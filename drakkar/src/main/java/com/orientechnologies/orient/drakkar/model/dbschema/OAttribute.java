@@ -21,10 +21,10 @@
 package com.orientechnologies.orient.drakkar.model.dbschema;
 
 /**
- * <CLASS DESCRIPTION>
+ * It represents an attribute of an entity.
  * 
  * @author Gabriele Ponzi
- * @email  gabriele.ponzi-at-gmaildotcom
+ * @email  gabriele.ponzi--at--gmail.com
  * 
  */
 

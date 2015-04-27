@@ -25,10 +25,11 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * <CLASS DESCRIPTION>
+ * It represents a generic key of the source DB. It's extended from OPrimaryKey
+ * and OForeignKey that differ each other only by their usage.
  * 
  * @author Gabriele Ponzi
- * @email  gabriele.ponzi-at-gmaildotcom
+ * @email  gabriele.ponzi--at--gmail.com
  * 
  */
 

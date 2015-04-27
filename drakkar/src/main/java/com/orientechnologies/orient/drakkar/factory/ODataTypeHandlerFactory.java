@@ -28,8 +28,11 @@ import com.orientechnologies.orient.drakkar.persistence.handler.OOracleDataTypeH
 import com.orientechnologies.orient.drakkar.persistence.handler.OPostgreSQLDataTypeHandler;
 
 /**
+ * Factory used to instantiate a specific DataTypeHandler according to the driver of the
+ * DBMS from which the import is performed.
+ * 
  * @author Gabriele Ponzi
- * @email  gabriele.ponzi-at-gmaildotcom
+ * @email  gabriele.ponzi--at--gmail.com
  *
  */
 

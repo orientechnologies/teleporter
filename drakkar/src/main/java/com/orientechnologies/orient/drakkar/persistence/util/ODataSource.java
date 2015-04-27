@@ -29,7 +29,7 @@ import javax.persistence.PersistenceException;
 import com.orientechnologies.common.log.OLogManager;
 
 /**
- * <CLASS DESCRIPTION>
+ * Utility class to which connection with source DB is delegated.
  * 
  * @author Gabriele Ponzi
  * @email  gabriele.ponzi-at-gmaildotcom

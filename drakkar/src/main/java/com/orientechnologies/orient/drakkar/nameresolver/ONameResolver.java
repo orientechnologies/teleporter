@@ -24,8 +24,11 @@ import com.orientechnologies.orient.drakkar.mapper.OER2GraphMapper;
 import com.orientechnologies.orient.drakkar.model.dbschema.ORelationship;
 
 /**
+ * Interface that performs name transformations on the elements 
+ * of the data source according to a specific convention.
+ * 
  * @author Gabriele Ponzi
- * @email  gabriele.ponzi-at-gmaildotcom
+ * @email  gabriele.ponzi--at--gmail.com
  *
  */
 

@@ -26,10 +26,10 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * <CLASS DESCRIPTION>
+ * It represents an entity of the source DB.
  * 
  * @author Gabriele Ponzi
- * @email  gabriele.ponzi-at-gmaildotcom
+ * @email  gabriele.ponzi--at--gmail.com
  * 
  */
 
@@ -71,8 +71,8 @@ public class OEntity {
   private boolean isInvolvedInForeignKeys(OAttribute attribute) {
 
     for(ORelationship relationship: this.relationships) {
-      for(String fkAttribute: relationship.getForeignAttributes2parentAttributes().keySet()) {
-        if(fkAttribute.equals(attribute.getName())) {
+      for(OAttribute fkAttribute: relationship.getForeignKey().getInvolvedAttributes()) {
+        if(fkAttribute.getName().equals(attribute.getName())) {
           return true;
         }
       }

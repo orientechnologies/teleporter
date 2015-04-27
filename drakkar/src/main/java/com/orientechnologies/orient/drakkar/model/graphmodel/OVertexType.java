@@ -26,15 +26,18 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * It represents an Orient class of a specific type that extends the Orient Vertex Class.
+ * It's a simple vertex-type in the graph model.
+ * 
  * @author Gabriele Ponzi
- * @email  gabriele.ponzi-at-gmaildotcom
+ * @email  gabriele.ponzi--at--gmail.com
  *
  */
 
 public class OVertexType {
 
   private String vertexType;
-  private Map<String,OAttributeProperties> attributeName2attributeProperties;
+  private Map<String,OPropertyAttributes> propertyName2propertyAttributes;
   private OVertexType parentVertexType;
   private List<OEdgeType> inEdgesType;
   private List<OEdgeType> outEdgesType;
@@ -42,7 +45,7 @@ public class OVertexType {
 
   public OVertexType(String vertexType) {
     this.vertexType = vertexType;
-    this.attributeName2attributeProperties = new LinkedHashMap<String, OAttributeProperties>();
+    this.propertyName2propertyAttributes = new LinkedHashMap<String, OPropertyAttributes>();
     this.inEdgesType = new ArrayList<OEdgeType>();
     this.outEdgesType = new ArrayList<OEdgeType>();
   }
@@ -55,12 +58,12 @@ public class OVertexType {
     this.vertexType = vertexType;
   }
 
-  public Map<String, OAttributeProperties> getAttributeName2attributeProperties() {
-    return this.attributeName2attributeProperties;
+  public Map<String, OPropertyAttributes> getPropertyName2propertyAttributes() {
+    return this.propertyName2propertyAttributes;
   }
 
-  public void setAttributeName2attributeProperties(Map<String, OAttributeProperties> attributeName2attributeType) {
-    this.attributeName2attributeProperties = attributeName2attributeType;
+  public void setPropertyName2propertyAttributes(Map<String, OPropertyAttributes> propertyName2propertyAttributes) {
+    this.propertyName2propertyAttributes = propertyName2propertyAttributes;
   }
 
   public OVertexType getParentVertexType() {
@@ -116,9 +119,9 @@ public class OVertexType {
       return false;
 
     // check on properties
-    for(String attributeName: this.attributeName2attributeProperties.keySet()) {
-      if(!(that.getAttributeName2attributeProperties().containsKey(attributeName) && 
-          this.attributeName2attributeProperties.get(attributeName).equals(that.getAttributeName2attributeProperties().get(attributeName))))
+    for(String attributeName: this.propertyName2propertyAttributes.keySet()) {
+      if(!(that.getPropertyName2propertyAttributes().containsKey(attributeName) && 
+          this.propertyName2propertyAttributes.get(attributeName).equals(that.getPropertyName2propertyAttributes().get(attributeName))))
         return false;
     }
 
@@ -126,13 +129,13 @@ public class OVertexType {
   }
 
   public String toString() {
-    String s = "Vertex-type [type = " + this.vertexType + ", # attributes = " + this.attributeName2attributeProperties.size() + ", # inEdges: "
+    String s = "Vertex-type [type = " + this.vertexType + ", # attributes = " + this.propertyName2propertyAttributes.size() + ", # inEdges: "
         + this.inEdgesType.size() + ", # outEdges: " + this.outEdgesType.size() + "]\nAttributes:\n"; 
 
-    for(String attributeName: this.attributeName2attributeProperties.keySet()) {
-      s += this.attributeName2attributeProperties.get(attributeName).getOrdinalPosition() + ": " + attributeName + " --> " + this.attributeName2attributeProperties.get(attributeName).toString();
+    for(String attributeName: this.propertyName2propertyAttributes.keySet()) {
+      s += this.propertyName2propertyAttributes.get(attributeName).getOrdinalPosition() + ": " + attributeName + " --> " + this.propertyName2propertyAttributes.get(attributeName).toString();
       
-      if(this.attributeName2attributeProperties.get(attributeName).isFromPrimaryKey())
+      if(this.propertyName2propertyAttributes.get(attributeName).isFromPrimaryKey())
         s += "(from PK)";
       
       s += "\t";

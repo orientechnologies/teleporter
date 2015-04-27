@@ -28,7 +28,7 @@ import com.orientechnologies.common.exception.OException;
 import com.orientechnologies.common.log.OLogManager;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.sql.OCommandSQL;
-import com.orientechnologies.orient.drakkar.model.graphmodel.OAttributeProperties;
+import com.orientechnologies.orient.drakkar.model.graphmodel.OPropertyAttributes;
 import com.orientechnologies.orient.drakkar.model.graphmodel.OEdgeType;
 import com.orientechnologies.orient.drakkar.model.graphmodel.OGraphModel;
 import com.orientechnologies.orient.drakkar.model.graphmodel.OVertexType;
@@ -38,8 +38,11 @@ import com.tinkerpop.blueprints.impls.orient.OrientGraphNoTx;
 import com.tinkerpop.blueprints.impls.orient.OrientVertexType;
 
 /**
+ * Writer that has the responsibility to write the model of the destination Orient Graph
+ * on OrientDB as an OrientDB Schema.
+ * 
  * @author Gabriele Ponzi
- * @email  gabriele.ponzi-at-gmaildotcom
+ * @email  gabriele.ponzi--at--gmail.com
  *
  */
 
@@ -63,7 +66,7 @@ public class OGraphModelWriter {
       int numberOfVertices = graphModel.getVerticesType().size();
 
       OrientVertexType newVertexType;
-      OAttributeProperties currentAttributeProperties = null;
+      OPropertyAttributes currentAttributeProperties = null;
       List<String> toRemoveAttributes;
       String statement;
       OCommandSQL sqlCommand;
@@ -75,8 +78,8 @@ public class OGraphModelWriter {
         newVertexType = orientGraph.createVertexType(currentVertexType.getType());
         toRemoveAttributes = new ArrayList<String>();
 
-        for(String attributeName: currentVertexType.getAttributeName2attributeProperties().keySet()) {
-          currentAttributeProperties = currentVertexType.getAttributeName2attributeProperties().get(attributeName);
+        for(String attributeName: currentVertexType.getPropertyName2propertyAttributes().keySet()) {
+          currentAttributeProperties = currentVertexType.getPropertyName2propertyAttributes().get(attributeName);
 
           type = handler.resolveType(currentAttributeProperties.getAttributeType().toLowerCase(Locale.ENGLISH));
           if(type != null) {
@@ -93,7 +96,7 @@ public class OGraphModelWriter {
 
         // property will be dropped both from the POJO schema and from OrientDb schema         
         for(String toRemove: toRemoveAttributes)
-          currentVertexType.getAttributeName2attributeProperties().remove(toRemove);
+          currentVertexType.getPropertyName2propertyAttributes().remove(toRemove);
 
         iteration++;
         OLogManager.instance().info(this, "Vertex-type '%s' built.\n", currentVertexType.getType());
@@ -159,8 +162,8 @@ public class OGraphModelWriter {
 
         currentType = currentVertexType.getType();
         properties = new ArrayList<String>();
-        for(String property: currentVertexType.getAttributeName2attributeProperties().keySet()) {
-          if(currentVertexType.getAttributeName2attributeProperties().get(property).isFromPrimaryKey()) {
+        for(String property: currentVertexType.getPropertyName2propertyAttributes().keySet()) {
+          if(currentVertexType.getPropertyName2propertyAttributes().get(property).isFromPrimaryKey()) {
             properties.add(property);
           }
         }

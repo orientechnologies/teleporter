@@ -33,8 +33,11 @@ import com.orientechnologies.orient.drakkar.nameresolver.ONameResolver;
 import com.tinkerpop.blueprints.Vertex;
 
 /**
+ * It orchestrates the phases of the importing algorithm from a DB to an Orient Graph DB.
+ * Uses an ODBQueryEngine and an OGraphDBCommandEngine for the source DB and the destination Orient DB managing.
+ * 
  * @author Gabriele Ponzi
- * @email  gabriele.ponzi-at-gmaildotcom
+ * @email  gabriele.ponzi--at--gmail.com
  *
  */
 
@@ -43,12 +46,6 @@ public class ODB2GraphImportEngine {
 
   public ODB2GraphImportEngine() {}
 
-
-  /**
-   * @param nameResolver 
-   * @throws SQLException 
-   * 
-   */
 
   public void executeImport(String driver, String uri, String username, String password, String outOrientGraphUri, OSource2GraphMapper genericMapper, ONameResolver nameResolver) throws SQLException {
 

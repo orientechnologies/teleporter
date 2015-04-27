@@ -35,10 +35,11 @@ import com.orientechnologies.orient.drakkar.persistence.handler.ODriverDataTypeH
 import com.orientechnologies.orient.drakkar.writer.OGraphModelWriter;
 
 /**
- * <CLASS DESCRIPTION>
+ * A strategy that performs a "naive" import of the source data. The source data schema is
+ * translated semi-directly in a correspondent and coherent graph model.
  * 
  * @author Gabriele Ponzi
- * @email  gabriele.ponzi-at-gmaildotcom
+ * @email  gabriele.ponzi--at--gmail.com
  * 
  */
 
@@ -74,7 +75,6 @@ public class ONaiveImportStrategy implements OImportStrategy {
     OLogManager.instance().info(this, "Elapsed time: %s s.\n", hms);
     
     OLogManager.instance().debug(this, "%s\n", ((OER2GraphMapper)mapper).getDataBaseSchema().toString());
-
 
     // Graph model building
     OLogManager.instance().info(this, "Building the graph model...\n", (Object[]) null);

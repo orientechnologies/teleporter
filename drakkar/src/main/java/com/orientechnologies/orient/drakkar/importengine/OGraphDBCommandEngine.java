@@ -42,8 +42,10 @@ import com.tinkerpop.blueprints.impls.orient.OrientGraphNoTx;
 import com.tinkerpop.blueprints.impls.orient.OrientVertex;
 
 /**
+ * Executes the necessary operations of insert and upsert for the destination Orient DB populating.
+ * 
  * @author Gabriele Ponzi
- * @email  gabriele.ponzi-at-gmaildotcom
+ * @email  gabriele.ponzi--at--gmail.com
  *
  */
 
@@ -119,9 +121,9 @@ public class OGraphDBCommandEngine {
 
     List<String> propertiesOfIndex = new LinkedList<String>();
 
-    for(String attribute: vertexType.getAttributeName2attributeProperties().keySet()) {
+    for(String attribute: vertexType.getPropertyName2propertyAttributes().keySet()) {
       // only attribute coming from the primary key are given
-      if(vertexType.getAttributeName2attributeProperties().get(attribute).isFromPrimaryKey())
+      if(vertexType.getPropertyName2propertyAttributes().get(attribute).isFromPrimaryKey())
         propertiesOfIndex.add(attribute);
     }
 
@@ -150,7 +152,7 @@ public class OGraphDBCommandEngine {
 
     // setting properties to the vertex
     String currentAttributeName = null;
-    for(String attributeName : vertexType.getAttributeName2attributeProperties().keySet()) {
+    for(String attributeName : vertexType.getPropertyName2propertyAttributes().keySet()) {
 
       currentAttributeName = record.getString(nameResolver.reverseTransformation(attributeName));
       if(currentAttributeName != null) {

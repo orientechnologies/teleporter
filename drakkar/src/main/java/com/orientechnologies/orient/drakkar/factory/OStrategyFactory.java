@@ -26,16 +26,16 @@ import com.orientechnologies.orient.drakkar.strategies.ONaiveAggregationImportSt
 import com.orientechnologies.orient.drakkar.strategies.ONaiveImportStrategy;
 
 /**
- * <CLASS DESCRIPTION>
+ * Factory used to instantiate the chosen strategy for the importing phase starting from its name.
  * 
  * @author Gabriele Ponzi
- * @email  gabriele.ponzi-at-gmaildotcom
+ * @email  gabriele.ponzi--at--gmail.com
  * 
  */
 
 public class OStrategyFactory {
   
-  public OStrategyFactory(){}
+  public OStrategyFactory() {}
 
   public OImportStrategy buildStrategy(String chosenStrategy) {
     OImportStrategy strategy = null;

@@ -21,10 +21,10 @@
 package com.orientechnologies.orient.drakkar.strategies;
 
 /**
- * <CLASS DESCRIPTION>
+ * Interface that represents a specific approach of data importing.
  * 
  * @author Gabriele Ponzi
- * @email  gabriele.ponzi@gmail.com
+ * @email  gabriele.ponzi--at--gmail.com
  * 
  */
 

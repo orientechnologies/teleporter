@@ -40,7 +40,7 @@ import com.orientechnologies.orient.drakkar.model.dbschema.OEntity;
 import com.orientechnologies.orient.drakkar.model.dbschema.OForeignKey;
 import com.orientechnologies.orient.drakkar.model.dbschema.OPrimaryKey;
 import com.orientechnologies.orient.drakkar.model.dbschema.ORelationship;
-import com.orientechnologies.orient.drakkar.model.graphmodel.OAttributeProperties;
+import com.orientechnologies.orient.drakkar.model.graphmodel.OPropertyAttributes;
 import com.orientechnologies.orient.drakkar.model.graphmodel.OEdgeType;
 import com.orientechnologies.orient.drakkar.model.graphmodel.OGraphModel;
 import com.orientechnologies.orient.drakkar.model.graphmodel.OVertexType;
@@ -48,8 +48,12 @@ import com.orientechnologies.orient.drakkar.nameresolver.ONameResolver;
 import com.orientechnologies.orient.drakkar.persistence.util.ODataSource;
 
 /**
+ * Implementation of OSource2GraphMapper that manages the source DB schema and the destination graph model with their correspondences.
+ * It has the responsibility to build in memory the two models: the first is built from the source DB meta-data through the JDBC driver,
+ * the second from the source DB schema just created.
+ * 
  * @author Gabriele Ponzi
- * @email  gabriele.ponzi-at-gmaildotcom
+ * @email  gabriele.ponzi--at--gmail.com
  *
  */
 
@@ -311,7 +315,7 @@ public class OER2GraphMapper implements OSource2GraphMapper {
 
     OVertexType currentVertexType;
     String currentVertexTypeName;
-    OAttributeProperties attributeProperties = null;
+    OPropertyAttributes attributeProperties = null;
 
     int numberOfVertexType = this.dataBaseSchema.getEntities().size();
     int iteration = 1;
@@ -331,8 +335,8 @@ public class OER2GraphMapper implements OSource2GraphMapper {
 
       // adding attributes to vertex-type
       for(OAttribute attribute: currentEntity.getAttributes()) {               
-        attributeProperties = new OAttributeProperties(attribute.getOrdinalPosition(), attribute.getDataType(), currentEntity.getPrimaryKey().getInvolvedAttributes().contains(attribute));
-        currentVertexType.getAttributeName2attributeProperties().put(nameResolver.resolveVertexProperty(attribute.getName()), attributeProperties);
+        attributeProperties = new OPropertyAttributes(attribute.getOrdinalPosition(), attribute.getDataType(), currentEntity.getPrimaryKey().getInvolvedAttributes().contains(attribute));
+        currentVertexType.getPropertyName2propertyAttributes().put(nameResolver.resolveVertexProperty(attribute.getName()), attributeProperties);
       }
 
       // adding vertex to the graph model
@@ -417,11 +421,11 @@ public class OER2GraphMapper implements OSource2GraphMapper {
         newAggregatorEdge = new OEdgeType(edgeType, outVertexType, inVertexType);       
 
         // adding to the edge all properties not belonging to the primary key
-        for(String property: currentVertex.getAttributeName2attributeProperties().keySet()) {
+        for(String property: currentVertex.getPropertyName2propertyAttributes().keySet()) {
 
           // if property does not belong to the primary key
-          if(!currentVertex.getAttributeName2attributeProperties().get(property).isFromPrimaryKey()) {
-            newAggregatorEdge.getAttributeName2attributeProperties().put(property, currentVertex.getAttributeName2attributeProperties().get(property));
+          if(!currentVertex.getPropertyName2propertyAttributes().get(property).isFromPrimaryKey()) {
+            newAggregatorEdge.getAttributeName2attributeProperties().put(property, currentVertex.getPropertyName2propertyAttributes().get(property));
           }
         }
 

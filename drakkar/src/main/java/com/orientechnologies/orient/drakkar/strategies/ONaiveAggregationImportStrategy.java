@@ -33,10 +33,12 @@ import com.orientechnologies.orient.drakkar.persistence.handler.ODriverDataTypeH
 import com.orientechnologies.orient.drakkar.writer.OGraphModelWriter;
 
 /**
- * <CLASS DESCRIPTION>
+ * A strategy that performs a "naive" import of the source data. The source data schema is
+ * translated semi-directly in a correspondent and coherent graph model using an aggregation 
+ * policy on the junction tables of dimension equals to 2.
  * 
  * @author Gabriele Ponzi
- * @email  gabriele.ponzi@gmail.com
+ * @email  gabriele.ponzi--at--gmail.com
  * 
  */
 

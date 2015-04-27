@@ -21,8 +21,10 @@
 package com.orientechnologies.orient.drakkar.model.dbschema;
 
 /**
+ * It represents a primary key for an entity.
+ * 
  * @author Gabriele Ponzi
- * @email  gabriele.ponzi-at-gmaildotcom
+ * @email  gabriele.ponzi--at--gmail.com
  *
  */
 

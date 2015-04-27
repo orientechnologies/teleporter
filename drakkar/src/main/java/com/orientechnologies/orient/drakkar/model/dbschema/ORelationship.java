@@ -20,14 +20,12 @@
 
 package com.orientechnologies.orient.drakkar.model.dbschema;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
-
 /**
- * <CLASS DESCRIPTION>
+ * It represents the relationship between two entities (foreign and parent entity)
+ * based on the importing of a single primary key (composite or not) through a foreign key.
  * 
  * @author Gabriele Ponzi
- * @email  gabriele.ponzi-at-gmaildotcom
+ * @email  gabriele.ponzi--at--gmail.com
  * 
  */
 
@@ -37,12 +35,10 @@ public class ORelationship {
   private String parentEntityName;				// Entity exporting the key (arrival entity)
   private OForeignKey foreignKey;
   private OPrimaryKey primaryKey;
-  private Map<String,String> foreignAttributes2parentAttributes;    // ???
   
   public ORelationship(String foreignEntityName, String parentEntityName) {
     this.foreignEntityName = foreignEntityName;
     this.parentEntityName = parentEntityName;
-    this.foreignAttributes2parentAttributes = new LinkedHashMap<String,String>();
   }
   
   public ORelationship(String foreignEntityName, String parentEntityName, OForeignKey foreignKey, OPrimaryKey primaryKey) {
@@ -50,15 +46,8 @@ public class ORelationship {
     this.parentEntityName = parentEntityName;
     this.foreignKey = foreignKey;
     this.primaryKey = primaryKey;
-    this.foreignAttributes2parentAttributes = new LinkedHashMap<String,String>();
   }
-  
-//  public ORelationship(String foreignEntityName, String parentEntityName, Map<String,String> foreignAttributes2parentAttributes) {
-//    this.foreignEntityName = foreignEntityName;
-//    this.parentEntityName = parentEntityName;
-//    this.foreignAttributes2parentAttributes = foreignAttributes2parentAttributes;
-//  }
-
+ 
   public String getForeignEntityName() {
     return this.foreignEntityName;
   }
@@ -91,21 +80,11 @@ public class ORelationship {
     this.primaryKey = primaryKey;
   }
 
-  public Map<String, String> getForeignAttributes2parentAttributes() {
-    return foreignAttributes2parentAttributes;
-  }
-
-  public void setForeignAttributes2parentAttributes(Map<String, String> foreignAttributes2parentAttributes) {
-    this.foreignAttributes2parentAttributes = foreignAttributes2parentAttributes;
-  }
-
- 
-
+  
   @Override
   public int hashCode() {
     final int prime = 31;
     int result = 1;
-    result = prime * result + ((foreignAttributes2parentAttributes == null) ? 0 : foreignAttributes2parentAttributes.hashCode());
     result = prime * result + ((foreignEntityName == null) ? 0 : foreignEntityName.hashCode());
     result = prime * result + ((parentEntityName == null) ? 0 : parentEntityName.hashCode());
     return result;

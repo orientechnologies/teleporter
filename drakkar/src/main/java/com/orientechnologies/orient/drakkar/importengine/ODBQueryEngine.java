@@ -29,8 +29,10 @@ import com.orientechnologies.common.log.OLogManager;
 import com.orientechnologies.orient.drakkar.persistence.util.ODataSource;
 
 /**
+ * Implementation of ODataSourceQueryEngine. It executes the necessary queries for the source DB records fetching.
+ * 
  * @author Gabriele Ponzi
- * @email  gabriele.ponzi-at-gmaildotcom
+ * @email  gabriele.ponzi--at--gmail.com
  *
  */
 

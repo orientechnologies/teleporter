@@ -20,12 +20,15 @@
 
 package com.orientechnologies.orient.drakkar.factory;
 
+import com.orientechnologies.orient.drakkar.nameresolver.OJavaConventionNameResolver;
 import com.orientechnologies.orient.drakkar.nameresolver.ONameResolver;
-import com.orientechnologies.orient.drakkar.nameresolver.javaconvention.OJavaConventionSimpleEdge;
 
 /**
+ * Factory used to instantiate a specific NameResolver starting from its name.
+ * If the name is not specified (null value) a JavaConventionNameResolver is instantiated.
+ *  
  * @author Gabriele Ponzi
- * @email  gabriele.ponzi-at-gmaildotcom
+ * @email  gabriele.ponzi--at--gmail.com
  *
  */
 
@@ -36,12 +39,12 @@ public class ONameResolverFactory {
 
 
     if(nameResolverConvention == null)  {
-      nameResolver = new OJavaConventionSimpleEdge();
+      nameResolver = new OJavaConventionNameResolver();
     }
     else {
       switch(nameResolverConvention) {
 
-      default :  nameResolver = new OJavaConventionSimpleEdge();
+      default :  nameResolver = new OJavaConventionNameResolver();
       break;
 
       }

@@ -27,8 +27,10 @@ import com.orientechnologies.common.log.OLogManager;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 
 /**
+ * Handler that executes type conversions from PostgreSQL DBMS to the OrientDB types.
+ * 
  * @author Gabriele Ponzi
- * @email  gabriele.ponzi-at-gmaildotcom
+ * @email  gabriele.ponzi--at--gmail.com
  *
  */
 

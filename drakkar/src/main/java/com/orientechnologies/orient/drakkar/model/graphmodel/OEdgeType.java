@@ -24,8 +24,11 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
+ * It represents an Orient class of a specific type that extends the Orient Edge Class.
+ * It's a simple edge-type in the graph model.
+ * 
  * @author Gabriele Ponzi
- * @email  gabriele.ponzi-at-gmaildotcom
+ * @email  gabriele.ponzi--at--gmail.com
  *
  */
 
@@ -34,18 +37,18 @@ public class OEdgeType {
   private String edgeType;
   private OVertexType inVertexType;
   private OVertexType outVertexType;
-  private Map<String,OAttributeProperties> attributeName2attributeProperties;
+  private Map<String,OPropertyAttributes> attributeName2attributeProperties;
 
   public OEdgeType(String edgeType) {
     this.edgeType = edgeType;  
-    this.attributeName2attributeProperties = new LinkedHashMap<String, OAttributeProperties>();
+    this.attributeName2attributeProperties = new LinkedHashMap<String, OPropertyAttributes>();
   }
 
   public OEdgeType(String edgeType, OVertexType outVertexType, OVertexType inVertexType) {
     this.edgeType = edgeType;
     this.outVertexType = outVertexType;
     this.inVertexType = inVertexType;
-    this.attributeName2attributeProperties = new LinkedHashMap<String, OAttributeProperties>();
+    this.attributeName2attributeProperties = new LinkedHashMap<String, OPropertyAttributes>();
 
   }
 
@@ -73,11 +76,11 @@ public class OEdgeType {
     this.outVertexType = outVertexType;
   }
 
-  public Map<String, OAttributeProperties> getAttributeName2attributeProperties() {
+  public Map<String, OPropertyAttributes> getAttributeName2attributeProperties() {
     return this.attributeName2attributeProperties;
   }
 
-  public void setAttributeName2attributeProperties(Map<String, OAttributeProperties> attributeName2attributeProperties) {
+  public void setAttributeName2attributeProperties(Map<String, OPropertyAttributes> attributeName2attributeProperties) {
     this.attributeName2attributeProperties = attributeName2attributeProperties;
   }
 

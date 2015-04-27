@@ -25,10 +25,10 @@ import java.util.List;
 
 
 /**
- * <CLASS DESCRIPTION>
+ * It represents the model of the destination GraphDB.
  * 
  * @author Gabriele Ponzi
- * @email  gabriele.ponzi-at-gmaildotcom
+ * @email  gabriele.ponzi--at--gmail.com
  * 
  */
 

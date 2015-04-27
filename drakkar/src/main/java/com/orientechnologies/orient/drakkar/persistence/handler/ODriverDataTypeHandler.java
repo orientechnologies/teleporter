@@ -23,8 +23,11 @@ package com.orientechnologies.orient.drakkar.persistence.handler;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 
 /**
+ * Interface that executes the right type conversions between DBMS and OrientDB types according 
+ * to the specific driver of the source DB.
+ * 
  * @author Gabriele Ponzi
- * @email  gabriele.ponzi-at-gmaildotcom
+ * @email  gabriele.ponzi--at--gmail.com
  *
  */
 

@@ -21,8 +21,10 @@
 package com.orientechnologies.orient.drakkar.importengine;
 
 /**
+ * Interface that executes the necessary queries on the data source in order to import them. 
+ * 
  * @author Gabriele Ponzi
- * @email  gabriele.ponzi-at-gmaildotcom
+ * @email  gabriele.ponzi--at--gmail.com
  *
  */
 
