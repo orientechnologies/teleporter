@@ -20,6 +20,7 @@
 
 package com.orientechnologies.orient.drakkar.factory;
 
+import com.orientechnologies.common.log.OLogManager;
 import com.orientechnologies.orient.drakkar.nameresolver.OJavaConventionNameResolver;
 import com.orientechnologies.orient.drakkar.nameresolver.ONameResolver;
 
@@ -39,12 +40,20 @@ public class ONameResolverFactory {
 
 
     if(nameResolverConvention == null)  {
-      nameResolver = new OJavaConventionNameResolver();
+      nameResolver = new OOriginalConventionNameResolver();
     }
     else {
       switch(nameResolverConvention) {
+      
+      case "java": nameResolver = new OJavaConventionNameResolver();
+      break;
+      
+      case "original": nameResolver = new OOriginalConventionNameResolver();
+      break;
 
-      default :  nameResolver = new OJavaConventionNameResolver();
+      default :  
+        OLogManager.instance().info(this, "Name resolver convention '%s' not found, the original name convention will be adopted!", nameResolverConvention );
+        nameResolver = new OOriginalConventionNameResolver();
       break;
 
       }

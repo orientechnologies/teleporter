@@ -20,7 +20,6 @@
 
 package com.orientechnologies.orient.drakkar.nameresolver;
 
-import com.orientechnologies.orient.drakkar.mapper.OER2GraphMapper;
 import com.orientechnologies.orient.drakkar.model.dbschema.ORelationship;
 
 /**
@@ -53,7 +52,7 @@ public class OJavaConventionNameResolver implements ONameResolver {
   }  
 
   @Override
-  public String resolveEdgeName(ORelationship relationship, OER2GraphMapper mapper) {
+  public String resolveEdgeName(ORelationship relationship) {
     String finalName;
 
     // Foreign Key composed of 1 attribute
@@ -144,9 +143,7 @@ public class OJavaConventionNameResolver implements ONameResolver {
     return name;
   }
 
-  /* (non-Javadoc)
-   * @see com.orientechnologies.orient.importer.nameresolver.ONameResolver#reverseStransformation(java.lang.String)
-   */
+
   @Override
   public String reverseTransformation(String transformedName) {
 

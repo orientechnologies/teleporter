@@ -20,7 +20,6 @@
 
 package com.orientechnologies.orient.drakkar.nameresolver;
 
-import com.orientechnologies.orient.drakkar.mapper.OER2GraphMapper;
 import com.orientechnologies.orient.drakkar.model.dbschema.ORelationship;
 
 /**
@@ -34,11 +33,11 @@ import com.orientechnologies.orient.drakkar.model.dbschema.ORelationship;
 
 public interface ONameResolver {
   
-  public String resolveVertexName(String candidatename);
+  public String resolveVertexName(String candidateName);
   
   public  String resolveVertexProperty(String candidateName);
   
-  public String resolveEdgeName(ORelationship relationship, OER2GraphMapper mapper);
+  public String resolveEdgeName(ORelationship relationship);
   
   public String reverseTransformation(String transformedName);
 

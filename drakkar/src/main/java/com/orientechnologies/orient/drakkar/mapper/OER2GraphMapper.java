@@ -366,7 +366,7 @@ public class OER2GraphMapper implements OSource2GraphMapper {
       OLogManager.instance().info(this, "Building edge-type from '%s' to '%s' (%s/%s)...", currentOutVertex.getType(), currentInVertex.getType(), iteration, numberOfEdgeType);
 
       if(currentOutVertex != null && currentInVertex != null) {
-        edgeType = nameResolver.resolveEdgeName(relationship, this);
+        edgeType = nameResolver.resolveEdgeName(relationship);
 //        currentEdgeType = new OEdgeType(edgeType, currentOutVertex, currentInVertex);
         
         // if the class edge doesn't exists, it will be created
