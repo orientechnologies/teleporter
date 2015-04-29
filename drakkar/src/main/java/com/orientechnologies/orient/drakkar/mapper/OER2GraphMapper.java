@@ -34,6 +34,8 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import com.orientechnologies.common.log.OLogManager;
+import com.orientechnologies.orient.drakkar.context.ODrakkarContext;
+import com.orientechnologies.orient.drakkar.context.ODrakkarStatistics;
 import com.orientechnologies.orient.drakkar.model.dbschema.OAttribute;
 import com.orientechnologies.orient.drakkar.model.dbschema.ODataBaseSchema;
 import com.orientechnologies.orient.drakkar.model.dbschema.OEntity;
@@ -78,13 +80,14 @@ public class OER2GraphMapper implements OSource2GraphMapper {
   }
 
 
-  public void buildSourceSchema() {
+  public void buildSourceSchema(ODrakkarContext context) {
 
     Connection connection = null;
 
     try {
 
       connection = this.dataSource.getConnection();
+      ODrakkarStatistics statistics = context.getStatistics();
       DatabaseMetaData databaseMetaData = connection.getMetaData();
 
       /*
@@ -119,6 +122,7 @@ public class OER2GraphMapper implements OSource2GraphMapper {
       }
 
       int numberOfTables = tablesName.size();
+      statistics.setTotalNumberOfEntities(numberOfTables);
 
       OLogManager.instance().info(this, "%s tables found.", numberOfTables);
 
@@ -134,7 +138,7 @@ public class OER2GraphMapper implements OSource2GraphMapper {
       int iteration = 1;
       for(String currentTableName: tablesName) {
 
-        OLogManager.instance().info(this, "Building '%s' entity (%s/%s)...", currentTableName, iteration, numberOfTables);
+        OLogManager.instance().debug(this, "Building '%s' entity (%s/%s)...", currentTableName, iteration, numberOfTables);
 
         // creating entity
         currentEntity = new OEntity(currentTableName);
@@ -169,7 +173,8 @@ public class OER2GraphMapper implements OSource2GraphMapper {
         this.dataBaseSchema.addEntity(currentEntity);
 
         iteration++;
-        OLogManager.instance().info(this, "Entity %s built.\n", currentTableName);
+        OLogManager.instance().debug(this, "Entity %s built.\n", currentTableName);
+        statistics.incrementBuiltEntities();
       }
 
 
@@ -180,7 +185,7 @@ public class OER2GraphMapper implements OSource2GraphMapper {
       for(OEntity currentForeignEntity: this.dataBaseSchema.getEntities()) {
 
         String currentForeignEntityName = currentForeignEntity.getName();
-        OLogManager.instance().info(this, "Building relationships starting from '%s' entity (%s/%s)...", currentForeignEntityName, iteration, numberOfTables);
+        OLogManager.instance().debug(this, "Building relationships starting from '%s' entity (%s/%s)...", currentForeignEntityName, iteration, numberOfTables);
 
         String foreignCatalog = null;
         String foreignSchema = null;
@@ -246,7 +251,8 @@ public class OER2GraphMapper implements OSource2GraphMapper {
         }
 
         iteration++;
-        OLogManager.instance().info(this, "Relationships from %s built.\n", currentForeignEntityName);
+        OLogManager.instance().debug(this, "Relationships from %s built.\n", currentForeignEntityName);
+        statistics.incrementDoneEntity4Relationship();
       }
 
     }catch(SQLException e) {
@@ -263,7 +269,7 @@ public class OER2GraphMapper implements OSource2GraphMapper {
 
     try {
       if(connection.isClosed())
-        OLogManager.instance().info(this, "Connection to DB closed.\n", (Object[])null);
+        OLogManager.instance().debug(this, "Connection to DB closed.\n", (Object[])null);
       else
         OLogManager.instance().warn(this, "Connection to DB not closed.\n", (Object[])null);
     }catch(SQLException e) {
@@ -305,9 +311,10 @@ public class OER2GraphMapper implements OSource2GraphMapper {
 
 
   @Override
-  public void buildGraphModel(ONameResolver nameResolver) {
+  public void buildGraphModel(ONameResolver nameResolver, ODrakkarContext context) {
 
     this.graphModel = new OGraphModel();
+    ODrakkarStatistics statistics = context.getStatistics();
 
     /*
      *  Vertex-type building
@@ -318,20 +325,24 @@ public class OER2GraphMapper implements OSource2GraphMapper {
     OPropertyAttributes attributeProperties = null;
 
     int numberOfVertexType = this.dataBaseSchema.getEntities().size();
+    statistics.setTotalNumberOfModelVertices(numberOfVertexType);
     int iteration = 1;
     for(OEntity currentEntity: this.dataBaseSchema.getEntities()) {
 
-      OLogManager.instance().info(this, "Building '%s' vertex-type (%s/%s)...", currentEntity.getName(), iteration, numberOfVertexType);
+      OLogManager.instance().debug(this, "Building '%s' vertex-type (%s/%s)...", currentEntity.getName(), iteration, numberOfVertexType);
 
       // buildind correspondent vertex-type
       currentVertexTypeName = nameResolver.resolveVertexName(currentEntity.getName());
       currentVertexType = new OVertexType(currentVertexTypeName);
+      
 
       // TO CHANGE
       if(currentEntity.isJunctionEntity())
         currentVertexType.setFromMany2Many(true);
       else
         currentVertexType.setFromMany2Many(false);
+      
+      
 
       // adding attributes to vertex-type
       for(OAttribute attribute: currentEntity.getAttributes()) {               
@@ -346,7 +357,8 @@ public class OER2GraphMapper implements OSource2GraphMapper {
       this.entity2vertexType.put(currentEntity, currentVertexType);
 
       iteration++;
-      OLogManager.instance().info(this, "Vertex-type %s built.\n", currentVertexType.getType());
+      OLogManager.instance().debug(this, "Vertex-type %s built.\n", currentVertexType.getType());
+      statistics.incrementBuiltModelVertexTypes();
     }
 
     /*
@@ -359,20 +371,20 @@ public class OER2GraphMapper implements OSource2GraphMapper {
     OVertexType currentInVertex;
 
     int numberOfEdgeType = this.dataBaseSchema.getRelationships().size();
+    statistics.setTotalNumberOfModelEdges(numberOfEdgeType);
     iteration = 1;
     for(ORelationship relationship: this.dataBaseSchema.getRelationships()) {  
       currentOutVertex = this.graphModel.getVertexByType(nameResolver.resolveVertexName(relationship.getForeignEntityName()));
       currentInVertex = this.graphModel.getVertexByType(nameResolver.resolveVertexName(relationship.getParentEntityName()));
-      OLogManager.instance().info(this, "Building edge-type from '%s' to '%s' (%s/%s)...", currentOutVertex.getType(), currentInVertex.getType(), iteration, numberOfEdgeType);
+      OLogManager.instance().debug(this, "Building edge-type from '%s' to '%s' (%s/%s)...", currentOutVertex.getType(), currentInVertex.getType(), iteration, numberOfEdgeType);
 
       if(currentOutVertex != null && currentInVertex != null) {
         edgeType = nameResolver.resolveEdgeName(relationship);
-//        currentEdgeType = new OEdgeType(edgeType, currentOutVertex, currentInVertex);
         
         // if the class edge doesn't exists, it will be created
         currentEdgeType = this.graphModel.getEdgeTypeByName(edgeType);
         if(currentEdgeType == null) {
-          currentEdgeType = new OEdgeType(edgeType);
+          currentEdgeType = new OEdgeType(edgeType, null, currentInVertex);  // TO UPDATE !!!!!!!!
           this.graphModel.addEdgeType(currentEdgeType);
         }
           
@@ -387,7 +399,8 @@ public class OER2GraphMapper implements OSource2GraphMapper {
       this.relationship2edgeType.put(relationship, currentEdgeType);
 
       iteration++;
-      OLogManager.instance().info(this, "Edge-type %s built.\n", currentEdgeType.getType());
+      OLogManager.instance().debug(this, "Edge-type %s built.\n", currentEdgeType.getType());
+      statistics.incrementBuiltModelEdgeTypes();
     }
   }
 

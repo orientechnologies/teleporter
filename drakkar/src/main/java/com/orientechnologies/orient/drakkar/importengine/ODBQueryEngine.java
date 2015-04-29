@@ -49,7 +49,6 @@ public class ODBQueryEngine implements ODataSourceQueryEngine {
 
   public ResultSet getRecordsByEntity(String entityName) {
 
-//    List<OFetchingRecord> records = new LinkedList<OFetchingRecord>();
     ResultSet results = null;
     this.dbConnection = null;
     this.statement = null;
@@ -64,17 +63,6 @@ public class ODBQueryEngine implements ODataSourceQueryEngine {
     }catch(SQLException e) {
       OLogManager.instance().debug(this, "%s", e.getMessage());
       e.printStackTrace();
-    }finally {
-//      try {
-//        if(dbConnection != null) 
-//          dbConnection.close();
-//        if(statement != null) 
-//          statement.close();
-//
-//      }catch(SQLException e) {
-//        OLogManager.instance().debug(this, "%s", e.getMessage());
-//        e.printStackTrace();
-//      }
     }
     return results;
 

@@ -23,6 +23,8 @@ package com.orientechnologies.orient.drakkar.importengine;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import com.orientechnologies.orient.drakkar.context.ODrakkarContext;
+import com.orientechnologies.orient.drakkar.context.ODrakkarStatistics;
 import com.orientechnologies.orient.drakkar.mapper.OER2GraphMapper;
 import com.orientechnologies.orient.drakkar.mapper.OSource2GraphMapper;
 import com.orientechnologies.orient.drakkar.model.dbschema.OEntity;
@@ -47,8 +49,9 @@ public class ODB2GraphImportEngine {
   public ODB2GraphImportEngine() {}
 
 
-  public void executeImport(String driver, String uri, String username, String password, String outOrientGraphUri, OSource2GraphMapper genericMapper, ONameResolver nameResolver) throws SQLException {
+  public void executeImport(String driver, String uri, String username, String password, String outOrientGraphUri, OSource2GraphMapper genericMapper, ONameResolver nameResolver, ODrakkarContext context) throws SQLException {
 
+    ODrakkarStatistics statistics = context.getStatistics();
 
     OER2GraphMapper mapper = (OER2GraphMapper) genericMapper;
     ODBQueryEngine dbQueryEngine = new ODBQueryEngine(driver, uri, username, password);    
@@ -83,6 +86,8 @@ public class ODB2GraphImportEngine {
 
       // closing connection and statement
       dbQueryEngine.closeAll();
+      
+      statistics.incrementImportedEntities();
     }
   }
 

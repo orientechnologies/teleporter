@@ -54,11 +54,11 @@ public class ODataSource {
 
   public Connection getConnection()  {
     Connection connection = null;
-    OLogManager.instance().info(this, "Attempting connection to %s ...", this.uri);
+    OLogManager.instance().debug(this, "Attempting connection to %s ...", this.uri);
     try {
       Class.forName(driver);
       connection = DriverManager.getConnection(uri,username, password);
-      OLogManager.instance().info(this, "Successful connection.\n", (Object[])null);
+      OLogManager.instance().debug(this, "Successful connection.\n", (Object[])null);
     } catch (ClassNotFoundException e) {
       OLogManager.instance().error(this, "ClassNotFoundException during connection attempting.\n", (Object[])null);
       throw new PersistenceException(e.getMessage());

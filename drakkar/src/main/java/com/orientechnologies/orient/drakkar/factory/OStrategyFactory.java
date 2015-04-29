@@ -21,9 +21,9 @@
 package com.orientechnologies.orient.drakkar.factory;
 
 import com.orientechnologies.common.log.OLogManager;
-import com.orientechnologies.orient.drakkar.strategies.OImportStrategy;
-import com.orientechnologies.orient.drakkar.strategies.ONaiveAggregationImportStrategy;
-import com.orientechnologies.orient.drakkar.strategies.ONaiveImportStrategy;
+import com.orientechnologies.orient.drakkar.strategy.OImportStrategy;
+import com.orientechnologies.orient.drakkar.strategy.ONaiveAggregationImportStrategy;
+import com.orientechnologies.orient.drakkar.strategy.ONaiveImportStrategy;
 
 /**
  * Factory used to instantiate the chosen strategy for the importing phase starting from its name.

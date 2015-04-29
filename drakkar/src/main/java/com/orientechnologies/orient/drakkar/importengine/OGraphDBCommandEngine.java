@@ -255,7 +255,7 @@ public class OGraphDBCommandEngine {
         currentInVertex = orientGraph.addVertex(classAndClusterName, classAndClusterName);
         currentInVertex.setProperties(partialProperties);
         currentInVertex.save();
-        OLogManager.instance().info(this, "New vertex inserted (only pk props setted): %s\n", currentInVertex.toString());
+        OLogManager.instance().debug(this, "New vertex inserted (only pk props setted): %s\n", currentInVertex.toString());
 
       }
 

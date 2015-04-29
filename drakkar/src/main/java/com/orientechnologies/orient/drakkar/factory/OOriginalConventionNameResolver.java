@@ -62,7 +62,7 @@ public class OOriginalConventionNameResolver implements ONameResolver {
 
 
       // manipulating name (Java Convention)
-      finalName = "Has" + columnName;
+      finalName = "has_" + columnName;
     }
 
     // Foreign Key composed of multiple attribute

@@ -18,26 +18,32 @@
  *
  */
 
-package com.orientechnologies.orient.drakkar.mapper;
-
-import com.orientechnologies.orient.drakkar.context.ODrakkarContext;
-import com.orientechnologies.orient.drakkar.nameresolver.ONameResolver;
+package com.orientechnologies.orient.drakkar.context;
 
 
 /**
- * Interface that manages the data source schema and the destination graph model with their correspondences.
- * It has the responsibility to build in memory the two models: the first is built from the source meta-data,
- * the second from the data source schema just created.
+ * Context class for Drakkar execution.
  * 
  * @author Gabriele Ponzi
  * @email  gabriele.ponzi--at--gmail.com
  *
  */
 
-public interface OSource2GraphMapper {
+public class ODrakkarContext {
   
-  public void buildSourceSchema(ODrakkarContext context);
+  private ODrakkarStatistics statistics;
   
-  void buildGraphModel(ONameResolver nameResolver, ODrakkarContext context);
+  public ODrakkarContext() {
+    this.statistics = new ODrakkarStatistics();
+  }
 
+  public ODrakkarStatistics getStatistics() {
+    return statistics;
+  }
+
+  public void setStatistics(ODrakkarStatistics statistics) {
+    this.statistics = statistics;
+  }
+
+  
 }

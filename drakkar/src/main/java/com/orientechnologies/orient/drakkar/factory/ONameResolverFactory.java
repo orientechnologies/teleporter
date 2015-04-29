@@ -52,7 +52,7 @@ public class ONameResolverFactory {
       break;
 
       default :  
-        OLogManager.instance().info(this, "Name resolver convention '%s' not found, the original name convention will be adopted!", nameResolverConvention );
+        OLogManager.instance().info(this, "Name resolver convention '%s' not found, the original name convention will be adopted!", nameResolverConvention);
         nameResolver = new OOriginalConventionNameResolver();
       break;
 

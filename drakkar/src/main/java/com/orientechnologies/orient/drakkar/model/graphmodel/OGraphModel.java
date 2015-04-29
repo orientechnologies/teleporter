@@ -105,10 +105,11 @@ public class OGraphModel {
     s += "\n\n";
     
     // graph structure
-//    s += "Graph structure:\n\n";
-//    for(OEdgeType e: this.edgesType) {
-//        s += e.getOutVertexType().getType() + " -----------[" + e.getType() + "]-----------> " + e.getInVertexType().getType() + "\n";
-//      }
+    s += "Graph structure:\n\n";
+    for(OVertexType v: this.verticesType) {
+      for(OEdgeType e: v.getOutEdgesType())
+        s += v.getType() + " -----------[" + e.getType() + "]-----------> " + e.getInVertexType().getType() + "\n";
+      }
             
     return s; 
   }
