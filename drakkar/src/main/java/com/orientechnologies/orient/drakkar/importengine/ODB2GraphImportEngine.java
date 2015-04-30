@@ -63,6 +63,8 @@ public class ODB2GraphImportEngine {
     OVertexType currentInVertexType = null;  
     Vertex currentOutVertex = null;
     OEdgeType edgeType = null;
+    
+    int insertedVisitedVertex = 0;
 
     for(OEntity entity: mapper.getDataBaseSchema().getEntities()) {
       
@@ -84,13 +86,20 @@ public class ODB2GraphImportEngine {
           edgeType = mapper.getRelationship2edgeType().get(currentRelation);
           graphDBCommandEngine.upsertReachedVertexWithEdge(currentRecord, currentRelation, currentOutVertex, currentInVertexType, edgeType.getType(), nameResolver);
         }   
+        
+        // Statistics updated every 500 inserted visited vertex
+        insertedVisitedVertex++;
+        if(insertedVisitedVertex % 500 == 0) {
+          statistics.incrementImportedRecords(500);
+          insertedVisitedVertex = 0;
+        }
       }
 
       // closing connection and statement
       dbQueryEngine.closeAll();
-      
-      statistics.incrementImportedEntities();
     }
+    // Statistics updated with remaining records inserted (if presents)
+    statistics.incrementImportedRecords(insertedVisitedVertex);
   }
 
 }

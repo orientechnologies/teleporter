@@ -64,7 +64,8 @@ public class ODrakkarStatistics {
   private Date startWork3Time;
 
   // OrientDB importing
-  private int importedEntities;
+  private int totalNumberOfRecords;
+  private int importedRecords;
   private Date startWork4Time;
 
   
@@ -95,7 +96,8 @@ public class ODrakkarStatistics {
     this.totalNumberOfIndices = 0;
     this.wroteIndices = 0;
 
-    this.importedEntities = 0;
+    this.totalNumberOfRecords = 0;
+    this.importedRecords = 0;
 
   }
   
@@ -238,9 +240,20 @@ public class ODrakkarStatistics {
   }
 
 
-  public int getImportedEntities() {
-    return this.importedEntities;
+  public int getTotalNumberOfRecords() {
+    return totalNumberOfRecords;
   }
+
+
+  public void setTotalNumberOfRecords(int totalNumberOfRecords) {
+    this.totalNumberOfRecords = totalNumberOfRecords;
+  }
+
+
+  public int getImportedRecords() {
+    return importedRecords;
+  }
+
 
 
   /*
@@ -293,11 +306,12 @@ public class ODrakkarStatistics {
     this.notifyListeners(3);
   }
 
-  public void incrementImportedEntities() {
-    this.importedEntities++;
+  public void incrementImportedRecords(int importedRecord) {
+    this.importedRecords += importedRecord;
     this.notifyListeners(4);
   }
-
+  
+ 
   
   /*
    *  toString methods
@@ -327,7 +341,7 @@ public class ODrakkarStatistics {
 
   public String importingProgress() {
     String s ="";
-    s += "Imported Entities: " + this.importedEntities + "/" + this.totalNumberOfEntities;
+    s += "Imported Records: " + this.importedRecords + "/" + this.totalNumberOfRecords;
     return s;
   }
   

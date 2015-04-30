@@ -24,6 +24,7 @@ import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -133,6 +134,12 @@ public class OER2GraphMapper implements OSource2GraphMapper {
 
       List<LinkedHashMap<String,String>> currentEntityRelationships1;
       List<LinkedHashMap<String,String>> currentEntityRelationships2;
+      
+      // Variables for records counting
+      Statement statement = connection.createStatement();
+      String sql;
+      ResultSet currentTableRecordAmount;
+      int totalNumberOfRecord = 0;
 
       /*
        *  Entity building
@@ -141,6 +148,15 @@ public class OER2GraphMapper implements OSource2GraphMapper {
       for(String currentTableName: tablesName) {
 
         OLogManager.instance().debug(this, "Building '%s' entity (%s/%s)...", currentTableName, iteration, numberOfTables);
+        
+        // Counting current-table's record
+        sql = "select count(*) from " + currentTableName;
+        currentTableRecordAmount = statement.executeQuery(sql);
+        if (currentTableRecordAmount.next()) {
+            totalNumberOfRecord += currentTableRecordAmount.getInt(1);
+        }
+        currentTableRecordAmount.close();
+        
 
         // creating entity
         currentEntity = new OEntity(currentTableName);
@@ -178,7 +194,8 @@ public class OER2GraphMapper implements OSource2GraphMapper {
         OLogManager.instance().debug(this, "Entity %s built.\n", currentTableName);
         statistics.incrementBuiltEntities();
       }
-
+      statement.close();
+      statistics.setTotalNumberOfRecords(totalNumberOfRecord);
 
       /*
        *  Building relationships

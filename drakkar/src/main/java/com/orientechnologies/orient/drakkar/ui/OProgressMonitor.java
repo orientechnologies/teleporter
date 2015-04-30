@@ -207,7 +207,7 @@ public class OProgressMonitor implements OStatisticsListener {
 
     int work4DonePercentage;
     if(statistics.getTotalNumberOfEntities() > 0) {
-      work4DonePercentage = (int) (((double)statistics.getImportedEntities()/(double)statistics.getTotalNumberOfEntities()) * 100);
+      work4DonePercentage = (int) (((double)statistics.getImportedRecords()/(double)statistics.getTotalNumberOfRecords()) * 100);
     }
     else {
       work4DonePercentage = 0;

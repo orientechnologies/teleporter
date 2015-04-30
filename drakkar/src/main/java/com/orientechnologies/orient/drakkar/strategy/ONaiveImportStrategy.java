@@ -20,8 +20,6 @@
 
 package com.orientechnologies.orient.drakkar.strategy;
 
-import java.util.Date;
-
 import com.orientechnologies.common.log.OLogManager;
 import com.orientechnologies.orient.drakkar.context.ODrakkarContext;
 import com.orientechnologies.orient.drakkar.factory.ODataTypeHandlerFactory;
@@ -33,7 +31,6 @@ import com.orientechnologies.orient.drakkar.model.graphmodel.OGraphModel;
 import com.orientechnologies.orient.drakkar.nameresolver.ONameResolver;
 import com.orientechnologies.orient.drakkar.persistence.handler.ODriverDataTypeHandler;
 import com.orientechnologies.orient.drakkar.ui.OProgressMonitor;
-import com.orientechnologies.orient.drakkar.util.OTimeFormatHandler;
 import com.orientechnologies.orient.drakkar.writer.OGraphModelWriter;
 
 /**
@@ -53,16 +50,17 @@ public class ONaiveImportStrategy implements OImportStrategy {
   public ONaiveImportStrategy() {}
 
   public void executeStrategy(String driver, String uri, String username, String password, String outOrientGraphUri, String nameResolverConvention) {	
-    
+
     // Context and Progress Monitor initialization
     ODrakkarContext context = new ODrakkarContext();
     OProgressMonitor progressMonitor = new OProgressMonitor();
     progressMonitor.initialize(context.getStatistics());
-    
+
     ONameResolverFactory nameResolverFactory = new ONameResolverFactory();
     ONameResolver nameResolver = nameResolverFactory.buildNameResolver(nameResolverConvention);
     this.setNameResolver(nameResolver);
     OSource2GraphMapper mapper = this.createSchemaMapper(driver, uri, username, password, outOrientGraphUri, nameResolver, context);
+
     this.executeImport(driver, uri, username, password, outOrientGraphUri, mapper, nameResolver, context);
   }
 
@@ -74,13 +72,13 @@ public class ONaiveImportStrategy implements OImportStrategy {
     mapper.buildSourceSchema(context);
 
     OLogManager.instance().debug(this, "%s\n", ((OER2GraphMapper)mapper).getDataBaseSchema().toString());
-//        System.out.println(((OER2GraphMapper)mapper).getDataBaseSchema().toString());
+    //        System.out.println(((OER2GraphMapper)mapper).getDataBaseSchema().toString());
 
     // Graph model building
     mapper.buildGraphModel(nameResolver, context);
 
     OLogManager.instance().debug(this, "%s\n", ((OER2GraphMapper)mapper).getGraphModel().toString());
-//        System.out.println(((OER2GraphMapper)mapper).getGraphModel().toString());
+    //        System.out.println(((OER2GraphMapper)mapper).getGraphModel().toString());
 
     // Saving schema on Orient
     ODataTypeHandlerFactory factory = new ODataTypeHandlerFactory();
