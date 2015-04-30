@@ -158,7 +158,7 @@ public class OGraphModelWriter {
 
 
       // Writing indexes on properties belonging to the original primary key
-      OLogManager.instance().info(this, "%s", "Building indexes on properties belonging to the original primary key...");
+      OLogManager.instance().debug(this, "%s", "Building indexes on properties belonging to the original primary key...");
       statistics.setTotalNumberOfIndices(numberOfVertices);
 
       String currentType = null;

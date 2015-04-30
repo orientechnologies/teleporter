@@ -1,3 +1,7 @@
+import static org.junit.Assert.*;
+
+import org.junit.Test;
+
 /*
  *
  *  *  Copyright 2015 Orient Technologies LTD (info(at)orientechnologies.com)
@@ -18,29 +22,17 @@
  *
  */
 
-package com.orientechnologies.orient.drakkar.ui;
-
-import com.orientechnologies.orient.drakkar.context.ODrakkarStatistics;
-
 /**
- * Listener interface of ODrakkarStatistics.
- * 
  * @author Gabriele Ponzi
  * @email  gabriele.ponzi--at--gmail.com
  *
  */
 
-public interface OStatisticsListener {
-  
-//  public void updateWork1OnEvent(ODrakkarStatistics statistics);
-//  
-//  public void updateWork2OnEvent(ODrakkarStatistics statistics);
-//
-//  public void updateWork3OnEvent(ODrakkarStatistics statistics);
-//
-//  public void updateWork4OnEvent(ODrakkarStatistics statistics);
+public class GraphModelBuildingTestCase {
 
-  public void updateOnEvent(ODrakkarStatistics oDrakkarStatistics, int workNumber);
-
+  @Test
+  public void test() {
+    fail("Not yet implemented");
+  }
 
 }

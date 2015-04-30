@@ -71,11 +71,11 @@ public class ONaiveImportStrategy implements OImportStrategy {
     OSource2GraphMapper mapper = new OER2GraphMapper(driver, uri, username, password);
 
     // DataBase schema building
-    OLogManager.instance().info(this, "Building the DataBase schema...\n", (Object[]) null);
+//    OLogManager.instance().info(this, "Building the DataBase schema...\n", (Object[]) null);
     Date start = new Date();
     mapper.buildSourceSchema(context);
     Date end = new Date();
-    OLogManager.instance().info(this, "DataBase schema building complete.\n", (Object[]) null);
+//    OLogManager.instance().info(this, "DataBase schema building complete.\n", (Object[]) null);
 
     String hms = String.format("%02d:%02d:%02d", TimeUnit.MILLISECONDS.toHours(end.getTime()-start.getTime()), TimeUnit.MILLISECONDS.toMinutes(end.getTime()-start.getTime())
         - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(end.getTime()-start.getTime())), TimeUnit.MILLISECONDS.toSeconds(end.getTime()-start.getTime())
@@ -86,11 +86,11 @@ public class ONaiveImportStrategy implements OImportStrategy {
 //        System.out.println(((OER2GraphMapper)mapper).getDataBaseSchema().toString());
 
     // Graph model building
-    OLogManager.instance().info(this, "Building the graph model...\n", (Object[]) null);
+//    OLogManager.instance().info(this, "Building the graph model...\n", (Object[]) null);
     start = new Date();
     mapper.buildGraphModel(nameResolver, context);
     end = new Date();
-    OLogManager.instance().info(this, "Graph model building complete.\n", (Object[]) null);
+//    OLogManager.instance().info(this, "Graph model building complete.\n", (Object[]) null);
 
     hms = String.format("%02d:%02d:%02d", TimeUnit.MILLISECONDS.toHours(end.getTime()-start.getTime()), TimeUnit.MILLISECONDS.toMinutes(end.getTime()-start.getTime())
         - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(end.getTime()-start.getTime())), TimeUnit.MILLISECONDS.toSeconds(end.getTime()-start.getTime())
@@ -104,7 +104,7 @@ public class ONaiveImportStrategy implements OImportStrategy {
     ODataTypeHandlerFactory factory = new ODataTypeHandlerFactory();
     ODriverDataTypeHandler handler = factory.buildDataTypeHandler(driver);
     String outDbRootDirUri = outOrientGraphUri.substring(outOrientGraphUri.indexOf(':'), outOrientGraphUri.lastIndexOf('/')+1);
-    OLogManager.instance().info(this, "OrientGraph schema writing at %s...\n", outDbRootDirUri);
+//    OLogManager.instance().info(this, "OrientGraph schema writing at %s...\n", outDbRootDirUri);
     start = new Date();
     OGraphModelWriter graphModelWriter = new OGraphModelWriter();  
     OGraphModel graphModel = ((OER2GraphMapper)mapper).getGraphModel();
@@ -112,7 +112,7 @@ public class ONaiveImportStrategy implements OImportStrategy {
     end = new Date();
 
     if(success) {
-      OLogManager.instance().info(this, "Writing complete.\n", (Object[]) null);
+//      OLogManager.instance().info(this, "Writing complete.\n", (Object[]) null);
     }
     else {
       OLogManager.instance().error(this, "Writing not complete. Something's gone wrong.\n", (Object[]) null);
@@ -131,14 +131,14 @@ public class ONaiveImportStrategy implements OImportStrategy {
 
   public void executeImport(String driver, String uri, String username, String password, String outOrientGraphUri, OSource2GraphMapper mapper,  ONameResolver nameResolver, ODrakkarContext context) {
 
-    OLogManager.instance().info(this, "Importing phase in progress...\n", (Object[]) null);
+//    OLogManager.instance().info(this, "Importing phase in progress...\n", (Object[]) null);
     Date start = new Date();
     ODB2GraphImportEngine importEngine = new ODB2GraphImportEngine();
 
     try {
       importEngine.executeImport(driver, uri, username, password, outOrientGraphUri, mapper, nameResolver, context);
       Date end = new Date();
-      OLogManager.instance().info(this, "Importing phase completed.\n", (Object[]) null);
+//      OLogManager.instance().info(this, "Importing phase completed.\n", (Object[]) null);
 
       String hms = String.format("%02d:%02d:%02d", TimeUnit.MILLISECONDS.toHours(end.getTime()-start.getTime()), TimeUnit.MILLISECONDS.toMinutes(end.getTime()-start.getTime())
           - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(end.getTime()-start.getTime())), TimeUnit.MILLISECONDS.toSeconds(end.getTime()-start.getTime())

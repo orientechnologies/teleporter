@@ -105,9 +105,9 @@ public class ODrakkarStatistics {
     this.listeners.add(listener);
   }
   
-  public void notifyListeners() {
+  public void notifyListeners(int workNumber) {
     for(OStatisticsListener listener: this.listeners) {
-      listener.updateOnEvent(this);
+      listener.updateOnEvent(this, workNumber);
     }
   }
   
@@ -210,42 +210,42 @@ public class ODrakkarStatistics {
 
   public void incrementBuiltEntities() {
     this.builtEntities++;
-    this.notifyListeners();
+    this.notifyListeners(1);
   }
 
   public void incrementDoneEntity4Relationship() {
     this.doneEntity4Relationship++;
-    this.notifyListeners();
+    this.notifyListeners(1);
   }
 
   public void incrementBuiltModelVertexTypes() {
     this.builtModelVertexTypes++;
-    this.notifyListeners();
+    this.notifyListeners(2);
   }
 
   public void incrementBuiltModelEdgeTypes() {
     this.builtModelEdgeTypes++;
-    this.notifyListeners();
+    this.notifyListeners(2);
   }
 
   public void incrementWroteVertexType() {
     this.wroteVertexType++;
-    this.notifyListeners();
+    this.notifyListeners(3);
   }
 
   public void incrementWroteEdgeType() {
     this.wroteEdgeType++;
-    this.notifyListeners();
+    this.notifyListeners(3);
   }
 
   public void incrementWroteIndices() {
     this.wroteIndices++;
-    this.notifyListeners();
+    this.notifyListeners(3);
   }
 
   public void incrementImportedEntities() {
     this.importedEntities++;
-    this.notifyListeners();
+    this.notifyListeners(4);
   }
 
   
