@@ -21,6 +21,7 @@
 package com.orientechnologies.orient.drakkar.writer;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -30,9 +31,9 @@ import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.sql.OCommandSQL;
 import com.orientechnologies.orient.drakkar.context.ODrakkarContext;
 import com.orientechnologies.orient.drakkar.context.ODrakkarStatistics;
-import com.orientechnologies.orient.drakkar.model.graphmodel.OPropertyAttributes;
 import com.orientechnologies.orient.drakkar.model.graphmodel.OEdgeType;
 import com.orientechnologies.orient.drakkar.model.graphmodel.OGraphModel;
+import com.orientechnologies.orient.drakkar.model.graphmodel.OPropertyAttributes;
 import com.orientechnologies.orient.drakkar.model.graphmodel.OVertexType;
 import com.orientechnologies.orient.drakkar.persistence.handler.ODriverDataTypeHandler;
 import com.tinkerpop.blueprints.impls.orient.OrientEdgeType;
@@ -60,6 +61,7 @@ public class OGraphModelWriter {
 
     OrientGraphNoTx orientGraph = new OrientGraphNoTx(outOrientGraphUri);
     ODrakkarStatistics statistics = context.getStatistics();
+    statistics.setStartWork3Time(new Date());
 
     try {
 

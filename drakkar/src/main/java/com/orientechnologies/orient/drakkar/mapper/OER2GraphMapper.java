@@ -25,6 +25,7 @@ import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -42,9 +43,9 @@ import com.orientechnologies.orient.drakkar.model.dbschema.OEntity;
 import com.orientechnologies.orient.drakkar.model.dbschema.OForeignKey;
 import com.orientechnologies.orient.drakkar.model.dbschema.OPrimaryKey;
 import com.orientechnologies.orient.drakkar.model.dbschema.ORelationship;
-import com.orientechnologies.orient.drakkar.model.graphmodel.OPropertyAttributes;
 import com.orientechnologies.orient.drakkar.model.graphmodel.OEdgeType;
 import com.orientechnologies.orient.drakkar.model.graphmodel.OGraphModel;
+import com.orientechnologies.orient.drakkar.model.graphmodel.OPropertyAttributes;
 import com.orientechnologies.orient.drakkar.model.graphmodel.OVertexType;
 import com.orientechnologies.orient.drakkar.nameresolver.ONameResolver;
 import com.orientechnologies.orient.drakkar.persistence.util.ODataSource;
@@ -88,6 +89,7 @@ public class OER2GraphMapper implements OSource2GraphMapper {
 
       connection = this.dataSource.getConnection();
       ODrakkarStatistics statistics = context.getStatistics();
+      statistics.setStartWork1Time(new Date());
       DatabaseMetaData databaseMetaData = connection.getMetaData();
 
       /*
@@ -315,6 +317,7 @@ public class OER2GraphMapper implements OSource2GraphMapper {
 
     this.graphModel = new OGraphModel();
     ODrakkarStatistics statistics = context.getStatistics();
+    statistics.setStartWork2Time(new Date());
 
     /*
      *  Vertex-type building

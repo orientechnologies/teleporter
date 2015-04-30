@@ -21,6 +21,7 @@
 package com.orientechnologies.orient.drakkar.context;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import com.orientechnologies.orient.drakkar.ui.OStatisticsListener;
@@ -44,12 +45,14 @@ public class ODrakkarStatistics {
   private int totalNumberOfEntities;
   private int builtEntities;
   private int doneEntity4Relationship;
+  private Date startWork1Time;
 
   // Graph Model building statistics
   private int totalNumberOfModelVertices;
   private int builtModelVertexTypes;
   private int totalNumberOfModelEdges;
   private int builtModelEdgeTypes;
+  private Date startWork2Time;
 
   // OrientDB Schema writing statistics
   private int totalNumberOfVertexType;
@@ -58,9 +61,12 @@ public class ODrakkarStatistics {
   private int wroteEdgeType;
   private int totalNumberOfIndices;
   private int wroteIndices;
+  private Date startWork3Time;
 
   // OrientDB importing
   private int importedEntities;
+  private Date startWork4Time;
+
   
   // Listeners
   private List<OStatisticsListener> listeners;
@@ -128,10 +134,24 @@ public class ODrakkarStatistics {
     return this.builtEntities;
   }
 
+  public void setWroteEdgeType(int wroteEdgeType) {
+    this.wroteEdgeType = wroteEdgeType;
+  }
+
 
   public int getDoneEntity4Relationship() {
     return this.doneEntity4Relationship;
   }
+
+  public Date getStartWork1Time() {
+    return startWork1Time;
+  }
+
+
+  public void setStartWork1Time(Date startWork1Time) {
+    this.startWork1Time = startWork1Time;
+  }
+
 
   public int getTotalNumberOfModelVertices() {
     return this.totalNumberOfModelVertices;
@@ -156,6 +176,16 @@ public class ODrakkarStatistics {
 
   public int getBuiltModelEdgeTypes() {
     return this.builtModelEdgeTypes;
+  }
+
+
+  public Date getStartWork2Time() {
+    return startWork2Time;
+  }
+
+
+  public void setStartWork2Time(Date startWork2Time) {
+    this.startWork2Time = startWork2Time;
   }
 
 
@@ -198,6 +228,16 @@ public class ODrakkarStatistics {
   }
 
 
+  public Date getStartWork3Time() {
+    return startWork3Time;
+  }
+
+
+  public void setStartWork3Time(Date startWork3Time) {
+    this.startWork3Time = startWork3Time;
+  }
+
+
   public int getImportedEntities() {
     return this.importedEntities;
   }
@@ -206,6 +246,16 @@ public class ODrakkarStatistics {
   /*
    *  Incrementing methods
    */
+
+
+  public Date getStartWork4Time() {
+    return startWork4Time;
+  }
+
+
+  public void setStartWork4Time(Date startWork4Time) {
+    this.startWork4Time = startWork4Time;
+  }
 
 
   public void incrementBuiltEntities() {
