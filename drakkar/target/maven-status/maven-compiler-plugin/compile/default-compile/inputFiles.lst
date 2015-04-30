@@ -3,6 +3,7 @@
 /home/gabriele/workspace/drakkar/src/main/java/com/orientechnologies/orient/drakkar/strategy/ONaiveImportStrategy.java
 /home/gabriele/workspace/drakkar/src/main/java/com/orientechnologies/orient/drakkar/ui/OStatisticsListener.java
 /home/gabriele/workspace/drakkar/src/main/java/com/orientechnologies/orient/drakkar/factory/ONameResolverFactory.java
+/home/gabriele/workspace/drakkar/src/main/java/com/orientechnologies/orient/drakkar/util/OTimeFormatHandler.java
 /home/gabriele/workspace/drakkar/src/main/java/com/orientechnologies/orient/drakkar/model/graphmodel/OPropertyAttributes.java
 /home/gabriele/workspace/drakkar/src/main/java/com/orientechnologies/orient/drakkar/ui/OProgressMonitor.java
 /home/gabriele/workspace/drakkar/src/main/java/com/orientechnologies/orient/drakkar/strategy/ONaiveAggregationImportStrategy.java

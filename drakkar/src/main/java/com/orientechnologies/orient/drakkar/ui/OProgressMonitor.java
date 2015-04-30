@@ -256,5 +256,9 @@ public class OProgressMonitor implements OStatisticsListener {
     
     System.out.printf(format, workTitle, workDonePercentage, progressBarWork, "\tElapsed Time: ", elapsedHMSTime, "\tRemaining Time: ", remainingHMSTime);
     
+    if(workDonePercentage == 100) {
+      System.out.println();
+    }
+    
   }
 }

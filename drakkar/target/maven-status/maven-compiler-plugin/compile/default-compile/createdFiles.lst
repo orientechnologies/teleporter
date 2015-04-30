@@ -18,6 +18,7 @@ com/orientechnologies/orient/drakkar/model/graphmodel/OEdgeType.class
 com/orientechnologies/orient/drakkar/model/dbschema/ODataSourceSchema.class
 com/orientechnologies/orient/drakkar/factory/OStrategyFactory.class
 com/orientechnologies/orient/drakkar/importengine/ODBQueryEngine.class
+com/orientechnologies/orient/drakkar/util/OTimeFormatHandler.class
 com/orientechnologies/orient/drakkar/persistence/handler/OMySQLDataTypeHandler.class
 com/orientechnologies/orient/drakkar/model/dbschema/OPrimaryKey.class
 com/orientechnologies/orient/drakkar/context/ODrakkarContext.class
