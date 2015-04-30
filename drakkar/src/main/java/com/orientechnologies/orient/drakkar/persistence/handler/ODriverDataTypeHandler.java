@@ -21,6 +21,7 @@
 package com.orientechnologies.orient.drakkar.persistence.handler;
 
 import com.orientechnologies.orient.core.metadata.schema.OType;
+import com.orientechnologies.orient.drakkar.context.ODrakkarContext;
 
 /**
  * Interface that executes the right type conversions between DBMS and OrientDB types according 
@@ -33,6 +34,6 @@ import com.orientechnologies.orient.core.metadata.schema.OType;
 
 public interface ODriverDataTypeHandler {
   
-  public OType resolveType(String type);
+  public OType resolveType(String type, ODrakkarContext context);
   
 }

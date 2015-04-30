@@ -21,6 +21,7 @@
 package com.orientechnologies.orient.drakkar.factory;
 
 import com.orientechnologies.common.log.OLogManager;
+import com.orientechnologies.orient.drakkar.context.ODrakkarContext;
 import com.orientechnologies.orient.drakkar.persistence.handler.ODriverDataTypeHandler;
 import com.orientechnologies.orient.drakkar.persistence.handler.OGenericDataTypeHandler;
 import com.orientechnologies.orient.drakkar.persistence.handler.OMySQLDataTypeHandler;
@@ -38,7 +39,7 @@ import com.orientechnologies.orient.drakkar.persistence.handler.OPostgreSQLDataT
 
 public class ODataTypeHandlerFactory {
 
-  public ODriverDataTypeHandler buildDataTypeHandler(String driver) {
+  public ODriverDataTypeHandler buildDataTypeHandler(String driver, ODrakkarContext context) {
     ODriverDataTypeHandler handler = null;
 
     switch(driver) {
@@ -53,7 +54,8 @@ public class ODataTypeHandlerFactory {
     break;
 
     default :  handler = new OGenericDataTypeHandler();
-    OLogManager.instance().warn(this, "Driver '%s' is not supported. Thus problems may occur during type conversion.\n", driver);
+//    OLogManager.instance().warn(this, "Driver '%s' is not supported. Thus problems may occur during type conversion.", driver);
+    context.getStatistics().warningMessages.add("Driver " + driver + " is not supported. Thus problems may occur during type conversion.");
     break;
     }
 

@@ -21,6 +21,7 @@
 package com.orientechnologies.orient.drakkar.factory;
 
 import com.orientechnologies.common.log.OLogManager;
+import com.orientechnologies.orient.drakkar.context.ODrakkarContext;
 import com.orientechnologies.orient.drakkar.nameresolver.OJavaConventionNameResolver;
 import com.orientechnologies.orient.drakkar.nameresolver.ONameResolver;
 
@@ -35,7 +36,7 @@ import com.orientechnologies.orient.drakkar.nameresolver.ONameResolver;
 
 public class ONameResolverFactory {
 
-  public ONameResolver buildNameResolver(String nameResolverConvention) {
+  public ONameResolver buildNameResolver(String nameResolverConvention, ODrakkarContext context) {
     ONameResolver nameResolver = null;
 
 
@@ -52,7 +53,8 @@ public class ONameResolverFactory {
       break;
 
       default :  
-        OLogManager.instance().info(this, "Name resolver convention '%s' not found, the original name convention will be adopted!", nameResolverConvention);
+//        OLogManager.instance().warn(this, "Name resolver convention '%s' not found, the original name convention will be adopted!", nameResolverConvention);
+        context.getStatistics().warningMessages.add("Name resolver convention '" + nameResolverConvention + "' not found, the original name convention will be adopted!");
         nameResolver = new OOriginalConventionNameResolver();
       break;
 

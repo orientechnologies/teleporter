@@ -85,12 +85,13 @@ public class OER2GraphMapper implements OSource2GraphMapper {
   public void buildSourceSchema(ODrakkarContext context) {
 
     Connection connection = null;
+    ODrakkarStatistics statistics = context.getStatistics();
+    statistics.startWork1Time = new Date();
+    statistics.runningStepNumber = 1;
 
     try {
 
-      connection = this.dataSource.getConnection();
-      ODrakkarStatistics statistics = context.getStatistics();
-      statistics.setStartWork1Time(new Date());
+      connection = this.dataSource.getConnection();      
       DatabaseMetaData databaseMetaData = connection.getMetaData();
 
       /*
@@ -125,9 +126,9 @@ public class OER2GraphMapper implements OSource2GraphMapper {
       }
 
       int numberOfTables = tablesName.size();
-      statistics.setTotalNumberOfEntities(numberOfTables);
+      statistics.totalNumberOfEntities = numberOfTables;
 
-      OLogManager.instance().info(this, "%s tables found.", numberOfTables);
+      OLogManager.instance().debug(this, "%s tables found.", numberOfTables);
 
       OEntity currentEntity;
       OPrimaryKey pKey;
@@ -195,7 +196,7 @@ public class OER2GraphMapper implements OSource2GraphMapper {
         statistics.incrementBuiltEntities();
       }
       statement.close();
-      statistics.setTotalNumberOfRecords(totalNumberOfRecord);
+      statistics.totalNumberOfRecords = totalNumberOfRecord;
 
       /*
        *  Building relationships
@@ -266,7 +267,8 @@ public class OER2GraphMapper implements OSource2GraphMapper {
           this.dataBaseSchema.getRelationships().add(currentRelationship);
           // adding relationship to the current entity
           currentForeignEntity.getRelationships().add(currentRelationship);
-
+          // updating statistics
+          statistics.detectedRelationships += 1;
         }
 
         iteration++;
@@ -289,11 +291,15 @@ public class OER2GraphMapper implements OSource2GraphMapper {
     try {
       if(connection.isClosed())
         OLogManager.instance().debug(this, "Connection to DB closed.\n", (Object[])null);
-      else
-        OLogManager.instance().warn(this, "Connection to DB not closed.\n", (Object[])null);
+      else {
+//        OLogManager.instance().warn(this, "Connection to DB not closed.\n", (Object[])null);
+        statistics.warningMessages.add("Connection to DB not closed.");
+      }      
     }catch(SQLException e) {
       e.printStackTrace();
     }
+    statistics.notifyListeners();
+    statistics.runningStepNumber = -1;
   }
 
 
@@ -334,7 +340,9 @@ public class OER2GraphMapper implements OSource2GraphMapper {
 
     this.graphModel = new OGraphModel();
     ODrakkarStatistics statistics = context.getStatistics();
-    statistics.setStartWork2Time(new Date());
+    statistics.startWork2Time = new Date();
+    statistics.runningStepNumber = 2;
+    
 
     /*
      *  Vertex-type building
@@ -345,7 +353,7 @@ public class OER2GraphMapper implements OSource2GraphMapper {
     OPropertyAttributes attributeProperties = null;
 
     int numberOfVertexType = this.dataBaseSchema.getEntities().size();
-    statistics.setTotalNumberOfModelVertices(numberOfVertexType);
+    statistics.totalNumberOfModelVertices = numberOfVertexType;
     int iteration = 1;
     for(OEntity currentEntity: this.dataBaseSchema.getEntities()) {
 
@@ -391,7 +399,7 @@ public class OER2GraphMapper implements OSource2GraphMapper {
     OVertexType currentInVertex;
 
     int numberOfEdgeType = this.dataBaseSchema.getRelationships().size();
-    statistics.setTotalNumberOfModelEdges(numberOfEdgeType);
+    statistics.totalNumberOfModelEdges = numberOfEdgeType;
     iteration = 1;
     for(ORelationship relationship: this.dataBaseSchema.getRelationships()) {  
       currentOutVertex = this.graphModel.getVertexByType(nameResolver.resolveVertexName(relationship.getForeignEntityName()));
@@ -422,6 +430,8 @@ public class OER2GraphMapper implements OSource2GraphMapper {
       OLogManager.instance().debug(this, "Edge-type %s built.\n", currentEdgeType.getType());
       statistics.incrementBuiltModelEdgeTypes();
     }
+    statistics.notifyListeners();
+    statistics.runningStepNumber = -1;
   }
 
   

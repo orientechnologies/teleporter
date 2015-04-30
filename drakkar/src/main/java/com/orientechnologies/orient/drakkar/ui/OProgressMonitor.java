@@ -29,13 +29,13 @@ import com.orientechnologies.orient.drakkar.util.OTimeFormatHandler;
  * 
  * Listener class of ODrakkarStatistics which updates and visualizes a progress monitor. 
  * 
- * Source DB Schema building: 100% [..................................................]
+ * Source DB Schema building: 100% [..................................................] Elapsed: 00:00:00 Remaining: 00:00:00 Warnings: 0
  * 
- * Graph Model building:       50% [.........................                         ]
+ * Graph Model building:       50% [.........................                         ] Elapsed: 00:00:00 Remaining: 00:00:00 Warnings: 3
  * 
- * OrientDB Schema writing:     0% [                                                  ]
+ * OrientDB Schema writing:     0% [                                                  ] Elapsed: 00:00:00 Remaining: 00:00:00 Warnings: 5
  * 
- * OrientDB importing:         90% [                                                  ]
+ * OrientDB importing:         90% [                                                  ] Elapsed: 00:00:00 Remaining: 00:00:00 Warnings: 5
  * 
  * @author Gabriele Ponzi
  * @email  gabriele.ponzi--at--gmail.com
@@ -53,15 +53,15 @@ public class OProgressMonitor implements OStatisticsListener {
    * initialize progress bar properties.
    */
   public OProgressMonitor() {
-    this.work1Title = "(1/4) Source DB Schema building: ";
-    this.work2Title = "(2/4) Graph Model building:      ";
+    this.work1Title = "(1/4) Source DB Schema building:   ";
+    this.work2Title = "(2/4) Graph Model building:   ";
     this.work3Title = "(3/4) OrientDB Schema writing:   ";
-    this.work4Title = "(4/4) OrientDB importing:        ";
+    this.work4Title = "(4/4) OrientDB importing:   ";
   }
 
-  public void updateOnEvent(ODrakkarStatistics statistics, int workNumber) {
+  public void updateOnEvent(ODrakkarStatistics statistics) {
 
-    switch(workNumber) {
+    switch(statistics.runningStepNumber) {
     case 1: this.updateWork1OnEvent(statistics);
     break;
     case 2: this.updateWork2OnEvent(statistics);
@@ -87,11 +87,11 @@ public class OProgressMonitor implements OStatisticsListener {
 
     Date currentTime = new Date();
 
-    int work1DonePercentage = (int)( (((double)statistics.getBuiltEntities()/(double)statistics.getTotalNumberOfEntities()) * 0.25 * 100) + 
-        (((double)statistics.getDoneEntity4Relationship()/(double)statistics.getTotalNumberOfEntities()) * 0.75 * 100) );
+    int work1DonePercentage = (int)( (((double)statistics.builtEntities/(double)statistics.totalNumberOfEntities) * 0.25 * 100) + 
+        (((double)statistics.doneEntity4Relationship/(double)statistics.totalNumberOfEntities) * 0.75 * 100) );
 
-    int pointCharsWork1 = (work1DonePercentage/2);
-    int emptyCharsWork1 = 50-pointCharsWork1;
+    int pointCharsWork1 = (work1DonePercentage/5);
+    int emptyCharsWork1 = 20-pointCharsWork1;
 
     String progressBarWork1 = "[";
     while (pointCharsWork1 > 0) {
@@ -107,9 +107,9 @@ public class OProgressMonitor implements OStatisticsListener {
     progressBarWork1 += "]";    
 
     // Time
-    long elapsedTime = (currentTime.getTime() - statistics.getStartWork1Time().getTime());
+    long elapsedTime = (currentTime.getTime() - statistics.startWork1Time.getTime());
 
-    this.printProgressBar(this.work1Title, work1DonePercentage, progressBarWork1, elapsedTime);
+    this.printProgressBar(this.work1Title, work1DonePercentage, progressBarWork1, elapsedTime, statistics.warningMessages.size(), -1, -1);
   }
 
   public void updateWork2OnEvent(ODrakkarStatistics statistics) {
@@ -121,18 +121,18 @@ public class OProgressMonitor implements OStatisticsListener {
     Date currentTime = new Date();
 
     int work2DonePercentage;
-    if(statistics.getTotalNumberOfModelVertices() > 0) {
-      work2DonePercentage = (int) (((double)statistics.getBuiltModelVertexTypes()/(double)statistics.getTotalNumberOfModelVertices()) * 0.5 * 100);
-      if(statistics.getTotalNumberOfModelEdges() > 0)
-        work2DonePercentage += (int) (((double)statistics.getBuiltModelEdgeTypes()/(double)statistics.getTotalNumberOfModelEdges()) * 0.5 * 100);
+    if(statistics.totalNumberOfModelVertices > 0) {
+      work2DonePercentage = (int) (((double)statistics.builtModelVertexTypes/(double)statistics.totalNumberOfModelVertices) * 0.5 * 100);
+      if(statistics.totalNumberOfModelEdges > 0)
+        work2DonePercentage += (int) (((double)statistics.builtModelEdgeTypes/(double)statistics.totalNumberOfModelEdges) * 0.5 * 100);
 
     }
     else {
       work2DonePercentage = 0;
     }
 
-    int pointCharsWork2 = (work2DonePercentage/2);
-    int emptyCharsWork2 = 50-pointCharsWork2;
+    int pointCharsWork2 = (work2DonePercentage/5);
+    int emptyCharsWork2 = 20-pointCharsWork2;
 
     String progressBarWork2 = "[";
     while (pointCharsWork2 > 0) {
@@ -148,9 +148,9 @@ public class OProgressMonitor implements OStatisticsListener {
     progressBarWork2 += "]";
 
     // Time
-    long elapsedTime = (currentTime.getTime() - statistics.getStartWork2Time().getTime());
-    
-    this.printProgressBar(this.work2Title, work2DonePercentage, progressBarWork2, elapsedTime);
+    long elapsedTime = (currentTime.getTime() - statistics.startWork2Time.getTime());
+
+    this.printProgressBar(this.work2Title, work2DonePercentage, progressBarWork2, elapsedTime, statistics.warningMessages.size(), -1, -1);
   }
 
 
@@ -163,20 +163,20 @@ public class OProgressMonitor implements OStatisticsListener {
 
     int work3DonePercentage;
 
-    if(statistics.getTotalNumberOfVertexType() > 0) {
-      work3DonePercentage = (int) (((double)statistics.getWroteVertexType()/(double)statistics.getTotalNumberOfVertexType()) * 0.3 * 100);
-      if(statistics.getTotalNumberOfEdgeType() > 0)
-        work3DonePercentage += (int) (((double)statistics.getWroteEdgeType()/(double)statistics.getTotalNumberOfEdgeType()) * 0.3 * 100);
-      if(statistics.getTotalNumberOfIndices() > 0)
-        work3DonePercentage += (int) (((double)statistics.getWroteIndices()/(double)statistics.getTotalNumberOfIndices()) * 0.4 * 100);      
+    if(statistics.totalNumberOfVertexType > 0) {
+      work3DonePercentage = (int) (((double)statistics.wroteVertexType/(double)statistics.totalNumberOfVertexType) * 0.3 * 100);
+      if(statistics.totalNumberOfEdgeType > 0)
+        work3DonePercentage += (int) (((double)statistics.wroteEdgeType/(double)statistics.totalNumberOfEdgeType) * 0.3 * 100);
+      if(statistics.totalNumberOfIndices > 0)
+        work3DonePercentage += (int) (((double)statistics.wroteIndices/(double)statistics.totalNumberOfIndices) * 0.4 * 100);      
 
     }
     else {
       work3DonePercentage = 0;
     }
 
-    int pointCharsWork3 = (work3DonePercentage/2);
-    int emptyCharsWork3 = 50-pointCharsWork3;
+    int pointCharsWork3 = (work3DonePercentage/5);
+    int emptyCharsWork3 = 20-pointCharsWork3;
 
     String progressBarWork3 = "[";
     while (pointCharsWork3 > 0) {
@@ -192,9 +192,9 @@ public class OProgressMonitor implements OStatisticsListener {
     progressBarWork3 += "]";
 
     // Time
-    long elapsedTime = (currentTime.getTime() - statistics.getStartWork3Time().getTime());
+    long elapsedTime = (currentTime.getTime() - statistics.startWork3Time.getTime());
 
-    this.printProgressBar(this.work3Title, work3DonePercentage, progressBarWork3, elapsedTime);
+    this.printProgressBar(this.work3Title, work3DonePercentage, progressBarWork3, elapsedTime, statistics.warningMessages.size(), -1, -1);
   }
 
   public void updateWork4OnEvent(ODrakkarStatistics statistics) {
@@ -206,15 +206,15 @@ public class OProgressMonitor implements OStatisticsListener {
     Date currentTime = new Date();
 
     int work4DonePercentage;
-    if(statistics.getTotalNumberOfEntities() > 0) {
-      work4DonePercentage = (int) (((double)statistics.getImportedRecords()/(double)statistics.getTotalNumberOfRecords()) * 100);
+    if(statistics.totalNumberOfEntities > 0) {
+      work4DonePercentage = (int) (((double)statistics.importedRecords/(double)statistics.totalNumberOfRecords) * 100);
     }
     else {
       work4DonePercentage = 0;
     }
 
-    int pointCharsWork4 = (work4DonePercentage/2);
-    int emptyCharsWork4 = 50-pointCharsWork4;
+    int pointCharsWork4 = (work4DonePercentage/5);
+    int emptyCharsWork4 = 20-pointCharsWork4;
 
     String progressBarWork4 = "[";
     while (pointCharsWork4 > 0) {
@@ -230,9 +230,9 @@ public class OProgressMonitor implements OStatisticsListener {
     progressBarWork4 += "]";
 
     // Time
-    long elapsedTime = (currentTime.getTime() - statistics.getStartWork4Time().getTime());
+    long elapsedTime = (currentTime.getTime() - statistics.startWork4Time.getTime());
 
-    this.printProgressBar(this.work4Title, work4DonePercentage, progressBarWork4, elapsedTime);
+    this.printProgressBar(this.work4Title, work4DonePercentage, progressBarWork4, elapsedTime, statistics.warningMessages.size(), statistics.importedRecords, statistics.totalNumberOfRecords);
   }
 
 
@@ -240,25 +240,26 @@ public class OProgressMonitor implements OStatisticsListener {
     statistics.registerListener(this);    
   }
 
-  public void printProgressBar(String workTitle, int workDonePercentage, String progressBarWork, long elapsedTime) {
+  public void printProgressBar(String workTitle, int workDonePercentage, String progressBarWork, long elapsedTime, int occurredWarnings, int importedRecords, int totalRecords) {
 
-    String format = "\r%s %3d%% %s %s %s %s %s";
-    
+    String format;
+    if(importedRecords  == -1 && totalRecords == -1)
+      format = "\r%s %3d%% %s %s %s %s %s %s %s";
+    else
+      format = "\r%s %3d%% %s %s %s %s %s %s %s %s %s";
+
+
     // Times
     String elapsedHMSTime = OTimeFormatHandler.getHMSFormat(elapsedTime);
-    
+
     long remainingTime;
     if(workDonePercentage > 0)
       remainingTime = (elapsedTime*(long)(100-workDonePercentage))/(long)workDonePercentage;
     else
       remainingTime = 0;
     String remainingHMSTime = OTimeFormatHandler.getHMSFormat(remainingTime);
-    
-    System.out.printf(format, workTitle, workDonePercentage, progressBarWork, "\tElapsed Time: ", elapsedHMSTime, "\tRemaining Time: ", remainingHMSTime);
-    
-    if(workDonePercentage == 100) {
-      System.out.println();
-    }
-    
+
+    System.out.printf(format, workTitle, workDonePercentage, progressBarWork, " Elapsed:", elapsedHMSTime, " Remaining:", remainingHMSTime, " Warnings:", occurredWarnings, " Records:", importedRecords + "/" + totalRecords);
+
   }
 }

@@ -25,6 +25,7 @@ import java.util.Map;
 
 import com.orientechnologies.common.log.OLogManager;
 import com.orientechnologies.orient.core.metadata.schema.OType;
+import com.orientechnologies.orient.drakkar.context.ODrakkarContext;
 
 /**
  * Handler that executes type conversions from MySQL DBMS to the OrientDB types.
@@ -47,7 +48,7 @@ public class OMySQLDataTypeHandler implements ODriverDataTypeHandler {
    * The method returns the Orient Type starting from the string name type of the MySQL DBMS.
    * If the starting type is not mapped, OType.STRING is returned.
    */
-  public OType resolveType(String type) {
+  public OType resolveType(String type, ODrakkarContext context) {
     
     // Defined Types
     if(this.dbmsType2OrientType.keySet().contains(type))
@@ -55,7 +56,8 @@ public class OMySQLDataTypeHandler implements ODriverDataTypeHandler {
     
  // Undefined Types
     else {
-      OLogManager.instance().warn(this, "The original type '%s' is not convertible into any Orient type thus, to prevent data loss, it will be converted to the Orient Type String.", type);
+//      OLogManager.instance().warn(this, "The original type '%s' is not convertible into any Orient type thus, to prevent data loss, it will be converted to the Orient Type String.", type);
+      context.getStatistics().warningMessages.add("The original type " + type + " is not convertible into any Orient type thus, in order to prevent data loss, it will be converted to the Orient Type String.");
       return OType.STRING;
     }
     

@@ -53,7 +53,8 @@ public class ODB2GraphImportEngine {
   public void executeImport(String driver, String uri, String username, String password, String outOrientGraphUri, OSource2GraphMapper genericMapper, ONameResolver nameResolver, ODrakkarContext context) throws SQLException {
 
     ODrakkarStatistics statistics = context.getStatistics();
-    statistics.setStartWork4Time(new Date());
+    statistics.startWork4Time = new Date();
+    statistics.runningStepNumber = 4;
 
     OER2GraphMapper mapper = (OER2GraphMapper) genericMapper;
     ODBQueryEngine dbQueryEngine = new ODBQueryEngine(driver, uri, username, password);    
@@ -87,19 +88,23 @@ public class ODB2GraphImportEngine {
           graphDBCommandEngine.upsertReachedVertexWithEdge(currentRecord, currentRelation, currentOutVertex, currentInVertexType, edgeType.getType(), nameResolver);
         }   
         
-        // Statistics updated every 500 inserted visited vertex
-        insertedVisitedVertex++;
-        if(insertedVisitedVertex % 500 == 0) {
-          statistics.incrementImportedRecords(500);
-          insertedVisitedVertex = 0;
-        }
+//        // Statistics updated every 500 inserted visited vertex
+//        insertedVisitedVertex++;
+//        if(insertedVisitedVertex % 500 == 0) {
+//          statistics.incrementImportedRecords(500);
+//          insertedVisitedVertex = 0;
+//        }
+        statistics.incrementImportedRecords(1);
       }
 
       // closing connection and statement
       dbQueryEngine.closeAll();
     }
     // Statistics updated with remaining records inserted (if presents)
-    statistics.incrementImportedRecords(insertedVisitedVertex);
+//    statistics.incrementImportedRecords(insertedVisitedVertex);
+    
+    statistics.notifyListeners();
+    statistics.runningStepNumber = -1;
   }
 
 }

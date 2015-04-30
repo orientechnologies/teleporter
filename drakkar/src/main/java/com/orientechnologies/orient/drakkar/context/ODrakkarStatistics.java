@@ -22,6 +22,7 @@ package com.orientechnologies.orient.drakkar.context;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 
 import com.orientechnologies.orient.drakkar.ui.OStatisticsListener;
@@ -40,49 +41,59 @@ import com.orientechnologies.orient.drakkar.ui.OStatisticsListener;
  */
 
 public class ODrakkarStatistics {
+  
+  // indicates the running step, -1 if no step are running
+  public volatile int runningStepNumber;
 
   // Source DB Schema building statistics
-  private int totalNumberOfEntities;
-  private int builtEntities;
-  private int doneEntity4Relationship;
-  private Date startWork1Time;
+  public volatile int totalNumberOfEntities;
+  public volatile int builtEntities;
+  public volatile int doneEntity4Relationship;
+  public volatile int detectedRelationships;
+  public volatile Date startWork1Time;
 
   // Graph Model building statistics
-  private int totalNumberOfModelVertices;
-  private int builtModelVertexTypes;
-  private int totalNumberOfModelEdges;
-  private int builtModelEdgeTypes;
-  private Date startWork2Time;
+  public volatile int totalNumberOfModelVertices;
+  public volatile int builtModelVertexTypes;
+  public volatile int totalNumberOfModelEdges;
+  public volatile int builtModelEdgeTypes;
+  public volatile Date startWork2Time;
 
   // OrientDB Schema writing statistics
-  private int totalNumberOfVertexType;
-  private int wroteVertexType;
-  private int totalNumberOfEdgeType;
-  private int wroteEdgeType;
-  private int totalNumberOfIndices;
-  private int wroteIndices;
-  private Date startWork3Time;
+  public volatile int totalNumberOfVertexType;
+  public volatile int wroteVertexType;
+  public volatile int totalNumberOfEdgeType;
+  public volatile int wroteEdgeType;
+  public volatile int totalNumberOfIndices;
+  public volatile int wroteIndices;
+  public volatile Date startWork3Time;
 
   // OrientDB importing
-  private int totalNumberOfRecords;
-  private int importedRecords;
-  private Date startWork4Time;
-
+  public volatile int totalNumberOfRecords;
+  public volatile int importedRecords;
+  public volatile Date startWork4Time;
+    
+  // Warnings Messages
+  public volatile List<String> warningMessages;
   
   // Listeners
-  private List<OStatisticsListener> listeners;
+  private volatile List<OStatisticsListener> listeners;
 
   public ODrakkarStatistics() {
     this.init();
+    this.warningMessages = new LinkedList<String>();
     this.listeners = new ArrayList<OStatisticsListener>();
   }
 
 
   private void init() {
+    
+    this.runningStepNumber = -1;
 
     this.totalNumberOfEntities = 0;
     this.builtEntities = 0;
     this.doneEntity4Relationship = 0;
+    this.detectedRelationships = 0;
 
     this.totalNumberOfModelVertices = 0;
     this.builtModelVertexTypes = 0;
@@ -113,202 +124,50 @@ public class ODrakkarStatistics {
     this.listeners.add(listener);
   }
   
-  public void notifyListeners(int workNumber) {
+  public void notifyListeners() {
     for(OStatisticsListener listener: this.listeners) {
-      listener.updateOnEvent(this, workNumber);
+      listener.updateOnEvent(this);
     }
   }
-  
-
-  /*
-   *  Getters and Setters
-   */
-
-  public int getTotalNumberOfEntities() {
-    return this.totalNumberOfEntities;
-  }
-
-  public void setTotalNumberOfEntities(int totalNumberOfEntities) {
-    this.totalNumberOfEntities = totalNumberOfEntities;
-  }
-
-  public int getBuiltEntities() {
-    return this.builtEntities;
-  }
-
-  public void setWroteEdgeType(int wroteEdgeType) {
-    this.wroteEdgeType = wroteEdgeType;
-  }
-
-
-  public int getDoneEntity4Relationship() {
-    return this.doneEntity4Relationship;
-  }
-
-  public Date getStartWork1Time() {
-    return startWork1Time;
-  }
-
-
-  public void setStartWork1Time(Date startWork1Time) {
-    this.startWork1Time = startWork1Time;
-  }
-
-
-  public int getTotalNumberOfModelVertices() {
-    return this.totalNumberOfModelVertices;
-  }
-
-  public void setTotalNumberOfModelVertices(int totalNumberOfModelVertices) {
-    this.totalNumberOfModelVertices = totalNumberOfModelVertices;
-  }
-
-  public int getBuiltModelVertexTypes() {
-    return this.builtModelVertexTypes;
-  }
-
-
-  public int getTotalNumberOfModelEdges() {
-    return this.totalNumberOfModelEdges;
-  }
-
-  public void setTotalNumberOfModelEdges(int totalNumberOfModelEdges) {
-    this.totalNumberOfModelEdges = totalNumberOfModelEdges;
-  }
-
-  public int getBuiltModelEdgeTypes() {
-    return this.builtModelEdgeTypes;
-  }
-
-
-  public Date getStartWork2Time() {
-    return startWork2Time;
-  }
-
-
-  public void setStartWork2Time(Date startWork2Time) {
-    this.startWork2Time = startWork2Time;
-  }
-
-
-  public int getTotalNumberOfVertexType() {
-    return this.totalNumberOfVertexType;
-  }
-
-  public void setTotalNumberOfVertexType(int totalNumberOfVertexType) {
-    this.totalNumberOfVertexType = totalNumberOfVertexType;
-  }
-
-  public int getWroteVertexType() {
-    return this.wroteVertexType;
-  }
-
-
-  public int getTotalNumberOfEdgeType() {
-    return this.totalNumberOfEdgeType;
-  }
-
-  public void setTotalNumberOfEdgeType(int totalNumberOfEdgeType) {
-    this.totalNumberOfEdgeType = totalNumberOfEdgeType;
-  }
-
-  public int getWroteEdgeType() {
-    return this.wroteEdgeType;
-  }
-
-
-  public int getTotalNumberOfIndices() {
-    return this.totalNumberOfIndices;
-  }
-
-  public void setTotalNumberOfIndices(int totalNumberOfIndices) {
-    this.totalNumberOfIndices = totalNumberOfIndices;
-  }
-
-  public int getWroteIndices() {
-    return this.wroteIndices;
-  }
-
-
-  public Date getStartWork3Time() {
-    return startWork3Time;
-  }
-
-
-  public void setStartWork3Time(Date startWork3Time) {
-    this.startWork3Time = startWork3Time;
-  }
-
-
-  public int getTotalNumberOfRecords() {
-    return totalNumberOfRecords;
-  }
-
-
-  public void setTotalNumberOfRecords(int totalNumberOfRecords) {
-    this.totalNumberOfRecords = totalNumberOfRecords;
-  }
-
-
-  public int getImportedRecords() {
-    return importedRecords;
-  }
-
-
 
   /*
    *  Incrementing methods
    */
 
-
   public Date getStartWork4Time() {
     return startWork4Time;
   }
 
-
-  public void setStartWork4Time(Date startWork4Time) {
-    this.startWork4Time = startWork4Time;
-  }
-
-
   public void incrementBuiltEntities() {
     this.builtEntities++;
-    this.notifyListeners(1);
   }
 
   public void incrementDoneEntity4Relationship() {
     this.doneEntity4Relationship++;
-    this.notifyListeners(1);
   }
 
   public void incrementBuiltModelVertexTypes() {
     this.builtModelVertexTypes++;
-    this.notifyListeners(2);
   }
 
   public void incrementBuiltModelEdgeTypes() {
     this.builtModelEdgeTypes++;
-    this.notifyListeners(2);
   }
 
   public void incrementWroteVertexType() {
     this.wroteVertexType++;
-    this.notifyListeners(3);
   }
 
   public void incrementWroteEdgeType() {
     this.wroteEdgeType++;
-    this.notifyListeners(3);
   }
 
   public void incrementWroteIndices() {
     this.wroteIndices++;
-    this.notifyListeners(3);
   }
 
   public void incrementImportedRecords(int importedRecord) {
     this.importedRecords += importedRecord;
-    this.notifyListeners(4);
   }
   
  
@@ -318,36 +177,43 @@ public class ODrakkarStatistics {
    */
 
   public String sourceDbSchemaBuildingProgress() {
-    String s ="";
-    s += "Built Entities: " + this.builtEntities + "/" + this.totalNumberOfEntities;
-    s += "\nExplored Entities for Relationship: " + this.doneEntity4Relationship + "/" + this.totalNumberOfEntities;
+    String s ="Source DB Schema\n";
+    s += "Entities: " + this.builtEntities;
+    s += "\nRelationships: " + this.detectedRelationships;
     return s;
   }
 
   public String graphModelBuildingProgress() {
-    String s ="";
+    String s ="Graph Model Building\n";
     s += "Built Model Vertices: " + this.builtModelVertexTypes + "/" + this.totalNumberOfModelVertices;
     s += "\nBuilt Model Edges: " + this.builtModelEdgeTypes + "/" + this.totalNumberOfModelEdges;
     return s;
   }
 
   public String orientSchemaWritingProgress() {
-    String s ="";
-    s += "Wrote Vertex Type: " + this.wroteVertexType + "/" + this.totalNumberOfVertexType;
-    s += "\nWrote Edge Type: " + this.wroteEdgeType + "/" + this.totalNumberOfEdgeType;
-    s += "\nWrote Indices: " + this.wroteIndices + "/" + this.totalNumberOfIndices;
+    String s ="OrientDB Schema\n";
+    s += "Vertex Type: " + this.wroteVertexType;
+    s += "\nEdge Type: " + this.wroteEdgeType;
+    s += "\nIndices: " + this.wroteIndices;
     return s;
   }
 
   public String importingProgress() {
-    String s ="";
+    String s ="OrientDB Importing\n";
     s += "Imported Records: " + this.importedRecords + "/" + this.totalNumberOfRecords;
     return s;
   }
   
   public String toString() {
-    String s = "";
-    s += this.sourceDbSchemaBuildingProgress() + "\n\n" + this.graphModelBuildingProgress() + "\n\n" + this.orientSchemaWritingProgress() + "\n\n" + this.importingProgress();
+    String s = "\n\nSUMMARY\n\n";
+    s += this.sourceDbSchemaBuildingProgress() + "\n\n" + this.orientSchemaWritingProgress() + "\n\n" + this.importingProgress() + "\n\n";
+    
+    if(this.warningMessages.size() > 0) {
+      s += "Warning Messages:\n";
+      for(String message: this.warningMessages) {
+        s += message + "\n";
+      }
+    }
     return s;
   }
 

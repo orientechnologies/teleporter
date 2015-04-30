@@ -40,7 +40,7 @@ public interface OStatisticsListener {
 //
 //  public void updateWork4OnEvent(ODrakkarStatistics statistics);
 
-  public void updateOnEvent(ODrakkarStatistics oDrakkarStatistics, int workNumber);
+  public void updateOnEvent(ODrakkarStatistics oDrakkarStatistics);
 
 
 }

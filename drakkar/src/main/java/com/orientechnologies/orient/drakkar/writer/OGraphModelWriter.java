@@ -61,15 +61,16 @@ public class OGraphModelWriter {
 
     OrientGraphNoTx orientGraph = new OrientGraphNoTx(outOrientGraphUri);
     ODrakkarStatistics statistics = context.getStatistics();
-    statistics.setStartWork3Time(new Date());
+    statistics.startWork3Time = new Date();
+    statistics.runningStepNumber = 3;
 
     try {
 
       // Writing vertex-type
 
-      OLogManager.instance().info(this, "%s", "Writing vertex-types on OrientDB Schema...");
+      OLogManager.instance().debug(this, "%s", "Writing vertex-types on OrientDB Schema...");
       int numberOfVertices = graphModel.getVerticesType().size();
-      statistics.setTotalNumberOfVertexType(numberOfVertices);
+      statistics.totalNumberOfVertexType = numberOfVertices;
 
       OrientVertexType newVertexType;
       OPropertyAttributes currentAttributeProperties = null;
@@ -87,7 +88,7 @@ public class OGraphModelWriter {
         for(String attributeName: currentVertexType.getPropertyName2propertyAttributes().keySet()) {
           currentAttributeProperties = currentVertexType.getPropertyName2propertyAttributes().get(attributeName);
 
-          type = handler.resolveType(currentAttributeProperties.getAttributeType().toLowerCase(Locale.ENGLISH));
+          type = handler.resolveType(currentAttributeProperties.getAttributeType().toLowerCase(Locale.ENGLISH), context);
           if(type != null) {
             newVertexType.createProperty(attributeName, type);
             statement = "alter property " + currentVertexType.getType() + "." + attributeName + " custom fromPK = " + currentAttributeProperties.isFromPrimaryKey();
@@ -96,7 +97,8 @@ public class OGraphModelWriter {
           }
           else{
             toRemoveAttributes.add(attributeName);   
-            OLogManager.instance().warn(this, "%s type is not supported, the correspondent property will be dropped.\n", currentAttributeProperties.getAttributeType());
+//            OLogManager.instance().warn(this, "%s type is not supported, the correspondent property will be dropped.\n", currentAttributeProperties.getAttributeType());
+            statistics.warningMessages.add(currentAttributeProperties.getAttributeType() + " type is not supported, the correspondent property will be dropped.");
           }
         }
 
@@ -111,9 +113,9 @@ public class OGraphModelWriter {
 
       // Writing edge-type
 
-      OLogManager.instance().info(this, "%s", "Writing edge-types on OrientDB Schema...");
+      OLogManager.instance().debug(this, "%s", "Writing edge-types on OrientDB Schema...");
       int numberOfEdges = graphModel.getEdgesType().size();
-      statistics.setTotalNumberOfEdgeType(numberOfEdges);
+      statistics.totalNumberOfEdgeType = numberOfEdges;
 
       OrientEdgeType newEdgeType;
 
@@ -135,7 +137,7 @@ public class OGraphModelWriter {
 
         for(String attributeName: currentEdgeType.getAttributeName2attributeProperties().keySet()) {
 
-          type = handler.resolveType(currentAttributeProperties.getAttributeType().toLowerCase(Locale.ENGLISH));
+          type = handler.resolveType(currentAttributeProperties.getAttributeType().toLowerCase(Locale.ENGLISH), context);
 
           if(type != null) {
             newEdgeType.createProperty(attributeName, type);
@@ -145,7 +147,8 @@ public class OGraphModelWriter {
           }
           else{  
             toRemoveAttributes.add(attributeName);   
-            OLogManager.instance().warn(this, "%s type is not supported, the correspondent property will be dropped.\n", currentAttributeProperties.getAttributeType());
+//            OLogManager.instance().warn(this, "%s type is not supported, the correspondent property will be dropped.\n", currentAttributeProperties.getAttributeType());
+            statistics.warningMessages.add(currentAttributeProperties.getAttributeType() + " type is not supported, the correspondent property will be dropped.");
           }
         }
 
@@ -161,7 +164,7 @@ public class OGraphModelWriter {
 
       // Writing indexes on properties belonging to the original primary key
       OLogManager.instance().debug(this, "%s", "Building indexes on properties belonging to the original primary key...");
-      statistics.setTotalNumberOfIndices(numberOfVertices);
+      statistics.totalNumberOfIndices = numberOfVertices;
 
       String currentType = null;
       List<String> properties = null;
@@ -196,7 +199,9 @@ public class OGraphModelWriter {
 
     }catch(OException e) {
       e.printStackTrace();
-    }
+    }    
+    statistics.notifyListeners();
+    statistics.runningStepNumber = -1;
 
     success = true;
     return success;

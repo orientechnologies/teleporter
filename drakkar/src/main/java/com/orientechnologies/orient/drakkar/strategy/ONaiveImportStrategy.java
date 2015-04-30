@@ -20,6 +20,10 @@
 
 package com.orientechnologies.orient.drakkar.strategy;
 
+import java.util.Date;
+import java.util.Timer;
+import java.util.TimerTask;
+
 import com.orientechnologies.common.log.OLogManager;
 import com.orientechnologies.orient.drakkar.context.ODrakkarContext;
 import com.orientechnologies.orient.drakkar.factory.ODataTypeHandlerFactory;
@@ -31,6 +35,7 @@ import com.orientechnologies.orient.drakkar.model.graphmodel.OGraphModel;
 import com.orientechnologies.orient.drakkar.nameresolver.ONameResolver;
 import com.orientechnologies.orient.drakkar.persistence.handler.ODriverDataTypeHandler;
 import com.orientechnologies.orient.drakkar.ui.OProgressMonitor;
+import com.orientechnologies.orient.drakkar.util.OTimeFormatHandler;
 import com.orientechnologies.orient.drakkar.writer.OGraphModelWriter;
 
 /**
@@ -51,17 +56,40 @@ public class ONaiveImportStrategy implements OImportStrategy {
 
   public void executeStrategy(String driver, String uri, String username, String password, String outOrientGraphUri, String nameResolverConvention) {	
 
+    Date globalStart = new Date(); 
+
     // Context and Progress Monitor initialization
-    ODrakkarContext context = new ODrakkarContext();
+    final ODrakkarContext context = new ODrakkarContext();
     OProgressMonitor progressMonitor = new OProgressMonitor();
     progressMonitor.initialize(context.getStatistics());
+    context.getStatistics().notifyListeners();
 
+    // Timer for statistics notifying
+    Timer timer = new Timer();
+    timer.schedule(new TimerTask() {
+
+      @Override
+      public void run() {
+        context.getStatistics().notifyListeners();        
+      }
+    }, 0, 1000);
+
+    // Step 1,2,3
     ONameResolverFactory nameResolverFactory = new ONameResolverFactory();
-    ONameResolver nameResolver = nameResolverFactory.buildNameResolver(nameResolverConvention);
+    ONameResolver nameResolver = nameResolverFactory.buildNameResolver(nameResolverConvention, context);
     this.setNameResolver(nameResolver);
     OSource2GraphMapper mapper = this.createSchemaMapper(driver, uri, username, password, outOrientGraphUri, nameResolver, context);
 
+    // Step 4
     this.executeImport(driver, uri, username, password, outOrientGraphUri, mapper, nameResolver, context);
+    context.getStatistics().runningStepNumber = -1;
+
+    Date globalEnd = new Date();
+
+    System.out.println("\n\nImporting Complete in " + OTimeFormatHandler.getHMSFormat(globalStart, globalEnd) + " !");
+    System.out.println(context.getStatistics().toString());
+
+    timer.cancel();
   }
 
   public OSource2GraphMapper createSchemaMapper(String driver, String uri, String username, String password, String outOrientGraphUri, ONameResolver nameResolver, ODrakkarContext context) {
@@ -70,27 +98,27 @@ public class ONaiveImportStrategy implements OImportStrategy {
 
     // DataBase schema building
     mapper.buildSourceSchema(context);
-
+    System.out.println();
     OLogManager.instance().debug(this, "%s\n", ((OER2GraphMapper)mapper).getDataBaseSchema().toString());
     //        System.out.println(((OER2GraphMapper)mapper).getDataBaseSchema().toString());
 
     // Graph model building
     mapper.buildGraphModel(nameResolver, context);
-
+    System.out.println();
     OLogManager.instance().debug(this, "%s\n", ((OER2GraphMapper)mapper).getGraphModel().toString());
     //        System.out.println(((OER2GraphMapper)mapper).getGraphModel().toString());
 
     // Saving schema on Orient
     ODataTypeHandlerFactory factory = new ODataTypeHandlerFactory();
-    ODriverDataTypeHandler handler = factory.buildDataTypeHandler(driver);
+    ODriverDataTypeHandler handler = factory.buildDataTypeHandler(driver, context);
     OGraphModelWriter graphModelWriter = new OGraphModelWriter();  
     OGraphModel graphModel = ((OER2GraphMapper)mapper).getGraphModel();
     boolean success = graphModelWriter.writeModelOnOrient(graphModel, handler, outOrientGraphUri, context);
-
     if(!success) {
       OLogManager.instance().error(this, "Writing not complete. Something's gone wrong.\n", (Object[]) null);
       System.exit(0);
     }
+    System.out.println();
 
     return mapper;
   }
@@ -102,6 +130,7 @@ public class ONaiveImportStrategy implements OImportStrategy {
 
     try {
       importEngine.executeImport(driver, uri, username, password, outOrientGraphUri, mapper, nameResolver, context);
+      System.out.println();
     }catch(Exception e){
       e.printStackTrace();
     }
