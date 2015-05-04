@@ -24,7 +24,7 @@ package com.orientechnologies.orient.drakkar.model.dbschema;
  * Interface that represents the data source schema with all its elements.
  * 
  * @author Gabriele Ponzi
- * @email  gabriele.ponzi--at--gmail.com
+ * @email  <gabriele.ponzi--at--gmail.com>
  * 
  */
 

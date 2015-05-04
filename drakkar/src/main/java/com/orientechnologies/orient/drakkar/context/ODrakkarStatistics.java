@@ -36,7 +36,7 @@ import com.orientechnologies.orient.drakkar.ui.OStatisticsListener;
  * 4. OrientDB importing
  * 
  * @author Gabriele Ponzi
- * @email  gabriele.ponzi--at--gmail.com
+ * @email  <gabriele.ponzi--at--gmail.com>
  *
  */
 
@@ -138,37 +138,37 @@ public class ODrakkarStatistics {
     return startWork4Time;
   }
 
-  public void incrementBuiltEntities() {
-    this.builtEntities++;
-  }
-
-  public void incrementDoneEntity4Relationship() {
-    this.doneEntity4Relationship++;
-  }
-
-  public void incrementBuiltModelVertexTypes() {
-    this.builtModelVertexTypes++;
-  }
-
-  public void incrementBuiltModelEdgeTypes() {
-    this.builtModelEdgeTypes++;
-  }
-
-  public void incrementWroteVertexType() {
-    this.wroteVertexType++;
-  }
-
-  public void incrementWroteEdgeType() {
-    this.wroteEdgeType++;
-  }
-
-  public void incrementWroteIndices() {
-    this.wroteIndices++;
-  }
-
-  public void incrementImportedRecords(int importedRecord) {
-    this.importedRecords += importedRecord;
-  }
+//  public void incrementBuiltEntities() {
+//    this.builtEntities++;
+//  }
+//
+//  public void incrementDoneEntity4Relationship() {
+//    this.doneEntity4Relationship++;
+//  }
+//
+//  public void incrementBuiltModelVertexTypes() {
+//    this.builtModelVertexTypes++;
+//  }
+//
+//  public void incrementBuiltModelEdgeTypes() {
+//    this.builtModelEdgeTypes++;
+//  }
+//
+//  public void incrementWroteVertexType() {
+//    this.wroteVertexType++;
+//  }
+//
+//  public void incrementWroteEdgeType() {
+//    this.wroteEdgeType++;
+//  }
+//
+//  public void incrementWroteIndices() {
+//    this.wroteIndices++;
+//  }
+//
+//  public void incrementImportedRecords(int importedRecord) {
+//    this.importedRecords += importedRecord;
+//  }
   
  
   

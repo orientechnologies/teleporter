@@ -28,7 +28,7 @@ import com.orientechnologies.orient.drakkar.context.ODrakkarContext;
  * to the specific driver of the source DB.
  * 
  * @author Gabriele Ponzi
- * @email  gabriele.ponzi--at--gmail.com
+ * @email  <gabriele.ponzi--at--gmail.com>
  *
  */
 

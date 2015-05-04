@@ -30,7 +30,7 @@ import com.orientechnologies.orient.drakkar.nameresolver.ONameResolver;
  * the second from the data source schema just created.
  * 
  * @author Gabriele Ponzi
- * @email  gabriele.ponzi--at--gmail.com
+ * @email  <gabriele.ponzi--at--gmail.com>
  *
  */
 

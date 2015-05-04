@@ -20,7 +20,7 @@
 
 package com.orientechnologies.orient.drakkar.factory;
 
-import com.orientechnologies.common.log.OLogManager;
+import com.orientechnologies.orient.drakkar.context.ODrakkarContext;
 import com.orientechnologies.orient.drakkar.strategy.OImportStrategy;
 import com.orientechnologies.orient.drakkar.strategy.ONaiveAggregationImportStrategy;
 import com.orientechnologies.orient.drakkar.strategy.ONaiveImportStrategy;
@@ -29,26 +29,26 @@ import com.orientechnologies.orient.drakkar.strategy.ONaiveImportStrategy;
  * Factory used to instantiate the chosen strategy for the importing phase starting from its name.
  * 
  * @author Gabriele Ponzi
- * @email  gabriele.ponzi--at--gmail.com
+ * @email  <gabriele.ponzi--at--gmail.com>
  * 
  */
 
 public class OStrategyFactory {
-  
+
   public OStrategyFactory() {}
 
-  public OImportStrategy buildStrategy(String chosenStrategy) {
+  public OImportStrategy buildStrategy(String chosenStrategy, ODrakkarContext context) {
     OImportStrategy strategy = null;
 
     switch(chosenStrategy) {
 
     case "naive":   strategy = new ONaiveImportStrategy();
-                    break;
+    break;
 
     case "naive-aggregate":   strategy = new ONaiveAggregationImportStrategy();
-                              break;
+    break;
 
-    default :  OLogManager.instance().error(this, "Strategy doesn't exist.\n", (Object[])null);
+    default :  context.getOutputManager().error("Strategy doesn't exist.\n");
     }
 
     return strategy;

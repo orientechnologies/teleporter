@@ -26,20 +26,12 @@ import com.orientechnologies.orient.drakkar.context.ODrakkarStatistics;
  * Listener interface of ODrakkarStatistics.
  * 
  * @author Gabriele Ponzi
- * @email  gabriele.ponzi--at--gmail.com
+ * @email  <gabriele.ponzi--at--gmail.com>
  *
  */
 
 public interface OStatisticsListener {
   
-//  public void updateWork1OnEvent(ODrakkarStatistics statistics);
-//  
-//  public void updateWork2OnEvent(ODrakkarStatistics statistics);
-//
-//  public void updateWork3OnEvent(ODrakkarStatistics statistics);
-//
-//  public void updateWork4OnEvent(ODrakkarStatistics statistics);
-
   public void updateOnEvent(ODrakkarStatistics oDrakkarStatistics);
 
 

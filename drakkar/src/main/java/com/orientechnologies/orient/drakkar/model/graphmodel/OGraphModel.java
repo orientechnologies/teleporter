@@ -28,7 +28,7 @@ import java.util.List;
  * It represents the model of the destination GraphDB.
  * 
  * @author Gabriele Ponzi
- * @email  gabriele.ponzi--at--gmail.com
+ * @email  <gabriele.ponzi--at--gmail.com>
  * 
  */
 

@@ -21,29 +21,38 @@
 package com.orientechnologies.orient.drakkar.context;
 
 
+
 /**
  * Context class for Drakkar execution.
  * 
  * @author Gabriele Ponzi
- * @email  gabriele.ponzi--at--gmail.com
+ * @email  <gabriele.ponzi--at--gmail.com>
  *
  */
 
 public class ODrakkarContext {
   
   private ODrakkarStatistics statistics;
+  private OOutputStreamManager outputManager;
   
   public ODrakkarContext() {
     this.statistics = new ODrakkarStatistics();
   }
 
   public ODrakkarStatistics getStatistics() {
-    return statistics;
+    return this.statistics;
   }
 
   public void setStatistics(ODrakkarStatistics statistics) {
     this.statistics = statistics;
   }
+  
+  public OOutputStreamManager getOutputManager() {
+    return this.outputManager;
+  }
 
+  public void setOutputManager(OOutputStreamManager outputManager) {
+    this.outputManager = outputManager;
+  }
   
 }

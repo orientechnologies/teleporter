@@ -21,10 +21,6 @@
 package com.orientechnologies.orient.drakkar.strategy;
 
 import java.util.Date;
-import java.util.Timer;
-import java.util.TimerTask;
-
-import com.orientechnologies.common.log.OLogManager;
 import com.orientechnologies.orient.drakkar.context.ODrakkarContext;
 import com.orientechnologies.orient.drakkar.factory.ODataTypeHandlerFactory;
 import com.orientechnologies.orient.drakkar.factory.ONameResolverFactory;
@@ -34,7 +30,6 @@ import com.orientechnologies.orient.drakkar.mapper.OSource2GraphMapper;
 import com.orientechnologies.orient.drakkar.model.graphmodel.OGraphModel;
 import com.orientechnologies.orient.drakkar.nameresolver.ONameResolver;
 import com.orientechnologies.orient.drakkar.persistence.handler.ODriverDataTypeHandler;
-import com.orientechnologies.orient.drakkar.ui.OProgressMonitor;
 import com.orientechnologies.orient.drakkar.util.OTimeFormatHandler;
 import com.orientechnologies.orient.drakkar.writer.OGraphModelWriter;
 
@@ -43,7 +38,7 @@ import com.orientechnologies.orient.drakkar.writer.OGraphModelWriter;
  * translated semi-directly in a correspondent and coherent graph model.
  * 
  * @author Gabriele Ponzi
- * @email  gabriele.ponzi--at--gmail.com
+ * @email  <gabriele.ponzi--at--gmail.com>
  * 
  */
 
@@ -54,25 +49,11 @@ public class ONaiveImportStrategy implements OImportStrategy {
 
   public ONaiveImportStrategy() {}
 
-  public void executeStrategy(String driver, String uri, String username, String password, String outOrientGraphUri, String nameResolverConvention) {	
+  public void executeStrategy(String driver, String uri, String username, String password, String outOrientGraphUri, String nameResolverConvention, ODrakkarContext context) {	
 
     Date globalStart = new Date(); 
-
-    // Context and Progress Monitor initialization
-    final ODrakkarContext context = new ODrakkarContext();
-    OProgressMonitor progressMonitor = new OProgressMonitor();
-    progressMonitor.initialize(context.getStatistics());
+    
     context.getStatistics().notifyListeners();
-
-    // Timer for statistics notifying
-    Timer timer = new Timer();
-    timer.schedule(new TimerTask() {
-
-      @Override
-      public void run() {
-        context.getStatistics().notifyListeners();        
-      }
-    }, 0, 1000);
 
     // Step 1,2,3
     ONameResolverFactory nameResolverFactory = new ONameResolverFactory();
@@ -86,10 +67,9 @@ public class ONaiveImportStrategy implements OImportStrategy {
 
     Date globalEnd = new Date();
 
-    System.out.println("\n\nImporting Complete in " + OTimeFormatHandler.getHMSFormat(globalStart, globalEnd) + " !");
-    System.out.println(context.getStatistics().toString());
+    context.getOutputManager().info("\n\nImporting Complete in " + OTimeFormatHandler.getHMSFormat(globalStart, globalEnd) + " !");
+    context.getOutputManager().info(context.getStatistics().toString());
 
-    timer.cancel();
   }
 
   public OSource2GraphMapper createSchemaMapper(String driver, String uri, String username, String password, String outOrientGraphUri, ONameResolver nameResolver, ODrakkarContext context) {
@@ -98,15 +78,13 @@ public class ONaiveImportStrategy implements OImportStrategy {
 
     // DataBase schema building
     mapper.buildSourceSchema(context);
-    System.out.println();
-    OLogManager.instance().debug(this, "%s\n", ((OER2GraphMapper)mapper).getDataBaseSchema().toString());
-    //        System.out.println(((OER2GraphMapper)mapper).getDataBaseSchema().toString());
+    context.getOutputManager().info("");
+    context.getOutputManager().debug(((OER2GraphMapper)mapper).getDataBaseSchema().toString() + "\n");
 
     // Graph model building
     mapper.buildGraphModel(nameResolver, context);
-    System.out.println();
-    OLogManager.instance().debug(this, "%s\n", ((OER2GraphMapper)mapper).getGraphModel().toString());
-    //        System.out.println(((OER2GraphMapper)mapper).getGraphModel().toString());
+    context.getOutputManager().info("");
+    context.getOutputManager().debug(((OER2GraphMapper)mapper).getGraphModel().toString() + "\n");
 
     // Saving schema on Orient
     ODataTypeHandlerFactory factory = new ODataTypeHandlerFactory();
@@ -115,11 +93,11 @@ public class ONaiveImportStrategy implements OImportStrategy {
     OGraphModel graphModel = ((OER2GraphMapper)mapper).getGraphModel();
     boolean success = graphModelWriter.writeModelOnOrient(graphModel, handler, outOrientGraphUri, context);
     if(!success) {
-      OLogManager.instance().error(this, "Writing not complete. Something's gone wrong.\n", (Object[]) null);
+      context.getOutputManager().error("Writing not complete. Something's gone wrong.\n");
       System.exit(0);
     }
-    System.out.println();
-
+    context.getOutputManager().info("");
+    
     return mapper;
   }
 
@@ -130,7 +108,7 @@ public class ONaiveImportStrategy implements OImportStrategy {
 
     try {
       importEngine.executeImport(driver, uri, username, password, outOrientGraphUri, mapper, nameResolver, context);
-      System.out.println();
+      context.getOutputManager().info("");
     }catch(Exception e){
       e.printStackTrace();
     }

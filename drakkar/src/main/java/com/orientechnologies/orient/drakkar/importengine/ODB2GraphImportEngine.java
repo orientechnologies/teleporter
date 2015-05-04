@@ -40,7 +40,7 @@ import com.tinkerpop.blueprints.Vertex;
  * Uses an ODBQueryEngine and an OGraphDBCommandEngine for the source DB and the destination Orient DB managing.
  * 
  * @author Gabriele Ponzi
- * @email  gabriele.ponzi--at--gmail.com
+ * @email  <gabriele.ponzi--at--gmail.com>
  *
  */
 
@@ -64,13 +64,11 @@ public class ODB2GraphImportEngine {
     OVertexType currentInVertexType = null;  
     Vertex currentOutVertex = null;
     OEdgeType edgeType = null;
-    
-    int insertedVisitedVertex = 0;
 
     for(OEntity entity: mapper.getDataBaseSchema().getEntities()) {
-      
+
       // for each entity in dbSchema all records are retrieved
-      ResultSet records = dbQueryEngine.getRecordsByEntity(entity.getName());
+      ResultSet records = dbQueryEngine.getRecordsByEntity(entity.getName(), context);
       currentOutVertexType = mapper.getEntity2vertexType().get(entity);
 
       ResultSet currentRecord = null;
@@ -78,31 +76,24 @@ public class ODB2GraphImportEngine {
       while(records.next()) {
         // upsert of the vertex
         currentRecord = records;
-        currentOutVertex = graphDBCommandEngine.upsertVisitedVertex(currentRecord, currentOutVertexType, nameResolver);
+        currentOutVertex = graphDBCommandEngine.upsertVisitedVertex(currentRecord, currentOutVertexType, nameResolver, context);
 
         // for each attribute of the entity belonging to the primary key, correspondent relationship is
         // built as edge and for the referenced record a vertex is built (only id)
         for(ORelationship currentRelation: entity.getRelationships()) {
           currentInVertexType = mapper.getVertexTypeByName(nameResolver.resolveVertexName(currentRelation.getParentEntityName())); // aggiungi getVertexTypeByName!
           edgeType = mapper.getRelationship2edgeType().get(currentRelation);
-          graphDBCommandEngine.upsertReachedVertexWithEdge(currentRecord, currentRelation, currentOutVertex, currentInVertexType, edgeType.getType(), nameResolver);
+          graphDBCommandEngine.upsertReachedVertexWithEdge(currentRecord, currentRelation, currentOutVertex, currentInVertexType, edgeType.getType(), nameResolver, context);
         }   
-        
-//        // Statistics updated every 500 inserted visited vertex
-//        insertedVisitedVertex++;
-//        if(insertedVisitedVertex % 500 == 0) {
-//          statistics.incrementImportedRecords(500);
-//          insertedVisitedVertex = 0;
-//        }
-        statistics.incrementImportedRecords(1);
+
+        // Statistics updated every 500 inserted visited vertex
+        statistics.importedRecords++;
       }
 
       // closing connection and statement
-      dbQueryEngine.closeAll();
+      dbQueryEngine.closeAll(context);
     }
-    // Statistics updated with remaining records inserted (if presents)
-//    statistics.incrementImportedRecords(insertedVisitedVertex);
-    
+
     statistics.notifyListeners();
     statistics.runningStepNumber = -1;
   }

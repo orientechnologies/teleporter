@@ -35,7 +35,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import com.orientechnologies.common.log.OLogManager;
 import com.orientechnologies.orient.drakkar.context.ODrakkarContext;
 import com.orientechnologies.orient.drakkar.context.ODrakkarStatistics;
 import com.orientechnologies.orient.drakkar.model.dbschema.OAttribute;
@@ -57,7 +56,7 @@ import com.orientechnologies.orient.drakkar.persistence.util.ODataSource;
  * the second from the source DB schema just created.
  * 
  * @author Gabriele Ponzi
- * @email  gabriele.ponzi--at--gmail.com
+ * @email  <gabriele.ponzi--at--gmail.com>
  *
  */
 
@@ -91,7 +90,7 @@ public class OER2GraphMapper implements OSource2GraphMapper {
 
     try {
 
-      connection = this.dataSource.getConnection();      
+      connection = this.dataSource.getConnection(context);      
       DatabaseMetaData databaseMetaData = connection.getMetaData();
 
       /*
@@ -128,7 +127,7 @@ public class OER2GraphMapper implements OSource2GraphMapper {
       int numberOfTables = tablesName.size();
       statistics.totalNumberOfEntities = numberOfTables;
 
-      OLogManager.instance().debug(this, "%s tables found.", numberOfTables);
+      context.getOutputManager().debug(numberOfTables + " tables found.");
 
       OEntity currentEntity;
       OPrimaryKey pKey;
@@ -148,7 +147,7 @@ public class OER2GraphMapper implements OSource2GraphMapper {
       int iteration = 1;
       for(String currentTableName: tablesName) {
 
-        OLogManager.instance().debug(this, "Building '%s' entity (%s/%s)...", currentTableName, iteration, numberOfTables);
+        context.getOutputManager().debug("Building '" + currentTableName + "' entity (" + iteration + "/" + numberOfTables + ")...");
         
         // Counting current-table's record
         sql = "select count(*) from " + currentTableName;
@@ -192,8 +191,8 @@ public class OER2GraphMapper implements OSource2GraphMapper {
         this.dataBaseSchema.addEntity(currentEntity);
 
         iteration++;
-        OLogManager.instance().debug(this, "Entity %s built.\n", currentTableName);
-        statistics.incrementBuiltEntities();
+        context.getOutputManager().debug("Entity " + currentTableName + " built.\n");
+        statistics.builtEntities++;
       }
       statement.close();
       statistics.totalNumberOfRecords = totalNumberOfRecord;
@@ -205,7 +204,8 @@ public class OER2GraphMapper implements OSource2GraphMapper {
       for(OEntity currentForeignEntity: this.dataBaseSchema.getEntities()) {
 
         String currentForeignEntityName = currentForeignEntity.getName();
-        OLogManager.instance().debug(this, "Building relationships starting from '%s' entity (%s/%s)...", currentForeignEntityName, iteration, numberOfTables);
+        
+        context.getOutputManager().debug("Building relationships starting from '" + currentForeignEntityName + "' entity (" + iteration + "/" + numberOfTables + ")...");
 
         String foreignCatalog = null;
         String foreignSchema = null;
@@ -213,7 +213,7 @@ public class OER2GraphMapper implements OSource2GraphMapper {
         resultForeignKeys = databaseMetaData.getImportedKeys(foreignCatalog, foreignSchema, currentForeignEntityName);
 
         // copy of resultset in a HashLinkedMap
-        currentEntityRelationships1 = this.fromResultSetToList(resultForeignKeys);
+        currentEntityRelationships1 = this.fromResultSetToList(resultForeignKeys, context);
         currentEntityRelationships2 = new LinkedList<LinkedHashMap<String,String>>();
         currentEntityRelationships2.addAll(currentEntityRelationships1);
 
@@ -272,8 +272,8 @@ public class OER2GraphMapper implements OSource2GraphMapper {
         }
 
         iteration++;
-        OLogManager.instance().debug(this, "Relationships from %s built.\n", currentForeignEntityName);
-        statistics.incrementDoneEntity4Relationship();
+        context.getOutputManager().debug("Relationships from " + currentForeignEntityName + " built.\n");
+        statistics.doneEntity4Relationship++;
       }
 
     }catch(SQLException e) {
@@ -290,9 +290,8 @@ public class OER2GraphMapper implements OSource2GraphMapper {
 
     try {
       if(connection.isClosed())
-        OLogManager.instance().debug(this, "Connection to DB closed.\n", (Object[])null);
+        context.getOutputManager().debug("Connection to DB closed.\n");
       else {
-//        OLogManager.instance().warn(this, "Connection to DB not closed.\n", (Object[])null);
         statistics.warningMessages.add("Connection to DB not closed.");
       }      
     }catch(SQLException e) {
@@ -314,7 +313,7 @@ public class OER2GraphMapper implements OSource2GraphMapper {
   }
 
 
-  private List<LinkedHashMap<String,String>> fromResultSetToList(ResultSet resultForeignKeys) {
+  private List<LinkedHashMap<String,String>> fromResultSetToList(ResultSet resultForeignKeys, ODrakkarContext context) {
     List<LinkedHashMap<String, String>> rows = new LinkedList<LinkedHashMap<String,String>>();
 
     try{
@@ -328,7 +327,7 @@ public class OER2GraphMapper implements OSource2GraphMapper {
         rows.add(row);
       }
     }catch(SQLException e) {
-      OLogManager.instance().error(this, "%s", e.getMessage());
+      context.getOutputManager().error(e.getMessage());
       e.printStackTrace();
     }
     return rows;
@@ -357,7 +356,7 @@ public class OER2GraphMapper implements OSource2GraphMapper {
     int iteration = 1;
     for(OEntity currentEntity: this.dataBaseSchema.getEntities()) {
 
-      OLogManager.instance().debug(this, "Building '%s' vertex-type (%s/%s)...", currentEntity.getName(), iteration, numberOfVertexType);
+      context.getOutputManager().debug("Building '" + currentEntity.getName() + "' vertex-type (" + iteration + "/" + numberOfVertexType + ")...");
 
       // buildind correspondent vertex-type
       currentVertexTypeName = nameResolver.resolveVertexName(currentEntity.getName());
@@ -385,8 +384,8 @@ public class OER2GraphMapper implements OSource2GraphMapper {
       this.entity2vertexType.put(currentEntity, currentVertexType);
 
       iteration++;
-      OLogManager.instance().debug(this, "Vertex-type %s built.\n", currentVertexType.getType());
-      statistics.incrementBuiltModelVertexTypes();
+      context.getOutputManager().debug("Vertex-type " + currentVertexType.getType() + " built.\n");
+      statistics.builtModelVertexTypes++;
     }
 
     /*
@@ -404,7 +403,7 @@ public class OER2GraphMapper implements OSource2GraphMapper {
     for(ORelationship relationship: this.dataBaseSchema.getRelationships()) {  
       currentOutVertex = this.graphModel.getVertexByType(nameResolver.resolveVertexName(relationship.getForeignEntityName()));
       currentInVertex = this.graphModel.getVertexByType(nameResolver.resolveVertexName(relationship.getParentEntityName()));
-      OLogManager.instance().debug(this, "Building edge-type from '%s' to '%s' (%s/%s)...", currentOutVertex.getType(), currentInVertex.getType(), iteration, numberOfEdgeType);
+      context.getOutputManager().debug("Building edge-type from '" + currentOutVertex.getType() + "' to '" + currentInVertex.getType() + "' (" + iteration + "/" + numberOfEdgeType + ")...");
 
       if(currentOutVertex != null && currentInVertex != null) {
         edgeType = nameResolver.resolveEdgeName(relationship);
@@ -421,21 +420,21 @@ public class OER2GraphMapper implements OSource2GraphMapper {
         currentInVertex.getInEdgesType().add(currentEdgeType);
       }
       else {
-        OLogManager.instance().error(this, "Error during graph model building phase: vertices-edges information loss, relationship missed.\n", (Object[])null);
+        context.getOutputManager().error("Error during graph model building phase: vertices-edges information loss, relationship missed.\n");
       }
       // rules updating
       this.relationship2edgeType.put(relationship, currentEdgeType);
 
       iteration++;
-      OLogManager.instance().debug(this, "Edge-type %s built.\n", currentEdgeType.getType());
-      statistics.incrementBuiltModelEdgeTypes();
+      context.getOutputManager().debug("Edge-type " + currentEdgeType.getType() + " built.\n");
+      statistics.builtModelEdgeTypes++;
     }
     statistics.notifyListeners();
     statistics.runningStepNumber = -1;
   }
 
   
-  public void Many2ManyAggregation() {
+  public void Many2ManyAggregation(ODrakkarContext context) {
 
     OEdgeType newAggregatorEdge;
     OEdgeType currentOutEdge1;
@@ -447,7 +446,7 @@ public class OER2GraphMapper implements OSource2GraphMapper {
     Iterator<OVertexType> iter = this.graphModel.getVerticesType().iterator();
     OVertexType currentVertex;
 
-    OLogManager.instance().debug(this, "\n\nMany-To-Many aggregation phase:\n", (Object[]) null);
+    context.getOutputManager().debug("\n\nMany-To-Many aggregation phase:\n");
 
     while(iter.hasNext()) {
       currentVertex = iter.next();

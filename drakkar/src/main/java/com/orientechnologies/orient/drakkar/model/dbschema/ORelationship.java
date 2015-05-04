@@ -25,7 +25,7 @@ package com.orientechnologies.orient.drakkar.model.dbschema;
  * based on the importing of a single primary key (composite or not) through a foreign key.
  * 
  * @author Gabriele Ponzi
- * @email  gabriele.ponzi--at--gmail.com
+ * @email  <gabriele.ponzi--at--gmail.com>
  * 
  */
 

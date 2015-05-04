@@ -25,7 +25,7 @@ package com.orientechnologies.orient.drakkar.model.graphmodel;
  * the transformation of an attribute belonging to an entity of the source DB schema.
  * 
  * @author Gabriele Ponzi
- * @email  gabriele.ponzi--at--gmail.com
+ * @email  <gabriele.ponzi--at--gmail.com>
  *
  */
 

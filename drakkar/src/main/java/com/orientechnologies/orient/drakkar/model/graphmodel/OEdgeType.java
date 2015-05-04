@@ -28,7 +28,7 @@ import java.util.Map;
  * It's a simple edge-type in the graph model.
  * 
  * @author Gabriele Ponzi
- * @email  gabriele.ponzi--at--gmail.com
+ * @email  <gabriele.ponzi--at--gmail.com>
  *
  */
 

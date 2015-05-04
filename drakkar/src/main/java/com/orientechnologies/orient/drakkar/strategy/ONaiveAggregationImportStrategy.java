@@ -38,7 +38,7 @@ import com.orientechnologies.orient.drakkar.writer.OGraphModelWriter;
  * policy on the junction tables of dimension equals to 2.
  * 
  * @author Gabriele Ponzi
- * @email  gabriele.ponzi--at--gmail.com
+ * @email  <gabriele.ponzi--at--gmail.com>
  * 
  */
 

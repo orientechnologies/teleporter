@@ -27,7 +27,7 @@ import com.orientechnologies.orient.drakkar.model.dbschema.ORelationship;
  * of the data source according to a specific convention.
  * 
  * @author Gabriele Ponzi
- * @email  gabriele.ponzi--at--gmail.com
+ * @email  <gabriele.ponzi--at--gmail.com>
  *
  */
 

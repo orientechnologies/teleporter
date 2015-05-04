@@ -22,6 +22,7 @@ package com.orientechnologies.orient.drakkar.ui;
 
 import java.util.Date;
 
+import com.orientechnologies.orient.drakkar.context.ODrakkarContext;
 import com.orientechnologies.orient.drakkar.context.ODrakkarStatistics;
 import com.orientechnologies.orient.drakkar.util.OTimeFormatHandler;
 
@@ -38,11 +39,13 @@ import com.orientechnologies.orient.drakkar.util.OTimeFormatHandler;
  * OrientDB importing:         90% [                                                  ] Elapsed: 00:00:00 Remaining: 00:00:00 Warnings: 5
  * 
  * @author Gabriele Ponzi
- * @email  gabriele.ponzi--at--gmail.com
+ * @email  <gabriele.ponzi--at--gmail.com>
  *
  */
 
 public class OProgressMonitor implements OStatisticsListener {
+
+  private ODrakkarContext context;
 
   private final String work1Title;
   private final String work2Title;
@@ -52,11 +55,12 @@ public class OProgressMonitor implements OStatisticsListener {
   /**
    * initialize progress bar properties.
    */
-  public OProgressMonitor() {
+  public OProgressMonitor(ODrakkarContext context) {
     this.work1Title = "(1/4) Source DB Schema building:   ";
     this.work2Title = "(2/4) Graph Model building:   ";
     this.work3Title = "(3/4) OrientDB Schema writing:   ";
     this.work4Title = "(4/4) OrientDB importing:   ";
+    this.context = context;
   }
 
   public void updateOnEvent(ODrakkarStatistics statistics) {
@@ -236,8 +240,8 @@ public class OProgressMonitor implements OStatisticsListener {
   }
 
 
-  public void initialize(ODrakkarStatistics statistics) {
-    statistics.registerListener(this);    
+  public void initialize() {
+    context.getStatistics().registerListener(this);    
   }
 
   public void printProgressBar(String workTitle, int workDonePercentage, String progressBarWork, long elapsedTime, int occurredWarnings, int importedRecords, int totalRecords) {
@@ -259,7 +263,7 @@ public class OProgressMonitor implements OStatisticsListener {
       remainingTime = 0;
     String remainingHMSTime = OTimeFormatHandler.getHMSFormat(remainingTime);
 
-    System.out.printf(format, workTitle, workDonePercentage, progressBarWork, " Elapsed:", elapsedHMSTime, " Remaining:", remainingHMSTime, " Warnings:", occurredWarnings, " Records:", importedRecords + "/" + totalRecords);
+    context.getOutputManager().info(format, workTitle, workDonePercentage, progressBarWork, " Elapsed:", elapsedHMSTime, " Remaining:", remainingHMSTime, " Warnings:", occurredWarnings, " Records:", importedRecords + "/" + totalRecords);
 
   }
 }

@@ -29,7 +29,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import com.orientechnologies.common.log.OLogManager;
+import com.orientechnologies.orient.drakkar.context.ODrakkarContext;
 import com.orientechnologies.orient.drakkar.model.dbschema.OAttribute;
 import com.orientechnologies.orient.drakkar.model.dbschema.ORelationship;
 import com.orientechnologies.orient.drakkar.model.graphmodel.OVertexType;
@@ -45,7 +45,7 @@ import com.tinkerpop.blueprints.impls.orient.OrientVertex;
  * Executes the necessary operations of insert and upsert for the destination Orient DB populating.
  * 
  * @author Gabriele Ponzi
- * @email  gabriele.ponzi--at--gmail.com
+ * @email  <gabriele.ponzi--at--gmail.com>
  *
  */
 
@@ -110,7 +110,7 @@ public class OGraphDBCommandEngine {
    * @param record
    * @throws SQLException 
    */
-  public Vertex upsertVisitedVertex(ResultSet record, OVertexType vertexType, ONameResolver nameResolver) throws SQLException {
+  public Vertex upsertVisitedVertex(ResultSet record, OVertexType vertexType, ONameResolver nameResolver, ODrakkarContext context) throws SQLException {
 
     OrientGraphFactory factory = new OrientGraphFactory(this.graphDBUrl);
     OrientGraphNoTx orientGraph = factory.getNoTx();
@@ -141,7 +141,7 @@ public class OGraphDBCommandEngine {
     for(int i=0; i<propertyOfKey.length;i++) {
       s += propertyOfKey[i] + ":" + valueOfKey[i];
     }
-    OLogManager.instance().debug(this, "%s", s);
+    context.getOutputManager().debug(s);
 
     OrientVertex vertex = this.getVertexByIndexedKey(orientGraph, propertyOfKey, valueOfKey, vertexType.getType());  // !!!
 
@@ -171,10 +171,10 @@ public class OGraphDBCommandEngine {
       }
     }
 
-    OLogManager.instance().debug(this, "%s", properties);
+    context.getOutputManager().debug(properties.toString());
     vertex.setProperties(properties);
     vertex.save();
-    OLogManager.instance().debug(this, "New vertex inserted (all props setted): %s\n", vertex.toString());
+    context.getOutputManager().debug("New vertex inserted (all props setted): " + vertex.toString() + "\n");
     orientGraph.shutdown();
 
     return vertex;
@@ -194,7 +194,8 @@ public class OGraphDBCommandEngine {
    * @throws SQLException 
    */
 
-  public Vertex upsertReachedVertexWithEdge(ResultSet foreignRecord, ORelationship relation, Vertex currentOutVertex, OVertexType currentInVertexType, String edgeType, ONameResolver nameResolver) throws SQLException {
+  public Vertex upsertReachedVertexWithEdge(ResultSet foreignRecord, ORelationship relation, Vertex currentOutVertex, OVertexType currentInVertexType,
+      String edgeType, ONameResolver nameResolver, ODrakkarContext context) throws SQLException {
 
     OrientGraphFactory factory = new OrientGraphFactory(this.graphDBUrl);
     OrientGraphNoTx orientGraph = factory.getNoTx();
@@ -216,9 +217,7 @@ public class OGraphDBCommandEngine {
     for(int i=0; i<propertyOfKey.length;i++) {
       s += propertyOfKey[i] + ":" + valueOfKey[i] + "\t";
     }
-    OLogManager.instance().debug(this, "%s", s);
-
-
+    context.getOutputManager().debug(s);
 
     // new vertex is added only if all the values in the foreign key are different from null
     boolean ok = true;
@@ -250,25 +249,24 @@ public class OGraphDBCommandEngine {
           partialProperties.put(propertyOfKey[i], valueOfKey[i]);
         }
 
-        OLogManager.instance().debug(this, "NEW Reached vertex (id:value) --> %s:%s", Arrays.toString(propertyOfKey),Arrays.toString(valueOfKey));
+        context.getOutputManager().debug("NEW Reached vertex (id:value) --> " + Arrays.toString(propertyOfKey) + ":" + Arrays.toString(valueOfKey));
         String classAndClusterName = currentInVertexType.getType(); 
         currentInVertex = orientGraph.addVertex(classAndClusterName, classAndClusterName);
         currentInVertex.setProperties(partialProperties);
         currentInVertex.save();
-        OLogManager.instance().debug(this, "New vertex inserted (only pk props setted): %s\n", currentInVertex.toString());
+        context.getOutputManager().debug("New vertex inserted (only pk props setted): " + currentInVertex.toString() + "\n");
 
       }
 
       else {
-        OLogManager.instance().debug(this, "NOT NEW Reached vertex, vertex %s:%s already present in the Orient Graph.\n", Arrays.toString(propertyOfKey),Arrays.toString(valueOfKey));
+        context.getOutputManager().debug("NOT NEW Reached vertex, vertex " + Arrays.toString(propertyOfKey) + ":" + Arrays.toString(valueOfKey) + " already present in the Orient Graph.\n");
       }
 
       // create relative edge beetween currentVertex and current reached vertex (just inserted or not)
       // only if it's present in the graph (different from null)
       OrientEdge edge = orientGraph.addEdge(null, currentOutVertex, currentInVertex, edgeType);
       edge.save();
-      OLogManager.instance().debug(this, "New edge inserted: %s\n", edge.toString());
-
+      context.getOutputManager().debug("New edge inserted: " + edge.toString());
     }
 
     orientGraph.shutdown();

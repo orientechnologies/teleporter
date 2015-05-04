@@ -23,7 +23,6 @@ package com.orientechnologies.orient.drakkar.persistence.handler;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.orientechnologies.common.log.OLogManager;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.drakkar.context.ODrakkarContext;
 
@@ -31,7 +30,7 @@ import com.orientechnologies.orient.drakkar.context.ODrakkarContext;
  * Handler that executes type conversions from Oracle DBMS to the OrientDB types.
  * 
  * @author Gabriele Ponzi
- * @email  gabriele.ponzi--at--gmail.com
+ * @email  <gabriele.ponzi--at--gmail.com>
  *
  */
 
@@ -55,8 +54,7 @@ public class OOracleDataTypeHandler implements ODriverDataTypeHandler {
 
     // Undefined Types
     else {
-//      OLogManager.instance().warn(this, "The original type '%s' is not convertible into any Orient type thus, to prevent data loss, it will be converted to the Orient Type String.", type);
-      context.getStatistics().warningMessages.add("The original type " + type + " is not convertible into any Orient type thus, in order to prevent data loss, it will be converted to the Orient Type String.");
+      context.getStatistics().warningMessages.add("The original type '" + type + "' is not convertible into any Orient type thus, in order to prevent data loss, it will be converted to the Orient Type String.");
       return OType.STRING;
     }
 

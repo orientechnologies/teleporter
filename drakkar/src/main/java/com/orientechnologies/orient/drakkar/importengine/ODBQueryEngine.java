@@ -25,14 +25,14 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import com.orientechnologies.common.log.OLogManager;
+import com.orientechnologies.orient.drakkar.context.ODrakkarContext;
 import com.orientechnologies.orient.drakkar.persistence.util.ODataSource;
 
 /**
  * Implementation of ODataSourceQueryEngine. It executes the necessary queries for the source DB records fetching.
  * 
  * @author Gabriele Ponzi
- * @email  gabriele.ponzi--at--gmail.com
+ * @email  <gabriele.ponzi--at--gmail.com>
  *
  */
 
@@ -47,7 +47,7 @@ public class ODBQueryEngine implements ODataSourceQueryEngine {
   }
 
 
-  public ResultSet getRecordsByEntity(String entityName) {
+  public ResultSet getRecordsByEntity(String entityName, ODrakkarContext context) {
 
     ResultSet results = null;
     this.dbConnection = null;
@@ -56,12 +56,12 @@ public class ODBQueryEngine implements ODataSourceQueryEngine {
 
     try {
       
-      this.dbConnection = dataSource.getConnection();
+      this.dbConnection = dataSource.getConnection(context);
       this.statement = dbConnection.prepareStatement(query);
       results = statement.executeQuery();      
       
     }catch(SQLException e) {
-      OLogManager.instance().debug(this, "%s", e.getMessage());
+      context.getOutputManager().debug(e.getMessage());
       e.printStackTrace();
     }
     return results;
@@ -143,7 +143,7 @@ public class ODBQueryEngine implements ODataSourceQueryEngine {
 //  }
   
   
-  public void closeAll() {
+  public void closeAll(ODrakkarContext context) {
     
     try {
       if(this.dbConnection != null) 
@@ -152,7 +152,7 @@ public class ODBQueryEngine implements ODataSourceQueryEngine {
         this.statement.close();
 
     }catch(SQLException e) {
-      OLogManager.instance().debug(this, "%s", e.getMessage());
+      context.getOutputManager().debug(e.getMessage());
       e.printStackTrace();
     }
     

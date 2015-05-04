@@ -20,16 +20,18 @@
 
 package com.orientechnologies.orient.drakkar.strategy;
 
+import com.orientechnologies.orient.drakkar.context.ODrakkarContext;
+
 /**
  * Interface that represents a specific approach of data importing.
  * 
  * @author Gabriele Ponzi
- * @email  gabriele.ponzi--at--gmail.com
+ * @email  <gabriele.ponzi--at--gmail.com>
  * 
  */
 
 public interface OImportStrategy {
 
-	public void executeStrategy(String driver, String uri, String username, String password, String outDbUri, String nameResolverConvention);
+	public void executeStrategy(String driver, String uri, String username, String password, String outDbUri, String nameResolverConvention, ODrakkarContext context);
 	
 }

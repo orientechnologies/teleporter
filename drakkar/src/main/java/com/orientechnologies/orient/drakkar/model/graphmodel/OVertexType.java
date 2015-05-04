@@ -30,7 +30,7 @@ import java.util.Map;
  * It's a simple vertex-type in the graph model.
  * 
  * @author Gabriele Ponzi
- * @email  gabriele.ponzi--at--gmail.com
+ * @email  <gabriele.ponzi--at--gmail.com>
  *
  */
 

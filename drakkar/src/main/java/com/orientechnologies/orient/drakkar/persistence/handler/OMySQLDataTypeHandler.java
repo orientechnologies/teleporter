@@ -23,7 +23,6 @@ package com.orientechnologies.orient.drakkar.persistence.handler;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.orientechnologies.common.log.OLogManager;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.drakkar.context.ODrakkarContext;
 
@@ -31,13 +30,13 @@ import com.orientechnologies.orient.drakkar.context.ODrakkarContext;
  * Handler that executes type conversions from MySQL DBMS to the OrientDB types.
  * 
  * @author Gabriele Ponzi
- * @email  gabriele.ponzi--at--gmail.com
+ * @email  <gabriele.ponzi--at--gmail.com>
  *
  */
 
 public class OMySQLDataTypeHandler implements ODriverDataTypeHandler {
 
-  
+
   private Map<String,OType> dbmsType2OrientType;
 
   public OMySQLDataTypeHandler(){
@@ -49,27 +48,26 @@ public class OMySQLDataTypeHandler implements ODriverDataTypeHandler {
    * If the starting type is not mapped, OType.STRING is returned.
    */
   public OType resolveType(String type, ODrakkarContext context) {
-    
+
     // Defined Types
     if(this.dbmsType2OrientType.keySet().contains(type))
       return this.dbmsType2OrientType.get(type);
-    
- // Undefined Types
+
+    // Undefined Types
     else {
-//      OLogManager.instance().warn(this, "The original type '%s' is not convertible into any Orient type thus, to prevent data loss, it will be converted to the Orient Type String.", type);
-      context.getStatistics().warningMessages.add("The original type " + type + " is not convertible into any Orient type thus, in order to prevent data loss, it will be converted to the Orient Type String.");
+      context.getStatistics().warningMessages.add("The original type '" + type + "' is not convertible into any Orient type thus, in order to prevent data loss, it will be converted to the Orient Type String.");
       return OType.STRING;
     }
-    
-    
+
+
   }
-  
+
 
   private Map<String, OType> fillTypesMap() {
 
     Map<String, OType> dbmsType2OrientType = new HashMap<String, OType>();
 
-    
+
     /*
      * Numeric Types
      * (doc at http://dev.mysql.com/doc/refman/5.6/en/numeric-types.html )
@@ -85,17 +83,17 @@ public class OMySQLDataTypeHandler implements ODriverDataTypeHandler {
     dbmsType2OrientType.put("float", OType.FLOAT);
     dbmsType2OrientType.put("double", OType.DOUBLE);
     dbmsType2OrientType.put("double precision", OType.DOUBLE);
-    
 
-    
+
+
     /*
      * Bit String Types
      * (doc at http://dev.mysql.com/doc/refman/5.6/en/numeric-types.html )
      */
     dbmsType2OrientType.put("bit", OType.STRING);
-    
-    
-    
+
+
+
     /*
      * Date/Time Types
      * (doc at http://dev.mysql.com/doc/refman/5.6/en/date-and-time-types.html )
@@ -120,9 +118,9 @@ public class OMySQLDataTypeHandler implements ODriverDataTypeHandler {
     dbmsType2OrientType.put("text", OType.STRING);
     dbmsType2OrientType.put("mediumtext", OType.STRING);
     dbmsType2OrientType.put("longtext", OType.STRING);
-    
-    
-    
+
+
+
     /*
      * Binary Data Types
      * (doc at http://www.postgresql.org/docs/9.3/static/datatype-binary.html )
@@ -131,24 +129,24 @@ public class OMySQLDataTypeHandler implements ODriverDataTypeHandler {
     dbmsType2OrientType.put("blob", OType.BINARY);
     dbmsType2OrientType.put("mediumblob", OType.BINARY);
     dbmsType2OrientType.put("longblob", OType.BINARY);
-    
-    
+
+
     /*
      * ENUM Types
      * (doc at http://dev.mysql.com/doc/refman/5.6/en/enum.html )
      */
     // TODO !!!
-    
-    
-    
+
+
+
     /*
      * SET Types
      * (doc at http://dev.mysql.com/doc/refman/5.6/en/set.html )
      */
     // TODO !!!
-    
 
-    
+
+
     /*
      * Geometric Types
      * (doc at http://www.postgresql.org/docs/9.3/static/datatype-geometric.html )
@@ -164,13 +162,13 @@ public class OMySQLDataTypeHandler implements ODriverDataTypeHandler {
     dbmsType2OrientType.put("multilinestring", OType.STRING);
     dbmsType2OrientType.put("multipolygon", OType.STRING);
 
-    
+
 
     /*
      * Using Data Types from Other Database Engines
      * (doc at http://dev.mysql.com/doc/refman/5.6/en/other-vendor-data-types.html )
      */
-    
+
 
 
     return dbmsType2OrientType;

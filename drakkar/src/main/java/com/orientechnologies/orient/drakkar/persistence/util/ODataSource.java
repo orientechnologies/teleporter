@@ -26,13 +26,13 @@ import java.sql.SQLException;
 
 import javax.persistence.PersistenceException;
 
-import com.orientechnologies.common.log.OLogManager;
+import com.orientechnologies.orient.drakkar.context.ODrakkarContext;
 
 /**
  * Utility class to which connection with source DB is delegated.
  * 
  * @author Gabriele Ponzi
- * @email  gabriele.ponzi-at-gmaildotcom
+ * @email  <gabriele.ponzi--at--gmail.com>
  * 
  */
 
@@ -52,20 +52,20 @@ public class ODataSource {
 
   }
 
-  public Connection getConnection()  {
+  public Connection getConnection(ODrakkarContext context)  {
     Connection connection = null;
-    OLogManager.instance().debug(this, "Attempting connection to %s ...", this.uri);
+    context.getOutputManager().debug("Attempting connection to " + this.uri + " ...");
     try {
       Class.forName(driver);
       connection = DriverManager.getConnection(uri,username, password);
-      OLogManager.instance().debug(this, "Successful connection.\n", (Object[])null);
+      context.getOutputManager().debug("Successful connection.\n");
     } catch (ClassNotFoundException e) {
-      OLogManager.instance().error(this, "ClassNotFoundException during connection attempting.\n", (Object[])null);
+      context.getOutputManager().error("ClassNotFoundException during connection attempting.\n");
       throw new PersistenceException(e.getMessage());
     } catch(SQLException e) {
-      OLogManager.instance().error(this, "SQLException during connection attempting.\n", (Object[])null);
+      context.getOutputManager().error("SQLException during connection attempting.\n");
       throw new PersistenceException(e.getMessage());
-      
+
     }
     return connection;
 

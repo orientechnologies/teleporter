@@ -24,7 +24,7 @@ package com.orientechnologies.orient.drakkar.model.dbschema;
  * It represents a foreign key for an entity.
  * 
  * @author Gabriele Ponzi
- * @email  gabriele.ponzi--at--gmail.com
+ * @email  <gabriele.ponzi--at--gmail.com>
  *
  */
 

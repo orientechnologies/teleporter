@@ -26,7 +26,6 @@ import java.util.List;
 import java.util.Locale;
 
 import com.orientechnologies.common.exception.OException;
-import com.orientechnologies.common.log.OLogManager;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.sql.OCommandSQL;
 import com.orientechnologies.orient.drakkar.context.ODrakkarContext;
@@ -45,7 +44,7 @@ import com.tinkerpop.blueprints.impls.orient.OrientVertexType;
  * on OrientDB as an OrientDB Schema.
  * 
  * @author Gabriele Ponzi
- * @email  gabriele.ponzi--at--gmail.com
+ * @email  <gabriele.ponzi--at--gmail.com>
  *
  */
 
@@ -68,7 +67,7 @@ public class OGraphModelWriter {
 
       // Writing vertex-type
 
-      OLogManager.instance().debug(this, "%s", "Writing vertex-types on OrientDB Schema...");
+      context.getOutputManager().debug("Writing vertex-types on OrientDB Schema...");
       int numberOfVertices = graphModel.getVerticesType().size();
       statistics.totalNumberOfVertexType = numberOfVertices;
 
@@ -81,7 +80,7 @@ public class OGraphModelWriter {
 
       int iteration = 1;
       for(OVertexType currentVertexType: graphModel.getVerticesType()) {
-        OLogManager.instance().debug(this, "Writing '%s' vertex-type  (%s/%s)...", currentVertexType.getType(),iteration,numberOfVertices);
+        context.getOutputManager().debug("Writing '" + currentVertexType.getType() + "' vertex-type  (" + iteration + "/" + numberOfVertices + ")...");
         newVertexType = orientGraph.createVertexType(currentVertexType.getType());
         toRemoveAttributes = new ArrayList<String>();
 
@@ -97,7 +96,6 @@ public class OGraphModelWriter {
           }
           else{
             toRemoveAttributes.add(attributeName);   
-//            OLogManager.instance().warn(this, "%s type is not supported, the correspondent property will be dropped.\n", currentAttributeProperties.getAttributeType());
             statistics.warningMessages.add(currentAttributeProperties.getAttributeType() + " type is not supported, the correspondent property will be dropped.");
           }
         }
@@ -107,13 +105,13 @@ public class OGraphModelWriter {
           currentVertexType.getPropertyName2propertyAttributes().remove(toRemove);
 
         iteration++;
-        OLogManager.instance().debug(this, "Vertex-type '%s' wrote.\n", currentVertexType.getType());
-        statistics.incrementWroteVertexType();
+        context.getOutputManager().debug("Vertex-type '" + currentVertexType.getType() + "' wrote.\n");
+        statistics.wroteVertexType++;
       }
 
       // Writing edge-type
 
-      OLogManager.instance().debug(this, "%s", "Writing edge-types on OrientDB Schema...");
+      context.getOutputManager().debug("Writing edge-types on OrientDB Schema...");
       int numberOfEdges = graphModel.getEdgesType().size();
       statistics.totalNumberOfEdgeType = numberOfEdges;
 
@@ -121,7 +119,7 @@ public class OGraphModelWriter {
 
       iteration = 1;
       for(OEdgeType currentEdgeType: graphModel.getEdgesType()) {
-        OLogManager.instance().debug(this, "Writing '%s' edge-type  (%s/%s)...", currentEdgeType.getType(),iteration,numberOfEdges);
+        context.getOutputManager().debug("Writing '" + currentEdgeType.getType() + "' edge-type  (" + iteration + "/" + numberOfEdges + ")...");
         newEdgeType = orientGraph.createEdgeType(currentEdgeType.getType());
 
 //        // setting in-vertex-type
@@ -147,7 +145,6 @@ public class OGraphModelWriter {
           }
           else{  
             toRemoveAttributes.add(attributeName);   
-//            OLogManager.instance().warn(this, "%s type is not supported, the correspondent property will be dropped.\n", currentAttributeProperties.getAttributeType());
             statistics.warningMessages.add(currentAttributeProperties.getAttributeType() + " type is not supported, the correspondent property will be dropped.");
           }
         }
@@ -157,13 +154,13 @@ public class OGraphModelWriter {
           currentEdgeType.getAttributeName2attributeProperties().remove(toRemove);
 
         iteration++;
-        OLogManager.instance().debug(this, "Edge-type '%s' wrote.\n", currentEdgeType.getType());
-        statistics.incrementWroteEdgeType();
+        context.getOutputManager().debug("Edge-type '" + currentEdgeType.getType() + "' wrote.\n");
+        statistics.wroteEdgeType++;
       }
 
 
       // Writing indexes on properties belonging to the original primary key
-      OLogManager.instance().debug(this, "%s", "Building indexes on properties belonging to the original primary key...");
+      context.getOutputManager().debug("Building indexes on properties belonging to the original primary key...");
       statistics.totalNumberOfIndices = numberOfVertices;
 
       String currentType = null;
@@ -188,13 +185,13 @@ public class OGraphModelWriter {
             propertiesList += property + ",";
           j++;
         }
-        OLogManager.instance().debug(this, "Building index for '%s' on %s  (%s/%s)...", currentVertexType.getType(),propertiesList,iteration,numberOfVertices);
+        context.getOutputManager().debug("Building index for '" + currentVertexType.getType() + "' on " + propertiesList + "  (" + iteration + "/" + numberOfVertices + ")...");
         statement = "create index " + currentType + ".pkey" + " on " + currentType + " (" + propertiesList + ") unique_hash_index";
         sqlCommand = new OCommandSQL(statement);
         orientGraph.getRawGraph().command(sqlCommand).execute();
         iteration++;
-        OLogManager.instance().debug(this, "Index for %s built.\n", currentVertexType.getType());
-        statistics.incrementWroteIndices();
+        context.getOutputManager().debug("Index for " + currentVertexType.getType() + " built.\n");
+        statistics.wroteIndices++;
       }
 
     }catch(OException e) {
