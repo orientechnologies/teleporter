@@ -8,8 +8,10 @@ com/orientechnologies/orient/drakkar/model/dbschema/ODataBaseSchema.class
 com/orientechnologies/orient/drakkar/context/ODrakkarStatistics.class
 com/orientechnologies/orient/drakkar/model/graphmodel/OVertexType.class
 com/orientechnologies/orient/drakkar/persistence/util/ODataSource.class
+com/orientechnologies/orient/drakkar/main/ODrakkar$1.class
 com/orientechnologies/orient/drakkar/model/dbschema/OAttribute.class
 com/orientechnologies/orient/drakkar/strategy/OImportStrategy.class
+com/orientechnologies/orient/drakkar/context/OOutputStreamManager.class
 com/orientechnologies/orient/drakkar/mapper/OSource2GraphMapper.class
 com/orientechnologies/orient/drakkar/factory/ONameResolverFactory.class
 com/orientechnologies/orient/drakkar/model/dbschema/OEntity.class
@@ -24,7 +26,6 @@ com/orientechnologies/orient/drakkar/model/dbschema/OPrimaryKey.class
 com/orientechnologies/orient/drakkar/context/ODrakkarContext.class
 com/orientechnologies/orient/drakkar/persistence/handler/OOracleDataTypeHandler.class
 com/orientechnologies/orient/drakkar/strategy/ONaiveImportStrategy.class
-com/orientechnologies/orient/drakkar/factory/OOriginalConventionNameResolver.class
 com/orientechnologies/orient/drakkar/model/dbschema/OForeignKey.class
 com/orientechnologies/orient/drakkar/model/graphmodel/OGraphModel.class
 com/orientechnologies/orient/drakkar/ui/OProgressMonitor.class
@@ -34,6 +35,7 @@ com/orientechnologies/orient/drakkar/model/dbschema/OKey.class
 com/orientechnologies/orient/drakkar/importengine/ODB2GraphImportEngine.class
 com/orientechnologies/orient/drakkar/nameresolver/ONameResolver.class
 com/orientechnologies/orient/drakkar/importengine/ODataSourceQueryEngine.class
+com/orientechnologies/orient/drakkar/nameresolver/OOriginalConventionNameResolver.class
 com/orientechnologies/orient/drakkar/persistence/handler/OPostgreSQLDataTypeHandler.class
 com/orientechnologies/orient/drakkar/nameresolver/OJavaConventionNameResolver.class
 com/orientechnologies/orient/drakkar/persistence/handler/OGenericDataTypeHandler.class
