@@ -1,7 +1,4 @@
 package com.orientechnologies.orient.drakkar.test;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.Statement;
 
 import org.junit.Test;
 

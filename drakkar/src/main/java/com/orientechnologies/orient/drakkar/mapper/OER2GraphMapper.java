@@ -230,7 +230,7 @@ public class OER2GraphMapper implements OSource2GraphMapper {
         while(it1.hasNext()) {
           currentExternalRow = it1.next();
 
-          // current row has Key_Seq equals to '2' then alghoritm is finished and is stopped
+          // current row has Key_Seq equals to '2' then algorithm is finished and is stopped
           if(currentExternalRow.get("key_seq").equals("2")) {
             break;
           }

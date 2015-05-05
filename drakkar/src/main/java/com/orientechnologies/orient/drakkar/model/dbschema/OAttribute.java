@@ -111,6 +111,12 @@ public class OAttribute implements Comparable<OAttribute> {
       return 1;
   }
 
+  
+  public String toString() {
+    String s = "";
+    s += this.ordinalPosition + ": " + this.name + " ( " + this.dataType + " )";
+    return s;
+  }
 
 
 
