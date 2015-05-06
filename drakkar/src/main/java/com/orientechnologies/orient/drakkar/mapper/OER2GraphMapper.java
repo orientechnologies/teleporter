@@ -45,7 +45,7 @@ import com.orientechnologies.orient.drakkar.model.dbschema.OPrimaryKey;
 import com.orientechnologies.orient.drakkar.model.dbschema.ORelationship;
 import com.orientechnologies.orient.drakkar.model.graphmodel.OEdgeType;
 import com.orientechnologies.orient.drakkar.model.graphmodel.OGraphModel;
-import com.orientechnologies.orient.drakkar.model.graphmodel.OPropertyAttributes;
+import com.orientechnologies.orient.drakkar.model.graphmodel.OProperty;
 import com.orientechnologies.orient.drakkar.model.graphmodel.OVertexType;
 import com.orientechnologies.orient.drakkar.nameresolver.ONameResolver;
 import com.orientechnologies.orient.drakkar.persistence.util.ODataSource;
@@ -349,7 +349,7 @@ public class OER2GraphMapper implements OSource2GraphMapper {
 
     OVertexType currentVertexType;
     String currentVertexTypeName;
-    OPropertyAttributes attributeProperties = null;
+    OProperty currentProperty = null;
 
     int numberOfVertexType = this.dataBaseSchema.getEntities().size();
     statistics.totalNumberOfModelVertices = numberOfVertexType;
@@ -373,8 +373,8 @@ public class OER2GraphMapper implements OSource2GraphMapper {
 
       // adding attributes to vertex-type
       for(OAttribute attribute: currentEntity.getAttributes()) {               
-        attributeProperties = new OPropertyAttributes(attribute.getOrdinalPosition(), attribute.getDataType(), currentEntity.getPrimaryKey().getInvolvedAttributes().contains(attribute));
-        currentVertexType.getPropertyName2propertyAttributes().put(nameResolver.resolveVertexProperty(attribute.getName()), attributeProperties);
+        currentProperty = new OProperty(nameResolver.resolveVertexProperty(attribute.getName()), attribute.getOrdinalPosition(), attribute.getDataType(), currentEntity.getPrimaryKey().getInvolvedAttributes().contains(attribute));
+        currentVertexType.getProperties().add(currentProperty);
       }
 
       // adding vertex to the graph model
@@ -398,7 +398,7 @@ public class OER2GraphMapper implements OSource2GraphMapper {
     OVertexType currentInVertex;
 
     int numberOfEdgeType = this.dataBaseSchema.getRelationships().size();
-    statistics.totalNumberOfModelEdges = numberOfEdgeType;
+    statistics.totalNumberOfRelationships = numberOfEdgeType;
     iteration = 1;
     for(ORelationship relationship: this.dataBaseSchema.getRelationships()) {  
       currentOutVertex = this.graphModel.getVertexByType(nameResolver.resolveVertexName(relationship.getForeignEntityName()));
@@ -413,6 +413,8 @@ public class OER2GraphMapper implements OSource2GraphMapper {
         if(currentEdgeType == null) {
           currentEdgeType = new OEdgeType(edgeType, null, currentInVertex);  // TO UPDATE !!!!!!!!
           this.graphModel.addEdgeType(currentEdgeType);
+          context.getOutputManager().debug("Edge-type " + currentEdgeType.getType() + " built.\n");
+          statistics.builtModelEdgeTypes++;
         }
           
         // adding the edge to the two vertices
@@ -426,8 +428,7 @@ public class OER2GraphMapper implements OSource2GraphMapper {
       this.relationship2edgeType.put(relationship, currentEdgeType);
 
       iteration++;
-      context.getOutputManager().debug("Edge-type " + currentEdgeType.getType() + " built.\n");
-      statistics.builtModelEdgeTypes++;
+      statistics.analizedRelationships++;
     }
     statistics.notifyListeners();
     statistics.runningStepNumber = -1;
@@ -463,11 +464,11 @@ public class OER2GraphMapper implements OSource2GraphMapper {
         newAggregatorEdge = new OEdgeType(edgeType, outVertexType, inVertexType);       
 
         // adding to the edge all properties not belonging to the primary key
-        for(String property: currentVertex.getPropertyName2propertyAttributes().keySet()) {
+        for(OProperty currentProperty: currentVertex.getProperties()) {
 
           // if property does not belong to the primary key
-          if(!currentVertex.getPropertyName2propertyAttributes().get(property).isFromPrimaryKey()) {
-            newAggregatorEdge.getAttributeName2attributeProperties().put(property, currentVertex.getPropertyName2propertyAttributes().get(property));
+          if(!currentProperty.isFromPrimaryKey()) {
+            newAggregatorEdge.getProperties().add(currentProperty);
           }
         }
 

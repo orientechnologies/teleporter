@@ -127,8 +127,8 @@ public class OProgressMonitor implements OStatisticsListener {
     int work2DonePercentage;
     if(statistics.totalNumberOfModelVertices > 0) {
       work2DonePercentage = (int) (((double)statistics.builtModelVertexTypes/(double)statistics.totalNumberOfModelVertices) * 0.5 * 100);
-      if(statistics.totalNumberOfModelEdges > 0)
-        work2DonePercentage += (int) (((double)statistics.builtModelEdgeTypes/(double)statistics.totalNumberOfModelEdges) * 0.5 * 100);
+      if(statistics.totalNumberOfRelationships > 0)
+        work2DonePercentage += (int) (((double)statistics.analizedRelationships/(double)statistics.totalNumberOfRelationships) * 0.5 * 100);
 
     }
     else {

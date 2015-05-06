@@ -32,7 +32,7 @@ import com.orientechnologies.orient.drakkar.context.ODrakkarContext;
 import com.orientechnologies.orient.drakkar.context.ODrakkarStatistics;
 import com.orientechnologies.orient.drakkar.model.graphmodel.OEdgeType;
 import com.orientechnologies.orient.drakkar.model.graphmodel.OGraphModel;
-import com.orientechnologies.orient.drakkar.model.graphmodel.OPropertyAttributes;
+import com.orientechnologies.orient.drakkar.model.graphmodel.OProperty;
 import com.orientechnologies.orient.drakkar.model.graphmodel.OVertexType;
 import com.orientechnologies.orient.drakkar.persistence.handler.ODriverDataTypeHandler;
 import com.tinkerpop.blueprints.impls.orient.OrientEdgeType;
@@ -72,7 +72,7 @@ public class OGraphModelWriter {
       statistics.totalNumberOfVertexType = numberOfVertices;
 
       OrientVertexType newVertexType;
-      OPropertyAttributes currentAttributeProperties = null;
+//      OProperty currentProperty = null;
       List<String> toRemoveAttributes;
       String statement;
       OCommandSQL sqlCommand;
@@ -84,25 +84,24 @@ public class OGraphModelWriter {
         newVertexType = orientGraph.createVertexType(currentVertexType.getType());
         toRemoveAttributes = new ArrayList<String>();
 
-        for(String attributeName: currentVertexType.getPropertyName2propertyAttributes().keySet()) {
-          currentAttributeProperties = currentVertexType.getPropertyName2propertyAttributes().get(attributeName);
-
-          type = handler.resolveType(currentAttributeProperties.getAttributeType().toLowerCase(Locale.ENGLISH), context);
+        for(OProperty currentProperty: currentVertexType.getProperties()) {
+          
+          type = handler.resolveType(currentProperty.getPropertyType().toLowerCase(Locale.ENGLISH), context);
           if(type != null) {
-            newVertexType.createProperty(attributeName, type);
-            statement = "alter property " + currentVertexType.getType() + "." + attributeName + " custom fromPK = " + currentAttributeProperties.isFromPrimaryKey();
+            newVertexType.createProperty(currentProperty.getName(), type);
+            statement = "alter property " + currentVertexType.getType() + "." + currentProperty.getName() + " custom fromPK = " + currentProperty.isFromPrimaryKey();
             sqlCommand = new OCommandSQL(statement);
             orientGraph.getRawGraph().command(sqlCommand).execute();
           }
           else{
-            toRemoveAttributes.add(attributeName);   
-            statistics.warningMessages.add(currentAttributeProperties.getAttributeType() + " type is not supported, the correspondent property will be dropped.");
+            toRemoveAttributes.add(currentProperty.getName());   
+            statistics.warningMessages.add(currentProperty.getPropertyType() + " type is not supported, the correspondent property will be dropped.");
           }
         }
 
         // property will be dropped both from the POJO schema and from OrientDb schema         
         for(String toRemove: toRemoveAttributes)
-          currentVertexType.getPropertyName2propertyAttributes().remove(toRemove);
+          currentVertexType.removePropertyByName(toRemove);
 
         iteration++;
         context.getOutputManager().debug("Vertex-type '" + currentVertexType.getType() + "' wrote.\n");
@@ -133,25 +132,25 @@ public class OGraphModelWriter {
 
         toRemoveAttributes = new ArrayList<String>();
 
-        for(String attributeName: currentEdgeType.getAttributeName2attributeProperties().keySet()) {
+        for(OProperty currentProperty: currentEdgeType.getProperties()) {
 
-          type = handler.resolveType(currentAttributeProperties.getAttributeType().toLowerCase(Locale.ENGLISH), context);
+          type = handler.resolveType(currentProperty.getPropertyType().toLowerCase(Locale.ENGLISH), context);
 
           if(type != null) {
-            newEdgeType.createProperty(attributeName, type);
-            statement = "alter property " + currentEdgeType.getType() + "."+ attributeName + " custom fromPK = " + currentAttributeProperties.isFromPrimaryKey();
+            newEdgeType.createProperty(currentProperty.getName(), type);
+            statement = "alter property " + currentEdgeType.getType() + "."+ currentProperty.getName() + " custom fromPK = " + currentProperty.isFromPrimaryKey();
             sqlCommand = new OCommandSQL(statement);
             orientGraph.getRawGraph().command(sqlCommand).execute();
           }
-          else{  
-            toRemoveAttributes.add(attributeName);   
-            statistics.warningMessages.add(currentAttributeProperties.getAttributeType() + " type is not supported, the correspondent property will be dropped.");
+          else {  
+            toRemoveAttributes.add(currentProperty.getName());   
+            statistics.warningMessages.add(currentProperty.getPropertyType() + " type is not supported, the correspondent property will be dropped.");
           }
         }
 
         // property will be dropped both from the POJO schema and from OrientDb schema         
         for(String toRemove: toRemoveAttributes)
-          currentEdgeType.getAttributeName2attributeProperties().remove(toRemove);
+          currentEdgeType.removePropertyByName(toRemove);
 
         iteration++;
         context.getOutputManager().debug("Edge-type '" + currentEdgeType.getType() + "' wrote.\n");
@@ -170,9 +169,9 @@ public class OGraphModelWriter {
 
         currentType = currentVertexType.getType();
         properties = new ArrayList<String>();
-        for(String property: currentVertexType.getPropertyName2propertyAttributes().keySet()) {
-          if(currentVertexType.getPropertyName2propertyAttributes().get(property).isFromPrimaryKey()) {
-            properties.add(property);
+        for(OProperty currentProperty: currentVertexType.getProperties()) {
+          if(currentProperty.isFromPrimaryKey()) {
+            properties.add(currentProperty.getName());
           }
         }
 

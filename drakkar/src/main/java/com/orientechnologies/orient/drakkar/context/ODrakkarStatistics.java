@@ -41,7 +41,7 @@ import com.orientechnologies.orient.drakkar.ui.OStatisticsListener;
  */
 
 public class ODrakkarStatistics {
-  
+
   // indicates the running step, -1 if no step are running
   public volatile int runningStepNumber;
 
@@ -55,7 +55,8 @@ public class ODrakkarStatistics {
   // Graph Model building statistics
   public volatile int totalNumberOfModelVertices;
   public volatile int builtModelVertexTypes;
-  public volatile int totalNumberOfModelEdges;
+  public volatile int totalNumberOfRelationships;
+  public volatile int analizedRelationships;
   public volatile int builtModelEdgeTypes;
   public volatile Date startWork2Time;
 
@@ -72,10 +73,10 @@ public class ODrakkarStatistics {
   public volatile int totalNumberOfRecords;
   public volatile int importedRecords;
   public volatile Date startWork4Time;
-    
+
   // Warnings Messages
   public volatile List<String> warningMessages;
-  
+
   // Listeners
   private volatile List<OStatisticsListener> listeners;
 
@@ -87,7 +88,7 @@ public class ODrakkarStatistics {
 
 
   private void init() {
-    
+
     this.runningStepNumber = -1;
 
     this.totalNumberOfEntities = 0;
@@ -97,7 +98,8 @@ public class ODrakkarStatistics {
 
     this.totalNumberOfModelVertices = 0;
     this.builtModelVertexTypes = 0;
-    this.totalNumberOfModelEdges = 0;
+    this.totalNumberOfRelationships = 0;
+    this.analizedRelationships = 0;
     this.builtModelEdgeTypes = 0;
 
     this.totalNumberOfVertexType = 0;
@@ -111,19 +113,19 @@ public class ODrakkarStatistics {
     this.importedRecords = 0;
 
   }
-  
+
   public void reset() {
     this.init();
   }
-  
+
   /*
    * Publisher-Subscribers
    */
-  
+
   public void registerListener(OStatisticsListener listener) {
     this.listeners.add(listener);
   }
-  
+
   public void notifyListeners() {
     for(OStatisticsListener listener: this.listeners) {
       listener.updateOnEvent(this);
@@ -138,40 +140,40 @@ public class ODrakkarStatistics {
     return startWork4Time;
   }
 
-//  public void incrementBuiltEntities() {
-//    this.builtEntities++;
-//  }
-//
-//  public void incrementDoneEntity4Relationship() {
-//    this.doneEntity4Relationship++;
-//  }
-//
-//  public void incrementBuiltModelVertexTypes() {
-//    this.builtModelVertexTypes++;
-//  }
-//
-//  public void incrementBuiltModelEdgeTypes() {
-//    this.builtModelEdgeTypes++;
-//  }
-//
-//  public void incrementWroteVertexType() {
-//    this.wroteVertexType++;
-//  }
-//
-//  public void incrementWroteEdgeType() {
-//    this.wroteEdgeType++;
-//  }
-//
-//  public void incrementWroteIndices() {
-//    this.wroteIndices++;
-//  }
-//
-//  public void incrementImportedRecords(int importedRecord) {
-//    this.importedRecords += importedRecord;
-//  }
-  
- 
-  
+  //  public void incrementBuiltEntities() {
+  //    this.builtEntities++;
+  //  }
+  //
+  //  public void incrementDoneEntity4Relationship() {
+  //    this.doneEntity4Relationship++;
+  //  }
+  //
+  //  public void incrementBuiltModelVertexTypes() {
+  //    this.builtModelVertexTypes++;
+  //  }
+  //
+  //  public void incrementBuiltModelEdgeTypes() {
+  //    this.builtModelEdgeTypes++;
+  //  }
+  //
+  //  public void incrementWroteVertexType() {
+  //    this.wroteVertexType++;
+  //  }
+  //
+  //  public void incrementWroteEdgeType() {
+  //    this.wroteEdgeType++;
+  //  }
+  //
+  //  public void incrementWroteIndices() {
+  //    this.wroteIndices++;
+  //  }
+  //
+  //  public void incrementImportedRecords(int importedRecord) {
+  //    this.importedRecords += importedRecord;
+  //  }
+
+
+
   /*
    *  toString methods
    */
@@ -185,8 +187,8 @@ public class ODrakkarStatistics {
 
   public String graphModelBuildingProgress() {
     String s ="Graph Model Building\n";
-    s += "Built Model Vertices: " + this.builtModelVertexTypes + "/" + this.totalNumberOfModelVertices;
-    s += "\nBuilt Model Edges: " + this.builtModelEdgeTypes + "/" + this.totalNumberOfModelEdges;
+    s += "Built Model Vertices: " + this.builtModelVertexTypes;
+    s += "\nBuilt Model Edges: " + this.builtModelEdgeTypes;
     return s;
   }
 
@@ -203,11 +205,11 @@ public class ODrakkarStatistics {
     s += "Imported Records: " + this.importedRecords + "/" + this.totalNumberOfRecords;
     return s;
   }
-  
+
   public String toString() {
     String s = "\n\nSUMMARY\n\n";
     s += this.sourceDbSchemaBuildingProgress() + "\n\n" + this.orientSchemaWritingProgress() + "\n\n" + this.importingProgress() + "\n\n";
-    
+
     if(this.warningMessages.size() > 0) {
       s += "Warning Messages:\n";
       for(String message: this.warningMessages) {

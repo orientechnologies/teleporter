@@ -32,6 +32,7 @@ import java.util.Map;
 import com.orientechnologies.orient.drakkar.context.ODrakkarContext;
 import com.orientechnologies.orient.drakkar.model.dbschema.OAttribute;
 import com.orientechnologies.orient.drakkar.model.dbschema.ORelationship;
+import com.orientechnologies.orient.drakkar.model.graphmodel.OProperty;
 import com.orientechnologies.orient.drakkar.model.graphmodel.OVertexType;
 import com.orientechnologies.orient.drakkar.nameresolver.ONameResolver;
 import com.tinkerpop.blueprints.Vertex;
@@ -121,10 +122,10 @@ public class OGraphDBCommandEngine {
 
     List<String> propertiesOfIndex = new LinkedList<String>();
 
-    for(String attribute: vertexType.getPropertyName2propertyAttributes().keySet()) {
+    for(OProperty currentProperty: vertexType.getProperties()) {
       // only attribute coming from the primary key are given
-      if(vertexType.getPropertyName2propertyAttributes().get(attribute).isFromPrimaryKey())
-        propertiesOfIndex.add(attribute);
+      if(currentProperty.isFromPrimaryKey())
+        propertiesOfIndex.add(currentProperty.getName());
     }
 
     String[] propertyOfKey = new String[propertiesOfIndex.size()];
@@ -151,23 +152,23 @@ public class OGraphDBCommandEngine {
     }
 
     // setting properties to the vertex
-    String currentAttributeName = null;
-    for(String attributeName : vertexType.getPropertyName2propertyAttributes().keySet()) {
+    String currentAttributeValue = null;
+    for(OProperty currentProperty : vertexType.getProperties()) {
 
-      currentAttributeName = record.getString(nameResolver.reverseTransformation(attributeName));
-      if(currentAttributeName != null) {
-        switch(currentAttributeName) {
+      currentAttributeValue = record.getString(nameResolver.reverseTransformation(currentProperty.getName()));
+      if(currentAttributeValue != null) {
+        switch(currentAttributeValue) {
 
-        case "t": properties.put(attributeName, "true");
+        case "t": properties.put(currentProperty.getName(), "true");
         break;
-        case "f": properties.put(attributeName, "false");
+        case "f": properties.put(currentProperty.getName(), "false");
         break;
-        default: properties.put(attributeName, currentAttributeName);
+        default: properties.put(currentProperty.getName(), currentAttributeValue);
         break;
         }
       }
       else {
-        properties.put(attributeName, currentAttributeName);
+        properties.put(currentProperty.getName(), currentAttributeValue);
       }
     }
 

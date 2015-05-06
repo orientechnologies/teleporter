@@ -21,9 +21,9 @@
 package com.orientechnologies.orient.drakkar.model.graphmodel;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * It represents an Orient class of a specific type that extends the Orient Vertex Class.
@@ -37,7 +37,8 @@ import java.util.Map;
 public class OVertexType {
 
   private String vertexType;
-  private Map<String,OPropertyAttributes> propertyName2propertyAttributes;
+  //  private Map<String,OPropertyAttributes> propertyName2propertyAttributes;
+  private List<OProperty> properties;
   private OVertexType parentVertexType;
   private List<OEdgeType> inEdgesType;
   private List<OEdgeType> outEdgesType;
@@ -45,7 +46,8 @@ public class OVertexType {
 
   public OVertexType(String vertexType) {
     this.vertexType = vertexType;
-    this.propertyName2propertyAttributes = new LinkedHashMap<String, OPropertyAttributes>();
+    //    this.propertyName2propertyAttributes = new LinkedHashMap<String, OPropertyAttributes>();
+    this.properties = new LinkedList<OProperty>();
     this.inEdgesType = new ArrayList<OEdgeType>();
     this.outEdgesType = new ArrayList<OEdgeType>();
   }
@@ -57,13 +59,21 @@ public class OVertexType {
   public void setType(String vertexType) {
     this.vertexType = vertexType;
   }
+  //
+  //  public Map<String, OPropertyAttributes> getPropertyName2propertyAttributes() {
+  //    return this.propertyName2propertyAttributes;
+  //  }
+  //
+  //  public void setPropertyName2propertyAttributes(Map<String, OPropertyAttributes> propertyName2propertyAttributes) {
+  //    this.propertyName2propertyAttributes = propertyName2propertyAttributes;
+  //  }
 
-  public Map<String, OPropertyAttributes> getPropertyName2propertyAttributes() {
-    return this.propertyName2propertyAttributes;
+  public List<OProperty> getProperties() {
+    return this.properties;
   }
 
-  public void setPropertyName2propertyAttributes(Map<String, OPropertyAttributes> propertyName2propertyAttributes) {
-    this.propertyName2propertyAttributes = propertyName2propertyAttributes;
+  public void setProperties(List<OProperty> properties) {
+    this.properties = properties;
   }
 
   public OVertexType getParentVertexType() {
@@ -97,6 +107,29 @@ public class OVertexType {
   public void setFromMany2Many(boolean fromMany2Many) {
     this.fromJunctionEntity = fromMany2Many;
   }
+  
+  /**
+   * @param toRemove
+   */
+  public void removePropertyByName(String toRemove) {
+    Iterator<OProperty> it = this.properties.iterator();
+    OProperty currentProperty = null;
+
+    while (it.hasNext()) {
+      currentProperty = it.next();
+      if(currentProperty.getName().equals(toRemove))
+        it.remove();
+    }
+  }
+  
+  public OProperty getPropertyByName(String name) {
+    for(OProperty property: this.properties) {
+      if(property.getName().equals(name)) {
+        return property;
+      }
+    }
+    return null;
+  }
 
 
   @Override
@@ -109,6 +142,7 @@ public class OVertexType {
     return result;
   }
 
+
   @Override
   public boolean equals(Object obj) {
 
@@ -119,25 +153,26 @@ public class OVertexType {
       return false;
 
     // check on properties
-    for(String attributeName: this.propertyName2propertyAttributes.keySet()) {
-      if(!(that.getPropertyName2propertyAttributes().containsKey(attributeName) && 
-          this.propertyName2propertyAttributes.get(attributeName).equals(that.getPropertyName2propertyAttributes().get(attributeName))))
-        return false;
-    }
+    if( !(this.properties.equals(that.getProperties())) )
+      return false;
+    
+    // in&out edges
+    if( !(this.inEdgesType.equals(that.getInEdgesType()) &&  this.outEdgesType.equals(that.getOutEdgesType())) )
+      return false;
 
     return true;
   }
 
   public String toString() {
-    String s = "Vertex-type [type = " + this.vertexType + ", # attributes = " + this.propertyName2propertyAttributes.size() + ", # inEdges: "
+    String s = "Vertex-type [type = " + this.vertexType + ", # attributes = " + this.properties.size() + ", # inEdges: "
         + this.inEdgesType.size() + ", # outEdges: " + this.outEdgesType.size() + "]\nAttributes:\n"; 
 
-    for(String attributeName: this.propertyName2propertyAttributes.keySet()) {
-      s += this.propertyName2propertyAttributes.get(attributeName).getOrdinalPosition() + ": " + attributeName + " --> " + this.propertyName2propertyAttributes.get(attributeName).toString();
-      
-      if(this.propertyName2propertyAttributes.get(attributeName).isFromPrimaryKey())
+    for(OProperty currentProperty: this.properties) {
+      s += currentProperty.getOrdinalPosition() + ": " + currentProperty.getName() + " --> " + currentProperty.toString();
+
+      if(currentProperty.isFromPrimaryKey())
         s += "(from PK)";
-      
+
       s += "\t";
     }
     return s;    
