@@ -369,10 +369,9 @@ public class OER2GraphMapper implements OSource2GraphMapper {
       else
         currentVertexType.setFromMany2Many(false);
       
-      
 
       // adding attributes to vertex-type
-      for(OAttribute attribute: currentEntity.getAttributes()) {               
+      for(OAttribute attribute: currentEntity.getAttributes()) {             
         currentProperty = new OProperty(nameResolver.resolveVertexProperty(attribute.getName()), attribute.getOrdinalPosition(), attribute.getDataType(), currentEntity.getPrimaryKey().getInvolvedAttributes().contains(attribute));
         currentVertexType.getProperties().add(currentProperty);
       }
@@ -387,6 +386,7 @@ public class OER2GraphMapper implements OSource2GraphMapper {
       context.getOutputManager().debug("Vertex-type " + currentVertexType.getType() + " built.\n");
       statistics.builtModelVertexTypes++;
     }
+    
 
     /*
      *  Edge-type building

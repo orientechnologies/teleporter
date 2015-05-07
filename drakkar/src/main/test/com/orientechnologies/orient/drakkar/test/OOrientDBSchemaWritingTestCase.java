@@ -10,14 +10,16 @@ import java.sql.Statement;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.drakkar.context.ODrakkarContext;
 import com.orientechnologies.orient.drakkar.context.OOutputStreamManager;
 import com.orientechnologies.orient.drakkar.mapper.OER2GraphMapper;
-import com.orientechnologies.orient.drakkar.model.graphmodel.OEdgeType;
-import com.orientechnologies.orient.drakkar.model.graphmodel.OVertexType;
 import com.orientechnologies.orient.drakkar.nameresolver.OJavaConventionNameResolver;
 import com.orientechnologies.orient.drakkar.persistence.handler.OGenericDataTypeHandler;
 import com.orientechnologies.orient.drakkar.writer.OGraphModelWriter;
+import com.tinkerpop.blueprints.impls.orient.OrientEdgeType;
+import com.tinkerpop.blueprints.impls.orient.OrientGraphNoTx;
+import com.tinkerpop.blueprints.impls.orient.OrientVertexType;
 
 /*
  *
@@ -57,7 +59,7 @@ public class OOrientDBSchemaWritingTestCase {
     this.context = new ODrakkarContext();
     this.context.setOutputManager(new OOutputStreamManager(0));
     this.modelWriter = new OGraphModelWriter();
-    this.outOrientGraphUri = "";
+    this.outOrientGraphUri = "memory:testOrientDB";
   }
 
 
@@ -70,6 +72,8 @@ public class OOrientDBSchemaWritingTestCase {
   public void test1() {
 
     Connection connection = null;
+    Statement st = null;
+    OrientGraphNoTx orientGraph = null;
 
     try {
 
@@ -78,7 +82,7 @@ public class OOrientDBSchemaWritingTestCase {
 
       String parentTableBuilding = "create memory table BOOK_AUTHOR (ID varchar(256) not null,"+
           " NAME varchar(256) not null, AGE integer not null, primary key (ID))";
-      Statement st = connection.createStatement();
+      st = connection.createStatement();
       st.execute(parentTableBuilding);
 
 
@@ -96,81 +100,79 @@ public class OOrientDBSchemaWritingTestCase {
        *  Testing context information
        */
 
-      assertEquals(2, context.getStatistics().totalNumberOfModelVertices);
-      assertEquals(2, context.getStatistics().builtModelVertexTypes);
-      assertEquals(1, context.getStatistics().analizedRelationships);
-      assertEquals(1, context.getStatistics().builtModelEdgeTypes);
-
+      assertEquals(2, context.getStatistics().totalNumberOfVertexType);
+      assertEquals(2, context.getStatistics().wroteVertexType);
+      assertEquals(1, context.getStatistics().totalNumberOfEdgeType);
+      assertEquals(1, context.getStatistics().wroteEdgeType);
+      assertEquals(2, context.getStatistics().totalNumberOfIndices);
+      assertEquals(2, context.getStatistics().wroteIndices);
 
       /*
-       *  Testing built graph model
+       *  Testing built OrientDB schema
        */
-      OVertexType authorVertexType = mapper.getGraphModel().getVertexByType("BookAuthor");
-      OVertexType bookVertexType = mapper.getGraphModel().getVertexByType("Book");
-      OEdgeType authorEdgeType = mapper.getGraphModel().getEdgeTypeByName("HasAuthor");
+      orientGraph = new OrientGraphNoTx(this.outOrientGraphUri);
+      OrientVertexType authorVertexType =  orientGraph.getVertexType("BookAuthor");
+      OrientVertexType bookVertexType = orientGraph.getVertexType("Book");
+      OrientEdgeType authorEdgeType = orientGraph.getEdgeType("HasAuthor");
 
       // vertices check
-      assertEquals(2, mapper.getGraphModel().getVerticesType().size());
       assertNotNull(authorVertexType);
       assertNotNull(bookVertexType);
 
       // properties check
-      assertEquals(3, authorVertexType.getProperties().size());
+      assertNotNull(authorVertexType.getProperty("id"));
+      assertEquals("id", authorVertexType.getProperty("id").getName());
+      assertEquals(OType.STRING, authorVertexType.getProperty("id").getType());
 
-      assertNotNull(authorVertexType.getPropertyByName("id"));
-      assertEquals("id", authorVertexType.getPropertyByName("id").getName());
-      assertEquals("VARCHAR", authorVertexType.getPropertyByName("id").getPropertyType());
-      assertEquals(1, authorVertexType.getPropertyByName("id").getOrdinalPosition());
-      assertEquals(true, authorVertexType.getPropertyByName("id").isFromPrimaryKey());
+      assertNotNull(authorVertexType.getProperty("name"));
+      assertEquals("name", authorVertexType.getProperty("name").getName());
+      assertEquals(OType.STRING, authorVertexType.getProperty("name").getType());
 
-      assertNotNull(authorVertexType.getPropertyByName("name"));
-      assertEquals("name", authorVertexType.getPropertyByName("name").getName());
-      assertEquals("VARCHAR", authorVertexType.getPropertyByName("name").getPropertyType());
-      assertEquals(2, authorVertexType.getPropertyByName("name").getOrdinalPosition());
-      assertEquals(false, authorVertexType.getPropertyByName("name").isFromPrimaryKey());
+      assertNotNull(authorVertexType.getProperty("age"));
+      assertEquals("age", authorVertexType.getProperty("age").getName());
+      assertEquals(OType.INTEGER, authorVertexType.getProperty("age").getType());
 
-      assertNotNull(authorVertexType.getPropertyByName("age"));
-      assertEquals("age", authorVertexType.getPropertyByName("age").getName());
-      assertEquals("INTEGER", authorVertexType.getPropertyByName("age").getPropertyType());
-      assertEquals(3, authorVertexType.getPropertyByName("age").getOrdinalPosition());
-      assertEquals(false, authorVertexType.getPropertyByName("age").isFromPrimaryKey());
+      assertNotNull(bookVertexType.getProperty("id"));
+      assertEquals("id", bookVertexType.getProperty("id").getName());
+      assertEquals(OType.STRING, bookVertexType.getProperty("id").getType());
 
-      assertEquals(3, bookVertexType.getProperties().size());
+      assertNotNull(bookVertexType.getProperty("title"));
+      assertEquals("title", bookVertexType.getProperty("title").getName());
+      assertEquals(OType.STRING, bookVertexType.getProperty("title").getType());
 
-      assertNotNull(bookVertexType.getPropertyByName("id"));
-      assertEquals("id", bookVertexType.getPropertyByName("id").getName());
-      assertEquals("VARCHAR", bookVertexType.getPropertyByName("id").getPropertyType());
-      assertEquals(1, bookVertexType.getPropertyByName("id").getOrdinalPosition());
-      assertEquals(true, bookVertexType.getPropertyByName("id").isFromPrimaryKey());
-
-      assertNotNull(bookVertexType.getPropertyByName("title"));
-      assertEquals("title", bookVertexType.getPropertyByName("title").getName());
-      assertEquals("VARCHAR", bookVertexType.getPropertyByName("title").getPropertyType());
-      assertEquals(2, bookVertexType.getPropertyByName("title").getOrdinalPosition());
-      assertEquals(false, bookVertexType.getPropertyByName("title").isFromPrimaryKey());
-
-      assertNotNull(bookVertexType.getPropertyByName("authorId"));
-      assertEquals("authorId", bookVertexType.getPropertyByName("authorId").getName());
-      assertEquals("VARCHAR", bookVertexType.getPropertyByName("authorId").getPropertyType());
-      assertEquals(3, bookVertexType.getPropertyByName("authorId").getOrdinalPosition());
-      assertEquals(false, bookVertexType.getPropertyByName("authorId").isFromPrimaryKey());
+      assertNotNull(bookVertexType.getProperty("authorId"));
+      assertEquals("authorId", bookVertexType.getProperty("authorId").getName());
+      assertEquals(OType.STRING, bookVertexType.getProperty("authorId").getType());
 
       // edges check
-      assertEquals(1, mapper.getGraphModel().getEdgesType().size());
       assertNotNull(authorEdgeType);
 
-      assertEquals("HasAuthor", authorEdgeType.getType());
-      assertEquals(0, authorEdgeType.getProperties().size());
-      assertEquals("BookAuthor", authorEdgeType.getInVertexType().getType());
+      assertEquals("HasAuthor", authorEdgeType.getName());
 
+      // Indices check
+      assertEquals(2+3, orientGraph.getRawGraph().getMetadata().getIndexManager().getIndexes().size());
 
-      // Dropping Source DB Schema
-      String dbDropping = "DROP SCHEMA PUBLIC CASCADE";
-      st.execute(dbDropping);
-      connection.close();
+      assertEquals(true, orientGraph.getRawGraph().getMetadata().getIndexManager().existsIndex("BookAuthor.pkey"));
+      assertEquals(true, orientGraph.getRawGraph().getMetadata().getIndexManager().areIndexed("BookAuthor", "id"));
+
+      assertEquals(true, orientGraph.getRawGraph().getMetadata().getIndexManager().existsIndex("Book.pkey"));
+      assertEquals(true, orientGraph.getRawGraph().getMetadata().getIndexManager().areIndexed("Book", "id"));
+
 
     }catch(Exception e) {
       e.printStackTrace();
+    }finally {
+      try {
+
+        // Dropping Source DB Schema and OrientGraph
+        String dbDropping = "DROP SCHEMA PUBLIC CASCADE";
+        st.execute(dbDropping);
+        connection.close();
+      }catch(Exception e) {
+        e.printStackTrace();
+      }
+      orientGraph.drop();
+      orientGraph.shutdown();
     }
   }
 
@@ -184,6 +186,8 @@ public class OOrientDBSchemaWritingTestCase {
   public void test2() {
 
     Connection connection = null;
+    Statement st = null;
+    OrientGraphNoTx orientGraph = null;
 
     try {
 
@@ -192,7 +196,7 @@ public class OOrientDBSchemaWritingTestCase {
 
       String authorTableBuilding = "create memory table AUTHOR (ID varchar(256) not null,"+
           " NAME varchar(256) not null, AGE integer not null, primary key (ID))";
-      Statement st = connection.createStatement();
+      st = connection.createStatement();
       st.execute(authorTableBuilding);
 
       String bookTableBuilding = "create memory table BOOK (ID varchar(256) not null, TITLE  varchar(256),"+
@@ -213,109 +217,103 @@ public class OOrientDBSchemaWritingTestCase {
        *  Testing context information
        */
 
-      assertEquals(3, context.getStatistics().totalNumberOfModelVertices);
-      assertEquals(3, context.getStatistics().builtModelVertexTypes); 
-      assertEquals(2, context.getStatistics().analizedRelationships);
-      assertEquals(2, context.getStatistics().builtModelEdgeTypes);
-
+      assertEquals(3, context.getStatistics().totalNumberOfVertexType);
+      assertEquals(3, context.getStatistics().wroteVertexType);
+      assertEquals(2, context.getStatistics().totalNumberOfEdgeType);
+      assertEquals(2, context.getStatistics().wroteEdgeType);
+      assertEquals(3, context.getStatistics().totalNumberOfIndices);
+      assertEquals(3, context.getStatistics().wroteIndices);
 
       /*
-       *  Testing built graph model
+       *  Testing built OrientDB schema
        */
-      OVertexType authorVertexType = mapper.getGraphModel().getVertexByType("Author");
-      OVertexType bookVertexType = mapper.getGraphModel().getVertexByType("Book");
-      OVertexType itemVertexType = mapper.getGraphModel().getVertexByType("Item");
-      OEdgeType authorEdgeType = mapper.getGraphModel().getEdgeTypeByName("HasAuthor");
-      OEdgeType bookEdgeType = mapper.getGraphModel().getEdgeTypeByName("HasBook");
+      orientGraph = new OrientGraphNoTx(this.outOrientGraphUri);
+      OrientVertexType authorVertexType =  orientGraph.getVertexType("Author");
+      OrientVertexType bookVertexType = orientGraph.getVertexType("Book");
+      OrientVertexType itemVertexType = orientGraph.getVertexType("Item");
+      OrientEdgeType authorEdgeType = orientGraph.getEdgeType("HasAuthor");
+      OrientEdgeType bookEdgeType = orientGraph.getEdgeType("HasBook");
+
 
       // vertices check
-      assertEquals(3, mapper.getGraphModel().getVerticesType().size());
       assertNotNull(authorVertexType);
       assertNotNull(bookVertexType);
 
       // properties check
-      assertEquals(3, authorVertexType.getProperties().size());
+      assertNotNull(authorVertexType.getProperty("id"));
+      assertEquals("id", authorVertexType.getProperty("id").getName());
+      assertEquals(OType.STRING, authorVertexType.getProperty("id").getType());
 
-      assertNotNull(authorVertexType.getPropertyByName("id"));
-      assertEquals("id", authorVertexType.getPropertyByName("id").getName());
-      assertEquals("VARCHAR", authorVertexType.getPropertyByName("id").getPropertyType());
-      assertEquals(1, authorVertexType.getPropertyByName("id").getOrdinalPosition());
-      assertEquals(true, authorVertexType.getPropertyByName("id").isFromPrimaryKey());
+      assertNotNull(authorVertexType.getProperty("name"));
+      assertEquals("name", authorVertexType.getProperty("name").getName());
+      assertEquals(OType.STRING, authorVertexType.getProperty("name").getType());
 
-      assertNotNull(authorVertexType.getPropertyByName("name"));
-      assertEquals("name", authorVertexType.getPropertyByName("name").getName());
-      assertEquals("VARCHAR", authorVertexType.getPropertyByName("name").getPropertyType());
-      assertEquals(2, authorVertexType.getPropertyByName("name").getOrdinalPosition());
-      assertEquals(false, authorVertexType.getPropertyByName("name").isFromPrimaryKey());
+      assertNotNull(authorVertexType.getProperty("age"));
+      assertEquals("age", authorVertexType.getProperty("age").getName());
+      assertEquals(OType.INTEGER, authorVertexType.getProperty("age").getType());
 
-      assertNotNull(authorVertexType.getPropertyByName("age"));
-      assertEquals("age", authorVertexType.getPropertyByName("age").getName());
-      assertEquals("INTEGER", authorVertexType.getPropertyByName("age").getPropertyType());
-      assertEquals(3, authorVertexType.getPropertyByName("age").getOrdinalPosition());
-      assertEquals(false, authorVertexType.getPropertyByName("age").isFromPrimaryKey());
+      assertNotNull(bookVertexType.getProperty("id"));
+      assertEquals("id", bookVertexType.getProperty("id").getName());
+      assertEquals(OType.STRING, bookVertexType.getProperty("id").getType());
 
-      assertEquals(3, bookVertexType.getProperties().size());
+      assertNotNull(bookVertexType.getProperty("title"));
+      assertEquals("title", bookVertexType.getProperty("title").getName());
+      assertEquals(OType.STRING, bookVertexType.getProperty("title").getType());
 
-      assertNotNull(bookVertexType.getPropertyByName("id"));
-      assertEquals("id", bookVertexType.getPropertyByName("id").getName());
-      assertEquals("VARCHAR", bookVertexType.getPropertyByName("id").getPropertyType());
-      assertEquals(1, bookVertexType.getPropertyByName("id").getOrdinalPosition());
-      assertEquals(true, bookVertexType.getPropertyByName("id").isFromPrimaryKey());
+      assertNotNull(bookVertexType.getProperty("authorId"));
+      assertEquals("authorId", bookVertexType.getProperty("authorId").getName());
+      assertEquals(OType.STRING, bookVertexType.getProperty("authorId").getType());
 
-      assertNotNull(bookVertexType.getPropertyByName("title"));
-      assertEquals("title", bookVertexType.getPropertyByName("title").getName());
-      assertEquals("VARCHAR", bookVertexType.getPropertyByName("title").getPropertyType());
-      assertEquals(2, bookVertexType.getPropertyByName("title").getOrdinalPosition());
-      assertEquals(false, bookVertexType.getPropertyByName("title").isFromPrimaryKey());
+      assertNotNull(itemVertexType.getProperty("id"));
+      assertEquals("id", itemVertexType.getProperty("id").getName());
+      assertEquals(OType.STRING, itemVertexType.getProperty("id").getType());
 
-      assertNotNull(bookVertexType.getPropertyByName("authorId"));
-      assertEquals("authorId", bookVertexType.getPropertyByName("authorId").getName());
-      assertEquals("VARCHAR", bookVertexType.getPropertyByName("authorId").getPropertyType());
-      assertEquals(3, bookVertexType.getPropertyByName("authorId").getOrdinalPosition());
-      assertEquals(false, bookVertexType.getPropertyByName("authorId").isFromPrimaryKey());
+      assertNotNull(itemVertexType.getProperty("bookId"));
+      assertEquals("bookId", itemVertexType.getProperty("bookId").getName());
+      assertEquals(OType.STRING, itemVertexType.getProperty("bookId").getType());
 
-      assertEquals(3, itemVertexType.getProperties().size());
-
-      assertNotNull(itemVertexType.getPropertyByName("id"));
-      assertEquals("id", itemVertexType.getPropertyByName("id").getName());
-      assertEquals("VARCHAR", itemVertexType.getPropertyByName("id").getPropertyType());
-      assertEquals(1, itemVertexType.getPropertyByName("id").getOrdinalPosition());
-      assertEquals(true, itemVertexType.getPropertyByName("id").isFromPrimaryKey());
-
-      assertNotNull(itemVertexType.getPropertyByName("bookId"));
-      assertEquals("bookId", itemVertexType.getPropertyByName("bookId").getName());
-      assertEquals("VARCHAR", itemVertexType.getPropertyByName("bookId").getPropertyType());
-      assertEquals(2, itemVertexType.getPropertyByName("bookId").getOrdinalPosition());
-      assertEquals(false, itemVertexType.getPropertyByName("bookId").isFromPrimaryKey());
-
-      assertNotNull(itemVertexType.getPropertyByName("price"));
-      assertEquals("price", itemVertexType.getPropertyByName("price").getName());
-      assertEquals("VARCHAR", itemVertexType.getPropertyByName("price").getPropertyType());
-      assertEquals(3, itemVertexType.getPropertyByName("price").getOrdinalPosition());
-      assertEquals(false, itemVertexType.getPropertyByName("price").isFromPrimaryKey());
+      assertNotNull(itemVertexType.getProperty("price"));
+      assertEquals("price", itemVertexType.getProperty("price").getName());
+      assertEquals(OType.STRING, itemVertexType.getProperty("price").getType());
 
 
       // edges check
-      assertEquals(2, mapper.getGraphModel().getEdgesType().size());
       assertNotNull(authorEdgeType);
       assertNotNull(bookEdgeType);
 
-      assertEquals("HasAuthor", authorEdgeType.getType());
-      assertEquals(0, authorEdgeType.getProperties().size());
-      assertEquals("Author", authorEdgeType.getInVertexType().getType());
+      assertEquals("HasAuthor", authorEdgeType.getName());
+      assertEquals("HasBook", bookEdgeType.getName());
 
-      assertEquals("HasBook", bookEdgeType.getType());
-      assertEquals(0, bookEdgeType.getProperties().size());
-      assertEquals("Book", bookEdgeType.getInVertexType().getType());
+      // Indices check
+      assertEquals(3+3, orientGraph.getRawGraph().getMetadata().getIndexManager().getIndexes().size());
 
-      // Dropping Source DB Schema
-      String dbDropping = "DROP SCHEMA PUBLIC CASCADE";
-      st.execute(dbDropping);
-      connection.close();
+      assertEquals(true, orientGraph.getRawGraph().getMetadata().getIndexManager().existsIndex("Author.pkey"));
+      assertEquals(1, authorVertexType.getIndexedProperties().size());
+      assertEquals(true, orientGraph.getRawGraph().getMetadata().getIndexManager().areIndexed("Author", "id"));
+
+      assertEquals(true, orientGraph.getRawGraph().getMetadata().getIndexManager().existsIndex("Book.pkey"));
+      assertEquals(1, authorVertexType.getIndexedProperties().size());
+      assertEquals(true, orientGraph.getRawGraph().getMetadata().getIndexManager().areIndexed("Book", "id"));
+
+      assertEquals(true, orientGraph.getRawGraph().getMetadata().getIndexManager().existsIndex("Item.pkey"));
+      assertEquals(1, authorVertexType.getIndexedProperties().size());
+      assertEquals(true, orientGraph.getRawGraph().getMetadata().getIndexManager().areIndexed("Item", "id"));
 
 
     }catch(Exception e) {
       e.printStackTrace();
+    }finally {
+      try {
+
+        // Dropping Source DB Schema and OrientGraph
+        String dbDropping = "DROP SCHEMA PUBLIC CASCADE";
+        st.execute(dbDropping);
+        connection.close();
+      }catch(Exception e) {
+        e.printStackTrace();
+      }
+      orientGraph.drop();
+      orientGraph.shutdown();
     }
   }
 
@@ -329,6 +327,8 @@ public class OOrientDBSchemaWritingTestCase {
   public void test3() {
 
     Connection connection = null;
+    Statement st = null;
+    OrientGraphNoTx orientGraph = null;
 
     try {
 
@@ -337,7 +337,7 @@ public class OOrientDBSchemaWritingTestCase {
 
       String authorTableBuilding = "create memory table AUTHOR (ID varchar(256) not null,"+
           " NAME varchar(256) not null, AGE integer not null, primary key (ID))";
-      Statement st = connection.createStatement();
+      st = connection.createStatement();
       st.execute(authorTableBuilding);
 
       String bookTableBuilding = "create memory table BOOK (ID varchar(256) not null, TITLE  varchar(256),"+
@@ -358,108 +358,100 @@ public class OOrientDBSchemaWritingTestCase {
        *  Testing context information
        */
 
-      assertEquals(3, context.getStatistics().totalNumberOfModelVertices);
-      assertEquals(3, context.getStatistics().builtModelVertexTypes);  
-      assertEquals(2, context.getStatistics().analizedRelationships);
-      assertEquals(1, context.getStatistics().builtModelEdgeTypes);
-
+      assertEquals(3, context.getStatistics().totalNumberOfVertexType);
+      assertEquals(3, context.getStatistics().wroteVertexType);
+      assertEquals(1, context.getStatistics().totalNumberOfEdgeType);
+      assertEquals(1, context.getStatistics().wroteEdgeType);
+      assertEquals(3, context.getStatistics().totalNumberOfIndices);
+      assertEquals(3, context.getStatistics().wroteIndices);
 
       /*
-       *  Testing built graph model
+       *  Testing built OrientDB schema
        */
-      OVertexType authorVertexType = mapper.getGraphModel().getVertexByType("Author");
-      OVertexType bookVertexType = mapper.getGraphModel().getVertexByType("Book");
-      OVertexType articleVertexType = mapper.getGraphModel().getVertexByType("Article");
-      OEdgeType authorEdgeType = mapper.getGraphModel().getEdgeTypeByName("HasAuthor");
+      orientGraph = new OrientGraphNoTx(this.outOrientGraphUri);
+      OrientVertexType authorVertexType =  orientGraph.getVertexType("Author");
+      OrientVertexType bookVertexType = orientGraph.getVertexType("Book");
+      OrientVertexType articleVertexType = orientGraph.getVertexType("Article");
+      OrientEdgeType authorEdgeType = orientGraph.getEdgeType("HasAuthor");
+
 
       // vertices check
-      assertEquals(3, mapper.getGraphModel().getVerticesType().size());
       assertNotNull(authorVertexType);
       assertNotNull(bookVertexType);
 
       // properties check
-      assertEquals(3, authorVertexType.getProperties().size());
+      assertNotNull(authorVertexType.getProperty("id"));
+      assertEquals("id", authorVertexType.getProperty("id").getName());
+      assertEquals(OType.STRING, authorVertexType.getProperty("id").getType());
 
-      assertNotNull(authorVertexType.getPropertyByName("id"));
-      assertEquals("id", authorVertexType.getPropertyByName("id").getName());
-      assertEquals("VARCHAR", authorVertexType.getPropertyByName("id").getPropertyType());
-      assertEquals(1, authorVertexType.getPropertyByName("id").getOrdinalPosition());
-      assertEquals(true, authorVertexType.getPropertyByName("id").isFromPrimaryKey());
+      assertNotNull(authorVertexType.getProperty("name"));
+      assertEquals("name", authorVertexType.getProperty("name").getName());
+      assertEquals(OType.STRING, authorVertexType.getProperty("name").getType());
 
-      assertNotNull(authorVertexType.getPropertyByName("name"));
-      assertEquals("name", authorVertexType.getPropertyByName("name").getName());
-      assertEquals("VARCHAR", authorVertexType.getPropertyByName("name").getPropertyType());
-      assertEquals(2, authorVertexType.getPropertyByName("name").getOrdinalPosition());
-      assertEquals(false, authorVertexType.getPropertyByName("name").isFromPrimaryKey());
+      assertNotNull(authorVertexType.getProperty("age"));
+      assertEquals("age", authorVertexType.getProperty("age").getName());
+      assertEquals(OType.INTEGER, authorVertexType.getProperty("age").getType());
 
-      assertNotNull(authorVertexType.getPropertyByName("age"));
-      assertEquals("age", authorVertexType.getPropertyByName("age").getName());
-      assertEquals("INTEGER", authorVertexType.getPropertyByName("age").getPropertyType());
-      assertEquals(3, authorVertexType.getPropertyByName("age").getOrdinalPosition());
-      assertEquals(false, authorVertexType.getPropertyByName("age").isFromPrimaryKey());
+      assertNotNull(bookVertexType.getProperty("id"));
+      assertEquals("id", bookVertexType.getProperty("id").getName());
+      assertEquals(OType.STRING, bookVertexType.getProperty("id").getType());
 
-      assertEquals(3, bookVertexType.getProperties().size());
+      assertNotNull(bookVertexType.getProperty("title"));
+      assertEquals("title", bookVertexType.getProperty("title").getName());
+      assertEquals(OType.STRING, bookVertexType.getProperty("title").getType());
 
-      assertNotNull(bookVertexType.getPropertyByName("id"));
-      assertEquals("id", bookVertexType.getPropertyByName("id").getName());
-      assertEquals("VARCHAR", bookVertexType.getPropertyByName("id").getPropertyType());
-      assertEquals(1, bookVertexType.getPropertyByName("id").getOrdinalPosition());
-      assertEquals(true, bookVertexType.getPropertyByName("id").isFromPrimaryKey());
+      assertNotNull(bookVertexType.getProperty("authorId"));
+      assertEquals("authorId", bookVertexType.getProperty("authorId").getName());
+      assertEquals(OType.STRING, bookVertexType.getProperty("authorId").getType());
 
-      assertNotNull(bookVertexType.getPropertyByName("title"));
-      assertEquals("title", bookVertexType.getPropertyByName("title").getName());
-      assertEquals("VARCHAR", bookVertexType.getPropertyByName("title").getPropertyType());
-      assertEquals(2, bookVertexType.getPropertyByName("title").getOrdinalPosition());
-      assertEquals(false, bookVertexType.getPropertyByName("title").isFromPrimaryKey());
+      assertNotNull(articleVertexType.getProperty("id"));
+      assertEquals("id", articleVertexType.getProperty("id").getName());
+      assertEquals(OType.STRING, articleVertexType.getProperty("id").getType());
 
-      assertNotNull(bookVertexType.getPropertyByName("authorId"));
-      assertEquals("authorId", bookVertexType.getPropertyByName("authorId").getName());
-      assertEquals("VARCHAR", bookVertexType.getPropertyByName("authorId").getPropertyType());
-      assertEquals(3, bookVertexType.getPropertyByName("authorId").getOrdinalPosition());
-      assertEquals(false, bookVertexType.getPropertyByName("authorId").isFromPrimaryKey());
+      assertNotNull(articleVertexType.getProperty("title"));
+      assertEquals("title", articleVertexType.getProperty("title").getName());
+      assertEquals(OType.STRING, articleVertexType.getProperty("title").getType());
 
-      assertEquals(4, articleVertexType.getProperties().size());
+      assertNotNull(articleVertexType.getProperty("date"));
+      assertEquals("date", articleVertexType.getProperty("date").getName());
+      assertEquals(OType.DATETIME, articleVertexType.getProperty("date").getType());
 
-      assertNotNull(articleVertexType.getPropertyByName("id"));
-      assertEquals("id", articleVertexType.getPropertyByName("id").getName());
-      assertEquals("VARCHAR", articleVertexType.getPropertyByName("id").getPropertyType());
-      assertEquals(1, articleVertexType.getPropertyByName("id").getOrdinalPosition());
-      assertEquals(true, articleVertexType.getPropertyByName("id").isFromPrimaryKey());
-
-      assertNotNull(articleVertexType.getPropertyByName("title"));
-      assertEquals("title", articleVertexType.getPropertyByName("title").getName());
-      assertEquals("VARCHAR", articleVertexType.getPropertyByName("title").getPropertyType());
-      assertEquals(2, articleVertexType.getPropertyByName("title").getOrdinalPosition());
-      assertEquals(false, articleVertexType.getPropertyByName("title").isFromPrimaryKey());
-
-      assertNotNull(articleVertexType.getPropertyByName("date"));
-      assertEquals("date", articleVertexType.getPropertyByName("date").getName());
-      assertEquals("DATE", articleVertexType.getPropertyByName("date").getPropertyType());
-      assertEquals(3, articleVertexType.getPropertyByName("date").getOrdinalPosition());
-      assertEquals(false, articleVertexType.getPropertyByName("date").isFromPrimaryKey());
-
-      assertNotNull(articleVertexType.getPropertyByName("authorId"));
-      assertEquals("authorId", articleVertexType.getPropertyByName("authorId").getName());
-      assertEquals("VARCHAR", articleVertexType.getPropertyByName("authorId").getPropertyType());
-      assertEquals(4, articleVertexType.getPropertyByName("authorId").getOrdinalPosition());
-      assertEquals(false, articleVertexType.getPropertyByName("authorId").isFromPrimaryKey());
+      assertNotNull(articleVertexType.getProperty("authorId"));
+      assertEquals("authorId", articleVertexType.getProperty("authorId").getName());
+      assertEquals(OType.STRING, articleVertexType.getProperty("authorId").getType());
 
       // edges check
-      assertEquals(1, mapper.getGraphModel().getEdgesType().size());
       assertNotNull(authorEdgeType);
 
-      assertEquals("HasAuthor", authorEdgeType.getType());
-      assertEquals(0, authorEdgeType.getProperties().size());
-      assertEquals("Author", authorEdgeType.getInVertexType().getType());
+      assertEquals("HasAuthor", authorEdgeType.getName());
 
-      // Dropping Source DB Schema
-      String dbDropping = "DROP SCHEMA PUBLIC CASCADE";
-      st.execute(dbDropping);
-      connection.close();
+      // Indices check
+      assertEquals(3+3, orientGraph.getRawGraph().getMetadata().getIndexManager().getIndexes().size());
+
+      assertEquals(true, orientGraph.getRawGraph().getMetadata().getIndexManager().existsIndex("Author.pkey"));
+      assertEquals(true, orientGraph.getRawGraph().getMetadata().getIndexManager().areIndexed("Author", "id"));
+
+      assertEquals(true, orientGraph.getRawGraph().getMetadata().getIndexManager().existsIndex("Book.pkey"));
+      assertEquals(true, orientGraph.getRawGraph().getMetadata().getIndexManager().areIndexed("Book", "id"));
+
+      assertEquals(true, orientGraph.getRawGraph().getMetadata().getIndexManager().existsIndex("Article.pkey"));
+      assertEquals(true, orientGraph.getRawGraph().getMetadata().getIndexManager().areIndexed("Article", "id"));
 
 
     }catch(Exception e) {
       e.printStackTrace();
+    }finally {
+      try {
+
+        // Dropping Source DB Schema and OrientGraph
+        String dbDropping = "DROP SCHEMA PUBLIC CASCADE";
+        st.execute(dbDropping);
+        connection.close();
+      }catch(Exception e) {
+        e.printStackTrace();
+      }
+      orientGraph.drop();
+      orientGraph.shutdown();
     }
   }
 
@@ -474,6 +466,8 @@ public class OOrientDBSchemaWritingTestCase {
   public void test4() {
 
     Connection connection = null;
+    Statement st = null;
+    OrientGraphNoTx orientGraph = null;
 
     try {
 
@@ -482,7 +476,7 @@ public class OOrientDBSchemaWritingTestCase {
 
       String authorTableBuilding = "create memory table AUTHOR (NAME varchar(256) not null," + 
           " SURNAME varchar(256) not null, AGE integer, primary key (NAME,SURNAME))";
-      Statement st = connection.createStatement();
+      st = connection.createStatement();
       st.execute(authorTableBuilding);
 
       String bookTableBuilding = "create memory table BOOK (ID varchar(256) not null, TITLE  varchar(256),"+
@@ -500,87 +494,83 @@ public class OOrientDBSchemaWritingTestCase {
        *  Testing context information
        */
 
-      assertEquals(2, context.getStatistics().totalNumberOfModelVertices);
-      assertEquals(2, context.getStatistics().builtModelVertexTypes);  
-      assertEquals(1, context.getStatistics().analizedRelationships);
-      assertEquals(1, context.getStatistics().builtModelEdgeTypes);
-
+      assertEquals(2, context.getStatistics().totalNumberOfVertexType);
+      assertEquals(2, context.getStatistics().wroteVertexType);
+      assertEquals(1, context.getStatistics().totalNumberOfEdgeType);
+      assertEquals(1, context.getStatistics().wroteEdgeType);
+      assertEquals(2, context.getStatistics().totalNumberOfIndices);
+      assertEquals(2, context.getStatistics().wroteIndices);
 
       /*
-       *  Testing built graph model
+       *  Testing built OrientDB schema
        */
-      OVertexType authorVertexType = mapper.getGraphModel().getVertexByType("Author");
-      OVertexType bookVertexType = mapper.getGraphModel().getVertexByType("Book");
-      OEdgeType authorEdgeType = mapper.getGraphModel().getEdgeTypeByName("Book2Author");
+      orientGraph = new OrientGraphNoTx(this.outOrientGraphUri);
+      OrientVertexType authorVertexType =  orientGraph.getVertexType("Author");
+      OrientVertexType bookVertexType = orientGraph.getVertexType("Book");
+      OrientEdgeType authorEdgeType = orientGraph.getEdgeType("Book2Author");
 
       // vertices check
-      assertEquals(2, mapper.getGraphModel().getVerticesType().size());
       assertNotNull(authorVertexType);
       assertNotNull(bookVertexType);
 
       // properties check
-      assertEquals(3, authorVertexType.getProperties().size());
+      assertNotNull(authorVertexType.getProperty("name"));
+      assertEquals("name", authorVertexType.getProperty("name").getName());
+      assertEquals(OType.STRING, authorVertexType.getProperty("name").getType());
 
-      assertNotNull(authorVertexType.getPropertyByName("name"));
-      assertEquals("name", authorVertexType.getPropertyByName("name").getName());
-      assertEquals("VARCHAR", authorVertexType.getPropertyByName("name").getPropertyType());
-      assertEquals(1, authorVertexType.getPropertyByName("name").getOrdinalPosition());
-      assertEquals(true, authorVertexType.getPropertyByName("name").isFromPrimaryKey());
+      assertNotNull(authorVertexType.getProperty("surname"));
+      assertEquals("surname", authorVertexType.getProperty("surname").getName());
+      assertEquals(OType.STRING, authorVertexType.getProperty("surname").getType());
 
-      assertNotNull(authorVertexType.getPropertyByName("surname"));
-      assertEquals("surname", authorVertexType.getPropertyByName("surname").getName());
-      assertEquals("VARCHAR", authorVertexType.getPropertyByName("surname").getPropertyType());
-      assertEquals(2, authorVertexType.getPropertyByName("surname").getOrdinalPosition());
-      assertEquals(true, authorVertexType.getPropertyByName("surname").isFromPrimaryKey());
+      assertNotNull(authorVertexType.getProperty("age"));
+      assertEquals("age", authorVertexType.getProperty("age").getName());
+      assertEquals(OType.INTEGER, authorVertexType.getProperty("age").getType());
 
-      assertNotNull(authorVertexType.getPropertyByName("age"));
-      assertEquals("age", authorVertexType.getPropertyByName("age").getName());
-      assertEquals("INTEGER", authorVertexType.getPropertyByName("age").getPropertyType());
-      assertEquals(3, authorVertexType.getPropertyByName("age").getOrdinalPosition());
-      assertEquals(false, authorVertexType.getPropertyByName("age").isFromPrimaryKey());
+      assertNotNull(bookVertexType.getProperty("id"));
+      assertEquals("id", bookVertexType.getProperty("id").getName());
+      assertEquals(OType.STRING, bookVertexType.getProperty("id").getType());
 
-      assertEquals(4, bookVertexType.getProperties().size());
+      assertNotNull(bookVertexType.getProperty("title"));
+      assertEquals("title", bookVertexType.getProperty("title").getName());
+      assertEquals(OType.STRING, bookVertexType.getProperty("title").getType());
 
-      assertNotNull(bookVertexType.getPropertyByName("id"));
-      assertEquals("id", bookVertexType.getPropertyByName("id").getName());
-      assertEquals("VARCHAR", bookVertexType.getPropertyByName("id").getPropertyType());
-      assertEquals(1, bookVertexType.getPropertyByName("id").getOrdinalPosition());
-      assertEquals(true, bookVertexType.getPropertyByName("id").isFromPrimaryKey());
+      assertNotNull(bookVertexType.getProperty("authorName"));
+      assertEquals("authorName", bookVertexType.getProperty("authorName").getName());
+      assertEquals(OType.STRING, bookVertexType.getProperty("authorName").getType());
 
-      assertNotNull(bookVertexType.getPropertyByName("title"));
-      assertEquals("title", bookVertexType.getPropertyByName("title").getName());
-      assertEquals("VARCHAR", bookVertexType.getPropertyByName("title").getPropertyType());
-      assertEquals(2, bookVertexType.getPropertyByName("title").getOrdinalPosition());
-      assertEquals(false, bookVertexType.getPropertyByName("title").isFromPrimaryKey());
-
-      assertNotNull(bookVertexType.getPropertyByName("authorName"));
-      assertEquals("authorName", bookVertexType.getPropertyByName("authorName").getName());
-      assertEquals("VARCHAR", bookVertexType.getPropertyByName("authorName").getPropertyType());
-      assertEquals(3, bookVertexType.getPropertyByName("authorName").getOrdinalPosition());
-      assertEquals(false, bookVertexType.getPropertyByName("authorName").isFromPrimaryKey());
-
-      assertNotNull(bookVertexType.getPropertyByName("authorSurname"));
-      assertEquals("authorSurname", bookVertexType.getPropertyByName("authorSurname").getName());
-      assertEquals("VARCHAR", bookVertexType.getPropertyByName("authorSurname").getPropertyType());
-      assertEquals(4, bookVertexType.getPropertyByName("authorSurname").getOrdinalPosition());
-      assertEquals(false, bookVertexType.getPropertyByName("authorSurname").isFromPrimaryKey());
+      assertNotNull(bookVertexType.getProperty("authorSurname"));
+      assertEquals("authorSurname", bookVertexType.getProperty("authorSurname").getName());
+      assertEquals(OType.STRING, bookVertexType.getProperty("authorSurname").getType());
 
       // edges check
-      assertEquals(1, mapper.getGraphModel().getEdgesType().size());
       assertNotNull(authorEdgeType);
 
-      assertEquals("Book2Author", authorEdgeType.getType());
-      assertEquals(0, authorEdgeType.getProperties().size());
-      assertEquals("Author", authorEdgeType.getInVertexType().getType());
+      assertEquals("Book2Author", authorEdgeType.getName());
 
-      // Dropping Source DB Schema
-      String dbDropping = "DROP SCHEMA PUBLIC CASCADE";
-      st.execute(dbDropping);
-      connection.close();
+      // Indices check
+      assertEquals(2+3, orientGraph.getRawGraph().getMetadata().getIndexManager().getIndexes().size());
+
+      assertEquals(true, orientGraph.getRawGraph().getMetadata().getIndexManager().existsIndex("Author.pkey"));
+      assertEquals(true, orientGraph.getRawGraph().getMetadata().getIndexManager().areIndexed("Author", "name", "surname"));
+
+      assertEquals(true, orientGraph.getRawGraph().getMetadata().getIndexManager().existsIndex("Book.pkey"));
+      assertEquals(true, orientGraph.getRawGraph().getMetadata().getIndexManager().areIndexed("Book", "id"));
 
 
     }catch(Exception e) {
       e.printStackTrace();
+    }finally {
+      try {
+
+        // Dropping Source DB Schema and OrientGraph
+        String dbDropping = "DROP SCHEMA PUBLIC CASCADE";
+        st.execute(dbDropping);
+        connection.close();
+      }catch(Exception e) {
+        e.printStackTrace();
+      }
+      orientGraph.drop();
+      orientGraph.shutdown();
     }
   }
 
@@ -593,6 +583,8 @@ public class OOrientDBSchemaWritingTestCase {
   public void test5() {
 
     Connection connection = null;
+    Statement st = null;
+    OrientGraphNoTx orientGraph = null;
 
     try {
 
@@ -601,7 +593,7 @@ public class OOrientDBSchemaWritingTestCase {
 
       String filmTableBuilding = "create memory table FILM (ID varchar(256) not null," + 
           " TITLE varchar(256) not null, YEAR date, primary key (ID))";
-      Statement st = connection.createStatement();
+      st = connection.createStatement();
       st.execute(filmTableBuilding);
 
       String actorTableBuilding = "create memory table ACTOR (ID varchar(256) not null,"+
@@ -624,104 +616,97 @@ public class OOrientDBSchemaWritingTestCase {
        *  Testing context information
        */
 
-      assertEquals(3, context.getStatistics().totalNumberOfModelVertices);
-      assertEquals(3, context.getStatistics().builtModelVertexTypes);  
-      assertEquals(2, context.getStatistics().analizedRelationships);
-      assertEquals(2, context.getStatistics().builtModelEdgeTypes);
-
+      assertEquals(3, context.getStatistics().totalNumberOfVertexType);
+      assertEquals(3, context.getStatistics().wroteVertexType);
+      assertEquals(2, context.getStatistics().totalNumberOfEdgeType);
+      assertEquals(2, context.getStatistics().wroteEdgeType);
+      assertEquals(3, context.getStatistics().totalNumberOfIndices);
+      assertEquals(3, context.getStatistics().wroteIndices);
 
       /*
-       *  Testing built graph model
+       *  Testing built OrientDB schema
        */
-      OVertexType actorVertexType = mapper.getGraphModel().getVertexByType("Actor");
-      OVertexType filmVertexType = mapper.getGraphModel().getVertexByType("Film");
-      OVertexType film2actorVertexType = mapper.getGraphModel().getVertexByType("FilmActor");
-      OEdgeType actorEdgeType = mapper.getGraphModel().getEdgeTypeByName("HasActor");
-      OEdgeType filmEdgeType = mapper.getGraphModel().getEdgeTypeByName("HasFilm");
+      orientGraph = new OrientGraphNoTx(this.outOrientGraphUri);
+      OrientVertexType actorVertexType =  orientGraph.getVertexType("Actor");
+      OrientVertexType filmVertexType = orientGraph.getVertexType("Film");
+      OrientVertexType film2actorVertexType = orientGraph.getVertexType("FilmActor");
+      OrientEdgeType actorEdgeType = orientGraph.getEdgeType("HasActor");
+      OrientEdgeType filmEdgeType = orientGraph.getEdgeType("HasFilm");
 
 
       // vertices check
-      assertEquals(3, mapper.getGraphModel().getVerticesType().size());
       assertNotNull(actorVertexType);
       assertNotNull(filmVertexType);
       assertNotNull(film2actorVertexType);
 
       // properties check
-      assertEquals(3, actorVertexType.getProperties().size());
+      assertNotNull(actorVertexType.getProperty("id"));
+      assertEquals("id", actorVertexType.getProperty("id").getName());
+      assertEquals(OType.STRING, actorVertexType.getProperty("id").getType());
 
-      assertNotNull(actorVertexType.getPropertyByName("id"));
-      assertEquals("id", actorVertexType.getPropertyByName("id").getName());
-      assertEquals("VARCHAR", actorVertexType.getPropertyByName("id").getPropertyType());
-      assertEquals(1, actorVertexType.getPropertyByName("id").getOrdinalPosition());
-      assertEquals(true, actorVertexType.getPropertyByName("id").isFromPrimaryKey());
+      assertNotNull(actorVertexType.getProperty("name"));
+      assertEquals("name", actorVertexType.getProperty("name").getName());
+      assertEquals(OType.STRING, actorVertexType.getProperty("name").getType());
 
-      assertNotNull(actorVertexType.getPropertyByName("name"));
-      assertEquals("name", actorVertexType.getPropertyByName("name").getName());
-      assertEquals("VARCHAR", actorVertexType.getPropertyByName("name").getPropertyType());
-      assertEquals(2, actorVertexType.getPropertyByName("name").getOrdinalPosition());
-      assertEquals(false, actorVertexType.getPropertyByName("name").isFromPrimaryKey());
+      assertNotNull(actorVertexType.getProperty("surname"));
+      assertEquals("surname", actorVertexType.getProperty("surname").getName());
+      assertEquals(OType.STRING, actorVertexType.getProperty("surname").getType());
 
-      assertNotNull(actorVertexType.getPropertyByName("surname"));
-      assertEquals("surname", actorVertexType.getPropertyByName("surname").getName());
-      assertEquals("VARCHAR", actorVertexType.getPropertyByName("surname").getPropertyType());
-      assertEquals(3, actorVertexType.getPropertyByName("surname").getOrdinalPosition());
-      assertEquals(false, actorVertexType.getPropertyByName("surname").isFromPrimaryKey());
 
-      assertEquals(3, filmVertexType.getProperties().size());
+      assertNotNull(filmVertexType.getProperty("id"));
+      assertEquals("id", filmVertexType.getProperty("id").getName());
+      assertEquals(OType.STRING, filmVertexType.getProperty("id").getType());
 
-      assertNotNull(filmVertexType.getPropertyByName("id"));
-      assertEquals("id", filmVertexType.getPropertyByName("id").getName());
-      assertEquals("VARCHAR", filmVertexType.getPropertyByName("id").getPropertyType());
-      assertEquals(1, filmVertexType.getPropertyByName("id").getOrdinalPosition());
-      assertEquals(true, filmVertexType.getPropertyByName("id").isFromPrimaryKey());
+      assertNotNull(filmVertexType.getProperty("title"));
+      assertEquals("title", filmVertexType.getProperty("title").getName());
+      assertEquals(OType.STRING, filmVertexType.getProperty("title").getType());
 
-      assertNotNull(filmVertexType.getPropertyByName("title"));
-      assertEquals("title", filmVertexType.getPropertyByName("title").getName());
-      assertEquals("VARCHAR", filmVertexType.getPropertyByName("title").getPropertyType());
-      assertEquals(2, filmVertexType.getPropertyByName("title").getOrdinalPosition());
-      assertEquals(false, filmVertexType.getPropertyByName("title").isFromPrimaryKey());
+      assertNotNull(filmVertexType.getProperty("year"));
+      assertEquals("year", filmVertexType.getProperty("year").getName());
+      assertEquals(OType.DATETIME, filmVertexType.getProperty("year").getType());
 
-      assertNotNull(filmVertexType.getPropertyByName("year"));
-      assertEquals("year", filmVertexType.getPropertyByName("year").getName());
-      assertEquals("DATE", filmVertexType.getPropertyByName("year").getPropertyType());
-      assertEquals(3, filmVertexType.getPropertyByName("year").getOrdinalPosition());
-      assertEquals(false, filmVertexType.getPropertyByName("year").isFromPrimaryKey());
+      assertNotNull(film2actorVertexType.getProperty("filmId"));
+      assertEquals("filmId", film2actorVertexType.getProperty("filmId").getName());
+      assertEquals(OType.STRING, film2actorVertexType.getProperty("filmId").getType());
 
-      assertEquals(2, film2actorVertexType.getProperties().size());
-
-      assertNotNull(film2actorVertexType.getPropertyByName("filmId"));
-      assertEquals("filmId", film2actorVertexType.getPropertyByName("filmId").getName());
-      assertEquals("VARCHAR", film2actorVertexType.getPropertyByName("filmId").getPropertyType());
-      assertEquals(1, film2actorVertexType.getPropertyByName("filmId").getOrdinalPosition());
-      assertEquals(true, film2actorVertexType.getPropertyByName("filmId").isFromPrimaryKey());
-
-      assertNotNull(film2actorVertexType.getPropertyByName("actorId"));
-      assertEquals("actorId", film2actorVertexType.getPropertyByName("actorId").getName());
-      assertEquals("VARCHAR", film2actorVertexType.getPropertyByName("actorId").getPropertyType());
-      assertEquals(2, film2actorVertexType.getPropertyByName("actorId").getOrdinalPosition());
-      assertEquals(true, film2actorVertexType.getPropertyByName("actorId").isFromPrimaryKey());
+      assertNotNull(film2actorVertexType.getProperty("actorId"));
+      assertEquals("actorId", film2actorVertexType.getProperty("actorId").getName());
+      assertEquals(OType.STRING, film2actorVertexType.getProperty("actorId").getType());
 
       // edges check
-      assertEquals(2, mapper.getGraphModel().getEdgesType().size());
       assertNotNull(filmEdgeType);
       assertNotNull(actorEdgeType);
 
-      assertEquals("HasFilm", filmEdgeType.getType());
-      assertEquals(0, filmEdgeType.getProperties().size());
-      assertEquals("Film", filmEdgeType.getInVertexType().getType());
+      assertEquals("HasFilm", filmEdgeType.getName());
+      assertEquals("HasActor", actorEdgeType.getName());
 
-      assertEquals("HasActor", actorEdgeType.getType());
-      assertEquals(0, actorEdgeType.getProperties().size());
-      assertEquals("Actor", actorEdgeType.getInVertexType().getType());
+      // Indices check
+      assertEquals(3+3, orientGraph.getRawGraph().getMetadata().getIndexManager().getIndexes().size());
 
-      // Dropping Source DB Schema
-      String dbDropping = "DROP SCHEMA PUBLIC CASCADE";
-      st.execute(dbDropping);
-      connection.close();
+      assertEquals(true, orientGraph.getRawGraph().getMetadata().getIndexManager().existsIndex("Actor.pkey"));
+      assertEquals(true, orientGraph.getRawGraph().getMetadata().getIndexManager().areIndexed("Actor", "id"));
+
+      assertEquals(true, orientGraph.getRawGraph().getMetadata().getIndexManager().existsIndex("Film.pkey"));
+      assertEquals(true, orientGraph.getRawGraph().getMetadata().getIndexManager().areIndexed("Film", "id"));
+
+      assertEquals(true, orientGraph.getRawGraph().getMetadata().getIndexManager().existsIndex("FilmActor.pkey"));
+      assertEquals(true, orientGraph.getRawGraph().getMetadata().getIndexManager().areIndexed("FilmActor", "filmId", "actorId"));
 
 
     }catch(Exception e) {
       e.printStackTrace();
+    }finally {
+      try {
+
+        // Dropping Source DB Schema and OrientGraph
+        String dbDropping = "DROP SCHEMA PUBLIC CASCADE";
+        st.execute(dbDropping);
+        connection.close();
+      }catch(Exception e) {
+        e.printStackTrace();
+      }
+      orientGraph.drop();
+      orientGraph.shutdown();
     }
   }
 
@@ -735,6 +720,8 @@ public class OOrientDBSchemaWritingTestCase {
   public void test6() {
 
     Connection connection = null;
+    Statement st = null;
+    OrientGraphNoTx orientGraph = null;
 
     try {
 
@@ -744,7 +731,7 @@ public class OOrientDBSchemaWritingTestCase {
       String parentTableBuilding = "create memory table EMPLOYEE (EMP_ID varchar(256) not null,"+
           " MGR_ID varchar(256) not null, NAME varchar(256) not null, primary key (EMP_ID), " + 
           " foreign key (MGR_ID) references EMPLOYEE(EMP_ID))";
-      Statement st = connection.createStatement();
+      st = connection.createStatement();
       st.execute(parentTableBuilding);
 
       String foreignTableBuilding = "create memory table PROJECT (ID  varchar(256),"+
@@ -757,93 +744,89 @@ public class OOrientDBSchemaWritingTestCase {
       mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
       modelWriter.writeModelOnOrient(mapper.getGraphModel(), new OGenericDataTypeHandler(), this.outOrientGraphUri, context);
 
-      
+
       /*
        *  Testing context information
        */
 
-      assertEquals(2, context.getStatistics().totalNumberOfModelVertices);
-      assertEquals(2, context.getStatistics().builtModelVertexTypes);  
-      assertEquals(2, context.getStatistics().analizedRelationships);
-      assertEquals(2, context.getStatistics().builtModelEdgeTypes);
-
+      assertEquals(2, context.getStatistics().totalNumberOfVertexType);
+      assertEquals(2, context.getStatistics().wroteVertexType);
+      assertEquals(2, context.getStatistics().totalNumberOfEdgeType);
+      assertEquals(2, context.getStatistics().wroteEdgeType);
+      assertEquals(2, context.getStatistics().totalNumberOfIndices);
+      assertEquals(2, context.getStatistics().wroteIndices);
 
       /*
-       *  Testing built graph model
+       *  Testing built OrientDB schema
        */
-      OVertexType employeeVertexType = mapper.getGraphModel().getVertexByType("Employee");
-      OVertexType projectVertexType = mapper.getGraphModel().getVertexByType("Project");
-      OEdgeType projectManagerEdgeType = mapper.getGraphModel().getEdgeTypeByName("HasProjectManager");
-      OEdgeType mgrEdgeType = mapper.getGraphModel().getEdgeTypeByName("HasMgr");
+      orientGraph = new OrientGraphNoTx(this.outOrientGraphUri);
+      OrientVertexType employeeVertexType =  orientGraph.getVertexType("Employee");
+      OrientVertexType projectVertexType = orientGraph.getVertexType("Project");
+      OrientEdgeType projectManagerEdgeType = orientGraph.getEdgeType("HasProjectManager");
+      OrientEdgeType mgrEdgeType = orientGraph.getEdgeType("HasMgr");
 
 
       // vertices check
-      assertEquals(2, mapper.getGraphModel().getVerticesType().size());
       assertNotNull(employeeVertexType);
       assertNotNull(projectVertexType);
 
       // properties check
-      assertEquals(3, employeeVertexType.getProperties().size());
+      assertNotNull(employeeVertexType.getProperty("empId"));
+      assertEquals("empId", employeeVertexType.getProperty("empId").getName());
+      assertEquals(OType.STRING, employeeVertexType.getProperty("empId").getType());
 
-      assertNotNull(employeeVertexType.getPropertyByName("empId"));
-      assertEquals("empId", employeeVertexType.getPropertyByName("empId").getName());
-      assertEquals("VARCHAR", employeeVertexType.getPropertyByName("empId").getPropertyType());
-      assertEquals(1, employeeVertexType.getPropertyByName("empId").getOrdinalPosition());
-      assertEquals(true, employeeVertexType.getPropertyByName("empId").isFromPrimaryKey());
+      assertNotNull(employeeVertexType.getProperty("mgrId"));
+      assertEquals("mgrId", employeeVertexType.getProperty("mgrId").getName());
+      assertEquals(OType.STRING, employeeVertexType.getProperty("mgrId").getType());
 
-      assertNotNull(employeeVertexType.getPropertyByName("mgrId"));
-      assertEquals("mgrId", employeeVertexType.getPropertyByName("mgrId").getName());
-      assertEquals("VARCHAR", employeeVertexType.getPropertyByName("mgrId").getPropertyType());
-      assertEquals(2, employeeVertexType.getPropertyByName("mgrId").getOrdinalPosition());
-      assertEquals(false, employeeVertexType.getPropertyByName("mgrId").isFromPrimaryKey());
+      assertNotNull(employeeVertexType.getProperty("name"));
+      assertEquals("name", employeeVertexType.getProperty("name").getName());
+      assertEquals(OType.STRING, employeeVertexType.getProperty("name").getType());
 
-      assertNotNull(employeeVertexType.getPropertyByName("name"));
-      assertEquals("name", employeeVertexType.getPropertyByName("name").getName());
-      assertEquals("VARCHAR", employeeVertexType.getPropertyByName("name").getPropertyType());
-      assertEquals(3, employeeVertexType.getPropertyByName("name").getOrdinalPosition());
-      assertEquals(false, employeeVertexType.getPropertyByName("name").isFromPrimaryKey());
-      
-      assertEquals(3, projectVertexType.getProperties().size());
+      assertNotNull(projectVertexType.getProperty("id"));
+      assertEquals("id", projectVertexType.getProperty("id").getName());
+      assertEquals(OType.STRING, projectVertexType.getProperty("id").getType());
 
-      assertNotNull(projectVertexType.getPropertyByName("id"));
-      assertEquals("id", projectVertexType.getPropertyByName("id").getName());
-      assertEquals("VARCHAR", projectVertexType.getPropertyByName("id").getPropertyType());
-      assertEquals(1, projectVertexType.getPropertyByName("id").getOrdinalPosition());
-      assertEquals(true, projectVertexType.getPropertyByName("id").isFromPrimaryKey());
+      assertNotNull(projectVertexType.getProperty("title"));
+      assertEquals("title", projectVertexType.getProperty("title").getName());
+      assertEquals(OType.STRING, projectVertexType.getProperty("title").getType());
 
-      assertNotNull(projectVertexType.getPropertyByName("title"));
-      assertEquals("title", projectVertexType.getPropertyByName("title").getName());
-      assertEquals("VARCHAR", projectVertexType.getPropertyByName("title").getPropertyType());
-      assertEquals(2, projectVertexType.getPropertyByName("title").getOrdinalPosition());
-      assertEquals(false, projectVertexType.getPropertyByName("title").isFromPrimaryKey());
-
-      assertNotNull(projectVertexType.getPropertyByName("projectManager"));
-      assertEquals("projectManager", projectVertexType.getPropertyByName("projectManager").getName());
-      assertEquals("VARCHAR", projectVertexType.getPropertyByName("projectManager").getPropertyType());
-      assertEquals(3, projectVertexType.getPropertyByName("projectManager").getOrdinalPosition());
-      assertEquals(false, projectVertexType.getPropertyByName("projectManager").isFromPrimaryKey());
+      assertNotNull(projectVertexType.getProperty("projectManager"));
+      assertEquals("projectManager", projectVertexType.getProperty("projectManager").getName());
+      assertEquals(OType.STRING, projectVertexType.getProperty("projectManager").getType());
 
       // edges check
-      assertEquals(2, mapper.getGraphModel().getEdgesType().size());
       assertNotNull(mgrEdgeType);
       assertNotNull(projectManagerEdgeType);
 
-      assertEquals("HasMgr", mgrEdgeType.getType());
-      assertEquals(0, mgrEdgeType.getProperties().size());
-      assertEquals("Employee", mgrEdgeType.getInVertexType().getType());
+      assertEquals("HasMgr", mgrEdgeType.getName());
+      assertEquals("HasProjectManager", projectManagerEdgeType.getName());
+      
+      // Indices check
+      assertEquals(2+3, orientGraph.getRawGraph().getMetadata().getIndexManager().getIndexes().size());
 
-      assertEquals("HasProjectManager", projectManagerEdgeType.getType());
-      assertEquals(0, projectManagerEdgeType.getProperties().size());
-      assertEquals("Employee", projectManagerEdgeType.getInVertexType().getType());
+      assertEquals(true, orientGraph.getRawGraph().getMetadata().getIndexManager().existsIndex("Employee.pkey"));
+      assertEquals(true, orientGraph.getRawGraph().getMetadata().getIndexManager().areIndexed("Employee", "empId"));
+
+      assertEquals(true, orientGraph.getRawGraph().getMetadata().getIndexManager().existsIndex("Project.pkey"));
+      assertEquals(true, orientGraph.getRawGraph().getMetadata().getIndexManager().areIndexed("Project", "id"));
 
 
-      // Dropping Source DB Schema
-      String dbDropping = "DROP SCHEMA PUBLIC CASCADE";
-      st.execute(dbDropping);
-      connection.close();
 
     }catch(Exception e) {
       e.printStackTrace();
+    }finally {
+      try {
+
+        // Dropping Source DB Schema and OrientGraph
+        String dbDropping = "DROP SCHEMA PUBLIC CASCADE";
+        st.execute(dbDropping);
+        connection.close();
+      }catch(Exception e) {
+        e.printStackTrace();
+      }
+      orientGraph.drop();
+      orientGraph.shutdown();
     }
   }
 

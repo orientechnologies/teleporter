@@ -72,7 +72,7 @@ public class OGraphModelWriter {
       statistics.totalNumberOfVertexType = numberOfVertices;
 
       OrientVertexType newVertexType;
-//      OProperty currentProperty = null;
+      //      OProperty currentProperty = null;
       List<String> toRemoveAttributes;
       String statement;
       OCommandSQL sqlCommand;
@@ -85,13 +85,13 @@ public class OGraphModelWriter {
         toRemoveAttributes = new ArrayList<String>();
 
         for(OProperty currentProperty: currentVertexType.getProperties()) {
-          
+
           type = handler.resolveType(currentProperty.getPropertyType().toLowerCase(Locale.ENGLISH), context);
           if(type != null) {
             newVertexType.createProperty(currentProperty.getName(), type);
-            statement = "alter property " + currentVertexType.getType() + "." + currentProperty.getName() + " custom fromPK = " + currentProperty.isFromPrimaryKey();
-            sqlCommand = new OCommandSQL(statement);
-            orientGraph.getRawGraph().command(sqlCommand).execute();
+            //            statement = "alter property " + currentVertexType.getType() + "." + currentProperty.getName() + " custom fromPK = " + currentProperty.isFromPrimaryKey();
+            //            sqlCommand = new OCommandSQL(statement);
+            //            orientGraph.getRawGraph().command(sqlCommand).execute();
           }
           else{
             toRemoveAttributes.add(currentProperty.getName());   
@@ -121,14 +121,14 @@ public class OGraphModelWriter {
         context.getOutputManager().debug("Writing '" + currentEdgeType.getType() + "' edge-type  (" + iteration + "/" + numberOfEdges + ")...");
         newEdgeType = orientGraph.createEdgeType(currentEdgeType.getType());
 
-//        // setting in-vertex-type
-//
-//        propIn = newEdgeType.createProperty("in", OType.LINK);
-//        propIn.setLinkedClass(orientGraph.getVertexType(currentEdgeType.getInVertexType().getType()));
-//
-//        // setting out-vertex-type
-//        propOut = newEdgeType.createProperty("out", OType.LINK);
-//        propOut.setLinkedClass(orientGraph.getVertexType(currentEdgeType.getOutVertexType().getType()));
+        //        // setting in-vertex-type
+        //
+        //        propIn = newEdgeType.createProperty("in", OType.LINK);
+        //        propIn.setLinkedClass(orientGraph.getVertexType(currentEdgeType.getInVertexType().getType()));
+        //
+        //        // setting out-vertex-type
+        //        propOut = newEdgeType.createProperty("out", OType.LINK);
+        //        propOut.setLinkedClass(orientGraph.getVertexType(currentEdgeType.getOutVertexType().getType()));
 
         toRemoveAttributes = new ArrayList<String>();
 
@@ -138,9 +138,9 @@ public class OGraphModelWriter {
 
           if(type != null) {
             newEdgeType.createProperty(currentProperty.getName(), type);
-            statement = "alter property " + currentEdgeType.getType() + "."+ currentProperty.getName() + " custom fromPK = " + currentProperty.isFromPrimaryKey();
-            sqlCommand = new OCommandSQL(statement);
-            orientGraph.getRawGraph().command(sqlCommand).execute();
+            //            statement = "alter property " + currentEdgeType.getType() + "."+ currentProperty.getName() + " custom fromPK = " + currentProperty.isFromPrimaryKey();
+            //            sqlCommand = new OCommandSQL(statement);
+            //            orientGraph.getRawGraph().command(sqlCommand).execute();
           }
           else {  
             toRemoveAttributes.add(currentProperty.getName());   

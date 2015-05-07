@@ -20,17 +20,17 @@
 
 package com.orientechnologies.orient.drakkar.strategy;
 
-import java.util.Date;
-import java.util.concurrent.TimeUnit;
-
-import com.orientechnologies.common.log.OLogManager;
-import com.orientechnologies.orient.drakkar.factory.ODataTypeHandlerFactory;
-import com.orientechnologies.orient.drakkar.mapper.OER2GraphMapper;
-import com.orientechnologies.orient.drakkar.mapper.OSource2GraphMapper;
-import com.orientechnologies.orient.drakkar.model.graphmodel.OGraphModel;
-import com.orientechnologies.orient.drakkar.nameresolver.ONameResolver;
-import com.orientechnologies.orient.drakkar.persistence.handler.ODriverDataTypeHandler;
-import com.orientechnologies.orient.drakkar.writer.OGraphModelWriter;
+//import java.util.Date;
+//import java.util.concurrent.TimeUnit;
+//
+//import com.orientechnologies.common.log.OLogManager;
+//import com.orientechnologies.orient.drakkar.factory.ODataTypeHandlerFactory;
+//import com.orientechnologies.orient.drakkar.mapper.OER2GraphMapper;
+//import com.orientechnologies.orient.drakkar.mapper.OSource2GraphMapper;
+//import com.orientechnologies.orient.drakkar.model.graphmodel.OGraphModel;
+//import com.orientechnologies.orient.drakkar.nameresolver.ONameResolver;
+//import com.orientechnologies.orient.drakkar.persistence.handler.ODriverDataTypeHandler;
+//import com.orientechnologies.orient.drakkar.writer.OGraphModelWriter;
 
 /**
  * A strategy that performs a "naive" import of the data source. The data source schema is

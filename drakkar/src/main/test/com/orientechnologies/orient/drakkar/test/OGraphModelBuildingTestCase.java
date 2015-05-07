@@ -63,6 +63,7 @@ public class OGraphModelBuildingTestCase {
   public void test1() {
 
     Connection connection = null;
+    Statement st = null;
 
     try {
 
@@ -71,7 +72,7 @@ public class OGraphModelBuildingTestCase {
 
       String parentTableBuilding = "create memory table BOOK_AUTHOR (ID varchar(256) not null,"+
           " NAME varchar(256) not null, AGE integer not null, primary key (ID))";
-      Statement st = connection.createStatement();
+      st = connection.createStatement();
       st.execute(parentTableBuilding);
 
 
@@ -156,13 +157,18 @@ public class OGraphModelBuildingTestCase {
       assertEquals("BookAuthor", authorEdgeType.getInVertexType().getType());
 
 
-      // Dropping Source DB Schema
-      String dbDropping = "DROP SCHEMA PUBLIC CASCADE";
-      st.execute(dbDropping);
-      connection.close();
-
     }catch(Exception e) {
       e.printStackTrace();
+    }finally {      
+      try {
+
+        // Dropping Source DB Schema and OrientGraph
+        String dbDropping = "DROP SCHEMA PUBLIC CASCADE";
+        st.execute(dbDropping);
+        connection.close();
+      }catch(Exception e) {
+        e.printStackTrace();
+      }
     }
   }
 
@@ -176,7 +182,8 @@ public class OGraphModelBuildingTestCase {
   public void test2() {
 
     Connection connection = null;
-
+    Statement st = null;
+    
     try {
 
       Class.forName("org.hsqldb.jdbc.JDBCDriver");
@@ -184,7 +191,7 @@ public class OGraphModelBuildingTestCase {
 
       String authorTableBuilding = "create memory table AUTHOR (ID varchar(256) not null,"+
           " NAME varchar(256) not null, AGE integer not null, primary key (ID))";
-      Statement st = connection.createStatement();
+      st = connection.createStatement();
       st.execute(authorTableBuilding);
 
       String bookTableBuilding = "create memory table BOOK (ID varchar(256) not null, TITLE  varchar(256),"+
@@ -299,14 +306,19 @@ public class OGraphModelBuildingTestCase {
       assertEquals(0, bookEdgeType.getProperties().size());
       assertEquals("Book", bookEdgeType.getInVertexType().getType());
 
-      // Dropping Source DB Schema
-      String dbDropping = "DROP SCHEMA PUBLIC CASCADE";
-      st.execute(dbDropping);
-      connection.close();
-
 
     }catch(Exception e) {
       e.printStackTrace();
+    }finally {      
+      try {
+
+        // Dropping Source DB Schema and OrientGraph
+        String dbDropping = "DROP SCHEMA PUBLIC CASCADE";
+        st.execute(dbDropping);
+        connection.close();
+      }catch(Exception e) {
+        e.printStackTrace();
+      }
     }
   }
 
@@ -320,6 +332,7 @@ public class OGraphModelBuildingTestCase {
   public void test3() {
 
     Connection connection = null;
+    Statement st = null;
 
     try {
 
@@ -328,7 +341,7 @@ public class OGraphModelBuildingTestCase {
 
       String authorTableBuilding = "create memory table AUTHOR (ID varchar(256) not null,"+
           " NAME varchar(256) not null, AGE integer not null, primary key (ID))";
-      Statement st = connection.createStatement();
+      st = connection.createStatement();
       st.execute(authorTableBuilding);
 
       String bookTableBuilding = "create memory table BOOK (ID varchar(256) not null, TITLE  varchar(256),"+
@@ -442,14 +455,19 @@ public class OGraphModelBuildingTestCase {
       assertEquals(0, authorEdgeType.getProperties().size());
       assertEquals("Author", authorEdgeType.getInVertexType().getType());
 
-      // Dropping Source DB Schema
-      String dbDropping = "DROP SCHEMA PUBLIC CASCADE";
-      st.execute(dbDropping);
-      connection.close();
-
 
     }catch(Exception e) {
       e.printStackTrace();
+    }finally {      
+      try {
+
+        // Dropping Source DB Schema and OrientGraph
+        String dbDropping = "DROP SCHEMA PUBLIC CASCADE";
+        st.execute(dbDropping);
+        connection.close();
+      }catch(Exception e) {
+        e.printStackTrace();
+      }
     }
   }
 
@@ -464,7 +482,8 @@ public class OGraphModelBuildingTestCase {
   public void test4() {
 
     Connection connection = null;
-
+    Statement st = null;
+    
     try {
 
       Class.forName("org.hsqldb.jdbc.JDBCDriver");
@@ -472,7 +491,7 @@ public class OGraphModelBuildingTestCase {
 
       String authorTableBuilding = "create memory table AUTHOR (NAME varchar(256) not null," + 
           " SURNAME varchar(256) not null, AGE integer, primary key (NAME,SURNAME))";
-      Statement st = connection.createStatement();
+      st = connection.createStatement();
       st.execute(authorTableBuilding);
 
       String bookTableBuilding = "create memory table BOOK (ID varchar(256) not null, TITLE  varchar(256),"+
@@ -562,14 +581,19 @@ public class OGraphModelBuildingTestCase {
       assertEquals(0, authorEdgeType.getProperties().size());
       assertEquals("Author", authorEdgeType.getInVertexType().getType());
 
-      // Dropping Source DB Schema
-      String dbDropping = "DROP SCHEMA PUBLIC CASCADE";
-      st.execute(dbDropping);
-      connection.close();
-
 
     }catch(Exception e) {
       e.printStackTrace();
+    }finally {      
+      try {
+
+        // Dropping Source DB Schema and OrientGraph
+        String dbDropping = "DROP SCHEMA PUBLIC CASCADE";
+        st.execute(dbDropping);
+        connection.close();
+      }catch(Exception e) {
+        e.printStackTrace();
+      }
     }
   }
 
@@ -582,7 +606,8 @@ public class OGraphModelBuildingTestCase {
   public void test5() {
 
     Connection connection = null;
-
+    Statement st = null;
+    
     try {
 
       Class.forName("org.hsqldb.jdbc.JDBCDriver");
@@ -590,7 +615,7 @@ public class OGraphModelBuildingTestCase {
 
       String filmTableBuilding = "create memory table FILM (ID varchar(256) not null," + 
           " TITLE varchar(256) not null, YEAR date, primary key (ID))";
-      Statement st = connection.createStatement();
+      st = connection.createStatement();
       st.execute(filmTableBuilding);
 
       String actorTableBuilding = "create memory table ACTOR (ID varchar(256) not null,"+
@@ -702,14 +727,19 @@ public class OGraphModelBuildingTestCase {
       assertEquals(0, actorEdgeType.getProperties().size());
       assertEquals("Actor", actorEdgeType.getInVertexType().getType());
 
-      // Dropping Source DB Schema
-      String dbDropping = "DROP SCHEMA PUBLIC CASCADE";
-      st.execute(dbDropping);
-      connection.close();
-
 
     }catch(Exception e) {
       e.printStackTrace();
+    }finally {      
+      try {
+
+        // Dropping Source DB Schema and OrientGraph
+        String dbDropping = "DROP SCHEMA PUBLIC CASCADE";
+        st.execute(dbDropping);
+        connection.close();
+      }catch(Exception e) {
+        e.printStackTrace();
+      }
     }
   }
 
@@ -723,7 +753,8 @@ public class OGraphModelBuildingTestCase {
   public void test6() {
 
     Connection connection = null;
-
+    Statement st = null;
+    
     try {
 
       Class.forName("org.hsqldb.jdbc.JDBCDriver");
@@ -732,7 +763,7 @@ public class OGraphModelBuildingTestCase {
       String parentTableBuilding = "create memory table EMPLOYEE (EMP_ID varchar(256) not null,"+
           " MGR_ID varchar(256) not null, NAME varchar(256) not null, primary key (EMP_ID), " + 
           " foreign key (MGR_ID) references EMPLOYEE(EMP_ID))";
-      Statement st = connection.createStatement();
+      st = connection.createStatement();
       st.execute(parentTableBuilding);
 
       String foreignTableBuilding = "create memory table PROJECT (ID  varchar(256),"+
@@ -744,7 +775,7 @@ public class OGraphModelBuildingTestCase {
       mapper.buildSourceSchema(this.context);
       mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
 
-      
+
       /*
        *  Testing context information
        */
@@ -789,7 +820,7 @@ public class OGraphModelBuildingTestCase {
       assertEquals("VARCHAR", employeeVertexType.getPropertyByName("name").getPropertyType());
       assertEquals(3, employeeVertexType.getPropertyByName("name").getOrdinalPosition());
       assertEquals(false, employeeVertexType.getPropertyByName("name").isFromPrimaryKey());
-      
+
       assertEquals(3, projectVertexType.getProperties().size());
 
       assertNotNull(projectVertexType.getPropertyByName("id"));
@@ -824,13 +855,18 @@ public class OGraphModelBuildingTestCase {
       assertEquals("Employee", projectManagerEdgeType.getInVertexType().getType());
 
 
-      // Dropping Source DB Schema
-      String dbDropping = "DROP SCHEMA PUBLIC CASCADE";
-      st.execute(dbDropping);
-      connection.close();
-
     }catch(Exception e) {
       e.printStackTrace();
+    }finally {      
+      try {
+
+        // Dropping Source DB Schema and OrientGraph
+        String dbDropping = "DROP SCHEMA PUBLIC CASCADE";
+        st.execute(dbDropping);
+        connection.close();
+      }catch(Exception e) {
+        e.printStackTrace();
+      }
     }
   }
 }

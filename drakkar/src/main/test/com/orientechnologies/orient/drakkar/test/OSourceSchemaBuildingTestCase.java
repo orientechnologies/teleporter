@@ -61,7 +61,8 @@ public class OSourceSchemaBuildingTestCase {
   public void test1() {
 
     Connection connection = null;
-
+    Statement st = null;
+    
     try {
 
       Class.forName("org.hsqldb.jdbc.JDBCDriver");
@@ -69,7 +70,7 @@ public class OSourceSchemaBuildingTestCase {
 
       String parentTableBuilding = "create memory table PARENT_AUTHOR (AUTHOR_ID varchar(256) not null,"+
           " AUTHOR_NAME varchar(256) not null, primary key (AUTHOR_ID))";
-      Statement st = connection.createStatement();
+      st = connection.createStatement();
       st.execute(parentTableBuilding);
 
 
@@ -151,13 +152,18 @@ public class OSourceSchemaBuildingTestCase {
       assertEquals(foreignEntity.getForeignKeys().get(0), foreignEntity.getRelationships().get(0).getForeignKey());
 
 
-      // Dropping Source DB Schema
-      String dbDropping = "DROP SCHEMA PUBLIC CASCADE";
-      st.execute(dbDropping);
-      connection.close();
-
     }catch(Exception e) {
       e.printStackTrace();
+    }finally {      
+      try {
+
+        // Dropping Source DB Schema and OrientGraph
+        String dbDropping = "DROP SCHEMA PUBLIC CASCADE";
+        st.execute(dbDropping);
+        connection.close();
+      }catch(Exception e) {
+        e.printStackTrace();
+      }
     }
   }
 
@@ -172,7 +178,8 @@ public class OSourceSchemaBuildingTestCase {
   public void test2() {
 
     Connection connection = null;
-
+    Statement st = null;
+    
     try {
 
       Class.forName("org.hsqldb.jdbc.JDBCDriver");
@@ -180,7 +187,7 @@ public class OSourceSchemaBuildingTestCase {
 
       String parentTableBuilding = "create memory table PARENT_AUTHOR (AUTHOR_NAME varchar(256) not null,"+
           " AUTHOR_SURNAME varchar(256) not null, AGE INTEGER, primary key (AUTHOR_NAME,AUTHOR_SURNAME))";
-      Statement st = connection.createStatement();
+      st = connection.createStatement();
       st.execute(parentTableBuilding);
 
 
@@ -268,14 +275,18 @@ public class OSourceSchemaBuildingTestCase {
       assertEquals(foreignEntity.getForeignKeys().get(0), foreignEntity.getRelationships().get(0).getForeignKey());
       
 
-
-      // Dropping Source DB Schema
-      String dbDropping = "DROP SCHEMA PUBLIC CASCADE";
-      st.execute(dbDropping);
-      connection.close();
-
     }catch(Exception e) {
       e.printStackTrace();
+    }finally {      
+      try {
+
+        // Dropping Source DB Schema and OrientGraph
+        String dbDropping = "DROP SCHEMA PUBLIC CASCADE";
+        st.execute(dbDropping);
+        connection.close();
+      }catch(Exception e) {
+        e.printStackTrace();
+      }
     }
   }
 
@@ -288,6 +299,7 @@ public class OSourceSchemaBuildingTestCase {
   public void test3() {
 
     Connection connection = null;
+    Statement st = null;
 
     try {
 
@@ -296,7 +308,7 @@ public class OSourceSchemaBuildingTestCase {
 
       String parentTableBuilding = "create memory table PARENT_PERSON (PERSON_ID varchar(256) not null,"+
           " NAME varchar(256) not null, primary key (PERSON_ID))";
-      Statement st = connection.createStatement();
+      st = connection.createStatement();
       st.execute(parentTableBuilding);
 
 
@@ -386,13 +398,19 @@ public class OSourceSchemaBuildingTestCase {
       assertEquals(parentEntity.getPrimaryKey(), foreignEntity.getRelationships().get(1).getPrimaryKey());
       assertEquals(foreignEntity.getForeignKeys().get(1), foreignEntity.getRelationships().get(1).getForeignKey());
 
-      // Dropping Source DB Schema
-      String dbDropping = "DROP SCHEMA PUBLIC CASCADE";
-      st.execute(dbDropping);
-      connection.close();
 
     }catch(Exception e) {
       e.printStackTrace();
+    }finally {      
+      try {
+
+        // Dropping Source DB Schema and OrientGraph
+        String dbDropping = "DROP SCHEMA PUBLIC CASCADE";
+        st.execute(dbDropping);
+        connection.close();
+      }catch(Exception e) {
+        e.printStackTrace();
+      }
     }
   }
   
@@ -405,7 +423,8 @@ public class OSourceSchemaBuildingTestCase {
   public void test4() {
 
     Connection connection = null;
-
+    Statement st = null;
+    
     try {
 
       Class.forName("org.hsqldb.jdbc.JDBCDriver");
@@ -413,7 +432,7 @@ public class OSourceSchemaBuildingTestCase {
 
       String parentTableBuilding = "create memory table PARENT_PERSON (NAME varchar(256) not null,"+
           " SURNAME varchar(256) not null, primary key (NAME,SURNAME))";
-      Statement st = connection.createStatement();
+      st = connection.createStatement();
       st.execute(parentTableBuilding);
 
 
@@ -516,13 +535,18 @@ public class OSourceSchemaBuildingTestCase {
       assertEquals(foreignEntity.getForeignKeys().get(1), foreignEntity.getRelationships().get(1).getForeignKey());
 
 
-      // Dropping Source DB Schema
-      String dbDropping = "DROP SCHEMA PUBLIC CASCADE";
-      st.execute(dbDropping);
-      connection.close();
-
     }catch(Exception e) {
       e.printStackTrace();
+    }finally {      
+      try {
+
+        // Dropping Source DB Schema and OrientGraph
+        String dbDropping = "DROP SCHEMA PUBLIC CASCADE";
+        st.execute(dbDropping);
+        connection.close();
+      }catch(Exception e) {
+        e.printStackTrace();
+      }
     }
   }
   
@@ -537,7 +561,8 @@ public class OSourceSchemaBuildingTestCase {
   public void test5() {
 
     Connection connection = null;
-
+    Statement st = null;
+    
     try {
 
       Class.forName("org.hsqldb.jdbc.JDBCDriver");
@@ -546,7 +571,7 @@ public class OSourceSchemaBuildingTestCase {
       String parentTableBuilding = "create memory table PARENT_EMPLOYEE (EMP_ID varchar(256) not null,"+
           " MGR_ID varchar(256) not null, NAME varchar(256) not null, primary key (EMP_ID), " + 
           " foreign key (MGR_ID) references PARENT_EMPLOYEE(EMP_ID))";
-      Statement st = connection.createStatement();
+      st = connection.createStatement();
       st.execute(parentTableBuilding);
       
       String foreignTableBuilding = "create memory table FOREIGN_PROJECT (PROJECT_ID  varchar(256),"+
@@ -640,13 +665,18 @@ public class OSourceSchemaBuildingTestCase {
       assertEquals(parentEntity.getForeignKeys().get(0), parentEntity.getRelationships().get(0).getForeignKey());
 
 
-      // Dropping Source DB Schema
-      String dbDropping = "DROP SCHEMA PUBLIC CASCADE";
-      st.execute(dbDropping);
-      connection.close();
-
     }catch(Exception e) {
       e.printStackTrace();
+    }finally {      
+      try {
+
+        // Dropping Source DB Schema and OrientGraph
+        String dbDropping = "DROP SCHEMA PUBLIC CASCADE";
+        st.execute(dbDropping);
+        connection.close();
+      }catch(Exception e) {
+        e.printStackTrace();
+      }
     }
   }
   
@@ -661,6 +691,7 @@ public class OSourceSchemaBuildingTestCase {
   public void test6() {
 
     Connection connection = null;
+    Statement st = null;
 
     try {
 
@@ -669,7 +700,7 @@ public class OSourceSchemaBuildingTestCase {
 
       String filmTableBuilding = "create memory table FILM (ID varchar(256) not null, TITLE varchar(256) not null,"+
           " YEAR varchar(256) not null, DIRECTOR varchar(256) not null, primary key (ID))";
-      Statement st = connection.createStatement();
+      st = connection.createStatement();
       st.execute(filmTableBuilding);
       
       String actorTableBuilding = "create memory table ACTOR (ID varchar(256) not null, NAME varchar(256) not null,"+
@@ -741,13 +772,18 @@ public class OSourceSchemaBuildingTestCase {
       assertEquals(film2actor.getForeignKeys().get(1), film2actor.getRelationships().get(1).getForeignKey());
 
 
-      // Dropping Source DB Schema
-      String dbDropping = "DROP SCHEMA PUBLIC CASCADE";
-      st.execute(dbDropping);
-      connection.close();
-
     }catch(Exception e) {
       e.printStackTrace();
+    }finally {      
+      try {
+
+        // Dropping Source DB Schema and OrientGraph
+        String dbDropping = "DROP SCHEMA PUBLIC CASCADE";
+        st.execute(dbDropping);
+        connection.close();
+      }catch(Exception e) {
+        e.printStackTrace();
+      }
     }
   }
   

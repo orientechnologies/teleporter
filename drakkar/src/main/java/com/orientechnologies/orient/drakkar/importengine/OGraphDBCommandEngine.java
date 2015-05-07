@@ -95,8 +95,8 @@ public class OGraphDBCommandEngine {
       }
 
       if(ok) {
-        Iterable<Vertex> iterable = orientGraph.getVertices(vertexClassName, keys, values);
-        Iterator<Vertex> iterator = iterable.iterator();
+//        Iterable<Vertex> iterable = orientGraph.getVertices(vertexClassName, keys, values);
+        Iterator<Vertex> iterator = orientGraph.getVertices(vertexClassName, keys, values).iterator();
         if(iterator.hasNext())
           vertex = (OrientVertex) iterator.next();
       }
