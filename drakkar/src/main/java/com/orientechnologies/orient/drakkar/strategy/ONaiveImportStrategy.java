@@ -44,25 +44,22 @@ import com.orientechnologies.orient.drakkar.writer.OGraphModelWriter;
 
 public class ONaiveImportStrategy implements OImportStrategy {
 
-  //Name Resolver
-  private ONameResolver nameResolver;
 
   public ONaiveImportStrategy() {}
 
   public void executeStrategy(String driver, String uri, String username, String password, String outOrientGraphUri, String nameResolverConvention, ODrakkarContext context) {	
 
     Date globalStart = new Date(); 
-    
+
     context.getStatistics().notifyListeners();
 
     // Step 1,2,3
     ONameResolverFactory nameResolverFactory = new ONameResolverFactory();
     ONameResolver nameResolver = nameResolverFactory.buildNameResolver(nameResolverConvention, context);
-    this.setNameResolver(nameResolver);
     OSource2GraphMapper mapper = this.createSchemaMapper(driver, uri, username, password, outOrientGraphUri, nameResolver, context);
 
     // Step 4
-    this.executeImport(driver, uri, username, password, outOrientGraphUri, mapper, nameResolver, context);
+    this.executeImport(driver, uri, username, password, outOrientGraphUri, mapper, context);
     context.getStatistics().runningStepNumber = -1;
 
     Date globalEnd = new Date();
@@ -97,31 +94,21 @@ public class ONaiveImportStrategy implements OImportStrategy {
       System.exit(0);
     }
     context.getOutputManager().info("");
-    
+
     return mapper;
   }
 
 
-  public void executeImport(String driver, String uri, String username, String password, String outOrientGraphUri, OSource2GraphMapper mapper,  ONameResolver nameResolver, ODrakkarContext context) {
+  public void executeImport(String driver, String uri, String username, String password, String outOrientGraphUri, OSource2GraphMapper mapper,  ODrakkarContext context) {
 
     ODB2GraphImportEngine importEngine = new ODB2GraphImportEngine();
 
     try {
-      importEngine.executeImport(driver, uri, username, password, outOrientGraphUri, mapper, nameResolver, context);
+      importEngine.executeImport(driver, uri, username, password, outOrientGraphUri, mapper, context);
       context.getOutputManager().info("");
     }catch(Exception e){
       e.printStackTrace();
     }
-  }
-
-
-  public ONameResolver getNameResolver() {
-    return this.nameResolver;
-  }
-
-
-  public void setNameResolver(ONameResolver nameResolver) {
-    this.nameResolver = nameResolver;
   }
 
 }

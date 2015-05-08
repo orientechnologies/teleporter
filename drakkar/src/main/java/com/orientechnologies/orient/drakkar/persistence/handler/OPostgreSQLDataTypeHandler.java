@@ -121,8 +121,8 @@ public class OPostgreSQLDataTypeHandler implements ODriverDataTypeHandler {
      */    
     dbmsType2OrientType.put("timestamp", OType.DATETIME);
     dbmsType2OrientType.put("date", OType.DATE);
-    dbmsType2OrientType.put("time", OType.DATETIME);
-    dbmsType2OrientType.put("interval", OType.DATETIME);   
+    dbmsType2OrientType.put("time", OType.STRING);
+    dbmsType2OrientType.put("interval", OType.STRING);   
 
     /*
      * Boolean Type

@@ -92,7 +92,7 @@ public class OOracleDataTypeHandler implements ODriverDataTypeHandler {
      * Date/Time Types
      * (doc at http://docs.oracle.com/cd/B28359_01/server.111/b28318/datatype.htm#CNCPT413 )
      */    
-    dbmsType2OrientType.put("date", OType.DATETIME);
+    dbmsType2OrientType.put("date", OType.DATE);
     dbmsType2OrientType.put("datetime", OType.DATETIME);
     dbmsType2OrientType.put("timestamp", OType.DATETIME);
     dbmsType2OrientType.put("timestamp with time zone", OType.DATETIME);

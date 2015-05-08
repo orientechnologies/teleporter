@@ -23,6 +23,7 @@ package com.orientechnologies.orient.drakkar.factory;
 import com.orientechnologies.orient.drakkar.context.ODrakkarContext;
 import com.orientechnologies.orient.drakkar.persistence.handler.ODriverDataTypeHandler;
 import com.orientechnologies.orient.drakkar.persistence.handler.OGenericDataTypeHandler;
+import com.orientechnologies.orient.drakkar.persistence.handler.OHSQLDBDataTypeHandler;
 import com.orientechnologies.orient.drakkar.persistence.handler.OMySQLDataTypeHandler;
 import com.orientechnologies.orient.drakkar.persistence.handler.OOracleDataTypeHandler;
 import com.orientechnologies.orient.drakkar.persistence.handler.OPostgreSQLDataTypeHandler;
@@ -51,11 +52,16 @@ public class ODataTypeHandlerFactory {
 
     case "oracle.jdbc.driver.OracleDriver": handler = new OOracleDataTypeHandler();
     break;
+    
+    case "org.hsqldb.jdbc.JDBCDriver": handler = new OHSQLDBDataTypeHandler();
+    break;
 
     default :  handler = new OGenericDataTypeHandler();
     context.getStatistics().warningMessages.add("Driver " + driver + " is not supported. Thus problems may occur during type conversion.");
     break;
     }
+    
+    context.setDataTypeHandler(handler);
 
     return handler;
   }

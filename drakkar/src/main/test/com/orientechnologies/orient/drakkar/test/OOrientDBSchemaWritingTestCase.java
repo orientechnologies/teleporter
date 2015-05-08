@@ -15,7 +15,7 @@ import com.orientechnologies.orient.drakkar.context.ODrakkarContext;
 import com.orientechnologies.orient.drakkar.context.OOutputStreamManager;
 import com.orientechnologies.orient.drakkar.mapper.OER2GraphMapper;
 import com.orientechnologies.orient.drakkar.nameresolver.OJavaConventionNameResolver;
-import com.orientechnologies.orient.drakkar.persistence.handler.OGenericDataTypeHandler;
+import com.orientechnologies.orient.drakkar.persistence.handler.OHSQLDBDataTypeHandler;
 import com.orientechnologies.orient.drakkar.writer.OGraphModelWriter;
 import com.tinkerpop.blueprints.impls.orient.OrientEdgeType;
 import com.tinkerpop.blueprints.impls.orient.OrientGraphNoTx;
@@ -93,7 +93,7 @@ public class OOrientDBSchemaWritingTestCase {
       this.mapper = new OER2GraphMapper("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "");
       mapper.buildSourceSchema(this.context);
       mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
-      modelWriter.writeModelOnOrient(mapper.getGraphModel(), new OGenericDataTypeHandler(), this.outOrientGraphUri, context);
+      modelWriter.writeModelOnOrient(mapper.getGraphModel(), new OHSQLDBDataTypeHandler(), this.outOrientGraphUri, context);
 
 
       /*
@@ -210,7 +210,7 @@ public class OOrientDBSchemaWritingTestCase {
       this.mapper = new OER2GraphMapper("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "");
       mapper.buildSourceSchema(this.context);
       mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
-      modelWriter.writeModelOnOrient(mapper.getGraphModel(), new OGenericDataTypeHandler(), this.outOrientGraphUri, context);
+      modelWriter.writeModelOnOrient(mapper.getGraphModel(), new OHSQLDBDataTypeHandler(), this.outOrientGraphUri, context);
 
 
       /*
@@ -351,7 +351,7 @@ public class OOrientDBSchemaWritingTestCase {
       this.mapper = new OER2GraphMapper("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "");
       mapper.buildSourceSchema(this.context);
       mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
-      modelWriter.writeModelOnOrient(mapper.getGraphModel(), new OGenericDataTypeHandler(), this.outOrientGraphUri, context);
+      modelWriter.writeModelOnOrient(mapper.getGraphModel(), new OHSQLDBDataTypeHandler(), this.outOrientGraphUri, context);
 
 
       /*
@@ -487,7 +487,7 @@ public class OOrientDBSchemaWritingTestCase {
       this.mapper = new OER2GraphMapper("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "");
       mapper.buildSourceSchema(this.context);
       mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
-      modelWriter.writeModelOnOrient(mapper.getGraphModel(), new OGenericDataTypeHandler(), this.outOrientGraphUri, context);
+      modelWriter.writeModelOnOrient(mapper.getGraphModel(), new OHSQLDBDataTypeHandler(), this.outOrientGraphUri, context);
 
 
       /*
@@ -609,7 +609,7 @@ public class OOrientDBSchemaWritingTestCase {
       this.mapper = new OER2GraphMapper("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "");
       mapper.buildSourceSchema(this.context);
       mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
-      modelWriter.writeModelOnOrient(mapper.getGraphModel(), new OGenericDataTypeHandler(), this.outOrientGraphUri, context);
+      modelWriter.writeModelOnOrient(mapper.getGraphModel(), new OHSQLDBDataTypeHandler(), this.outOrientGraphUri, context);
 
 
       /*
@@ -742,7 +742,7 @@ public class OOrientDBSchemaWritingTestCase {
       this.mapper = new OER2GraphMapper("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "");
       mapper.buildSourceSchema(this.context);
       mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
-      modelWriter.writeModelOnOrient(mapper.getGraphModel(), new OGenericDataTypeHandler(), this.outOrientGraphUri, context);
+      modelWriter.writeModelOnOrient(mapper.getGraphModel(), new OHSQLDBDataTypeHandler(), this.outOrientGraphUri, context);
 
 
       /*

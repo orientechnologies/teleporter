@@ -52,13 +52,15 @@ public class ONameResolverFactory {
       case "original": nameResolver = new OOriginalConventionNameResolver();
       break;
 
-      default :  
+      default : nameResolver = new OOriginalConventionNameResolver();
         context.getStatistics().warningMessages.add("Name resolver convention '" + nameResolverConvention + "' not found, the original name convention will be adopted!");
-        nameResolver = new OOriginalConventionNameResolver();
-      break;
+        break;
 
       }
     }
+    
+    context.setNameResolver(nameResolver);
+    
     return nameResolver;
   }
 

@@ -22,8 +22,9 @@ package com.orientechnologies.orient.drakkar.context;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.LinkedList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import com.orientechnologies.orient.drakkar.ui.OStatisticsListener;
 
@@ -75,14 +76,14 @@ public class ODrakkarStatistics {
   public volatile Date startWork4Time;
 
   // Warnings Messages
-  public volatile List<String> warningMessages;
+  public volatile Set<String> warningMessages;
 
   // Listeners
   private volatile List<OStatisticsListener> listeners;
 
   public ODrakkarStatistics() {
     this.init();
-    this.warningMessages = new LinkedList<String>();
+    this.warningMessages = new HashSet<String>();
     this.listeners = new ArrayList<OStatisticsListener>();
   }
 
@@ -131,47 +132,6 @@ public class ODrakkarStatistics {
       listener.updateOnEvent(this);
     }
   }
-
-  /*
-   *  Incrementing methods
-   */
-
-  public Date getStartWork4Time() {
-    return startWork4Time;
-  }
-
-  //  public void incrementBuiltEntities() {
-  //    this.builtEntities++;
-  //  }
-  //
-  //  public void incrementDoneEntity4Relationship() {
-  //    this.doneEntity4Relationship++;
-  //  }
-  //
-  //  public void incrementBuiltModelVertexTypes() {
-  //    this.builtModelVertexTypes++;
-  //  }
-  //
-  //  public void incrementBuiltModelEdgeTypes() {
-  //    this.builtModelEdgeTypes++;
-  //  }
-  //
-  //  public void incrementWroteVertexType() {
-  //    this.wroteVertexType++;
-  //  }
-  //
-  //  public void incrementWroteEdgeType() {
-  //    this.wroteEdgeType++;
-  //  }
-  //
-  //  public void incrementWroteIndices() {
-  //    this.wroteIndices++;
-  //  }
-  //
-  //  public void incrementImportedRecords(int importedRecord) {
-  //    this.importedRecords += importedRecord;
-  //  }
-
 
 
   /*

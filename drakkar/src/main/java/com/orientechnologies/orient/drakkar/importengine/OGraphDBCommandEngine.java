@@ -34,7 +34,6 @@ import com.orientechnologies.orient.drakkar.model.dbschema.OAttribute;
 import com.orientechnologies.orient.drakkar.model.dbschema.ORelationship;
 import com.orientechnologies.orient.drakkar.model.graphmodel.OProperty;
 import com.orientechnologies.orient.drakkar.model.graphmodel.OVertexType;
-import com.orientechnologies.orient.drakkar.nameresolver.ONameResolver;
 import com.tinkerpop.blueprints.Vertex;
 import com.tinkerpop.blueprints.impls.orient.OrientBaseGraph;
 import com.tinkerpop.blueprints.impls.orient.OrientEdge;
@@ -77,13 +76,13 @@ public class OGraphDBCommandEngine {
 
     OrientVertex vertex = null;
 
-    if(keys.length == 1) {
-      //check: the value must be different from null
-      if(values[0] != null)
-        vertex = (OrientVertex) orientGraph.getVertexByKey(vertexClassName + ".pkey", values[0]);
-    }
+//    if(keys.length == 1) {
+//      //check: the value must be different from null
+//      if(values[0] != null)
+//        vertex = (OrientVertex) orientGraph.getVertexByKey(vertexClassName + ".pkey", values[0]);
+//    }
 
-    else if(keys.length > 1) {
+//    else if(keys.length > 1) {
 
       //check: all values must be different from null
       boolean ok = true;
@@ -95,12 +94,11 @@ public class OGraphDBCommandEngine {
       }
 
       if(ok) {
-//        Iterable<Vertex> iterable = orientGraph.getVertices(vertexClassName, keys, values);
         Iterator<Vertex> iterator = orientGraph.getVertices(vertexClassName, keys, values).iterator();
         if(iterator.hasNext())
           vertex = (OrientVertex) iterator.next();
       }
-    }
+//    }
 
     return vertex;
 
@@ -111,7 +109,7 @@ public class OGraphDBCommandEngine {
    * @param record
    * @throws SQLException 
    */
-  public Vertex upsertVisitedVertex(ResultSet record, OVertexType vertexType, ONameResolver nameResolver, ODrakkarContext context) throws SQLException {
+  public Vertex upsertVisitedVertex(ResultSet record, OVertexType vertexType, ODrakkarContext context) throws SQLException {
 
     OrientGraphFactory factory = new OrientGraphFactory(this.graphDBUrl);
     OrientGraphNoTx orientGraph = factory.getNoTx();
@@ -134,7 +132,7 @@ public class OGraphDBCommandEngine {
     int cont = 0;
     for(String property: propertiesOfIndex) {
       propertyOfKey[cont] = property;
-      valueOfKey[cont] = record.getString(nameResolver.reverseTransformation(property));
+      valueOfKey[cont] = record.getString(context.getNameResolver().reverseTransformation(property));
       cont++;
     }
 
@@ -153,21 +151,44 @@ public class OGraphDBCommandEngine {
 
     // setting properties to the vertex
     String currentAttributeValue = null;
+    String currentDateValue;
+    String currentPropertyType;
     for(OProperty currentProperty : vertexType.getProperties()) {
 
-      currentAttributeValue = record.getString(nameResolver.reverseTransformation(currentProperty.getName()));
-      if(currentAttributeValue != null) {
-        switch(currentAttributeValue) {
+      currentPropertyType = context.getDataTypeHandler().resolveType(currentProperty.getPropertyType(),context).toString();
+      currentAttributeValue = record.getString(context.getNameResolver().reverseTransformation(currentProperty.getName()));
 
-        case "t": properties.put(currentProperty.getName(), "true");
-        break;
-        case "f": properties.put(currentProperty.getName(), "false");
-        break;
-        default: properties.put(currentProperty.getName(), currentAttributeValue);
-        break;
+      if(currentAttributeValue != null) {
+
+        if(currentPropertyType.equals("DATE")) {
+          currentDateValue = record.getDate(context.getNameResolver().reverseTransformation(currentProperty.getName())).toString();
+          properties.put(currentProperty.getName(), currentDateValue);
+        }
+        
+        else if(currentPropertyType.equals("DATETIME")) {
+          {
+            currentDateValue = record.getTimestamp(context.getNameResolver().reverseTransformation(currentProperty.getName())).toString();
+            properties.put(currentProperty.getName(), currentDateValue);
+          }
+        }
+
+        else if(currentPropertyType.equals("BOOLEAN")) {
+          switch(currentAttributeValue) {
+
+          case "t": properties.put(currentProperty.getName(), "true");
+          break;
+          case "f": properties.put(currentProperty.getName(), "false");
+          break;
+          default: break;
+          }
+        }
+        
+        else {
+          properties.put(currentProperty.getName(), currentAttributeValue);
         }
       }
       else {
+        // null value is inserted in the property
         properties.put(currentProperty.getName(), currentAttributeValue);
       }
     }
@@ -181,6 +202,7 @@ public class OGraphDBCommandEngine {
     return vertex;
 
   }
+
 
   /**
    * @param ResultSet foreignRecord: the record correspondent to the current-out-vertex
@@ -196,7 +218,7 @@ public class OGraphDBCommandEngine {
    */
 
   public Vertex upsertReachedVertexWithEdge(ResultSet foreignRecord, ORelationship relation, Vertex currentOutVertex, OVertexType currentInVertexType,
-      String edgeType, ONameResolver nameResolver, ODrakkarContext context) throws SQLException {
+      String edgeType, ODrakkarContext context) throws SQLException {
 
     OrientGraphFactory factory = new OrientGraphFactory(this.graphDBUrl);
     OrientGraphNoTx orientGraph = factory.getNoTx();
@@ -209,7 +231,7 @@ public class OGraphDBCommandEngine {
 
     int index = 0;
     for(OAttribute foreignAttribute: relation.getForeignKey().getInvolvedAttributes())  {
-      propertyOfKey[index] = nameResolver.resolveVertexProperty(relation.getPrimaryKey().getInvolvedAttributes().get(index).getName());
+      propertyOfKey[index] = context.getNameResolver().resolveVertexProperty(relation.getPrimaryKey().getInvolvedAttributes().get(index).getName());
       valueOfKey[index] = foreignRecord.getString((foreignAttribute.getName()));
       index++;
     }
@@ -241,7 +263,7 @@ public class OGraphDBCommandEngine {
        *  if the vertex is not already present in the graph it's built, set and inserted to the graph,
        *  then the edge beetwen the current-out-vertex and the current-in-vertex is added 
        */
-      if(currentInVertex == null) {     
+      if(currentInVertex == null) {
 
         Map<String,String> partialProperties = new LinkedHashMap<String,String>();
 

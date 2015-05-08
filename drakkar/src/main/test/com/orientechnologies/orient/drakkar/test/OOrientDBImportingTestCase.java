@@ -15,7 +15,7 @@ import com.orientechnologies.orient.drakkar.importengine.ODB2GraphImportEngine;
 import com.orientechnologies.orient.drakkar.mapper.OER2GraphMapper;
 import com.orientechnologies.orient.drakkar.mapper.OSource2GraphMapper;
 import com.orientechnologies.orient.drakkar.nameresolver.OJavaConventionNameResolver;
-import com.orientechnologies.orient.drakkar.persistence.handler.OGenericDataTypeHandler;
+import com.orientechnologies.orient.drakkar.persistence.handler.OHSQLDBDataTypeHandler;
 import com.orientechnologies.orient.drakkar.writer.OGraphModelWriter;
 import com.tinkerpop.blueprints.Direction;
 import com.tinkerpop.blueprints.Edge;
@@ -60,6 +60,8 @@ public class OOrientDBImportingTestCase {
   public void init() {
     this.context = new ODrakkarContext();
     this.context.setOutputManager(new OOutputStreamManager(0));
+    this.context.setNameResolver(new OJavaConventionNameResolver());
+    this.context.setDataTypeHandler(new OHSQLDBDataTypeHandler());
     this.modelWriter = new OGraphModelWriter();
     this.importEngine = new ODB2GraphImportEngine();
     this.outOrientGraphUri = "memory:testOrientDB";
@@ -89,7 +91,8 @@ public class OOrientDBImportingTestCase {
       st.execute(categoryTableBuilding);
 
       String filmTableBuilding = "create memory table FILM (ID varchar(256) not null,"+
-          " TITLE varchar(256) not null, DIRECTOR varchar(256) not null, CATEGORY varchar(256) not null, primary key (ID), " +
+          " TITLE varchar(256) not null, DIRECTOR varchar(256) not null, CATEGORY varchar(256) not null," +
+          " primary key (ID), " +
           " foreign key (DIRECTOR) references DIRECTOR(ID)," + 
           " foreign key (CATEGORY) references CATEGORY(ID))";
       st.execute(filmTableBuilding);
@@ -152,8 +155,8 @@ public class OOrientDBImportingTestCase {
       this.mapper = new OER2GraphMapper("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "");
       mapper.buildSourceSchema(this.context);
       mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
-      modelWriter.writeModelOnOrient(((OER2GraphMapper)mapper).getGraphModel(), new OGenericDataTypeHandler(), this.outOrientGraphUri, context);
-      this.importEngine.executeImport("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", this.outOrientGraphUri, this.mapper, new OJavaConventionNameResolver(), context);
+      modelWriter.writeModelOnOrient(((OER2GraphMapper)mapper).getGraphModel(), new OHSQLDBDataTypeHandler(), this.outOrientGraphUri, context);
+      this.importEngine.executeImport("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", this.outOrientGraphUri, this.mapper, context);
 
 
       /*
@@ -538,6 +541,8 @@ public class OOrientDBImportingTestCase {
       }catch(Exception e) {
         e.printStackTrace();
       }
+      orientGraph.drop();
+      orientGraph.shutdown();
     }  
 
   }

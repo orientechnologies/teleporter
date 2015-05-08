@@ -20,6 +20,10 @@
 
 package com.orientechnologies.orient.drakkar.context;
 
+import com.orientechnologies.orient.drakkar.nameresolver.ONameResolver;
+import com.orientechnologies.orient.drakkar.persistence.handler.ODriverDataTypeHandler;
+
+
 
 
 /**
@@ -34,6 +38,8 @@ public class ODrakkarContext {
   
   private ODrakkarStatistics statistics;
   private OOutputStreamManager outputManager;
+  private ODriverDataTypeHandler dataTypeHandler;
+  private ONameResolver nameResolver;
   
   public ODrakkarContext() {
     this.statistics = new ODrakkarStatistics();
@@ -53,6 +59,22 @@ public class ODrakkarContext {
 
   public void setOutputManager(OOutputStreamManager outputManager) {
     this.outputManager = outputManager;
+  }
+
+  public ODriverDataTypeHandler getDataTypeHandler() {
+    return this.dataTypeHandler;
+  }
+
+  public void setDataTypeHandler(ODriverDataTypeHandler dataTypeHandler) {
+    this.dataTypeHandler = dataTypeHandler;
+  }
+
+  public ONameResolver getNameResolver() {
+    return this.nameResolver;
+  }
+
+  public void setNameResolver(ONameResolver nameResolver) {
+    this.nameResolver = nameResolver;
   }
   
 }
