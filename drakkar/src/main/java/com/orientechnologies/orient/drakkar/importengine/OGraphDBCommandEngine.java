@@ -76,29 +76,20 @@ public class OGraphDBCommandEngine {
 
     OrientVertex vertex = null;
 
-//    if(keys.length == 1) {
-//      //check: the value must be different from null
-//      if(values[0] != null)
-//        vertex = (OrientVertex) orientGraph.getVertexByKey(vertexClassName + ".pkey", values[0]);
-//    }
-
-//    else if(keys.length > 1) {
-
-      //check: all values must be different from null
-      boolean ok = true;
-      for(int i=0; i<values.length; i++) {
-        if(values[i] == null) {
-          ok = false;
-          break;
-        }
+    //check: all values must be different from null
+    boolean ok = true;
+    for(int i=0; i<values.length; i++) {
+      if(values[i] == null) {
+        ok = false;
+        break;
       }
+    }
 
-      if(ok) {
-        Iterator<Vertex> iterator = orientGraph.getVertices(vertexClassName, keys, values).iterator();
-        if(iterator.hasNext())
-          vertex = (OrientVertex) iterator.next();
-      }
-//    }
+    if(ok) {
+      Iterator<Vertex> iterator = orientGraph.getVertices(vertexClassName, keys, values).iterator();
+      if(iterator.hasNext())
+        vertex = (OrientVertex) iterator.next();
+    }
 
     return vertex;
 
@@ -144,11 +135,6 @@ public class OGraphDBCommandEngine {
 
     OrientVertex vertex = this.getVertexByIndexedKey(orientGraph, propertyOfKey, valueOfKey, vertexType.getType());  // !!!
 
-    if(vertex == null) {
-      String classAndClusterName = vertexType.getType(); 
-      vertex = orientGraph.addVertex(classAndClusterName, classAndClusterName);
-    }
-
     // setting properties to the vertex
     String currentAttributeValue = null;
     String currentDateValue;
@@ -164,7 +150,7 @@ public class OGraphDBCommandEngine {
           currentDateValue = record.getDate(context.getNameResolver().reverseTransformation(currentProperty.getName())).toString();
           properties.put(currentProperty.getName(), currentDateValue);
         }
-        
+
         else if(currentPropertyType.equals("DATETIME")) {
           {
             currentDateValue = record.getTimestamp(context.getNameResolver().reverseTransformation(currentProperty.getName())).toString();
@@ -182,7 +168,7 @@ public class OGraphDBCommandEngine {
           default: break;
           }
         }
-        
+
         else {
           properties.put(currentProperty.getName(), currentAttributeValue);
         }
@@ -193,9 +179,16 @@ public class OGraphDBCommandEngine {
       }
     }
 
+    if(vertex == null) {
+      String classAndClusterName = vertexType.getType(); 
+      vertex = orientGraph.addVertex("class:"+classAndClusterName, properties);
+    }
+    else {
+      vertex.setProperties(properties);
+      vertex.save();
+    }
+
     context.getOutputManager().debug(properties.toString());
-    vertex.setProperties(properties);
-    vertex.save();
     context.getOutputManager().debug("New vertex inserted (all props setted): " + vertex.toString() + "\n");
     orientGraph.shutdown();
 
@@ -274,9 +267,7 @@ public class OGraphDBCommandEngine {
 
         context.getOutputManager().debug("NEW Reached vertex (id:value) --> " + Arrays.toString(propertyOfKey) + ":" + Arrays.toString(valueOfKey));
         String classAndClusterName = currentInVertexType.getType(); 
-        currentInVertex = orientGraph.addVertex(classAndClusterName, classAndClusterName);
-        currentInVertex.setProperties(partialProperties);
-        currentInVertex.save();
+        currentInVertex = orientGraph.addVertex("class:"+classAndClusterName, partialProperties);
         context.getOutputManager().debug("New vertex inserted (only pk props setted): " + currentInVertex.toString() + "\n");
 
       }

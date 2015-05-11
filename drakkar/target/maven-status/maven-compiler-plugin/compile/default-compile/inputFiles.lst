@@ -4,7 +4,6 @@
 /home/gabriele/workspace/drakkar/src/main/java/com/orientechnologies/orient/drakkar/ui/OStatisticsListener.java
 /home/gabriele/workspace/drakkar/src/main/java/com/orientechnologies/orient/drakkar/factory/ONameResolverFactory.java
 /home/gabriele/workspace/drakkar/src/main/java/com/orientechnologies/orient/drakkar/util/OTimeFormatHandler.java
-/home/gabriele/workspace/drakkar/src/main/java/com/orientechnologies/orient/drakkar/model/graphmodel/OPropertyAttributes.java
 /home/gabriele/workspace/drakkar/src/main/java/com/orientechnologies/orient/drakkar/ui/OProgressMonitor.java
 /home/gabriele/workspace/drakkar/src/main/java/com/orientechnologies/orient/drakkar/strategy/ONaiveAggregationImportStrategy.java
 /home/gabriele/workspace/drakkar/src/main/java/com/orientechnologies/orient/drakkar/model/dbschema/ODataSourceSchema.java
@@ -20,10 +19,12 @@
 /home/gabriele/workspace/drakkar/src/main/java/com/orientechnologies/orient/drakkar/importengine/ODB2GraphImportEngine.java
 /home/gabriele/workspace/drakkar/src/main/java/com/orientechnologies/orient/drakkar/strategy/OImportStrategy.java
 /home/gabriele/workspace/drakkar/src/main/java/com/orientechnologies/orient/drakkar/model/dbschema/OPrimaryKey.java
+/home/gabriele/workspace/drakkar/src/main/java/com/orientechnologies/orient/drakkar/model/graphmodel/OProperty.java
 /home/gabriele/workspace/drakkar/src/main/java/com/orientechnologies/orient/drakkar/model/graphmodel/OEdgeType.java
 /home/gabriele/workspace/drakkar/src/main/java/com/orientechnologies/orient/drakkar/model/dbschema/ODataBaseSchema.java
 /home/gabriele/workspace/drakkar/src/main/java/com/orientechnologies/orient/drakkar/persistence/handler/ODriverDataTypeHandler.java
 /home/gabriele/workspace/drakkar/src/main/java/com/orientechnologies/orient/drakkar/nameresolver/OJavaConventionNameResolver.java
+/home/gabriele/workspace/drakkar/src/main/java/com/orientechnologies/orient/drakkar/persistence/handler/OHSQLDBDataTypeHandler.java
 /home/gabriele/workspace/drakkar/src/main/java/com/orientechnologies/orient/drakkar/nameresolver/OOriginalConventionNameResolver.java
 /home/gabriele/workspace/drakkar/src/main/java/com/orientechnologies/orient/drakkar/persistence/handler/OMySQLDataTypeHandler.java
 /home/gabriele/workspace/drakkar/src/main/java/com/orientechnologies/orient/drakkar/mapper/OSource2GraphMapper.java

@@ -22,6 +22,7 @@ package com.orientechnologies.orient.drakkar.writer;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 
@@ -73,19 +74,24 @@ public class OGraphModelWriter {
 
       OrientVertexType newVertexType;
       //      OProperty currentProperty = null;
-      List<String> toRemoveAttributes;
       String statement;
       OCommandSQL sqlCommand;
       OType type;
+      Iterator<OProperty> it = null;
 
       int iteration = 1;
       for(OVertexType currentVertexType: graphModel.getVerticesType()) {
         context.getOutputManager().debug("Writing '" + currentVertexType.getType() + "' vertex-type  (" + iteration + "/" + numberOfVertices + ")...");
+        // add check on present vertex
+        newVertexType = orientGraph.getVertexType(currentVertexType.getType());
+        
         newVertexType = orientGraph.createVertexType(currentVertexType.getType());
-        toRemoveAttributes = new ArrayList<String>();
-
-        for(OProperty currentProperty: currentVertexType.getProperties()) {
-
+        
+        
+        OProperty currentProperty = null;
+        it = currentVertexType.getProperties().iterator();
+        while(it.hasNext()) {
+          currentProperty = it.next();
           type = handler.resolveType(currentProperty.getPropertyType().toLowerCase(Locale.ENGLISH), context);
           if(type != null) {
             newVertexType.createProperty(currentProperty.getName(), type);
@@ -93,15 +99,11 @@ public class OGraphModelWriter {
             //            sqlCommand = new OCommandSQL(statement);
             //            orientGraph.getRawGraph().command(sqlCommand).execute();
           }
-          else{
-            toRemoveAttributes.add(currentProperty.getName());   
+          else {
+            it.remove();
             statistics.warningMessages.add(currentProperty.getPropertyType() + " type is not supported, the correspondent property will be dropped.");
           }
         }
-
-        // property will be dropped both from the POJO schema and from OrientDb schema         
-        for(String toRemove: toRemoveAttributes)
-          currentVertexType.removePropertyByName(toRemove);
 
         iteration++;
         context.getOutputManager().debug("Vertex-type '" + currentVertexType.getType() + "' wrote.\n");
@@ -119,6 +121,7 @@ public class OGraphModelWriter {
       iteration = 1;
       for(OEdgeType currentEdgeType: graphModel.getEdgesType()) {
         context.getOutputManager().debug("Writing '" + currentEdgeType.getType() + "' edge-type  (" + iteration + "/" + numberOfEdges + ")...");
+        // add check on present vertex
         newEdgeType = orientGraph.createEdgeType(currentEdgeType.getType());
 
         //        // setting in-vertex-type
@@ -129,11 +132,10 @@ public class OGraphModelWriter {
         //        // setting out-vertex-type
         //        propOut = newEdgeType.createProperty("out", OType.LINK);
         //        propOut.setLinkedClass(orientGraph.getVertexType(currentEdgeType.getOutVertexType().getType()));
-
-        toRemoveAttributes = new ArrayList<String>();
-
-        for(OProperty currentProperty: currentEdgeType.getProperties()) {
-
+        OProperty currentProperty = null;
+        it = currentEdgeType.getProperties().iterator();
+        while(it.hasNext()) {
+          currentProperty = it.next();
           type = handler.resolveType(currentProperty.getPropertyType().toLowerCase(Locale.ENGLISH), context);
 
           if(type != null) {
@@ -143,20 +145,15 @@ public class OGraphModelWriter {
             //            orientGraph.getRawGraph().command(sqlCommand).execute();
           }
           else {  
-            toRemoveAttributes.add(currentProperty.getName());   
+            it.remove();
             statistics.warningMessages.add(currentProperty.getPropertyType() + " type is not supported, the correspondent property will be dropped.");
           }
         }
-
-        // property will be dropped both from the POJO schema and from OrientDb schema         
-        for(String toRemove: toRemoveAttributes)
-          currentEdgeType.removePropertyByName(toRemove);
 
         iteration++;
         context.getOutputManager().debug("Edge-type '" + currentEdgeType.getType() + "' wrote.\n");
         statistics.wroteEdgeType++;
       }
-
 
       // Writing indexes on properties belonging to the original primary key
       context.getOutputManager().debug("Building indexes on properties belonging to the original primary key...");

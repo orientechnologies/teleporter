@@ -1,3 +1,4 @@
+com/orientechnologies/orient/drakkar/model/graphmodel/OProperty.class
 com/orientechnologies/orient/drakkar/writer/OGraphModelWriter.class
 com/orientechnologies/orient/drakkar/persistence/handler/ODriverDataTypeHandler.class
 com/orientechnologies/orient/drakkar/importengine/OGraphDBCommandEngine.class
@@ -15,7 +16,6 @@ com/orientechnologies/orient/drakkar/context/OOutputStreamManager.class
 com/orientechnologies/orient/drakkar/mapper/OSource2GraphMapper.class
 com/orientechnologies/orient/drakkar/factory/ONameResolverFactory.class
 com/orientechnologies/orient/drakkar/model/dbschema/OEntity.class
-com/orientechnologies/orient/drakkar/model/graphmodel/OPropertyAttributes.class
 com/orientechnologies/orient/drakkar/model/graphmodel/OEdgeType.class
 com/orientechnologies/orient/drakkar/model/dbschema/ODataSourceSchema.class
 com/orientechnologies/orient/drakkar/factory/OStrategyFactory.class
@@ -39,4 +39,5 @@ com/orientechnologies/orient/drakkar/nameresolver/OOriginalConventionNameResolve
 com/orientechnologies/orient/drakkar/persistence/handler/OPostgreSQLDataTypeHandler.class
 com/orientechnologies/orient/drakkar/nameresolver/OJavaConventionNameResolver.class
 com/orientechnologies/orient/drakkar/persistence/handler/OGenericDataTypeHandler.class
+com/orientechnologies/orient/drakkar/persistence/handler/OHSQLDBDataTypeHandler.class
 com/orientechnologies/orient/drakkar/model/dbschema/ORelationship.class

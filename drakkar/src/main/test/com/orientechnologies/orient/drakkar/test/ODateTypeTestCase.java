@@ -37,7 +37,6 @@ import com.orientechnologies.orient.drakkar.mapper.OSource2GraphMapper;
 import com.orientechnologies.orient.drakkar.nameresolver.OJavaConventionNameResolver;
 import com.orientechnologies.orient.drakkar.persistence.handler.OHSQLDBDataTypeHandler;
 import com.orientechnologies.orient.drakkar.writer.OGraphModelWriter;
-import com.tinkerpop.blueprints.Vertex;
 import com.tinkerpop.blueprints.impls.orient.OrientGraphNoTx;
 
 /**
@@ -110,12 +109,6 @@ public class ODateTypeTestCase {
        */
       orientGraph = new OrientGraphNoTx(this.outOrientGraphUri);
 
-      // vertices check
-      for(Vertex v: orientGraph.getVertices()) {
-        System.out.print(v.getProperty("year"));
-        System.out.println("\t" + orientGraph.getRawGraph().getMetadata().getSchema().getClass("Film").getProperty("year").getType().toString());
-      }
-      
       assertEquals("STRING", orientGraph.getRawGraph().getMetadata().getSchema().getClass("Film").getProperty("year").getType().toString());
       
     }catch(Exception e) {
@@ -179,12 +172,6 @@ public class ODateTypeTestCase {
        */
       orientGraph = new OrientGraphNoTx(this.outOrientGraphUri);
 
-      // vertices check
-      for(Vertex v: orientGraph.getVertices()) {
-        System.out.print(v.getProperty("year"));
-        System.out.println("\t" + orientGraph.getRawGraph().getMetadata().getSchema().getClass("Film").getProperty("year").getType().toString());
-      }
-      
       assertEquals("DATETIME", orientGraph.getRawGraph().getMetadata().getSchema().getClass("Film").getProperty("year").getType().toString());
 
       
@@ -249,12 +236,6 @@ public class ODateTypeTestCase {
        */
       orientGraph = new OrientGraphNoTx(this.outOrientGraphUri);
 
-      // vertices check
-      for(Vertex v: orientGraph.getVertices()) {
-        System.out.print(v.getProperty("lastUpdate"));
-        System.out.println("\t" + orientGraph.getRawGraph().getMetadata().getSchema().getClass("Film").getProperty("lastUpdate").getType().toString());
-      }
-      
       assertEquals("DATETIME", orientGraph.getRawGraph().getMetadata().getSchema().getClass("Film").getProperty("lastUpdate").getType().toString());
 
       
@@ -320,12 +301,6 @@ public class ODateTypeTestCase {
        */
       orientGraph = new OrientGraphNoTx(this.outOrientGraphUri);
 
-      // vertices check
-      for(Vertex v: orientGraph.getVertices()) {
-        System.out.print(v.getProperty("lastUpdate"));
-        System.out.println("\t" + orientGraph.getRawGraph().getMetadata().getSchema().getClass("Film").getProperty("lastUpdate").getType().toString());
-      }
-      
       assertEquals("DATETIME", orientGraph.getRawGraph().getMetadata().getSchema().getClass("Film").getProperty("lastUpdate").getType().toString());
 
       
@@ -391,12 +366,6 @@ public class ODateTypeTestCase {
        */
       orientGraph = new OrientGraphNoTx(this.outOrientGraphUri);
 
-      // vertices check
-      for(Vertex v: orientGraph.getVertices()) {
-        System.out.print(v.getProperty("lastUpdate"));
-        System.out.println("\t" + orientGraph.getRawGraph().getMetadata().getSchema().getClass("Film").getProperty("lastUpdate").getType().toString());
-      }
-      
       assertEquals("STRING", orientGraph.getRawGraph().getMetadata().getSchema().getClass("Film").getProperty("lastUpdate").getType().toString());
 
       
@@ -461,12 +430,6 @@ public class ODateTypeTestCase {
        */
       orientGraph = new OrientGraphNoTx(this.outOrientGraphUri);
 
-      // vertices check
-      for(Vertex v: orientGraph.getVertices()) {
-        System.out.print(v.getProperty("lastUpdate"));
-        System.out.println("\t" + orientGraph.getRawGraph().getMetadata().getSchema().getClass("Film").getProperty("lastUpdate").getType().toString());
-      }
-      
       assertEquals("STRING", orientGraph.getRawGraph().getMetadata().getSchema().getClass("Film").getProperty("lastUpdate").getType().toString());
 
       
