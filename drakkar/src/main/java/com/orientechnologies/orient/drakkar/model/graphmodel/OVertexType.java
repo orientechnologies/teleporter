@@ -21,8 +21,6 @@
 package com.orientechnologies.orient.drakkar.model.graphmodel;
 
 import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -34,54 +32,16 @@ import java.util.List;
  *
  */
 
-public class OVertexType {
+public class OVertexType extends OElementType {
 
-  private String vertexType;
-  //  private Map<String,OPropertyAttributes> propertyName2propertyAttributes;
-  private List<OProperty> properties;
-  private OVertexType parentVertexType;
   private List<OEdgeType> inEdgesType;
   private List<OEdgeType> outEdgesType;
   private boolean fromJunctionEntity;
 
   public OVertexType(String vertexType) {
-    this.vertexType = vertexType;
-    //    this.propertyName2propertyAttributes = new LinkedHashMap<String, OPropertyAttributes>();
-    this.properties = new LinkedList<OProperty>();
+    super(vertexType);
     this.inEdgesType = new ArrayList<OEdgeType>();
     this.outEdgesType = new ArrayList<OEdgeType>();
-  }
-
-  public String getType() {
-    return this.vertexType;
-  }
-
-  public void setType(String vertexType) {
-    this.vertexType = vertexType;
-  }
-  //
-  //  public Map<String, OPropertyAttributes> getPropertyName2propertyAttributes() {
-  //    return this.propertyName2propertyAttributes;
-  //  }
-  //
-  //  public void setPropertyName2propertyAttributes(Map<String, OPropertyAttributes> propertyName2propertyAttributes) {
-  //    this.propertyName2propertyAttributes = propertyName2propertyAttributes;
-  //  }
-
-  public List<OProperty> getProperties() {
-    return this.properties;
-  }
-
-  public void setProperties(List<OProperty> properties) {
-    this.properties = properties;
-  }
-
-  public OVertexType getParentVertexType() {
-    return this.parentVertexType;
-  }
-
-  public void setParentVertexType(OVertexType parentVertexType) {
-    this.parentVertexType = parentVertexType;
   }
 
   public List<OEdgeType> getInEdgesType() {
@@ -108,37 +68,13 @@ public class OVertexType {
     this.fromJunctionEntity = fromMany2Many;
   }
   
-  /**
-   * @param toRemove
-   */
-  public void removePropertyByName(String toRemove) {
-    Iterator<OProperty> it = this.properties.iterator();
-    OProperty currentProperty = null;
-
-    while (it.hasNext()) {
-      currentProperty = it.next();
-      if(currentProperty.getName().equals(toRemove))
-        it.remove();
-    }
-  }
-  
-  public OProperty getPropertyByName(String name) {
-    for(OProperty property: this.properties) {
-      if(property.getName().equals(name)) {
-        return property;
-      }
-    }
-    return null;
-  }
-
 
   @Override
   public int hashCode() {
     final int prime = 31;
     int result = 1;
     result = prime * result + (fromJunctionEntity ? 1231 : 1237);
-    result = prime * result + ((parentVertexType == null) ? 0 : parentVertexType.hashCode());
-    result = prime * result + ((vertexType == null) ? 0 : vertexType.hashCode());
+    result = prime * result + ((super.type == null) ? 0 : super.type.hashCode());
     return result;
   }
 
@@ -149,7 +85,7 @@ public class OVertexType {
     OVertexType that = (OVertexType) obj;
 
     // check on type and many-to-many variables
-    if(!(this.vertexType.equals(that.getType()) && this.fromJunctionEntity == that.isFromJunctionEntity()))
+    if(!(super.type.equals(that.getType()) && this.fromJunctionEntity == that.isFromJunctionEntity()))
       return false;
 
     // check on properties
@@ -164,10 +100,10 @@ public class OVertexType {
   }
 
   public String toString() {
-    String s = "Vertex-type [type = " + this.vertexType + ", # attributes = " + this.properties.size() + ", # inEdges: "
+    String s = "Vertex-type [type = " + super.type + ", # attributes = " + this.properties.size() + ", # inEdges: "
         + this.inEdgesType.size() + ", # outEdges: " + this.outEdgesType.size() + "]\nAttributes:\n"; 
 
-    for(OProperty currentProperty: this.properties) {
+    for(OModelProperty currentProperty: this.properties) {
       s += currentProperty.getOrdinalPosition() + ": " + currentProperty.getName() + " --> " + currentProperty.toString();
 
       if(currentProperty.isFromPrimaryKey())

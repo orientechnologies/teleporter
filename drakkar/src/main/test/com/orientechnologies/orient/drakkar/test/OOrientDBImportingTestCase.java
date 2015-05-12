@@ -708,5 +708,10 @@ public class OOrientDBImportingTestCase {
     }  
 
   }
+  
+  
+  public void test2() {
+    
+  }
 
 }

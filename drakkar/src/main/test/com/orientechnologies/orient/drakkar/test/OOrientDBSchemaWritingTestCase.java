@@ -1,15 +1,16 @@
 package com.orientechnologies.orient.drakkar.test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.Statement;
+import java.util.Iterator;
 
 import org.junit.Before;
 import org.junit.Test;
 
+import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.drakkar.context.ODrakkarContext;
 import com.orientechnologies.orient.drakkar.context.OOutputStreamManager;
@@ -801,7 +802,7 @@ public class OOrientDBSchemaWritingTestCase {
 
       assertEquals("HasMgr", mgrEdgeType.getName());
       assertEquals("HasProjectManager", projectManagerEdgeType.getName());
-      
+
       // Indices check
       assertEquals(2+3, orientGraph.getRawGraph().getMetadata().getIndexManager().getIndexes().size());
 
@@ -811,6 +812,125 @@ public class OOrientDBSchemaWritingTestCase {
       assertEquals(true, orientGraph.getRawGraph().getMetadata().getIndexManager().existsIndex("Project.pkey"));
       assertEquals(true, orientGraph.getRawGraph().getMetadata().getIndexManager().areIndexed("Project", "id"));
 
+
+
+    }catch(Exception e) {
+      e.printStackTrace();
+    }finally {
+      try {
+
+        // Dropping Source DB Schema and OrientGraph
+        String dbDropping = "DROP SCHEMA PUBLIC CASCADE";
+        st.execute(dbDropping);
+        connection.close();
+      }catch(Exception e) {
+        e.printStackTrace();
+      }
+      orientGraph.drop();
+      orientGraph.shutdown();
+    }
+  }
+  
+  
+  @Test
+
+  /*
+   * CheckAndUpdate OrientDB Schema
+   */
+
+  public void test7() {
+
+    Connection connection = null;
+    Statement st = null;
+    OrientGraphNoTx orientGraph = null;
+
+    try {
+
+      Class.forName("org.hsqldb.jdbc.JDBCDriver");
+      connection = DriverManager.getConnection("jdbc:hsqldb:mem:mydb", "SA", "");
+
+      String authorTableBuilding = "create memory table AUTHOR (ID varchar(256) not null,"+
+          " NAME varchar(256) not null, AGE integer not null, primary key (ID))";
+      st = connection.createStatement();
+      st.execute(authorTableBuilding);
+
+      String bookTableBuilding = "create memory table BOOK (ID varchar(256) not null, TITLE  varchar(256),"+
+          " AUTHOR_ID varchar(256) not null, primary key (ID), foreign key (AUTHOR_ID) references AUTHOR(ID))";
+      st.execute(bookTableBuilding);
+
+      String articleTableBuilding = "create memory table ARTICLE (ID varchar(256) not null, TITLE  varchar(256),"+
+          " DATE  date, AUTHOR_ID varchar(256) not null, primary key (ID), foreign key (AUTHOR_ID) references AUTHOR(ID))";
+      st.execute(articleTableBuilding);
+
+      this.mapper = new OER2GraphMapper("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "");
+      mapper.buildSourceSchema(this.context);
+      mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
+      modelWriter.writeModelOnOrient(mapper.getGraphModel(), new OHSQLDBDataTypeHandler(), this.outOrientGraphUri, context);
+      
+//      OrientVertexType bookVertexType = orientGraph.getVertexType("Book");
+//      OrientEdgeType authorEdgeType = orientGraph.getEdgeType("HasAuthor");
+      
+      // dropping property from OrientDB Schema (from Author)
+      orientGraph = new OrientGraphNoTx(this.outOrientGraphUri);
+      OrientVertexType authorVertexType =  orientGraph.getVertexType("Author");
+      
+      authorVertexType.createProperty("surname", OType.STRING);
+      authorVertexType =  orientGraph.getVertexType("Author");
+      assertEquals(4, authorVertexType.properties().size());
+      Iterator<OProperty> it = authorVertexType.properties().iterator();
+      assertEquals("id", it.next().getName());
+      assertEquals("age", it.next().getName());
+      assertEquals("name", it.next().getName());
+      assertEquals("surname", it.next().getName());
+      assertFalse(it.hasNext());
+      
+      modelWriter.writeModelOnOrient(mapper.getGraphModel(), new OHSQLDBDataTypeHandler(), this.outOrientGraphUri, context);
+      authorVertexType =  orientGraph.getVertexType("Author");
+      assertEquals(3, authorVertexType.properties().size());
+      it = authorVertexType.properties().iterator();
+      assertEquals("id", it.next().getName());
+      assertEquals("name", it.next().getName());
+      assertEquals("age", it.next().getName());
+      assertFalse(it.hasNext());
+      
+      // dropping property from Graph Model (from Book)
+      OrientVertexType articleVertexType = orientGraph.getVertexType("Article");
+      
+      mapper.getGraphModel().getVertexByType("Article").removePropertyByName("title");
+      assertEquals(3, mapper.getGraphModel().getVertexByType("Article").getProperties().size());
+      assertEquals("id", mapper.getGraphModel().getVertexByType("Article").getProperties().get(0).getName());
+      assertEquals("date", mapper.getGraphModel().getVertexByType("Article").getProperties().get(1).getName());
+      assertEquals("authorId", mapper.getGraphModel().getVertexByType("Article").getProperties().get(2).getName());
+      
+      assertEquals(4, articleVertexType.properties().size());
+      it = articleVertexType.properties().iterator();
+      assertEquals("id", it.next().getName());
+      assertEquals("title", it.next().getName());
+      assertEquals("authorId", it.next().getName());
+      assertEquals("date", it.next().getName());
+      assertFalse(it.hasNext());
+      
+      modelWriter.writeModelOnOrient(mapper.getGraphModel(), new OHSQLDBDataTypeHandler(), this.outOrientGraphUri, context);
+      assertEquals(3, articleVertexType.properties().size());
+      articleVertexType = orientGraph.getVertexType("Article");
+      it = articleVertexType.properties().iterator();
+      assertEquals("id", it.next().getName());
+      assertEquals("authorId", it.next().getName());
+      assertEquals("date", it.next().getName());
+      assertFalse(it.hasNext());
+      
+
+      // adding a property to OrientDB Schema (to HasAuthor)
+      OrientEdgeType authorEdgeType = orientGraph.getEdgeType("HasAuthor");
+      authorEdgeType.createProperty("date", OType.DATE);
+      assertEquals(1, authorEdgeType.properties().size());
+      it = authorEdgeType.properties().iterator();
+      assertEquals("date", it.next().getName());
+      assertFalse(it.hasNext());
+      
+      modelWriter.writeModelOnOrient(mapper.getGraphModel(), new OHSQLDBDataTypeHandler(), this.outOrientGraphUri, context);
+      authorEdgeType = orientGraph.getEdgeType("HasAuthor");
+      assertEquals(0, authorEdgeType.properties().size());
 
 
     }catch(Exception e) {

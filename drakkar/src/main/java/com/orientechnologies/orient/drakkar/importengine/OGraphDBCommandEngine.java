@@ -32,8 +32,10 @@ import java.util.Map;
 import com.orientechnologies.orient.drakkar.context.ODrakkarContext;
 import com.orientechnologies.orient.drakkar.model.dbschema.OAttribute;
 import com.orientechnologies.orient.drakkar.model.dbschema.ORelationship;
-import com.orientechnologies.orient.drakkar.model.graphmodel.OProperty;
+import com.orientechnologies.orient.drakkar.model.graphmodel.OModelProperty;
 import com.orientechnologies.orient.drakkar.model.graphmodel.OVertexType;
+import com.tinkerpop.blueprints.Direction;
+import com.tinkerpop.blueprints.Edge;
 import com.tinkerpop.blueprints.Vertex;
 import com.tinkerpop.blueprints.impls.orient.OrientBaseGraph;
 import com.tinkerpop.blueprints.impls.orient.OrientEdge;
@@ -70,26 +72,11 @@ public class OGraphDBCommandEngine {
    */
   public OrientVertex getVertexByIndexedKey(OrientBaseGraph orientGraph, String[] keys, String[] values, String vertexClassName) {
 
-    /*
-     * Graph API throughout index
-     */
-
     OrientVertex vertex = null;
+    Iterator<Vertex> iterator = orientGraph.getVertices(vertexClassName, keys, values).iterator();
 
-    //check: all values must be different from null
-    boolean ok = true;
-    for(int i=0; i<values.length; i++) {
-      if(values[i] == null) {
-        ok = false;
-        break;
-      }
-    }
-
-    if(ok) {
-      Iterator<Vertex> iterator = orientGraph.getVertices(vertexClassName, keys, values).iterator();
-      if(iterator.hasNext())
-        vertex = (OrientVertex) iterator.next();
-    }
+    if(iterator.hasNext())
+      vertex = (OrientVertex) iterator.next();
 
     return vertex;
 
@@ -111,7 +98,7 @@ public class OGraphDBCommandEngine {
 
     List<String> propertiesOfIndex = new LinkedList<String>();
 
-    for(OProperty currentProperty: vertexType.getProperties()) {
+    for(OModelProperty currentProperty: vertexType.getProperties()) {
       // only attribute coming from the primary key are given
       if(currentProperty.isFromPrimaryKey())
         propertiesOfIndex.add(currentProperty.getName());
@@ -139,7 +126,7 @@ public class OGraphDBCommandEngine {
     String currentAttributeValue = null;
     String currentDateValue;
     String currentPropertyType;
-    for(OProperty currentProperty : vertexType.getProperties()) {
+    for(OModelProperty currentProperty : vertexType.getProperties()) {
 
       currentPropertyType = context.getDataTypeHandler().resolveType(currentProperty.getPropertyType(),context).toString();
       currentAttributeValue = record.getString(context.getNameResolver().reverseTransformation(currentProperty.getName()));
@@ -210,7 +197,7 @@ public class OGraphDBCommandEngine {
    * @throws SQLException 
    */
 
-  public Vertex upsertReachedVertexWithEdge(ResultSet foreignRecord, ORelationship relation, Vertex currentOutVertex, OVertexType currentInVertexType,
+  public OrientVertex upsertReachedVertexWithEdge(ResultSet foreignRecord, ORelationship relation, OrientVertex currentOutVertex, OVertexType currentInVertexType,
       String edgeType, ODrakkarContext context) throws SQLException {
 
     OrientGraphFactory factory = new OrientGraphFactory(this.graphDBUrl);
@@ -276,16 +263,39 @@ public class OGraphDBCommandEngine {
         context.getOutputManager().debug("NOT NEW Reached vertex, vertex " + Arrays.toString(propertyOfKey) + ":" + Arrays.toString(valueOfKey) + " already present in the Orient Graph.\n");
       }
 
-      // create relative edge beetween currentVertex and current reached vertex (just inserted or not)
-      // only if it's present in the graph (different from null)
+      // upsert of the edge between the currentOutVertex and the currentInVertex
+      this.upsertEdge(orientGraph, currentOutVertex, currentInVertex, edgeType, context);
+    }
+    orientGraph.shutdown();
+
+    return currentInVertex;
+  }
+
+  public void upsertEdge(OrientGraphNoTx orientGraph, OrientVertex currentOutVertex, OrientVertex currentInVertex, String edgeType, ODrakkarContext context) {
+
+    boolean edgeAlreadyPresent = false;
+    Iterator<Edge> it = currentOutVertex.getEdges(Direction.OUT, edgeType).iterator();
+    Edge currentEdge;
+    
+    if(it.hasNext()) {
+      while(it.hasNext()) {
+        currentEdge = it.next();
+        edgeAlreadyPresent = ((OrientVertex)currentEdge.getVertex(Direction.IN)).getType().getName().equals(currentInVertex.getType().getName());
+        if(edgeAlreadyPresent) {
+          context.getOutputManager().debug("Edge beetween '" + currentOutVertex.toString() + "' and '" + currentInVertex.toString() + "' already present.");
+        }
+        else {
+          OrientEdge edge = orientGraph.addEdge(null, currentOutVertex, currentInVertex, edgeType);
+          edge.save();
+          context.getOutputManager().debug("New edge inserted: " + edge.toString());
+        }
+      }
+    }
+    else {
       OrientEdge edge = orientGraph.addEdge(null, currentOutVertex, currentInVertex, edgeType);
       edge.save();
       context.getOutputManager().debug("New edge inserted: " + edge.toString());
     }
-
-    orientGraph.shutdown();
-
-    return currentInVertex;
   }
 
 }

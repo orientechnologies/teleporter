@@ -45,7 +45,7 @@ import com.orientechnologies.orient.drakkar.model.dbschema.OPrimaryKey;
 import com.orientechnologies.orient.drakkar.model.dbschema.ORelationship;
 import com.orientechnologies.orient.drakkar.model.graphmodel.OEdgeType;
 import com.orientechnologies.orient.drakkar.model.graphmodel.OGraphModel;
-import com.orientechnologies.orient.drakkar.model.graphmodel.OProperty;
+import com.orientechnologies.orient.drakkar.model.graphmodel.OModelProperty;
 import com.orientechnologies.orient.drakkar.model.graphmodel.OVertexType;
 import com.orientechnologies.orient.drakkar.nameresolver.ONameResolver;
 import com.orientechnologies.orient.drakkar.persistence.util.ODataSource;
@@ -349,7 +349,7 @@ public class OER2GraphMapper implements OSource2GraphMapper {
 
     OVertexType currentVertexType;
     String currentVertexTypeName;
-    OProperty currentProperty = null;
+    OModelProperty currentProperty = null;
 
     int numberOfVertexType = this.dataBaseSchema.getEntities().size();
     statistics.totalNumberOfModelVertices = numberOfVertexType;
@@ -372,7 +372,7 @@ public class OER2GraphMapper implements OSource2GraphMapper {
 
       // adding attributes to vertex-type
       for(OAttribute attribute: currentEntity.getAttributes()) {             
-        currentProperty = new OProperty(nameResolver.resolveVertexProperty(attribute.getName()), attribute.getOrdinalPosition(), attribute.getDataType(), currentEntity.getPrimaryKey().getInvolvedAttributes().contains(attribute));
+        currentProperty = new OModelProperty(nameResolver.resolveVertexProperty(attribute.getName()), attribute.getOrdinalPosition(), attribute.getDataType(), currentEntity.getPrimaryKey().getInvolvedAttributes().contains(attribute));
         currentVertexType.getProperties().add(currentProperty);
       }
 
@@ -464,7 +464,7 @@ public class OER2GraphMapper implements OSource2GraphMapper {
         newAggregatorEdge = new OEdgeType(edgeType, outVertexType, inVertexType);       
 
         // adding to the edge all properties not belonging to the primary key
-        for(OProperty currentProperty: currentVertex.getProperties()) {
+        for(OModelProperty currentProperty: currentVertex.getProperties()) {
 
           // if property does not belong to the primary key
           if(!currentProperty.isFromPrimaryKey()) {

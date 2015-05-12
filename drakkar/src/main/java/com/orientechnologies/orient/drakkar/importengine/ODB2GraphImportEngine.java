@@ -32,7 +32,7 @@ import com.orientechnologies.orient.drakkar.model.dbschema.OEntity;
 import com.orientechnologies.orient.drakkar.model.dbschema.ORelationship;
 import com.orientechnologies.orient.drakkar.model.graphmodel.OEdgeType;
 import com.orientechnologies.orient.drakkar.model.graphmodel.OVertexType;
-import com.tinkerpop.blueprints.Vertex;
+import com.tinkerpop.blueprints.impls.orient.OrientVertex;
 
 /**
  * It orchestrates the phases of the importing algorithm from a DB to an Orient Graph DB.
@@ -61,7 +61,7 @@ public class ODB2GraphImportEngine {
 
     OVertexType currentOutVertexType = null;  
     OVertexType currentInVertexType = null;  
-    Vertex currentOutVertex = null;
+    OrientVertex currentOutVertex = null;
     OEdgeType edgeType = null;
 
     for(OEntity entity: mapper.getDataBaseSchema().getEntities()) {
@@ -75,7 +75,7 @@ public class ODB2GraphImportEngine {
       while(records.next()) {
         // upsert of the vertex
         currentRecord = records;
-        currentOutVertex = graphDBCommandEngine.upsertVisitedVertex(currentRecord, currentOutVertexType, context);
+        currentOutVertex = (OrientVertex) graphDBCommandEngine.upsertVisitedVertex(currentRecord, currentOutVertexType, context);
 
         // for each attribute of the entity belonging to the primary key, correspondent relationship is
         // built as edge and for the referenced record a vertex is built (only id)
