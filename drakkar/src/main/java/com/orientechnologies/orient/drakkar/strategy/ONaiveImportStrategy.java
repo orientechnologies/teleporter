@@ -93,7 +93,7 @@ public class ONaiveImportStrategy implements OImportStrategy {
       context.getOutputManager().error("Writing not complete. Something's gone wrong.\n");
       System.exit(0);
     }
-    context.getOutputManager().info("OrientDB Schema writing complete.");
+    context.getOutputManager().debug("OrientDB Schema writing complete.");
 
     return mapper;
   }

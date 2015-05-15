@@ -110,7 +110,7 @@ public class ODrakkar {
 
     // simple syntax check on command
 
-    if(!arguments.get("-d").contains(".Driver")) {
+    if(!arguments.get("-d").contains("Driver")) {
       outputManager.error("Not valid db-driver name.\n");
       exit();
     }

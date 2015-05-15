@@ -27,6 +27,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import com.orientechnologies.orient.drakkar.context.ODrakkarContext;
@@ -128,7 +129,7 @@ public class OGraphDBCommandEngine {
     String currentPropertyType;
     for(OModelProperty currentProperty : vertexType.getProperties()) {
 
-      currentPropertyType = context.getDataTypeHandler().resolveType(currentProperty.getPropertyType(),context).toString();
+      currentPropertyType = context.getDataTypeHandler().resolveType(currentProperty.getPropertyType().toLowerCase(Locale.ENGLISH),context).toString();
       currentAttributeValue = record.getString(context.getNameResolver().reverseTransformation(currentProperty.getName()));
 
       if(currentAttributeValue != null) {
