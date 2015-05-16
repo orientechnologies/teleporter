@@ -41,43 +41,39 @@ public class OEntity {
   private OPrimaryKey primaryKey;
   private List<OForeignKey> foreignKeys;
   private List<ORelationship> relationships;
-  private Boolean isJunctionEntity;
+  private Boolean isJoinEntityDim2;
 
   public OEntity(String name) {
     this.name = name;
     this.attributes = new LinkedList<OAttribute>();
     this.foreignKeys = new LinkedList<OForeignKey>();
     this.relationships = new ArrayList<ORelationship>();
-    this.isJunctionEntity = null;
+    this.isJoinEntityDim2 = null;
   }
 
-  public boolean isJunctionEntity() {
+  /*
+   * It's possible to aggregate an entity if it's a junction (or join) table of dimension 2.
+   */
+  public boolean isJoinEntityDim2() {
 
-    if(this.isJunctionEntity == null) {
+    if(this.foreignKeys.size() != 2)
+      return false;
 
-      for(OAttribute attribute: this.primaryKey.getInvolvedAttributes()) {         
-        if(!this.isInvolvedInForeignKeys(attribute)) {
-          return false;
-        }      
-      }
-      return true; 
-    }
-    else {
-      return this.isJunctionEntity();
-    }
+    if(this.isJoinEntityDim2 == null) {
 
-  }
-
-  private boolean isInvolvedInForeignKeys(OAttribute attribute) {
-
-    for(ORelationship relationship: this.relationships) {
-      for(OAttribute fkAttribute: relationship.getForeignKey().getInvolvedAttributes()) {
-        if(fkAttribute.getName().equals(attribute.getName())) {
-          return true;
+      for(OForeignKey currentFk: this.foreignKeys) {
+        for(OAttribute attribute: currentFk.getInvolvedAttributes()) {
+          if(!this.primaryKey.getInvolvedAttributes().contains(attribute)) {
+            return this.isJoinEntityDim2 = false;
+          }
         }
       }
-    }      
-    return false;    
+      return this.isJoinEntityDim2 = true;
+    }
+    else {
+      return this.isJoinEntityDim2;
+    }
+
   }
 
   public String getName() {
@@ -113,13 +109,9 @@ public class OEntity {
     this.foreignKeys = foreignKeys;
   }
 
-//  public void addAttribute(OAttribute attribute) {
-//    this.attributes.add(attribute);
-//  }
-  
   public boolean addAttribute(OAttribute attribute) {
     boolean added = this.attributes.add(attribute);
-    
+
     if(added) {
       Collections.sort(this.attributes);
     }
@@ -157,8 +149,8 @@ public class OEntity {
   public String toString() {
     String s = "Entity [name = " + this.name + ", number of attributes = " + this.attributes.size() + "]";	
 
-    if(this.isJunctionEntity())
-      s += "\t\t\tJunction Entity (Join Table)";
+    if(this.isJoinEntityDim2())
+      s += "\t\t\tJoin Entity (Join Table of dimension 2)";
 
     s += "\n|| ";
 

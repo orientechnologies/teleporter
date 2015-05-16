@@ -94,6 +94,7 @@ public class ONaiveImportStrategy implements OImportStrategy {
       System.exit(0);
     }
     context.getOutputManager().debug("OrientDB Schema writing complete.");
+    context.getOutputManager().info("");
 
     return mapper;
   }

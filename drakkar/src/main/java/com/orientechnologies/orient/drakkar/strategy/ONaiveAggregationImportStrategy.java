@@ -20,17 +20,14 @@
 
 package com.orientechnologies.orient.drakkar.strategy;
 
-//import java.util.Date;
-//import java.util.concurrent.TimeUnit;
-//
-//import com.orientechnologies.common.log.OLogManager;
-//import com.orientechnologies.orient.drakkar.factory.ODataTypeHandlerFactory;
-//import com.orientechnologies.orient.drakkar.mapper.OER2GraphMapper;
-//import com.orientechnologies.orient.drakkar.mapper.OSource2GraphMapper;
-//import com.orientechnologies.orient.drakkar.model.graphmodel.OGraphModel;
-//import com.orientechnologies.orient.drakkar.nameresolver.ONameResolver;
-//import com.orientechnologies.orient.drakkar.persistence.handler.ODriverDataTypeHandler;
-//import com.orientechnologies.orient.drakkar.writer.OGraphModelWriter;
+import com.orientechnologies.orient.drakkar.context.ODrakkarContext;
+import com.orientechnologies.orient.drakkar.factory.ODataTypeHandlerFactory;
+import com.orientechnologies.orient.drakkar.mapper.OER2GraphMapper;
+import com.orientechnologies.orient.drakkar.mapper.OSource2GraphMapper;
+import com.orientechnologies.orient.drakkar.model.graphmodel.OGraphModel;
+import com.orientechnologies.orient.drakkar.nameresolver.ONameResolver;
+import com.orientechnologies.orient.drakkar.persistence.handler.ODriverDataTypeHandler;
+import com.orientechnologies.orient.drakkar.writer.OGraphModelWriter;
 
 /**
  * A strategy that performs a "naive" import of the data source. The data source schema is
@@ -47,82 +44,41 @@ public class ONaiveAggregationImportStrategy extends ONaiveImportStrategy {
   public ONaiveAggregationImportStrategy() {}
 
 
-//  public OSource2GraphMapper createSchemaMapper(String driver, String uri, String username, String password, String outOrientGraphUri, ONameResolver nameResolver) {
-//
-//    OSource2GraphMapper mapper = new OER2GraphMapper(driver, uri, username, password);
-//
-//    // DataBase schema building
-//    OLogManager.instance().info(this, "Building the DataBase schema...\n", (Object[]) null);
-//    Date start = new Date();
-//    mapper.buildSourceSchema();
-//    Date end = new Date();
-//    OLogManager.instance().info(this, "DataBase schema building complete.\n", (Object[]) null);
-//
-//    String hms = String.format("%02d:%02d:%02d", TimeUnit.MILLISECONDS.toHours(end.getTime()-start.getTime()), TimeUnit.MILLISECONDS.toMinutes(end.getTime()-start.getTime())
-//        - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(end.getTime()-start.getTime())), TimeUnit.MILLISECONDS.toSeconds(end.getTime()-start.getTime())
-//        - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(end.getTime()-start.getTime())));
-//    OLogManager.instance().info(this, "Elapsed time: %s s.\n", hms);
-//
-//    OLogManager.instance().debug(this, "%s\n", ((OER2GraphMapper)mapper).getDataBaseSchema().toString());
-//
-//
-//    // Graph model building
-//    OLogManager.instance().info(this, "Building the graph model...\n", (Object[]) null);
-//    start = new Date();
-//    mapper.buildGraphModel(nameResolver);
-//    end = new Date();
-//    OLogManager.instance().info(this, "Graph model building complete.\n", (Object[]) null);
-//
-//    hms = String.format("%02d:%02d:%02d", TimeUnit.MILLISECONDS.toHours(end.getTime()-start.getTime()), TimeUnit.MILLISECONDS.toMinutes(end.getTime()-start.getTime())
-//        - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(end.getTime()-start.getTime())), TimeUnit.MILLISECONDS.toSeconds(end.getTime()-start.getTime())
-//        - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(end.getTime()-start.getTime())));
-//    OLogManager.instance().info(this, "Elapsed time: %s s.\n", hms);
-//
-//    OLogManager.instance().debug(this, "%s\n", ((OER2GraphMapper)mapper).getGraphModel().toString());
-//
-//
-//
-//    // Many-to-Many aggregation
-//    OLogManager.instance().info(this, "Many-To-Many aggregation in progress...\n", (Object[]) null);
-//    start = new Date();
-//    ((OER2GraphMapper)mapper).Many2ManyAggregation();
-//    end = new Date();
-//    OLogManager.instance().info(this, "'Junction-Entity' aggregation complete.\n", (Object[]) null);
-//
-//    hms = String.format("%02d:%02d:%02d", TimeUnit.MILLISECONDS.toHours(end.getTime()-start.getTime()), TimeUnit.MILLISECONDS.toMinutes(end.getTime()-start.getTime())
-//        - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(end.getTime()-start.getTime())), TimeUnit.MILLISECONDS.toSeconds(end.getTime()-start.getTime())
-//        - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(end.getTime()-start.getTime())));
-//    OLogManager.instance().info(this, "Elapsed time: %s ms.\n", hms);
-//
-//    OLogManager.instance().debug(this, "%s\n", ((OER2GraphMapper)mapper).getGraphModel().toString());
-//
-//
-//    // Saving schema on Orient
-//    ODataTypeHandlerFactory factory = new ODataTypeHandlerFactory();
-//    ODriverDataTypeHandler handler = factory.buildDataTypeHandler(driver);
-//    String outDbRootDirUri = outOrientGraphUri.substring(outOrientGraphUri.indexOf(':'), outOrientGraphUri.lastIndexOf('/')+1);
-//    OLogManager.instance().info(this, "OrientGraph schema writing at %s...\n", outDbRootDirUri);
-//    start = new Date();
-//    OGraphModelWriter graphModelWriter = new OGraphModelWriter();  
-//    OGraphModel graphModel = ((OER2GraphMapper)mapper).getGraphModel();
-//    boolean success = graphModelWriter.writeModelOnOrient(graphModel, handler, outOrientGraphUri);
-//    end = new Date();
-//
-//    if(success) {
-//      OLogManager.instance().info(this, "Writing complete.\n", (Object[]) null);
-//    }
-//    else {
-//      OLogManager.instance().error(this, "Writing not complete. Something's gone wrong.\n", (Object[]) null);
-//
-//    }
-//
-//    hms = String.format("%02d:%02d:%02d", TimeUnit.MILLISECONDS.toHours(end.getTime()-start.getTime()), TimeUnit.MILLISECONDS.toMinutes(end.getTime()-start.getTime())
-//        - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(end.getTime()-start.getTime())), TimeUnit.MILLISECONDS.toSeconds(end.getTime()-start.getTime())
-//        - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(end.getTime()-start.getTime())));
-//    OLogManager.instance().info(this, "Elapsed time: %s s.\n", (end.getTime() - start.getTime())/1000);
-//
-//
-//    return mapper;
-//  }
+  public OSource2GraphMapper createSchemaMapper(String driver, String uri, String username, String password, String outOrientGraphUri, ONameResolver nameResolver, ODrakkarContext context) {
+
+    OSource2GraphMapper mapper = new OER2GraphMapper(driver, uri, username, password);
+
+    // DataBase schema building
+    mapper.buildSourceSchema(context);
+    context.getOutputManager().info("");
+    context.getOutputManager().debug(((OER2GraphMapper)mapper).getDataBaseSchema().toString() + "\n");
+
+    // Graph model building
+    mapper.buildGraphModel(nameResolver, context);
+    context.getOutputManager().info("");
+    context.getOutputManager().debug(((OER2GraphMapper)mapper).getGraphModel().toString() + "\n");
+
+    // Many-to-Many aggregation
+    ((OER2GraphMapper)mapper).JoinTableDim2Aggregation(context);
+    context.getOutputManager().debug("'Junction-Entity' aggregation complete.\n");
+    context.getOutputManager().debug(((OER2GraphMapper)mapper).getGraphModel().toString() + "\n");
+
+
+ // Saving schema on Orient
+    ODataTypeHandlerFactory factory = new ODataTypeHandlerFactory();
+    ODriverDataTypeHandler handler = factory.buildDataTypeHandler(driver, context);
+    OGraphModelWriter graphModelWriter = new OGraphModelWriter();  
+    OGraphModel graphModel = ((OER2GraphMapper)mapper).getGraphModel();
+    boolean success = graphModelWriter.writeModelOnOrient(graphModel, handler, outOrientGraphUri, context);
+    if(!success) {
+      context.getOutputManager().error("Writing not complete. Something's gone wrong.\n");
+      System.exit(0);
+    }
+    context.getOutputManager().debug("OrientDB Schema writing complete.");
+    context.getOutputManager().info("");
+
+
+    return mapper;
+  }
 
 }

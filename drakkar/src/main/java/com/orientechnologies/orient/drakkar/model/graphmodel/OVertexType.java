@@ -36,7 +36,7 @@ public class OVertexType extends OElementType {
 
   private List<OEdgeType> inEdgesType;
   private List<OEdgeType> outEdgesType;
-  private boolean fromJunctionEntity;
+  private boolean isFromJoinTable;
 
   public OVertexType(String vertexType) {
     super(vertexType);
@@ -60,24 +60,22 @@ public class OVertexType extends OElementType {
     this.outEdgesType = outEdgesType;
   }
 
-  public boolean isFromJunctionEntity() {
-    return this.fromJunctionEntity;
+  public boolean isFromJoinTable() {
+    return this.isFromJoinTable;
   }
 
-  public void setFromMany2Many(boolean fromMany2Many) {
-    this.fromJunctionEntity = fromMany2Many;
+  public void setIsFromJoinTable(boolean isFromJoinTable) {
+    this.isFromJoinTable = isFromJoinTable;
   }
   
-
   @Override
   public int hashCode() {
     final int prime = 31;
     int result = 1;
-    result = prime * result + (fromJunctionEntity ? 1231 : 1237);
+    result = prime * result + (isFromJoinTable ? 1231 : 1237);
     result = prime * result + ((super.type == null) ? 0 : super.type.hashCode());
     return result;
   }
-
 
   @Override
   public boolean equals(Object obj) {
@@ -85,7 +83,7 @@ public class OVertexType extends OElementType {
     OVertexType that = (OVertexType) obj;
 
     // check on type and many-to-many variables
-    if(!(super.type.equals(that.getType()) && this.fromJunctionEntity == that.isFromJunctionEntity()))
+    if(!(super.type.equals(that.getType()) && this.isFromJoinTable == that.isFromJoinTable()))
       return false;
 
     // check on properties

@@ -80,7 +80,7 @@ public class OEdgeType extends OElementType {
     OEdgeType that = (OEdgeType) obj;
 
     // check on type and in/out vertex
-    if(!(super.type.equals(that.getType()) && this.outVertexType.getType().equals(that.getOutVertexType().getType()) && this.inVertexType.getType().equals(that.getInVertexType().getType())))
+    if(!(super.type.equals(that.getType()) && this.inVertexType.getType().equals(that.getInVertexType().getType())))
       return false;
 
     // check on properties

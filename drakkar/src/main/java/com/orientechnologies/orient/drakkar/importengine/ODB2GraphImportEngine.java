@@ -26,6 +26,7 @@ import java.util.Date;
 
 import com.orientechnologies.orient.drakkar.context.ODrakkarContext;
 import com.orientechnologies.orient.drakkar.context.ODrakkarStatistics;
+import com.orientechnologies.orient.drakkar.mapper.OAggregatorEdge;
 import com.orientechnologies.orient.drakkar.mapper.OER2GraphMapper;
 import com.orientechnologies.orient.drakkar.mapper.OSource2GraphMapper;
 import com.orientechnologies.orient.drakkar.model.dbschema.OEntity;
@@ -68,29 +69,57 @@ public class ODB2GraphImportEngine {
 
       // for each entity in dbSchema all records are retrieved
       ResultSet records = dbQueryEngine.getRecordsByEntity(entity.getName(), context);
-      currentOutVertexType = mapper.getEntity2vertexType().get(entity);
-
       ResultSet currentRecord = null;
-      // each record imported as vertex in the orient graph
-      while(records.next()) {
-        // upsert of the vertex
-        currentRecord = records;
-        currentOutVertex = (OrientVertex) graphDBCommandEngine.upsertVisitedVertex(currentRecord, currentOutVertexType, context);
 
-        // for each attribute of the entity belonging to the primary key, correspondent relationship is
-        // built as edge and for the referenced record a vertex is built (only id)
-        for(ORelationship currentRelation: entity.getRelationships()) {
-          currentInVertexType = mapper.getVertexTypeByName(context.getNameResolver().resolveVertexName(currentRelation.getParentEntityName())); // aggiungi getVertexTypeByName!
-          edgeType = mapper.getRelationship2edgeType().get(currentRelation);
-          graphDBCommandEngine.upsertReachedVertexWithEdge(currentRecord, currentRelation, currentOutVertex, currentInVertexType, edgeType.getType(), context);
-        }   
+      if(!entity.isJoinEntityDim2()) {
 
-        // Statistics updated every 500 inserted visited vertex
-        statistics.importedRecords++;
+        currentOutVertexType = mapper.getEntity2vertexType().get(entity);
+
+        // each record imported as vertex in the orient graph
+        while(records.next()) {
+          // upsert of the vertex
+          currentRecord = records;
+          currentOutVertex = (OrientVertex) graphDBCommandEngine.upsertVisitedVertex(currentRecord, currentOutVertexType, context);
+
+          // for each attribute of the entity belonging to the primary key, correspondent relationship is
+          // built as edge and for the referenced record a vertex is built (only id)
+          for(ORelationship currentRelation: entity.getRelationships()) {
+            currentInVertexType = mapper.getVertexTypeByName(context.getNameResolver().resolveVertexName(currentRelation.getParentEntityName())); // aggiungi getVertexTypeByName!
+            edgeType = mapper.getRelationship2edgeType().get(currentRelation);
+            graphDBCommandEngine.upsertReachedVertexWithEdge(currentRecord, currentRelation, currentOutVertex, currentInVertexType, edgeType.getType(), context);
+          }   
+
+          // Statistics updated
+          statistics.importedRecords++;
+        }
+
+        // closing connection and statement
+        dbQueryEngine.closeAll(context);
       }
+     
+    }
+    
+    
+    for(OEntity entity: mapper.getDataBaseSchema().getEntities()) {
 
-      // closing connection and statement
-      dbQueryEngine.closeAll(context);
+      // for each entity in dbSchema all records are retrieved
+      ResultSet records = dbQueryEngine.getRecordsByEntity(entity.getName(), context);
+      ResultSet currentRecord = null;
+
+      if(entity.isJoinEntityDim2()) {
+        
+        OAggregatorEdge aggregatorEdge = mapper.getJoinVertex2aggregatorEdges().get(context.getNameResolver().resolveVertexName(entity.getName()));
+        
+        // each record of the join table used to add an edge
+        while(records.next()) {
+          currentRecord = records;
+          graphDBCommandEngine.upsertAggregatorEdge(currentRecord, entity, aggregatorEdge, context);
+          
+          // Statistics updated
+          statistics.importedRecords++;
+        }
+      }
+      
     }
 
     statistics.notifyListeners();

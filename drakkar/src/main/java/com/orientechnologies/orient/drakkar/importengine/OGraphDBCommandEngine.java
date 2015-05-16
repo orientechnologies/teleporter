@@ -31,7 +31,9 @@ import java.util.Locale;
 import java.util.Map;
 
 import com.orientechnologies.orient.drakkar.context.ODrakkarContext;
+import com.orientechnologies.orient.drakkar.mapper.OAggregatorEdge;
 import com.orientechnologies.orient.drakkar.model.dbschema.OAttribute;
+import com.orientechnologies.orient.drakkar.model.dbschema.OEntity;
 import com.orientechnologies.orient.drakkar.model.dbschema.ORelationship;
 import com.orientechnologies.orient.drakkar.model.graphmodel.OModelProperty;
 import com.orientechnologies.orient.drakkar.model.graphmodel.OVertexType;
@@ -277,26 +279,72 @@ public class OGraphDBCommandEngine {
     boolean edgeAlreadyPresent = false;
     Iterator<Edge> it = currentOutVertex.getEdges(Direction.OUT, edgeType).iterator();
     Edge currentEdge;
-    
+
     if(it.hasNext()) {
+
       while(it.hasNext()) {
         currentEdge = it.next();
-        edgeAlreadyPresent = ((OrientVertex)currentEdge.getVertex(Direction.IN)).getType().getName().equals(currentInVertex.getType().getName());
-        if(edgeAlreadyPresent) {
-          context.getOutputManager().debug("Edge beetween '" + currentOutVertex.toString() + "' and '" + currentInVertex.toString() + "' already present.");
+
+        if(((OrientVertex)currentEdge.getVertex(Direction.IN)).getId().equals(currentInVertex.getId())) {
+          edgeAlreadyPresent = true;
+          break;
         }
-        else {
-          OrientEdge edge = orientGraph.addEdge(null, currentOutVertex, currentInVertex, edgeType);
-          edge.save();
-          context.getOutputManager().debug("New edge inserted: " + edge.toString());
-        }
+
       }
+
+      if(edgeAlreadyPresent) {
+        context.getOutputManager().debug("Edge beetween '" + currentOutVertex.toString() + "' and '" + currentInVertex.toString() + "' already present.");
+      }
+      else {
+        OrientEdge edge = orientGraph.addEdge(null, currentOutVertex, currentInVertex, edgeType);
+        edge.save();
+        context.getOutputManager().debug("New edge inserted: " + edge.toString());
+      }
+
     }
     else {
       OrientEdge edge = orientGraph.addEdge(null, currentOutVertex, currentInVertex, edgeType);
       edge.save();
       context.getOutputManager().debug("New edge inserted: " + edge.toString());
     }
+  }
+
+  public void upsertAggregatorEdge(ResultSet jointTableRecord, OEntity joinTable, OAggregatorEdge aggregatorEdge, ODrakkarContext context) throws SQLException {
+
+    OrientGraphFactory factory = new OrientGraphFactory(this.graphDBUrl);
+    OrientGraphNoTx orientGraph = factory.getNoTx();
+    orientGraph.setStandardElementConstraints(false);
+
+    ORelationship relationship1 = joinTable.getRelationships().get(0);
+    ORelationship relationship2 = joinTable.getRelationships().get(1);
+
+    String[] keysOutVertex = new String[relationship1.getPrimaryKey().getInvolvedAttributes().size()];
+    String[] valuesOutVertex = new String[relationship1.getPrimaryKey().getInvolvedAttributes().size()];
+
+    int index = 0;
+    for(OAttribute primaryKeyAttribute: relationship1.getPrimaryKey().getInvolvedAttributes()) {
+      keysOutVertex[index] = context.getNameResolver().resolveVertexProperty(relationship1.getPrimaryKey().getInvolvedAttributes().get(index).getName());
+      valuesOutVertex[index] = jointTableRecord.getString(primaryKeyAttribute.getName());
+      index++;
+    }
+
+    String[] keysInVertex = new String[relationship2.getPrimaryKey().getInvolvedAttributes().size()];
+    String[] valuesInVertex = new String[relationship2.getPrimaryKey().getInvolvedAttributes().size()];
+
+    index = 0;
+    for(OAttribute primaryKeyAttribute: relationship2.getPrimaryKey().getInvolvedAttributes()) {
+      keysInVertex[index] = context.getNameResolver().resolveVertexProperty(relationship2.getPrimaryKey().getInvolvedAttributes().get(index).getName());
+      valuesInVertex[index] = jointTableRecord.getString(primaryKeyAttribute.getName());
+      index++;
+    }
+
+    OrientVertex currentOutVertex = this.getVertexByIndexedKey(orientGraph, keysOutVertex, valuesOutVertex, aggregatorEdge.getOutVertexClassName());
+    OrientVertex currentInVertex = this.getVertexByIndexedKey(orientGraph, keysInVertex, valuesInVertex, aggregatorEdge.getInVertexClassName());
+
+    this.upsertEdge(orientGraph, currentOutVertex, currentInVertex, aggregatorEdge.getEdgeType(), context);
+    //    OrientEdge edge = orientGraph.addEdge(null, currentOutVertex, currentInVertex, aggregatorEdge.getEdgeType());
+    //    edge.save();
+    orientGraph.shutdown();
   }
 
 }
