@@ -11,12 +11,9 @@ import org.junit.Test;
 
 import com.orientechnologies.orient.drakkar.context.ODrakkarContext;
 import com.orientechnologies.orient.drakkar.context.OOutputStreamManager;
-import com.orientechnologies.orient.drakkar.importengine.ODB2GraphImportEngine;
-import com.orientechnologies.orient.drakkar.mapper.OER2GraphMapper;
-import com.orientechnologies.orient.drakkar.mapper.OSource2GraphMapper;
 import com.orientechnologies.orient.drakkar.nameresolver.OJavaConventionNameResolver;
 import com.orientechnologies.orient.drakkar.persistence.handler.OHSQLDBDataTypeHandler;
-import com.orientechnologies.orient.drakkar.writer.OGraphModelWriter;
+import com.orientechnologies.orient.drakkar.strategy.ONaiveImportStrategy;
 import com.tinkerpop.blueprints.Direction;
 import com.tinkerpop.blueprints.Edge;
 import com.tinkerpop.blueprints.Vertex;
@@ -50,10 +47,8 @@ import com.tinkerpop.blueprints.impls.orient.OrientGraphNoTx;
 
 public class OOrientDBImportingTestCase {
 
-  private OSource2GraphMapper mapper;
   private ODrakkarContext context;
-  private OGraphModelWriter modelWriter;
-  private ODB2GraphImportEngine importEngine;
+  private ONaiveImportStrategy importStrategy;
   private String outOrientGraphUri;
 
   @Before
@@ -62,8 +57,7 @@ public class OOrientDBImportingTestCase {
     this.context.setOutputManager(new OOutputStreamManager(0));
     this.context.setNameResolver(new OJavaConventionNameResolver());
     this.context.setDataTypeHandler(new OHSQLDBDataTypeHandler());
-    this.modelWriter = new OGraphModelWriter();
-    this.importEngine = new ODB2GraphImportEngine();
+    this.importStrategy = new ONaiveImportStrategy();
     this.outOrientGraphUri = "memory:testOrientDB";
   }
 
@@ -152,11 +146,7 @@ public class OOrientDBImportingTestCase {
       st.execute(film2actorFilling);
 
 
-      this.mapper = new OER2GraphMapper("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "");
-      mapper.buildSourceSchema(this.context);
-      mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
-      modelWriter.writeModelOnOrient(((OER2GraphMapper)mapper).getGraphModel(), new OHSQLDBDataTypeHandler(), this.outOrientGraphUri, context);
-      this.importEngine.executeImport("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", this.outOrientGraphUri, this.mapper, context);
+      this.importStrategy.executeStrategy("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", this.outOrientGraphUri, "java", context);
 
 
       /*
@@ -707,11 +697,6 @@ public class OOrientDBImportingTestCase {
       orientGraph.shutdown();
     }  
 
-  }
-  
-  
-  public void test2() {
-    
   }
 
 }

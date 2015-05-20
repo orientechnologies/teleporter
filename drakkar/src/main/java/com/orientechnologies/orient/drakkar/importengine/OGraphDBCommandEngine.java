@@ -318,23 +318,29 @@ public class OGraphDBCommandEngine {
     ORelationship relationship1 = joinTable.getRelationships().get(0);
     ORelationship relationship2 = joinTable.getRelationships().get(1);
 
-    String[] keysOutVertex = new String[relationship1.getPrimaryKey().getInvolvedAttributes().size()];
-    String[] valuesOutVertex = new String[relationship1.getPrimaryKey().getInvolvedAttributes().size()];
+    
+    // Building keys and values for out-vertex lookup
+    
+    String[] keysOutVertex = new String[relationship1.getForeignKey().getInvolvedAttributes().size()];
+    String[] valuesOutVertex = new String[relationship1.getForeignKey().getInvolvedAttributes().size()];
 
     int index = 0;
-    for(OAttribute primaryKeyAttribute: relationship1.getPrimaryKey().getInvolvedAttributes()) {
+    for(OAttribute foreignKeyAttribute: relationship1.getForeignKey().getInvolvedAttributes()) {
       keysOutVertex[index] = context.getNameResolver().resolveVertexProperty(relationship1.getPrimaryKey().getInvolvedAttributes().get(index).getName());
-      valuesOutVertex[index] = jointTableRecord.getString(primaryKeyAttribute.getName());
+      valuesOutVertex[index] = jointTableRecord.getString(foreignKeyAttribute.getName());
       index++;
     }
+    
+    
+    // Building keys and values for in-vertex lookup
 
     String[] keysInVertex = new String[relationship2.getPrimaryKey().getInvolvedAttributes().size()];
     String[] valuesInVertex = new String[relationship2.getPrimaryKey().getInvolvedAttributes().size()];
 
     index = 0;
-    for(OAttribute primaryKeyAttribute: relationship2.getPrimaryKey().getInvolvedAttributes()) {
+    for(OAttribute foreignKeyAttribute: relationship2.getForeignKey().getInvolvedAttributes()) {
       keysInVertex[index] = context.getNameResolver().resolveVertexProperty(relationship2.getPrimaryKey().getInvolvedAttributes().get(index).getName());
-      valuesInVertex[index] = jointTableRecord.getString(primaryKeyAttribute.getName());
+      valuesInVertex[index] = jointTableRecord.getString(foreignKeyAttribute.getName());
       index++;
     }
 
@@ -342,8 +348,6 @@ public class OGraphDBCommandEngine {
     OrientVertex currentInVertex = this.getVertexByIndexedKey(orientGraph, keysInVertex, valuesInVertex, aggregatorEdge.getInVertexClassName());
 
     this.upsertEdge(orientGraph, currentOutVertex, currentInVertex, aggregatorEdge.getEdgeType(), context);
-    //    OrientEdge edge = orientGraph.addEdge(null, currentOutVertex, currentInVertex, aggregatorEdge.getEdgeType());
-    //    edge.save();
     orientGraph.shutdown();
   }
 

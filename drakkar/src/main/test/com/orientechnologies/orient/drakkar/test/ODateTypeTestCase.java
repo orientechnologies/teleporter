@@ -31,12 +31,9 @@ import org.junit.Test;
 
 import com.orientechnologies.orient.drakkar.context.ODrakkarContext;
 import com.orientechnologies.orient.drakkar.context.OOutputStreamManager;
-import com.orientechnologies.orient.drakkar.importengine.ODB2GraphImportEngine;
-import com.orientechnologies.orient.drakkar.mapper.OER2GraphMapper;
-import com.orientechnologies.orient.drakkar.mapper.OSource2GraphMapper;
 import com.orientechnologies.orient.drakkar.nameresolver.OJavaConventionNameResolver;
 import com.orientechnologies.orient.drakkar.persistence.handler.OHSQLDBDataTypeHandler;
-import com.orientechnologies.orient.drakkar.writer.OGraphModelWriter;
+import com.orientechnologies.orient.drakkar.strategy.ONaiveImportStrategy;
 import com.tinkerpop.blueprints.impls.orient.OrientGraphNoTx;
 
 /**
@@ -48,10 +45,8 @@ import com.tinkerpop.blueprints.impls.orient.OrientGraphNoTx;
 public class ODateTypeTestCase {
 
 
-  private OSource2GraphMapper mapper;
   private ODrakkarContext context;
-  private OGraphModelWriter modelWriter;
-  private ODB2GraphImportEngine importEngine;
+  private ONaiveImportStrategy importStrategy;
   private String outOrientGraphUri;
 
   @Before
@@ -60,8 +55,7 @@ public class ODateTypeTestCase {
     this.context.setOutputManager(new OOutputStreamManager(0));
     this.context.setNameResolver(new OJavaConventionNameResolver());
     this.context.setDataTypeHandler(new OHSQLDBDataTypeHandler());
-    this.modelWriter = new OGraphModelWriter();
-    this.importEngine = new ODB2GraphImportEngine();
+    this.importStrategy = new ONaiveImportStrategy();
     this.outOrientGraphUri = "memory:testOrientDB";
   }
 
@@ -70,7 +64,7 @@ public class ODateTypeTestCase {
  * Conversion to OType.STRING.
  */
   @Test
-  public void test() {
+  public void test1() {
 
     Connection connection = null;
     Statement st = null;
@@ -97,11 +91,7 @@ public class ODateTypeTestCase {
           + "('F003','The Departed','2006'))";
       st.execute(filmFilling);
       
-      this.mapper = new OER2GraphMapper("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "");
-      mapper.buildSourceSchema(this.context);
-      mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
-      modelWriter.writeModelOnOrient(((OER2GraphMapper)mapper).getGraphModel(), new OHSQLDBDataTypeHandler(), this.outOrientGraphUri, context);
-      this.importEngine.executeImport("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", this.outOrientGraphUri, this.mapper, context);
+      this.importStrategy.executeStrategy("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", this.outOrientGraphUri,"java", context);
       
      
       /*
@@ -160,13 +150,9 @@ public class ODateTypeTestCase {
           + "('F003','The Departed','2006-09-26'))";
       st.execute(filmFilling);
       
-      this.mapper = new OER2GraphMapper("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "");
-      mapper.buildSourceSchema(this.context);
-      mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
-      modelWriter.writeModelOnOrient(((OER2GraphMapper)mapper).getGraphModel(), new OHSQLDBDataTypeHandler(), this.outOrientGraphUri, context);
-      this.importEngine.executeImport("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", this.outOrientGraphUri, this.mapper, context);
-      
-     
+      this.importStrategy.executeStrategy("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", this.outOrientGraphUri, "java", context);
+
+
       /*
        *  Testing built OrientDB
        */
@@ -224,11 +210,7 @@ public class ODateTypeTestCase {
           + "('F003','The Departed','2006-09-26','2012-08-08 20:08:08'))";
       st.execute(filmFilling);
       
-      this.mapper = new OER2GraphMapper("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "");
-      mapper.buildSourceSchema(this.context);
-      mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
-      modelWriter.writeModelOnOrient(((OER2GraphMapper)mapper).getGraphModel(), new OHSQLDBDataTypeHandler(), this.outOrientGraphUri, context);
-      this.importEngine.executeImport("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", this.outOrientGraphUri, this.mapper, context);
+      this.importStrategy.executeStrategy("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", this.outOrientGraphUri,"java", context);
       
      
       /*
@@ -289,11 +271,7 @@ public class ODateTypeTestCase {
           + "('F003','The Departed','2006-09-26','2012-08-08 20:08:08+8:00'))";
       st.execute(filmFilling);
       
-      this.mapper = new OER2GraphMapper("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "");
-      mapper.buildSourceSchema(this.context);
-      mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
-      modelWriter.writeModelOnOrient(((OER2GraphMapper)mapper).getGraphModel(), new OHSQLDBDataTypeHandler(), this.outOrientGraphUri, context);
-      this.importEngine.executeImport("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", this.outOrientGraphUri, this.mapper, context);
+      this.importStrategy.executeStrategy("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", this.outOrientGraphUri,"java", context);
       
      
       /*
@@ -354,11 +332,7 @@ public class ODateTypeTestCase {
           + "('F003','The Departed','2006-09-26','20:08:08.034900'))";
       st.execute(filmFilling);
       
-      this.mapper = new OER2GraphMapper("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "");
-      mapper.buildSourceSchema(this.context);
-      mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
-      modelWriter.writeModelOnOrient(((OER2GraphMapper)mapper).getGraphModel(), new OHSQLDBDataTypeHandler(), this.outOrientGraphUri, context);
-      this.importEngine.executeImport("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", this.outOrientGraphUri, this.mapper, context);
+      this.importStrategy.executeStrategy("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", this.outOrientGraphUri,"java", context);
       
      
       /*
@@ -418,11 +392,7 @@ public class ODateTypeTestCase {
           + "('F003','The Departed','2006-09-26','20:08:08.034900-8:00'))";
       st.execute(filmFilling);
       
-      this.mapper = new OER2GraphMapper("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "");
-      mapper.buildSourceSchema(this.context);
-      mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
-      modelWriter.writeModelOnOrient(((OER2GraphMapper)mapper).getGraphModel(), new OHSQLDBDataTypeHandler(), this.outOrientGraphUri, context);
-      this.importEngine.executeImport("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", this.outOrientGraphUri, this.mapper, context);
+      this.importStrategy.executeStrategy("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", this.outOrientGraphUri,"java", context);
       
      
       /*

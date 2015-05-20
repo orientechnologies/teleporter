@@ -94,7 +94,7 @@ public class ORelationship {
   public boolean equals(Object obj) {
     ORelationship that = (ORelationship) obj;
     if(this.foreignEntityName.equals(that.getForeignEntityName()) && this.parentEntityName.equals(that.getParentEntityName())) {
-      if(this.foreignKey.equals(that.getForeignKey()) && this.primaryKey.equals(that.getPrimaryKey())) {
+      if(this.foreignKey.equals(that.getForeignKey()) && this.primaryKey.equals(that.getForeignKey())) {
         return true;
       }
     }

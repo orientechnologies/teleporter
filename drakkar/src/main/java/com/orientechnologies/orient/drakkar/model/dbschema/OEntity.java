@@ -177,7 +177,7 @@ public class OEntity {
       for(ORelationship relationship: this.relationships) {
         s += index +".  ";
         s += "Foreign Entity: " + relationship.getForeignEntityName() + ", Foreign Key: " + relationship.getForeignKey().toString() + "\t||\t" 
-            + "Parent Entity: " + relationship.getParentEntityName() + ", Primary Key: " + relationship.getPrimaryKey().toString() + "\n";
+            + "Parent Entity: " + relationship.getParentEntityName() + ", Primary Key: " + relationship.getForeignKey().toString() + "\n";
         index++;
       }
 
