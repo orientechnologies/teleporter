@@ -72,7 +72,7 @@ public class OER2GraphMapper implements OSource2GraphMapper {
   private Map<OEntity,OVertexType> entity2vertexType;  
   private Map<ORelationship,OEdgeType> relationship2edgeType;
   private Map<String,Integer> edgeTypeName2count;
-//  private Map<String,OEdgeType> joinVertex2edgeType;
+  //  private Map<String,OEdgeType> joinVertex2edgeType;
   private Map<String,OAggregatorEdge> joinVertex2aggregatorEdges;
 
   public OER2GraphMapper (String driver, String uri, String username, String password) {
@@ -80,76 +80,78 @@ public class OER2GraphMapper implements OSource2GraphMapper {
     this.entity2vertexType = new HashMap<OEntity,OVertexType>();
     this.relationship2edgeType = new HashMap<ORelationship,OEdgeType>();
     this.edgeTypeName2count = new TreeMap<String,Integer>();
-//    this.joinVertex2edgeType = new HashMap<String,OEdgeType>();
+    //    this.joinVertex2edgeType = new HashMap<String,OEdgeType>();
     this.joinVertex2aggregatorEdges = new HashMap<String, OAggregatorEdge>();
   }
 
-  
-  public void buildSourceSchema(ODrakkarContext context) {
+
+  public void buildSourceSchema(ODrakkarContext context) throws SQLException {
 
     Connection connection = null;
     ODrakkarStatistics statistics = context.getStatistics();
     statistics.startWork1Time = new Date();
     statistics.runningStepNumber = 1;
 
-    try {
+    //    try {
 
-      connection = this.dataSource.getConnection(context);      
-      DatabaseMetaData databaseMetaData = connection.getMetaData();
+    connection = this.dataSource.getConnection(context);      
+    DatabaseMetaData databaseMetaData = connection.getMetaData();
 
-      /*
-       *  General DB Info
-       */
+    /*
+     *  General DB Info
+     */
 
-      int majorVersion = databaseMetaData.getDatabaseMajorVersion();
-      int minorVersion = databaseMetaData.getDatabaseMinorVersion();
-      int driverMajorVersion = databaseMetaData.getDriverMajorVersion();
-      int driverMinorVersion = databaseMetaData.getDriverMinorVersion();
-      String productName = databaseMetaData.getDatabaseProductName();
-      String productVersion = databaseMetaData.getDatabaseProductVersion();
+    int majorVersion = databaseMetaData.getDatabaseMajorVersion();
+    int minorVersion = databaseMetaData.getDatabaseMinorVersion();
+    int driverMajorVersion = databaseMetaData.getDriverMajorVersion();
+    int driverMinorVersion = databaseMetaData.getDriverMinorVersion();
+    String productName = databaseMetaData.getDatabaseProductName();
+    String productVersion = databaseMetaData.getDatabaseProductVersion();
 
-      this.dataBaseSchema = new ODataBaseSchema(majorVersion, minorVersion, driverMajorVersion, driverMinorVersion, productName, productVersion);
+    this.dataBaseSchema = new ODataBaseSchema(majorVersion, minorVersion, driverMajorVersion, driverMinorVersion, productName, productVersion);
 
-      List<String> tablesName = new ArrayList<String>();
+    List<String> tablesName = new ArrayList<String>();
 
-      String tableCatalog = null;
-      String tableSchemaPattern = null;
-      String tableNamePattern = null;
-      String[] tableTypes = {"TABLE"};
+    String tableCatalog = null;
+    String tableSchemaPattern = null;
+    String tableNamePattern = null;
+    String[] tableTypes = {"TABLE"};
 
-      ResultSet resultTable = databaseMetaData.getTables(tableCatalog, tableSchemaPattern, tableNamePattern, tableTypes);
-      ResultSet resultColumns;
-      ResultSet resultPrimaryKeys;
-      ResultSet resultForeignKeys;
+    ResultSet resultTable = databaseMetaData.getTables(tableCatalog, tableSchemaPattern, tableNamePattern, tableTypes);
+    ResultSet resultColumns;
+    ResultSet resultPrimaryKeys;
+    ResultSet resultForeignKeys;
 
-      // Giving db's table names
-      while(resultTable.next()) {
-        String tableName = resultTable.getString(3);
-        tablesName.add(tableName);  
-      }
+    // Giving db's table names
+    while(resultTable.next()) {
+      String tableName = resultTable.getString(3);
+      tablesName.add(tableName);  
+    }
 
-      int numberOfTables = tablesName.size();
-      statistics.totalNumberOfEntities = numberOfTables;
+    int numberOfTables = tablesName.size();
+    statistics.totalNumberOfEntities = numberOfTables;
 
-      context.getOutputManager().debug(numberOfTables + " tables found.");
+    context.getOutputManager().debug(numberOfTables + " tables found.");
 
-      OEntity currentEntity;
-      OPrimaryKey pKey;
+    OEntity currentEntity;
+    OPrimaryKey pKey;
 
-      List<LinkedHashMap<String,String>> currentEntityRelationships1;
-      List<LinkedHashMap<String,String>> currentEntityRelationships2;
+    List<LinkedHashMap<String,String>> currentEntityRelationships1;
+    List<LinkedHashMap<String,String>> currentEntityRelationships2;
 
-      // Variables for records counting
-      Statement statement = connection.createStatement();
-      String sql;
-      ResultSet currentTableRecordAmount;
-      int totalNumberOfRecord = 0;
+    // Variables for records counting
+    Statement statement = connection.createStatement();
+    String sql;
+    ResultSet currentTableRecordAmount;
+    int totalNumberOfRecord = 0;
 
-      /*
-       *  Entity building
-       */
-      int iteration = 1;
-      for(String currentTableName: tablesName) {
+    /*
+     *  Entity building
+     */
+    int iteration = 1;
+    for(String currentTableName: tablesName) {
+
+      try {  // TO DELETEEEE!!!!
 
         context.getOutputManager().debug("Building '" + currentTableName + "' entity (" + iteration + "/" + numberOfTables + ")...");
 
@@ -197,15 +199,23 @@ public class OER2GraphMapper implements OSource2GraphMapper {
         iteration++;
         context.getOutputManager().debug("Entity " + currentTableName + " built.\n");
         statistics.builtEntities++;
-      }
-      statement.close();
-      statistics.totalNumberOfRecords = totalNumberOfRecord;
 
-      /*
-       *  Building relationships
-       */
-      iteration = 1;
-      for(OEntity currentForeignEntity: this.dataBaseSchema.getEntities()) {
+
+        statement.close();
+        statistics.totalNumberOfRecords = totalNumberOfRecord;
+      }catch(Exception e) {
+        continue;  // TO DELETEEE!!!
+      }
+    }
+
+
+    /*
+     *  Building relationships
+     */
+    iteration = 1;
+    for(OEntity currentForeignEntity: this.dataBaseSchema.getEntities()) {
+
+      try {    // TO DELETEEE!!!
 
         String currentForeignEntityName = currentForeignEntity.getName();
 
@@ -278,19 +288,24 @@ public class OER2GraphMapper implements OSource2GraphMapper {
         iteration++;
         context.getOutputManager().debug("Relationships from " + currentForeignEntityName + " built.\n");
         statistics.doneEntity4Relationship++;
-      }
 
-    }catch(SQLException e) {
-      e.printStackTrace();
-    }finally {
-      try {
-        if(connection != null) {
-          connection.close();
-        }
-      }catch(SQLException e) {
-        e.printStackTrace();
+      }catch(Exception e) {
+        continue;
       }
     }
+
+    //    }catch(SQLException e) {
+    //      e.printStackTrace();
+    //      continue;
+    //    }finally {
+    try {
+      if(connection != null) {
+        connection.close();
+      }
+    }catch(SQLException e) {
+      e.printStackTrace();
+    }
+    //    }
 
     try {
       if(connection.isClosed())
@@ -346,7 +361,7 @@ public class OER2GraphMapper implements OSource2GraphMapper {
     statistics.startWork2Time = new Date();
     statistics.runningStepNumber = 2;
 
-    
+
     /*
      *  Vertex-type building
      */
@@ -489,7 +504,7 @@ public class OER2GraphMapper implements OSource2GraphMapper {
         this.graphModel.getEdgesType().remove(currentOutEdge2);
         outVertexType.getInEdgesType().remove(currentOutEdge1);
         inVertexType.getInEdgesType().remove(currentOutEdge2);
-        
+
         // adding entry to the map
         this.joinVertex2aggregatorEdges.put(currentVertex.getType(), new OAggregatorEdge(outVertexType.getType(), inVertexType.getType(), newAggregatorEdge.getType()));
 

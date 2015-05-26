@@ -100,9 +100,6 @@ public class OGraphModelWriter {
             type = handler.resolveType(currentProperty.getPropertyType().toLowerCase(Locale.ENGLISH), context);
             if(type != null) {
               newVertexType.createProperty(currentProperty.getName(), type);
-              //            statement = "alter property " + currentVertexType.getType() + "." + currentProperty.getName() + " custom fromPK = " + currentProperty.isFromPrimaryKey();
-              //            sqlCommand = new OCommandSQL(statement);
-              //            orientGraph.getRawGraph().command(sqlCommand).execute();
             }
             else {
               it.remove();
@@ -112,7 +109,7 @@ public class OGraphModelWriter {
           context.getOutputManager().debug("Vertex-type '" + currentVertexType.getType() + "' wrote.\n");
         }
         else  {
-          boolean updated = this.checkAndUpdateElement(orientGraph, currentVertexType, handler, context);
+          boolean updated = this.checkAndUpdateClass(orientGraph, currentVertexType, handler, context);
 
           if(updated) {
             context.getOutputManager().debug("Vertex-type '" + currentVertexType.getType() + "' updated.\n");
@@ -145,15 +142,6 @@ public class OGraphModelWriter {
 
         if(newEdgeType == null) {
           newEdgeType = orientGraph.createEdgeType(currentEdgeType.getType());
-
-          //        // setting in-vertex-type
-          //
-          //        propIn = newEdgeType.createProperty("in", OType.LINK);
-          //        propIn.setLinkedClass(orientGraph.getVertexType(currentEdgeType.getInVertexType().getType()));
-          //
-          //        // setting out-vertex-type
-          //        propOut = newEdgeType.createProperty("out", OType.LINK);
-          //        propOut.setLinkedClass(orientGraph.getVertexType(currentEdgeType.getOutVertexType().getType()));
           OModelProperty currentProperty = null;
           it = currentEdgeType.getProperties().iterator();
           while(it.hasNext()) {
@@ -162,9 +150,6 @@ public class OGraphModelWriter {
 
             if(type != null) {
               newEdgeType.createProperty(currentProperty.getName(), type);
-              //            statement = "alter property " + currentEdgeType.getType() + "."+ currentProperty.getName() + " custom fromPK = " + currentProperty.isFromPrimaryKey();
-              //            sqlCommand = new OCommandSQL(statement);
-              //            orientGraph.getRawGraph().command(sqlCommand).execute();
             }
             else {  
               it.remove();
@@ -174,7 +159,7 @@ public class OGraphModelWriter {
           context.getOutputManager().debug("Edge-type '" + currentEdgeType.getType() + "' wrote.\n");
         }
         else {
-          boolean updated = this.checkAndUpdateElement(orientGraph, currentEdgeType, handler, context);
+          boolean updated = this.checkAndUpdateClass(orientGraph, currentEdgeType, handler, context);
 
           if(updated) {
             context.getOutputManager().debug("Edge-type '" + currentEdgeType.getType() + "' updated.\n");
@@ -252,7 +237,7 @@ public class OGraphModelWriter {
    * @param currentElementType
    * @return
    */
-  private boolean checkAndUpdateElement(OrientGraphNoTx orientGraph, OElementType currentElementType, ODriverDataTypeHandler handler, ODrakkarContext context) {
+  private boolean checkAndUpdateClass(OrientGraphNoTx orientGraph, OElementType currentElementType, ODriverDataTypeHandler handler, ODrakkarContext context) {
 
     boolean updated = false;
 
@@ -265,7 +250,7 @@ public class OGraphModelWriter {
       orientElementType = orientGraph.getEdgeType(currentElementType.getType());
     }
     else {
-      context.getOutputManager().error("Fatal error: current element type is not instance neither of Vertex Type neither of EdgeType");
+      context.getOutputManager().error("Fatal error: current element type '" + currentElementType + "' is not instance neither of Vertex Type neither of EdgeType");
       System.exit(0);
     }
 

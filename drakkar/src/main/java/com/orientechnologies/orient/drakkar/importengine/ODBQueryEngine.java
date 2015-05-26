@@ -62,87 +62,13 @@ public class ODBQueryEngine implements ODataSourceQueryEngine {
       
     }catch(SQLException e) {
       context.getOutputManager().debug(e.getMessage());
-      e.printStackTrace();
+//      e.printStackTrace();
     }
     return results;
 
   }
 
 
-  /**
-   * UNUSED, DELETE?
-   * @return reachable record parameters (parentEntityName, parentEntityAttributeValue) in order to build the vertex:
-   * - parent entity name
-   * - parent entity attribute --> name of the attribute on which join is performed
-   * - parent entity attribute value --> value on which join is performed
-   */
-//  public String[] getRecordByConnectedRecord(ResultSet record, ORelationship relation, OEntity startingEntity) {
-//
-//    ResultSet result;
-//    Connection dbConnection = null;
-//    PreparedStatement statement = null;
-//    String foreignEntityName = relation.getForeignEntityName();
-//    String parentEntityName = relation.getParentEntityName();
-//    String foreignEntityAttribute = relation.getForeignEntityAttribute();
-//    String parentEntityAttribute = relation.getParentEntityAttribute(); 
-//   
-//    
-//    /*
-//     * select startingRecord.<foreignEntityAttribute> from 
-//     * (select * from <foreignEntityName> where <p.key1> = <value> and <p.key2> = <value>) as startingRecord 
-//     * join <parentEntityName> as arrivalRecord on <foreignEntityAttribute> = <parentEntityAttribute>
-//     */
-//
-//    String parentEntityAttributeValue = null; 
-//    String whereConditions = "";
-//
-//    try {
-//
-//      int length = startingEntity.getPrimaryKey().getInvolvedAttributes().size();
-//      int cont = 1;
-//
-//      for(OAttribute attribute: startingEntity.getPrimaryKey().getInvolvedAttributes()) {
-//        if(cont == length)
-//          whereConditions += attribute.getName() + " = " + record.getString(attribute.getName());
-//        else
-//          whereConditions += attribute.getName() + " = " + record.getString(attribute.getName()) + " and ";
-//      }
-//
-//      String query = "select arrivalRecord." + parentEntityAttribute + " from\n" + 
-//          "(select * from " + foreignEntityName + " where " + whereConditions + ") as startingRecord\n" + 
-//          "join " + parentEntityName + " as arrivalRecord on " + "startingRecord." + foreignEntityAttribute + " = " + "arrivalRecord." + parentEntityAttribute;
-//
-//      OLogManager.instance().debug(this, "%s\n", query);
-//      dbConnection = dataSource.getConnection();      
-//      statement = dbConnection.prepareStatement(query);
-//      result = statement.executeQuery();  
-//      result.next();
-//      parentEntityAttributeValue = result.getString(1);
-//
-//    }catch(SQLException e) {
-//      OLogManager.instance().debug(this, "%s\n", e.getMessage());
-//      e.printStackTrace();
-//    }finally {
-//      try {
-//        if(dbConnection != null) 
-//          dbConnection.close();
-//        if(statement != null) 
-//          statement.close();
-//
-//      }catch(SQLException e) {
-//        OLogManager.instance().debug(this, "%s\n", e.getMessage());
-//        e.printStackTrace();
-//      }
-//    }
-//
-//    String[] parameters = new String[3];
-//    parameters[0] = parentEntityAttribute;
-//    parameters[1] = parentEntityAttributeValue;
-//
-//    return parameters;
-//  }
-  
-  
   public void closeAll(ODrakkarContext context) {
     
     try {

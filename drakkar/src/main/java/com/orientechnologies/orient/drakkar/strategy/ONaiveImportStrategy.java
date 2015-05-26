@@ -83,7 +83,9 @@ public class ONaiveImportStrategy implements OImportStrategy {
     OSource2GraphMapper mapper = new OER2GraphMapper(driver, uri, username, password);
 
     // DataBase schema building
+    try{
     mapper.buildSourceSchema(context);
+    }catch(Exception e){}
     context.getOutputManager().info("");
     context.getOutputManager().debug(((OER2GraphMapper)mapper).getDataBaseSchema().toString() + "\n");
 

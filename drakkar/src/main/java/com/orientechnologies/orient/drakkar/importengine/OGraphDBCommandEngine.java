@@ -174,6 +174,14 @@ public class OGraphDBCommandEngine {
       vertex = orientGraph.addVertex("class:"+classAndClusterName, properties);
     }
     else {
+
+      // removing old eventual properties
+      for(String propertyKey: vertex.getPropertyKeys()) {
+        vertex.removeProperty(propertyKey);
+      }
+      vertex.save();
+
+      // setting new properties
       vertex.setProperties(properties);
       vertex.save();
     }
@@ -318,9 +326,9 @@ public class OGraphDBCommandEngine {
     ORelationship relationship1 = joinTable.getRelationships().get(0);
     ORelationship relationship2 = joinTable.getRelationships().get(1);
 
-    
+
     // Building keys and values for out-vertex lookup
-    
+
     String[] keysOutVertex = new String[relationship1.getForeignKey().getInvolvedAttributes().size()];
     String[] valuesOutVertex = new String[relationship1.getForeignKey().getInvolvedAttributes().size()];
 
@@ -330,8 +338,8 @@ public class OGraphDBCommandEngine {
       valuesOutVertex[index] = jointTableRecord.getString(foreignKeyAttribute.getName());
       index++;
     }
-    
-    
+
+
     // Building keys and values for in-vertex lookup
 
     String[] keysInVertex = new String[relationship2.getPrimaryKey().getInvolvedAttributes().size()];

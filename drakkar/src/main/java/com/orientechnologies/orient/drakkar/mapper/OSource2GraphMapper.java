@@ -20,6 +20,8 @@
 
 package com.orientechnologies.orient.drakkar.mapper;
 
+import java.sql.SQLException;
+
 import com.orientechnologies.orient.drakkar.context.ODrakkarContext;
 import com.orientechnologies.orient.drakkar.nameresolver.ONameResolver;
 
@@ -36,7 +38,7 @@ import com.orientechnologies.orient.drakkar.nameresolver.ONameResolver;
 
 public interface OSource2GraphMapper {
   
-  public void buildSourceSchema(ODrakkarContext context);
+  public void buildSourceSchema(ODrakkarContext context) throws SQLException;
   
   void buildGraphModel(ONameResolver nameResolver, ODrakkarContext context);
 
