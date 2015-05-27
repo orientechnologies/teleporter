@@ -18,26 +18,23 @@
  *
  */
 
-package com.orientechnologies.orient.drakkar.mapper;
+package com.orientechnologies.orient.drakkar.test;
 
-import com.orientechnologies.orient.drakkar.context.ODrakkarContext;
-import com.orientechnologies.orient.drakkar.nameresolver.ONameResolver;
+import static org.junit.Assert.*;
 
+import org.junit.Test;
 
 /**
- * Interface that manages the data source schema and the destination graph model with their correspondences.
- * It has the responsibility to build in memory the two models: the first is built from the source meta-data,
- * the second from the data source schema just created.
- * 
  * @author Gabriele Ponzi
  * @email  <gabriele.ponzi--at--gmail.com>
  *
  */
 
-public interface OSource2GraphMapper {
-  
-  public void buildSourceSchema(ODrakkarContext context);
-  
-  void buildGraphModel(ONameResolver nameResolver, ODrakkarContext context);
+public class OSequentialExecutionsTestCase {
+
+  @Test
+  public void test() {
+    fail("Not yet implemented");
+  }
 
 }

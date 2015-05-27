@@ -60,11 +60,10 @@ public class ONaiveImportStrategy implements OImportStrategy {
 
     Date globalStart = new Date(); 
 
-    context.getStatistics().notifyListeners();
-
     // Step 1,2,3
     ONameResolverFactory nameResolverFactory = new ONameResolverFactory();
     ONameResolver nameResolver = nameResolverFactory.buildNameResolver(nameResolverConvention, context);
+    context.getStatistics().runningStepNumber = 1;
     OSource2GraphMapper mapper = this.createSchemaMapper(driver, uri, username, password, outOrientGraphUri, nameResolver, context);
 
     // Step 4
@@ -83,9 +82,7 @@ public class ONaiveImportStrategy implements OImportStrategy {
     OSource2GraphMapper mapper = new OER2GraphMapper(driver, uri, username, password);
 
     // DataBase schema building
-    try{
     mapper.buildSourceSchema(context);
-    }catch(Exception e){}
     context.getOutputManager().info("");
     context.getOutputManager().debug(((OER2GraphMapper)mapper).getDataBaseSchema().toString() + "\n");
 

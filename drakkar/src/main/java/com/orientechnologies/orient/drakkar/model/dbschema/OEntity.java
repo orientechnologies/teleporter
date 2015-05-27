@@ -22,8 +22,10 @@ package com.orientechnologies.orient.drakkar.model.dbschema;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * It represents an entity of the source DB.
@@ -37,7 +39,7 @@ public class OEntity {
 
 
   private String name;
-  private List<OAttribute> attributes;
+  private Set<OAttribute> attributes;
   private OPrimaryKey primaryKey;
   private List<OForeignKey> foreignKeys;
   private List<ORelationship> relationships;
@@ -45,7 +47,7 @@ public class OEntity {
 
   public OEntity(String name) {
     this.name = name;
-    this.attributes = new LinkedList<OAttribute>();
+    this.attributes = new LinkedHashSet<OAttribute>();
     this.foreignKeys = new LinkedList<OForeignKey>();
     this.relationships = new ArrayList<ORelationship>();
     this.isJoinEntityDim2 = null;
@@ -85,11 +87,11 @@ public class OEntity {
   }
 
 
-  public List<OAttribute> getAttributes() {
+  public Set<OAttribute> getAttributes() {
     return this.attributes;
   }
 
-  public void setAttributes(List<OAttribute> attributes) {
+  public void setAttributes(Set<OAttribute> attributes) {
     this.attributes = attributes;
   }
 
@@ -111,10 +113,13 @@ public class OEntity {
 
   public boolean addAttribute(OAttribute attribute) {
     boolean added = this.attributes.add(attribute);
+    List<OAttribute> temp = new LinkedList<OAttribute>(this.attributes);
 
     if(added) {
-      Collections.sort(this.attributes);
+      Collections.sort(temp);
     }
+    this.attributes.clear();
+    this.attributes.addAll(temp);
     return added;
   }
 

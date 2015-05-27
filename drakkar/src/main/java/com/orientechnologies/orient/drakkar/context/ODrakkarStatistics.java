@@ -73,6 +73,8 @@ public class ODrakkarStatistics {
   // OrientDB importing
   public volatile int totalNumberOfRecords;
   public volatile int importedRecords;
+  public volatile int orientVertices;
+  public volatile int orientEdges;
   public volatile Date startWork4Time;
 
   // Warnings Messages
@@ -112,6 +114,8 @@ public class ODrakkarStatistics {
 
     this.totalNumberOfRecords = 0;
     this.importedRecords = 0;
+    this.orientVertices = 0;
+    this.orientEdges = 0;
 
   }
 
@@ -163,6 +167,9 @@ public class ODrakkarStatistics {
   public String importingProgress() {
     String s ="OrientDB Importing\n";
     s += "Imported Records: " + this.importedRecords + "/" + this.totalNumberOfRecords;
+    s += "\nVertices on OrientDB: " + this.orientVertices;
+    s += "\nEdges on OrientDB: " + this.orientEdges;
+
     return s;
   }
 

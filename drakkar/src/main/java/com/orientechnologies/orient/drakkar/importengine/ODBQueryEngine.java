@@ -62,7 +62,7 @@ public class ODBQueryEngine implements ODataSourceQueryEngine {
       
     }catch(SQLException e) {
       context.getOutputManager().debug(e.getMessage());
-//      e.printStackTrace();
+      e.printStackTrace();
     }
     return results;
 

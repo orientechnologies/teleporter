@@ -61,9 +61,7 @@ public class ONaiveAggregationImportStrategy extends ONaiveImportStrategy {
     OSource2GraphMapper mapper = new OER2GraphMapper(driver, uri, username, password);
 
     // DataBase schema building
-    try {
     mapper.buildSourceSchema(context);
-    }catch(Exception e){}
     context.getOutputManager().info("");
     context.getOutputManager().debug(((OER2GraphMapper)mapper).getDataBaseSchema().toString() + "\n");
 
@@ -99,7 +97,7 @@ public class ONaiveAggregationImportStrategy extends ONaiveImportStrategy {
   public void executeImport(String driver, String uri, String username, String password, String outOrientGraphUri, OSource2GraphMapper genericMapper,  ODrakkarContext context) {
 
     try {
-     
+
       ODrakkarStatistics statistics = context.getStatistics();
       statistics.startWork4Time = new Date();
       statistics.runningStepNumber = 4;
@@ -140,14 +138,13 @@ public class ONaiveAggregationImportStrategy extends ONaiveImportStrategy {
             // Statistics updated
             statistics.importedRecords++;
           }
-
           // closing connection and statement
           dbQueryEngine.closeAll(context);
         }
-       
+
       }
-      
-      
+
+
       for(OEntity entity: mapper.getDataBaseSchema().getEntities()) {
 
         // for each entity in dbSchema all records are retrieved
@@ -155,24 +152,26 @@ public class ONaiveAggregationImportStrategy extends ONaiveImportStrategy {
         ResultSet currentRecord = null;
 
         if(entity.isJoinEntityDim2()) {
-          
+
           OAggregatorEdge aggregatorEdge = mapper.getJoinVertex2aggregatorEdges().get(context.getNameResolver().resolveVertexName(entity.getName()));
-          
+
           // each record of the join table used to add an edge
           while(records.next()) {
             currentRecord = records;
             graphDBCommandEngine.upsertAggregatorEdge(currentRecord, entity, aggregatorEdge, context);
-            
+
             // Statistics updated
             statistics.importedRecords++;
           }
+          // closing connection and statement
+          dbQueryEngine.closeAll(context);
         }
       }
 
       statistics.notifyListeners();
       statistics.runningStepNumber = -1;
       context.getOutputManager().info("");
-     
+
     }catch(Exception e){
       e.printStackTrace();
     }

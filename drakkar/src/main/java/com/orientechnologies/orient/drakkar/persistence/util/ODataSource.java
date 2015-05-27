@@ -54,20 +54,33 @@ public class ODataSource {
 
   public Connection getConnection(ODrakkarContext context)  {
     Connection connection = null;
-    context.getOutputManager().debug("Attempting connection to " + this.uri + " ...");
     try {
       Class.forName(driver);
       connection = DriverManager.getConnection(uri,username, password);
-      context.getOutputManager().debug("Successful connection.\n");
     } catch (ClassNotFoundException e) {
       context.getOutputManager().error("ClassNotFoundException during connection attempting.\n");
       throw new PersistenceException(e.getMessage());
     } catch(SQLException e) {
       context.getOutputManager().error("SQLException during connection attempting.\n");
       throw new PersistenceException(e.getMessage());
-
     }
     return connection;
 
+  }
+  
+  public String getDriver() {
+    return driver;
+  }
+
+  public String getUri() {
+    return uri;
+  }
+
+  public String getUsername() {
+    return username;
+  }
+
+  public String getPassword() {
+    return password;
   }
 }

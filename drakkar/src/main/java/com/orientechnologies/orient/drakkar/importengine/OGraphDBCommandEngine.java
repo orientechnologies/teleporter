@@ -31,6 +31,7 @@ import java.util.Locale;
 import java.util.Map;
 
 import com.orientechnologies.orient.drakkar.context.ODrakkarContext;
+import com.orientechnologies.orient.drakkar.context.ODrakkarStatistics;
 import com.orientechnologies.orient.drakkar.mapper.OAggregatorEdge;
 import com.orientechnologies.orient.drakkar.model.dbschema.OAttribute;
 import com.orientechnologies.orient.drakkar.model.dbschema.OEntity;
@@ -96,6 +97,8 @@ public class OGraphDBCommandEngine {
     OrientGraphNoTx orientGraph = factory.getNoTx();
     orientGraph.setStandardElementConstraints(false);
     Map<String,String> properties = new LinkedHashMap<String,String>();
+    
+    ODrakkarStatistics statistics = context.getStatistics();
 
     // building keys and values for the lookup
 
@@ -172,6 +175,7 @@ public class OGraphDBCommandEngine {
     if(vertex == null) {
       String classAndClusterName = vertexType.getType(); 
       vertex = orientGraph.addVertex("class:"+classAndClusterName, properties);
+      statistics.orientVertices++;
     }
     else {
 
@@ -181,9 +185,10 @@ public class OGraphDBCommandEngine {
       }
       vertex.save();
 
-      // setting new properties
+      // setting new properties and save
       vertex.setProperties(properties);
       vertex.save();
+      statistics.orientVertices++;
     }
 
     context.getOutputManager().debug(properties.toString());
@@ -214,7 +219,7 @@ public class OGraphDBCommandEngine {
     OrientGraphFactory factory = new OrientGraphFactory(this.graphDBUrl);
     OrientGraphNoTx orientGraph = factory.getNoTx();
     orientGraph.setStandardElementConstraints(false);
-
+    
     // building keys and values for the lookup 
 
     String[] propertyOfKey = new String[relation.getForeignKey().getInvolvedAttributes().size()];
@@ -287,6 +292,9 @@ public class OGraphDBCommandEngine {
     boolean edgeAlreadyPresent = false;
     Iterator<Edge> it = currentOutVertex.getEdges(Direction.OUT, edgeType).iterator();
     Edge currentEdge;
+    
+    ODrakkarStatistics statistics = context.getStatistics();
+
 
     if(it.hasNext()) {
 
@@ -302,10 +310,12 @@ public class OGraphDBCommandEngine {
 
       if(edgeAlreadyPresent) {
         context.getOutputManager().debug("Edge beetween '" + currentOutVertex.toString() + "' and '" + currentInVertex.toString() + "' already present.");
+        statistics.orientEdges++;
       }
       else {
         OrientEdge edge = orientGraph.addEdge(null, currentOutVertex, currentInVertex, edgeType);
         edge.save();
+        statistics.orientEdges++;
         context.getOutputManager().debug("New edge inserted: " + edge.toString());
       }
 
@@ -313,6 +323,7 @@ public class OGraphDBCommandEngine {
     else {
       OrientEdge edge = orientGraph.addEdge(null, currentOutVertex, currentInVertex, edgeType);
       edge.save();
+      statistics.orientEdges++;
       context.getOutputManager().debug("New edge inserted: " + edge.toString());
     }
   }
@@ -322,7 +333,7 @@ public class OGraphDBCommandEngine {
     OrientGraphFactory factory = new OrientGraphFactory(this.graphDBUrl);
     OrientGraphNoTx orientGraph = factory.getNoTx();
     orientGraph.setStandardElementConstraints(false);
-
+    
     ORelationship relationship1 = joinTable.getRelationships().get(0);
     ORelationship relationship2 = joinTable.getRelationships().get(1);
 
