@@ -151,7 +151,7 @@ public class ONaiveImportStrategy implements OImportStrategy {
           statistics.importedRecords++;
         }
 
-        // closing connection and statement
+        // closing resultset, connection and statement
         dbQueryEngine.closeAll(context);
       }
       statistics.notifyListeners();

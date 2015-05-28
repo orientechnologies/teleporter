@@ -93,6 +93,7 @@ public class ONaiveAggregationImportStrategy extends ONaiveImportStrategy {
     return mapper;
   }
 
+  
   @Override
   public void executeImport(String driver, String uri, String username, String password, String outOrientGraphUri, OSource2GraphMapper genericMapper,  ODrakkarContext context) {
 
@@ -138,10 +139,9 @@ public class ONaiveAggregationImportStrategy extends ONaiveImportStrategy {
             // Statistics updated
             statistics.importedRecords++;
           }
-          // closing connection and statement
+          // closing resultset, connection and statement
           dbQueryEngine.closeAll(context);
         }
-
       }
 
 
@@ -163,7 +163,7 @@ public class ONaiveAggregationImportStrategy extends ONaiveImportStrategy {
             // Statistics updated
             statistics.importedRecords++;
           }
-          // closing connection and statement
+          // closing resultset, connection and statement
           dbQueryEngine.closeAll(context);
         }
       }

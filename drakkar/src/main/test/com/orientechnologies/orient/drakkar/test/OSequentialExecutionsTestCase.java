@@ -32,9 +32,20 @@ import org.junit.Test;
 
 public class OSequentialExecutionsTestCase {
 
+  
+  
   @Test
-  public void test() {
-    fail("Not yet implemented");
+  public void schemaModificationTest() {
+    
   }
+  
+  
+  
+  
 
+  @Test
+  public void contentModificationTest() {
+    
+  }
+  
 }
