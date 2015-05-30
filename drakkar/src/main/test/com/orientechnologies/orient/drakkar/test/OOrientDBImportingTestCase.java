@@ -101,6 +101,7 @@ public class OOrientDBImportingTestCase {
 
 
       // Records Inserting
+      
       String directorFilling = "INSERT INTO DIRECTOR (ID,NAME,SURNAME) VALUES ("
           + "('D001','Quentin','Tarantino'),"
           + "('D002','Martin','Scorsese'))";
@@ -155,6 +156,9 @@ public class OOrientDBImportingTestCase {
 
       assertEquals(29, context.getStatistics().totalNumberOfRecords);
       assertEquals(29, context.getStatistics().importedRecords);
+      assertEquals(29, context.getStatistics().orientVertices);
+      assertEquals(24, context.getStatistics().orientEdges);
+
 
       /*
        *  Testing built OrientDB

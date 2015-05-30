@@ -68,6 +68,7 @@ public class OAggregationStrategyTestCase {
    * Aggregation Strategy Test
    */
   public void test1() {
+    
     Connection connection = null;
     Statement st = null;
     OrientGraphNoTx orientGraph = null;
@@ -135,6 +136,8 @@ public class OAggregationStrategyTestCase {
 
       assertEquals(21, context.getStatistics().totalNumberOfRecords);
       assertEquals(21, context.getStatistics().importedRecords);
+      assertEquals(11, context.getStatistics().orientVertices);
+      assertEquals(10, context.getStatistics().orientEdges);
 
       /*
        *  Testing built OrientDB
