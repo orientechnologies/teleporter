@@ -147,7 +147,7 @@ public class OOrientDBImportingTestCase {
       st.execute(film2actorFilling);
 
 
-      this.importStrategy.executeStrategy("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", this.outOrientGraphUri, "java", context);
+      this.importStrategy.executeStrategy("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", this.outOrientGraphUri, "basicDBMapper", null, "java", context);
 
 
       /*

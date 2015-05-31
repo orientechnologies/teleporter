@@ -26,6 +26,7 @@ import java.util.Date;
 import com.orientechnologies.orient.drakkar.context.ODrakkarContext;
 import com.orientechnologies.orient.drakkar.context.ODrakkarStatistics;
 import com.orientechnologies.orient.drakkar.factory.ODataTypeHandlerFactory;
+import com.orientechnologies.orient.drakkar.factory.OMapperFactory;
 import com.orientechnologies.orient.drakkar.factory.ONameResolverFactory;
 import com.orientechnologies.orient.drakkar.importengine.ODBQueryEngine;
 import com.orientechnologies.orient.drakkar.importengine.OGraphDBCommandEngine;
@@ -56,7 +57,7 @@ public class ONaiveImportStrategy implements OImportStrategy {
 
   public ONaiveImportStrategy() {}
 
-  public void executeStrategy(String driver, String uri, String username, String password, String outOrientGraphUri, String nameResolverConvention, ODrakkarContext context) {	
+  public void executeStrategy(String driver, String uri, String username, String password, String outOrientGraphUri, String chosenMapper, String xmlPath, String nameResolverConvention, ODrakkarContext context) {	
 
     Date globalStart = new Date(); 
 
@@ -64,7 +65,7 @@ public class ONaiveImportStrategy implements OImportStrategy {
     ONameResolverFactory nameResolverFactory = new ONameResolverFactory();
     ONameResolver nameResolver = nameResolverFactory.buildNameResolver(nameResolverConvention, context);
     context.getStatistics().runningStepNumber = 1;
-    OSource2GraphMapper mapper = this.createSchemaMapper(driver, uri, username, password, outOrientGraphUri, nameResolver, context);
+    OSource2GraphMapper mapper = this.createSchemaMapper(driver, uri, username, password, outOrientGraphUri, chosenMapper, xmlPath, nameResolver, context);
 
     // Step 4
     this.executeImport(driver, uri, username, password, outOrientGraphUri, mapper, context);
@@ -77,19 +78,20 @@ public class ONaiveImportStrategy implements OImportStrategy {
 
   }
 
-  public OSource2GraphMapper createSchemaMapper(String driver, String uri, String username, String password, String outOrientGraphUri, ONameResolver nameResolver, ODrakkarContext context) {
+  public OSource2GraphMapper createSchemaMapper(String driver, String uri, String username, String password, String outOrientGraphUri, String chosenMapper, String xmlPath, ONameResolver nameResolver, ODrakkarContext context) {
 
-    OSource2GraphMapper mapper = new OER2GraphMapper(driver, uri, username, password);
+    OMapperFactory mapperFactory = new OMapperFactory();
+    OSource2GraphMapper mapper = mapperFactory.buildMapper(chosenMapper, driver, uri, username, password, xmlPath, context);
 
     // DataBase schema building
     mapper.buildSourceSchema(context);
     context.getOutputManager().info("");
-    context.getOutputManager().debug(((OER2GraphMapper)mapper).getDataBaseSchema().toString() + "\n");
+    context.getOutputManager().debug(mapper.getSourceSchema().toString() + "\n");
 
     // Graph model building
     mapper.buildGraphModel(nameResolver, context);
     context.getOutputManager().info("");
-    context.getOutputManager().debug(((OER2GraphMapper)mapper).getGraphModel().toString() + "\n");
+    context.getOutputManager().debug(mapper.getGraphModel().toString() + "\n");
 
     // Saving schema on Orient
     ODataTypeHandlerFactory factory = new ODataTypeHandlerFactory();

@@ -95,7 +95,7 @@ public class OSequentialExecutionsTestCase {
       st = connection.createStatement();
       st.execute(actorTableBuilding);
 
-      this.naiveImportStrategy.executeStrategy("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", this.outOrientGraphUri, "java", context);
+      this.naiveImportStrategy.executeStrategy("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", this.outOrientGraphUri, "basicDBMapper",  null, "java", context);
 
 
       /*
@@ -133,7 +133,7 @@ public class OSequentialExecutionsTestCase {
           + "add BIRTHDAY date";
       st.execute(addColumn);
 
-      this.naiveImportStrategy.executeStrategy("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", this.outOrientGraphUri, "java", context);
+      this.naiveImportStrategy.executeStrategy("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", this.outOrientGraphUri, "basicDBMapper",  null, "java", context);
 
 
       /*
@@ -207,7 +207,7 @@ public class OSequentialExecutionsTestCase {
       st = connection.createStatement();
       st.execute(actorTableBuilding);
 
-      this.naiveImportStrategy.executeStrategy("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", this.outOrientGraphUri, "java", context);
+      this.naiveImportStrategy.executeStrategy("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", this.outOrientGraphUri, "basicDBMapper",  null, "java", context);
 
 
       /*
@@ -248,7 +248,7 @@ public class OSequentialExecutionsTestCase {
           + "drop column BIRTHDAY";
       st.execute(removeColumn);
 
-      this.naiveImportStrategy.executeStrategy("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", this.outOrientGraphUri, "java", context);
+      this.naiveImportStrategy.executeStrategy("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", this.outOrientGraphUri, "basicDBMapper",  null, "java", context);
 
 
       /*
@@ -317,7 +317,7 @@ public class OSequentialExecutionsTestCase {
       st = connection.createStatement();
       st.execute(actorTableBuilding);
 
-      this.naiveImportStrategy.executeStrategy("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", this.outOrientGraphUri, "java", context);
+      this.naiveImportStrategy.executeStrategy("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", this.outOrientGraphUri, "basicDBMapper",  null, "java", context);
 
 
       /*
@@ -362,7 +362,7 @@ public class OSequentialExecutionsTestCase {
           + "alter column BIRTHDAY rename to ANNIVERSARY";
       st.execute(modifyColumn);
 
-      this.naiveImportStrategy.executeStrategy("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", this.outOrientGraphUri, "java", context);
+      this.naiveImportStrategy.executeStrategy("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", this.outOrientGraphUri, "basicDBMapper",  null, "java", context);
 
 
       /*
@@ -453,7 +453,7 @@ public class OSequentialExecutionsTestCase {
           + "('F002','Shutter Island','D002'))";
       st.execute(filmFilling);
 
-      this.naiveImportStrategy.executeStrategy("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", this.outOrientGraphUri, "java", context);
+      this.naiveImportStrategy.executeStrategy("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", this.outOrientGraphUri, "basicDBMapper",  null, "java", context);
 
 
       /*
@@ -515,7 +515,7 @@ public class OSequentialExecutionsTestCase {
       String addNewForeignKey = "alter table DIRECTOR add constraint bestfilm foreign key (BESTFILM) references FILM(ID)";
       st.execute(addNewForeignKey);
 
-      this.naiveImportStrategy.executeStrategy("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", this.outOrientGraphUri, "java", context);
+      this.naiveImportStrategy.executeStrategy("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", this.outOrientGraphUri, "basicDBMapper",  null, "java", context);
 
 
       /*
@@ -612,7 +612,7 @@ public class OSequentialExecutionsTestCase {
       st = connection.createStatement();
       st.execute(actorTableBuilding);
 
-      this.naiveImportStrategy.executeStrategy("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", this.outOrientGraphUri, "java", context);
+      this.naiveImportStrategy.executeStrategy("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", this.outOrientGraphUri, "basicDBMapper",  null, "java", context);
 
 
       /*
@@ -653,7 +653,7 @@ public class OSequentialExecutionsTestCase {
           "TITLE varchar(256) not null, DIRECTOR varchar(256) not null, primary key (ID))";
       st.execute(addTable);
 
-      this.naiveImportStrategy.executeStrategy("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", this.outOrientGraphUri, "java", context);
+      this.naiveImportStrategy.executeStrategy("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", this.outOrientGraphUri, "basicDBMapper",  null, "java", context);
 
 
       /*
@@ -761,7 +761,7 @@ public class OSequentialExecutionsTestCase {
           + "('F002','Shutter Island','D002'))";
       st.execute(filmFilling);
 
-      this.naiveImportStrategy.executeStrategy("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", this.outOrientGraphUri, "java", context);
+      this.naiveImportStrategy.executeStrategy("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", this.outOrientGraphUri, "basicDBMapper",  null, "java", context);
 
 
       /*
@@ -813,7 +813,7 @@ public class OSequentialExecutionsTestCase {
       String addNewForeignKey = "alter table FILM add foreign key (DIRECTOR) references DIRECTOR(ID)";
       st.execute(addNewForeignKey);
 
-      this.naiveImportStrategy.executeStrategy("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", this.outOrientGraphUri, "java", context);
+      this.naiveImportStrategy.executeStrategy("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", this.outOrientGraphUri, "basicDBMapper",  null, "java", context);
 
 
       /*
@@ -908,7 +908,7 @@ public class OSequentialExecutionsTestCase {
           " TITLE varchar(256) not null, DIRECTOR varchar(256) not null, primary key (ID))";
       st.execute(filmTableBuilding);
 
-      this.naiveImportStrategy.executeStrategy("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", this.outOrientGraphUri, "java", context);
+      this.naiveImportStrategy.executeStrategy("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", this.outOrientGraphUri, "basicDBMapper",  null, "java", context);
 
 
       /*
@@ -966,7 +966,7 @@ public class OSequentialExecutionsTestCase {
       String removeTable = "drop table FILM";
       st.execute(removeTable);
 
-      this.naiveImportStrategy.executeStrategy("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", this.outOrientGraphUri, "java", context);
+      this.naiveImportStrategy.executeStrategy("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", this.outOrientGraphUri, "basicDBMapper",  null, "java", context);
 
 
       /*
@@ -1063,7 +1063,7 @@ public class OSequentialExecutionsTestCase {
           + "('F002','Shutter Island','D002'))";
       st.execute(filmFilling);
 
-      this.naiveImportStrategy.executeStrategy("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", this.outOrientGraphUri, "java", context);
+      this.naiveImportStrategy.executeStrategy("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", this.outOrientGraphUri, "basicDBMapper",  null, "java", context);
 
 
       /*
@@ -1122,7 +1122,7 @@ public class OSequentialExecutionsTestCase {
       String dropForeignKey = "alter table FILM drop constraint director";
       st.execute(dropForeignKey);
 
-      this.naiveImportStrategy.executeStrategy("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", this.outOrientGraphUri, "java", context);
+      this.naiveImportStrategy.executeStrategy("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", this.outOrientGraphUri, "basicDBMapper",  null, "java", context);
 
 
       /*
@@ -1222,7 +1222,7 @@ public class OSequentialExecutionsTestCase {
           + "('A008','Matt','Damon'))";
       st.execute(actorFilling);
 
-      this.naiveImportStrategy.executeStrategy("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", this.outOrientGraphUri, "java", context);
+      this.naiveImportStrategy.executeStrategy("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", this.outOrientGraphUri, "basicDBMapper",  null, "java", context);
 
 
       /*
@@ -1269,7 +1269,7 @@ public class OSequentialExecutionsTestCase {
           + "('A010','Hugh','Jackman'))";
       st.executeQuery(actorFilling);
 
-      this.naiveImportStrategy.executeStrategy("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", this.outOrientGraphUri, "java", context);
+      this.naiveImportStrategy.executeStrategy("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", this.outOrientGraphUri, "basicDBMapper",  null, "java", context);
 
 
       /*
@@ -1381,7 +1381,7 @@ public class OSequentialExecutionsTestCase {
           + "('F003','A006'))";
       st.execute(film2actorFilling);
 
-      this.naiveAggregationImportStrategy.executeStrategy("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", this.outOrientGraphUri, "java", context);
+      this.naiveAggregationImportStrategy.executeStrategy("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", this.outOrientGraphUri, "basicDBMapper",  null, "java", context);
 
 
       /*
@@ -1450,7 +1450,7 @@ public class OSequentialExecutionsTestCase {
           + "('F004','A007'))";
       st.executeQuery(film2actorFilling);
 
-      this.naiveAggregationImportStrategy.executeStrategy("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", this.outOrientGraphUri, "java", context);
+      this.naiveAggregationImportStrategy.executeStrategy("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", this.outOrientGraphUri, "basicDBMapper",  null, "java", context);
 
 
       /*
@@ -1547,7 +1547,7 @@ public class OSequentialExecutionsTestCase {
           + "('D002','Martin','Scorsese'))";
       st.execute(directorFilling);    
 
-      this.naiveImportStrategy.executeStrategy("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", this.outOrientGraphUri, "java", context);
+      this.naiveImportStrategy.executeStrategy("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", this.outOrientGraphUri, "basicDBMapper",  null, "java", context);
 
 
       /*
@@ -1588,7 +1588,7 @@ public class OSequentialExecutionsTestCase {
           + "('F003','The Departed','D002'))";
       st.execute(filmFilling);
 
-      this.naiveImportStrategy.executeStrategy("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", this.outOrientGraphUri, "java", context);
+      this.naiveImportStrategy.executeStrategy("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", this.outOrientGraphUri, "basicDBMapper",  null, "java", context);
 
 
       /*
@@ -1700,7 +1700,7 @@ public class OSequentialExecutionsTestCase {
           + "('A006','Matt','Damon'))";
       st.execute(actorFilling);
 
-      this.naiveAggregationImportStrategy.executeStrategy("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", this.outOrientGraphUri, "java", context);
+      this.naiveAggregationImportStrategy.executeStrategy("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", this.outOrientGraphUri, "basicDBMapper",  null, "java", context);
 
 
       /*
@@ -1764,7 +1764,7 @@ public class OSequentialExecutionsTestCase {
           + "('F003','A006'))";
       st.execute(film2actorFilling);
 
-      this.naiveAggregationImportStrategy.executeStrategy("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", this.outOrientGraphUri, "java", context);
+      this.naiveAggregationImportStrategy.executeStrategy("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", this.outOrientGraphUri, "basicDBMapper",  null, "java", context);
 
 
       /*
@@ -1869,7 +1869,7 @@ public class OSequentialExecutionsTestCase {
           + "('A008','Matto','Demone'))";
       st.execute(actorFilling);
 
-      this.naiveImportStrategy.executeStrategy("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", this.outOrientGraphUri, "java", context);
+      this.naiveImportStrategy.executeStrategy("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", this.outOrientGraphUri, "basicDBMapper",  null, "java", context);
 
 
       /*
@@ -1936,7 +1936,7 @@ public class OSequentialExecutionsTestCase {
       update = "update ACTOR set name='Matt', surname='Damon' where id='A008'";
       st.executeQuery(update);
 
-      this.naiveImportStrategy.executeStrategy("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", this.outOrientGraphUri, "java", context);
+      this.naiveImportStrategy.executeStrategy("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", this.outOrientGraphUri, "basicDBMapper",  null, "java", context);
 
 
       /*

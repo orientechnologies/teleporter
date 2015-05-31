@@ -26,6 +26,7 @@ import java.util.Date;
 import com.orientechnologies.orient.drakkar.context.ODrakkarContext;
 import com.orientechnologies.orient.drakkar.context.ODrakkarStatistics;
 import com.orientechnologies.orient.drakkar.factory.ODataTypeHandlerFactory;
+import com.orientechnologies.orient.drakkar.factory.OMapperFactory;
 import com.orientechnologies.orient.drakkar.importengine.ODBQueryEngine;
 import com.orientechnologies.orient.drakkar.importengine.OGraphDBCommandEngine;
 import com.orientechnologies.orient.drakkar.mapper.OAggregatorEdge;
@@ -56,10 +57,11 @@ public class ONaiveAggregationImportStrategy extends ONaiveImportStrategy {
   public ONaiveAggregationImportStrategy() {}
 
 
-  public OSource2GraphMapper createSchemaMapper(String driver, String uri, String username, String password, String outOrientGraphUri, ONameResolver nameResolver, ODrakkarContext context) {
+  public OSource2GraphMapper createSchemaMapper(String driver, String uri, String username, String password, String outOrientGraphUri, String chosenMapper, String xmlPath, ONameResolver nameResolver, ODrakkarContext context) {
 
-    OSource2GraphMapper mapper = new OER2GraphMapper(driver, uri, username, password);
-
+    OMapperFactory mapperFactory = new OMapperFactory();
+    OSource2GraphMapper mapper = mapperFactory.buildMapper(chosenMapper, driver, uri, username, password, xmlPath, context);
+    
     // DataBase schema building
     mapper.buildSourceSchema(context);
     context.getOutputManager().info("");

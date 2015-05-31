@@ -39,6 +39,7 @@ import com.orientechnologies.orient.drakkar.context.ODrakkarContext;
 import com.orientechnologies.orient.drakkar.context.ODrakkarStatistics;
 import com.orientechnologies.orient.drakkar.model.dbschema.OAttribute;
 import com.orientechnologies.orient.drakkar.model.dbschema.ODataBaseSchema;
+import com.orientechnologies.orient.drakkar.model.dbschema.ODataSourceSchema;
 import com.orientechnologies.orient.drakkar.model.dbschema.OEntity;
 import com.orientechnologies.orient.drakkar.model.dbschema.OForeignKey;
 import com.orientechnologies.orient.drakkar.model.dbschema.OPrimaryKey;
@@ -48,7 +49,7 @@ import com.orientechnologies.orient.drakkar.model.graphmodel.OGraphModel;
 import com.orientechnologies.orient.drakkar.model.graphmodel.OModelProperty;
 import com.orientechnologies.orient.drakkar.model.graphmodel.OVertexType;
 import com.orientechnologies.orient.drakkar.nameresolver.ONameResolver;
-import com.orientechnologies.orient.drakkar.persistence.util.ODataSource;
+import com.orientechnologies.orient.drakkar.persistence.util.ODBSourceConnection;
 
 /**
  * Implementation of OSource2GraphMapper that manages the source DB schema and the destination graph model with their correspondences.
@@ -60,22 +61,21 @@ import com.orientechnologies.orient.drakkar.persistence.util.ODataSource;
  *
  */
 
-public class OER2GraphMapper implements OSource2GraphMapper {
+public class OER2GraphMapper extends OSource2GraphMapper {
 
-  private ODataSource dataSource;
+  protected ODBSourceConnection dbSourceConnection;
 
-  // models
-  private ODataBaseSchema dataBaseSchema;
-  private OGraphModel graphModel;
+  // source model
+  protected ODataBaseSchema dataBaseSchema;
 
   // Rules
-  private Map<OEntity,OVertexType> entity2vertexType;  
-  private Map<ORelationship,OEdgeType> relationship2edgeType;
-  private Map<String,Integer> edgeTypeName2count;
-  private Map<String,OAggregatorEdge> joinVertex2aggregatorEdges;
+  protected Map<OEntity,OVertexType> entity2vertexType;  
+  protected Map<ORelationship,OEdgeType> relationship2edgeType;
+  protected Map<String,Integer> edgeTypeName2count;
+  protected Map<String,OAggregatorEdge> joinVertex2aggregatorEdges;
 
   public OER2GraphMapper (String driver, String uri, String username, String password) {
-    this.dataSource = new ODataSource(driver, uri, username, password);
+    this.dbSourceConnection = new ODBSourceConnection(driver, uri, username, password);
     this.entity2vertexType = new HashMap<OEntity,OVertexType>();
     this.relationship2edgeType = new HashMap<ORelationship,OEdgeType>();
     this.edgeTypeName2count = new TreeMap<String,Integer>();
@@ -93,7 +93,7 @@ public class OER2GraphMapper implements OSource2GraphMapper {
 
     try {
 
-      connection = this.dataSource.getConnection(context);      
+      connection = this.dbSourceConnection.getConnection(context);
       DatabaseMetaData databaseMetaData = connection.getMetaData();
 
       /*
@@ -113,10 +113,10 @@ public class OER2GraphMapper implements OSource2GraphMapper {
 
       String tableCatalog = null;
       String tableSchemaPattern = null;
-      if(this.dataSource.getDriver().contains("Oracle")) {
+      if(this.dbSourceConnection.getDriver().contains("Oracle")) {
         ResultSet schemas = databaseMetaData.getSchemas();
         while(schemas.next()) {
-          if(schemas.getString(1).equalsIgnoreCase(this.dataSource.getUsername())) {
+          if(schemas.getString(1).equalsIgnoreCase(this.dbSourceConnection.getUsername())) {
             tableSchemaPattern = schemas.getString(1);
             break;
           }
@@ -158,9 +158,11 @@ public class OER2GraphMapper implements OSource2GraphMapper {
       ResultSet currentTableRecordAmount;
       int totalNumberOfRecord = 0;
 
+      
       /*
        *  Entity building
        */
+      
       int iteration = 1;
       for(String currentTableName: tablesName) {
 
@@ -219,6 +221,7 @@ public class OER2GraphMapper implements OSource2GraphMapper {
       /*
        *  Building relationships
        */
+      
       iteration = 1;
       for(OEntity currentForeignEntity: this.dataBaseSchema.getEntities()) {
 
@@ -535,6 +538,9 @@ public class OER2GraphMapper implements OSource2GraphMapper {
     }
   }
 
+  public ODataSourceSchema getSourceSchema() {
+    return this.getDataBaseSchema();
+  }
 
   public ODataBaseSchema getDataBaseSchema() {
     return this.dataBaseSchema;
@@ -543,16 +549,6 @@ public class OER2GraphMapper implements OSource2GraphMapper {
 
   public void setDataBaseSchema(ODataBaseSchema dataBaseSchema) {
     this.dataBaseSchema = dataBaseSchema;
-  }
-
-
-  public OGraphModel getGraphModel() {
-    return this.graphModel;
-  }
-
-
-  public void setGraphModel(OGraphModel graphModel) {
-    this.graphModel = graphModel;
   }
 
 

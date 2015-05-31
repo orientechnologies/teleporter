@@ -21,6 +21,8 @@
 package com.orientechnologies.orient.drakkar.mapper;
 
 import com.orientechnologies.orient.drakkar.context.ODrakkarContext;
+import com.orientechnologies.orient.drakkar.model.dbschema.ODataSourceSchema;
+import com.orientechnologies.orient.drakkar.model.graphmodel.OGraphModel;
 import com.orientechnologies.orient.drakkar.nameresolver.ONameResolver;
 
 
@@ -34,10 +36,27 @@ import com.orientechnologies.orient.drakkar.nameresolver.ONameResolver;
  *
  */
 
-public interface OSource2GraphMapper {
+public abstract class OSource2GraphMapper {
+
+  // graph model
+  protected OGraphModel graphModel;
   
-  public void buildSourceSchema(ODrakkarContext context);
   
-  void buildGraphModel(ONameResolver nameResolver, ODrakkarContext context);
+  public OSource2GraphMapper() {}
+  
+  
+  public OGraphModel getGraphModel() {
+    return this.graphModel;
+  }
+  
+  public abstract ODataSourceSchema getSourceSchema();
+
+  public abstract void buildSourceSchema(ODrakkarContext context);
+
+  public abstract void buildGraphModel(ONameResolver nameResolver, ODrakkarContext context);
+
+  public abstract String toString();
+  
+  
 
 }

@@ -40,18 +40,18 @@ import com.orientechnologies.orient.drakkar.ui.OProgressMonitor;
  */
 
 public class ODrakkar {
-  
+
   private static OOutputStreamManager outputManager;
 
   private static final OStrategyFactory FACTORY = new OStrategyFactory();	
 
-  
+
   public static void main(String[] args) {
-    
-    
+
+
     // Output Manager setting
     outputManager = new OOutputStreamManager(2);
-    
+
 
     /*
      * Input args validation
@@ -148,8 +148,18 @@ public class ODrakkar {
     // Optional arguments
     String nameResolver = arguments.get("-nr");
     String outputLevel = arguments.get("-v");
+    String chosenMapper = "basicDBMapper";  // Mapper argument
+    String xmlPath = null;
+    if(arguments.containsKey("-hibernate")) {
+      chosenMapper = "hibernate";
+      xmlPath = arguments.get("-hibernate");
+    }
+    else if(arguments.containsKey("-jpa")) {
+      chosenMapper = "jpa";
+      xmlPath = arguments.get("-jpa");
+    }
 
-    ODrakkar.execute(driver, jurl, username, password, outDbUrl, chosenStrategy, nameResolver, outputLevel);
+    ODrakkar.execute(driver, jurl, username, password, outDbUrl, chosenStrategy, chosenMapper, xmlPath, nameResolver, outputLevel);
   }
 
   /**
@@ -167,11 +177,11 @@ public class ODrakkar {
    */
 
 
-  public static void execute(String driver, String jurl, String username, String password, String outDbUrl, String chosenStrategy, String nameResolver, String outputLevel) {
+  public static void execute(String driver, String jurl, String username, String password, String outDbUrl, String chosenStrategy, String chosenMapper, String xmlPath, String nameResolver, String outputLevel) {
 
 
     // OutputStream setting
-    
+
     if(outputLevel != null)
       outputManager.setLevel(Integer.parseInt(outputLevel));
 
@@ -180,7 +190,7 @@ public class ODrakkar {
     context.setOutputManager(outputManager);
     OProgressMonitor progressMonitor = new OProgressMonitor(context);
     progressMonitor.initialize();
-    
+
     OImportStrategy strategy = FACTORY.buildStrategy(chosenStrategy, context);
 
     // Timer for statistics notifying
@@ -194,7 +204,7 @@ public class ODrakkar {
     }, 0, 1000);
 
     // the last argument represents the nameResolver (non is null)
-    strategy.executeStrategy(driver, jurl, username, password, outDbUrl, nameResolver, context);
+    strategy.executeStrategy(driver, jurl, username, password, outDbUrl, chosenMapper, xmlPath, nameResolver, context);
 
     timer.cancel();
 

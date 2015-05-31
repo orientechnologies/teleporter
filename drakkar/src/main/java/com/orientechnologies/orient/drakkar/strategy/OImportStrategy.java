@@ -32,6 +32,6 @@ import com.orientechnologies.orient.drakkar.context.ODrakkarContext;
 
 public interface OImportStrategy {
 
-	public void executeStrategy(String driver, String uri, String username, String password, String outDbUri, String nameResolverConvention, ODrakkarContext context);
+	public void executeStrategy(String driver, String uri, String username, String password, String outOrientGraphUri, String chosenMapper, String xmlPath, String nameResolverConvention, ODrakkarContext context);
 	
 }

@@ -26,7 +26,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import com.orientechnologies.orient.drakkar.context.ODrakkarContext;
-import com.orientechnologies.orient.drakkar.persistence.util.ODataSource;
+import com.orientechnologies.orient.drakkar.persistence.util.ODBSourceConnection;
 
 /**
  * Implementation of ODataSourceQueryEngine. It executes the necessary queries for the source DB records fetching.
@@ -38,12 +38,12 @@ import com.orientechnologies.orient.drakkar.persistence.util.ODataSource;
 
 public class ODBQueryEngine implements ODataSourceQueryEngine {
 
-  private ODataSource dataSource;
+  private ODBSourceConnection dataSource;
   private Connection dbConnection;
   private PreparedStatement statement;
 
   public ODBQueryEngine(String driver, String uri, String username, String password) {
-    this.dataSource =  new ODataSource(driver, uri, username, password);
+    this.dataSource =  new ODBSourceConnection(driver, uri, username, password);
   }
 
   public ResultSet getRecordsByEntity(String entityName, ODrakkarContext context) {
@@ -55,7 +55,12 @@ public class ODBQueryEngine implements ODataSourceQueryEngine {
 
     try {
 
-      this.dbConnection = dataSource.getConnection(context);
+      try {
+        this.dbConnection = dataSource.getConnection(context);
+      } catch (Exception e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      }
       this.statement = dbConnection.prepareStatement(query);
       results = statement.executeQuery();
 
