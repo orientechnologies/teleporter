@@ -30,10 +30,16 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 import com.orientechnologies.orient.drakkar.context.ODrakkarContext;
 import com.orientechnologies.orient.drakkar.context.ODrakkarStatistics;
+import com.orientechnologies.orient.drakkar.model.dbschema.OAttribute;
 import com.orientechnologies.orient.drakkar.model.dbschema.ODataBaseSchema;
+import com.orientechnologies.orient.drakkar.model.dbschema.OEntity;
+import com.orientechnologies.orient.drakkar.model.dbschema.OPrimaryKey;
 
 /**
  * Extends OER2GraphMapper thus manages the source DB schema and the destination graph model with their correspondences.
@@ -52,7 +58,7 @@ public class OHibernate2GraphMapper extends OER2GraphMapper {
     super(driver, uri, username, password);
     this.xmlPath = xmlPath;
   }
-  
+
   @Override
   public void buildSourceSchema(ODrakkarContext context) {
 
@@ -79,33 +85,49 @@ public class OHibernate2GraphMapper extends OER2GraphMapper {
       String productVersion = databaseMetaData.getDatabaseProductVersion();
 
       this.dataBaseSchema = new ODataBaseSchema(majorVersion, minorVersion, driverMajorVersion, driverMinorVersion, productName, productVersion);
-      
+
       // XML parsing and DOM building
-      
+
       File xmlFile = new File(this.xmlPath);
       DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
       DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
       Document dom = dBuilder.parse(xmlFile);
-      
+
       /*
        *  Entity building
        */
+
+      NodeList entities = dom.getElementsByTagName("class");
+      NodeList entitiesSubClass = dom.getElementsByTagName("subclass");
+      int iteration = 1;
       
-      // TODO
       
+      int totalNumberOfEntities = entities.getLength() + entitiesSubClass.getLength();
+      statistics.totalNumberOfEntities = totalNumberOfEntities;
+
+      context.getOutputManager().debug(totalNumberOfEntities + " tables found.");
       
-      
+      for(int i=0; i<entities.getLength(); i++) {
+
+        Element currentEntityElement = (Element) entities.item(i);
+        
+        this.buildAndAddEntityToSchema(currentEntityElement, iteration, totalNumberOfEntities, context);
+        
+        
+      }
+
+
       /*
        *  Building relationships
        */
-      
+
       // TODO
 
-      
-      
-      
-      
-      
+
+
+
+
+
     }catch(SQLException e) {
       e.printStackTrace();
     }catch(Exception e) {
@@ -129,6 +151,71 @@ public class OHibernate2GraphMapper extends OER2GraphMapper {
     }catch(SQLException e) {
       e.printStackTrace();
     }
+
+  }
+  
+  private void buildAndAddEntityToSchema(Element currentEntityElement, int iteration, int totalNumberOfEntities, ODrakkarContext context) {
+    
+    OEntity currentEntity;
+    OAttribute currentAttribute;
+    OPrimaryKey pKey;
+    int ordinalPosition = 1;
+    
+    currentEntity = new OEntity(currentEntityElement.getAttribute("table"));
+    
+    context.getOutputManager().debug("Building '" + currentEntity.getName() + "' entity (" + iteration + "/" + totalNumberOfEntities + ")...");
+
+    // adding primary key or composite primary key
+    NodeList pKeyElements = currentEntityElement.getElementsByTagName("id");
+    NodeList compositePKeyElements = currentEntityElement.getElementsByTagName("composite-id");
+
+    if(pKeyElements.getLength() == compositePKeyElements.getLength()) {
+      context.getOutputManager().error("XML Format ERROR: problem on the primary key inference of the entity '" + currentEntity.getName()  + "'.");
+      System.exit(0);
+    }
+
+    if(pKeyElements.getLength()==1) {
+      pKey = new OPrimaryKey(currentEntity);
+      Element pKeyElement = (Element) pKeyElements.item(0);
+
+      currentAttribute = new OAttribute(pKeyElement.getAttribute("column"), ordinalPosition, pKeyElement.getAttribute("type"), currentEntity);
+      currentEntity.addAttribute(currentAttribute);
+      ordinalPosition++;
+      pKey.addAttribute(currentAttribute);
+      currentEntity.setPrimaryKey(pKey);
+    }
+
+    else if (compositePKeyElements.getLength() == 1) {
+      
+      pKey = new OPrimaryKey(currentEntity);
+      Element compositePKeyElement = (Element) pKeyElements.item(0);
+      NodeList compositeKeyAttributes = compositePKeyElement.getElementsByTagName("key-property");
+      
+      for(int i=0; i<compositeKeyAttributes.getLength(); i++) {
+        currentAttribute = new OAttribute(compositePKeyElement.getAttribute("column"), ordinalPosition, compositePKeyElement.getAttribute("type"), currentEntity);
+        currentEntity.addAttribute(currentAttribute);
+        ordinalPosition++;
+        pKey.addAttribute(currentAttribute);
+      }
+      currentEntity.setPrimaryKey(pKey);
+    }
+
+    // adding attributes
+    NodeList attributes = currentEntityElement.getElementsByTagName("property");
+
+    for(int j=0; j<attributes.getLength(); j++) {
+      Element currentAttributeElement = (Element) attributes.item(j);
+      currentAttribute = new OAttribute(currentAttributeElement.getAttribute("column"), ordinalPosition, currentAttributeElement.getAttribute("type"), currentEntity);
+      currentEntity.addAttribute(currentAttribute);
+      ordinalPosition++;
+    }
+
+    // adding entity to db schema
+    this.dataBaseSchema.addEntity(currentEntity);
+    
+    iteration++;
+    context.getOutputManager().debug("Entity " + currentEntity.getName() + " built.\n");
+    context.getStatistics().builtEntities++;
     
   }
 
