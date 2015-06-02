@@ -136,6 +136,13 @@ public class ODrakkar {
         exit();
       }
     }
+    
+    if(arguments.get("-mapping") != null) {
+      if(! (arguments.get("-v").equals("0") | arguments.get("-v").equals("1") | arguments.get("-v").equals("2") | arguments.get("-v").equals("3")) ) {
+        outputManager.error("Not valid output level. Available levels:\n0 - No messages\n1 - Debug\n2 - Info\n3 - Warning \n");
+        exit();
+      }
+    }
 
     // Mandatory arguments
     String driver = arguments.get("-d");

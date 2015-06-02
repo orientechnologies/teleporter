@@ -67,7 +67,7 @@ public class OEdgeType extends OElementType {
   public int hashCode() {
     final int prime = 31;
     int result = 1;
-    result = prime * result + ((super.type == null) ? 0 : super.type.hashCode());
+    result = prime * result + ((super.name == null) ? 0 : super.name.hashCode());
     result = prime * result + ((inVertexType == null) ? 0 : inVertexType.hashCode());
     result = prime * result + ((outVertexType == null) ? 0 : outVertexType.hashCode());
     result = prime * result + ((properties == null) ? 0 : properties.hashCode());
@@ -80,7 +80,7 @@ public class OEdgeType extends OElementType {
     OEdgeType that = (OEdgeType) obj;
 
     // check on type and in/out vertex
-    if(!(super.type.equals(that.getType()) && this.inVertexType.getType().equals(that.getInVertexType().getType())))
+    if(!(super.name.equals(that.getName()) && this.inVertexType.getName().equals(that.getInVertexType().getName())))
       return false;
 
     // check on properties
@@ -99,10 +99,10 @@ public class OEdgeType extends OElementType {
     String s = "";
 
     if(this.outVertexType != null && this.inVertexType != null)
-      s = "Edge-type [type = " + super.type + ", out-vertex-type = " + this.getOutVertexType().getType() +  ", in-vertex-type = " + this.getInVertexType().getType() + " ]"; 
+      s = "Edge-type [type = " + super.name + ", out-vertex-type = " + this.getOutVertexType().getName() +  ", in-vertex-type = " + this.getInVertexType().getName() + " ]"; 
 
     else
-      s = "Edge-type [type = " + super.type + " ]"; 
+      s = "Edge-type [type = " + super.name + " ]"; 
 
     if(this.properties.size() > 0) {
       s += "\nEdge's properties ("+this.properties.size()+"):\n";

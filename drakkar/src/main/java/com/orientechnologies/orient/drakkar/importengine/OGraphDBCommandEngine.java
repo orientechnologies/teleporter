@@ -126,7 +126,7 @@ public class OGraphDBCommandEngine {
     }
     context.getOutputManager().debug(s);
 
-    OrientVertex vertex = this.getVertexByIndexedKey(orientGraph, propertyOfKey, valueOfKey, vertexType.getType());  // !!!
+    OrientVertex vertex = this.getVertexByIndexedKey(orientGraph, propertyOfKey, valueOfKey, vertexType.getName());  // !!!
 
     // setting properties to the vertex
     String currentAttributeValue = null;
@@ -173,7 +173,7 @@ public class OGraphDBCommandEngine {
     }
 
     if(vertex == null) {
-      String classAndClusterName = vertexType.getType(); 
+      String classAndClusterName = vertexType.getName(); 
       vertex = orientGraph.addVertex("class:"+classAndClusterName, properties);
       statistics.orientVertices++;
     }
@@ -253,7 +253,7 @@ public class OGraphDBCommandEngine {
     // all values are different from null, thus vertex is searched in the graph and in case is added if not found.
     if(ok) {
 
-      currentInVertex = this.getVertexByIndexedKey(orientGraph, propertyOfKey, valueOfKey, currentInVertexType.getType());
+      currentInVertex = this.getVertexByIndexedKey(orientGraph, propertyOfKey, valueOfKey, currentInVertexType.getName());
 
       /*
        *  if the vertex is not already present in the graph it's built, set and inserted to the graph,
@@ -269,7 +269,7 @@ public class OGraphDBCommandEngine {
         }
 
         context.getOutputManager().debug("NEW Reached vertex (id:value) --> " + Arrays.toString(propertyOfKey) + ":" + Arrays.toString(valueOfKey));
-        String classAndClusterName = currentInVertexType.getType(); 
+        String classAndClusterName = currentInVertexType.getName(); 
         currentInVertex = orientGraph.addVertex("class:"+classAndClusterName, partialProperties);
         context.getOutputManager().debug("New vertex inserted (only pk props setted): " + currentInVertex.toString() + "\n");
 

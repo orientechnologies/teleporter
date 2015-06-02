@@ -32,23 +32,24 @@ import java.util.List;
  *
  */
 
-public class OElementType {
+public class OElementType implements Comparable<OElementType> {
   
-  protected String type;
+  protected String name;
   protected List<OModelProperty> properties;
   protected OElementType parentType;
+  protected int inheritanceLevel;
 
   public OElementType(String type) {
-    this.type = type;
+    this.name = type;
     this.properties = new LinkedList<OModelProperty>();
   }
 
-  public String getType() {
-    return this.type;
+  public String getName() {
+    return this.name;
   }
 
-  public void setType(String type) {
-    this.type = type;
+  public void setName(String type) {
+    this.name = type;
   }
 
   public List<OModelProperty> getProperties() {
@@ -65,6 +66,14 @@ public class OElementType {
 
   public void setParentType(OElementType parentType) {
     this.parentType = parentType;
+  }
+
+  public int getInheritanceLevel() {
+    return this.inheritanceLevel;
+  }
+
+  public void setInheritanceLevel(int inheritanceLevel) {
+    this.inheritanceLevel = inheritanceLevel;
   }
 
   public void removePropertyByName(String toRemove) {
@@ -85,5 +94,17 @@ public class OElementType {
       }
     }
     return null;
+  }
+
+  @Override
+  public int compareTo(OElementType toCompare) {
+    
+    if(this.inheritanceLevel > toCompare.getInheritanceLevel())
+      return 1;
+    else if(this.inheritanceLevel < toCompare.getInheritanceLevel())
+      return -1;
+    else
+      return this.name.compareTo(toCompare.getName());
+
   }
 }

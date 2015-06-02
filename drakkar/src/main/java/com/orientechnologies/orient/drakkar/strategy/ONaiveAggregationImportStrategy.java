@@ -135,7 +135,7 @@ public class ONaiveAggregationImportStrategy extends ONaiveImportStrategy {
             for(ORelationship currentRelation: entity.getRelationships()) {
               currentInVertexType = mapper.getVertexTypeByName(context.getNameResolver().resolveVertexName(currentRelation.getParentEntityName())); // aggiungi getVertexTypeByName!
               edgeType = mapper.getRelationship2edgeType().get(currentRelation);
-              graphDBCommandEngine.upsertReachedVertexWithEdge(currentRecord, currentRelation, currentOutVertex, currentInVertexType, edgeType.getType(), context);
+              graphDBCommandEngine.upsertReachedVertexWithEdge(currentRecord, currentRelation, currentOutVertex, currentInVertexType, edgeType.getName(), context);
             }   
 
             // Statistics updated

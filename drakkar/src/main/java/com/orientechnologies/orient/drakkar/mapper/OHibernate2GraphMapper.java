@@ -21,23 +21,17 @@
 package com.orientechnologies.orient.drakkar.mapper;
 
 import java.io.File;
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.SQLException;
-import java.util.Date;
+import java.util.Collections;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import com.orientechnologies.orient.drakkar.context.ODrakkarContext;
-import com.orientechnologies.orient.drakkar.context.ODrakkarStatistics;
 import com.orientechnologies.orient.drakkar.model.dbschema.OAttribute;
-import com.orientechnologies.orient.drakkar.model.dbschema.ODataBaseSchema;
 import com.orientechnologies.orient.drakkar.model.dbschema.OEntity;
 import com.orientechnologies.orient.drakkar.model.dbschema.OPrimaryKey;
 
@@ -62,29 +56,18 @@ public class OHibernate2GraphMapper extends OER2GraphMapper {
   @Override
   public void buildSourceSchema(ODrakkarContext context) {
 
-    Connection connection = null;
-    ODrakkarStatistics statistics = context.getStatistics();
-    statistics.startWork1Time = new Date();
-    statistics.runningStepNumber = 1;
-    statistics.notifyListeners();
-
     try {
 
-      connection = this.dbSourceConnection.getConnection(context);
-      DatabaseMetaData databaseMetaData = connection.getMetaData();
-
       /*
-       *  General DB Info
+       * Building Info from DB Schema
        */
 
-      int majorVersion = databaseMetaData.getDatabaseMajorVersion();
-      int minorVersion = databaseMetaData.getDatabaseMinorVersion();
-      int driverMajorVersion = databaseMetaData.getDriverMajorVersion();
-      int driverMinorVersion = databaseMetaData.getDriverMinorVersion();
-      String productName = databaseMetaData.getDatabaseProductName();
-      String productVersion = databaseMetaData.getDatabaseProductVersion();
+      super.buildSourceSchema(context);
 
-      this.dataBaseSchema = new ODataBaseSchema(majorVersion, minorVersion, driverMajorVersion, driverMinorVersion, productName, productVersion);
+
+      /*
+       * XML Checking and Inheritance
+       */
 
       // XML parsing and DOM building
 
@@ -93,131 +76,161 @@ public class OHibernate2GraphMapper extends OER2GraphMapper {
       DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
       Document dom = dBuilder.parse(xmlFile);
 
-      /*
-       *  Entity building
-       */
 
       NodeList entities = dom.getElementsByTagName("class");
-      NodeList entitiesSubClass = dom.getElementsByTagName("subclass");
-      int iteration = 1;
-      
-      
-      int totalNumberOfEntities = entities.getLength() + entitiesSubClass.getLength();
-      statistics.totalNumberOfEntities = totalNumberOfEntities;
+      Element currentEntityElement;
+      OEntity currentEntity = null;
 
-      context.getOutputManager().debug(totalNumberOfEntities + " tables found.");
-      
       for(int i=0; i<entities.getLength(); i++) {
+        currentEntityElement = (Element) entities.item(i);
 
-        Element currentEntityElement = (Element) entities.item(i);
-        
-        this.buildAndAddEntityToSchema(currentEntityElement, iteration, totalNumberOfEntities, context);
-        
-        
-      }
-
-
-      /*
-       *  Building relationships
-       */
-
-      // TODO
-
-
-
-
-
-
-    }catch(SQLException e) {
-      e.printStackTrace();
-    }catch(Exception e) {
-      e.printStackTrace();
-    }finally {
-      try {
-        if(connection != null) {
-          connection.close();
+        if(currentEntityElement.hasAttribute("table"))
+          currentEntity = super.dataBaseSchema.getEntityByName(currentEntityElement.getAttribute("table"));
+        else {
+          context.getOutputManager().error("XML Format ERROR: problem in class definition, table attribute missing on class node.");
+          System.exit(0);
         }
-      }catch(SQLException e) {
-        e.printStackTrace();
-      }
-    }
 
-    try {
-      if(connection.isClosed())
-        context.getOutputManager().debug("Connection to DB closed.\n");
-      else {
-        statistics.warningMessages.add("Connection to DB not closed.");
-      }      
-    }catch(SQLException e) {
+        // check primary key
+        if(currentEntity.getPrimaryKey().getInvolvedAttributes().size() == 0) {
+          this.detectPrimaryKey(dom, currentEntityElement, currentEntity, context);
+        }
+
+        // check foreign key
+        if(currentEntity.getForeignKeys().size() == 0) {
+          this.detectForeignKeys(dom, currentEntityElement, currentEntity, context);
+        }
+
+        // inheritance
+        this.detectInheritanceAndUpdateSchema(dom, currentEntity, currentEntityElement, context);
+      }
+
+      // sorting tables for inheritance level and then for name
+      Collections.sort(super.dataBaseSchema.getEntities());
+
+    }catch(Exception e) {
       e.printStackTrace();
     }
 
   }
-  
-  private void buildAndAddEntityToSchema(Element currentEntityElement, int iteration, int totalNumberOfEntities, ODrakkarContext context) {
-    
-    OEntity currentEntity;
-    OAttribute currentAttribute;
-    OPrimaryKey pKey;
-    int ordinalPosition = 1;
-    
-    currentEntity = new OEntity(currentEntityElement.getAttribute("table"));
-    
-    context.getOutputManager().debug("Building '" + currentEntity.getName() + "' entity (" + iteration + "/" + totalNumberOfEntities + ")...");
+
+  private void detectPrimaryKey(Document dom, Element currentEntityElement, OEntity currentEntity, ODrakkarContext context) {
+
+    OPrimaryKey pKey = currentEntity.getPrimaryKey();
 
     // adding primary key or composite primary key
     NodeList pKeyElements = currentEntityElement.getElementsByTagName("id");
     NodeList compositePKeyElements = currentEntityElement.getElementsByTagName("composite-id");
 
     if(pKeyElements.getLength() == compositePKeyElements.getLength()) {
-      context.getOutputManager().error("XML Format ERROR: problem on the primary key inference of the entity '" + currentEntity.getName()  + "'.");
+      context.getOutputManager().error("XML Format ERROR: problem on the primary key inference of the entity '" + currentEntity.getName()  + "', primary key neither present in Db Schema nor in XMl mapping file.");
       System.exit(0);
     }
 
     if(pKeyElements.getLength()==1) {
-      pKey = new OPrimaryKey(currentEntity);
-      Element pKeyElement = (Element) pKeyElements.item(0);
 
-      currentAttribute = new OAttribute(pKeyElement.getAttribute("column"), ordinalPosition, pKeyElement.getAttribute("type"), currentEntity);
-      currentEntity.addAttribute(currentAttribute);
-      ordinalPosition++;
+      Element pKeyElement = (Element) pKeyElements.item(0);
+      OAttribute currentAttribute;
+      if(pKeyElement.hasAttribute("column")) {
+        currentAttribute = currentEntity.getAttributeByName(pKeyElement.getAttribute("column"));
+      }
+      else {
+        Element column = (Element) pKeyElement.getElementsByTagName("column").item(0);
+        currentAttribute = currentEntity.getAttributeByName(column.getAttribute("name"));
+      }
       pKey.addAttribute(currentAttribute);
-      currentEntity.setPrimaryKey(pKey);
     }
 
     else if (compositePKeyElements.getLength() == 1) {
-      
-      pKey = new OPrimaryKey(currentEntity);
-      Element compositePKeyElement = (Element) pKeyElements.item(0);
-      NodeList compositeKeyAttributes = compositePKeyElement.getElementsByTagName("key-property");
-      
-      for(int i=0; i<compositeKeyAttributes.getLength(); i++) {
-        currentAttribute = new OAttribute(compositePKeyElement.getAttribute("column"), ordinalPosition, compositePKeyElement.getAttribute("type"), currentEntity);
-        currentEntity.addAttribute(currentAttribute);
-        ordinalPosition++;
+
+      Element compositePKeyElement = (Element) compositePKeyElements.item(0);
+      NodeList compositePKeyAttributes = compositePKeyElement.getElementsByTagName("key-property");
+
+      OAttribute currentAttribute;
+      for(int i=0; i<compositePKeyAttributes.getLength(); i++) {
+        currentAttribute = currentEntity.getAttributeByName(((Element)compositePKeyAttributes.item(i)).getAttribute("column"));
         pKey.addAttribute(currentAttribute);
       }
-      currentEntity.setPrimaryKey(pKey);
     }
 
-    // adding attributes
-    NodeList attributes = currentEntityElement.getElementsByTagName("property");
-
-    for(int j=0; j<attributes.getLength(); j++) {
-      Element currentAttributeElement = (Element) attributes.item(j);
-      currentAttribute = new OAttribute(currentAttributeElement.getAttribute("column"), ordinalPosition, currentAttributeElement.getAttribute("type"), currentEntity);
-      currentEntity.addAttribute(currentAttribute);
-      ordinalPosition++;
+    else if(pKeyElements.getLength()>1 || compositePKeyElements.getLength()>1) {
+      context.getOutputManager().error("XML Format ERROR: problem on the primary key inference of the entity '" + currentEntity.getName()  + "'.");
+      System.exit(0);
     }
-
-    // adding entity to db schema
-    this.dataBaseSchema.addEntity(currentEntity);
-    
-    iteration++;
-    context.getOutputManager().debug("Entity " + currentEntity.getName() + " built.\n");
-    context.getStatistics().builtEntities++;
-    
   }
+
+
+  private void detectInheritanceAndUpdateSchema(Document dom, OEntity parentEntity, Element parentEntityElement, ODrakkarContext context) {
+
+//    NodeList classElements = dom.getElementsByTagName("class");
+//    Element currentEntityElement;
+//    OEntity currentEntity;
+//    for(int i=0; i<classElements.getLength(); i++) {
+
+      NodeList subclassElements = parentEntityElement.getElementsByTagName("subclass");
+      NodeList joinedSubclassElements = parentEntityElement.getElementsByTagName("joined-subclass");
+
+      if(subclassElements.getLength() > 0) {
+        this.performSubclassInheritance(dom, parentEntity, subclassElements, context);
+      }
+
+      if(joinedSubclassElements.getLength() > 0) {
+        this.performJoinedSubclassInheritance(dom, parentEntity, joinedSubclassElements, context);
+      }
+//    }
+
+  }
+
+
+  private void performSubclassInheritance(Document dom, OEntity parentEntity, NodeList subclassElements, ODrakkarContext context) {
+    // TODO Auto-generated method stub
+
+  }
+
+  private void performJoinedSubclassInheritance(Document dom, OEntity parentEntity, NodeList joinedSubclassElements, ODrakkarContext context) {
+
+    Element currentChildElement;
+    OEntity currentChildEntity;
+    String currentChildEntityName = null;
+
+    for(int i=0; i<joinedSubclassElements.getLength(); i++) {
+      currentChildElement = (Element) joinedSubclassElements.item(i);
+      if(currentChildElement.hasAttribute("table"))
+        currentChildEntityName = currentChildElement.getAttribute("table");
+      else {
+        context.getOutputManager().error("XML Format ERROR: problem in subclass definition, table attribute missing on joined-subclass node.");
+        System.exit(0);
+      }
+      currentChildEntity = super.dataBaseSchema.getEntityByName(currentChildEntityName);
+      currentChildEntity.setParentEntity(parentEntity);
+      currentChildEntity.setInheritanceLevel(parentEntity.getInheritanceLevel()+1);
+
+      // recursive call on the node
+      this.detectInheritanceAndUpdateSchema(dom, currentChildEntity, currentChildElement, context);
+    }
+
+  }
+
+
+  private void detectForeignKeys(Document dom, Element currentEntityElement, OEntity currentEntity, ODrakkarContext context) {
+
+    NodeList one2OneElements = currentEntityElement.getElementsByTagName("one-to-one");
+    NodeList many2OneElements = currentEntityElement.getElementsByTagName("many-to-one");
+    NodeList one2ManyElements = currentEntityElement.getElementsByTagName("one-to-many");
+
+    // adding relationships one-to-one if present
+    //TODO
+
+    // adding relationships many-to-one if present
+    //TODO
+
+
+    // adding relationships one-to-many if present
+    //TODO
+
+
+  }
+
 
 
 }

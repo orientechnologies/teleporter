@@ -152,9 +152,9 @@ public class OGraphModelBuildingTestCase {
       assertEquals(1, mapper.getGraphModel().getEdgesType().size());
       assertNotNull(authorEdgeType);
 
-      assertEquals("HasAuthor", authorEdgeType.getType());
+      assertEquals("HasAuthor", authorEdgeType.getName());
       assertEquals(0, authorEdgeType.getProperties().size());
-      assertEquals("BookAuthor", authorEdgeType.getInVertexType().getType());
+      assertEquals("BookAuthor", authorEdgeType.getInVertexType().getName());
 
 
     }catch(Exception e) {
@@ -298,13 +298,13 @@ public class OGraphModelBuildingTestCase {
       assertNotNull(authorEdgeType);
       assertNotNull(bookEdgeType);
 
-      assertEquals("HasAuthor", authorEdgeType.getType());
+      assertEquals("HasAuthor", authorEdgeType.getName());
       assertEquals(0, authorEdgeType.getProperties().size());
-      assertEquals("Author", authorEdgeType.getInVertexType().getType());
+      assertEquals("Author", authorEdgeType.getInVertexType().getName());
 
-      assertEquals("HasBook", bookEdgeType.getType());
+      assertEquals("HasBook", bookEdgeType.getName());
       assertEquals(0, bookEdgeType.getProperties().size());
-      assertEquals("Book", bookEdgeType.getInVertexType().getType());
+      assertEquals("Book", bookEdgeType.getInVertexType().getName());
 
 
     }catch(Exception e) {
@@ -451,9 +451,9 @@ public class OGraphModelBuildingTestCase {
       assertEquals(1, mapper.getGraphModel().getEdgesType().size());
       assertNotNull(authorEdgeType);
 
-      assertEquals("HasAuthor", authorEdgeType.getType());
+      assertEquals("HasAuthor", authorEdgeType.getName());
       assertEquals(0, authorEdgeType.getProperties().size());
-      assertEquals("Author", authorEdgeType.getInVertexType().getType());
+      assertEquals("Author", authorEdgeType.getInVertexType().getName());
 
 
     }catch(Exception e) {
@@ -577,9 +577,9 @@ public class OGraphModelBuildingTestCase {
       assertEquals(1, mapper.getGraphModel().getEdgesType().size());
       assertNotNull(authorEdgeType);
 
-      assertEquals("Book2Author", authorEdgeType.getType());
+      assertEquals("Book2Author", authorEdgeType.getName());
       assertEquals(0, authorEdgeType.getProperties().size());
-      assertEquals("Author", authorEdgeType.getInVertexType().getType());
+      assertEquals("Author", authorEdgeType.getInVertexType().getName());
 
 
     }catch(Exception e) {
@@ -719,13 +719,13 @@ public class OGraphModelBuildingTestCase {
       assertNotNull(filmEdgeType);
       assertNotNull(actorEdgeType);
 
-      assertEquals("HasFilm", filmEdgeType.getType());
+      assertEquals("HasFilm", filmEdgeType.getName());
       assertEquals(0, filmEdgeType.getProperties().size());
-      assertEquals("Film", filmEdgeType.getInVertexType().getType());
+      assertEquals("Film", filmEdgeType.getInVertexType().getName());
 
-      assertEquals("HasActor", actorEdgeType.getType());
+      assertEquals("HasActor", actorEdgeType.getName());
       assertEquals(0, actorEdgeType.getProperties().size());
-      assertEquals("Actor", actorEdgeType.getInVertexType().getType());
+      assertEquals("Actor", actorEdgeType.getInVertexType().getName());
 
 
     }catch(Exception e) {
@@ -846,13 +846,13 @@ public class OGraphModelBuildingTestCase {
       assertNotNull(mgrEdgeType);
       assertNotNull(projectManagerEdgeType);
 
-      assertEquals("HasMgr", mgrEdgeType.getType());
+      assertEquals("HasMgr", mgrEdgeType.getName());
       assertEquals(0, mgrEdgeType.getProperties().size());
-      assertEquals("Employee", mgrEdgeType.getInVertexType().getType());
+      assertEquals("Employee", mgrEdgeType.getInVertexType().getName());
 
-      assertEquals("HasProjectManager", projectManagerEdgeType.getType());
+      assertEquals("HasProjectManager", projectManagerEdgeType.getName());
       assertEquals(0, projectManagerEdgeType.getProperties().size());
-      assertEquals("Employee", projectManagerEdgeType.getInVertexType().getType());
+      assertEquals("Employee", projectManagerEdgeType.getInVertexType().getName());
 
 
     }catch(Exception e) {

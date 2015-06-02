@@ -26,6 +26,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -158,11 +159,11 @@ public class OER2GraphMapper extends OSource2GraphMapper {
       ResultSet currentTableRecordAmount;
       int totalNumberOfRecord = 0;
 
-      
+
       /*
        *  Entity building
        */
-      
+
       int iteration = 1;
       for(String currentTableName: tablesName) {
 
@@ -207,7 +208,7 @@ public class OER2GraphMapper extends OSource2GraphMapper {
         currentEntity.setPrimaryKey(pKey);
 
         // adding entity to db schema
-        this.dataBaseSchema.addEntity(currentEntity);
+        this.dataBaseSchema.getEntities().add(currentEntity);
 
         iteration++;
         context.getOutputManager().debug("Entity " + currentTableName + " built.\n");
@@ -221,7 +222,7 @@ public class OER2GraphMapper extends OSource2GraphMapper {
       /*
        *  Building relationships
        */
-      
+
       iteration = 1;
       for(OEntity currentForeignEntity: this.dataBaseSchema.getEntities()) {
 
@@ -417,9 +418,12 @@ public class OER2GraphMapper extends OSource2GraphMapper {
       this.entity2vertexType.put(currentEntity, currentVertexType);
 
       iteration++;
-      context.getOutputManager().debug("Vertex-type " + currentVertexType.getType() + " built.\n");
+      context.getOutputManager().debug("Vertex-type " + currentVertexType.getName() + " built.\n");
       statistics.builtModelVertexTypes++;
     }
+
+    // sorting vertices type for inheritance level and then for name
+    Collections.sort(this.graphModel.getVerticesType());
 
 
     /*
@@ -437,7 +441,7 @@ public class OER2GraphMapper extends OSource2GraphMapper {
     for(ORelationship relationship: this.dataBaseSchema.getRelationships()) {  
       currentOutVertex = this.graphModel.getVertexByType(nameResolver.resolveVertexName(relationship.getForeignEntityName()));
       currentInVertex = this.graphModel.getVertexByType(nameResolver.resolveVertexName(relationship.getParentEntityName()));
-      context.getOutputManager().debug("Building edge-type from '" + currentOutVertex.getType() + "' to '" + currentInVertex.getType() + "' (" + iteration + "/" + numberOfEdgeType + ")...");
+      context.getOutputManager().debug("Building edge-type from '" + currentOutVertex.getName() + "' to '" + currentInVertex.getName() + "' (" + iteration + "/" + numberOfEdgeType + ")...");
 
       if(currentOutVertex != null && currentInVertex != null) {
         edgeType = nameResolver.resolveEdgeName(relationship);
@@ -446,8 +450,8 @@ public class OER2GraphMapper extends OSource2GraphMapper {
         currentEdgeType = this.graphModel.getEdgeTypeByName(edgeType);
         if(currentEdgeType == null) {
           currentEdgeType = new OEdgeType(edgeType, null, currentInVertex);  // TO UPDATE !!!!!!!!
-          this.graphModel.addEdgeType(currentEdgeType);
-          context.getOutputManager().debug("Edge-type " + currentEdgeType.getType() + " built.\n");
+          this.graphModel.getEdgesType().add(currentEdgeType);
+          context.getOutputManager().debug("Edge-type " + currentEdgeType.getName() + " built.\n");
           statistics.builtModelEdgeTypes++;
         }
 
@@ -495,7 +499,7 @@ public class OER2GraphMapper extends OSource2GraphMapper {
         outVertexType = currentOutEdge1.getInVertexType();       
         currentOutEdge2 = currentVertex.getOutEdgesType().get(1); 
         inVertexType = currentOutEdge2.getInVertexType();       
-        edgeType = currentOutEdge2.getType();
+        edgeType = currentOutEdge2.getName();
         newAggregatorEdge = new OEdgeType(edgeType, null, inVertexType);     // TO UPDATE  
 
         // adding to the edge all properties not belonging to the primary key
@@ -523,7 +527,7 @@ public class OER2GraphMapper extends OSource2GraphMapper {
         inVertexType.getInEdgesType().remove(currentOutEdge2);
 
         // adding entry to the map
-        this.joinVertex2aggregatorEdges.put(currentVertex.getType(), new OAggregatorEdge(outVertexType.getType(), inVertexType.getType(), newAggregatorEdge.getType()));
+        this.joinVertex2aggregatorEdges.put(currentVertex.getName(), new OAggregatorEdge(outVertexType.getName(), inVertexType.getName(), newAggregatorEdge.getName()));
 
         // removing old vertex
         iter.remove();
@@ -574,7 +578,7 @@ public class OER2GraphMapper extends OSource2GraphMapper {
   public OVertexType getVertexTypeByName(String name) {
 
     for(OVertexType currentVertexType: this.entity2vertexType.values()) {
-      if(currentVertexType.getType().equals(name)) {
+      if(currentVertexType.getName().equals(name)) {
         return currentVertexType;
       }
     }
@@ -606,11 +610,11 @@ public class OER2GraphMapper extends OSource2GraphMapper {
     s += "RULES\n\n";
     s += "- Entity2VertexType Rules:\n\n";
     for(OEntity entity: this.entity2vertexType.keySet()) {
-      s += entity.getName() + " --> " + this.entity2vertexType.get(entity).getType() + "\n";
+      s += entity.getName() + " --> " + this.entity2vertexType.get(entity).getName() + "\n";
     }
     s += "\n\n- Relaionship2EdgeType Rules:\n\n";
     for(ORelationship relationship: this.relationship2edgeType.keySet()) {
-      s += relationship.getForeignEntityName() + "2" + relationship.getParentEntityName() + " --> " + this.relationship2edgeType.get(relationship).getType() + "\n";
+      s += relationship.getForeignEntityName() + "2" + relationship.getParentEntityName() + " --> " + this.relationship2edgeType.get(relationship).getName() + "\n";
     }
     s += "\n\n- EdgeTypeName2Count Rules:\n\n";
     for(String edgeName: this.edgeTypeName2count.keySet()) {

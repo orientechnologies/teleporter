@@ -30,6 +30,8 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
 
 import com.orientechnologies.orient.drakkar.context.ODrakkarContext;
 import com.orientechnologies.orient.drakkar.context.ODrakkarStatistics;
@@ -86,6 +88,18 @@ public class OJPA2GraphMapper extends OER2GraphMapper {
       DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
       DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
       Document dom = dBuilder.parse(xmlFile);
+      
+      NodeList entities = dom.getElementsByTagName("class");
+      
+      for(int i=0; i<entities.getLength(); i++) {
+
+        Element currentEntityElement = (Element) entities.item(i);
+        if(super.dataBaseSchema.getEntityByName(currentEntityElement.getAttribute("table")).getPrimaryKey() == null) {
+          
+        }
+        
+      }
+
       
       /*
        *  Entity building

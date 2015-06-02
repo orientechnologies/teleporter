@@ -73,7 +73,7 @@ public class OVertexType extends OElementType {
     final int prime = 31;
     int result = 1;
     result = prime * result + (isFromJoinTable ? 1231 : 1237);
-    result = prime * result + ((super.type == null) ? 0 : super.type.hashCode());
+    result = prime * result + ((super.name == null) ? 0 : super.name.hashCode());
     return result;
   }
 
@@ -83,7 +83,7 @@ public class OVertexType extends OElementType {
     OVertexType that = (OVertexType) obj;
 
     // check on type and many-to-many variables
-    if(!(super.type.equals(that.getType()) && this.isFromJoinTable == that.isFromJoinTable()))
+    if(!(super.name.equals(that.getName()) && this.isFromJoinTable == that.isFromJoinTable()))
       return false;
 
     // check on properties
@@ -98,7 +98,7 @@ public class OVertexType extends OElementType {
   }
 
   public String toString() {
-    String s = "Vertex-type [type = " + super.type + ", # attributes = " + this.properties.size() + ", # inEdges: "
+    String s = "Vertex-type [type = " + super.name + ", # attributes = " + this.properties.size() + ", # inEdges: "
         + this.inEdgesType.size() + ", # outEdges: " + this.outEdgesType.size() + "]\nAttributes:\n"; 
 
     for(OModelProperty currentProperty: this.properties) {

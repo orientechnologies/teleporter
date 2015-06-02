@@ -46,7 +46,7 @@ public class OGraphModel {
     OVertexType vertex = null;
     
     for(OVertexType currentVertex: this.verticesType) {
-      if(currentVertex.getType().equalsIgnoreCase(type)) {
+      if(currentVertex.getName().equalsIgnoreCase(type)) {
         vertex = currentVertex;
         break;
       }
@@ -72,18 +72,13 @@ public class OGraphModel {
   
   public OEdgeType getEdgeTypeByName(String name) {
     for(OEdgeType currentEdgetype: this.edgesType) {
-      if(currentEdgetype.getType().equals(name)) {
+      if(currentEdgetype.getName().equals(name)) {
         return currentEdgetype;
       }
     }
     return null;
   }
   
-  public boolean addEdgeType(OEdgeType edgeType) {
-    return this.edgesType.add(edgeType);
-  }
-  
-   
  
   public String toString() {
     String s = "\n\n\n------------------------------ MODEL GRAPH DESCRIPTION ------------------------------\n\n\n";
@@ -108,7 +103,7 @@ public class OGraphModel {
     s += "Graph structure:\n\n";
     for(OVertexType v: this.verticesType) {
       for(OEdgeType e: v.getOutEdgesType())
-        s += v.getType() + " -----------[" + e.getType() + "]-----------> " + e.getInVertexType().getType() + "\n";
+        s += v.getName() + " -----------[" + e.getName() + "]-----------> " + e.getInVertexType().getName() + "\n";
       }
             
     return s; 
