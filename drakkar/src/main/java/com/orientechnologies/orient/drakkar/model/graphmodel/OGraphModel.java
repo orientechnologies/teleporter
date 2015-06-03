@@ -42,11 +42,23 @@ public class OGraphModel {
     this.edgesType = new ArrayList<OEdgeType>();
   }
   
-  public OVertexType getVertexByType(String type) {
+  public OVertexType getVertexByName(String name) {
     OVertexType vertex = null;
     
     for(OVertexType currentVertex: this.verticesType) {
-      if(currentVertex.getName().equalsIgnoreCase(type)) {
+      if(currentVertex.getName().equals(name)) {
+        vertex = currentVertex;
+        break;
+      }
+    }    
+    return vertex;
+  }
+  
+  public OVertexType getVertexByNameIgnoreCase(String name) {
+    OVertexType vertex = null;
+    
+    for(OVertexType currentVertex: this.verticesType) {
+      if(currentVertex.getName().equalsIgnoreCase(name)) {
         vertex = currentVertex;
         break;
       }
@@ -79,6 +91,14 @@ public class OGraphModel {
     return null;
   }
   
+  public OEdgeType getEdgeTypeByNameIgnoreCase(String name) {
+    for(OEdgeType currentEdgetype: this.edgesType) {
+      if(currentEdgetype.getName().equalsIgnoreCase(name)) {
+        return currentEdgetype;
+      }
+    }
+    return null;
+  }
  
   public String toString() {
     String s = "\n\n\n------------------------------ MODEL GRAPH DESCRIPTION ------------------------------\n\n\n";

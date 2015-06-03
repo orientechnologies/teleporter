@@ -46,6 +46,7 @@ import com.orientechnologies.orient.drakkar.model.dbschema.OForeignKey;
 import com.orientechnologies.orient.drakkar.model.dbschema.OPrimaryKey;
 import com.orientechnologies.orient.drakkar.model.dbschema.ORelationship;
 import com.orientechnologies.orient.drakkar.model.graphmodel.OEdgeType;
+import com.orientechnologies.orient.drakkar.model.graphmodel.OElementType;
 import com.orientechnologies.orient.drakkar.model.graphmodel.OGraphModel;
 import com.orientechnologies.orient.drakkar.model.graphmodel.OModelProperty;
 import com.orientechnologies.orient.drakkar.model.graphmodel.OVertexType;
@@ -387,6 +388,7 @@ public class OER2GraphMapper extends OSource2GraphMapper {
     OVertexType currentVertexType;
     String currentVertexTypeName;
     OModelProperty currentProperty = null;
+    OElementType currentParentElement = null;
 
     int numberOfVertexType = this.dataBaseSchema.getEntities().size();
     statistics.totalNumberOfModelVertices = numberOfVertexType;
@@ -409,6 +411,13 @@ public class OER2GraphMapper extends OSource2GraphMapper {
       for(OAttribute attribute: currentEntity.getAttributes()) {             
         currentProperty = new OModelProperty(nameResolver.resolveVertexProperty(attribute.getName()), attribute.getOrdinalPosition(), attribute.getDataType(), currentEntity.getPrimaryKey().getInvolvedAttributes().contains(attribute));
         currentVertexType.getProperties().add(currentProperty);
+      }
+
+      // adding parent vertex if the corresponding entity has a parent
+      if(currentEntity.getParentEntity() != null) {
+        currentParentElement = this.graphModel.getVertexByNameIgnoreCase(currentEntity.getParentEntity().getName());
+        currentVertexType.setParentType(currentParentElement);
+        currentVertexType.setInheritanceLevel(currentEntity.getInheritanceLevel());
       }
 
       // adding vertex to the graph model
@@ -439,8 +448,8 @@ public class OER2GraphMapper extends OSource2GraphMapper {
     statistics.totalNumberOfRelationships = numberOfEdgeType;
     iteration = 1;
     for(ORelationship relationship: this.dataBaseSchema.getRelationships()) {  
-      currentOutVertex = this.graphModel.getVertexByType(nameResolver.resolveVertexName(relationship.getForeignEntityName()));
-      currentInVertex = this.graphModel.getVertexByType(nameResolver.resolveVertexName(relationship.getParentEntityName()));
+      currentOutVertex = this.graphModel.getVertexByName(nameResolver.resolveVertexName(relationship.getForeignEntityName()));
+      currentInVertex = this.graphModel.getVertexByName(nameResolver.resolveVertexName(relationship.getParentEntityName()));
       context.getOutputManager().debug("Building edge-type from '" + currentOutVertex.getName() + "' to '" + currentInVertex.getName() + "' (" + iteration + "/" + numberOfEdgeType + ")...");
 
       if(currentOutVertex != null && currentInVertex != null) {

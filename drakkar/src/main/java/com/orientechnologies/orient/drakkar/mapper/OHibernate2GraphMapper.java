@@ -76,7 +76,6 @@ public class OHibernate2GraphMapper extends OER2GraphMapper {
       DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
       Document dom = dBuilder.parse(xmlFile);
 
-
       NodeList entities = dom.getElementsByTagName("class");
       Element currentEntityElement;
       OEntity currentEntity = null;
@@ -85,7 +84,7 @@ public class OHibernate2GraphMapper extends OER2GraphMapper {
         currentEntityElement = (Element) entities.item(i);
 
         if(currentEntityElement.hasAttribute("table"))
-          currentEntity = super.dataBaseSchema.getEntityByName(currentEntityElement.getAttribute("table"));
+          currentEntity = super.dataBaseSchema.getEntityByNameIgnoreCase(currentEntityElement.getAttribute("table"));
         else {
           context.getOutputManager().error("XML Format ERROR: problem in class definition, table attribute missing on class node.");
           System.exit(0);
@@ -162,22 +161,16 @@ public class OHibernate2GraphMapper extends OER2GraphMapper {
 
   private void detectInheritanceAndUpdateSchema(Document dom, OEntity parentEntity, Element parentEntityElement, ODrakkarContext context) {
 
-//    NodeList classElements = dom.getElementsByTagName("class");
-//    Element currentEntityElement;
-//    OEntity currentEntity;
-//    for(int i=0; i<classElements.getLength(); i++) {
+    NodeList subclassElements = parentEntityElement.getElementsByTagName("subclass");
+    NodeList joinedSubclassElements = parentEntityElement.getElementsByTagName("joined-subclass");
 
-      NodeList subclassElements = parentEntityElement.getElementsByTagName("subclass");
-      NodeList joinedSubclassElements = parentEntityElement.getElementsByTagName("joined-subclass");
+    if(subclassElements.getLength() > 0) {
+      this.performSubclassInheritance(dom, parentEntity, subclassElements, context);
+    }
 
-      if(subclassElements.getLength() > 0) {
-        this.performSubclassInheritance(dom, parentEntity, subclassElements, context);
-      }
-
-      if(joinedSubclassElements.getLength() > 0) {
-        this.performJoinedSubclassInheritance(dom, parentEntity, joinedSubclassElements, context);
-      }
-//    }
+    if(joinedSubclassElements.getLength() > 0) {
+      this.performJoinedSubclassInheritance(dom, parentEntity, joinedSubclassElements, context);
+    }
 
   }
 
@@ -201,7 +194,7 @@ public class OHibernate2GraphMapper extends OER2GraphMapper {
         context.getOutputManager().error("XML Format ERROR: problem in subclass definition, table attribute missing on joined-subclass node.");
         System.exit(0);
       }
-      currentChildEntity = super.dataBaseSchema.getEntityByName(currentChildEntityName);
+      currentChildEntity = super.dataBaseSchema.getEntityByNameIgnoreCase(currentChildEntityName);
       currentChildEntity.setParentEntity(parentEntity);
       currentChildEntity.setInheritanceLevel(parentEntity.getInheritanceLevel()+1);
 
@@ -214,9 +207,9 @@ public class OHibernate2GraphMapper extends OER2GraphMapper {
 
   private void detectForeignKeys(Document dom, Element currentEntityElement, OEntity currentEntity, ODrakkarContext context) {
 
-    NodeList one2OneElements = currentEntityElement.getElementsByTagName("one-to-one");
-    NodeList many2OneElements = currentEntityElement.getElementsByTagName("many-to-one");
-    NodeList one2ManyElements = currentEntityElement.getElementsByTagName("one-to-many");
+//    NodeList one2OneElements = currentEntityElement.getElementsByTagName("one-to-one");
+//    NodeList many2OneElements = currentEntityElement.getElementsByTagName("many-to-one");
+//    NodeList one2ManyElements = currentEntityElement.getElementsByTagName("one-to-many");
 
     // adding relationships one-to-one if present
     //TODO
