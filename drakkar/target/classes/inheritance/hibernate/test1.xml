@@ -26,6 +26,5 @@
 			<property name="pay_per_hour"></property>
 			<property name="contract_duration"></property>
 		</joined-subclass>
-
 	</class>
 </hibernate-mapping>  

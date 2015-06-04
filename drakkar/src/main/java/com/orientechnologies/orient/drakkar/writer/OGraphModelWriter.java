@@ -91,7 +91,12 @@ public class OGraphModelWriter {
         newVertexType = orientGraph.getVertexType(currentVertexType.getName());
 
         if(newVertexType == null) {
-          newVertexType = orientGraph.createVertexType(currentVertexType.getName());
+          
+          // inheritance case
+          if(currentVertexType.getParentType() != null)
+            newVertexType = orientGraph.createVertexType(currentVertexType.getName(), currentVertexType.getParentType().getName());
+          else
+            newVertexType = orientGraph.createVertexType(currentVertexType.getName());
 
           OModelProperty currentProperty = null;
           it = currentVertexType.getProperties().iterator();
@@ -283,7 +288,7 @@ public class OGraphModelWriter {
     }
 
     // check from orientdb schema properties
-    Iterator<OProperty> it2 = orientElementType.properties().iterator();
+    Iterator<OProperty> it2 = orientElementType.declaredProperties().iterator();
     while(it2.hasNext()) {
       orientSchemaProperty = it2.next();
       // if the property is not present in the model vertex type, then is dropped

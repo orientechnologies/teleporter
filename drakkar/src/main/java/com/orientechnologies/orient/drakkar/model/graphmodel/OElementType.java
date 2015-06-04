@@ -36,12 +36,14 @@ public class OElementType implements Comparable<OElementType> {
   
   protected String name;
   protected List<OModelProperty> properties;
+  protected List<OModelProperty> inheritedProperties;
   protected OElementType parentType;
   protected int inheritanceLevel;
 
   public OElementType(String type) {
     this.name = type;
     this.properties = new LinkedList<OModelProperty>();
+    this.inheritedProperties = new LinkedList<OModelProperty>();
   }
 
   public String getName() {
@@ -60,6 +62,14 @@ public class OElementType implements Comparable<OElementType> {
     this.properties = properties;
   }
   
+  public List<OModelProperty> getInheritedProperties() {
+    return this.inheritedProperties;
+  }
+
+  public void setInheritedProperties(List<OModelProperty> inheritedProperties) {
+    this.inheritedProperties = inheritedProperties;
+  }
+
   public OElementType getParentType() {
     return this.parentType;
   }

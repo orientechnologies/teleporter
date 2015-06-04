@@ -29,10 +29,24 @@ package com.orientechnologies.orient.drakkar.model.dbschema;
  */
 
 public class OPrimaryKey extends OKey {
-  
-  
+
+
   public OPrimaryKey(OEntity belongingEntity) {
     super(belongingEntity);
   }
-  
+
+  public OAttribute getAttributeByOrdinalPosition(int ordinalPosition) {
+
+    // overflow
+    if(ordinalPosition > super.getInvolvedAttributes().size())
+      return null;
+    
+    for(OAttribute attribute: super.involvedAttributes) {
+      if(attribute.getOrdinalPosition() == ordinalPosition)
+        return attribute;
+    }
+    return null;
+    
+  }
+
 }

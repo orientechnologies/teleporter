@@ -23,6 +23,8 @@ package com.orientechnologies.orient.drakkar.model.graphmodel;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.tinkerpop.blueprints.Direction;
+
 /**
  * It represents an Orient class of a specific type that extends the Orient Vertex Class.
  * It's a simple vertex-type in the graph model.
@@ -60,6 +62,45 @@ public class OVertexType extends OElementType {
     this.outEdgesType = outEdgesType;
   }
 
+  public boolean hasEdgeType(String name) {
+
+    for(OEdgeType currentEdgeType: this.inEdgesType) {
+      if(currentEdgeType.getName().equals(name))
+        return true;
+    }
+
+    for(OEdgeType currentEdgeType: this.outEdgesType) {
+      if(currentEdgeType.getName().equals(name))
+        return true;
+    }
+
+    return false;
+
+  }
+
+  public boolean hasEdgeType(String name, Direction direction) {
+
+    if(direction.equals(Direction.IN)) {
+      for(OEdgeType currentEdgeType: this.inEdgesType) {
+        if(currentEdgeType.getName().equals(name))
+          return true;
+      }
+    }
+
+    else if(direction.equals(Direction.OUT)) {
+      for(OEdgeType currentEdgeType: this.outEdgesType) {
+        if(currentEdgeType.getName().equals(name))
+          return true;
+      }
+    }
+    
+    else if (direction.equals(Direction.BOTH)) {
+      return this.hasEdgeType(name);
+    }
+    
+    return false;
+  }
+
   public boolean isFromJoinTable() {
     return this.isFromJoinTable;
   }
@@ -67,7 +108,7 @@ public class OVertexType extends OElementType {
   public void setIsFromJoinTable(boolean isFromJoinTable) {
     this.isFromJoinTable = isFromJoinTable;
   }
-  
+
   @Override
   public int hashCode() {
     final int prime = 31;
@@ -89,7 +130,7 @@ public class OVertexType extends OElementType {
     // check on properties
     if( !(this.properties.equals(that.getProperties())) )
       return false;
-    
+
     // in&out edges
     if( !(this.inEdgesType.equals(that.getInEdgesType()) &&  this.outEdgesType.equals(that.getOutEdgesType())) )
       return false;

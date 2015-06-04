@@ -35,8 +35,8 @@ import java.util.List;
 
 public class OKey {
 
-  private OEntity belongingEntity;
-  private List<OAttribute> involvedAttributes;
+  protected OEntity belongingEntity;
+  protected List<OAttribute> involvedAttributes;
 
   public OKey() {
     this.involvedAttributes = new LinkedList<OAttribute>();

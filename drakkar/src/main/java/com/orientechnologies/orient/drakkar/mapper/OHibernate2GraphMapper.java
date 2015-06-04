@@ -101,7 +101,7 @@ public class OHibernate2GraphMapper extends OER2GraphMapper {
         }
 
         // inheritance
-        this.detectInheritanceAndUpdateSchema(dom, currentEntity, currentEntityElement, context);
+        this.detectInheritanceAndUpdateSchema(currentEntity, currentEntityElement, context);
       }
 
       // sorting tables for inheritance level and then for name
@@ -159,28 +159,48 @@ public class OHibernate2GraphMapper extends OER2GraphMapper {
   }
 
 
-  private void detectInheritanceAndUpdateSchema(Document dom, OEntity parentEntity, Element parentEntityElement, ODrakkarContext context) {
+  private void detectInheritanceAndUpdateSchema(OEntity parentEntity, Element parentEntityElement, ODrakkarContext context) {
 
     NodeList subclassElements = parentEntityElement.getElementsByTagName("subclass");
     NodeList joinedSubclassElements = parentEntityElement.getElementsByTagName("joined-subclass");
 
+    // Table per class hierarchy or table per subclass inheritance
     if(subclassElements.getLength() > 0) {
-      this.performSubclassInheritance(dom, parentEntity, subclassElements, context);
+      this.performSubclassInheritance(parentEntity, subclassElements, context);
     }
 
+    // Table per subclass inheritance
     if(joinedSubclassElements.getLength() > 0) {
-      this.performJoinedSubclassInheritance(dom, parentEntity, joinedSubclassElements, context);
+      this.performJoinedSubclassTagInheritance(parentEntity, joinedSubclassElements, context);
     }
 
   }
 
 
-  private void performSubclassInheritance(Document dom, OEntity parentEntity, NodeList subclassElements, ODrakkarContext context) {
-    // TODO Auto-generated method stub
+  private void performSubclassInheritance(OEntity parentEntity, NodeList subclassElements, ODrakkarContext context) {
 
+    NodeList joinElements;
+    Element currentEntityElement;
+    
+    for(int i=0; i<subclassElements.getLength(); i++) {
+    currentEntityElement = (Element)subclassElements.item(i);
+    joinElements = currentEntityElement.getElementsByTagName("join");
+    
+    // Table per subclass inheritance when join elements are present
+    if(joinElements.getLength()>0)
+      performJoinedSubclassTagInheritance(parentEntity, joinElements, context);
+    
+    // Table per class hierarchy
+    else {
+      // TODO
+    }
+    
+    }
+    
   }
 
-  private void performJoinedSubclassInheritance(Document dom, OEntity parentEntity, NodeList joinedSubclassElements, ODrakkarContext context) {
+  
+  private void performJoinedSubclassTagInheritance(OEntity parentEntity, NodeList joinedSubclassElements, ODrakkarContext context) {
 
     Element currentChildElement;
     OEntity currentChildEntity;
@@ -191,7 +211,7 @@ public class OHibernate2GraphMapper extends OER2GraphMapper {
       if(currentChildElement.hasAttribute("table"))
         currentChildEntityName = currentChildElement.getAttribute("table");
       else {
-        context.getOutputManager().error("XML Format ERROR: problem in subclass definition, table attribute missing on joined-subclass node.");
+        context.getOutputManager().error("XML Format ERROR: problem in subclass definition, table attribute missing on joined-subclass nodes.");
         System.exit(0);
       }
       currentChildEntity = super.dataBaseSchema.getEntityByNameIgnoreCase(currentChildEntityName);
@@ -199,11 +219,11 @@ public class OHibernate2GraphMapper extends OER2GraphMapper {
       currentChildEntity.setInheritanceLevel(parentEntity.getInheritanceLevel()+1);
 
       // recursive call on the node
-      this.detectInheritanceAndUpdateSchema(dom, currentChildEntity, currentChildElement, context);
+      this.detectInheritanceAndUpdateSchema(currentChildEntity, currentChildElement, context);
     }
 
   }
-
+  
 
   private void detectForeignKeys(Document dom, Element currentEntityElement, OEntity currentEntity, ODrakkarContext context) {
 
