@@ -41,6 +41,7 @@ public class ODBQueryEngine implements ODataSourceQueryEngine {
   private ODBSourceConnection dataSource;
   private Connection dbConnection;
   private PreparedStatement statement;
+  private ResultSet results;
 
   public ODBQueryEngine(String driver, String uri, String username, String password) {
     this.dataSource =  new ODBSourceConnection(driver, uri, username, password);
@@ -48,7 +49,7 @@ public class ODBQueryEngine implements ODataSourceQueryEngine {
 
   public ResultSet getRecordsByEntity(String entityName, ODrakkarContext context) {
 
-    ResultSet results = null;
+    this.results = null;
     this.dbConnection = null;
     this.statement = null;
     String query = "select * from " + entityName;
@@ -79,7 +80,9 @@ public class ODBQueryEngine implements ODataSourceQueryEngine {
         this.dbConnection.close();
       if(this.statement != null) 
         this.statement.close();
-    }catch(SQLException e) {
+      if(this.results != null)
+        this.results.close();
+    } catch(SQLException e) {
       context.getOutputManager().debug(e.getMessage());
       e.printStackTrace();
     }

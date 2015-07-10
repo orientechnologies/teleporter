@@ -52,7 +52,6 @@ import com.orientechnologies.orient.drakkar.model.graphmodel.OModelProperty;
 import com.orientechnologies.orient.drakkar.model.graphmodel.OVertexType;
 import com.orientechnologies.orient.drakkar.nameresolver.ONameResolver;
 import com.orientechnologies.orient.drakkar.persistence.util.ODBSourceConnection;
-import com.tinkerpop.blueprints.Direction;
 
 /**
  * Implementation of OSource2GraphMapper that manages the source DB schema and the destination graph model with their correspondences.

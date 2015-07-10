@@ -91,7 +91,7 @@ public class OGraphModelWriter {
         newVertexType = orientGraph.getVertexType(currentVertexType.getName());
 
         if(newVertexType == null) {
-          
+
           // inheritance case
           if(currentVertexType.getParentType() != null)
             newVertexType = orientGraph.createVertexType(currentVertexType.getName(), currentVertexType.getParentType().getName());
@@ -104,7 +104,8 @@ public class OGraphModelWriter {
             currentProperty = it.next();
             type = handler.resolveType(currentProperty.getPropertyType().toLowerCase(Locale.ENGLISH), context);
             if(type != null) {
-              newVertexType.createProperty(currentProperty.getName(), type);
+              String propertyName = currentProperty.getName();
+              newVertexType.createProperty(propertyName, type);
             }
             else {
               it.remove();
@@ -212,11 +213,18 @@ public class OGraphModelWriter {
               propertiesList += property + ",";
             j++;
           }
-          context.getOutputManager().debug("Building index for '" + currentVertexType.getName() + "' on " + propertiesList + "  (" + iteration + "/" + numberOfVertices + ")...");
-          statement = "create index " + currentType + ".pkey" + " on " + currentType + " (" + propertiesList + ") unique_hash_index";
-          sqlCommand = new OCommandSQL(statement);
-          orientGraph.getRawGraph().command(sqlCommand).execute();
-          context.getOutputManager().debug("Index for " + currentVertexType.getName() + " built.\n");
+
+          if(!propertiesList.isEmpty()) {
+            context.getOutputManager().debug("Building index for '" + currentVertexType.getName() + "' on " + propertiesList + "  (" + iteration + "/" + numberOfVertices + ")...");
+            statement = "create index " + currentType + ".pkey" + " on " + currentType + " (" + propertiesList + ") unique_hash_index";
+            sqlCommand = new OCommandSQL(statement);
+            orientGraph.getRawGraph().command(sqlCommand).execute();
+            context.getOutputManager().debug("Index for " + currentVertexType.getName() + " built.\n");
+          }
+          else {
+            context.getStatistics().warningMessages.add("The table '" + currentVertexType.getName() + "' has not primary key constraints defined in the db schema,"
+                + " thus the correspondent Class Vertex in Orient will not have a default index on the original primary key.");
+          }
         }
         else {
           context.getOutputManager().debug("Index for " + currentVertexType.getName() + " already present in the Orient schema.\n");
