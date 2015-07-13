@@ -143,6 +143,20 @@ public class OEntity implements Comparable<OEntity> {
 
     return toReturn;
   }
+  
+  public OAttribute getAttributeByNameIgnoreCase(String name) {
+    OAttribute toReturn = null;
+
+    for(OAttribute a: this.attributes) {
+      if(a.getName().equalsIgnoreCase(name)) {
+        toReturn = a;
+        break;
+      }
+    }
+
+    return toReturn;
+
+  }
 
   public List<ORelationship> getRelationships() {
     return this.relationships;
@@ -166,6 +180,14 @@ public class OEntity implements Comparable<OEntity> {
 
   public void setInheritanceLevel(int inheritanceLevel) {
     this.inheritanceLevel = inheritanceLevel;
+  }
+  
+  public void renumberAttributesOrdinalPositions() {
+    int i = 1;
+    for(OAttribute attribute: this.attributes) {
+      attribute.setOrdinalPosition(i);
+      i++;
+    }
   }
 
   @Override
@@ -239,5 +261,6 @@ public class OEntity implements Comparable<OEntity> {
     return this.name.equals(that.getName());
 
   }
+
 
 }

@@ -82,14 +82,12 @@ public class OAttribute implements Comparable<OAttribute> {
     int result = 1;
     result = prime * result + ((dataType == null) ? 0 : dataType.hashCode());
     result = prime * result + ((name == null) ? 0 : name.hashCode());
-    result = prime * result + ordinalPosition;
     return result;
   }
 
   public boolean equals(Object o) {
     OAttribute that = (OAttribute) o;
-    if(this.belongingEntity.getName().equals(that.getBelongingEntity().getName()) && this.name.equals(that.getName()) 
-        && this.dataType.equals(that.getDataType()) && this.ordinalPosition == that.ordinalPosition) {
+    if(this.name.equals(that.getName()) && this.dataType.equals(that.getDataType())) {
       return true;
     }
     else

@@ -416,13 +416,19 @@ public class OER2GraphMapper extends OSource2GraphMapper {
         // inheritance case: id of the subclass is not added, because the id of the superclass is inherited
         else {
           OAttribute inheritedPrimaryKeyAttribute;
-          if(currentEntity.getPrimaryKey().getInvolvedAttributes().contains(attribute)) {
+          if(currentEntity.getPrimaryKey() != null && currentEntity.getPrimaryKey().getInvolvedAttributes().contains(attribute)) {
             inheritedPrimaryKeyAttribute = currentEntity.getParentEntity().getPrimaryKey().getAttributeByOrdinalPosition(attribute.getOrdinalPosition());
             currentProperty = new OModelProperty(nameResolver.resolveVertexProperty(inheritedPrimaryKeyAttribute.getName()), inheritedPrimaryKeyAttribute.getOrdinalPosition(), inheritedPrimaryKeyAttribute.getDataType(), true);
             currentVertexType.getInheritedProperties().add(currentProperty);
           }
           else {
+            
+            // patch
+            if(currentEntity.getPrimaryKey() != null)
             currentProperty = new OModelProperty(nameResolver.resolveVertexProperty(attribute.getName()), attribute.getOrdinalPosition(), attribute.getDataType(), currentEntity.getPrimaryKey().getInvolvedAttributes().contains(attribute));
+            else
+              currentProperty = new OModelProperty(nameResolver.resolveVertexProperty(attribute.getName()), attribute.getOrdinalPosition(), attribute.getDataType(), false);
+
             currentVertexType.getProperties().add(currentProperty);
           }
         }
