@@ -12,13 +12,13 @@
 		<property name="name"></property>
 
 		<union-subclass name="Regular_Employee"
-			table="regemp">
+			table="regular_employee">
 			<property name="salary"></property>
 			<property name="bonus"></property>
 		</union-subclass>
 
 		<union-subclass name="Contract_Employee"
-			table="contemp">
+			table="contract_employee">
 			<property name="pay_per_hour"></property>
 			<property name="contract_duration"></property>
 		</union-subclass>

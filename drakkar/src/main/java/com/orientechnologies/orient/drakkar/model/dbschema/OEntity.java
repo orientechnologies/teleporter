@@ -22,6 +22,7 @@ package com.orientechnologies.orient.drakkar.model.dbschema;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -129,6 +130,20 @@ public class OEntity implements Comparable<OEntity> {
     return this.attributes.remove(toRemove);
   }
 
+  public void removeAttributeByNameIgnoreCase(String toRemove) {
+
+    OAttribute currentAttribute;
+    Iterator<OAttribute> it = this.attributes.iterator();
+    while(it.hasNext()) {
+      currentAttribute = it.next();
+      if(currentAttribute.getName().equalsIgnoreCase(toRemove)) {
+        it.remove();
+        break;
+      }
+    }
+    
+  }
+
 
   public OAttribute getAttributeByName(String name) {
 
@@ -143,7 +158,7 @@ public class OEntity implements Comparable<OEntity> {
 
     return toReturn;
   }
-  
+
   public OAttribute getAttributeByNameIgnoreCase(String name) {
     OAttribute toReturn = null;
 
@@ -181,7 +196,7 @@ public class OEntity implements Comparable<OEntity> {
   public void setInheritanceLevel(int inheritanceLevel) {
     this.inheritanceLevel = inheritanceLevel;
   }
-  
+
   public void renumberAttributesOrdinalPositions() {
     int i = 1;
     for(OAttribute attribute: this.attributes) {

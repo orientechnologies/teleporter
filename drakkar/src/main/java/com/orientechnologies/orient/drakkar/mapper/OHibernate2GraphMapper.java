@@ -34,7 +34,6 @@ import org.w3c.dom.NodeList;
 import com.orientechnologies.orient.drakkar.context.ODrakkarContext;
 import com.orientechnologies.orient.drakkar.model.dbschema.OAttribute;
 import com.orientechnologies.orient.drakkar.model.dbschema.OEntity;
-import com.orientechnologies.orient.drakkar.model.dbschema.OPrimaryKey;
 
 /**
  * Extends OER2GraphMapper thus manages the source DB schema and the destination graph model with their correspondences.
@@ -91,16 +90,6 @@ public class OHibernate2GraphMapper extends OER2GraphMapper {
           System.exit(0);
         }
 
-        // check primary key
-        //        if(currentEntity.getPrimaryKey().getInvolvedAttributes().size() == 0) {
-        //          this.detectPrimaryKey(dom, currentEntityElement, currentEntity, context);
-        //        }
-
-        // check foreign key
-        //        if(currentEntity.getForeignKeys().size() == 0) {
-        //          this.detectForeignKeys(dom, currentEntityElement, currentEntity, context);
-        //        }
-
         // inheritance
         this.detectInheritanceAndUpdateSchema(currentEntity, currentEntityElement, context);
       }
@@ -114,61 +103,17 @@ public class OHibernate2GraphMapper extends OER2GraphMapper {
 
   }
 
-  //  private void detectPrimaryKey(Document dom, Element currentEntityElement, OEntity currentEntity, ODrakkarContext context) {
-  //
-  //    OPrimaryKey pKey = currentEntity.getPrimaryKey();
-  //
-  //    // adding primary key or composite primary key
-  //    NodeList pKeyElements = currentEntityElement.getElementsByTagName("id");
-  //    NodeList compositePKeyElements = currentEntityElement.getElementsByTagName("composite-id");
-  //
-  //    if(pKeyElements.getLength() == compositePKeyElements.getLength()) {
-  //      context.getOutputManager().error("XML Format ERROR: problem on the primary key inference of the entity '" + currentEntity.getName()  + "', primary key neither present in Db Schema nor in XMl mapping file.");
-  //      System.exit(0);
-  //    }
-  //
-  //    if(pKeyElements.getLength()==1) {
-  //
-  //      Element pKeyElement = (Element) pKeyElements.item(0);
-  //      OAttribute currentAttribute;
-  //      if(pKeyElement.hasAttribute("column")) {
-  //        currentAttribute = currentEntity.getAttributeByName(pKeyElement.getAttribute("column"));
-  //      }
-  //      else {
-  //        Element column = (Element) pKeyElement.getElementsByTagName("column").item(0);
-  //        currentAttribute = currentEntity.getAttributeByName(column.getAttribute("name"));
-  //      }
-  //      pKey.addAttribute(currentAttribute);
-  //    }
-  //
-  //    else if (compositePKeyElements.getLength() == 1) {
-  //
-  //      Element compositePKeyElement = (Element) compositePKeyElements.item(0);
-  //      NodeList compositePKeyAttributes = compositePKeyElement.getElementsByTagName("key-property");
-  //
-  //      OAttribute currentAttribute;
-  //      for(int i=0; i<compositePKeyAttributes.getLength(); i++) {
-  //        currentAttribute = currentEntity.getAttributeByName(((Element)compositePKeyAttributes.item(i)).getAttribute("column"));
-  //        pKey.addAttribute(currentAttribute);
-  //      }
-  //    }
-  //
-  //    else if(pKeyElements.getLength()>1 || compositePKeyElements.getLength()>1) {
-  //      context.getOutputManager().error("XML Format ERROR: problem on the primary key inference of the entity '" + currentEntity.getName()  + "'.");
-  //      System.exit(0);
-  //    }
-  //  }
-
 
   private void detectInheritanceAndUpdateSchema(OEntity parentEntity, Element parentEntityElement, ODrakkarContext context) {
 
     NodeList subclassElements = parentEntityElement.getElementsByTagName("subclass");
     NodeList joinedSubclassElements = parentEntityElement.getElementsByTagName("joined-subclass");
     NodeList unionSubclassElements = parentEntityElement.getElementsByTagName("union-subclass");
+    Element discriminatorElement = (Element) parentEntityElement.getElementsByTagName("discriminator").item(0);
 
     // Table per Class Hierarchy or Table per Subclass Inheritance
     if(subclassElements.getLength() > 0) {
-      this.performSubclassTagInheritance(parentEntity, subclassElements, context);
+      this.performSubclassTagInheritance(parentEntity, subclassElements, discriminatorElement, context);
     }
 
     // Table per Subclass Inheritance
@@ -184,8 +129,8 @@ public class OHibernate2GraphMapper extends OER2GraphMapper {
   }
 
 
-
-  private void performSubclassTagInheritance(OEntity parentEntity, NodeList subclassElements, ODrakkarContext context) {
+  // Table per Class Hierarchy or Table per Subclass Inheritance
+  private void performSubclassTagInheritance(OEntity parentEntity, NodeList subclassElements, Element discriminatorElement, ODrakkarContext context) {
 
     NodeList joinElements;
     Element currentEntityElement;
@@ -212,6 +157,13 @@ public class OHibernate2GraphMapper extends OER2GraphMapper {
         currentChildEntity = new OEntity(currentEntityElementName);
 
         // entity's attributes setting
+        String discriminatorColumnName = discriminatorElement.getAttribute("column");
+        parentEntity.removeAttributeByNameIgnoreCase(discriminatorColumnName);
+        parentEntity.renumberAttributesOrdinalPositions();
+        
+        // primary key setting
+        currentChildEntity.setPrimaryKey(parentEntity.getPrimaryKey());
+
         NodeList propertiesElements = currentEntityElement.getElementsByTagName("property");
         Element currentPropertyElement;
         OAttribute currentChildAttribute;
@@ -254,12 +206,24 @@ public class OHibernate2GraphMapper extends OER2GraphMapper {
       currentChildEntity.setParentEntity(parentEntity);
       currentChildEntity.setInheritanceLevel(parentEntity.getInheritanceLevel()+1);
 
+      // removing attributes belonging to the primary key
+      OAttribute currentAttribute;
+      Iterator<OAttribute> it = currentChildEntity.getAttributes().iterator();
+      while(it.hasNext()) {
+        currentAttribute = it.next();
+        if(currentChildEntity.getPrimaryKey().getInvolvedAttributes().contains(currentAttribute)) {
+          it.remove();
+        }
+      }
+      currentChildEntity.renumberAttributesOrdinalPositions();
+
       // recursive call on the node
       this.detectInheritanceAndUpdateSchema(currentChildEntity, currentChildElement, context);
     }
 
   }
 
+  // Table per Concrete Class
   void performUnionSubclassTagInheritance(OEntity parentEntity, NodeList unionSubclassElements, ODrakkarContext context) {
 
     Element currentChildElement;
@@ -280,12 +244,22 @@ public class OHibernate2GraphMapper extends OER2GraphMapper {
       currentChildEntity.setParentEntity(parentEntity);
       currentChildEntity.setInheritanceLevel(parentEntity.getInheritanceLevel()+1);
 
+      // removing attributes belonging to the primary key
+      OAttribute currentAttribute;
+      Iterator<OAttribute> it = currentChildEntity.getAttributes().iterator();
+      while(it.hasNext()) {
+        currentAttribute = it.next();
+        if(currentChildEntity.getPrimaryKey().getInvolvedAttributes().contains(currentAttribute)) {
+          it.remove();
+        }
+      }
+      currentChildEntity.renumberAttributesOrdinalPositions();
+
       // recursive call on the node
       this.detectInheritanceAndUpdateSchema(currentChildEntity, currentChildElement, context);
 
       // removing inherited attributes
-      OAttribute currentAttribute;
-      Iterator<OAttribute> it = currentChildEntity.getAttributes().iterator();
+      it = currentChildEntity.getAttributes().iterator();
       while(it.hasNext()) {
         currentAttribute = it.next();
         if(parentEntity.getAttributes().contains(currentAttribute))
@@ -294,6 +268,5 @@ public class OHibernate2GraphMapper extends OER2GraphMapper {
       currentChildEntity.renumberAttributesOrdinalPositions();
     }
   }
-
 
 }
