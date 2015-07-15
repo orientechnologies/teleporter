@@ -126,6 +126,7 @@ public class OGraphDBCommandEngine {
     }
     context.getOutputManager().debug(s);
 
+    // lookup
     OrientVertex vertex = this.getVertexByIndexedKey(orientGraph, propertyOfKey, valueOfKey, vertexType.getName());  // !!!
 
     // setting properties to the vertex

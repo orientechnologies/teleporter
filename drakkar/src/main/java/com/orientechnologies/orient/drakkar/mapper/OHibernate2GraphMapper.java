@@ -22,7 +22,9 @@ package com.orientechnologies.orient.drakkar.mapper;
 
 import java.io.File;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Set;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -34,6 +36,7 @@ import org.w3c.dom.NodeList;
 import com.orientechnologies.orient.drakkar.context.ODrakkarContext;
 import com.orientechnologies.orient.drakkar.model.dbschema.OAttribute;
 import com.orientechnologies.orient.drakkar.model.dbschema.OEntity;
+import com.orientechnologies.orient.drakkar.model.dbschema.OHierarchicalBag;
 
 /**
  * Extends OER2GraphMapper thus manages the source DB schema and the destination graph model with their correspondences.
@@ -110,32 +113,44 @@ public class OHibernate2GraphMapper extends OER2GraphMapper {
     NodeList joinedSubclassElements = parentEntityElement.getElementsByTagName("joined-subclass");
     NodeList unionSubclassElements = parentEntityElement.getElementsByTagName("union-subclass");
     Element discriminatorElement = (Element) parentEntityElement.getElementsByTagName("discriminator").item(0);
+    
+    OHierarchicalBag hierarchicalBag = new OHierarchicalBag();
 
     // Table per Class Hierarchy or Table per Subclass Inheritance
     if(subclassElements.getLength() > 0) {
-      this.performSubclassTagInheritance(parentEntity, subclassElements, discriminatorElement, context);
+      this.performSubclassTagInheritance(hierarchicalBag, parentEntity, subclassElements, discriminatorElement, context);
     }
 
     // Table per Subclass Inheritance
     if(joinedSubclassElements.getLength() > 0) {
-      this.performJoinedSubclassTagInheritance(parentEntity, joinedSubclassElements, context);
+      this.performJoinedSubclassTagInheritance(hierarchicalBag, parentEntity, joinedSubclassElements, context);
     }
 
     // Table per Concrete Class Inheritance
     if(unionSubclassElements.getLength() > 0) {
-      this.performUnionSubclassTagInheritance(parentEntity, unionSubclassElements, context);
+      this.performUnionSubclassTagInheritance(hierarchicalBag, parentEntity, unionSubclassElements, context);
     }
 
   }
 
 
   // Table per Class Hierarchy or Table per Subclass Inheritance
-  private void performSubclassTagInheritance(OEntity parentEntity, NodeList subclassElements, Element discriminatorElement, ODrakkarContext context) {
+  private void performSubclassTagInheritance(OHierarchicalBag hierarchicalBag, OEntity parentEntity, NodeList subclassElements, Element discriminatorElement, ODrakkarContext context) {
 
     NodeList joinElements;
     Element currentEntityElement;
     String currentEntityElementName = null;
     OEntity currentChildEntity;
+    
+//    hierarchicalBag.setInheritancePattern("table-per-class-hierarchy");
+//    
+//    if(hierarchicalBag.getDepth2entities().get(0) == null) {
+//      Set<OEntity> tmp = new HashSet<OEntity>();
+//      tmp.add(parentEntity);
+//      hierarchicalBag.getDepth2entities().put(0, tmp);
+//    }
+//    
+    
 
     for(int i=0; i<subclassElements.getLength(); i++) {
 
@@ -144,10 +159,11 @@ public class OHibernate2GraphMapper extends OER2GraphMapper {
 
       // Table per subclass inheritance when join elements are present
       if(joinElements.getLength()>0)
-        performJoinedSubclassTagInheritance(parentEntity, joinElements, context);
+        performJoinedSubclassTagInheritance(hierarchicalBag, parentEntity, joinElements, context);
 
       // Table per Class Hierarchy
       else {
+        
         if(currentEntityElement.hasAttribute("name"))
           currentEntityElementName = currentEntityElement.getAttribute("name");
         else {
@@ -188,7 +204,7 @@ public class OHibernate2GraphMapper extends OER2GraphMapper {
   }
 
   // Table per Subclass Inheritance
-  private void performJoinedSubclassTagInheritance(OEntity parentEntity, NodeList joinedSubclassElements, ODrakkarContext context) {
+  private void performJoinedSubclassTagInheritance(OHierarchicalBag hierarchicalBag, OEntity parentEntity, NodeList joinedSubclassElements, ODrakkarContext context) {
 
     Element currentChildElement;
     OEntity currentChildEntity;
@@ -224,7 +240,7 @@ public class OHibernate2GraphMapper extends OER2GraphMapper {
   }
 
   // Table per Concrete Class
-  void performUnionSubclassTagInheritance(OEntity parentEntity, NodeList unionSubclassElements, ODrakkarContext context) {
+  void performUnionSubclassTagInheritance(OHierarchicalBag hierarchicalBag, OEntity parentEntity, NodeList unionSubclassElements, ODrakkarContext context) {
 
     Element currentChildElement;
     OEntity currentChildEntity;

@@ -1,0 +1,92 @@
+/*
+ *
+ *  *  Copyright 2015 Orient Technologies LTD (info(at)orientechnologies.com)
+ *  *
+ *  *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  *  you may not use this file except in compliance with the License.
+ *  *  You may obtain a copy of the License at
+ *  *
+ *  *       http://www.apache.org/licenses/LICENSE-2.0
+ *  *
+ *  *  Unless required by applicable law or agreed to in writing, software
+ *  *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  *  See the License for the specific language governing permissions and
+ *  *  limitations under the License.
+ *  *
+ *  * For more information: http://www.orientechnologies.com
+ *
+ */
+
+package com.orientechnologies.orient.drakkar.model.dbschema;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+
+/**
+ * @author Gabriele Ponzi
+ * @email  <gabriele.ponzi--at--gmail.com>
+ *
+ */
+
+public class OHierarchicalBag {
+
+  private Map<Integer,Set<OEntity>> depth2entities;
+  private String inheritancePattern;
+  
+  private String discriminatorColumn;
+  private Set<String> discriminatorValues;
+  
+  public OHierarchicalBag() {
+    this.depth2entities = new HashMap<Integer,Set<OEntity>>();
+  }
+  
+  public OHierarchicalBag(String inheritancePattern) {
+    this.depth2entities = new HashMap<Integer,Set<OEntity>>();
+    this.inheritancePattern = inheritancePattern;
+  }
+
+
+  public Map<Integer, Set<OEntity>> getDepth2entities() {
+    return depth2entities;
+  }
+
+
+  public void setDepth2entities(Map<Integer, Set<OEntity>> depth2entities) {
+    this.depth2entities = depth2entities;
+  }
+
+
+  public String getInheritancePattern() {
+    return inheritancePattern;
+  }
+
+
+  public void setInheritancePattern(String inheritancePattern) {
+    this.inheritancePattern = inheritancePattern;
+  }
+
+
+  public String getDiscriminatorColumn() {
+    return discriminatorColumn;
+  }
+
+
+  public void setDiscriminatorColumn(String discriminatorColumn) {
+    this.discriminatorColumn = discriminatorColumn;
+  }
+
+
+  public Set<String> getDiscriminatorValues() {
+    return discriminatorValues;
+  }
+
+
+  public void setDiscriminatorValues(Set<String> discriminatorValues) {
+    this.discriminatorValues = discriminatorValues;
+  }
+
+  
+   
+}
