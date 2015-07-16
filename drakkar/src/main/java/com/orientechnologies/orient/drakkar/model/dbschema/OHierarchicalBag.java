@@ -25,6 +25,10 @@ import java.util.Map;
 import java.util.Set;
 
 /**
+ * It represents a hierarchical tree of entities.
+ * It collects the involved entities, the "inheritance strategy" adopted at the lower level (DBMS level) and other
+ * meta-data useful for records importing.
+ * 
  * @author Gabriele Ponzi
  * @email  <gabriele.ponzi--at--gmail.com>
  *
@@ -34,22 +38,24 @@ public class OHierarchicalBag {
 
   private Map<Integer,Set<OEntity>> depth2entities;
   private String inheritancePattern;
-  
+
   private String discriminatorColumn;
-  private Set<String> discriminatorValues;
-  
+  private Map<String,String> entityName2discriminatorValue;
+
   public OHierarchicalBag() {
     this.depth2entities = new HashMap<Integer,Set<OEntity>>();
+    this.entityName2discriminatorValue = new HashMap<String,String>();
   }
-  
+
   public OHierarchicalBag(String inheritancePattern) {
-    this.depth2entities = new HashMap<Integer,Set<OEntity>>();
     this.inheritancePattern = inheritancePattern;
+    this.depth2entities = new HashMap<Integer,Set<OEntity>>();
+    this.entityName2discriminatorValue = new HashMap<String,String>();
   }
 
 
   public Map<Integer, Set<OEntity>> getDepth2entities() {
-    return depth2entities;
+    return this.depth2entities;
   }
 
 
@@ -59,7 +65,7 @@ public class OHierarchicalBag {
 
 
   public String getInheritancePattern() {
-    return inheritancePattern;
+    return this.inheritancePattern;
   }
 
 
@@ -69,7 +75,7 @@ public class OHierarchicalBag {
 
 
   public String getDiscriminatorColumn() {
-    return discriminatorColumn;
+    return this.discriminatorColumn;
   }
 
 
@@ -77,16 +83,14 @@ public class OHierarchicalBag {
     this.discriminatorColumn = discriminatorColumn;
   }
 
+  public Map<String, String> getEntityName2discriminatorValue() {
+    return this.entityName2discriminatorValue;
+  }
 
-  public Set<String> getDiscriminatorValues() {
-    return discriminatorValues;
+  public void setEntityName2discriminatorValue(Map<String, String> entityName2discriminatorValue) {
+    this.entityName2discriminatorValue = entityName2discriminatorValue;
   }
 
 
-  public void setDiscriminatorValues(Set<String> discriminatorValues) {
-    this.discriminatorValues = discriminatorValues;
-  }
 
-  
-   
 }

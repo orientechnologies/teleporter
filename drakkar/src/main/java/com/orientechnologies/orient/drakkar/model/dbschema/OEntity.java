@@ -22,6 +22,7 @@ package com.orientechnologies.orient.drakkar.model.dbschema;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
@@ -40,16 +41,21 @@ public class OEntity implements Comparable<OEntity> {
 
   private String name;
   private Set<OAttribute> attributes;
+  private Set<OAttribute> inheritedAttributes;
+  private boolean inheritedAttributesRecovered;
   private OPrimaryKey primaryKey;
   private List<OForeignKey> foreignKeys;
   private List<ORelationship> relationships;
   private Boolean isJoinEntityDim2;
   private OEntity parentEntity;
   private int inheritanceLevel;
+  private OHierarchicalBag hierarchicalBag;
 
   public OEntity(String name) {
     this.name = name;
     this.attributes = new LinkedHashSet<OAttribute>();
+    this.inheritedAttributes = new LinkedHashSet<OAttribute>();
+    this.inheritedAttributesRecovered = false;
     this.foreignKeys = new LinkedList<OForeignKey>();
     this.relationships = new ArrayList<ORelationship>();
     this.isJoinEntityDim2 = null;
@@ -98,6 +104,34 @@ public class OEntity implements Comparable<OEntity> {
     this.attributes = attributes;
   }
 
+  public Set<OAttribute> getInheritedAttributes() {
+    if(inheritedAttributesRecovered || this.parentEntity == null)
+      return inheritedAttributes;
+    else if()
+  }
+
+  public void setInheritedAttributes(Set<OAttribute> inheritedAttributes) {
+    this.inheritedAttributes = inheritedAttributes;
+  }
+
+  public boolean isInheritedAttributesRecovered() {
+    return inheritedAttributesRecovered;
+  }
+
+  public void setInheritedAttributesRecovered(boolean inheritedAttributesRecovered) {
+    this.inheritedAttributesRecovered = inheritedAttributesRecovered;
+  }
+
+  // Returns attributes and inherited attributes
+  public Set<OAttribute> getAllAttributes() {
+
+    Set<OAttribute> allAttributes = new HashSet<OAttribute>();
+    allAttributes.addAll(this.inheritedAttributes);
+    allAttributes.addAll(this.attributes);
+
+    return allAttributes;
+  }
+
   public OPrimaryKey getPrimaryKey() {
     return this.primaryKey;
   }
@@ -141,7 +175,6 @@ public class OEntity implements Comparable<OEntity> {
         break;
       }
     }
-    
   }
 
 
@@ -195,6 +228,14 @@ public class OEntity implements Comparable<OEntity> {
 
   public void setInheritanceLevel(int inheritanceLevel) {
     this.inheritanceLevel = inheritanceLevel;
+  }
+
+  public OHierarchicalBag getHierarchicalBag() {
+    return hierarchicalBag;
+  }
+
+  public void setHierarchicalBag(OHierarchicalBag hierarchicalBag) {
+    this.hierarchicalBag = hierarchicalBag;
   }
 
   public void renumberAttributesOrdinalPositions() {

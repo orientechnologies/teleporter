@@ -59,7 +59,6 @@ public class ODBQueryEngine implements ODataSourceQueryEngine {
       try {
         this.dbConnection = dataSource.getConnection(context);
       } catch (Exception e) {
-        // TODO Auto-generated catch block
         e.printStackTrace();
       }
       this.statement = dbConnection.prepareStatement(query);
@@ -72,6 +71,33 @@ public class ODBQueryEngine implements ODataSourceQueryEngine {
     return results;
   }
 
+  /**
+   * @param currentDiscriminatorValue
+   */
+  public ResultSet getRecordsFromSingleTableByDiscriminatorValue(String discriminatorColumn, String currentDiscriminatorValue, String entityName, ODrakkarContext context) {
+
+    this.results = null;
+    this.dbConnection = null;
+    this.statement = null;
+    String query = "select * from " + entityName + " where " + discriminatorColumn + "=" + currentDiscriminatorValue;
+
+    try {
+
+      try {
+        this.dbConnection = dataSource.getConnection(context);
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
+      this.statement = dbConnection.prepareStatement(query);
+      results = statement.executeQuery();
+
+    }catch(SQLException e) {
+      context.getOutputManager().debug(e.getMessage());
+      e.printStackTrace();
+    }
+    return results;
+
+  }
 
   public void closeAll(ODrakkarContext context) {
 
@@ -88,8 +114,6 @@ public class ODBQueryEngine implements ODataSourceQueryEngine {
     }
 
   }
-
-
 
 
 }

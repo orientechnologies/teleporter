@@ -25,6 +25,7 @@ import static org.junit.Assert.*;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.Statement;
+import java.util.Iterator;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -34,6 +35,7 @@ import com.orientechnologies.orient.drakkar.context.OOutputStreamManager;
 import com.orientechnologies.orient.drakkar.mapper.OER2GraphMapper;
 import com.orientechnologies.orient.drakkar.mapper.OHibernate2GraphMapper;
 import com.orientechnologies.orient.drakkar.model.dbschema.OEntity;
+import com.orientechnologies.orient.drakkar.model.dbschema.OHierarchicalBag;
 import com.orientechnologies.orient.drakkar.model.graphmodel.OVertexType;
 import com.orientechnologies.orient.drakkar.nameresolver.OJavaConventionNameResolver;
 import com.orientechnologies.orient.drakkar.persistence.handler.OHSQLDBDataTypeHandler;
@@ -195,6 +197,36 @@ public class OHibernateMapperTestCase {
       assertEquals(1, contractEmployeeEntity.getInheritanceLevel());
       assertEquals(0, employeeEntity.getInheritanceLevel());
 
+      // Hierarchical Bag check
+      assertEquals(1, mapper.getDataBaseSchema().getHierarchicalBags().size());
+      OHierarchicalBag hierarchicalBag = mapper.getDataBaseSchema().getHierarchicalBags().get(0);
+      assertEquals("table-per-hierarchy", hierarchicalBag.getInheritancePattern());
+
+      assertEquals(2, hierarchicalBag.getDepth2entities().size());
+
+      assertEquals(1, hierarchicalBag.getDepth2entities().get(0).size());
+      Iterator<OEntity> it = hierarchicalBag.getDepth2entities().get(0).iterator();
+      assertEquals("EMPLOYEE", it.next().getName());
+      assertTrue(!it.hasNext());
+
+      assertEquals(2, hierarchicalBag.getDepth2entities().get(1).size());
+      it = hierarchicalBag.getDepth2entities().get(1).iterator();
+      assertEquals("Contract_Employee", it.next().getName());
+      assertEquals("Regular_Employee", it.next().getName());
+      assertTrue(!it.hasNext());
+
+      assertEquals(hierarchicalBag, employeeEntity.getHierarchicalBag());
+      assertEquals(hierarchicalBag, regularEmployeeEntity.getHierarchicalBag());
+      assertEquals(hierarchicalBag, contractEmployeeEntity.getHierarchicalBag());
+
+      assertNotNull(hierarchicalBag.getDiscriminatorColumn());
+      assertEquals("TYPE",hierarchicalBag.getDiscriminatorColumn());
+
+      assertEquals(3, hierarchicalBag.getEntityName2discriminatorValue().size());
+      assertEquals("emp",hierarchicalBag.getEntityName2discriminatorValue().get("EMPLOYEE"));
+      assertEquals("reg_emp",hierarchicalBag.getEntityName2discriminatorValue().get("Regular_Employee"));
+      assertEquals("cont_emp",hierarchicalBag.getEntityName2discriminatorValue().get("Contract_Employee"));
+
 
       /*
        *  Testing built graph model
@@ -226,7 +258,7 @@ public class OHibernateMapperTestCase {
       assertEquals(false, employeeVertexType.getPropertyByName("name").isFromPrimaryKey());
 
       assertEquals(2, regularEmployeeVertexType.getProperties().size());
-      //      assertEquals(2, regularEmployeeVertexType.getInheritedProperties().size());
+      assertEquals(2, regularEmployeeVertexType.getInheritedProperties().size());
 
       assertNotNull(regularEmployeeVertexType.getPropertyByName("salary"));
       assertEquals("salary", regularEmployeeVertexType.getPropertyByName("salary").getName());
@@ -432,6 +464,30 @@ public class OHibernateMapperTestCase {
       assertEquals(1, contractEmployeeEntity.getInheritanceLevel());
       assertEquals(0, employeeEntity.getInheritanceLevel());
 
+      // Hierarchical Bag check
+      assertEquals(1, mapper.getDataBaseSchema().getHierarchicalBags().size());
+      OHierarchicalBag hierarchicalBag = mapper.getDataBaseSchema().getHierarchicalBags().get(0);
+      assertEquals("table-per-type", hierarchicalBag.getInheritancePattern());
+
+      assertEquals(2, hierarchicalBag.getDepth2entities().size());
+
+      assertEquals(1, hierarchicalBag.getDepth2entities().get(0).size());
+      Iterator<OEntity> it = hierarchicalBag.getDepth2entities().get(0).iterator();
+      assertEquals("EMPLOYEE", it.next().getName());
+      assertTrue(!it.hasNext());
+
+      assertEquals(2, hierarchicalBag.getDepth2entities().get(1).size());
+      it = hierarchicalBag.getDepth2entities().get(1).iterator();
+      assertEquals("CONTRACT_EMPLOYEE", it.next().getName());
+      assertEquals("REGULAR_EMPLOYEE", it.next().getName());
+      assertTrue(!it.hasNext());
+
+      assertEquals(hierarchicalBag, employeeEntity.getHierarchicalBag());
+      assertEquals(hierarchicalBag, regularEmployeeEntity.getHierarchicalBag());
+      assertEquals(hierarchicalBag, contractEmployeeEntity.getHierarchicalBag());
+
+      assertNull(hierarchicalBag.getDiscriminatorColumn());
+
 
       /*
        *  Testing built graph model
@@ -463,7 +519,7 @@ public class OHibernateMapperTestCase {
       assertEquals(false, employeeVertexType.getPropertyByName("name").isFromPrimaryKey());
 
       assertEquals(2, regularEmployeeVertexType.getProperties().size());
-      //      assertEquals(2, regularEmployeeVertexType.getInheritedProperties().size());
+      assertEquals(2, regularEmployeeVertexType.getInheritedProperties().size());
 
       assertNotNull(regularEmployeeVertexType.getPropertyByName("salary"));
       assertEquals("salary", regularEmployeeVertexType.getPropertyByName("salary").getName());
@@ -668,6 +724,31 @@ public class OHibernateMapperTestCase {
       assertEquals(1, contractEmployeeEntity.getInheritanceLevel());
       assertEquals(0, employeeEntity.getInheritanceLevel());
 
+      // Hierarchical Bag check
+      assertEquals(1, mapper.getDataBaseSchema().getHierarchicalBags().size());
+      OHierarchicalBag hierarchicalBag = mapper.getDataBaseSchema().getHierarchicalBags().get(0);
+      assertEquals("table-per-type", hierarchicalBag.getInheritancePattern());
+
+      assertEquals(2, hierarchicalBag.getDepth2entities().size());
+
+      assertEquals(1, hierarchicalBag.getDepth2entities().get(0).size());
+      Iterator<OEntity> it = hierarchicalBag.getDepth2entities().get(0).iterator();
+      assertEquals("EMPLOYEE", it.next().getName());
+      assertTrue(!it.hasNext());
+
+      assertEquals(2, hierarchicalBag.getDepth2entities().get(1).size());
+      it = hierarchicalBag.getDepth2entities().get(1).iterator();
+      assertEquals("CONTRACT_EMPLOYEE", it.next().getName());
+      assertEquals("REGULAR_EMPLOYEE", it.next().getName());
+      assertTrue(!it.hasNext());
+
+      assertEquals(hierarchicalBag, employeeEntity.getHierarchicalBag());
+      assertEquals(hierarchicalBag, regularEmployeeEntity.getHierarchicalBag());
+      assertEquals(hierarchicalBag, contractEmployeeEntity.getHierarchicalBag());
+
+      assertNotNull(hierarchicalBag.getDiscriminatorColumn());
+      assertEquals("employee_type",hierarchicalBag.getDiscriminatorColumn());
+
 
       /*
        *  Testing built graph model
@@ -837,18 +918,6 @@ public class OHibernateMapperTestCase {
 
       assertEquals(2, regularEmployeeEntity.getAttributes().size());
 
-      //      assertNotNull(regularEmployeeEntity.getAttributeByName("ID"));
-      //      assertEquals("EID", regularEmployeeEntity.getAttributeByName("ID").getName());
-      //      assertEquals("VARCHAR", regularEmployeeEntity.getAttributeByName("ID").getDataType());
-      //      assertEquals(1, regularEmployeeEntity.getAttributeByName("ID").getOrdinalPosition());
-      //      assertEquals("REGULAR_EMPLOYEE", regularEmployeeEntity.getAttributeByName("ID").getBelongingEntity().getName());
-
-      //      assertNotNull(employeeEntity.getAttributeByName("NAME"));
-      //      assertEquals("NAME", employeeEntity.getAttributeByName("NAME").getName());
-      //      assertEquals("VARCHAR", employeeEntity.getAttributeByName("NAME").getDataType());
-      //      assertEquals(2, employeeEntity.getAttributeByName("NAME").getOrdinalPosition());
-      //      assertEquals("EMPLOYEE", employeeEntity.getAttributeByName("NAME").getBelongingEntity().getName());
-
       assertNotNull(regularEmployeeEntity.getAttributeByName("SALARY"));
       assertEquals("SALARY", regularEmployeeEntity.getAttributeByName("SALARY").getName());
       assertEquals("DECIMAL", regularEmployeeEntity.getAttributeByName("SALARY").getDataType());
@@ -862,18 +931,6 @@ public class OHibernateMapperTestCase {
       assertEquals("REGULAR_EMPLOYEE", regularEmployeeEntity.getAttributeByName("BONUS").getBelongingEntity().getName());
 
       assertEquals(2, contractEmployeeEntity.getAttributes().size());
-
-      //      assertNotNull(contractEmployeeEntity.getAttributeByName("ID"));
-      //      assertEquals("EID", contractEmployeeEntity.getAttributeByName("ID").getName());
-      //      assertEquals("VARCHAR", contractEmployeeEntity.getAttributeByName("ID").getDataType());
-      //      assertEquals(1, contractEmployeeEntity.getAttributeByName("ID").getOrdinalPosition());
-      //      assertEquals("CONTRACT_EMPLOYEE", contractEmployeeEntity.getAttributeByName("ID").getBelongingEntity().getName());
-
-      //      assertNotNull(employeeEntity.getAttributeByName("NAME"));
-      //      assertEquals("NAME", employeeEntity.getAttributeByName("NAME").getName());
-      //      assertEquals("VARCHAR", employeeEntity.getAttributeByName("NAME").getDataType());
-      //      assertEquals(2, employeeEntity.getAttributeByName("NAME").getOrdinalPosition());
-      //      assertEquals("EMPLOYEE", employeeEntity.getAttributeByName("NAME").getBelongingEntity().getName());
 
       assertNotNull(contractEmployeeEntity.getAttributeByName("PAY_PER_HOUR"));
       assertEquals("PAY_PER_HOUR", contractEmployeeEntity.getAttributeByName("PAY_PER_HOUR").getName());
@@ -895,15 +952,6 @@ public class OHibernateMapperTestCase {
       assertEquals(0, contractEmployeeEntity.getForeignKeys().size());
       assertEquals(0, employeeEntity.getForeignKeys().size());
 
-      //      assertEquals("EMPLOYEE", regularEmployeeEntity.getRelationships().get(0).getParentEntityName());
-      //      assertEquals("REGULAR_EMPLOYEE", regularEmployeeEntity.getRelationships().get(0).getForeignEntityName());
-      //      assertEquals("EMPLOYEE", contractEmployeeEntity.getRelationships().get(0).getParentEntityName());
-      //      assertEquals("CONTRACT_EMPLOYEE", contractEmployeeEntity.getRelationships().get(0).getForeignEntityName());
-      //      assertEquals(employeeEntity.getPrimaryKey(), regularEmployeeEntity.getRelationships().get(0).getPrimaryKey());
-      //      assertEquals(regularEmployeeEntity.getForeignKeys().get(0), regularEmployeeEntity.getRelationships().get(0).getForeignKey());
-      //      assertEquals(employeeEntity.getPrimaryKey(), contractEmployeeEntity.getRelationships().get(0).getPrimaryKey());
-      //      assertEquals(contractEmployeeEntity.getForeignKeys().get(0), contractEmployeeEntity.getRelationships().get(0).getForeignKey());
-
       // inheritance check
       assertEquals(employeeEntity, regularEmployeeEntity.getParentEntity());
       assertEquals(employeeEntity, contractEmployeeEntity.getParentEntity());
@@ -912,6 +960,30 @@ public class OHibernateMapperTestCase {
       assertEquals(1, regularEmployeeEntity.getInheritanceLevel());
       assertEquals(1, contractEmployeeEntity.getInheritanceLevel());
       assertEquals(0, employeeEntity.getInheritanceLevel());
+
+      // Hierarchical Bag check
+      assertEquals(1, mapper.getDataBaseSchema().getHierarchicalBags().size());
+      OHierarchicalBag hierarchicalBag = mapper.getDataBaseSchema().getHierarchicalBags().get(0);
+      assertEquals("table-per-concrete-type", hierarchicalBag.getInheritancePattern());
+
+      assertEquals(2, hierarchicalBag.getDepth2entities().size());
+
+      assertEquals(1, hierarchicalBag.getDepth2entities().get(0).size());
+      Iterator<OEntity> it = hierarchicalBag.getDepth2entities().get(0).iterator();
+      assertEquals("EMPLOYEE", it.next().getName());
+      assertTrue(!it.hasNext());
+
+      assertEquals(2, hierarchicalBag.getDepth2entities().get(1).size());
+      it = hierarchicalBag.getDepth2entities().get(1).iterator();
+      assertEquals("CONTRACT_EMPLOYEE", it.next().getName());
+      assertEquals("REGULAR_EMPLOYEE", it.next().getName());
+      assertTrue(!it.hasNext());
+
+      assertEquals(hierarchicalBag, employeeEntity.getHierarchicalBag());
+      assertEquals(hierarchicalBag, regularEmployeeEntity.getHierarchicalBag());
+      assertEquals(hierarchicalBag, contractEmployeeEntity.getHierarchicalBag());
+
+      assertNull(hierarchicalBag.getDiscriminatorColumn());
 
 
       /*
@@ -944,7 +1016,7 @@ public class OHibernateMapperTestCase {
       assertEquals(false, employeeVertexType.getPropertyByName("name").isFromPrimaryKey());
 
       assertEquals(2, regularEmployeeVertexType.getProperties().size());
-      //      assertEquals(2, regularEmployeeVertexType.getInheritedProperties().size());
+      assertEquals(2, regularEmployeeVertexType.getInheritedProperties().size());
 
       assertNotNull(regularEmployeeVertexType.getPropertyByName("salary"));
       assertEquals("salary", regularEmployeeVertexType.getPropertyByName("salary").getName());

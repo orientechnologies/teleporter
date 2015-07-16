@@ -113,21 +113,52 @@ public class OHibernate2GraphMapper extends OER2GraphMapper {
     NodeList joinedSubclassElements = parentEntityElement.getElementsByTagName("joined-subclass");
     NodeList unionSubclassElements = parentEntityElement.getElementsByTagName("union-subclass");
     Element discriminatorElement = (Element) parentEntityElement.getElementsByTagName("discriminator").item(0);
-    
-    OHierarchicalBag hierarchicalBag = new OHierarchicalBag();
 
-    // Table per Class Hierarchy or Table per Subclass Inheritance
+    OHierarchicalBag hierarchicalBag = new OHierarchicalBag();
+    String rootDiscriminatorValue = null;
+
+    // TABLE PER CLASS Hierarchy or Table per Subclass Inheritance
     if(subclassElements.getLength() > 0) {
-      this.performSubclassTagInheritance(hierarchicalBag, parentEntity, subclassElements, discriminatorElement, context);
+      if(parentEntityElement.hasAttribute("discriminator-value")) 
+        rootDiscriminatorValue = parentEntityElement.getAttribute("discriminator-value");
+      this.performSubclassTagInheritance(hierarchicalBag, parentEntity, subclassElements, discriminatorElement, rootDiscriminatorValue, context);
     }
 
-    // Table per Subclass Inheritance
+    // TABLE PER SUBCLASS Inheritance
     if(joinedSubclassElements.getLength() > 0) {
+
+      // initializing the hierarchical bag
+      hierarchicalBag.setInheritancePattern("table-per-type");
+      super.dataBaseSchema.getHierarchicalBags().add(hierarchicalBag);
+      if(hierarchicalBag.getDepth2entities().get(parentEntity.getInheritanceLevel()) == null) {
+        Set<OEntity> tmp = new HashSet<OEntity>();
+        tmp.add(parentEntity);
+        hierarchicalBag.getDepth2entities().put(parentEntity.getInheritanceLevel(), tmp);
+        parentEntity.setHierarchicalBag(hierarchicalBag);
+      }
+      if(discriminatorElement != null) {
+        hierarchicalBag.setDiscriminatorColumn(discriminatorElement.getAttribute("column"));
+      }
+
       this.performJoinedSubclassTagInheritance(hierarchicalBag, parentEntity, joinedSubclassElements, context);
     }
 
-    // Table per Concrete Class Inheritance
+    // TABLE PER CONCRETE CLASS Inheritance
     if(unionSubclassElements.getLength() > 0) {
+
+      // initializing the hierarchical bag
+      hierarchicalBag.setInheritancePattern("table-per-concrete-type");
+      super.dataBaseSchema.getHierarchicalBags().add(hierarchicalBag);
+      if(hierarchicalBag.getDepth2entities().get(parentEntity.getInheritanceLevel()) == null) {
+        Set<OEntity> tmp = new HashSet<OEntity>();
+        tmp.add(parentEntity);
+        hierarchicalBag.getDepth2entities().put(parentEntity.getInheritanceLevel(), tmp);
+        parentEntity.setHierarchicalBag(hierarchicalBag);
+      }
+      if(discriminatorElement != null) {
+        hierarchicalBag.setDiscriminatorColumn(discriminatorElement.getAttribute("column"));
+      }
+
       this.performUnionSubclassTagInheritance(hierarchicalBag, parentEntity, unionSubclassElements, context);
     }
 
@@ -135,35 +166,61 @@ public class OHibernate2GraphMapper extends OER2GraphMapper {
 
 
   // Table per Class Hierarchy or Table per Subclass Inheritance
-  private void performSubclassTagInheritance(OHierarchicalBag hierarchicalBag, OEntity parentEntity, NodeList subclassElements, Element discriminatorElement, ODrakkarContext context) {
+  private void performSubclassTagInheritance(OHierarchicalBag hierarchicalBag, OEntity parentEntity, NodeList subclassElements, Element discriminatorElement, String rootDiscriminatorValue, ODrakkarContext context) {
 
     NodeList joinElements;
     Element currentEntityElement;
     String currentEntityElementName = null;
     OEntity currentChildEntity;
-    
-//    hierarchicalBag.setInheritancePattern("table-per-class-hierarchy");
-//    
-//    if(hierarchicalBag.getDepth2entities().get(0) == null) {
-//      Set<OEntity> tmp = new HashSet<OEntity>();
-//      tmp.add(parentEntity);
-//      hierarchicalBag.getDepth2entities().put(0, tmp);
-//    }
-//    
-    
 
-    for(int i=0; i<subclassElements.getLength(); i++) {
+    // distinguishing between "Table Per Class Hierarchy" and "Table Per Subclass" inheritance
+    currentEntityElement = (Element)subclassElements.item(0);
+    joinElements = currentEntityElement.getElementsByTagName("join");
 
-      currentEntityElement = (Element)subclassElements.item(i);
-      joinElements = currentEntityElement.getElementsByTagName("join");
+    // Table Per Subclass inheritance when join elements are present
+    if(joinElements.getLength()>0) {
 
-      // Table per subclass inheritance when join elements are present
-      if(joinElements.getLength()>0)
+      // initializing the hierarchical bag
+      hierarchicalBag.setInheritancePattern("table-per-type");
+      super.dataBaseSchema.getHierarchicalBags().add(hierarchicalBag);
+      if(hierarchicalBag.getDepth2entities().get(parentEntity.getInheritanceLevel()) == null) {
+        Set<OEntity> tmp = new HashSet<OEntity>();
+        tmp.add(parentEntity);
+        hierarchicalBag.getDepth2entities().put(parentEntity.getInheritanceLevel(), tmp);
+        parentEntity.setHierarchicalBag(hierarchicalBag);
+      }
+      if(discriminatorElement != null) {
+        hierarchicalBag.setDiscriminatorColumn(discriminatorElement.getAttribute("column"));
+      }
+
+      for(int j=0; j<subclassElements.getLength(); j++) {
+        currentEntityElement = (Element)subclassElements.item(j);
+        joinElements = currentEntityElement.getElementsByTagName("join");
         performJoinedSubclassTagInheritance(hierarchicalBag, parentEntity, joinElements, context);
+      }
+    }
 
-      // Table per Class Hierarchy
-      else {
-        
+    // Table per Class Hierarchy
+    else {
+
+      // initializing the hierarchical bag
+      hierarchicalBag.setInheritancePattern("table-per-hierarchy");
+      super.dataBaseSchema.getHierarchicalBags().add(hierarchicalBag);
+      if(hierarchicalBag.getDepth2entities().get(parentEntity.getInheritanceLevel()) == null) {
+        Set<OEntity> tmp = new HashSet<OEntity>();
+        tmp.add(parentEntity);
+        hierarchicalBag.getDepth2entities().put(parentEntity.getInheritanceLevel(), tmp);
+        parentEntity.setHierarchicalBag(hierarchicalBag);
+      }
+      if(discriminatorElement != null) {
+        hierarchicalBag.setDiscriminatorColumn(discriminatorElement.getAttribute("column"));
+      }
+      hierarchicalBag.getEntityName2discriminatorValue().put(parentEntity.getName(), rootDiscriminatorValue);
+
+      for(int i=0; i<subclassElements.getLength(); i++) {
+
+        currentEntityElement = (Element)subclassElements.item(i);
+
         if(currentEntityElement.hasAttribute("name"))
           currentEntityElementName = currentEntityElement.getAttribute("name");
         else {
@@ -176,7 +233,7 @@ public class OHibernate2GraphMapper extends OER2GraphMapper {
         String discriminatorColumnName = discriminatorElement.getAttribute("column");
         parentEntity.removeAttributeByNameIgnoreCase(discriminatorColumnName);
         parentEntity.renumberAttributesOrdinalPositions();
-        
+
         // primary key setting
         currentChildEntity.setPrimaryKey(parentEntity.getPrimaryKey());
 
@@ -198,6 +255,20 @@ public class OHibernate2GraphMapper extends OER2GraphMapper {
         super.dataBaseSchema.getEntities().add(currentChildEntity);
         currentChildEntity.setParentEntity(parentEntity);
         currentChildEntity.setInheritanceLevel(parentEntity.getInheritanceLevel()+1);
+
+        // updating hierarchical bag
+        if(hierarchicalBag.getDepth2entities().get(currentChildEntity.getInheritanceLevel()) == null) {
+          Set<OEntity> tmp = new HashSet<OEntity>();
+          tmp.add(currentChildEntity);
+          hierarchicalBag.getDepth2entities().put(currentChildEntity.getInheritanceLevel(), tmp);
+        }
+        else {
+          Set<OEntity> tmp = hierarchicalBag.getDepth2entities().get(currentChildEntity.getInheritanceLevel());
+          tmp.add(currentChildEntity);
+          hierarchicalBag.getDepth2entities().put(currentChildEntity.getInheritanceLevel(), tmp);
+        }
+        currentChildEntity.setHierarchicalBag(hierarchicalBag);
+        hierarchicalBag.getEntityName2discriminatorValue().put(currentChildEntity.getName(), currentEntityElement.getAttribute("discriminator-value"));
 
       }
     }
@@ -232,6 +303,19 @@ public class OHibernate2GraphMapper extends OER2GraphMapper {
         }
       }
       currentChildEntity.renumberAttributesOrdinalPositions();
+
+      // updating hierarchical bag
+      if(hierarchicalBag.getDepth2entities().get(currentChildEntity.getInheritanceLevel()) == null) {
+        Set<OEntity> tmp = new HashSet<OEntity>();
+        tmp.add(currentChildEntity);
+        hierarchicalBag.getDepth2entities().put(currentChildEntity.getInheritanceLevel(), tmp);
+      }
+      else {
+        Set<OEntity> tmp = hierarchicalBag.getDepth2entities().get(currentChildEntity.getInheritanceLevel());
+        tmp.add(currentChildEntity);
+        hierarchicalBag.getDepth2entities().put(currentChildEntity.getInheritanceLevel(), tmp);
+      }
+      currentChildEntity.setHierarchicalBag(hierarchicalBag);
 
       // recursive call on the node
       this.detectInheritanceAndUpdateSchema(currentChildEntity, currentChildElement, context);
@@ -270,6 +354,19 @@ public class OHibernate2GraphMapper extends OER2GraphMapper {
         }
       }
       currentChildEntity.renumberAttributesOrdinalPositions();
+
+      // updating hierarchical bag
+      if(hierarchicalBag.getDepth2entities().get(currentChildEntity.getInheritanceLevel()) == null) {
+        Set<OEntity> tmp = new HashSet<OEntity>();
+        tmp.add(currentChildEntity);
+        hierarchicalBag.getDepth2entities().put(currentChildEntity.getInheritanceLevel(), tmp);
+      }
+      else {
+        Set<OEntity> tmp = hierarchicalBag.getDepth2entities().get(currentChildEntity.getInheritanceLevel());
+        tmp.add(currentChildEntity);
+        hierarchicalBag.getDepth2entities().put(currentChildEntity.getInheritanceLevel(), tmp);
+      }
+      currentChildEntity.setHierarchicalBag(hierarchicalBag);
 
       // recursive call on the node
       this.detectInheritanceAndUpdateSchema(currentChildEntity, currentChildElement, context);

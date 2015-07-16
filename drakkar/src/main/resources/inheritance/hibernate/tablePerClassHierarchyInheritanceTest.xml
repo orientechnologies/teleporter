@@ -4,23 +4,23 @@
           "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
 
 <hibernate-mapping>
-	<class name="Employee" table="employee"
+	<class name="Employee" table="EMPLOYEE"
 		discriminator-value="emp">
 		<id name="id">
 			<generator class="increment"></generator>
 		</id>
 
-		<discriminator column="type" type="string"></discriminator>
+		<discriminator column="TYPE" type="string"></discriminator>
 		<property name="name"></property>
 
 		<subclass name="Regular_Employee"
-			discriminator-value="regular_employee">
+			discriminator-value="reg_emp">
 			<property name="salary"></property>
 			<property name="bonus"></property>
 		</subclass>
 
 		<subclass name="Contract_Employee"
-			discriminator-value="contract_employee">
+			discriminator-value="cont_emp">
 			<property name="pay_per_hour"></property>
 			<property name="contract_duration"></property>
 		</subclass>

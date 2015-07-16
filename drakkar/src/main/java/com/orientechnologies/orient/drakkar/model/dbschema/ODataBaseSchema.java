@@ -41,6 +41,7 @@ public class ODataBaseSchema implements ODataSourceSchema {
   private String productVersion;
   private List<OEntity> entities;
   private List<ORelationship> relationships;
+  private List<OHierarchicalBag> hierarchicalBags;
 
   public ODataBaseSchema(int majorVersion, int minorVersion, int driverMajorVersion, int driverMinorVersion, String productName, String productVersion) {		
     this.majorVersion = majorVersion;
@@ -51,6 +52,7 @@ public class ODataBaseSchema implements ODataSourceSchema {
     this.productVersion = productVersion;
     this.entities = new ArrayList<OEntity>();
     this.relationships = new ArrayList<ORelationship>();
+    this.hierarchicalBags = new ArrayList<OHierarchicalBag>();
   }
 
   public ODataBaseSchema(String productName, String productVersion) {		
@@ -58,6 +60,7 @@ public class ODataBaseSchema implements ODataSourceSchema {
     this.productVersion = productVersion;
     this.entities = new ArrayList<OEntity>();
     this.relationships = new ArrayList<ORelationship>();
+    this.hierarchicalBags = new ArrayList<OHierarchicalBag>();
   }
 
   public int getMajorVersion() {
@@ -116,6 +119,22 @@ public class ODataBaseSchema implements ODataSourceSchema {
     this.entities = entitiess;
   }
 
+  public List<ORelationship> getRelationships() {
+    return relationships;
+  }
+
+  public void setRelationships(List<ORelationship> relationships) {
+    this.relationships = relationships;
+  }
+
+  public List<OHierarchicalBag> getHierarchicalBags() {
+    return hierarchicalBags;
+  }
+
+  public void setHierarchicalBags(List<OHierarchicalBag> hierarchicalBags) {
+    this.hierarchicalBags = hierarchicalBags;
+  }
+
   public OEntity getEntityByName(String entityName) {
 
     for(OEntity currentEntity: this.entities) {
@@ -136,15 +155,7 @@ public class ODataBaseSchema implements ODataSourceSchema {
     return null;
   }
 
-  public List<ORelationship> getRelationships() {
-    return relationships;
-  }
-
-  public void setRelationship(List<ORelationship> relationships) {
-    this.relationships = relationships;
-  }
-
-
+  
   public String toString() {
     String s = "\n\n\n------------------------------ DB SCHEMA DESCRIPTION ------------------------------\n\n" + 
         "\nProduct name: " + this.productName + "\tProduct version: " + this.productVersion +

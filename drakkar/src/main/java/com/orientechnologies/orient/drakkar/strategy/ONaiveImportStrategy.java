@@ -22,6 +22,7 @@ package com.orientechnologies.orient.drakkar.strategy;
 
 import java.sql.ResultSet;
 import java.util.Date;
+import java.util.Iterator;
 
 import com.orientechnologies.orient.drakkar.context.ODrakkarContext;
 import com.orientechnologies.orient.drakkar.context.ODrakkarStatistics;
@@ -33,6 +34,7 @@ import com.orientechnologies.orient.drakkar.importengine.OGraphDBCommandEngine;
 import com.orientechnologies.orient.drakkar.mapper.OER2GraphMapper;
 import com.orientechnologies.orient.drakkar.mapper.OSource2GraphMapper;
 import com.orientechnologies.orient.drakkar.model.dbschema.OEntity;
+import com.orientechnologies.orient.drakkar.model.dbschema.OHierarchicalBag;
 import com.orientechnologies.orient.drakkar.model.dbschema.ORelationship;
 import com.orientechnologies.orient.drakkar.model.graphmodel.OEdgeType;
 import com.orientechnologies.orient.drakkar.model.graphmodel.OGraphModel;
@@ -127,34 +129,56 @@ public class ONaiveImportStrategy implements OImportStrategy {
       OrientVertex currentOutVertex = null;
       OEdgeType edgeType = null;
 
+      // Importing from Entities belonging to hierarchical bags
+      for(OHierarchicalBag bag: mapper.getDataBaseSchema().getHierarchicalBags()) {
+
+        switch(bag.getInheritancePattern()) {
+
+        case "table-per-hierarchy": this.tablePerHierarchyImport(bag, dbQueryEngine, context);
+        break;
+
+        case "table-per-type": this.tablePerTypeImport(bag, dbQueryEngine, context);
+        break;
+
+        case "table-per-concrete-type": this.tablePerConcreteTypeImport(bag, dbQueryEngine, context);
+        break;
+
+        }
+      }
+      
+
+      // Importing from Entities NOT belonging to hierarchical bags
       for(OEntity entity: mapper.getDataBaseSchema().getEntities()) {
 
-        // for each entity in dbSchema all records are retrieved
-        ResultSet records = dbQueryEngine.getRecordsByEntity(entity.getName(), context);
-        ResultSet currentRecord = null;
+        if(entity.getHierarchicalBag() == null){
 
-        currentOutVertexType = mapper.getEntity2vertexType().get(entity);
+          // for each entity in dbSchema all records are retrieved
+          ResultSet records = dbQueryEngine.getRecordsByEntity(entity.getName(), context);
+          ResultSet currentRecord = null;
 
-        // each record imported as vertex in the orient graph
-        while(records.next()) {
-          // upsert of the vertex
-          currentRecord = records;
-          currentOutVertex = (OrientVertex) graphDBCommandEngine.upsertVisitedVertex(currentRecord, currentOutVertexType, context);
+          currentOutVertexType = mapper.getEntity2vertexType().get(entity);
 
-          // for each attribute of the entity belonging to the primary key, correspondent relationship is
-          // built as edge and for the referenced record a vertex is built (only id)
-          for(ORelationship currentRelation: entity.getRelationships()) {
-            currentInVertexType = mapper.getVertexTypeByName(context.getNameResolver().resolveVertexName(currentRelation.getParentEntityName())); // aggiungi getVertexTypeByName!
-            edgeType = mapper.getRelationship2edgeType().get(currentRelation);
-            graphDBCommandEngine.upsertReachedVertexWithEdge(currentRecord, currentRelation, currentOutVertex, currentInVertexType, edgeType.getName(), context);
-          }   
+          // each record imported as vertex in the orient graph
+          while(records.next()) {
+            // upsert of the vertex
+            currentRecord = records;
+            currentOutVertex = (OrientVertex) graphDBCommandEngine.upsertVisitedVertex(currentRecord, currentOutVertexType, context);
 
-          // Statistics updated
-          statistics.importedRecords++;
+            // for each attribute of the entity belonging to the primary key, correspondent relationship is
+            // built as edge and for the referenced record a vertex is built (only id)
+            for(ORelationship currentRelation: entity.getRelationships()) {
+              currentInVertexType = mapper.getVertexTypeByName(context.getNameResolver().resolveVertexName(currentRelation.getParentEntityName())); // aggiungi getVertexTypeByName!
+              edgeType = mapper.getRelationship2edgeType().get(currentRelation);
+              graphDBCommandEngine.upsertReachedVertexWithEdge(currentRecord, currentRelation, currentOutVertex, currentInVertexType, edgeType.getName(), context);
+            }   
+
+            // Statistics updated
+            statistics.importedRecords++;
+          }
+
+          // closing resultset, connection and statement
+          dbQueryEngine.closeAll(context);
         }
-
-        // closing resultset, connection and statement
-        dbQueryEngine.closeAll(context);
       }
       statistics.notifyListeners();
       statistics.runningStepNumber = -1;
@@ -164,5 +188,55 @@ public class ONaiveImportStrategy implements OImportStrategy {
       e.printStackTrace();
     }
   }
+
+
+  /**
+   * Performs import of all records of the entities contained in the hierarchical bag passed as parameter.
+   * Adopted in case of "Table per Hierarchy" inheritance strategy.
+   * @param bag
+   * @param dbQueryEngine
+   * @param context
+   */
+  private void tablePerHierarchyImport(OHierarchicalBag bag, ODBQueryEngine dbQueryEngine, ODrakkarContext context) {
+    
+    String currentDiscriminatorValue;
+    Iterator<OEntity> it = bag.getDepth2entities().get(0).iterator();
+    String physicalEntityName = it.next().getName();
+    int i;
+    for(i=bag.getDepth2entities().size()-1; i>=0; i--) {
+      for(OEntity currentEntity: bag.getDepth2entities().get(i)) {
+        currentDiscriminatorValue = bag.getEntityName2discriminatorValue().get(currentEntity.getName());
+        dbQueryEngine.getRecordsFromSingleTableByDiscriminatorValue(bag.getDiscriminatorColumn(), currentDiscriminatorValue, physicalEntityName, context);
+      }
+    }
+    
+  }
+  
+  
+  /**
+   * Performs import of all records of the entities contained in the hierarchical bag passed as parameter.
+   * Adopted in case of "Table per Type" inheritance strategy.
+   * @param bag
+   * @param dbQueryEngine
+   * @param context
+   */
+  private void tablePerTypeImport(OHierarchicalBag bag, ODBQueryEngine dbQueryEngine, ODrakkarContext context) {
+    // TODO Auto-generated method stub
+    
+  }
+  
+  /**
+   * Performs import of all records of the entities contained in the hierarchical bag passed as parameter.
+   * Adopted in case of "Table per Concrete Type" inheritance strategy.
+   * @param bag
+   * @param dbQueryEngine
+   * @param context
+   */
+  private void tablePerConcreteTypeImport(OHierarchicalBag bag, ODBQueryEngine dbQueryEngine, ODrakkarContext context) {
+    // TODO Auto-generated method stub
+    
+  }
+
+
 
 }
