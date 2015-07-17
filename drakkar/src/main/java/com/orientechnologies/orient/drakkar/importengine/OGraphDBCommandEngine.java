@@ -97,7 +97,7 @@ public class OGraphDBCommandEngine {
     OrientGraphNoTx orientGraph = factory.getNoTx();
     orientGraph.setStandardElementConstraints(false);
     Map<String,String> properties = new LinkedHashMap<String,String>();
-    
+
     ODrakkarStatistics statistics = context.getStatistics();
 
     // building keys and values for the lookup
@@ -133,7 +133,10 @@ public class OGraphDBCommandEngine {
     String currentAttributeValue = null;
     String currentDateValue;
     String currentPropertyType;
-    for(OModelProperty currentProperty : vertexType.getProperties()) {
+
+
+    // extraction of inherited and not inherited properties from the record (through "getAllProperties()" method)
+    for(OModelProperty currentProperty : vertexType.getAllProperties()) {
 
       currentPropertyType = context.getDataTypeHandler().resolveType(currentProperty.getPropertyType().toLowerCase(Locale.ENGLISH),context).toString();
       currentAttributeValue = record.getString(context.getNameResolver().reverseTransformation(currentProperty.getName()));
@@ -220,7 +223,7 @@ public class OGraphDBCommandEngine {
     OrientGraphFactory factory = new OrientGraphFactory(this.graphDBUrl);
     OrientGraphNoTx orientGraph = factory.getNoTx();
     orientGraph.setStandardElementConstraints(false);
-    
+
     // building keys and values for the lookup 
 
     String[] propertyOfKey = new String[relation.getForeignKey().getInvolvedAttributes().size()];
@@ -293,7 +296,7 @@ public class OGraphDBCommandEngine {
     boolean edgeAlreadyPresent = false;
     Iterator<Edge> it = currentOutVertex.getEdges(Direction.OUT, edgeType).iterator();
     Edge currentEdge;
-    
+
     ODrakkarStatistics statistics = context.getStatistics();
 
 
@@ -334,7 +337,7 @@ public class OGraphDBCommandEngine {
     OrientGraphFactory factory = new OrientGraphFactory(this.graphDBUrl);
     OrientGraphNoTx orientGraph = factory.getNoTx();
     orientGraph.setStandardElementConstraints(false);
-    
+
     ORelationship relationship1 = joinTable.getRelationships().get(0);
     ORelationship relationship2 = joinTable.getRelationships().get(1);
 

@@ -105,9 +105,13 @@ public class OEntity implements Comparable<OEntity> {
   }
 
   public Set<OAttribute> getInheritedAttributes() {
-    if(inheritedAttributesRecovered || this.parentEntity == null)
-      return inheritedAttributes;
-    else if()
+    
+    if(inheritedAttributesRecovered)
+      return this.inheritedAttributes;
+    else if(parentEntity != null)
+      return parentEntity.getAllAttributes();
+    else
+      return this.inheritedAttributes;
   }
 
   public void setInheritedAttributes(Set<OAttribute> inheritedAttributes) {
@@ -126,7 +130,7 @@ public class OEntity implements Comparable<OEntity> {
   public Set<OAttribute> getAllAttributes() {
 
     Set<OAttribute> allAttributes = new HashSet<OAttribute>();
-    allAttributes.addAll(this.inheritedAttributes);
+    allAttributes.addAll(this.getInheritedAttributes());
     allAttributes.addAll(this.attributes);
 
     return allAttributes;
@@ -203,7 +207,33 @@ public class OEntity implements Comparable<OEntity> {
     }
 
     return toReturn;
+  }
+  
+  public OAttribute getInheritedAttributeByName(String name) {
 
+    OAttribute toReturn = null;
+
+    for(OAttribute a: this.getInheritedAttributes()) {
+      if(a.getName().equals(name)) {
+        toReturn = a;
+        break;
+      }
+    }
+
+    return toReturn;
+  }
+
+  public OAttribute getInheritedAttributeByNameIgnoreCase(String name) {
+    OAttribute toReturn = null;
+
+    for(OAttribute a: this.getInheritedAttributes()) {
+      if(a.getName().equalsIgnoreCase(name)) {
+        toReturn = a;
+        break;
+      }
+    }
+
+    return toReturn;
   }
 
   public List<ORelationship> getRelationships() {

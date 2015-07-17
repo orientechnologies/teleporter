@@ -133,7 +133,7 @@ public class ONaiveAggregationImportStrategy extends ONaiveImportStrategy {
             // for each attribute of the entity belonging to the primary key, correspondent relationship is
             // built as edge and for the referenced record a vertex is built (only id)
             for(ORelationship currentRelation: entity.getRelationships()) {
-              currentInVertexType = mapper.getVertexTypeByName(context.getNameResolver().resolveVertexName(currentRelation.getParentEntityName())); // aggiungi getVertexTypeByName!
+              currentInVertexType = mapper.getVertexTypeByName(context.getNameResolver().resolveVertexName(currentRelation.getParentEntityName()));
               edgeType = mapper.getRelationship2edgeType().get(currentRelation);
               graphDBCommandEngine.upsertReachedVertexWithEdge(currentRecord, currentRelation, currentOutVertex, currentInVertexType, edgeType.getName(), context);
             }   

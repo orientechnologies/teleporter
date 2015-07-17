@@ -26,6 +26,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import com.orientechnologies.orient.drakkar.context.ODrakkarContext;
+import com.orientechnologies.orient.drakkar.model.dbschema.OAttribute;
+import com.orientechnologies.orient.drakkar.model.dbschema.OEntity;
 import com.orientechnologies.orient.drakkar.persistence.util.ODBSourceConnection;
 
 /**
@@ -96,8 +98,41 @@ public class ODBQueryEngine implements ODataSourceQueryEngine {
       e.printStackTrace();
     }
     return results;
+  }
+
+
+  public ResultSet getEntityTypeFromSingleTable(String discriminatorColumn, OEntity entity, String[] propertyOfKey, String[] valueOfKey, ODrakkarContext context) {
+    this.results = null;
+    this.dbConnection = null;
+    this.statement = null;
+    String query = "select " + discriminatorColumn + " from " + entity.getName() + " where ";
+    
+    query += propertyOfKey[0] + " = " + valueOfKey[0];
+    
+    if(propertyOfKey.length > 1) {
+      for(int i=1; i<propertyOfKey.length; i++) {
+        query += " and " + propertyOfKey[i] + " = " + valueOfKey[i];
+      }
+    }
+    
+    try {
+
+      try {
+        this.dbConnection = dataSource.getConnection(context);
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
+      this.statement = dbConnection.prepareStatement(query);
+      results = statement.executeQuery();
+
+    }catch(SQLException e) {
+      context.getOutputManager().debug(e.getMessage());
+      e.printStackTrace();
+    }
+    return results;
 
   }
+
 
   public void closeAll(ODrakkarContext context) {
 
@@ -114,6 +149,5 @@ public class ODBQueryEngine implements ODataSourceQueryEngine {
     }
 
   }
-
 
 }

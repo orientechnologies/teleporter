@@ -409,29 +409,8 @@ public class OER2GraphMapper extends OSource2GraphMapper {
 
       // adding attributes to vertex-type
       for(OAttribute attribute: currentEntity.getAttributes()) {        
-        if(currentEntity.getParentEntity() == null) {
-          currentProperty = new OModelProperty(nameResolver.resolveVertexProperty(attribute.getName()), attribute.getOrdinalPosition(), attribute.getDataType(), currentEntity.getPrimaryKey().getInvolvedAttributes().contains(attribute));
-          currentVertexType.getProperties().add(currentProperty);
-        }
-        // INHERITANCE CASE: id of the subclass is not added, because the id of the superclass is inherited
-        else {
-          OAttribute inheritedPrimaryKeyAttribute;
-          if(currentEntity.getPrimaryKey() != null && currentEntity.getPrimaryKey().getInvolvedAttributes().contains(attribute)) {
-            inheritedPrimaryKeyAttribute = currentEntity.getParentEntity().getPrimaryKey().getAttributeByOrdinalPosition(attribute.getOrdinalPosition());
-            currentProperty = new OModelProperty(nameResolver.resolveVertexProperty(inheritedPrimaryKeyAttribute.getName()), inheritedPrimaryKeyAttribute.getOrdinalPosition(), inheritedPrimaryKeyAttribute.getDataType(), true);
-            currentVertexType.getInheritedProperties().add(currentProperty);
-          }
-          else {
-            
-            // patch
-            if(currentEntity.getPrimaryKey() != null)
-            currentProperty = new OModelProperty(nameResolver.resolveVertexProperty(attribute.getName()), attribute.getOrdinalPosition(), attribute.getDataType(), currentEntity.getPrimaryKey().getInvolvedAttributes().contains(attribute));
-            else
-              currentProperty = new OModelProperty(nameResolver.resolveVertexProperty(attribute.getName()), attribute.getOrdinalPosition(), attribute.getDataType(), false);
-
-            currentVertexType.getProperties().add(currentProperty);
-          }
-        }
+        currentProperty = new OModelProperty(nameResolver.resolveVertexProperty(attribute.getName()), attribute.getOrdinalPosition(), attribute.getDataType(), currentEntity.getPrimaryKey().getInvolvedAttributes().contains(attribute));
+        currentVertexType.getProperties().add(currentProperty);
       }
 
       // adding parent vertex if the corresponding entity has a parent
@@ -439,6 +418,12 @@ public class OER2GraphMapper extends OSource2GraphMapper {
         currentParentElement = this.graphModel.getVertexByNameIgnoreCase(currentEntity.getParentEntity().getName());
         currentVertexType.setParentType(currentParentElement);
         currentVertexType.setInheritanceLevel(currentEntity.getInheritanceLevel());
+      }
+
+      // adding inherited attributes to vertex-type
+      for(OAttribute attribute: currentEntity.getInheritedAttributes()) {        
+        currentProperty = new OModelProperty(nameResolver.resolveVertexProperty(attribute.getName()), attribute.getOrdinalPosition(), attribute.getDataType(), currentEntity.getPrimaryKey().getInvolvedAttributes().contains(attribute));
+        currentVertexType.getInheritedProperties().add(currentProperty);
       }
 
       // adding vertex to the graph model
@@ -491,7 +476,6 @@ public class OER2GraphMapper extends OSource2GraphMapper {
             statistics.builtModelEdgeTypes++;
           }
 
-
           // adding the edge to the two vertices
           currentOutVertex.getOutEdgesType().add(currentEdgeType);
           currentInVertex.getInEdgesType().add(currentEdgeType);
@@ -506,32 +490,6 @@ public class OER2GraphMapper extends OSource2GraphMapper {
       iteration++;
       statistics.analizedRelationships++;
     }
-
-    //    // edges added through inheritance (no foreign key present in the db)
-    //    OVertexType currentParentVertex;
-    //    for(OVertexType currentVertex: this.graphModel.getVerticesType()) {
-    //      
-    //      if(currentVertex.getParentType() != null) {
-    //        currentParentVertex = (OVertexType) currentVertex.getParentType();
-    //        
-    //        // if edge "IsAs" is not present, it is added
-    //        if(!currentVertex.hasEdgeType("IsAs", Direction.OUT)) {
-    //          
-    //          currentEdgeType = this.graphModel.getEdgeTypeByName("IsAs");
-    //          if(currentEdgeType == null) {
-    //            currentEdgeType = new OEdgeType(edgeType, null, currentParentVertex);  // TO UPDATE !!!!!!!!
-    //            this.graphModel.getEdgesType().add(currentEdgeType);
-    //            context.getOutputManager().debug("Edge-type " + currentEdgeType.getName() + " built.\n");
-    //            statistics.builtModelEdgeTypes++;
-    //          }
-    //          
-    //          // adding the edge to the two vertices
-    //          currentVertex.getOutEdgesType().add(currentEdgeType);
-    //          currentParentVertex.getInEdgesType().add(currentEdgeType);
-    //        }
-    //      }
-    //      
-    //    }
 
     statistics.notifyListeners();
     statistics.runningStepNumber = -1;

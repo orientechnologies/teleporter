@@ -20,9 +20,13 @@
 
 package com.orientechnologies.orient.drakkar.model.graphmodel;
 
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
+
+import com.orientechnologies.orient.drakkar.model.dbschema.OAttribute;
 
 /**
  * It represents an Orient class. It could be a Vertex-Type or an Edge-Type in the graph model.
@@ -33,7 +37,7 @@ import java.util.List;
  */
 
 public class OElementType implements Comparable<OElementType> {
-  
+
   protected String name;
   protected List<OModelProperty> properties;
   protected List<OModelProperty> inheritedProperties;
@@ -61,7 +65,7 @@ public class OElementType implements Comparable<OElementType> {
   public void setProperties(List<OModelProperty> properties) {
     this.properties = properties;
   }
-  
+
   public List<OModelProperty> getInheritedProperties() {
     return this.inheritedProperties;
   }
@@ -96,7 +100,7 @@ public class OElementType implements Comparable<OElementType> {
         it.remove();
     }
   }
-  
+
   public OModelProperty getPropertyByName(String name) {
     for(OModelProperty property: this.properties) {
       if(property.getName().equals(name)) {
@@ -106,9 +110,30 @@ public class OElementType implements Comparable<OElementType> {
     return null;
   }
 
+  public OModelProperty getInheritedPropertyByName(String name) {
+    for(OModelProperty property: this.inheritedProperties) {
+      if(property.getName().equals(name)) {
+        return property;
+      }
+    }
+    return null; 
+  }
+  
+  // Returns properties and inherited properties
+  public Set<OModelProperty> getAllProperties() {
+
+    Set<OModelProperty> allProperties = new HashSet<OModelProperty>();
+    allProperties.addAll(this.inheritedProperties);
+    allProperties.addAll(this.properties);
+
+    return allProperties;
+  }
+
+
+
   @Override
   public int compareTo(OElementType toCompare) {
-    
+
     if(this.inheritanceLevel > toCompare.getInheritanceLevel())
       return 1;
     else if(this.inheritanceLevel < toCompare.getInheritanceLevel())
