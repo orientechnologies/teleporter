@@ -21,6 +21,7 @@
 package com.orientechnologies.orient.drakkar.model.dbschema;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -41,16 +42,20 @@ public class OHierarchicalBag {
 
   private String discriminatorColumn;
   private Map<String,String> entityName2discriminatorValue;
+  
+  private Set<String> addedRecordsId;
 
   public OHierarchicalBag() {
     this.depth2entities = new HashMap<Integer,Set<OEntity>>();
     this.entityName2discriminatorValue = new HashMap<String,String>();
+    this.addedRecordsId = new HashSet<String>();
   }
 
   public OHierarchicalBag(String inheritancePattern) {
     this.inheritancePattern = inheritancePattern;
     this.depth2entities = new HashMap<Integer,Set<OEntity>>();
     this.entityName2discriminatorValue = new HashMap<String,String>();
+    this.addedRecordsId = new HashSet<String>();
   }
 
 
@@ -89,6 +94,14 @@ public class OHierarchicalBag {
 
   public void setEntityName2discriminatorValue(Map<String, String> entityName2discriminatorValue) {
     this.entityName2discriminatorValue = entityName2discriminatorValue;
+  }
+
+  public Set<String> getAddedRecordsId() {
+    return addedRecordsId;
+  }
+
+  public void setAddedRecordsId(Set<String> addedRecordsId) {
+    this.addedRecordsId = addedRecordsId;
   }
 
 

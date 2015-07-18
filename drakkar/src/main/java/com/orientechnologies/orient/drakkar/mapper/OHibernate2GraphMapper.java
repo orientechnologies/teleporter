@@ -249,7 +249,7 @@ public class OHibernate2GraphMapper extends OER2GraphMapper {
           // building child's attribute and removing the corresponding attribute from the parent entity
           currentChildAttribute = new OAttribute(currentParentCorrespondingAttribute.getName(), j+1, currentParentCorrespondingAttribute.getDataType(), currentChildEntity);
           currentChildEntity.addAttribute(currentChildAttribute);
-          parentEntity.removeAttribute(currentParentCorrespondingAttribute);
+          parentEntity.getAttributes().remove(currentParentCorrespondingAttribute);
         }
 
         super.dataBaseSchema.getEntities().add(currentChildEntity);

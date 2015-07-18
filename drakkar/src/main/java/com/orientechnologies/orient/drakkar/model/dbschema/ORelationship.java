@@ -80,7 +80,6 @@ public class ORelationship {
     this.primaryKey = primaryKey;
   }
 
-  
   @Override
   public int hashCode() {
     final int prime = 31;
@@ -94,7 +93,7 @@ public class ORelationship {
   public boolean equals(Object obj) {
     ORelationship that = (ORelationship) obj;
     if(this.foreignEntityName.equals(that.getForeignEntityName()) && this.parentEntityName.equals(that.getParentEntityName())) {
-      if(this.foreignKey.equals(that.getForeignKey()) && this.primaryKey.equals(that.getForeignKey())) {
+      if(this.foreignKey.equals(that.getForeignKey()) && this.primaryKey.equals(that.getPrimaryKey())) {
         return true;
       }
     }

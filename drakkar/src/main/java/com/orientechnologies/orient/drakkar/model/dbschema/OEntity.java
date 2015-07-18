@@ -20,7 +20,6 @@
 
 package com.orientechnologies.orient.drakkar.model.dbschema;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -45,7 +44,9 @@ public class OEntity implements Comparable<OEntity> {
   private boolean inheritedAttributesRecovered;
   private OPrimaryKey primaryKey;
   private List<OForeignKey> foreignKeys;
-  private List<ORelationship> relationships;
+  private Set<ORelationship> relationships;
+  private Set<ORelationship> inheritedRelationships;
+  private boolean inheritedRelationshipsRecovered;
   private Boolean isJoinEntityDim2;
   private OEntity parentEntity;
   private int inheritanceLevel;
@@ -57,7 +58,9 @@ public class OEntity implements Comparable<OEntity> {
     this.inheritedAttributes = new LinkedHashSet<OAttribute>();
     this.inheritedAttributesRecovered = false;
     this.foreignKeys = new LinkedList<OForeignKey>();
-    this.relationships = new ArrayList<ORelationship>();
+    this.relationships = new LinkedHashSet<ORelationship>();
+    this.inheritedRelationships = new LinkedHashSet<ORelationship>();
+    this.inheritedRelationshipsRecovered = false;
     this.isJoinEntityDim2 = null;
     this.inheritanceLevel = 0;
   }
@@ -105,14 +108,27 @@ public class OEntity implements Comparable<OEntity> {
   }
 
   public Set<OAttribute> getInheritedAttributes() {
-    
+
     if(inheritedAttributesRecovered)
       return this.inheritedAttributes;
-    else if(parentEntity != null)
-      return parentEntity.getAllAttributes();
+    else if(parentEntity != null) {
+      this.inheritedAttributes = parentEntity.getAllAttributes();
+      this.inheritedAttributesRecovered = true;
+      return this.inheritedAttributes;
+    }
     else
       return this.inheritedAttributes;
   }
+  
+  //Returns attributes and inherited attributes
+  public Set<OAttribute> getAllAttributes() {
+
+    Set<OAttribute> allAttributes = new HashSet<OAttribute>();
+    allAttributes.addAll(this.getInheritedAttributes());
+    allAttributes.addAll(this.attributes);
+
+    return allAttributes;
+  }  
 
   public void setInheritedAttributes(Set<OAttribute> inheritedAttributes) {
     this.inheritedAttributes = inheritedAttributes;
@@ -124,16 +140,6 @@ public class OEntity implements Comparable<OEntity> {
 
   public void setInheritedAttributesRecovered(boolean inheritedAttributesRecovered) {
     this.inheritedAttributesRecovered = inheritedAttributesRecovered;
-  }
-
-  // Returns attributes and inherited attributes
-  public Set<OAttribute> getAllAttributes() {
-
-    Set<OAttribute> allAttributes = new HashSet<OAttribute>();
-    allAttributes.addAll(this.getInheritedAttributes());
-    allAttributes.addAll(this.attributes);
-
-    return allAttributes;
   }
 
   public OPrimaryKey getPrimaryKey() {
@@ -162,10 +168,6 @@ public class OEntity implements Comparable<OEntity> {
     this.attributes.clear();
     this.attributes.addAll(temp);
     return added;
-  }
-
-  public boolean removeAttribute(OAttribute toRemove) {
-    return this.attributes.remove(toRemove);
   }
 
   public void removeAttributeByNameIgnoreCase(String toRemove) {
@@ -208,7 +210,7 @@ public class OEntity implements Comparable<OEntity> {
 
     return toReturn;
   }
-  
+
   public OAttribute getInheritedAttributeByName(String name) {
 
     OAttribute toReturn = null;
@@ -236,12 +238,47 @@ public class OEntity implements Comparable<OEntity> {
     return toReturn;
   }
 
-  public List<ORelationship> getRelationships() {
+  public Set<ORelationship> getRelationships() {
     return this.relationships;
   }
 
-  public void setRelationships(List<ORelationship> relationships) {
+  public void setRelationships(Set<ORelationship> relationships) {
     this.relationships = relationships;
+  }
+
+  public Set<ORelationship> getInheritedRelationships() {
+
+    if(inheritedRelationshipsRecovered)
+      return this.inheritedRelationships;
+    else if(parentEntity != null) {
+      this.inheritedRelationships = parentEntity.getAllRelationships();
+      this.inheritedRelationshipsRecovered = true;
+      return this.inheritedRelationships;
+    }
+    else
+      return this.inheritedRelationships; 
+  }
+
+  public void setInheritedRelationships(Set<ORelationship> inheritedRelationships) {
+    this.inheritedRelationships = inheritedRelationships;
+  }
+
+  //Returns relationships and inherited relationships
+  public Set<ORelationship> getAllRelationships() {
+
+    Set<ORelationship> allRelationships = new HashSet<ORelationship>();
+    allRelationships.addAll(this.getInheritedRelationships());
+    allRelationships.addAll(this.relationships);
+
+    return allRelationships;
+  }
+
+  public boolean isInheritedRelationshipsRecovered() {
+    return inheritedRelationshipsRecovered;
+  }
+
+  public void setInheritedRelationshipsRecovered(boolean inheritedRelationshipsRecovered) {
+    this.inheritedRelationshipsRecovered = inheritedRelationshipsRecovered;
   }
 
   public OEntity getParentEntity() {

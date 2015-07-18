@@ -36,6 +36,7 @@ import com.orientechnologies.orient.drakkar.mapper.OER2GraphMapper;
 import com.orientechnologies.orient.drakkar.mapper.OHibernate2GraphMapper;
 import com.orientechnologies.orient.drakkar.model.dbschema.OEntity;
 import com.orientechnologies.orient.drakkar.model.dbschema.OHierarchicalBag;
+import com.orientechnologies.orient.drakkar.model.dbschema.ORelationship;
 import com.orientechnologies.orient.drakkar.model.graphmodel.OVertexType;
 import com.orientechnologies.orient.drakkar.nameresolver.OJavaConventionNameResolver;
 import com.orientechnologies.orient.drakkar.persistence.handler.OHSQLDBDataTypeHandler;
@@ -83,11 +84,14 @@ public class OHibernateMapperTestCase {
       Class.forName("org.hsqldb.jdbc.JDBCDriver");
       connection = DriverManager.getConnection("jdbc:hsqldb:mem:mydb", "SA", "");
 
+      String residence = "create memory table RESIDENCE(ID varchar(256) not null, CITY varchar(256), COUNTRY varchar(256), primary key (ID))";
+      st = connection.createStatement();
+      st.execute(residence);
+
       String employeeTableBuilding = "create memory table EMPLOYEE (ID varchar(256) not null,"+
           " TYPE varchar(256), NAME varchar(256), SALARY decimal(10,2), BONUS decimal(10,0), "
-          + "PAY_PER_HOUR decimal(10,2), CONTRACT_DURATION varchar(256), "
-          + "primary key (id))";
-      st = connection.createStatement();
+          + "PAY_PER_HOUR decimal(10,2), CONTRACT_DURATION varchar(256), RESIDENCE varchar(256),"
+          + "primary key (id), foreign key (RESIDENCE) references RESIDENCE(ID))";
       st.execute(employeeTableBuilding);
 
       this.mapper = new OHibernate2GraphMapper("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", OHibernateMapperTestCase.XML_TABLE_PER_CLASS);
@@ -114,6 +118,7 @@ public class OHibernateMapperTestCase {
       OEntity employeeEntity = mapper.getDataBaseSchema().getEntityByName("EMPLOYEE");
       OEntity regularEmployeeEntity = mapper.getDataBaseSchema().getEntityByNameIgnoreCase("REGULAR_EMPLOYEE");
       OEntity contractEmployeeEntity = mapper.getDataBaseSchema().getEntityByNameIgnoreCase("CONTRACT_EMPLOYEE");
+      OEntity residenceEntity = mapper.getDataBaseSchema().getEntityByNameIgnoreCase("RESIDENCE");
 
 
       // entities check
@@ -212,10 +217,39 @@ public class OHibernateMapperTestCase {
       // relationship, primary and foreign key check
       assertEquals(0, regularEmployeeEntity.getRelationships().size());
       assertEquals(0, contractEmployeeEntity.getRelationships().size());
-      assertEquals(0, employeeEntity.getRelationships().size());
+      assertEquals(1, employeeEntity.getRelationships().size());
       assertEquals(0, regularEmployeeEntity.getForeignKeys().size());
       assertEquals(0, contractEmployeeEntity.getForeignKeys().size());
-      assertEquals(0, employeeEntity.getForeignKeys().size());
+      assertEquals(1, employeeEntity.getForeignKeys().size());
+
+      Iterator<ORelationship> itEmp = employeeEntity.getRelationships().iterator();
+      ORelationship currentEmpRel = itEmp.next();
+      assertEquals("RESIDENCE", currentEmpRel.getParentEntityName());
+      assertEquals("EMPLOYEE", currentEmpRel.getForeignEntityName());
+      assertEquals(residenceEntity.getPrimaryKey(), currentEmpRel.getPrimaryKey());
+      assertEquals(employeeEntity.getForeignKeys().get(0), currentEmpRel.getForeignKey());
+      assertFalse(itEmp.hasNext());
+
+      // inherited relationships check
+      assertEquals(1, regularEmployeeEntity.getInheritedRelationships().size());
+      assertEquals(1, contractEmployeeEntity.getInheritedRelationships().size());
+      assertEquals(0, employeeEntity.getInheritedRelationships().size());
+
+      Iterator<ORelationship> itRegEmp = regularEmployeeEntity.getInheritedRelationships().iterator();
+      Iterator<ORelationship> itContEmp = contractEmployeeEntity.getInheritedRelationships().iterator();
+      ORelationship currentRegEmpRel = itRegEmp.next();
+      ORelationship currentContEmpRel = itContEmp.next();
+      assertEquals("RESIDENCE", currentRegEmpRel.getParentEntityName());
+      assertEquals("REGULAR_EMPLOYEE", currentRegEmpRel.getForeignEntityName());
+      assertEquals("RESIDENCE", currentContEmpRel.getParentEntityName());
+      assertEquals("CONTRACT_EMPLOYEE", currentContEmpRel.getForeignEntityName());
+      assertEquals(residenceEntity.getPrimaryKey(), currentRegEmpRel.getPrimaryKey());
+      assertEquals(regularEmployeeEntity.getForeignKeys().get(0), currentRegEmpRel.getForeignKey());
+      assertEquals(residenceEntity.getPrimaryKey(), currentContEmpRel.getPrimaryKey());
+      assertEquals(contractEmployeeEntity.getForeignKeys().get(0), currentContEmpRel.getForeignKey());
+      assertFalse(itRegEmp.hasNext());
+      assertFalse(itContEmp.hasNext());
+
 
       // inheritance check
       assertEquals(employeeEntity, regularEmployeeEntity.getParentEntity());
@@ -313,7 +347,7 @@ public class OHibernateMapperTestCase {
       assertEquals("VARCHAR", contractEmployeeVertexType.getPropertyByName("contractDuration").getPropertyType());
       assertEquals(2, contractEmployeeVertexType.getPropertyByName("contractDuration").getOrdinalPosition());
       assertEquals(false, contractEmployeeVertexType.getPropertyByName("contractDuration").isFromPrimaryKey());
-      
+
       // inherited properties check
       assertEquals(0, employeeVertexType.getProperties().size());
 
@@ -344,7 +378,7 @@ public class OHibernateMapperTestCase {
       assertEquals("VARCHAR", contractEmployeeVertexType.getInheritedPropertyByName("name").getPropertyType());
       assertEquals(2, contractEmployeeVertexType.getInheritedPropertyByName("name").getOrdinalPosition());
       assertEquals(false, contractEmployeeVertexType.getInheritedPropertyByName("name").isFromPrimaryKey());
-      
+
       // edges check
       assertEquals(0, mapper.getGraphModel().getEdgesType().size());
 
@@ -392,11 +426,13 @@ public class OHibernateMapperTestCase {
       Class.forName("org.hsqldb.jdbc.JDBCDriver");
       connection = DriverManager.getConnection("jdbc:hsqldb:mem:mydb", "SA", "");
 
-      String employeeTableBuilding = "create memory table EMPLOYEE (ID varchar(256) not null,"+
-          " NAME varchar(256), primary key (id))";
+      String residence = "create memory table RESIDENCE(ID varchar(256) not null, CITY varchar(256), COUNTRY varchar(256), primary key (ID))";
       st = connection.createStatement();
-      st.execute(employeeTableBuilding);
+      st.execute(residence);
 
+      String employeeTableBuilding = "create memory table EMPLOYEE (ID varchar(256) not null,"+
+          " NAME varchar(256), RESIDENCE varchar(256), primary key (ID), foreign key (RESIDENCE) references RESIDENCE(ID))";
+      st.execute(employeeTableBuilding);
 
       String regularEmployeeTableBuilding = "create memory table REGULAR_EMPLOYEE (EID varchar(256) not null, "
           + "SALARY decimal(10,2), BONUS decimal(10,0), primary key (EID), foreign key (EID) references EMPLOYEE(ID))";
@@ -430,6 +466,7 @@ public class OHibernateMapperTestCase {
       OEntity employeeEntity = mapper.getDataBaseSchema().getEntityByName("EMPLOYEE");
       OEntity regularEmployeeEntity = mapper.getDataBaseSchema().getEntityByName("REGULAR_EMPLOYEE");
       OEntity contractEmployeeEntity = mapper.getDataBaseSchema().getEntityByName("CONTRACT_EMPLOYEE");
+      OEntity residenceEntity = mapper.getDataBaseSchema().getEntityByNameIgnoreCase("RESIDENCE");
 
 
       // entities check
@@ -482,7 +519,7 @@ public class OHibernateMapperTestCase {
       assertEquals("VARCHAR", contractEmployeeEntity.getAttributeByName("CONTRACT_DURATION").getDataType());
       assertEquals(2, contractEmployeeEntity.getAttributeByName("CONTRACT_DURATION").getOrdinalPosition());
       assertEquals("CONTRACT_EMPLOYEE", contractEmployeeEntity.getAttributeByName("CONTRACT_DURATION").getBelongingEntity().getName());
-      
+
       // inherited attributes check
       assertEquals(0, employeeEntity.getInheritedAttributes().size());
 
@@ -529,19 +566,52 @@ public class OHibernateMapperTestCase {
       // relationship, primary and foreign key check
       assertEquals(1, regularEmployeeEntity.getRelationships().size());
       assertEquals(1, contractEmployeeEntity.getRelationships().size());
-      assertEquals(0, employeeEntity.getRelationships().size());
+      assertEquals(1, employeeEntity.getRelationships().size());
       assertEquals(1, regularEmployeeEntity.getForeignKeys().size());
       assertEquals(1, contractEmployeeEntity.getForeignKeys().size());
-      assertEquals(0, employeeEntity.getForeignKeys().size());
+      assertEquals(1, employeeEntity.getForeignKeys().size());
 
-      assertEquals("EMPLOYEE", regularEmployeeEntity.getRelationships().get(0).getParentEntityName());
-      assertEquals("REGULAR_EMPLOYEE", regularEmployeeEntity.getRelationships().get(0).getForeignEntityName());
-      assertEquals("EMPLOYEE", contractEmployeeEntity.getRelationships().get(0).getParentEntityName());
-      assertEquals("CONTRACT_EMPLOYEE", contractEmployeeEntity.getRelationships().get(0).getForeignEntityName());
-      assertEquals(employeeEntity.getPrimaryKey(), regularEmployeeEntity.getRelationships().get(0).getPrimaryKey());
-      assertEquals(regularEmployeeEntity.getForeignKeys().get(0), regularEmployeeEntity.getRelationships().get(0).getForeignKey());
-      assertEquals(employeeEntity.getPrimaryKey(), contractEmployeeEntity.getRelationships().get(0).getPrimaryKey());
-      assertEquals(contractEmployeeEntity.getForeignKeys().get(0), contractEmployeeEntity.getRelationships().get(0).getForeignKey());
+      Iterator<ORelationship> itEmp = employeeEntity.getRelationships().iterator();
+      Iterator<ORelationship> itRegEmp = regularEmployeeEntity.getRelationships().iterator();
+      Iterator<ORelationship> itContEmp = contractEmployeeEntity.getRelationships().iterator();
+      ORelationship currentEmpRel = itEmp.next();
+      ORelationship currentRegEmpRel = itRegEmp.next();
+      ORelationship currentContEmpRel = itContEmp.next();
+      assertEquals("RESIDENCE", currentEmpRel.getParentEntityName());
+      assertEquals("EMPLOYEE", currentEmpRel.getForeignEntityName());
+      assertEquals("EMPLOYEE", currentRegEmpRel.getParentEntityName());
+      assertEquals("REGULAR_EMPLOYEE", currentRegEmpRel.getForeignEntityName());
+      assertEquals("EMPLOYEE", currentContEmpRel.getParentEntityName());
+      assertEquals("CONTRACT_EMPLOYEE", currentContEmpRel.getForeignEntityName());
+      assertEquals(residenceEntity.getPrimaryKey(), currentEmpRel.getPrimaryKey());
+      assertEquals(employeeEntity.getForeignKeys().get(0), currentEmpRel.getForeignKey());
+      assertEquals(employeeEntity.getPrimaryKey(), currentRegEmpRel.getPrimaryKey());
+      assertEquals(regularEmployeeEntity.getForeignKeys().get(0), currentRegEmpRel.getForeignKey());
+      assertEquals(employeeEntity.getPrimaryKey(), currentContEmpRel.getPrimaryKey());
+      assertEquals(contractEmployeeEntity.getForeignKeys().get(0), currentContEmpRel.getForeignKey());
+      assertFalse(itEmp.hasNext());
+      assertFalse(itRegEmp.hasNext());
+      assertFalse(itContEmp.hasNext());
+
+      // inherited relationships check
+      assertEquals(1, regularEmployeeEntity.getInheritedRelationships().size());
+      assertEquals(1, contractEmployeeEntity.getInheritedRelationships().size());
+      assertEquals(0, employeeEntity.getInheritedRelationships().size());
+
+      itRegEmp = regularEmployeeEntity.getInheritedRelationships().iterator();
+      itContEmp = contractEmployeeEntity.getInheritedRelationships().iterator();
+      currentRegEmpRel = itRegEmp.next();
+      currentContEmpRel = itContEmp.next();
+      assertEquals("RESIDENCE", currentRegEmpRel.getParentEntityName());
+      assertEquals("REGULAR_EMPLOYEE", currentRegEmpRel.getForeignEntityName());
+      assertEquals("RESIDENCE", currentContEmpRel.getParentEntityName());
+      assertEquals("CONTRACT_EMPLOYEE", currentContEmpRel.getForeignEntityName());
+      assertEquals(residenceEntity.getPrimaryKey(), currentRegEmpRel.getPrimaryKey());
+      assertEquals(regularEmployeeEntity.getForeignKeys().get(0), currentRegEmpRel.getForeignKey());
+      assertEquals(residenceEntity.getPrimaryKey(), currentContEmpRel.getPrimaryKey());
+      assertEquals(contractEmployeeEntity.getForeignKeys().get(0), currentContEmpRel.getForeignKey());
+      assertFalse(itRegEmp.hasNext());
+      assertFalse(itContEmp.hasNext());
 
       // inheritance check
       assertEquals(employeeEntity, regularEmployeeEntity.getParentEntity());
@@ -634,7 +704,7 @@ public class OHibernateMapperTestCase {
       assertEquals("VARCHAR", contractEmployeeVertexType.getPropertyByName("contractDuration").getPropertyType());
       assertEquals(2, contractEmployeeVertexType.getPropertyByName("contractDuration").getOrdinalPosition());
       assertEquals(false, contractEmployeeVertexType.getPropertyByName("contractDuration").isFromPrimaryKey());
-      
+
       // inherited properties check
       assertEquals(0, employeeVertexType.getProperties().size());
 
@@ -712,9 +782,12 @@ public class OHibernateMapperTestCase {
       Class.forName("org.hsqldb.jdbc.JDBCDriver");
       connection = DriverManager.getConnection("jdbc:hsqldb:mem:mydb", "SA", "");
 
-      String employeeTableBuilding = "create memory table EMPLOYEE (ID varchar(256) not null,"+
-          " NAME varchar(256), primary key (id))";
+      String residence = "create memory table RESIDENCE(ID varchar(256) not null, CITY varchar(256), COUNTRY varchar(256), primary key (ID))";
       st = connection.createStatement();
+      st.execute(residence);
+
+      String employeeTableBuilding = "create memory table EMPLOYEE (ID varchar(256) not null,"+
+          " NAME varchar(256), RESIDENCE varchar(256), primary key (ID), foreign key (RESIDENCE) references RESIDENCE(ID))";
       st.execute(employeeTableBuilding);
 
 
@@ -750,6 +823,7 @@ public class OHibernateMapperTestCase {
       OEntity employeeEntity = mapper.getDataBaseSchema().getEntityByName("EMPLOYEE");
       OEntity regularEmployeeEntity = mapper.getDataBaseSchema().getEntityByName("REGULAR_EMPLOYEE");
       OEntity contractEmployeeEntity = mapper.getDataBaseSchema().getEntityByName("CONTRACT_EMPLOYEE");
+      OEntity residenceEntity = mapper.getDataBaseSchema().getEntityByNameIgnoreCase("RESIDENCE");
 
 
       // entities check
@@ -833,7 +907,7 @@ public class OHibernateMapperTestCase {
       assertEquals("VARCHAR", employeeEntity.getInheritedAttributeByName("NAME").getDataType());
       assertEquals(2, employeeEntity.getInheritedAttributeByName("NAME").getOrdinalPosition());
       assertEquals("EMPLOYEE", employeeEntity.getInheritedAttributeByName("NAME").getBelongingEntity().getName());
-      
+
       // primary key check
       assertEquals(1, regularEmployeeEntity.getPrimaryKey().getInvolvedAttributes().size());
       assertEquals("EID", regularEmployeeEntity.getPrimaryKey().getInvolvedAttributes().get(0).getName());
@@ -845,23 +919,55 @@ public class OHibernateMapperTestCase {
       assertEquals("VARCHAR", contractEmployeeEntity.getPrimaryKey().getInvolvedAttributes().get(0).getDataType());
       assertEquals("CONTRACT_EMPLOYEE", contractEmployeeEntity.getPrimaryKey().getInvolvedAttributes().get(0).getBelongingEntity().getName());
 
-
       // relationship, primary and foreign key check
       assertEquals(1, regularEmployeeEntity.getRelationships().size());
       assertEquals(1, contractEmployeeEntity.getRelationships().size());
-      assertEquals(0, employeeEntity.getRelationships().size());
+      assertEquals(1, employeeEntity.getRelationships().size());
       assertEquals(1, regularEmployeeEntity.getForeignKeys().size());
       assertEquals(1, contractEmployeeEntity.getForeignKeys().size());
-      assertEquals(0, employeeEntity.getForeignKeys().size());
+      assertEquals(1, employeeEntity.getForeignKeys().size());
 
-      assertEquals("EMPLOYEE", regularEmployeeEntity.getRelationships().get(0).getParentEntityName());
-      assertEquals("REGULAR_EMPLOYEE", regularEmployeeEntity.getRelationships().get(0).getForeignEntityName());
-      assertEquals("EMPLOYEE", contractEmployeeEntity.getRelationships().get(0).getParentEntityName());
-      assertEquals("CONTRACT_EMPLOYEE", contractEmployeeEntity.getRelationships().get(0).getForeignEntityName());
-      assertEquals(employeeEntity.getPrimaryKey(), regularEmployeeEntity.getRelationships().get(0).getPrimaryKey());
-      assertEquals(regularEmployeeEntity.getForeignKeys().get(0), regularEmployeeEntity.getRelationships().get(0).getForeignKey());
-      assertEquals(employeeEntity.getPrimaryKey(), contractEmployeeEntity.getRelationships().get(0).getPrimaryKey());
-      assertEquals(contractEmployeeEntity.getForeignKeys().get(0), contractEmployeeEntity.getRelationships().get(0).getForeignKey());
+      Iterator<ORelationship> itEmp = employeeEntity.getRelationships().iterator();
+      Iterator<ORelationship> itRegEmp = regularEmployeeEntity.getRelationships().iterator();
+      Iterator<ORelationship> itContEmp = contractEmployeeEntity.getRelationships().iterator();
+      ORelationship currentEmpRel = itEmp.next();
+      ORelationship currentRegEmpRel = itRegEmp.next();
+      ORelationship currentContEmpRel = itContEmp.next();
+      assertEquals("RESIDENCE", currentEmpRel.getParentEntityName());
+      assertEquals("EMPLOYEE", currentEmpRel.getForeignEntityName());
+      assertEquals("EMPLOYEE", currentRegEmpRel.getParentEntityName());
+      assertEquals("REGULAR_EMPLOYEE", currentRegEmpRel.getForeignEntityName());
+      assertEquals("EMPLOYEE", currentContEmpRel.getParentEntityName());
+      assertEquals("CONTRACT_EMPLOYEE", currentContEmpRel.getForeignEntityName());
+      assertEquals(residenceEntity.getPrimaryKey(), currentEmpRel.getPrimaryKey());
+      assertEquals(employeeEntity.getForeignKeys().get(0), currentEmpRel.getForeignKey());
+      assertEquals(employeeEntity.getPrimaryKey(), currentRegEmpRel.getPrimaryKey());
+      assertEquals(regularEmployeeEntity.getForeignKeys().get(0), currentRegEmpRel.getForeignKey());
+      assertEquals(employeeEntity.getPrimaryKey(), currentContEmpRel.getPrimaryKey());
+      assertEquals(contractEmployeeEntity.getForeignKeys().get(0), currentContEmpRel.getForeignKey());
+      assertFalse(itEmp.hasNext());
+      assertFalse(itRegEmp.hasNext());
+      assertFalse(itContEmp.hasNext());
+
+      // inherited relationships check
+      assertEquals(1, regularEmployeeEntity.getInheritedRelationships().size());
+      assertEquals(1, contractEmployeeEntity.getInheritedRelationships().size());
+      assertEquals(0, employeeEntity.getInheritedRelationships().size());
+
+      itRegEmp = regularEmployeeEntity.getInheritedRelationships().iterator();
+      itContEmp = contractEmployeeEntity.getInheritedRelationships().iterator();
+      currentRegEmpRel = itRegEmp.next();
+      currentContEmpRel = itContEmp.next();
+      assertEquals("RESIDENCE", currentRegEmpRel.getParentEntityName());
+      assertEquals("REGULAR_EMPLOYEE", currentRegEmpRel.getForeignEntityName());
+      assertEquals("RESIDENCE", currentContEmpRel.getParentEntityName());
+      assertEquals("CONTRACT_EMPLOYEE", currentContEmpRel.getForeignEntityName());
+      assertEquals(residenceEntity.getPrimaryKey(), currentRegEmpRel.getPrimaryKey());
+      assertEquals(regularEmployeeEntity.getForeignKeys().get(0), currentRegEmpRel.getForeignKey());
+      assertEquals(residenceEntity.getPrimaryKey(), currentContEmpRel.getPrimaryKey());
+      assertEquals(contractEmployeeEntity.getForeignKeys().get(0), currentContEmpRel.getForeignKey());
+      assertFalse(itRegEmp.hasNext());
+      assertFalse(itContEmp.hasNext());
 
       // inheritance check
       assertEquals(employeeEntity, regularEmployeeEntity.getParentEntity());
@@ -954,7 +1060,7 @@ public class OHibernateMapperTestCase {
       assertEquals("VARCHAR", contractEmployeeVertexType.getPropertyByName("contractDuration").getPropertyType());
       assertEquals(2, contractEmployeeVertexType.getPropertyByName("contractDuration").getOrdinalPosition());
       assertEquals(false, contractEmployeeVertexType.getPropertyByName("contractDuration").isFromPrimaryKey());
-      
+
       // inherited properties check
       assertEquals(0, employeeVertexType.getProperties().size());
 
@@ -1033,9 +1139,12 @@ public class OHibernateMapperTestCase {
       Class.forName("org.hsqldb.jdbc.JDBCDriver");
       connection = DriverManager.getConnection("jdbc:hsqldb:mem:mydb", "SA", "");
 
-      String employeeTableBuilding = "create memory table EMPLOYEE (ID varchar(256) not null,"+
-          " NAME varchar(256), primary key (id))";
+      String residence = "create memory table RESIDENCE(ID varchar(256) not null, CITY varchar(256), COUNTRY varchar(256), primary key (ID))";
       st = connection.createStatement();
+      st.execute(residence);
+
+      String employeeTableBuilding = "create memory table EMPLOYEE (ID varchar(256) not null,"+
+          " NAME varchar(256), RESIDENCE varchar(256), primary key (ID), foreign key (RESIDENCE) references RESIDENCE(ID))";
       st.execute(employeeTableBuilding);
 
       String regularEmployeeTableBuilding = "create memory table REGULAR_EMPLOYEE (EID varchar(256) not null, "
@@ -1070,6 +1179,7 @@ public class OHibernateMapperTestCase {
       OEntity employeeEntity = mapper.getDataBaseSchema().getEntityByName("EMPLOYEE");
       OEntity regularEmployeeEntity = mapper.getDataBaseSchema().getEntityByName("REGULAR_EMPLOYEE");
       OEntity contractEmployeeEntity = mapper.getDataBaseSchema().getEntityByName("CONTRACT_EMPLOYEE");
+      OEntity residenceEntity = mapper.getDataBaseSchema().getEntityByNameIgnoreCase("RESIDENCE");
 
 
       // entities check
@@ -1122,7 +1232,7 @@ public class OHibernateMapperTestCase {
       assertEquals("VARCHAR", contractEmployeeEntity.getAttributeByName("CONTRACT_DURATION").getDataType());
       assertEquals(2, contractEmployeeEntity.getAttributeByName("CONTRACT_DURATION").getOrdinalPosition());
       assertEquals("CONTRACT_EMPLOYEE", contractEmployeeEntity.getAttributeByName("CONTRACT_DURATION").getBelongingEntity().getName());
-      
+
       // inherited attributes check
       assertEquals(0, employeeEntity.getInheritedAttributes().size());
 
@@ -1153,7 +1263,7 @@ public class OHibernateMapperTestCase {
       assertEquals("VARCHAR", employeeEntity.getInheritedAttributeByName("NAME").getDataType());
       assertEquals(2, employeeEntity.getInheritedAttributeByName("NAME").getOrdinalPosition());
       assertEquals("EMPLOYEE", employeeEntity.getInheritedAttributeByName("NAME").getBelongingEntity().getName());
-      
+
       // primary key check (not "inherited")
       assertEquals(1, regularEmployeeEntity.getPrimaryKey().getInvolvedAttributes().size());
       assertEquals("EID", regularEmployeeEntity.getPrimaryKey().getInvolvedAttributes().get(0).getName());
@@ -1166,14 +1276,42 @@ public class OHibernateMapperTestCase {
       assertEquals("CONTRACT_EMPLOYEE", contractEmployeeEntity.getPrimaryKey().getInvolvedAttributes().get(0).getBelongingEntity().getName());
 
 
-      // relationship, primary and foreign key check
+   // relationship, primary and foreign key check
       assertEquals(0, regularEmployeeEntity.getRelationships().size());
       assertEquals(0, contractEmployeeEntity.getRelationships().size());
-      assertEquals(0, employeeEntity.getRelationships().size());
+      assertEquals(1, employeeEntity.getRelationships().size());
       assertEquals(0, regularEmployeeEntity.getForeignKeys().size());
       assertEquals(0, contractEmployeeEntity.getForeignKeys().size());
-      assertEquals(0, employeeEntity.getForeignKeys().size());
+      assertEquals(1, employeeEntity.getForeignKeys().size());
 
+      Iterator<ORelationship> itEmp = employeeEntity.getRelationships().iterator();
+      ORelationship currentEmpRel = itEmp.next();
+      assertEquals("RESIDENCE", currentEmpRel.getParentEntityName());
+      assertEquals("EMPLOYEE", currentEmpRel.getForeignEntityName());
+      assertEquals(residenceEntity.getPrimaryKey(), currentEmpRel.getPrimaryKey());
+      assertEquals(employeeEntity.getForeignKeys().get(0), currentEmpRel.getForeignKey());
+      assertFalse(itEmp.hasNext());
+
+      // inherited relationships check
+      assertEquals(1, regularEmployeeEntity.getInheritedRelationships().size());
+      assertEquals(1, contractEmployeeEntity.getInheritedRelationships().size());
+      assertEquals(0, employeeEntity.getInheritedRelationships().size());
+
+      Iterator<ORelationship> itRegEmp = regularEmployeeEntity.getInheritedRelationships().iterator();
+      Iterator<ORelationship> itContEmp = contractEmployeeEntity.getInheritedRelationships().iterator();
+      ORelationship currentRegEmpRel = itRegEmp.next();
+      ORelationship currentContEmpRel = itContEmp.next();
+      assertEquals("RESIDENCE", currentRegEmpRel.getParentEntityName());
+      assertEquals("REGULAR_EMPLOYEE", currentRegEmpRel.getForeignEntityName());
+      assertEquals("RESIDENCE", currentContEmpRel.getParentEntityName());
+      assertEquals("CONTRACT_EMPLOYEE", currentContEmpRel.getForeignEntityName());
+      assertEquals(residenceEntity.getPrimaryKey(), currentRegEmpRel.getPrimaryKey());
+      assertEquals(regularEmployeeEntity.getForeignKeys().get(0), currentRegEmpRel.getForeignKey());
+      assertEquals(residenceEntity.getPrimaryKey(), currentContEmpRel.getPrimaryKey());
+      assertEquals(contractEmployeeEntity.getForeignKeys().get(0), currentContEmpRel.getForeignKey());
+      assertFalse(itRegEmp.hasNext());
+      assertFalse(itContEmp.hasNext());
+      
       // inheritance check
       assertEquals(employeeEntity, regularEmployeeEntity.getParentEntity());
       assertEquals(employeeEntity, contractEmployeeEntity.getParentEntity());
@@ -1265,7 +1403,7 @@ public class OHibernateMapperTestCase {
       assertEquals("VARCHAR", contractEmployeeVertexType.getPropertyByName("contractDuration").getPropertyType());
       assertEquals(2, contractEmployeeVertexType.getPropertyByName("contractDuration").getOrdinalPosition());
       assertEquals(false, contractEmployeeVertexType.getPropertyByName("contractDuration").isFromPrimaryKey());
-      
+
       // inherited properties check
       assertEquals(0, employeeVertexType.getProperties().size());
 

@@ -296,12 +296,13 @@ public class OGraphModelWriter {
     }
 
     // check from orientdb schema properties
+    OProperty orientSchemaProperty2;
     Iterator<OProperty> it2 = orientElementType.declaredProperties().iterator();
     while(it2.hasNext()) {
-      orientSchemaProperty = it2.next();
+      orientSchemaProperty2 = it2.next();
       // if the property is not present in the model vertex type, then is dropped
-      if(currentElementType.getPropertyByName(orientSchemaProperty.getName()) == null) {
-        orientElementType.dropProperty(orientSchemaProperty.getName());
+      if(currentElementType.getPropertyByName(orientSchemaProperty2.getName()) == null) {
+        orientElementType.dropProperty(orientSchemaProperty2.getName());
         updated = true;
       }
     }

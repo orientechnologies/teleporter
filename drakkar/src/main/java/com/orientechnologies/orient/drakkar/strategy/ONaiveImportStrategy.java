@@ -236,7 +236,7 @@ public class ONaiveImportStrategy implements OImportStrategy {
 
             // for each attribute of the entity belonging to the primary key, correspondent relationship is
             // built as edge and for the referenced record a vertex is built (only id)
-            for(ORelationship currentRelation: currentEntity.getRelationships()) {
+            for(ORelationship currentRelation: currentEntity.getAllRelationships()) {
 
               currentParentEntity = mapper.getDataBaseSchema().getEntityByNameIgnoreCase(currentRelation.getParentEntityName());
               

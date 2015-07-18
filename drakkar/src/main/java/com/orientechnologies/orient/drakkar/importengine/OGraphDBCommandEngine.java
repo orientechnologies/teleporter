@@ -338,8 +338,9 @@ public class OGraphDBCommandEngine {
     OrientGraphNoTx orientGraph = factory.getNoTx();
     orientGraph.setStandardElementConstraints(false);
 
-    ORelationship relationship1 = joinTable.getRelationships().get(0);
-    ORelationship relationship2 = joinTable.getRelationships().get(1);
+    Iterator<ORelationship> it = joinTable.getRelationships().iterator();
+    ORelationship relationship1 = it.next();
+    ORelationship relationship2 = it.next();
 
 
     // Building keys and values for out-vertex lookup
