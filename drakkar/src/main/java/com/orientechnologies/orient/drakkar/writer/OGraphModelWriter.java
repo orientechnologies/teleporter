@@ -23,6 +23,7 @@ package com.orientechnologies.orient.drakkar.writer;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 
@@ -298,14 +299,21 @@ public class OGraphModelWriter {
     // check from orientdb schema properties
     OProperty orientSchemaProperty2;
     Iterator<OProperty> it2 = orientElementType.declaredProperties().iterator();
+    List<String> toDrop = new LinkedList<String>();
     while(it2.hasNext()) {
       orientSchemaProperty2 = it2.next();
-      // if the property is not present in the model vertex type, then is dropped
+      // if the property is not present in the model vertex type, then is added to a "to-drop list"
       if(currentElementType.getPropertyByName(orientSchemaProperty2.getName()) == null) {
-        orientElementType.dropProperty(orientSchemaProperty2.getName());
+        toDrop.add(orientSchemaProperty2.getName());
         updated = true;
       }
     }
+    
+    // dropping properties
+    for(String propertyName: toDrop) {
+      orientElementType.dropProperty(propertyName);
+    }
+    
     return updated;
   }
 

@@ -250,7 +250,6 @@ public class OHibernateMapperTestCase {
       assertFalse(itRegEmp.hasNext());
       assertFalse(itContEmp.hasNext());
 
-
       // inheritance check
       assertEquals(employeeEntity, regularEmployeeEntity.getParentEntity());
       assertEquals(employeeEntity, contractEmployeeEntity.getParentEntity());
@@ -380,7 +379,17 @@ public class OHibernateMapperTestCase {
       assertEquals(false, contractEmployeeVertexType.getInheritedPropertyByName("name").isFromPrimaryKey());
 
       // edges check
-      assertEquals(0, mapper.getGraphModel().getEdgesType().size());
+      assertEquals(1, mapper.getGraphModel().getEdgesType().size());
+      assertEquals("HasResidence", mapper.getGraphModel().getEdgesType().get(0).getName());
+
+      assertEquals(1, employeeVertexType.getOutEdgesType().size());
+      assertEquals("HasResidence", employeeVertexType.getOutEdgesType().get(0));
+
+      assertEquals(1, regularEmployeeVertexType.getOutEdgesType().size());
+      assertEquals("HasResidence", regularEmployeeVertexType.getOutEdgesType().get(0));
+
+      assertEquals(1, contractEmployeeVertexType.getOutEdgesType().size());
+      assertEquals("HasResidence", contractEmployeeVertexType.getOutEdgesType().get(0));
 
       // inheritance check
       assertEquals(employeeVertexType, regularEmployeeVertexType.getParentType());
@@ -737,7 +746,17 @@ public class OHibernateMapperTestCase {
       assertEquals(false, contractEmployeeVertexType.getInheritedPropertyByName("name").isFromPrimaryKey());
 
       // edges check
-      assertEquals(0, mapper.getGraphModel().getEdgesType().size());
+      assertEquals(1, mapper.getGraphModel().getEdgesType().size());
+      assertEquals("HasResidence", mapper.getGraphModel().getEdgesType().get(0).getName());
+
+      assertEquals(1, employeeVertexType.getOutEdgesType().size());
+      assertEquals("HasResidence", employeeVertexType.getOutEdgesType().get(0));
+
+      assertEquals(1, regularEmployeeVertexType.getOutEdgesType().size());
+      assertEquals("HasResidence", regularEmployeeVertexType.getOutEdgesType().get(0));
+
+      assertEquals(1, contractEmployeeVertexType.getOutEdgesType().size());
+      assertEquals("HasResidence", contractEmployeeVertexType.getOutEdgesType().get(0));
 
       // inheritance check
       assertEquals(employeeVertexType, regularEmployeeVertexType.getParentType());
@@ -1093,7 +1112,17 @@ public class OHibernateMapperTestCase {
       assertEquals(false, contractEmployeeVertexType.getInheritedPropertyByName("name").isFromPrimaryKey());
 
       // edges check
-      assertEquals(0, mapper.getGraphModel().getEdgesType().size());
+      assertEquals(1, mapper.getGraphModel().getEdgesType().size());
+      assertEquals("HasResidence", mapper.getGraphModel().getEdgesType().get(0).getName());
+
+      assertEquals(1, employeeVertexType.getOutEdgesType().size());
+      assertEquals("HasResidence", employeeVertexType.getOutEdgesType().get(0));
+
+      assertEquals(1, regularEmployeeVertexType.getOutEdgesType().size());
+      assertEquals("HasResidence", regularEmployeeVertexType.getOutEdgesType().get(0));
+
+      assertEquals(1, contractEmployeeVertexType.getOutEdgesType().size());
+      assertEquals("HasResidence", contractEmployeeVertexType.getOutEdgesType().get(0));
 
       // inheritance check
       assertEquals(employeeVertexType, regularEmployeeVertexType.getParentType());
@@ -1276,7 +1305,7 @@ public class OHibernateMapperTestCase {
       assertEquals("CONTRACT_EMPLOYEE", contractEmployeeEntity.getPrimaryKey().getInvolvedAttributes().get(0).getBelongingEntity().getName());
 
 
-   // relationship, primary and foreign key check
+      // relationship, primary and foreign key check
       assertEquals(0, regularEmployeeEntity.getRelationships().size());
       assertEquals(0, contractEmployeeEntity.getRelationships().size());
       assertEquals(1, employeeEntity.getRelationships().size());
@@ -1311,7 +1340,7 @@ public class OHibernateMapperTestCase {
       assertEquals(contractEmployeeEntity.getForeignKeys().get(0), currentContEmpRel.getForeignKey());
       assertFalse(itRegEmp.hasNext());
       assertFalse(itContEmp.hasNext());
-      
+
       // inheritance check
       assertEquals(employeeEntity, regularEmployeeEntity.getParentEntity());
       assertEquals(employeeEntity, contractEmployeeEntity.getParentEntity());
@@ -1436,7 +1465,17 @@ public class OHibernateMapperTestCase {
       assertEquals(false, contractEmployeeVertexType.getInheritedPropertyByName("name").isFromPrimaryKey());
 
       // edges check
-      assertEquals(0, mapper.getGraphModel().getEdgesType().size());
+      assertEquals(1, mapper.getGraphModel().getEdgesType().size());
+      assertEquals("HasResidence", mapper.getGraphModel().getEdgesType().get(0).getName());
+
+      assertEquals(1, employeeVertexType.getOutEdgesType().size());
+      assertEquals("HasResidence", employeeVertexType.getOutEdgesType().get(0));
+
+      assertEquals(1, regularEmployeeVertexType.getOutEdgesType().size());
+      assertEquals("HasResidence", regularEmployeeVertexType.getOutEdgesType().get(0));
+
+      assertEquals(1, contractEmployeeVertexType.getOutEdgesType().size());
+      assertEquals("HasResidence", contractEmployeeVertexType.getOutEdgesType().get(0));
 
       // inheritance check
       assertEquals(employeeVertexType, regularEmployeeVertexType.getParentType());

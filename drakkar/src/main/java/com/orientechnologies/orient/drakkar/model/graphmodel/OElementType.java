@@ -26,8 +26,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import com.orientechnologies.orient.drakkar.model.dbschema.OAttribute;
-
 /**
  * It represents an Orient class. It could be a Vertex-Type or an Edge-Type in the graph model.
  * 

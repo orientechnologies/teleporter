@@ -239,7 +239,10 @@ public class OER2GraphMapper extends OSource2GraphMapper {
         // copy of resultset in a HashLinkedMap
         currentEntityRelationships1 = this.fromResultSetToList(resultForeignKeys, context);
         currentEntityRelationships2 = new LinkedList<LinkedHashMap<String,String>>();
-        currentEntityRelationships2.addAll(currentEntityRelationships1);
+
+        for(LinkedHashMap<String,String> row: currentEntityRelationships1) {
+          currentEntityRelationships2.add(row);
+        }
 
         this.closeCursor(resultForeignKeys);
 
@@ -273,9 +276,8 @@ public class OER2GraphMapper extends OSource2GraphMapper {
             if(row.get("pktable_name").equals(currentParentTableName) && Integer.parseInt(row.get("key_seq")) == currentKeySeq) {
               currentFk.addAttribute(currentForeignEntity.getAttributeByName((String) row.get("fkcolumn_name")));
               it2.remove();
+              currentKeySeq++;
             }
-            currentKeySeq++;
-
           }
 
           // iterator reset
@@ -455,40 +457,80 @@ public class OER2GraphMapper extends OSource2GraphMapper {
     iteration = 1;
 
     // edges added through relationships (foreign keys of db)
-    for(ORelationship relationship: this.dataBaseSchema.getRelationships()) {  
-      currentOutVertex = this.graphModel.getVertexByName(nameResolver.resolveVertexName(relationship.getForeignEntityName()));
-      currentInVertex = this.graphModel.getVertexByName(nameResolver.resolveVertexName(relationship.getParentEntityName()));
-      context.getOutputManager().debug("Building edge-type from '" + currentOutVertex.getName() + "' to '" + currentInVertex.getName() + "' (" + iteration + "/" + numberOfEdgeType + ")...");
+    for(OEntity currentEntity: this.dataBaseSchema.getEntities()) {
+      for(ORelationship relationship: currentEntity.getRelationships()) {  
+        currentOutVertex = this.graphModel.getVertexByName(nameResolver.resolveVertexName(relationship.getForeignEntityName()));
+        currentInVertex = this.graphModel.getVertexByName(nameResolver.resolveVertexName(relationship.getParentEntityName()));
+        context.getOutputManager().debug("Building edge-type from '" + currentOutVertex.getName() + "' to '" + currentInVertex.getName() + "' (" + iteration + "/" + numberOfEdgeType + ")...");
 
-      if(currentOutVertex != null && currentInVertex != null) {
+        if(currentOutVertex != null && currentInVertex != null) {
 
-        // in case of inheritance no edge type is adopted, otherwise a new edge type is added to the graph model
-        if(currentOutVertex.getParentType() == null) {
+          // relationships which represents inheritance between different entities don't generate new edge-types,
+          // thus new edge type is created iff the parent entity's name (of the relationship) doesn't coincide 
+          // with the name of the parent entity of the current entity.
+          if(currentEntity.getParentEntity() == null || !currentEntity.getParentEntity().getName().equals(relationship.getParentEntityName())) {
 
-          // if the class edge doesn't exists, it will be created
-          edgeType = nameResolver.resolveEdgeName(relationship);
+            // if the class edge doesn't exists, it will be created
+            edgeType = nameResolver.resolveEdgeName(relationship);
 
-          currentEdgeType = this.graphModel.getEdgeTypeByName(edgeType);
-          if(currentEdgeType == null) {
-            currentEdgeType = new OEdgeType(edgeType, null, currentInVertex);  // TO UPDATE !!!!!!!!
-            this.graphModel.getEdgesType().add(currentEdgeType);
-            context.getOutputManager().debug("Edge-type " + currentEdgeType.getName() + " built.\n");
-            statistics.builtModelEdgeTypes++;
+            currentEdgeType = this.graphModel.getEdgeTypeByName(edgeType);
+            if(currentEdgeType == null) {
+              currentEdgeType = new OEdgeType(edgeType, null, currentInVertex);  // TO UPDATE !!!!!!!!
+              this.graphModel.getEdgesType().add(currentEdgeType);
+              context.getOutputManager().debug("Edge-type " + currentEdgeType.getName() + " built.\n");
+              statistics.builtModelEdgeTypes++;
+            }
+
+            // adding the edge to the two vertices
+            currentOutVertex.getOutEdgesType().add(currentEdgeType);
+            currentInVertex.getInEdgesType().add(currentEdgeType);
           }
-
-          // adding the edge to the two vertices
-          currentOutVertex.getOutEdgesType().add(currentEdgeType);
-          currentInVertex.getInEdgesType().add(currentEdgeType);
         }
-      }
-      else {
-        context.getOutputManager().error("Error during graph model building phase: vertices-edges information loss, relationship missed.\n");
-      }
-      // rules updating
-      this.relationship2edgeType.put(relationship, currentEdgeType);
+        else {
+          context.getOutputManager().error("Error during graph model building phase: vertices-edges information loss, relationship missed.\n");
+        }
+        // rules updating
+        this.relationship2edgeType.put(relationship, currentEdgeType);
 
-      iteration++;
-      statistics.analizedRelationships++;
+        iteration++;
+        statistics.analizedRelationships++;
+      }
+
+      for(ORelationship relationship: currentEntity.getInheritedRelationships()) {  
+        currentOutVertex = this.graphModel.getVertexByName(nameResolver.resolveVertexName(currentEntity.getName()));
+        currentInVertex = this.graphModel.getVertexByName(nameResolver.resolveVertexName(relationship.getParentEntityName()));
+        context.getOutputManager().debug("Building edge-type from '" + currentOutVertex.getName() + "' to '" + currentInVertex.getName() + "' (" + iteration + "/" + numberOfEdgeType + ")...");
+
+        if(currentOutVertex != null && currentInVertex != null) {
+
+          // in case of inheritance no edge type is adopted, otherwise a new edge type is added to the graph model
+          if(currentOutVertex.getParentType() == null) {
+
+            // if the class edge doesn't exists, it will be created
+            //            edgeType = nameResolver.resolveEdgeName(relationship);
+
+            currentEdgeType = this.graphModel.getEdgeTypeByName(edgeType);
+            //            if(currentEdgeType == null) {
+            //              currentEdgeType = new OEdgeType(edgeType, null, currentInVertex);  // TO UPDATE !!!!!!!!
+            //              this.graphModel.getEdgesType().add(currentEdgeType);
+            //              context.getOutputManager().debug("Edge-type " + currentEdgeType.getName() + " built.\n");
+            //              statistics.builtModelEdgeTypes++;
+            //            }
+
+            // adding the edge to the two vertices
+            currentOutVertex.getOutEdgesType().add(currentEdgeType);
+            currentInVertex.getInEdgesType().add(currentEdgeType);
+          }
+        }
+        else {
+          context.getOutputManager().error("Error during graph model building phase: vertices-edges information loss, relationship missed.\n");
+        }
+        // rules updating
+        this.relationship2edgeType.put(relationship, currentEdgeType);
+
+        //        iteration++;
+        //        statistics.analizedRelationships++;
+      }
     }
 
     statistics.notifyListeners();
