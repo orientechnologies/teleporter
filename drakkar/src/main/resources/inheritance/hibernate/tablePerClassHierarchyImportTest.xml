@@ -26,19 +26,4 @@
 		</subclass>
 	</class>
 	
-	<class name="Manager" table="MANAGER"
-		discriminator-value="mgr">
-		<id name="id">
-			<generator class="increment"></generator>
-		</id>
-
-		<discriminator column="TYPE" type="string"></discriminator>
-		<property name="name"></property>
-
-		<subclass name="Project_Manager"
-			discriminator-value="prj_mgr">
-			<property name="project"></property>
-		</subclass>
-	</class>
-	
 </hibernate-mapping>  

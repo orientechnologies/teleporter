@@ -159,7 +159,7 @@ public class ONaiveImportStrategy implements OImportStrategy {
 
           currentOutVertexType = mapper.getEntity2vertexType().get(entity);
 
-          // each record imported as vertex in the orient graph
+          // each record is imported as vertex in the orient graph
           while(records.next()) {
             // upsert of the vertex
             currentRecord = records;
@@ -228,7 +228,7 @@ public class ONaiveImportStrategy implements OImportStrategy {
 
           currentOutVertexType = mapper.getEntity2vertexType().get(currentEntity);
 
-          // each record imported as vertex in the orient graph
+          // each record is imported as vertex in the orient graph
           while(records.next()) {
             // upsert of the vertex
             currentRecord = records;
@@ -324,7 +324,7 @@ public class ONaiveImportStrategy implements OImportStrategy {
 
     try {
 
-      ResultSet result = dbQueryEngine.getEntityTypeFromSingleTable(discriminatorColumn, currentEntity, propertyOfKey, valueOfKey, context);
+      ResultSet result = dbQueryEngine.getEntityTypeFromSingleTable(discriminatorColumn, physicalEntityName, propertyOfKey, valueOfKey, context);
       result.next();
       String discriminatorValue = result.getString(discriminatorColumn);
 

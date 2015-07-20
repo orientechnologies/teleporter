@@ -484,13 +484,14 @@ public class OER2GraphMapper extends OSource2GraphMapper {
             // adding the edge to the two vertices
             currentOutVertex.getOutEdgesType().add(currentEdgeType);
             currentInVertex.getInEdgesType().add(currentEdgeType);
+            
+            // rules updating
+            this.relationship2edgeType.put(relationship, currentEdgeType);
           }
         }
         else {
           context.getOutputManager().error("Error during graph model building phase: vertices-edges information loss, relationship missed.\n");
         }
-        // rules updating
-        this.relationship2edgeType.put(relationship, currentEdgeType);
 
         iteration++;
         statistics.analizedRelationships++;
@@ -503,33 +504,15 @@ public class OER2GraphMapper extends OSource2GraphMapper {
 
         if(currentOutVertex != null && currentInVertex != null) {
 
-          // in case of inheritance no edge type is adopted, otherwise a new edge type is added to the graph model
-          if(currentOutVertex.getParentType() == null) {
+          currentEdgeType = this.graphModel.getEdgeTypeByName(edgeType);
 
-            // if the class edge doesn't exists, it will be created
-            //            edgeType = nameResolver.resolveEdgeName(relationship);
-
-            currentEdgeType = this.graphModel.getEdgeTypeByName(edgeType);
-            //            if(currentEdgeType == null) {
-            //              currentEdgeType = new OEdgeType(edgeType, null, currentInVertex);  // TO UPDATE !!!!!!!!
-            //              this.graphModel.getEdgesType().add(currentEdgeType);
-            //              context.getOutputManager().debug("Edge-type " + currentEdgeType.getName() + " built.\n");
-            //              statistics.builtModelEdgeTypes++;
-            //            }
-
-            // adding the edge to the two vertices
-            currentOutVertex.getOutEdgesType().add(currentEdgeType);
-            currentInVertex.getInEdgesType().add(currentEdgeType);
-          }
+          // adding the edge to the two vertices
+          currentOutVertex.getOutEdgesType().add(currentEdgeType);
+          currentInVertex.getInEdgesType().add(currentEdgeType);
         }
         else {
           context.getOutputManager().error("Error during graph model building phase: vertices-edges information loss, relationship missed.\n");
         }
-        // rules updating
-        this.relationship2edgeType.put(relationship, currentEdgeType);
-
-        //        iteration++;
-        //        statistics.analizedRelationships++;
       }
     }
 

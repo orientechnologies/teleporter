@@ -21,7 +21,6 @@
 package com.orientechnologies.orient.drakkar.model.dbschema;
 
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
@@ -123,7 +122,7 @@ public class OEntity implements Comparable<OEntity> {
   //Returns attributes and inherited attributes
   public Set<OAttribute> getAllAttributes() {
 
-    Set<OAttribute> allAttributes = new HashSet<OAttribute>();
+    Set<OAttribute> allAttributes = new LinkedHashSet<OAttribute>();
     allAttributes.addAll(this.getInheritedAttributes());
     allAttributes.addAll(this.attributes);
 
@@ -266,7 +265,7 @@ public class OEntity implements Comparable<OEntity> {
   //Returns relationships and inherited relationships
   public Set<ORelationship> getAllRelationships() {
 
-    Set<ORelationship> allRelationships = new HashSet<ORelationship>();
+    Set<ORelationship> allRelationships = new LinkedHashSet<ORelationship>();
     allRelationships.addAll(this.getInheritedRelationships());
     allRelationships.addAll(this.relationships);
 

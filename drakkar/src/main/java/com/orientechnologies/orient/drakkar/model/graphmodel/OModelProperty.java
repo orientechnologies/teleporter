@@ -97,7 +97,8 @@ public class OModelProperty {
   }
 
   public String toString() {
-    String s = "[" + this.propertyType + "]";
+    String s = "";
+    s += this.ordinalPosition + ": " + this.name + " ( " + this.propertyType + " )";
     return s;
   }
 

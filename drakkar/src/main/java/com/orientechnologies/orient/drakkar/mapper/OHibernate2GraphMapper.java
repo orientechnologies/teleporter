@@ -251,6 +251,8 @@ public class OHibernate2GraphMapper extends OER2GraphMapper {
           currentChildEntity.addAttribute(currentChildAttribute);
           parentEntity.getAttributes().remove(currentParentCorrespondingAttribute);
         }
+        
+        parentEntity.renumberAttributesOrdinalPositions();
 
         super.dataBaseSchema.getEntities().add(currentChildEntity);
         currentChildEntity.setParentEntity(parentEntity);

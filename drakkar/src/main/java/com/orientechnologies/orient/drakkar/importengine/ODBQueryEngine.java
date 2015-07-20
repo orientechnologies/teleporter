@@ -80,7 +80,7 @@ public class ODBQueryEngine implements ODataSourceQueryEngine {
     this.results = null;
     this.dbConnection = null;
     this.statement = null;
-    String query = "select * from " + entityName + " where " + discriminatorColumn + "=" + currentDiscriminatorValue;
+    String query = "select * from " + entityName + " where " + discriminatorColumn + "='" + currentDiscriminatorValue + "'";
 
     try {
 
@@ -100,11 +100,11 @@ public class ODBQueryEngine implements ODataSourceQueryEngine {
   }
 
 
-  public ResultSet getEntityTypeFromSingleTable(String discriminatorColumn, OEntity entity, String[] propertyOfKey, String[] valueOfKey, ODrakkarContext context) {
+  public ResultSet getEntityTypeFromSingleTable(String discriminatorColumn, String physicalEntityName, String[] propertyOfKey, String[] valueOfKey, ODrakkarContext context) {
     this.results = null;
     this.dbConnection = null;
     this.statement = null;
-    String query = "select " + discriminatorColumn + " from " + entity.getName() + " where ";
+    String query = "select " + discriminatorColumn + " from " + physicalEntityName + " where ";
     
     query += propertyOfKey[0] + " = " + valueOfKey[0];
     
