@@ -4,36 +4,37 @@
    "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
 
 <hibernate-mapping>
-	<class name="Employee" table="EMPLOYEE" discriminator-value="emp">
+	<class name="Employee" table="employee">
 		<id name="id">
 			<generator class="increment"></generator>
 		</id>
 
-		<discriminator column="TYPE" type="string"></discriminator>
 		<property name="name"></property>
 
-		<subclass name="Regular_Employee" discriminator-value="reg_emp">
+		<union-subclass name="Regular_Employee"
+			table="regular_employee">
 			<property name="salary"></property>
 			<property name="bonus"></property>
-		</subclass>
+		</union-subclass>
 
-		<subclass name="Contract_Employee" discriminator-value="cont_emp">
+		<union-subclass name="Contract_Employee"
+			table="contract_employee">
 			<property name="pay_per_hour"></property>
 			<property name="contract_duration"></property>
-		</subclass>
-	</class>
+		</union-subclass>
 
-	<class name="Manager" table="MANAGER" discriminator-value="mgr">
+	</class>
+	<class name="Manager" table="manager">
 		<id name="id">
 			<generator class="increment"></generator>
 		</id>
 
-		<discriminator column="TYPE" type="string"></discriminator>
 		<property name="name"></property>
 
-		<subclass name="Project_Manager" discriminator-value="prj_mgr">
+		<union-subclass name="Project_Manager"
+			table="project_manager">
 			<property name="project"></property>
-		</subclass>
+		</union-subclass>
 	</class>
 
 </hibernate-mapping>  

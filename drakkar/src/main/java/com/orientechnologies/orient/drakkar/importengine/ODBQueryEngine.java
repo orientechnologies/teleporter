@@ -21,12 +21,15 @@
 package com.orientechnologies.orient.drakkar.importengine;
 
 import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.Iterator;
 
 import com.orientechnologies.orient.drakkar.context.ODrakkarContext;
+import com.orientechnologies.orient.drakkar.model.dbschema.OAttribute;
 import com.orientechnologies.orient.drakkar.model.dbschema.OEntity;
+import com.orientechnologies.orient.drakkar.model.dbschema.OHierarchicalBag;
 import com.orientechnologies.orient.drakkar.persistence.util.ODBSourceConnection;
 
 /**
@@ -41,7 +44,7 @@ public class ODBQueryEngine implements ODataSourceQueryEngine {
 
   private ODBSourceConnection dataSource;
   private Connection dbConnection;
-  private PreparedStatement statement;
+  private Statement statement;
   private ResultSet results;
 
   public ODBQueryEngine(String driver, String uri, String username, String password) {
@@ -62,14 +65,14 @@ public class ODBQueryEngine implements ODataSourceQueryEngine {
       } catch (Exception e) {
         e.printStackTrace();
       }
-      this.statement = dbConnection.prepareStatement(query);
-      results = statement.executeQuery();
+      this.statement = dbConnection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+      this.results = statement.executeQuery(query);
 
     }catch(SQLException e) {
       context.getOutputManager().debug(e.getMessage());
       e.printStackTrace();
     }
-    return results;
+    return this.results;
   }
 
   /**
@@ -89,8 +92,8 @@ public class ODBQueryEngine implements ODataSourceQueryEngine {
       } catch (Exception e) {
         e.printStackTrace();
       }
-      this.statement = dbConnection.prepareStatement(query);
-      results = statement.executeQuery();
+      this.statement = dbConnection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+      this.results = statement.executeQuery(query);
 
     }catch(SQLException e) {
       context.getOutputManager().debug(e.getMessage());
@@ -105,15 +108,15 @@ public class ODBQueryEngine implements ODataSourceQueryEngine {
     this.dbConnection = null;
     this.statement = null;
     String query = "select " + discriminatorColumn + " from " + physicalEntityName + " where ";
-    
-    query += propertyOfKey[0] + " = " + valueOfKey[0];
-    
+
+    query += propertyOfKey[0] + " = '" + valueOfKey[0] + "'";
+
     if(propertyOfKey.length > 1) {
       for(int i=1; i<propertyOfKey.length; i++) {
-        query += " and " + propertyOfKey[i] + " = " + valueOfKey[i];
+        query += " and " + propertyOfKey[i] + " = '" + valueOfKey[i] + "'";
       }
     }
-    
+
     try {
 
       try {
@@ -121,8 +124,8 @@ public class ODBQueryEngine implements ODataSourceQueryEngine {
       } catch (Exception e) {
         e.printStackTrace();
       }
-      this.statement = dbConnection.prepareStatement(query);
-      results = statement.executeQuery();
+      this.statement = dbConnection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+      this.results = statement.executeQuery(query);
 
     }catch(SQLException e) {
       context.getOutputManager().debug(e.getMessage());
@@ -130,6 +133,73 @@ public class ODBQueryEngine implements ODataSourceQueryEngine {
     }
     return results;
 
+  }
+
+
+  /**
+   * @param bag
+   * @return
+   */
+  public ResultSet buildAggregateTableFromHierarchicalBag(OHierarchicalBag bag, ODrakkarContext context) {
+
+    this.results = null;
+    this.dbConnection = null;
+    this.statement = null;
+
+    Iterator<OEntity> it = bag.getDepth2entities().get(0).iterator();
+    OEntity rootEntity = it.next();
+
+    String query = "select * from " + rootEntity.getName() + " as t0\n";
+
+    String[] rootEntityPropertyOfKey = new String[rootEntity.getPrimaryKey().getInvolvedAttributes().size()];  // collects the attributes of the root-entity's primary key
+
+    // filling the rootPropertyOfKey from the primary key of the rootEntity
+    for(int j=0; j<rootEntity.getPrimaryKey().getInvolvedAttributes().size(); j++) {
+      rootEntityPropertyOfKey[j] = rootEntity.getPrimaryKey().getInvolvedAttributes().get(j).getName();
+    }
+
+    String[] currentEntityPropertyOfKey = new String[rootEntity.getPrimaryKey().getInvolvedAttributes().size()];  // collects the attributes of the current-entity's primary key
+
+    OEntity currentEntity;
+    for(int i=1; i<bag.getDepth2entities().size(); i++) {
+      it = bag.getDepth2entities().get(i).iterator();
+
+      while(it.hasNext()) {
+
+        currentEntity = it.next();
+        int index = 0;
+        for(OAttribute attribute: currentEntity.getPrimaryKey().getInvolvedAttributes()) {
+          currentEntityPropertyOfKey[index] = currentEntity.getPrimaryKey().getInvolvedAttributes().get(index).getName();
+          index++;
+        }
+
+        query += "left join " + currentEntity.getName() + " as t" + i + 
+            " on t" + (i-1) + "." + rootEntityPropertyOfKey[0] + "='" + currentEntityPropertyOfKey[0] + "'";
+        
+        for(int k=1; k<currentEntityPropertyOfKey.length; k++) {
+          query += " and " + rootEntityPropertyOfKey[k] + " = '" + currentEntityPropertyOfKey[k] + "'";
+        }
+        
+        query += "\n";
+          
+      }
+    }
+
+    try {
+
+      try {
+        this.dbConnection = dataSource.getConnection(context);
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
+      this.statement = dbConnection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+      this.results = statement.executeQuery(query);
+
+    }catch(SQLException e) {
+      context.getOutputManager().debug(e.getMessage());
+      e.printStackTrace();
+    }
+    return results;
   }
 
 
@@ -148,5 +218,7 @@ public class ODBQueryEngine implements ODataSourceQueryEngine {
     }
 
   }
+
+
 
 }

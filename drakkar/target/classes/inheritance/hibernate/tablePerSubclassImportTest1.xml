@@ -3,27 +3,27 @@
    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
    "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
 
+
 <hibernate-mapping>
-	<class name="Employee" table="EMPLOYEE"
-		discriminator-value="emp">
+	<class name="Employee" table="employee">
 		<id name="id">
 			<generator class="increment"></generator>
 		</id>
 
-		<discriminator column="TYPE" type="string"></discriminator>
 		<property name="name"></property>
 
-		<subclass name="Regular_Employee"
-			discriminator-value="reg_emp">
+		<joined-subclass name="Regular_Employee"
+			table="regular_employee">
+			<key column="eid"></key>
 			<property name="salary"></property>
 			<property name="bonus"></property>
-		</subclass>
+		</joined-subclass>
 
-		<subclass name="Contract_Employee"
-			discriminator-value="cont_emp">
+		<joined-subclass name="Contract_Employee"
+			table="contract_employee">
+			<key column="eid"></key>
 			<property name="pay_per_hour"></property>
 			<property name="contract_duration"></property>
-		</subclass>
+		</joined-subclass>
 	</class>
-	
 </hibernate-mapping>  

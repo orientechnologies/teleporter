@@ -104,7 +104,7 @@ public class OGraphDBCommandEngine {
 
     List<String> propertiesOfIndex = new LinkedList<String>();
 
-    for(OModelProperty currentProperty: vertexType.getProperties()) {
+    for(OModelProperty currentProperty: vertexType.getAllProperties()) {
       // only attribute coming from the primary key are given
       if(currentProperty.isFromPrimaryKey())
         propertiesOfIndex.add(currentProperty.getName());

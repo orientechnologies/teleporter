@@ -22,8 +22,8 @@ package com.orientechnologies.orient.drakkar.mapper;
 
 import java.io.File;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -131,7 +131,7 @@ public class OHibernate2GraphMapper extends OER2GraphMapper {
       hierarchicalBag.setInheritancePattern("table-per-type");
       super.dataBaseSchema.getHierarchicalBags().add(hierarchicalBag);
       if(hierarchicalBag.getDepth2entities().get(parentEntity.getInheritanceLevel()) == null) {
-        Set<OEntity> tmp = new HashSet<OEntity>();
+        Set<OEntity> tmp = new LinkedHashSet<OEntity>();
         tmp.add(parentEntity);
         hierarchicalBag.getDepth2entities().put(parentEntity.getInheritanceLevel(), tmp);
         parentEntity.setHierarchicalBag(hierarchicalBag);
@@ -150,7 +150,7 @@ public class OHibernate2GraphMapper extends OER2GraphMapper {
       hierarchicalBag.setInheritancePattern("table-per-concrete-type");
       super.dataBaseSchema.getHierarchicalBags().add(hierarchicalBag);
       if(hierarchicalBag.getDepth2entities().get(parentEntity.getInheritanceLevel()) == null) {
-        Set<OEntity> tmp = new HashSet<OEntity>();
+        Set<OEntity> tmp = new LinkedHashSet<OEntity>();
         tmp.add(parentEntity);
         hierarchicalBag.getDepth2entities().put(parentEntity.getInheritanceLevel(), tmp);
         parentEntity.setHierarchicalBag(hierarchicalBag);
@@ -184,7 +184,7 @@ public class OHibernate2GraphMapper extends OER2GraphMapper {
       hierarchicalBag.setInheritancePattern("table-per-type");
       super.dataBaseSchema.getHierarchicalBags().add(hierarchicalBag);
       if(hierarchicalBag.getDepth2entities().get(parentEntity.getInheritanceLevel()) == null) {
-        Set<OEntity> tmp = new HashSet<OEntity>();
+        Set<OEntity> tmp = new LinkedHashSet<OEntity>();
         tmp.add(parentEntity);
         hierarchicalBag.getDepth2entities().put(parentEntity.getInheritanceLevel(), tmp);
         parentEntity.setHierarchicalBag(hierarchicalBag);
@@ -207,7 +207,7 @@ public class OHibernate2GraphMapper extends OER2GraphMapper {
       hierarchicalBag.setInheritancePattern("table-per-hierarchy");
       super.dataBaseSchema.getHierarchicalBags().add(hierarchicalBag);
       if(hierarchicalBag.getDepth2entities().get(parentEntity.getInheritanceLevel()) == null) {
-        Set<OEntity> tmp = new HashSet<OEntity>();
+        Set<OEntity> tmp = new LinkedHashSet<OEntity>();
         tmp.add(parentEntity);
         hierarchicalBag.getDepth2entities().put(parentEntity.getInheritanceLevel(), tmp);
         parentEntity.setHierarchicalBag(hierarchicalBag);
@@ -260,7 +260,7 @@ public class OHibernate2GraphMapper extends OER2GraphMapper {
 
         // updating hierarchical bag
         if(hierarchicalBag.getDepth2entities().get(currentChildEntity.getInheritanceLevel()) == null) {
-          Set<OEntity> tmp = new HashSet<OEntity>();
+          Set<OEntity> tmp = new LinkedHashSet<OEntity>();
           tmp.add(currentChildEntity);
           hierarchicalBag.getDepth2entities().put(currentChildEntity.getInheritanceLevel(), tmp);
         }
@@ -308,7 +308,7 @@ public class OHibernate2GraphMapper extends OER2GraphMapper {
 
       // updating hierarchical bag
       if(hierarchicalBag.getDepth2entities().get(currentChildEntity.getInheritanceLevel()) == null) {
-        Set<OEntity> tmp = new HashSet<OEntity>();
+        Set<OEntity> tmp = new LinkedHashSet<OEntity>();
         tmp.add(currentChildEntity);
         hierarchicalBag.getDepth2entities().put(currentChildEntity.getInheritanceLevel(), tmp);
       }
@@ -359,7 +359,7 @@ public class OHibernate2GraphMapper extends OER2GraphMapper {
 
       // updating hierarchical bag
       if(hierarchicalBag.getDepth2entities().get(currentChildEntity.getInheritanceLevel()) == null) {
-        Set<OEntity> tmp = new HashSet<OEntity>();
+        Set<OEntity> tmp = new LinkedHashSet<OEntity>();
         tmp.add(currentChildEntity);
         hierarchicalBag.getDepth2entities().put(currentChildEntity.getInheritanceLevel(), tmp);
       }

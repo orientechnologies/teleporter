@@ -51,18 +51,18 @@ import com.tinkerpop.blueprints.impls.orient.OrientVertexType;
  */
 
 public class OHibernateImportTestCase {
-  
+
   private OER2GraphMapper mapper;
   private ODrakkarContext context;
   private ONaiveImportStrategy importStrategy;
   private String outOrientGraphUri;
-  
+
   private final static String XML_TABLE_PER_CLASS = "src/main/resources/inheritance/hibernate/tablePerClassHierarchyImportTest.xml";
   private final static String XML_TABLE_PER_SUBCLASS1 = "src/main/resources/inheritance/hibernate/tablePerSubclassImportTest1.xml";
   private final static String XML_TABLE_PER_SUBCLASS2 = "src/main/resources/inheritance/hibernate/tablePerSubclassImportTest2.xml";
   private final static String XML_TABLE_PER_CONCRETE_CLASS = "src/main/resources/inheritance/hibernate/tablePerConcreteClassImportTest.xml";
-  
-  
+
+
   @Before
   public void init() {
     this.context = new ODrakkarContext();
@@ -72,14 +72,12 @@ public class OHibernateImportTestCase {
     this.importStrategy = new ONaiveImportStrategy();
     this.outOrientGraphUri = "memory:testOrientDB";
   }
-  
+
   @Test
-
   /*
-   * Table per Subclass Inheritance (<joined-subclass> tag)
-   * 3 tables, one parent and 2 childs ( http://www.javatpoint.com/table-per-subclass )
+   * Import from tables with "table-per-hierarchy" inheritance strategy.
+   * Relationships both to simple table and table in a hierarchical bag ("table-per-hierarchy" bag).
    */
-
   public void test1() {
 
     Connection connection = null;
@@ -95,7 +93,7 @@ public class OHibernateImportTestCase {
       String residenceTableBuilding = "create memory table RESIDENCE(ID varchar(256) not null, CITY varchar(256), COUNTRY varchar(256), primary key (ID))";
       st = connection.createStatement();
       st.execute(residenceTableBuilding);
-      
+
       String managerTableBuilding = "create memory table MANAGER(ID varchar(256) not null, TYPE varchar(256), NAME varchar(256), PROJECT varchar(256), primary key (ID))";
       st = connection.createStatement();
       st.execute(managerTableBuilding);
@@ -108,12 +106,12 @@ public class OHibernateImportTestCase {
 
 
       // Records Inserting
-      
+
       String residenceFilling = "INSERT INTO RESIDENCE (ID,CITY,COUNTRY) VALUES ("
           + "('R001','Rome','Italy'),"
           + "('R002','Milan','Italy'))";
       st.execute(residenceFilling);
-      
+
       String managerFilling = "INSERT INTO MANAGER (ID,TYPE,NAME,PROJECT) VALUES ("
           + "('M001','prj_mgr','Bill Right','New World'))";
       st.execute(managerFilling);
@@ -124,10 +122,7 @@ public class OHibernateImportTestCase {
           + "('E003','cont_emp','Jack Johnson',NULL,NULL,'50.00','6','R002',NULL))";
       st.execute(employeeFilling);
 
-//      this.importStrategy.executeStrategy("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", this.outOrientGraphUri, "hibernate", OHibernateImportTestCase.XML_TABLE_PER_CLASS, "java", context);
-      this.mapper = new OHibernate2GraphMapper("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", OHibernateImportTestCase.XML_TABLE_PER_CLASS);
-      mapper.buildSourceSchema(this.context);
-      mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
+      this.importStrategy.executeStrategy("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", this.outOrientGraphUri, "hibernate", OHibernateImportTestCase.XML_TABLE_PER_CLASS, "java", context);
 
       /*
        *  Testing context information
@@ -139,7 +134,7 @@ public class OHibernateImportTestCase {
 
 
       /*
-       * Test OrientDB
+       * Test OrientDB Schema
        */
 
       orientGraph = new OrientGraphNoTx(this.outOrientGraphUri);
@@ -147,7 +142,7 @@ public class OHibernateImportTestCase {
       OrientVertexType employeeVertexType = orientGraph.getVertexType("Employee");
       OrientVertexType regularEmployeeVertexType = orientGraph.getVertexType("RegularEmployee");
       OrientVertexType contractEmployeeVertexType = orientGraph.getVertexType("ContractEmployee");
-      
+
       assertNotNull(employeeVertexType);
       assertNotNull(regularEmployeeVertexType);
       assertNotNull(contractEmployeeVertexType);
@@ -162,21 +157,21 @@ public class OHibernateImportTestCase {
       assertEquals("Employee", regularEmployeeSuperclass.getName());
       assertNotNull(contractEmployeeSuperclass);
       assertEquals("Employee", contractEmployeeSuperclass.getName());
-      
+
       OrientVertexType managerVertexType = orientGraph.getVertexType("Manager");
       OrientVertexType projectManagerVertexType = orientGraph.getVertexType("ProjectManager");
-      
+
       assertNotNull(managerVertexType);
       assertNotNull(projectManagerVertexType);
-      
+
       OrientVertexType managerSuperclass = managerVertexType.getSuperClass();
       OrientVertexType projectManagerSuperclass = projectManagerVertexType.getSuperClass();
-      
+
       assertNotNull(managerSuperclass);
       assertEquals("V", managerSuperclass.getName());
       assertNotNull(projectManagerSuperclass);
       assertEquals("Manager", projectManagerSuperclass.getName());
-      
+
 
       /*
        *  Testing built OrientDB
@@ -211,14 +206,21 @@ public class OHibernateImportTestCase {
         count++;
       }
       assertEquals(1, count);
-      
+
+      count = 0;
+      for(Vertex v: orientGraph.getVerticesOfClass("Residence")) {
+        assertNotNull(v.getId());
+        count++;
+      }
+      assertEquals(2, count);
+
       count = 0;
       for(Vertex v: orientGraph.getVerticesOfClass("Manager")) {
         assertNotNull(v.getId());
         count++;
       }
       assertEquals(1, count);
-      
+
       count = 0;
       for(Vertex v: orientGraph.getVerticesOfClass("ProjectManager")) {
         assertNotNull(v.getId());
@@ -241,7 +243,7 @@ public class OHibernateImportTestCase {
         count++;
       }
       assertEquals(3, count);
-      
+
       count = 0;
       for(Edge e: orientGraph.getEdgesOfClass("HasManager")) {
         assertNotNull(e.getId());
@@ -251,7 +253,7 @@ public class OHibernateImportTestCase {
 
 
       // vertex properties and connections check
-      
+
       Iterator<Edge> edgesIt = null;
       String[] keys = {"id"};
       String[] values = {"E001"};
@@ -277,7 +279,7 @@ public class OHibernateImportTestCase {
         fail("Query fail!");
       }
 
-      
+
       values[0] = "E002";
       iterator = orientGraph.getVertices("RegularEmployee", keys, values).iterator();
       assertTrue(iterator.hasNext());
@@ -290,9 +292,12 @@ public class OHibernateImportTestCase {
         assertEquals("10", v.getProperty("bonus").toString());
         assertNull(v.getProperty("payPerHour"));
         assertNull(v.getProperty("contractPeriod"));
-        
+
         edgesIt = v.getEdges(Direction.OUT, "HasResidence").iterator();
         assertEquals("R001", edgesIt.next().getVertex(Direction.IN).getProperty("id"));
+        assertEquals(false, edgesIt.hasNext());
+        edgesIt = v.getEdges(Direction.OUT, "HasManager").iterator();
+        assertEquals("M001", edgesIt.next().getVertex(Direction.IN).getProperty("id"));
         assertEquals(false, edgesIt.hasNext());
       }
       else {
@@ -312,7 +317,7 @@ public class OHibernateImportTestCase {
         assertNull(v.getProperty("bonus"));
         assertEquals("50.00", v.getProperty("payPerHour").toString());
         assertEquals("6", v.getProperty("contractDuration").toString());
-       
+
         edgesIt = v.getEdges(Direction.OUT, "HasResidence").iterator();
         assertEquals("R002", edgesIt.next().getVertex(Direction.IN).getProperty("id"));
         assertEquals(false, edgesIt.hasNext());
@@ -320,7 +325,7 @@ public class OHibernateImportTestCase {
       else {
         fail("Query fail!");
       }
-      
+
       values[0] = "R001";
       iterator = orientGraph.getVertices("Residence", keys, values).iterator();
       assertTrue(iterator.hasNext());
@@ -329,7 +334,7 @@ public class OHibernateImportTestCase {
         assertEquals("R001", v.getProperty("id"));
         assertEquals("Rome", v.getProperty("city"));
         assertEquals("Italy", v.getProperty("country"));
-       
+
         edgesIt = v.getEdges(Direction.IN, "HasResidence").iterator();
         assertEquals("E002", edgesIt.next().getVertex(Direction.OUT).getProperty("id"));
         assertEquals("E001", edgesIt.next().getVertex(Direction.OUT).getProperty("id"));
@@ -338,7 +343,7 @@ public class OHibernateImportTestCase {
       else {
         fail("Query fail!");
       }
-      
+
       values[0] = "R002";
       iterator = orientGraph.getVertices("Residence", keys, values).iterator();
       assertTrue(iterator.hasNext());
@@ -347,7 +352,7 @@ public class OHibernateImportTestCase {
         assertEquals("R002", v.getProperty("id"));
         assertEquals("Milan", v.getProperty("city"));
         assertEquals("Italy", v.getProperty("country"));
-       
+
         edgesIt = v.getEdges(Direction.IN, "HasResidence").iterator();
         assertEquals("E003", edgesIt.next().getVertex(Direction.OUT).getProperty("id"));
         assertEquals(false, edgesIt.hasNext());
@@ -355,7 +360,7 @@ public class OHibernateImportTestCase {
       else {
         fail("Query fail!");
       }
-      
+
       values[0] = "M001";
       iterator = orientGraph.getVertices("Manager", keys, values).iterator();
       assertTrue(iterator.hasNext());
@@ -364,7 +369,7 @@ public class OHibernateImportTestCase {
         assertEquals("M001", v.getProperty("id"));
         assertEquals("Bill Right", v.getProperty("name"));
         assertEquals("New World", v.getProperty("project"));
-       
+
         edgesIt = v.getEdges(Direction.IN, "HasManager").iterator();
         assertEquals("E002", edgesIt.next().getVertex(Direction.OUT).getProperty("id"));
         assertEquals(false, edgesIt.hasNext());
@@ -372,7 +377,974 @@ public class OHibernateImportTestCase {
       else {
         fail("Query fail!");
       }
-      
+
+
+
+    }catch(Exception e) {
+      e.printStackTrace();
+    }finally {      
+      try {
+
+        // Dropping Source DB Schema and OrientGraph
+        String dbDropping = "DROP SCHEMA PUBLIC CASCADE";
+        st.execute(dbDropping);
+        connection.close();
+      }catch(Exception e) {
+        e.printStackTrace();
+      }
+    }
+  }
+
+
+  @Test
+  /*
+   * Import from tables with "table-per-type" inheritance strategy.
+   * Relationships both to simple table and table in a hierarchical bag ("table-per-type" bag).
+   */
+  public void test2() {
+
+    Connection connection = null;
+    Statement st = null;
+    OrientGraphNoTx orientGraph = null;
+
+
+    try {
+
+      Class.forName("org.hsqldb.jdbc.JDBCDriver");
+      connection = DriverManager.getConnection("jdbc:hsqldb:mem:mydb", "SA", "");
+
+      String residenceTableBuilding = "create memory table RESIDENCE(ID varchar(256) not null, CITY varchar(256), COUNTRY varchar(256), primary key (ID))";
+      st = connection.createStatement();
+      st.execute(residenceTableBuilding);
+
+      String managerTableBuilding = "create memory table MANAGER(ID varchar(256) not null, TYPE varchar(256), NAME varchar(256), PROJECT varchar(256), primary key (ID))";
+      st = connection.createStatement();
+      st.execute(managerTableBuilding);
+
+      String employeeTableBuilding = "create memory table EMPLOYEE (ID varchar(256) not null,"+
+          " TYPE varchar(256), NAME varchar(256), SALARY decimal(10,2), BONUS decimal(10,0), "
+          + "PAY_PER_HOUR decimal(10,2), CONTRACT_DURATION varchar(256), RESIDENCE varchar(256), MANAGER varchar(256), "
+          + "primary key (id), foreign key (RESIDENCE) references RESIDENCE(ID), foreign key (MANAGER) references MANAGER(ID))";
+      st.execute(employeeTableBuilding);
+
+
+      // Records Inserting
+
+      String residenceFilling = "INSERT INTO RESIDENCE (ID,CITY,COUNTRY) VALUES ("
+          + "('R001','Rome','Italy'),"
+          + "('R002','Milan','Italy'))";
+      st.execute(residenceFilling);
+
+      String managerFilling = "INSERT INTO MANAGER (ID,TYPE,NAME,PROJECT) VALUES ("
+          + "('M001','prj_mgr','Bill Right','New World'))";
+      st.execute(managerFilling);
+
+      String employeeFilling = "INSERT INTO EMPLOYEE (ID,TYPE,NAME,SALARY,BONUS,PAY_PER_HOUR,CONTRACT_DURATION,RESIDENCE,MANAGER) VALUES ("
+          + "('E001','emp','John Black',NULL,NULL,NULL,NULL,'R001',NULL),"
+          + "('E002','reg_emp','Andrew Brown','1000.00','10',NULL,NULL,'R001','M001'),"
+          + "('E003','cont_emp','Jack Johnson',NULL,NULL,'50.00','6','R002',NULL))";
+      st.execute(employeeFilling);
+
+      this.importStrategy.executeStrategy("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", this.outOrientGraphUri, "hibernate", OHibernateImportTestCase.XML_TABLE_PER_SUBCLASS1, "java", context);
+
+      /*
+       *  Testing context information
+       */
+
+      assertEquals(6, context.getStatistics().totalNumberOfRecords);
+      assertEquals(6, context.getStatistics().importedRecords);
+      assertEquals(6, context.getStatistics().orientVertices);
+
+
+      /*
+       * Test OrientDB Schema
+       */
+
+      orientGraph = new OrientGraphNoTx(this.outOrientGraphUri);
+
+      OrientVertexType employeeVertexType = orientGraph.getVertexType("Employee");
+      OrientVertexType regularEmployeeVertexType = orientGraph.getVertexType("RegularEmployee");
+      OrientVertexType contractEmployeeVertexType = orientGraph.getVertexType("ContractEmployee");
+
+      assertNotNull(employeeVertexType);
+      assertNotNull(regularEmployeeVertexType);
+      assertNotNull(contractEmployeeVertexType);
+
+      OrientVertexType employeeSuperclass = employeeVertexType.getSuperClass();
+      OrientVertexType regularEmployeeSuperclass = regularEmployeeVertexType.getSuperClass();
+      OrientVertexType contractEmployeeSuperclass = regularEmployeeVertexType.getSuperClass();
+
+      assertNotNull(employeeSuperclass);
+      assertEquals("V", employeeSuperclass.getName());
+      assertNotNull(regularEmployeeSuperclass);
+      assertEquals("Employee", regularEmployeeSuperclass.getName());
+      assertNotNull(contractEmployeeSuperclass);
+      assertEquals("Employee", contractEmployeeSuperclass.getName());
+
+      OrientVertexType managerVertexType = orientGraph.getVertexType("Manager");
+      OrientVertexType projectManagerVertexType = orientGraph.getVertexType("ProjectManager");
+
+      assertNotNull(managerVertexType);
+      assertNotNull(projectManagerVertexType);
+
+      OrientVertexType managerSuperclass = managerVertexType.getSuperClass();
+      OrientVertexType projectManagerSuperclass = projectManagerVertexType.getSuperClass();
+
+      assertNotNull(managerSuperclass);
+      assertEquals("V", managerSuperclass.getName());
+      assertNotNull(projectManagerSuperclass);
+      assertEquals("Manager", projectManagerSuperclass.getName());
+
+
+      /*
+       *  Testing built OrientDB
+       */
+
+      // vertices check
+
+      int count = 0;
+      for(Vertex v: orientGraph.getVertices()) {
+        assertNotNull(v.getId());
+        count++;
+      }
+      assertEquals(6, count);
+
+      count = 0;
+      for(Vertex v: orientGraph.getVerticesOfClass("Employee")) {
+        assertNotNull(v.getId());
+        count++;
+      }
+      assertEquals(3, count);
+
+      count = 0;
+      for(Vertex v: orientGraph.getVerticesOfClass("RegularEmployee")) {
+        assertNotNull(v.getId());
+        count++;
+      }
+      assertEquals(1, count);
+
+      count = 0;
+      for(Vertex v: orientGraph.getVerticesOfClass("ContractEmployee")) {
+        assertNotNull(v.getId());
+        count++;
+      }
+      assertEquals(1, count);
+
+      count = 0;
+      for(Vertex v: orientGraph.getVerticesOfClass("Residence")) {
+        assertNotNull(v.getId());
+        count++;
+      }
+      assertEquals(2, count);
+
+      count = 0;
+      for(Vertex v: orientGraph.getVerticesOfClass("Manager")) {
+        assertNotNull(v.getId());
+        count++;
+      }
+      assertEquals(1, count);
+
+      count = 0;
+      for(Vertex v: orientGraph.getVerticesOfClass("ProjectManager")) {
+        assertNotNull(v.getId());
+        count++;
+      }
+      assertEquals(1, count);
+
+
+      // edges check
+      count = 0;
+      for(Edge e: orientGraph.getEdges()) {
+        assertNotNull(e.getId());
+        count++;
+      }
+      assertEquals(4, count);
+
+      count = 0;
+      for(Edge e: orientGraph.getEdgesOfClass("HasResidence")) {
+        assertNotNull(e.getId());
+        count++;
+      }
+      assertEquals(3, count);
+
+      count = 0;
+      for(Edge e: orientGraph.getEdgesOfClass("HasManager")) {
+        assertNotNull(e.getId());
+        count++;
+      }
+      assertEquals(1, count);
+
+
+      // vertex properties and connections check
+
+      Iterator<Edge> edgesIt = null;
+      String[] keys = {"id"};
+      String[] values = {"E001"};
+
+      OrientVertex v = null;
+      Iterator<Vertex> iterator = orientGraph.getVertices("Employee", keys, values).iterator();
+      assertTrue(iterator.hasNext());
+      if(iterator.hasNext()) {
+        v = (OrientVertex) iterator.next();
+        assertEquals("E001", v.getProperty("id"));
+        assertEquals("John Black", v.getProperty("name"));
+        assertEquals("R001", v.getProperty("residence"));
+        assertNull(v.getProperty("salary"));
+        assertNull(v.getProperty("bonus"));
+        assertNull(v.getProperty("payPerHour"));
+        assertNull(v.getProperty("contractPeriod"));
+
+        edgesIt = v.getEdges(Direction.OUT, "HasResidence").iterator();
+        assertEquals("R001", edgesIt.next().getVertex(Direction.IN).getProperty("id"));
+        assertEquals(false, edgesIt.hasNext());
+      }
+      else {
+        fail("Query fail!");
+      }
+
+
+      values[0] = "E002";
+      iterator = orientGraph.getVertices("RegularEmployee", keys, values).iterator();
+      assertTrue(iterator.hasNext());
+      if(iterator.hasNext()) {
+        v = (OrientVertex) iterator.next();
+        assertEquals("E002", v.getProperty("id"));
+        assertEquals("Andrew Brown", v.getProperty("name"));
+        assertEquals("R001", v.getProperty("residence"));
+        assertEquals("1000.00", v.getProperty("salary").toString());
+        assertEquals("10", v.getProperty("bonus").toString());
+        assertNull(v.getProperty("payPerHour"));
+        assertNull(v.getProperty("contractPeriod"));
+
+        edgesIt = v.getEdges(Direction.OUT, "HasResidence").iterator();
+        assertEquals("R001", edgesIt.next().getVertex(Direction.IN).getProperty("id"));
+        assertEquals(false, edgesIt.hasNext());
+        edgesIt = v.getEdges(Direction.OUT, "HasManager").iterator();
+        assertEquals("M001", edgesIt.next().getVertex(Direction.IN).getProperty("id"));
+        assertEquals(false, edgesIt.hasNext());
+      }
+      else {
+        fail("Query fail!");
+      }
+
+
+      values[0] = "E003";
+      iterator = orientGraph.getVertices("ContractEmployee", keys, values).iterator();
+      assertTrue(iterator.hasNext());
+      if(iterator.hasNext()) {
+        v = (OrientVertex) iterator.next();
+        assertEquals("E003", v.getProperty("id"));
+        assertEquals("Jack Johnson", v.getProperty("name"));
+        assertEquals("R002", v.getProperty("residence"));
+        assertNull(v.getProperty("salary"));
+        assertNull(v.getProperty("bonus"));
+        assertEquals("50.00", v.getProperty("payPerHour").toString());
+        assertEquals("6", v.getProperty("contractDuration").toString());
+
+        edgesIt = v.getEdges(Direction.OUT, "HasResidence").iterator();
+        assertEquals("R002", edgesIt.next().getVertex(Direction.IN).getProperty("id"));
+        assertEquals(false, edgesIt.hasNext());
+      }
+      else {
+        fail("Query fail!");
+      }
+
+      values[0] = "R001";
+      iterator = orientGraph.getVertices("Residence", keys, values).iterator();
+      assertTrue(iterator.hasNext());
+      if(iterator.hasNext()) {
+        v = (OrientVertex) iterator.next();
+        assertEquals("R001", v.getProperty("id"));
+        assertEquals("Rome", v.getProperty("city"));
+        assertEquals("Italy", v.getProperty("country"));
+
+        edgesIt = v.getEdges(Direction.IN, "HasResidence").iterator();
+        assertEquals("E002", edgesIt.next().getVertex(Direction.OUT).getProperty("id"));
+        assertEquals("E001", edgesIt.next().getVertex(Direction.OUT).getProperty("id"));
+        assertEquals(false, edgesIt.hasNext());
+      }
+      else {
+        fail("Query fail!");
+      }
+
+      values[0] = "R002";
+      iterator = orientGraph.getVertices("Residence", keys, values).iterator();
+      assertTrue(iterator.hasNext());
+      if(iterator.hasNext()) {
+        v = (OrientVertex) iterator.next();
+        assertEquals("R002", v.getProperty("id"));
+        assertEquals("Milan", v.getProperty("city"));
+        assertEquals("Italy", v.getProperty("country"));
+
+        edgesIt = v.getEdges(Direction.IN, "HasResidence").iterator();
+        assertEquals("E003", edgesIt.next().getVertex(Direction.OUT).getProperty("id"));
+        assertEquals(false, edgesIt.hasNext());
+      }
+      else {
+        fail("Query fail!");
+      }
+
+      values[0] = "M001";
+      iterator = orientGraph.getVertices("Manager", keys, values).iterator();
+      assertTrue(iterator.hasNext());
+      if(iterator.hasNext()) {
+        v = (OrientVertex) iterator.next();
+        assertEquals("M001", v.getProperty("id"));
+        assertEquals("Bill Right", v.getProperty("name"));
+        assertEquals("New World", v.getProperty("project"));
+
+        edgesIt = v.getEdges(Direction.IN, "HasManager").iterator();
+        assertEquals("E002", edgesIt.next().getVertex(Direction.OUT).getProperty("id"));
+        assertEquals(false, edgesIt.hasNext());
+      }
+      else {
+        fail("Query fail!");
+      }
+
+
+
+    }catch(Exception e) {
+      e.printStackTrace();
+    }finally {      
+      try {
+
+        // Dropping Source DB Schema and OrientGraph
+        String dbDropping = "DROP SCHEMA PUBLIC CASCADE";
+        st.execute(dbDropping);
+        connection.close();
+      }catch(Exception e) {
+        e.printStackTrace();
+      }
+    }
+  }
+  
+  @Test
+  /*
+   * Import from tables with "table-per-type" inheritance strategy.
+   * Relationships both to simple table and table in a hierarchical bag ("table-per-type" bag).
+   */
+  public void test3() {
+
+    Connection connection = null;
+    Statement st = null;
+    OrientGraphNoTx orientGraph = null;
+
+
+    try {
+
+      Class.forName("org.hsqldb.jdbc.JDBCDriver");
+      connection = DriverManager.getConnection("jdbc:hsqldb:mem:mydb", "SA", "");
+
+      String residenceTableBuilding = "create memory table RESIDENCE(ID varchar(256) not null, CITY varchar(256), COUNTRY varchar(256), primary key (ID))";
+      st = connection.createStatement();
+      st.execute(residenceTableBuilding);
+
+      String managerTableBuilding = "create memory table MANAGER(ID varchar(256) not null, TYPE varchar(256), NAME varchar(256), PROJECT varchar(256), primary key (ID))";
+      st = connection.createStatement();
+      st.execute(managerTableBuilding);
+
+      String employeeTableBuilding = "create memory table EMPLOYEE (ID varchar(256) not null,"+
+          " TYPE varchar(256), NAME varchar(256), SALARY decimal(10,2), BONUS decimal(10,0), "
+          + "PAY_PER_HOUR decimal(10,2), CONTRACT_DURATION varchar(256), RESIDENCE varchar(256), MANAGER varchar(256), "
+          + "primary key (id), foreign key (RESIDENCE) references RESIDENCE(ID), foreign key (MANAGER) references MANAGER(ID))";
+      st.execute(employeeTableBuilding);
+
+
+      // Records Inserting
+
+      String residenceFilling = "INSERT INTO RESIDENCE (ID,CITY,COUNTRY) VALUES ("
+          + "('R001','Rome','Italy'),"
+          + "('R002','Milan','Italy'))";
+      st.execute(residenceFilling);
+
+      String managerFilling = "INSERT INTO MANAGER (ID,TYPE,NAME,PROJECT) VALUES ("
+          + "('M001','prj_mgr','Bill Right','New World'))";
+      st.execute(managerFilling);
+
+      String employeeFilling = "INSERT INTO EMPLOYEE (ID,TYPE,NAME,SALARY,BONUS,PAY_PER_HOUR,CONTRACT_DURATION,RESIDENCE,MANAGER) VALUES ("
+          + "('E001','emp','John Black',NULL,NULL,NULL,NULL,'R001',NULL),"
+          + "('E002','reg_emp','Andrew Brown','1000.00','10',NULL,NULL,'R001','M001'),"
+          + "('E003','cont_emp','Jack Johnson',NULL,NULL,'50.00','6','R002',NULL))";
+      st.execute(employeeFilling);
+
+      this.importStrategy.executeStrategy("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", this.outOrientGraphUri, "hibernate", OHibernateImportTestCase.XML_TABLE_PER_SUBCLASS2, "java", context);
+
+      /*
+       *  Testing context information
+       */
+
+      assertEquals(6, context.getStatistics().totalNumberOfRecords);
+      assertEquals(6, context.getStatistics().importedRecords);
+      assertEquals(6, context.getStatistics().orientVertices);
+
+
+      /*
+       * Test OrientDB Schema
+       */
+
+      orientGraph = new OrientGraphNoTx(this.outOrientGraphUri);
+
+      OrientVertexType employeeVertexType = orientGraph.getVertexType("Employee");
+      OrientVertexType regularEmployeeVertexType = orientGraph.getVertexType("RegularEmployee");
+      OrientVertexType contractEmployeeVertexType = orientGraph.getVertexType("ContractEmployee");
+
+      assertNotNull(employeeVertexType);
+      assertNotNull(regularEmployeeVertexType);
+      assertNotNull(contractEmployeeVertexType);
+
+      OrientVertexType employeeSuperclass = employeeVertexType.getSuperClass();
+      OrientVertexType regularEmployeeSuperclass = regularEmployeeVertexType.getSuperClass();
+      OrientVertexType contractEmployeeSuperclass = regularEmployeeVertexType.getSuperClass();
+
+      assertNotNull(employeeSuperclass);
+      assertEquals("V", employeeSuperclass.getName());
+      assertNotNull(regularEmployeeSuperclass);
+      assertEquals("Employee", regularEmployeeSuperclass.getName());
+      assertNotNull(contractEmployeeSuperclass);
+      assertEquals("Employee", contractEmployeeSuperclass.getName());
+
+      OrientVertexType managerVertexType = orientGraph.getVertexType("Manager");
+      OrientVertexType projectManagerVertexType = orientGraph.getVertexType("ProjectManager");
+
+      assertNotNull(managerVertexType);
+      assertNotNull(projectManagerVertexType);
+
+      OrientVertexType managerSuperclass = managerVertexType.getSuperClass();
+      OrientVertexType projectManagerSuperclass = projectManagerVertexType.getSuperClass();
+
+      assertNotNull(managerSuperclass);
+      assertEquals("V", managerSuperclass.getName());
+      assertNotNull(projectManagerSuperclass);
+      assertEquals("Manager", projectManagerSuperclass.getName());
+
+
+      /*
+       *  Testing built OrientDB
+       */
+
+      // vertices check
+
+      int count = 0;
+      for(Vertex v: orientGraph.getVertices()) {
+        assertNotNull(v.getId());
+        count++;
+      }
+      assertEquals(6, count);
+
+      count = 0;
+      for(Vertex v: orientGraph.getVerticesOfClass("Employee")) {
+        assertNotNull(v.getId());
+        count++;
+      }
+      assertEquals(3, count);
+
+      count = 0;
+      for(Vertex v: orientGraph.getVerticesOfClass("RegularEmployee")) {
+        assertNotNull(v.getId());
+        count++;
+      }
+      assertEquals(1, count);
+
+      count = 0;
+      for(Vertex v: orientGraph.getVerticesOfClass("ContractEmployee")) {
+        assertNotNull(v.getId());
+        count++;
+      }
+      assertEquals(1, count);
+
+      count = 0;
+      for(Vertex v: orientGraph.getVerticesOfClass("Residence")) {
+        assertNotNull(v.getId());
+        count++;
+      }
+      assertEquals(2, count);
+
+      count = 0;
+      for(Vertex v: orientGraph.getVerticesOfClass("Manager")) {
+        assertNotNull(v.getId());
+        count++;
+      }
+      assertEquals(1, count);
+
+      count = 0;
+      for(Vertex v: orientGraph.getVerticesOfClass("ProjectManager")) {
+        assertNotNull(v.getId());
+        count++;
+      }
+      assertEquals(1, count);
+
+
+      // edges check
+      count = 0;
+      for(Edge e: orientGraph.getEdges()) {
+        assertNotNull(e.getId());
+        count++;
+      }
+      assertEquals(4, count);
+
+      count = 0;
+      for(Edge e: orientGraph.getEdgesOfClass("HasResidence")) {
+        assertNotNull(e.getId());
+        count++;
+      }
+      assertEquals(3, count);
+
+      count = 0;
+      for(Edge e: orientGraph.getEdgesOfClass("HasManager")) {
+        assertNotNull(e.getId());
+        count++;
+      }
+      assertEquals(1, count);
+
+
+      // vertex properties and connections check
+
+      Iterator<Edge> edgesIt = null;
+      String[] keys = {"id"};
+      String[] values = {"E001"};
+
+      OrientVertex v = null;
+      Iterator<Vertex> iterator = orientGraph.getVertices("Employee", keys, values).iterator();
+      assertTrue(iterator.hasNext());
+      if(iterator.hasNext()) {
+        v = (OrientVertex) iterator.next();
+        assertEquals("E001", v.getProperty("id"));
+        assertEquals("John Black", v.getProperty("name"));
+        assertEquals("R001", v.getProperty("residence"));
+        assertNull(v.getProperty("salary"));
+        assertNull(v.getProperty("bonus"));
+        assertNull(v.getProperty("payPerHour"));
+        assertNull(v.getProperty("contractPeriod"));
+
+        edgesIt = v.getEdges(Direction.OUT, "HasResidence").iterator();
+        assertEquals("R001", edgesIt.next().getVertex(Direction.IN).getProperty("id"));
+        assertEquals(false, edgesIt.hasNext());
+      }
+      else {
+        fail("Query fail!");
+      }
+
+
+      values[0] = "E002";
+      iterator = orientGraph.getVertices("RegularEmployee", keys, values).iterator();
+      assertTrue(iterator.hasNext());
+      if(iterator.hasNext()) {
+        v = (OrientVertex) iterator.next();
+        assertEquals("E002", v.getProperty("id"));
+        assertEquals("Andrew Brown", v.getProperty("name"));
+        assertEquals("R001", v.getProperty("residence"));
+        assertEquals("1000.00", v.getProperty("salary").toString());
+        assertEquals("10", v.getProperty("bonus").toString());
+        assertNull(v.getProperty("payPerHour"));
+        assertNull(v.getProperty("contractPeriod"));
+
+        edgesIt = v.getEdges(Direction.OUT, "HasResidence").iterator();
+        assertEquals("R001", edgesIt.next().getVertex(Direction.IN).getProperty("id"));
+        assertEquals(false, edgesIt.hasNext());
+        edgesIt = v.getEdges(Direction.OUT, "HasManager").iterator();
+        assertEquals("M001", edgesIt.next().getVertex(Direction.IN).getProperty("id"));
+        assertEquals(false, edgesIt.hasNext());
+      }
+      else {
+        fail("Query fail!");
+      }
+
+
+      values[0] = "E003";
+      iterator = orientGraph.getVertices("ContractEmployee", keys, values).iterator();
+      assertTrue(iterator.hasNext());
+      if(iterator.hasNext()) {
+        v = (OrientVertex) iterator.next();
+        assertEquals("E003", v.getProperty("id"));
+        assertEquals("Jack Johnson", v.getProperty("name"));
+        assertEquals("R002", v.getProperty("residence"));
+        assertNull(v.getProperty("salary"));
+        assertNull(v.getProperty("bonus"));
+        assertEquals("50.00", v.getProperty("payPerHour").toString());
+        assertEquals("6", v.getProperty("contractDuration").toString());
+
+        edgesIt = v.getEdges(Direction.OUT, "HasResidence").iterator();
+        assertEquals("R002", edgesIt.next().getVertex(Direction.IN).getProperty("id"));
+        assertEquals(false, edgesIt.hasNext());
+      }
+      else {
+        fail("Query fail!");
+      }
+
+      values[0] = "R001";
+      iterator = orientGraph.getVertices("Residence", keys, values).iterator();
+      assertTrue(iterator.hasNext());
+      if(iterator.hasNext()) {
+        v = (OrientVertex) iterator.next();
+        assertEquals("R001", v.getProperty("id"));
+        assertEquals("Rome", v.getProperty("city"));
+        assertEquals("Italy", v.getProperty("country"));
+
+        edgesIt = v.getEdges(Direction.IN, "HasResidence").iterator();
+        assertEquals("E002", edgesIt.next().getVertex(Direction.OUT).getProperty("id"));
+        assertEquals("E001", edgesIt.next().getVertex(Direction.OUT).getProperty("id"));
+        assertEquals(false, edgesIt.hasNext());
+      }
+      else {
+        fail("Query fail!");
+      }
+
+      values[0] = "R002";
+      iterator = orientGraph.getVertices("Residence", keys, values).iterator();
+      assertTrue(iterator.hasNext());
+      if(iterator.hasNext()) {
+        v = (OrientVertex) iterator.next();
+        assertEquals("R002", v.getProperty("id"));
+        assertEquals("Milan", v.getProperty("city"));
+        assertEquals("Italy", v.getProperty("country"));
+
+        edgesIt = v.getEdges(Direction.IN, "HasResidence").iterator();
+        assertEquals("E003", edgesIt.next().getVertex(Direction.OUT).getProperty("id"));
+        assertEquals(false, edgesIt.hasNext());
+      }
+      else {
+        fail("Query fail!");
+      }
+
+      values[0] = "M001";
+      iterator = orientGraph.getVertices("Manager", keys, values).iterator();
+      assertTrue(iterator.hasNext());
+      if(iterator.hasNext()) {
+        v = (OrientVertex) iterator.next();
+        assertEquals("M001", v.getProperty("id"));
+        assertEquals("Bill Right", v.getProperty("name"));
+        assertEquals("New World", v.getProperty("project"));
+
+        edgesIt = v.getEdges(Direction.IN, "HasManager").iterator();
+        assertEquals("E002", edgesIt.next().getVertex(Direction.OUT).getProperty("id"));
+        assertEquals(false, edgesIt.hasNext());
+      }
+      else {
+        fail("Query fail!");
+      }
+
+
+
+    }catch(Exception e) {
+      e.printStackTrace();
+    }finally {      
+      try {
+
+        // Dropping Source DB Schema and OrientGraph
+        String dbDropping = "DROP SCHEMA PUBLIC CASCADE";
+        st.execute(dbDropping);
+        connection.close();
+      }catch(Exception e) {
+        e.printStackTrace();
+      }
+    }
+  }
+  
+  @Test
+  /*
+   * Import from tables with "table-per-concrete-type" inheritance strategy.
+   * Relationships both to simple table and table in a hierarchical bag ("table-per-concrete-type" bag).
+   */
+  public void test4() {
+
+    Connection connection = null;
+    Statement st = null;
+    OrientGraphNoTx orientGraph = null;
+
+
+    try {
+
+      Class.forName("org.hsqldb.jdbc.JDBCDriver");
+      connection = DriverManager.getConnection("jdbc:hsqldb:mem:mydb", "SA", "");
+
+      String residenceTableBuilding = "create memory table RESIDENCE(ID varchar(256) not null, CITY varchar(256), COUNTRY varchar(256), primary key (ID))";
+      st = connection.createStatement();
+      st.execute(residenceTableBuilding);
+
+      String managerTableBuilding = "create memory table MANAGER(ID varchar(256) not null, TYPE varchar(256), NAME varchar(256), PROJECT varchar(256), primary key (ID))";
+      st = connection.createStatement();
+      st.execute(managerTableBuilding);
+
+      String employeeTableBuilding = "create memory table EMPLOYEE (ID varchar(256) not null,"+
+          " TYPE varchar(256), NAME varchar(256), SALARY decimal(10,2), BONUS decimal(10,0), "
+          + "PAY_PER_HOUR decimal(10,2), CONTRACT_DURATION varchar(256), RESIDENCE varchar(256), MANAGER varchar(256), "
+          + "primary key (id), foreign key (RESIDENCE) references RESIDENCE(ID), foreign key (MANAGER) references MANAGER(ID))";
+      st.execute(employeeTableBuilding);
+
+
+      // Records Inserting
+
+      String residenceFilling = "INSERT INTO RESIDENCE (ID,CITY,COUNTRY) VALUES ("
+          + "('R001','Rome','Italy'),"
+          + "('R002','Milan','Italy'))";
+      st.execute(residenceFilling);
+
+      String managerFilling = "INSERT INTO MANAGER (ID,TYPE,NAME,PROJECT) VALUES ("
+          + "('M001','prj_mgr','Bill Right','New World'))";
+      st.execute(managerFilling);
+
+      String employeeFilling = "INSERT INTO EMPLOYEE (ID,TYPE,NAME,SALARY,BONUS,PAY_PER_HOUR,CONTRACT_DURATION,RESIDENCE,MANAGER) VALUES ("
+          + "('E001','emp','John Black',NULL,NULL,NULL,NULL,'R001',NULL),"
+          + "('E002','reg_emp','Andrew Brown','1000.00','10',NULL,NULL,'R001','M001'),"
+          + "('E003','cont_emp','Jack Johnson',NULL,NULL,'50.00','6','R002',NULL))";
+      st.execute(employeeFilling);
+
+      this.importStrategy.executeStrategy("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", this.outOrientGraphUri, "hibernate", OHibernateImportTestCase.XML_TABLE_PER_CONCRETE_CLASS, "java", context);
+
+      /*
+       *  Testing context information
+       */
+
+      assertEquals(6, context.getStatistics().totalNumberOfRecords);
+      assertEquals(6, context.getStatistics().importedRecords);
+      assertEquals(6, context.getStatistics().orientVertices);
+
+
+      /*
+       * Test OrientDB Schema
+       */
+
+      orientGraph = new OrientGraphNoTx(this.outOrientGraphUri);
+
+      OrientVertexType employeeVertexType = orientGraph.getVertexType("Employee");
+      OrientVertexType regularEmployeeVertexType = orientGraph.getVertexType("RegularEmployee");
+      OrientVertexType contractEmployeeVertexType = orientGraph.getVertexType("ContractEmployee");
+
+      assertNotNull(employeeVertexType);
+      assertNotNull(regularEmployeeVertexType);
+      assertNotNull(contractEmployeeVertexType);
+
+      OrientVertexType employeeSuperclass = employeeVertexType.getSuperClass();
+      OrientVertexType regularEmployeeSuperclass = regularEmployeeVertexType.getSuperClass();
+      OrientVertexType contractEmployeeSuperclass = regularEmployeeVertexType.getSuperClass();
+
+      assertNotNull(employeeSuperclass);
+      assertEquals("V", employeeSuperclass.getName());
+      assertNotNull(regularEmployeeSuperclass);
+      assertEquals("Employee", regularEmployeeSuperclass.getName());
+      assertNotNull(contractEmployeeSuperclass);
+      assertEquals("Employee", contractEmployeeSuperclass.getName());
+
+      OrientVertexType managerVertexType = orientGraph.getVertexType("Manager");
+      OrientVertexType projectManagerVertexType = orientGraph.getVertexType("ProjectManager");
+
+      assertNotNull(managerVertexType);
+      assertNotNull(projectManagerVertexType);
+
+      OrientVertexType managerSuperclass = managerVertexType.getSuperClass();
+      OrientVertexType projectManagerSuperclass = projectManagerVertexType.getSuperClass();
+
+      assertNotNull(managerSuperclass);
+      assertEquals("V", managerSuperclass.getName());
+      assertNotNull(projectManagerSuperclass);
+      assertEquals("Manager", projectManagerSuperclass.getName());
+
+
+      /*
+       *  Testing built OrientDB
+       */
+
+      // vertices check
+
+      int count = 0;
+      for(Vertex v: orientGraph.getVertices()) {
+        assertNotNull(v.getId());
+        count++;
+      }
+      assertEquals(6, count);
+
+      count = 0;
+      for(Vertex v: orientGraph.getVerticesOfClass("Employee")) {
+        assertNotNull(v.getId());
+        count++;
+      }
+      assertEquals(3, count);
+
+      count = 0;
+      for(Vertex v: orientGraph.getVerticesOfClass("RegularEmployee")) {
+        assertNotNull(v.getId());
+        count++;
+      }
+      assertEquals(1, count);
+
+      count = 0;
+      for(Vertex v: orientGraph.getVerticesOfClass("ContractEmployee")) {
+        assertNotNull(v.getId());
+        count++;
+      }
+      assertEquals(1, count);
+
+      count = 0;
+      for(Vertex v: orientGraph.getVerticesOfClass("Residence")) {
+        assertNotNull(v.getId());
+        count++;
+      }
+      assertEquals(2, count);
+
+      count = 0;
+      for(Vertex v: orientGraph.getVerticesOfClass("Manager")) {
+        assertNotNull(v.getId());
+        count++;
+      }
+      assertEquals(1, count);
+
+      count = 0;
+      for(Vertex v: orientGraph.getVerticesOfClass("ProjectManager")) {
+        assertNotNull(v.getId());
+        count++;
+      }
+      assertEquals(1, count);
+
+
+      // edges check
+      count = 0;
+      for(Edge e: orientGraph.getEdges()) {
+        assertNotNull(e.getId());
+        count++;
+      }
+      assertEquals(4, count);
+
+      count = 0;
+      for(Edge e: orientGraph.getEdgesOfClass("HasResidence")) {
+        assertNotNull(e.getId());
+        count++;
+      }
+      assertEquals(3, count);
+
+      count = 0;
+      for(Edge e: orientGraph.getEdgesOfClass("HasManager")) {
+        assertNotNull(e.getId());
+        count++;
+      }
+      assertEquals(1, count);
+
+
+      // vertex properties and connections check
+
+      Iterator<Edge> edgesIt = null;
+      String[] keys = {"id"};
+      String[] values = {"E001"};
+
+      OrientVertex v = null;
+      Iterator<Vertex> iterator = orientGraph.getVertices("Employee", keys, values).iterator();
+      assertTrue(iterator.hasNext());
+      if(iterator.hasNext()) {
+        v = (OrientVertex) iterator.next();
+        assertEquals("E001", v.getProperty("id"));
+        assertEquals("John Black", v.getProperty("name"));
+        assertEquals("R001", v.getProperty("residence"));
+        assertNull(v.getProperty("salary"));
+        assertNull(v.getProperty("bonus"));
+        assertNull(v.getProperty("payPerHour"));
+        assertNull(v.getProperty("contractPeriod"));
+
+        edgesIt = v.getEdges(Direction.OUT, "HasResidence").iterator();
+        assertEquals("R001", edgesIt.next().getVertex(Direction.IN).getProperty("id"));
+        assertEquals(false, edgesIt.hasNext());
+      }
+      else {
+        fail("Query fail!");
+      }
+
+
+      values[0] = "E002";
+      iterator = orientGraph.getVertices("RegularEmployee", keys, values).iterator();
+      assertTrue(iterator.hasNext());
+      if(iterator.hasNext()) {
+        v = (OrientVertex) iterator.next();
+        assertEquals("E002", v.getProperty("id"));
+        assertEquals("Andrew Brown", v.getProperty("name"));
+        assertEquals("R001", v.getProperty("residence"));
+        assertEquals("1000.00", v.getProperty("salary").toString());
+        assertEquals("10", v.getProperty("bonus").toString());
+        assertNull(v.getProperty("payPerHour"));
+        assertNull(v.getProperty("contractPeriod"));
+
+        edgesIt = v.getEdges(Direction.OUT, "HasResidence").iterator();
+        assertEquals("R001", edgesIt.next().getVertex(Direction.IN).getProperty("id"));
+        assertEquals(false, edgesIt.hasNext());
+        edgesIt = v.getEdges(Direction.OUT, "HasManager").iterator();
+        assertEquals("M001", edgesIt.next().getVertex(Direction.IN).getProperty("id"));
+        assertEquals(false, edgesIt.hasNext());
+      }
+      else {
+        fail("Query fail!");
+      }
+
+
+      values[0] = "E003";
+      iterator = orientGraph.getVertices("ContractEmployee", keys, values).iterator();
+      assertTrue(iterator.hasNext());
+      if(iterator.hasNext()) {
+        v = (OrientVertex) iterator.next();
+        assertEquals("E003", v.getProperty("id"));
+        assertEquals("Jack Johnson", v.getProperty("name"));
+        assertEquals("R002", v.getProperty("residence"));
+        assertNull(v.getProperty("salary"));
+        assertNull(v.getProperty("bonus"));
+        assertEquals("50.00", v.getProperty("payPerHour").toString());
+        assertEquals("6", v.getProperty("contractDuration").toString());
+
+        edgesIt = v.getEdges(Direction.OUT, "HasResidence").iterator();
+        assertEquals("R002", edgesIt.next().getVertex(Direction.IN).getProperty("id"));
+        assertEquals(false, edgesIt.hasNext());
+      }
+      else {
+        fail("Query fail!");
+      }
+
+      values[0] = "R001";
+      iterator = orientGraph.getVertices("Residence", keys, values).iterator();
+      assertTrue(iterator.hasNext());
+      if(iterator.hasNext()) {
+        v = (OrientVertex) iterator.next();
+        assertEquals("R001", v.getProperty("id"));
+        assertEquals("Rome", v.getProperty("city"));
+        assertEquals("Italy", v.getProperty("country"));
+
+        edgesIt = v.getEdges(Direction.IN, "HasResidence").iterator();
+        assertEquals("E002", edgesIt.next().getVertex(Direction.OUT).getProperty("id"));
+        assertEquals("E001", edgesIt.next().getVertex(Direction.OUT).getProperty("id"));
+        assertEquals(false, edgesIt.hasNext());
+      }
+      else {
+        fail("Query fail!");
+      }
+
+      values[0] = "R002";
+      iterator = orientGraph.getVertices("Residence", keys, values).iterator();
+      assertTrue(iterator.hasNext());
+      if(iterator.hasNext()) {
+        v = (OrientVertex) iterator.next();
+        assertEquals("R002", v.getProperty("id"));
+        assertEquals("Milan", v.getProperty("city"));
+        assertEquals("Italy", v.getProperty("country"));
+
+        edgesIt = v.getEdges(Direction.IN, "HasResidence").iterator();
+        assertEquals("E003", edgesIt.next().getVertex(Direction.OUT).getProperty("id"));
+        assertEquals(false, edgesIt.hasNext());
+      }
+      else {
+        fail("Query fail!");
+      }
+
+      values[0] = "M001";
+      iterator = orientGraph.getVertices("Manager", keys, values).iterator();
+      assertTrue(iterator.hasNext());
+      if(iterator.hasNext()) {
+        v = (OrientVertex) iterator.next();
+        assertEquals("M001", v.getProperty("id"));
+        assertEquals("Bill Right", v.getProperty("name"));
+        assertEquals("New World", v.getProperty("project"));
+
+        edgesIt = v.getEdges(Direction.IN, "HasManager").iterator();
+        assertEquals("E002", edgesIt.next().getVertex(Direction.OUT).getProperty("id"));
+        assertEquals(false, edgesIt.hasNext());
+      }
+      else {
+        fail("Query fail!");
+      }
+
 
 
     }catch(Exception e) {
