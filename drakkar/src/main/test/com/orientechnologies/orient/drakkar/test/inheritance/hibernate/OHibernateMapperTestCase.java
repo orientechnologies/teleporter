@@ -294,8 +294,8 @@ public class OHibernateMapperTestCase {
 
       assertEquals(2, hierarchicalBag.getDepth2entities().get(1).size());
       it = hierarchicalBag.getDepth2entities().get(1).iterator();
-      assertEquals("Contract_Employee", it.next().getName());
       assertEquals("Regular_Employee", it.next().getName());
+      assertEquals("Contract_Employee", it.next().getName());
       assertTrue(!it.hasNext());
 
       assertEquals(hierarchicalBag, employeeEntity.getHierarchicalBag());
@@ -736,8 +736,8 @@ public class OHibernateMapperTestCase {
 
       assertEquals(2, hierarchicalBag.getDepth2entities().get(1).size());
       it = hierarchicalBag.getDepth2entities().get(1).iterator();
-      assertEquals("CONTRACT_EMPLOYEE", it.next().getName());
       assertEquals("REGULAR_EMPLOYEE", it.next().getName());
+      assertEquals("CONTRACT_EMPLOYEE", it.next().getName());
       assertTrue(!it.hasNext());
 
       assertEquals(hierarchicalBag, employeeEntity.getHierarchicalBag());
@@ -1169,8 +1169,8 @@ public class OHibernateMapperTestCase {
 
       assertEquals(2, hierarchicalBag.getDepth2entities().get(1).size());
       it = hierarchicalBag.getDepth2entities().get(1).iterator();
-      assertEquals("CONTRACT_EMPLOYEE", it.next().getName());
       assertEquals("REGULAR_EMPLOYEE", it.next().getName());
+      assertEquals("CONTRACT_EMPLOYEE", it.next().getName());
       assertTrue(!it.hasNext());
 
       assertEquals(hierarchicalBag, employeeEntity.getHierarchicalBag());
@@ -1589,8 +1589,8 @@ public class OHibernateMapperTestCase {
 
       assertEquals(2, hierarchicalBag.getDepth2entities().get(1).size());
       it = hierarchicalBag.getDepth2entities().get(1).iterator();
-      assertEquals("CONTRACT_EMPLOYEE", it.next().getName());
       assertEquals("REGULAR_EMPLOYEE", it.next().getName());
+      assertEquals("CONTRACT_EMPLOYEE", it.next().getName());
       assertTrue(!it.hasNext());
 
       assertEquals(hierarchicalBag, employeeEntity.getHierarchicalBag());

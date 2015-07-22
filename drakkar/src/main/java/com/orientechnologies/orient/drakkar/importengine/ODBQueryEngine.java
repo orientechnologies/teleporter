@@ -50,6 +50,48 @@ public class ODBQueryEngine implements ODataSourceQueryEngine {
   public ODBQueryEngine(String driver, String uri, String username, String password) {
     this.dataSource =  new ODBSourceConnection(driver, uri, username, password);
   }
+  
+  
+  /**
+   * @param entityName
+   * @param propertyOfKey
+   * @param valueOfKey
+   * @param context
+   * @return
+   */
+  public ResultSet getRecordById(String entityName, String[] propertyOfKey, String[] valueOfKey, ODrakkarContext context) {
+    
+    this.results = null;
+    this.dbConnection = null;
+    this.statement = null;
+    String query = "select * from " + entityName + " where ";
+
+    query += propertyOfKey[0] + " = '" + valueOfKey[0] + "'";
+
+    if(propertyOfKey.length > 1) {
+      for(int i=1; i<propertyOfKey.length; i++) {
+        query += " and " + propertyOfKey[i] + " = '" + valueOfKey[i] + "'";
+      }
+    }
+
+    try {
+
+      try {
+        this.dbConnection = dataSource.getConnection(context);
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
+      this.statement = dbConnection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+      this.results = statement.executeQuery(query);
+
+    }catch(SQLException e) {
+      context.getOutputManager().debug(e.getMessage());
+      e.printStackTrace();
+    }
+    return results;
+  }
+
+  
 
   public ResultSet getRecordsByEntity(String entityName, ODrakkarContext context) {
 
@@ -134,7 +176,7 @@ public class ODBQueryEngine implements ODataSourceQueryEngine {
     return results;
 
   }
-
+  
 
   /**
    * @param bag
@@ -161,6 +203,7 @@ public class ODBQueryEngine implements ODataSourceQueryEngine {
     String[] currentEntityPropertyOfKey = new String[rootEntity.getPrimaryKey().getInvolvedAttributes().size()];  // collects the attributes of the current-entity's primary key
 
     OEntity currentEntity;
+    int thTable = 1;
     for(int i=1; i<bag.getDepth2entities().size(); i++) {
       it = bag.getDepth2entities().get(i).iterator();
 
@@ -169,19 +212,19 @@ public class ODBQueryEngine implements ODataSourceQueryEngine {
         currentEntity = it.next();
         int index = 0;
         for(OAttribute attribute: currentEntity.getPrimaryKey().getInvolvedAttributes()) {
-          currentEntityPropertyOfKey[index] = currentEntity.getPrimaryKey().getInvolvedAttributes().get(index).getName();
+          currentEntityPropertyOfKey[index] = attribute.getName();
           index++;
         }
 
-        query += "left join " + currentEntity.getName() + " as t" + i + 
-            " on t" + (i-1) + "." + rootEntityPropertyOfKey[0] + "='" + currentEntityPropertyOfKey[0] + "'";
+        query += "left join " + currentEntity.getName() + " as t" + thTable + 
+            " on t0." + rootEntityPropertyOfKey[0] + " = t" + thTable + "." + currentEntityPropertyOfKey[0];
         
         for(int k=1; k<currentEntityPropertyOfKey.length; k++) {
-          query += " and " + rootEntityPropertyOfKey[k] + " = '" + currentEntityPropertyOfKey[k] + "'";
+          query += " and " + rootEntityPropertyOfKey[k] + " = t" + thTable + "." + currentEntityPropertyOfKey[0];
         }
         
         query += "\n";
-          
+        thTable++;
       }
     }
 
@@ -218,7 +261,5 @@ public class ODBQueryEngine implements ODataSourceQueryEngine {
     }
 
   }
-
-
 
 }
