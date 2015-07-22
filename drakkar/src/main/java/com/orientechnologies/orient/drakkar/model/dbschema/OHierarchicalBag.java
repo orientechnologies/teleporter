@@ -22,6 +22,7 @@ package com.orientechnologies.orient.drakkar.model.dbschema;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
@@ -104,6 +105,38 @@ public class OHierarchicalBag {
   public void setimportedRecordsId(Set<String> addedRecordsId) {
     this.importedRecordsId = addedRecordsId;
   }
+
+  @Override
+  public int hashCode() {
+    
+    Iterator<OEntity> it = getDepth2entities().get(0).iterator();
+    OEntity rootEntity = it.next();
+    
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((rootEntity == null) ? 0 : rootEntity.getName().hashCode());
+    result = prime * result + ((inheritancePattern == null) ? 0 : inheritancePattern.hashCode());
+    return result;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    
+    OHierarchicalBag that = (OHierarchicalBag) obj;
+    
+    Iterator<OEntity> it = this.getDepth2entities().get(0).iterator();
+    OEntity rootEntity = it.next();
+    
+    it = that.getDepth2entities().get(0).iterator();
+    OEntity thatRootEntity = it.next();
+    
+    if(this.inheritancePattern.equals(that.getInheritancePattern()) && rootEntity.getName().equals(thatRootEntity.getName())) {
+      return true;
+    }
+    return false;
+  }
+  
+  
 
 
 
