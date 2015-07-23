@@ -128,7 +128,7 @@ public class ONaiveAggregationImportStrategy extends ONaiveImportStrategy {
           while(records.next()) {
             // upsert of the vertex
             currentRecord = records;
-            currentOutVertex = (OrientVertex) graphDBCommandEngine.upsertVisitedVertex(currentRecord, currentOutVertexType, context);
+            currentOutVertex = (OrientVertex) graphDBCommandEngine.upsertVisitedVertex(currentRecord, currentOutVertexType, null, context);
 
             // for each attribute of the entity belonging to the primary key, correspondent relationship is
             // built as edge and for the referenced record a vertex is built (only id)

@@ -45,19 +45,15 @@ public class OHierarchicalBag {
   private String discriminatorColumn;
   private Map<String,String> entityName2discriminatorValue;
   
-  private Set<String> importedRecordsId;
-
   public OHierarchicalBag() {
     this.depth2entities = new LinkedHashMap<Integer,Set<OEntity>>();
     this.entityName2discriminatorValue = new HashMap<String,String>();
-    this.importedRecordsId = new HashSet<String>();
   }
 
   public OHierarchicalBag(String inheritancePattern) {
     this.inheritancePattern = inheritancePattern;
     this.depth2entities = new HashMap<Integer,Set<OEntity>>();
     this.entityName2discriminatorValue = new HashMap<String,String>();
-    this.importedRecordsId = new HashSet<String>();
   }
 
 
@@ -98,13 +94,6 @@ public class OHierarchicalBag {
     this.entityName2discriminatorValue = entityName2discriminatorValue;
   }
 
-  public Set<String> getImportedRecordsId() {
-    return importedRecordsId;
-  }
-
-  public void setimportedRecordsId(Set<String> addedRecordsId) {
-    this.importedRecordsId = addedRecordsId;
-  }
 
   @Override
   public int hashCode() {

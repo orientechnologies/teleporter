@@ -1380,12 +1380,12 @@ public class OHibernateMapperTestCase {
           " NAME varchar(256), RESIDENCE varchar(256), primary key (ID), foreign key (RESIDENCE) references RESIDENCE(ID))";
       st.execute(employeeTableBuilding);
 
-      String regularEmployeeTableBuilding = "create memory table REGULAR_EMPLOYEE (EID varchar(256) not null, "
-          + "NAME varchar(256), RESIDENCE varchar(256), SALARY decimal(10,2), BONUS decimal(10,0), primary key (EID))";
+      String regularEmployeeTableBuilding = "create memory table REGULAR_EMPLOYEE (ID varchar(256) not null, "
+          + "NAME varchar(256), RESIDENCE varchar(256), SALARY decimal(10,2), BONUS decimal(10,0), primary key (ID))";
       st.execute(regularEmployeeTableBuilding);
 
-      String contractEmployeeTableBuilding = "create memory table CONTRACT_EMPLOYEE (EID varchar(256) not null, "
-          + "NAME varchar(256), RESIDENCE varchar(256), PAY_PER_HOUR decimal(10,2), CONTRACT_DURATION varchar(256), primary key (EID))";
+      String contractEmployeeTableBuilding = "create memory table CONTRACT_EMPLOYEE (ID varchar(256) not null, "
+          + "NAME varchar(256), RESIDENCE varchar(256), PAY_PER_HOUR decimal(10,2), CONTRACT_DURATION varchar(256), primary key (ID))";
       st.execute(contractEmployeeTableBuilding);
 
       this.mapper = new OHibernate2GraphMapper("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", OHibernateMapperTestCase.XML_TABLE_PER_CONCRETE_CLASS);
@@ -1518,12 +1518,12 @@ public class OHibernateMapperTestCase {
 
       // primary key check (not "inherited")
       assertEquals(1, regularEmployeeEntity.getPrimaryKey().getInvolvedAttributes().size());
-      assertEquals("EID", regularEmployeeEntity.getPrimaryKey().getInvolvedAttributes().get(0).getName());
+      assertEquals("ID", regularEmployeeEntity.getPrimaryKey().getInvolvedAttributes().get(0).getName());
       assertEquals("VARCHAR", regularEmployeeEntity.getPrimaryKey().getInvolvedAttributes().get(0).getDataType());
       assertEquals("REGULAR_EMPLOYEE", regularEmployeeEntity.getPrimaryKey().getInvolvedAttributes().get(0).getBelongingEntity().getName());
 
       assertEquals(1, contractEmployeeEntity.getPrimaryKey().getInvolvedAttributes().size());
-      assertEquals("EID", contractEmployeeEntity.getPrimaryKey().getInvolvedAttributes().get(0).getName());
+      assertEquals("ID", contractEmployeeEntity.getPrimaryKey().getInvolvedAttributes().get(0).getName());
       assertEquals("VARCHAR", contractEmployeeEntity.getPrimaryKey().getInvolvedAttributes().get(0).getDataType());
       assertEquals("CONTRACT_EMPLOYEE", contractEmployeeEntity.getPrimaryKey().getInvolvedAttributes().get(0).getBelongingEntity().getName());
 
@@ -1695,7 +1695,7 @@ public class OHibernateMapperTestCase {
       assertEquals("id", regularEmployeeVertexType.getInheritedPropertyByName("id").getName());
       assertEquals("VARCHAR", regularEmployeeVertexType.getInheritedPropertyByName("id").getPropertyType());
       assertEquals(1, regularEmployeeVertexType.getInheritedPropertyByName("id").getOrdinalPosition());
-      assertEquals(false, regularEmployeeVertexType.getInheritedPropertyByName("id").isFromPrimaryKey());
+      assertEquals(true, regularEmployeeVertexType.getInheritedPropertyByName("id").isFromPrimaryKey());
 
       assertNotNull(regularEmployeeVertexType.getInheritedPropertyByName("name"));
       assertEquals("name", regularEmployeeVertexType.getInheritedPropertyByName("name").getName());
@@ -1715,7 +1715,7 @@ public class OHibernateMapperTestCase {
       assertEquals("id", contractEmployeeVertexType.getInheritedPropertyByName("id").getName());
       assertEquals("VARCHAR", contractEmployeeVertexType.getInheritedPropertyByName("id").getPropertyType());
       assertEquals(1, contractEmployeeVertexType.getInheritedPropertyByName("id").getOrdinalPosition());
-      assertEquals(false, contractEmployeeVertexType.getInheritedPropertyByName("id").isFromPrimaryKey());
+      assertEquals(true, contractEmployeeVertexType.getInheritedPropertyByName("id").isFromPrimaryKey());
 
       assertNotNull(contractEmployeeVertexType.getInheritedPropertyByName("name"));
       assertEquals("name", contractEmployeeVertexType.getInheritedPropertyByName("name").getName());

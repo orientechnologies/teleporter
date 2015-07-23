@@ -1110,7 +1110,7 @@ public class OHibernateImportTestCase {
         String managerTableBuilding = "create memory table MANAGER(ID varchar(256) not null, NAME varchar(256), primary key (ID))";
         st.execute(managerTableBuilding);
         
-        String projectManagerTableBuilding = "create memory table PROJECT_MANAGER(EID varchar(256) not null, NAME varchar(256), PROJECT varchar(256), primary key (EID))";
+        String projectManagerTableBuilding = "create memory table PROJECT_MANAGER(ID varchar(256) not null, NAME varchar(256), PROJECT varchar(256), primary key (ID))";
         st.execute(projectManagerTableBuilding);
         
         String employeeTableBuilding = "create memory table EMPLOYEE (ID varchar(256) not null,"+
@@ -1118,14 +1118,14 @@ public class OHibernateImportTestCase {
             + "foreign key (RESIDENCE) references RESIDENCE(ID), foreign key (MANAGER) references MANAGER(ID))";
         st.execute(employeeTableBuilding);
   
-        String regularEmployeeTableBuilding = "create memory table REGULAR_EMPLOYEE (EID varchar(256) not null, "
+        String regularEmployeeTableBuilding = "create memory table REGULAR_EMPLOYEE (ID varchar(256) not null, "
             + "NAME varchar(256), RESIDENCE varchar(256), MANAGER varchar(256),"
-            + "SALARY decimal(10,2), BONUS decimal(10,0), primary key (EID))";
+            + "SALARY decimal(10,2), BONUS decimal(10,0), primary key (ID))";
         st.execute(regularEmployeeTableBuilding);
   
-        String contractEmployeeTableBuilding = "create memory table CONTRACT_EMPLOYEE (EID varchar(256) not null, "
+        String contractEmployeeTableBuilding = "create memory table CONTRACT_EMPLOYEE (ID varchar(256) not null, "
             + "NAME varchar(256), RESIDENCE varchar(256), MANAGER varchar(256),"
-            + "PAY_PER_HOUR decimal(10,2), CONTRACT_DURATION varchar(256), primary key (EID))";
+            + "PAY_PER_HOUR decimal(10,2), CONTRACT_DURATION varchar(256), primary key (ID))";
         st.execute(contractEmployeeTableBuilding);
   
   
@@ -1140,7 +1140,7 @@ public class OHibernateImportTestCase {
             + "('M001','Bill Right'))";
         st.execute(managerFilling);
         
-        String projectManagerFilling = "INSERT INTO PROJECT_MANAGER (EID,NAME,PROJECT) VALUES ("
+        String projectManagerFilling = "INSERT INTO PROJECT_MANAGER (ID,NAME,PROJECT) VALUES ("
             + "('M001','Bill Right','New World'))";
         st.execute(projectManagerFilling);
   
@@ -1150,11 +1150,11 @@ public class OHibernateImportTestCase {
             + "('E003','Jack Johnson','R002',NULL))";
         st.execute(employeeFilling);
         
-        String regularEmployeeFilling = "INSERT INTO REGULAR_EMPLOYEE (EID,NAME,RESIDENCE,MANAGER,SALARY,BONUS) VALUES ("
+        String regularEmployeeFilling = "INSERT INTO REGULAR_EMPLOYEE (ID,NAME,RESIDENCE,MANAGER,SALARY,BONUS) VALUES ("
             + "('E002','Andrew Brown','R001','M001','1000.00','10'))";
         st.execute(regularEmployeeFilling);
         
-        String contractEmployeeFilling = "INSERT INTO CONTRACT_EMPLOYEE (EID,NAME,RESIDENCE,MANAGER,PAY_PER_HOUR,CONTRACT_DURATION) VALUES ("
+        String contractEmployeeFilling = "INSERT INTO CONTRACT_EMPLOYEE (ID,NAME,RESIDENCE,MANAGER,PAY_PER_HOUR,CONTRACT_DURATION) VALUES ("
             + "('E003','Jack Johnson','R002',NULL,'50.00','6'))";
         st.execute(contractEmployeeFilling);
   

@@ -22,8 +22,11 @@ package com.orientechnologies.orient.drakkar.strategy;
 
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 import com.orientechnologies.orient.drakkar.context.ODrakkarContext;
 import com.orientechnologies.orient.drakkar.context.ODrakkarStatistics;
@@ -165,7 +168,7 @@ public class ONaiveImportStrategy implements OImportStrategy {
           while(records.next()) {
             // upsert of the vertex
             currentRecord = records;
-            currentOutVertex = (OrientVertex) graphDBCommandEngine.upsertVisitedVertex(currentRecord, currentOutVertexType, context);
+            currentOutVertex = (OrientVertex) graphDBCommandEngine.upsertVisitedVertex(currentRecord, currentOutVertexType, null, context);
 
             // for each attribute of the entity belonging to the primary key, correspondent relationship is
             // built as edge and for the referenced record a vertex is built (only id)
@@ -231,7 +234,7 @@ public class ONaiveImportStrategy implements OImportStrategy {
           while(records.next()) {
             // upsert of the vertex
             currentRecord = records;
-            currentOutVertex = (OrientVertex) graphDBCommandEngine.upsertVisitedVertex(currentRecord, currentOutVertexType, context);
+            currentOutVertex = (OrientVertex) graphDBCommandEngine.upsertVisitedVertex(currentRecord, currentOutVertexType, null, context);
 
             // for each attribute of the entity belonging to the primary key, correspondent relationship is
             // built as edge and for the referenced record a vertex is built (only id)
@@ -267,7 +270,7 @@ public class ONaiveImportStrategy implements OImportStrategy {
                 if(ok) {
                   it = currentParentEntity.getHierarchicalBag().getDepth2entities().get(0).iterator();
                   String physicalArrivalEntityName = it.next().getName();
-                  String currentArrivalEntityName = searchParentEntityType(currentParentEntity, propertyOfKey, valueOfKey, physicalArrivalEntityName, null, dbQueryEngine, context);
+                  String currentArrivalEntityName = searchParentEntityType(currentParentEntity, propertyOfKey, valueOfKey, physicalArrivalEntityName, dbQueryEngine, context);
                   currentInVertexType = mapper.getVertexTypeByName(context.getNameResolver().resolveVertexName(currentArrivalEntityName));
                 }
               }
@@ -313,7 +316,7 @@ public class ONaiveImportStrategy implements OImportStrategy {
 
       ODrakkarStatistics statistics = context.getStatistics();
 
-      ResultSet aggregateTableRecords = dbQueryEngine.buildAggregateTableFromHierarchicalBag(bag, context);
+      ResultSet aggregateTableRecords = null;
 
       OEntity currentParentEntity = null;
 
@@ -328,7 +331,6 @@ public class ONaiveImportStrategy implements OImportStrategy {
       Iterator<OEntity> it = bag.getDepth2entities().get(0).iterator();
       OEntity rootEntity = it.next();
 
-      String key;
       for(int i=bag.getDepth2entities().size()-1; i>=0; i--) {
         for(OEntity currentEntity: bag.getDepth2entities().get(i)) {
 
@@ -341,11 +343,10 @@ public class ONaiveImportStrategy implements OImportStrategy {
           // each record is imported as vertex in the orient graph
           while(records.next()) {
 
+            aggregateTableRecords = dbQueryEngine.buildAggregateTableFromHierarchicalBag(bag, context);
+            
             // upsert of the vertex
             currentRecord = records;
-
-            // building a textual representation of the key which will be collected in the hierarchical bag to avoid duplicates
-            key = this.primaryKeyToString(currentEntity.getPrimaryKey(), currentRecord, context);
 
             // lookup in the aggregateTable
             String[] propertyOfKey = new String[rootEntity.getPrimaryKey().getInvolvedAttributes().size()];
@@ -366,16 +367,18 @@ public class ONaiveImportStrategy implements OImportStrategy {
             // lookup
             fullRecord = this.getFullRecordByAggregateTable(aggregateTableRecords, aggregateTablePropertyOfKey, valueOfKey,context);
 
-            // record imported if is not contained in the collection "ImportedRecordsId"
-            if(!bag.getImportedRecordsId().contains(key)) {
-              currentOutVertex = (OrientVertex) graphDBCommandEngine.upsertVisitedVertex(fullRecord, currentOutVertexType, context);
+            // record imported if is not present in OrientDB
+            Set<String> propertiesOfIndex = new LinkedHashSet<String>(Arrays.asList(aggregateTablePropertyOfKey));  // we need the key of the aggregate table, because we are working on it
+            if(!graphDBCommandEngine.justFullImportedInOrient(fullRecord, currentOutVertexType, propertiesOfIndex, context)) {
+
+              currentOutVertex = (OrientVertex) graphDBCommandEngine.upsertVisitedVertex(fullRecord, currentOutVertexType, propertiesOfIndex, context);
 
               // for each attribute of the entity belonging to the primary key, correspondent relationship is
               // built as edge and for the referenced record a vertex is built (only id)
               for(ORelationship currentRelation: currentEntity.getAllRelationships()) {
 
                 currentParentEntity = mapper.getDataBaseSchema().getEntityByNameIgnoreCase(currentRelation.getParentEntityName());
-                currentInVertexType = null; // reset for the iteration
+                currentInVertexType = null; // reset for the current iteration
 
                 // checking if parent table belongs to a hierarchical bag
                 if(currentParentEntity.getHierarchicalBag() == null)
@@ -403,7 +406,7 @@ public class ONaiveImportStrategy implements OImportStrategy {
                     }
                   }
                   if(ok) {
-                    String currentArrivalEntityName = searchParentEntityType(currentParentEntity, propertyOfKey, valueOfKey, null, aggregateTableRecords, dbQueryEngine, context);
+                    String currentArrivalEntityName = searchParentEntityType(currentParentEntity, propertyOfKey, valueOfKey, null, dbQueryEngine, context);
                     currentInVertexType = mapper.getVertexTypeByName(context.getNameResolver().resolveVertexName(currentArrivalEntityName));
                   }
                 }
@@ -418,10 +421,15 @@ public class ONaiveImportStrategy implements OImportStrategy {
               // Statistics updated
               statistics.importedRecords++;
 
-              // adding to the imported records' id the current record id
-              bag.getImportedRecordsId().add(key);
-
             }
+            
+            // closing aggregateTable result
+            dbQueryEngine.aggregateTable.close();
+//            aggregateTableRecords.close();
+//            boolean closed = dbQueryEngine.aggregateTable.isClosed();
+//            closed = aggregateTableRecords.isClosed();
+//            closed = dbQueryEngine.
+//            System.out.println();
 
           }
           // closing resultset, connection and statement
@@ -452,8 +460,6 @@ public class ONaiveImportStrategy implements OImportStrategy {
 
       ODrakkarStatistics statistics = context.getStatistics();
 
-      ResultSet aggregateTableRecords = dbQueryEngine.buildAggregateTableFromHierarchicalBag(bag, context);
-
       OEntity currentParentEntity = null;
 
       OVertexType currentOutVertexType = null;  
@@ -462,12 +468,7 @@ public class ONaiveImportStrategy implements OImportStrategy {
       OEdgeType edgeType = null;
       ResultSet records;
       ResultSet currentRecord;
-      ResultSet fullRecord;
 
-      Iterator<OEntity> it = bag.getDepth2entities().get(0).iterator();
-      OEntity rootEntity = it.next();
-
-      String key;
       for(int i=bag.getDepth2entities().size()-1; i>=0; i--) {
         for(OEntity currentEntity: bag.getDepth2entities().get(i)) {
 
@@ -483,52 +484,39 @@ public class ONaiveImportStrategy implements OImportStrategy {
             // upsert of the vertex
             currentRecord = records;
 
-            // building a textual representation of the key which will be collected in the hierarchical bag to avoid duplicates
-            key = this.primaryKeyToString(currentEntity.getPrimaryKey(), currentRecord, context);
-
-            // lookup in the aggregateTable
-            String[] propertyOfKey = new String[rootEntity.getPrimaryKey().getInvolvedAttributes().size()];
-            String[] valueOfKey = new String[rootEntity.getPrimaryKey().getInvolvedAttributes().size()];
-            String[] aggregateTablePropertyOfKey = new String[rootEntity.getPrimaryKey().getInvolvedAttributes().size()];
+            // record imported if is not present in OrientDB
+            String[] propertyOfKey = new String[currentEntity.getPrimaryKey().getInvolvedAttributes().size()];
 
             for(int k=0; k<propertyOfKey.length; k++) {
               propertyOfKey[k] = currentEntity.getPrimaryKey().getInvolvedAttributes().get(k).getName();
             }
 
-            for(int k=0; k<propertyOfKey.length; k++) {
-              valueOfKey[k] = currentRecord.getString(propertyOfKey[k]);
-            }
-
-            for(int k=0; k<aggregateTablePropertyOfKey.length; k++) {
-              aggregateTablePropertyOfKey[k] = rootEntity.getPrimaryKey().getInvolvedAttributes().get(k).getName();
-            }
-            // lookup
-            fullRecord = this.getFullRecordByAggregateTable(aggregateTableRecords, aggregateTablePropertyOfKey, valueOfKey,context);
-
-            // record imported if is not contained in the collection "ImportedRecordsId"
-            if(!bag.getImportedRecordsId().contains(key)) {
-              currentOutVertex = (OrientVertex) graphDBCommandEngine.upsertVisitedVertex(fullRecord, currentOutVertexType, context);
+            Set<String> propertiesOfIndex = new LinkedHashSet<String>(Arrays.asList(propertyOfKey));  // we need the key of original table, because we are working on it
+            
+            if(!graphDBCommandEngine.justFullImportedInOrient(currentRecord, currentOutVertexType, propertiesOfIndex, context)) {
+              
+              currentOutVertex = (OrientVertex) graphDBCommandEngine.upsertVisitedVertex(currentRecord, currentOutVertexType, propertiesOfIndex, context);
 
               // for each attribute of the entity belonging to the primary key, correspondent relationship is
               // built as edge and for the referenced record a vertex is built (only id)
               for(ORelationship currentRelation: currentEntity.getAllRelationships()) {
 
                 currentParentEntity = mapper.getDataBaseSchema().getEntityByNameIgnoreCase(currentRelation.getParentEntityName());
-                currentInVertexType = null; // reset for the iteration
+                currentInVertexType = null; // reset for the current iteration
 
                 // checking if parent table belongs to a hierarchical bag
                 if(currentParentEntity.getHierarchicalBag() == null)
                   currentInVertexType = mapper.getVertexTypeByName(context.getNameResolver().resolveVertexName(currentRelation.getParentEntityName()));
 
                 // if the parent entity belongs to hierarchical bag, we need to know which is it the more stringent subclass of the record with a certain id
-                else if(!currentEntity.getHierarchicalBag().equals(currentParentEntity.getHierarchicalBag())){
+                else if(!currentEntity.getHierarchicalBag().equals(currentParentEntity.getHierarchicalBag())) {
                   propertyOfKey = new String[currentRelation.getForeignKey().getInvolvedAttributes().size()];
-                  valueOfKey = new String[currentRelation.getForeignKey().getInvolvedAttributes().size()];
+                  String[] valueOfKey = new String[currentRelation.getForeignKey().getInvolvedAttributes().size()];
 
                   int index = 0;
                   for(OAttribute foreignAttribute: currentRelation.getForeignKey().getInvolvedAttributes())  {
                     propertyOfKey[index] = currentRelation.getPrimaryKey().getInvolvedAttributes().get(index).getName();
-                    valueOfKey[index] = fullRecord.getString((foreignAttribute.getName()));
+                    valueOfKey[index] = currentRecord.getString((foreignAttribute.getName()));
                     index++;
                   }
 
@@ -542,7 +530,7 @@ public class ONaiveImportStrategy implements OImportStrategy {
                     }
                   }
                   if(ok) {
-                    String currentArrivalEntityName = searchParentEntityType(currentParentEntity, propertyOfKey, valueOfKey, null, aggregateTableRecords, dbQueryEngine, context);
+                    String currentArrivalEntityName = searchParentEntityType(currentParentEntity, propertyOfKey, valueOfKey, null, dbQueryEngine, context);
                     currentInVertexType = mapper.getVertexTypeByName(context.getNameResolver().resolveVertexName(currentArrivalEntityName));
                   }
                 }
@@ -550,15 +538,12 @@ public class ONaiveImportStrategy implements OImportStrategy {
                 // if currentInVertexType is null then there isn't a relationship between to records, thus the edge will not be added.
                 if(currentInVertexType != null) {
                   edgeType = mapper.getRelationship2edgeType().get(currentRelation);
-                  graphDBCommandEngine.upsertReachedVertexWithEdge(fullRecord, currentRelation, currentOutVertex, currentInVertexType, edgeType.getName(), context);
+                  graphDBCommandEngine.upsertReachedVertexWithEdge(currentRecord, currentRelation, currentOutVertex, currentInVertexType, edgeType.getName(), context);
                 }
               }
 
               // Statistics updated
               statistics.importedRecords++;
-
-              // adding to the imported records' id the current record id
-              bag.getImportedRecordsId().add(key);
 
             }
 
@@ -588,15 +573,15 @@ public class ONaiveImportStrategy implements OImportStrategy {
    * @param context
    * @return
    */
-  private String searchParentEntityType(OEntity currentParentEntity, String[] propertyOfKey, String[] valueOfKey, String physicalArrivalEntityName, ResultSet aggregateTableRecords, ODBQueryEngine dbQueryEngine, ODrakkarContext context) {
+  private String searchParentEntityType(OEntity currentParentEntity, String[] propertyOfKey, String[] valueOfKey, String physicalArrivalEntityName, ODBQueryEngine dbQueryEngine, ODrakkarContext context) {
 
     switch(currentParentEntity.getHierarchicalBag().getInheritancePattern()) {
 
     case "table-per-hierarchy": return searchParentEntityTypeFromSingleTable(currentParentEntity, propertyOfKey, valueOfKey, physicalArrivalEntityName, dbQueryEngine, context);
 
-    case "table-per-type": return searchParentEntityTypeFromSubclassTable(currentParentEntity, propertyOfKey, valueOfKey, null, dbQueryEngine, context);
+    case "table-per-type": return searchParentEntityTypeFromSubclassTable(currentParentEntity, propertyOfKey, valueOfKey, dbQueryEngine, context);
 
-    case "table-per-concrete-type": return null;
+    case "table-per-concrete-type": return searchParentEntityTypeFromConcreteTable(currentParentEntity, propertyOfKey, valueOfKey, dbQueryEngine, context);
 
     }
 
@@ -645,12 +630,11 @@ public class ONaiveImportStrategy implements OImportStrategy {
    * @param currentParentEntity
    * @param propertyOfKey
    * @param valueOfKey
-   * @param aggregateTableRecords
    * @param dbQueryEngine
    * @param context
    * @return
    */
-  private String searchParentEntityTypeFromSubclassTable(OEntity currentParentEntity, String[] propertyOfKey, String[] valueOfKey, ResultSet aggregateTableRecords, ODBQueryEngine dbQueryEngine, ODrakkarContext context) {
+  private String searchParentEntityTypeFromSubclassTable(OEntity currentParentEntity, String[] propertyOfKey, String[] valueOfKey, ODBQueryEngine dbQueryEngine, ODrakkarContext context) {
 
     OHierarchicalBag hierarchicalBag = currentParentEntity.getHierarchicalBag();
     String entityName = null;
@@ -688,24 +672,49 @@ public class ONaiveImportStrategy implements OImportStrategy {
   }
 
 
-  private String primaryKeyToString(OPrimaryKey primaryKey, ResultSet record, ODrakkarContext context) {
+  /**
+   * @param currentParentEntity
+   * @param propertyOfKey
+   * @param valueOfKey
+   * @param dbQueryEngine
+   * @param context
+   * @return
+   */
+  private String searchParentEntityTypeFromConcreteTable(OEntity currentParentEntity, String[] propertyOfKey, String[] valueOfKey, ODBQueryEngine dbQueryEngine, ODrakkarContext context) {
 
-    String primaryKeyToString = "";
+    OHierarchicalBag hierarchicalBag = currentParentEntity.getHierarchicalBag();
+    String entityName = null;
 
     try {
 
-      for(OAttribute attribute: primaryKey.getInvolvedAttributes()) {
-        primaryKeyToString += "," + record.getString(attribute.getName());
+      ResultSet result = null;
+
+      for(int i=hierarchicalBag.getDepth2entities().size()-1; i>=0; i--) {
+        for(OEntity currentEntity: hierarchicalBag.getDepth2entities().get(i)) {
+
+          // Overwriting propertyOfKey with the currentEntity attributes' names
+          for(int j=0; j<currentEntity.getPrimaryKey().getInvolvedAttributes().size(); j++) {
+            propertyOfKey[j] = currentEntity.getPrimaryKey().getInvolvedAttributes().get(j).getName();
+          }
+
+          result = dbQueryEngine.getRecordById(currentEntity.getName(),propertyOfKey, valueOfKey, context);
+
+          if(result != null) {
+            entityName = currentEntity.getName();
+            break;
+          }
+        }
+
+        if(result != null) {
+          break;
+        }
       }
 
-      primaryKeyToString = primaryKeyToString.substring(1);
-
     }catch(Exception e) {
-      context.getOutputManager().error(e.getMessage());
       e.printStackTrace();
     }
 
-    return primaryKeyToString;
+    return entityName;
   }
 
 
@@ -724,9 +733,6 @@ public class ONaiveImportStrategy implements OImportStrategy {
     boolean equals;
 
     try {
-
-      // moving cursor to the first row
-      aggregateTableRecords.beforeFirst();
 
       while(aggregateTableRecords.next()) {
 
@@ -754,6 +760,29 @@ public class ONaiveImportStrategy implements OImportStrategy {
     }
 
     return fullRecord;
+  }
+
+
+  /**
+   * @param aggregateTableRecords
+   */
+  private void printTable(ResultSet aggregateTableRecords) {
+
+    try {
+      ResultSetMetaData rsmd = aggregateTableRecords.getMetaData();
+      System.out.println("querying SELECT * FROM XXX");
+      int columnsNumber = rsmd.getColumnCount();
+      while (aggregateTableRecords.next()) {
+        for (int i = 1; i <= columnsNumber; i++) {
+          if (i > 1) System.out.print(",  ");
+          String columnValue = aggregateTableRecords.getString(i);
+          System.out.print(columnValue + " " + rsmd.getColumnName(i));
+        }
+        System.out.println("");
+      }    
+    }catch(Exception e) {
+      e.printStackTrace();
+    }
   }
 
 }

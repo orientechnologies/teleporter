@@ -45,7 +45,8 @@ public class ODBQueryEngine implements ODataSourceQueryEngine {
   private ODBSourceConnection dataSource;
   private Connection dbConnection;
   private Statement statement;
-  private ResultSet results;
+  public ResultSet results;
+  public ResultSet aggregateTable;
 
   public ODBQueryEngine(String driver, String uri, String username, String password) {
     this.dataSource =  new ODBSourceConnection(driver, uri, username, password);
@@ -61,7 +62,7 @@ public class ODBQueryEngine implements ODataSourceQueryEngine {
    */
   public ResultSet getRecordById(String entityName, String[] propertyOfKey, String[] valueOfKey, ODrakkarContext context) {
     
-    this.results = null;
+    this.aggregateTable = null;
     this.dbConnection = null;
     this.statement = null;
     String query = "select * from " + entityName + " where ";
@@ -81,14 +82,14 @@ public class ODBQueryEngine implements ODataSourceQueryEngine {
       } catch (Exception e) {
         e.printStackTrace();
       }
-      this.statement = dbConnection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
-      this.results = statement.executeQuery(query);
+      this.statement = dbConnection.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+      this.aggregateTable = statement.executeQuery(query);
 
     }catch(SQLException e) {
       context.getOutputManager().debug(e.getMessage());
       e.printStackTrace();
     }
-    return results;
+    return this.aggregateTable;
   }
 
   
@@ -107,7 +108,7 @@ public class ODBQueryEngine implements ODataSourceQueryEngine {
       } catch (Exception e) {
         e.printStackTrace();
       }
-      this.statement = dbConnection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+      this.statement = dbConnection.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
       this.results = statement.executeQuery(query);
 
     }catch(SQLException e) {
@@ -134,14 +135,14 @@ public class ODBQueryEngine implements ODataSourceQueryEngine {
       } catch (Exception e) {
         e.printStackTrace();
       }
-      this.statement = dbConnection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+      this.statement = dbConnection.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
       this.results = statement.executeQuery(query);
 
     }catch(SQLException e) {
       context.getOutputManager().debug(e.getMessage());
       e.printStackTrace();
     }
-    return results;
+    return this.results;
   }
 
 
@@ -166,14 +167,14 @@ public class ODBQueryEngine implements ODataSourceQueryEngine {
       } catch (Exception e) {
         e.printStackTrace();
       }
-      this.statement = dbConnection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+      this.statement = dbConnection.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
       this.results = statement.executeQuery(query);
 
     }catch(SQLException e) {
       context.getOutputManager().debug(e.getMessage());
       e.printStackTrace();
     }
-    return results;
+    return this.results;
 
   }
   
@@ -235,26 +236,28 @@ public class ODBQueryEngine implements ODataSourceQueryEngine {
       } catch (Exception e) {
         e.printStackTrace();
       }
-      this.statement = dbConnection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+      this.statement = dbConnection.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
       this.results = statement.executeQuery(query);
 
     }catch(SQLException e) {
       context.getOutputManager().debug(e.getMessage());
       e.printStackTrace();
     }
-    return results;
+    return this.results;
   }
 
 
   public void closeAll(ODrakkarContext context) {
 
     try {
-      if(this.dbConnection != null) 
+      if(this.dbConnection != null && !this.dbConnection.isClosed()) 
         this.dbConnection.close();
-      if(this.statement != null) 
+      if(this.statement != null && !this.statement.isClosed()) 
         this.statement.close();
-      if(this.results != null)
+      if(this.results != null && !this.results.isClosed())
         this.results.close();
+      if(this.aggregateTable != null && !this.aggregateTable.isClosed())
+        this.aggregateTable.close();
     } catch(SQLException e) {
       context.getOutputManager().debug(e.getMessage());
       e.printStackTrace();

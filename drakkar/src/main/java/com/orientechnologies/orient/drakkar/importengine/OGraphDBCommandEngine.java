@@ -21,14 +21,15 @@
 package com.orientechnologies.orient.drakkar.importengine;
 
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.LinkedHashSet;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 import com.orientechnologies.orient.drakkar.context.ODrakkarContext;
 import com.orientechnologies.orient.drakkar.context.ODrakkarStatistics;
@@ -64,6 +65,66 @@ public class OGraphDBCommandEngine {
   }
 
 
+
+  /**
+   * Return true if the record is "full-imported" in OrientDB: the correspondent vertex is visited (all properties are set).
+   * @param record
+   * @throws SQLException 
+   */
+  public boolean justFullImportedInOrient(ResultSet record, OVertexType vertexType, Set<String> propertiesOfIndex, ODrakkarContext context) throws SQLException {
+
+    OrientGraphFactory factory = new OrientGraphFactory(this.graphDBUrl);
+    OrientGraphNoTx orientGraph = factory.getNoTx();
+    orientGraph.setStandardElementConstraints(false);
+
+    boolean toResolveNames = false;
+
+    // building keys and values for the lookup
+
+    if(propertiesOfIndex == null) {
+      toResolveNames = true;
+      propertiesOfIndex = new LinkedHashSet<String>();
+
+      for(OModelProperty currentProperty: vertexType.getAllProperties()) {
+        // only attribute coming from the primary key are given
+        if(currentProperty.isFromPrimaryKey())
+          propertiesOfIndex.add(currentProperty.getName());
+      }
+    }
+
+    String[] propertyOfKey = new String[propertiesOfIndex.size()];
+    String[] valueOfKey = new String[propertiesOfIndex.size()];
+
+    int cont = 0;
+    for(String property: propertiesOfIndex) {
+      propertyOfKey[cont] = property;
+      if(toResolveNames)
+        valueOfKey[cont] = record.getString(context.getNameResolver().reverseTransformation(property));
+      else
+        valueOfKey[cont] = record.getString(property);
+
+      cont++;
+    }
+
+    String s = "Keys and values in the lookup (upsertVisitedVertex):\t";
+    for(int i=0; i<propertyOfKey.length;i++) {
+      s += propertyOfKey[i] + ":" + valueOfKey[i];
+    }
+    context.getOutputManager().debug(s);
+
+    // lookup
+    OrientVertex vertex = this.getVertexByIndexedKey(orientGraph, propertyOfKey, valueOfKey, vertexType.getName());
+    orientGraph.shutdown();
+
+    if(vertex != null && vertexType.getAllProperties().size() <= vertex.getPropertyKeys().size()) // there aren't properties to add into the vertex (<=)
+        return true;
+
+    return false;
+
+  }
+
+
+
   /**
    * The method perform on the passed OrientGraph a lookup for a OrientVertex starting from a record and from a vertex type.
    * It return the vertex if present, null if not present. 
@@ -87,11 +148,14 @@ public class OGraphDBCommandEngine {
   }
 
 
+
+
+
   /**
    * @param record
    * @throws SQLException 
    */
-  public Vertex upsertVisitedVertex(ResultSet record, OVertexType vertexType, ODrakkarContext context) throws SQLException {
+  public Vertex upsertVisitedVertex(ResultSet record, OVertexType vertexType, Set<String> propertiesOfIndex, ODrakkarContext context) throws SQLException {
 
     OrientGraphFactory factory = new OrientGraphFactory(this.graphDBUrl);
     OrientGraphNoTx orientGraph = factory.getNoTx();
@@ -100,14 +164,19 @@ public class OGraphDBCommandEngine {
 
     ODrakkarStatistics statistics = context.getStatistics();
 
+    boolean toResolveNames = false;
+
     // building keys and values for the lookup
 
-    List<String> propertiesOfIndex = new LinkedList<String>();
+    if(propertiesOfIndex == null) {
+      toResolveNames = true;
+      propertiesOfIndex = new LinkedHashSet<String>();
 
-    for(OModelProperty currentProperty: vertexType.getAllProperties()) {
-      // only attribute coming from the primary key are given
-      if(currentProperty.isFromPrimaryKey())
-        propertiesOfIndex.add(currentProperty.getName());
+      for(OModelProperty currentProperty: vertexType.getAllProperties()) {
+        // only attribute coming from the primary key are given
+        if(currentProperty.isFromPrimaryKey())
+          propertiesOfIndex.add(currentProperty.getName());
+      }
     }
 
     String[] propertyOfKey = new String[propertiesOfIndex.size()];
@@ -116,7 +185,11 @@ public class OGraphDBCommandEngine {
     int cont = 0;
     for(String property: propertiesOfIndex) {
       propertyOfKey[cont] = property;
-      valueOfKey[cont] = record.getString(context.getNameResolver().reverseTransformation(property));
+      if(toResolveNames)
+        valueOfKey[cont] = record.getString(context.getNameResolver().reverseTransformation(property));
+      else
+        valueOfKey[cont] = record.getString(property);
+
       cont++;
     }
 
@@ -127,7 +200,7 @@ public class OGraphDBCommandEngine {
     context.getOutputManager().debug(s);
 
     // lookup
-    OrientVertex vertex = this.getVertexByIndexedKey(orientGraph, propertyOfKey, valueOfKey, vertexType.getName());  // !!!
+    OrientVertex vertex = this.getVertexByIndexedKey(orientGraph, propertyOfKey, valueOfKey, vertexType.getName());
 
     // setting properties to the vertex
     String currentAttributeValue = null;
@@ -139,7 +212,13 @@ public class OGraphDBCommandEngine {
     for(OModelProperty currentProperty : vertexType.getAllProperties()) {
 
       currentPropertyType = context.getDataTypeHandler().resolveType(currentProperty.getPropertyType().toLowerCase(Locale.ENGLISH),context).toString();
-      currentAttributeValue = record.getString(context.getNameResolver().reverseTransformation(currentProperty.getName()));
+
+      try {
+        currentAttributeValue = record.getString(context.getNameResolver().reverseTransformation(currentProperty.getName()));
+      }catch(Exception e) {
+        context.getOutputManager().error("Mismatch between 'parent-table' attributes and 'child-table' attributes, check the schema of the tables involved in inheritance relationships. ");
+        e.printStackTrace();
+      }
 
       if(currentAttributeValue != null) {
 
@@ -182,12 +261,13 @@ public class OGraphDBCommandEngine {
       statistics.orientVertices++;
     }
     else {
+      
+      
 
       // removing old eventual properties
       for(String propertyKey: vertex.getPropertyKeys()) {
         vertex.removeProperty(propertyKey);
       }
-      vertex.save();
 
       // setting new properties and save
       vertex.setProperties(properties);
@@ -202,6 +282,134 @@ public class OGraphDBCommandEngine {
     return vertex;
 
   }
+
+  //  /**
+  //   * @param record
+  //   * @throws SQLException 
+  //   */
+  //  public Vertex upsertVisitedVertexWithInheritance(ResultSet record, OVertexType vertexType, Set<String> propertiesOfIndex, ODrakkarContext context) throws SQLException {
+  //
+  //    OrientGraphFactory factory = new OrientGraphFactory(this.graphDBUrl);
+  //    OrientGraphNoTx orientGraph = factory.getNoTx();
+  //    orientGraph.setStandardElementConstraints(false);
+  //    Map<String,String> properties = new LinkedHashMap<String,String>();
+  //
+  //    ODrakkarStatistics statistics = context.getStatistics();
+  //
+  //    boolean toResolveNames = false;
+  //
+  //    // building keys and values for the lookup
+  //
+  //    if(propertiesOfIndex == null) {
+  //      toResolveNames = true;
+  //      propertiesOfIndex = new LinkedHashSet<String>();
+  //
+  //      for(OModelProperty currentProperty: vertexType.getAllProperties()) {
+  //        // only attribute coming from the primary key are given
+  //        if(currentProperty.isFromPrimaryKey())
+  //          propertiesOfIndex.add(currentProperty.getName());
+  //      }
+  //    }
+  //
+  //    String[] propertyOfKey = new String[propertiesOfIndex.size()];
+  //    String[] valueOfKey = new String[propertiesOfIndex.size()];
+  //
+  //    int cont = 0;
+  //    for(String property: propertiesOfIndex) {
+  //      propertyOfKey[cont] = property;
+  //      if(toResolveNames)
+  //        valueOfKey[cont] = record.getString(context.getNameResolver().reverseTransformation(property));
+  //      else
+  //        valueOfKey[cont] = record.getString(property);
+  //
+  //      cont++;
+  //    }
+  //
+  //    String s = "Keys and values in the lookup (upsertVisitedVertex):\t";
+  //    for(int i=0; i<propertyOfKey.length;i++) {
+  //      s += propertyOfKey[i] + ":" + valueOfKey[i];
+  //    }
+  //    context.getOutputManager().debug(s);
+  //
+  //    // lookup
+  //    OrientVertex vertex = this.getVertexByIndexedKey(orientGraph, propertyOfKey, valueOfKey, vertexType.getName());  // !!!
+  //
+  //    // setting properties to the vertex
+  //    String currentAttributeValue = null;
+  //    String currentDateValue;
+  //    String currentPropertyType;
+  //
+  //
+  //    // extraction of inherited and not inherited properties from the record (through "getAllProperties()" method)
+  //    for(OModelProperty currentProperty : vertexType.getAllProperties()) {
+  //
+  //      if(this.hasColumn(record, context.getNameResolver().reverseTransformation(currentProperty.getName()))) {
+  //
+  //        currentPropertyType = context.getDataTypeHandler().resolveType(currentProperty.getPropertyType().toLowerCase(Locale.ENGLISH),context).toString();
+  //        currentAttributeValue = record.getString(context.getNameResolver().reverseTransformation(currentProperty.getName()));
+  //
+  //        if(currentAttributeValue != null) {
+  //
+  //          if(currentPropertyType.equals("DATE")) {
+  //            currentDateValue = record.getDate(context.getNameResolver().reverseTransformation(currentProperty.getName())).toString();
+  //            properties.put(currentProperty.getName(), currentDateValue);
+  //          }
+  //
+  //          else if(currentPropertyType.equals("DATETIME")) {
+  //            {
+  //              currentDateValue = record.getTimestamp(context.getNameResolver().reverseTransformation(currentProperty.getName())).toString();
+  //              properties.put(currentProperty.getName(), currentDateValue);
+  //            }
+  //          }
+  //
+  //          else if(currentPropertyType.equals("BOOLEAN")) {
+  //            switch(currentAttributeValue) {
+  //
+  //            case "t": properties.put(currentProperty.getName(), "true");
+  //            break;
+  //            case "f": properties.put(currentProperty.getName(), "false");
+  //            break;
+  //            default: break;
+  //            }
+  //          }
+  //
+  //          else {
+  //            properties.put(currentProperty.getName(), currentAttributeValue);
+  //          }
+  //        }
+  //        else {
+  //          // null value is inserted in the property
+  //          properties.put(currentProperty.getName(), currentAttributeValue);
+  //        }
+  //      }
+  //    }
+  //
+  //    if(vertex == null) {
+  //      String classAndClusterName = vertexType.getName(); 
+  //      vertex = orientGraph.addVertex("class:"+classAndClusterName, properties);
+  //      statistics.orientVertices++;
+  //    }
+  //    else {
+  //
+  //      // removing old eventual properties
+  //      for(String propertyKey: vertex.getPropertyKeys()) {
+  //        vertex.removeProperty(propertyKey);
+  //      }
+  //
+  //      // setting new properties and save
+  //      vertex.setProperties(properties);
+  //      vertex.save();
+  //      statistics.orientVertices++;
+  //    }
+  //
+  //    context.getOutputManager().debug(properties.toString());
+  //    context.getOutputManager().debug("New vertex inserted (all props setted): " + vertex.toString() + "\n");
+  //    orientGraph.shutdown();
+  //
+  //    return vertex;
+  //
+  //  }
+
 
 
   /**
@@ -373,6 +581,18 @@ public class OGraphDBCommandEngine {
 
     this.upsertEdge(orientGraph, currentOutVertex, currentInVertex, aggregatorEdge.getEdgeType(), context);
     orientGraph.shutdown();
+  }
+
+
+  private boolean hasColumn(ResultSet rs, String columnName) throws SQLException {
+    ResultSetMetaData rsmd = rs.getMetaData();
+    int columns = rsmd.getColumnCount();
+    for (int x = 1; x <= columns; x++) {
+      if (columnName.equals(rsmd.getColumnName(x))) {
+        return true;
+      }
+    }
+    return false;
   }
 
 }
