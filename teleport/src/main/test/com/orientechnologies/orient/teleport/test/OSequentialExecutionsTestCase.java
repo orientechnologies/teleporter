@@ -122,8 +122,8 @@ public class OSequentialExecutionsTestCase {
       assertEquals(OType.STRING, currentProperty.getType());
       assertFalse(itProperties.hasNext());
 
-      orientGraph.drop();
-      orientGraph.shutdown();
+//      orientGraph.drop();
+//      orientGraph.shutdown();
 
       /*
        * Modify of the db schema, adding a column
@@ -237,8 +237,8 @@ public class OSequentialExecutionsTestCase {
       assertEquals(OType.STRING, currentProperty.getType());
       assertFalse(itProperties.hasNext());
 
-      orientGraph.drop();
-      orientGraph.shutdown();
+//      orientGraph.drop();
+//      orientGraph.shutdown();
 
       /*
        * Modify of the db schema, removing a column
@@ -347,8 +347,8 @@ public class OSequentialExecutionsTestCase {
       assertEquals(OType.STRING, currentProperty.getType());
       assertFalse(itProperties.hasNext());
 
-      orientGraph.drop();
-      orientGraph.shutdown();
+//      orientGraph.drop();
+//      orientGraph.shutdown();
 
       /*
        * Modify of the db schema, changing a column (name and type)
@@ -501,8 +501,8 @@ public class OSequentialExecutionsTestCase {
       }
       assertEquals(2, count);
 
-      orientGraph.drop();
-      orientGraph.shutdown();
+//      orientGraph.drop();
+//      orientGraph.shutdown();
 
 
       /*
@@ -642,8 +642,8 @@ public class OSequentialExecutionsTestCase {
       assertEquals(OType.STRING, currentProperty.getType());
       assertFalse(itProperties.hasNext());
 
-      orientGraph.drop();
-      orientGraph.shutdown();
+//      orientGraph.drop();
+//      orientGraph.shutdown();
 
       /*
        * Modify of the db schema, adding a table
@@ -802,8 +802,8 @@ public class OSequentialExecutionsTestCase {
       }
       assertEquals(0, count);
 
-      orientGraph.drop();
-      orientGraph.shutdown();
+//      orientGraph.drop();
+//      orientGraph.shutdown();
 
 
       /*
@@ -956,8 +956,8 @@ public class OSequentialExecutionsTestCase {
       assertEquals(OType.STRING, currentProperty.getType());
       assertFalse(itProperties.hasNext());
 
-      orientGraph.drop();
-      orientGraph.shutdown();
+//      orientGraph.drop();
+//      orientGraph.shutdown();
 
       /*
        * Modify of the db schema, removing a table
@@ -1111,8 +1111,8 @@ public class OSequentialExecutionsTestCase {
       }
       assertEquals(2, count);
 
-      orientGraph.drop();
-      orientGraph.shutdown();
+//      orientGraph.drop();
+//      orientGraph.shutdown();
 
 
       /*
@@ -1256,8 +1256,8 @@ public class OSequentialExecutionsTestCase {
       }
       assertEquals(0, count);
 
-      orientGraph.drop();
-      orientGraph.shutdown();
+//      orientGraph.drop();
+//      orientGraph.shutdown();
 
 
       /*
@@ -1429,8 +1429,8 @@ public class OSequentialExecutionsTestCase {
       }
       assertEquals(8, count);
 
-      orientGraph.drop();
-      orientGraph.shutdown();
+//      orientGraph.drop();
+//      orientGraph.shutdown();
 
 
       /*
@@ -1741,8 +1741,8 @@ public class OSequentialExecutionsTestCase {
       }
       assertEquals(0, count);
 
-      orientGraph.drop();
-      orientGraph.shutdown();
+//      orientGraph.drop();
+//      orientGraph.shutdown();
 
 
       /*
@@ -1921,8 +1921,8 @@ public class OSequentialExecutionsTestCase {
       }
       assertEquals(0, count);
 
-      orientGraph.drop();
-      orientGraph.shutdown();
+//      orientGraph.drop();
+//      orientGraph.shutdown();
 
 
       /*

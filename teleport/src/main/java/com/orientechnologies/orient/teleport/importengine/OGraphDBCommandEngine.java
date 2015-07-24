@@ -279,15 +279,17 @@ public class OGraphDBCommandEngine {
         if(equalProperties) {
           // comparing values of the properties
           for(String propertyName: vertex.getPropertyKeys()) {
-            if(!vertex.getProperty(propertyName).equals(properties.get(propertyName))) {
+            if(!(vertex.getProperty(propertyName) == null && properties.get(propertyName) == null) 
+                && !vertex.getProperty(propertyName).equals(properties.get(propertyName))) {
               equalVersions = false;
               break;
-            }
+            } 
           }
         }
 
       }
       else {
+        equalProperties = false;
         equalVersions = false;
       }
 
