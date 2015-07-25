@@ -45,6 +45,7 @@ import com.orientechnologies.orient.teleport.model.graphmodel.OGraphModel;
 import com.orientechnologies.orient.teleport.model.graphmodel.OVertexType;
 import com.orientechnologies.orient.teleport.nameresolver.ONameResolver;
 import com.orientechnologies.orient.teleport.persistence.handler.ODriverDataTypeHandler;
+import com.orientechnologies.orient.teleport.persistence.util.OQueryResult;
 import com.orientechnologies.orient.teleport.util.OTimeFormatHandler;
 import com.orientechnologies.orient.teleport.writer.OGraphModelWriter;
 import com.tinkerpop.blueprints.impls.orient.OrientVertex;
@@ -150,6 +151,8 @@ public class ONaiveImportStrategy implements OImportStrategy {
         }
       }
 
+      OQueryResult queryResult = null;
+      ResultSet records = null;
 
       // Importing from Entities NOT belonging to hierarchical bags
       for(OEntity entity: mapper.getDataBaseSchema().getEntities()) {
@@ -157,7 +160,8 @@ public class ONaiveImportStrategy implements OImportStrategy {
         if(entity.getHierarchicalBag() == null) {
 
           // for each entity in dbSchema all records are retrieved
-          ResultSet records = dbQueryEngine.getRecordsByEntity(entity.getName(), context);
+          queryResult = dbQueryEngine.getRecordsByEntity(entity.getName(), context);
+          records = queryResult.getResult();
           ResultSet currentRecord = null;
 
           currentOutVertexType = mapper.getEntity2vertexType().get(entity);
@@ -181,7 +185,7 @@ public class ONaiveImportStrategy implements OImportStrategy {
           }
 
           // closing resultset, connection and statement
-          dbQueryEngine.closeAll(context);
+          queryResult.closeAll(context);
         }
       }
       statistics.notifyListeners();
@@ -198,7 +202,7 @@ public class ONaiveImportStrategy implements OImportStrategy {
    * Performs import of all records of the entities contained in the hierarchical bag passed as parameter.
    * Adopted in case of "Table per Hierarchy" inheritance strategy.
    * @param bag
-   * @param dbQueryEngine
+   * @param 
    * @param context
    */
   protected void tablePerHierarchyImport(OHierarchicalBag bag, OER2GraphMapper mapper, ODBQueryEngine dbQueryEngine, OGraphDBCommandEngine graphDBCommandEngine, OTeleportContext context) {
@@ -217,13 +221,17 @@ public class ONaiveImportStrategy implements OImportStrategy {
       String currentDiscriminatorValue;
       Iterator<OEntity> it = bag.getDepth2entities().get(0).iterator();
       String physicalCurrentEntityName = it.next().getName();
+      
+      OQueryResult queryResult = null;
+      ResultSet records = null;
 
       for(int i=bag.getDepth2entities().size()-1; i>=0; i--) {
         for(OEntity currentEntity: bag.getDepth2entities().get(i)) {
           currentDiscriminatorValue = bag.getEntityName2discriminatorValue().get(currentEntity.getName());
 
           // for each entity in dbSchema all records are retrieved
-          ResultSet records = dbQueryEngine.getRecordsFromSingleTableByDiscriminatorValue(bag.getDiscriminatorColumn(), currentDiscriminatorValue, physicalCurrentEntityName, context);
+          queryResult = dbQueryEngine.getRecordsFromSingleTableByDiscriminatorValue(bag.getDiscriminatorColumn(), currentDiscriminatorValue, physicalCurrentEntityName, context);
+          records = queryResult.getResult();
           ResultSet currentRecord = null;
 
           currentOutVertexType = mapper.getEntity2vertexType().get(currentEntity);
@@ -284,7 +292,7 @@ public class ONaiveImportStrategy implements OImportStrategy {
             statistics.importedRecords++;
           }
           // closing resultset, connection and statement
-          dbQueryEngine.closeAll(context);
+          queryResult.closeAll(context);
 
         }
       }
@@ -325,6 +333,9 @@ public class ONaiveImportStrategy implements OImportStrategy {
       ResultSet records;
       ResultSet currentRecord;
       ResultSet fullRecord;
+      
+      OQueryResult queryResult1 = null;
+      OQueryResult queryResult2 = null;
 
       Iterator<OEntity> it = bag.getDepth2entities().get(0).iterator();
       OEntity rootEntity = it.next();
@@ -333,15 +344,16 @@ public class ONaiveImportStrategy implements OImportStrategy {
         for(OEntity currentEntity: bag.getDepth2entities().get(i)) {
 
           // for each entity in dbSchema all records are retrieved
-          records = dbQueryEngine.getRecordsByEntity(currentEntity.getName(), context);
+          queryResult1 = dbQueryEngine.getRecordsByEntity(currentEntity.getName(), context);
+          records = queryResult1.getResult();
           currentRecord = null;
 
           currentOutVertexType = mapper.getEntity2vertexType().get(currentEntity);
 
           // each record is imported as vertex in the orient graph
           while(records.next()) {
-
-            aggregateTableRecords = dbQueryEngine.buildAggregateTableFromHierarchicalBag(bag, context);
+            queryResult2 = dbQueryEngine.buildAggregateTableFromHierarchicalBag(bag, context);
+            aggregateTableRecords = queryResult2.getResult();
             
             // upsert of the vertex
             currentRecord = records;
@@ -422,7 +434,7 @@ public class ONaiveImportStrategy implements OImportStrategy {
             }
             
             // closing aggregateTable result
-            dbQueryEngine.aggregateTable.close();
+            queryResult2.closeAll(context);
 //            aggregateTableRecords.close();
 //            boolean closed = dbQueryEngine.aggregateTable.isClosed();
 //            closed = aggregateTableRecords.isClosed();
@@ -431,7 +443,7 @@ public class ONaiveImportStrategy implements OImportStrategy {
 
           }
           // closing resultset, connection and statement
-          dbQueryEngine.closeAll(context);
+          queryResult1.closeAll(context);
 
         }
       }
@@ -466,12 +478,15 @@ public class ONaiveImportStrategy implements OImportStrategy {
       OEdgeType edgeType = null;
       ResultSet records;
       ResultSet currentRecord;
+      
+      OQueryResult queryResult = null;
 
       for(int i=bag.getDepth2entities().size()-1; i>=0; i--) {
         for(OEntity currentEntity: bag.getDepth2entities().get(i)) {
 
           // for each entity in dbSchema all records are retrieved
-          records = dbQueryEngine.getRecordsByEntity(currentEntity.getName(), context);
+          queryResult = dbQueryEngine.getRecordsByEntity(currentEntity.getName(), context);
+          records = queryResult.getResult();
           currentRecord = null;
 
           currentOutVertexType = mapper.getEntity2vertexType().get(currentEntity);
@@ -547,7 +562,7 @@ public class ONaiveImportStrategy implements OImportStrategy {
 
           }
           // closing resultset, connection and statement
-          dbQueryEngine.closeAll(context);
+          queryResult.closeAll(context);
 
         }
       }
@@ -605,7 +620,8 @@ public class ONaiveImportStrategy implements OImportStrategy {
 
     try {
 
-      ResultSet result = dbQueryEngine.getEntityTypeFromSingleTable(discriminatorColumn, physicalEntityName, propertyOfKey, valueOfKey, context);
+      OQueryResult queryResult = dbQueryEngine.getEntityTypeFromSingleTable(discriminatorColumn, physicalEntityName, propertyOfKey, valueOfKey, context);
+      ResultSet result = queryResult.getResult();
       result.next();
       String discriminatorValue = result.getString(discriminatorColumn);
 
@@ -639,6 +655,7 @@ public class ONaiveImportStrategy implements OImportStrategy {
 
     try {
 
+      OQueryResult queryResult = null;
       ResultSet result = null;
 
       for(int i=hierarchicalBag.getDepth2entities().size()-1; i>=0; i--) {
@@ -649,7 +666,8 @@ public class ONaiveImportStrategy implements OImportStrategy {
             propertyOfKey[j] = currentEntity.getPrimaryKey().getInvolvedAttributes().get(j).getName();
           }
 
-          result = dbQueryEngine.getRecordById(currentEntity.getName(),propertyOfKey, valueOfKey, context);
+          queryResult = dbQueryEngine.getRecordById(currentEntity.getName(),propertyOfKey, valueOfKey, context);
+          result = queryResult.getResult();
 
           if(result != null) {
             entityName = currentEntity.getName();
@@ -685,6 +703,7 @@ public class ONaiveImportStrategy implements OImportStrategy {
 
     try {
 
+      OQueryResult queryResult = null;
       ResultSet result = null;
 
       for(int i=hierarchicalBag.getDepth2entities().size()-1; i>=0; i--) {
@@ -695,7 +714,8 @@ public class ONaiveImportStrategy implements OImportStrategy {
             propertyOfKey[j] = currentEntity.getPrimaryKey().getInvolvedAttributes().get(j).getName();
           }
 
-          result = dbQueryEngine.getRecordById(currentEntity.getName(),propertyOfKey, valueOfKey, context);
+          queryResult = dbQueryEngine.getRecordById(currentEntity.getName(),propertyOfKey, valueOfKey, context);
+          result = queryResult.getResult();
 
           if(result != null) {
             entityName = currentEntity.getName();

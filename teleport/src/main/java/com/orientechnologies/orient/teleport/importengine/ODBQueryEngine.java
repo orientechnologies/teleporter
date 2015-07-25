@@ -31,6 +31,7 @@ import com.orientechnologies.orient.teleport.model.dbschema.OAttribute;
 import com.orientechnologies.orient.teleport.model.dbschema.OEntity;
 import com.orientechnologies.orient.teleport.model.dbschema.OHierarchicalBag;
 import com.orientechnologies.orient.teleport.persistence.util.ODBSourceConnection;
+import com.orientechnologies.orient.teleport.persistence.util.OQueryResult;
 
 /**
  * Implementation of ODataSourceQueryEngine. It executes the necessary queries for the source DB records fetching.
@@ -43,16 +44,16 @@ import com.orientechnologies.orient.teleport.persistence.util.ODBSourceConnectio
 public class ODBQueryEngine implements ODataSourceQueryEngine {
 
   private ODBSourceConnection dataSource;
-  private Connection dbConnection;
-  private Statement statement;
-  public ResultSet results;
-  public ResultSet aggregateTable;
+  //  private Connection dbConnection;
+  //  private Statement statement;
+  //  public ResultSet results;
+  //  public ResultSet aggregateTable;
 
   public ODBQueryEngine(String driver, String uri, String username, String password) {
     this.dataSource =  new ODBSourceConnection(driver, uri, username, password);
   }
-  
-  
+
+
   /**
    * @param entityName
    * @param propertyOfKey
@@ -60,11 +61,11 @@ public class ODBQueryEngine implements ODataSourceQueryEngine {
    * @param context
    * @return
    */
-  public ResultSet getRecordById(String entityName, String[] propertyOfKey, String[] valueOfKey, OTeleportContext context) {
-    
-    this.aggregateTable = null;
-    this.dbConnection = null;
-    this.statement = null;
+  public OQueryResult getRecordById(String entityName, String[] propertyOfKey, String[] valueOfKey, OTeleportContext context) {
+
+    ResultSet aggregateTable = null;
+    Connection dbConnection = null;
+    Statement statement = null;
     String query = "select * from " + entityName + " where ";
 
     query += propertyOfKey[0] + " = '" + valueOfKey[0] + "'";
@@ -78,78 +79,81 @@ public class ODBQueryEngine implements ODataSourceQueryEngine {
     try {
 
       try {
-        this.dbConnection = dataSource.getConnection(context);
+        dbConnection = dataSource.getConnection(context);
       } catch (Exception e) {
         e.printStackTrace();
       }
-      this.statement = dbConnection.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
-      this.aggregateTable = statement.executeQuery(query);
+      statement = dbConnection.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+      aggregateTable = statement.executeQuery(query);
 
     }catch(SQLException e) {
       context.getOutputManager().debug(e.getMessage());
       e.printStackTrace();
     }
-    return this.aggregateTable;
+    OQueryResult queryResult = new OQueryResult(dbConnection, statement, aggregateTable);
+    return queryResult;
   }
 
-  
 
-  public ResultSet getRecordsByEntity(String entityName, OTeleportContext context) {
 
-    this.results = null;
-    this.dbConnection = null;
-    this.statement = null;
+  public OQueryResult getRecordsByEntity(String entityName, OTeleportContext context) {
+
+    ResultSet result = null;
+    Connection dbConnection = null;
+    Statement statement = null;
     String query = "select * from " + entityName;
 
     try {
 
       try {
-        this.dbConnection = dataSource.getConnection(context);
+        dbConnection = dataSource.getConnection(context);
       } catch (Exception e) {
         e.printStackTrace();
       }
-      this.statement = dbConnection.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
-      this.results = statement.executeQuery(query);
+      statement = dbConnection.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+      result = statement.executeQuery(query);
 
     }catch(SQLException e) {
       context.getOutputManager().debug(e.getMessage());
       e.printStackTrace();
     }
-    return this.results;
+    OQueryResult queryResult = new OQueryResult(dbConnection, statement, result);
+    return queryResult;
   }
 
   /**
    * @param currentDiscriminatorValue
    */
-  public ResultSet getRecordsFromSingleTableByDiscriminatorValue(String discriminatorColumn, String currentDiscriminatorValue, String entityName, OTeleportContext context) {
+  public OQueryResult getRecordsFromSingleTableByDiscriminatorValue(String discriminatorColumn, String currentDiscriminatorValue, String entityName, OTeleportContext context) {
 
-    this.results = null;
-    this.dbConnection = null;
-    this.statement = null;
+    ResultSet result = null;
+    Connection dbConnection = null;
+    Statement statement = null;
     String query = "select * from " + entityName + " where " + discriminatorColumn + "='" + currentDiscriminatorValue + "'";
 
     try {
 
       try {
-        this.dbConnection = dataSource.getConnection(context);
+        dbConnection = dataSource.getConnection(context);
       } catch (Exception e) {
         e.printStackTrace();
       }
-      this.statement = dbConnection.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
-      this.results = statement.executeQuery(query);
+      statement = dbConnection.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+      result = statement.executeQuery(query);
 
     }catch(SQLException e) {
       context.getOutputManager().debug(e.getMessage());
       e.printStackTrace();
     }
-    return this.results;
+    OQueryResult queryResult = new OQueryResult(dbConnection, statement, result);
+    return queryResult;
   }
 
 
-  public ResultSet getEntityTypeFromSingleTable(String discriminatorColumn, String physicalEntityName, String[] propertyOfKey, String[] valueOfKey, OTeleportContext context) {
-    this.results = null;
-    this.dbConnection = null;
-    this.statement = null;
+  public OQueryResult getEntityTypeFromSingleTable(String discriminatorColumn, String physicalEntityName, String[] propertyOfKey, String[] valueOfKey, OTeleportContext context) {
+    ResultSet result = null;
+    Connection dbConnection = null;
+    Statement statement = null;
     String query = "select " + discriminatorColumn + " from " + physicalEntityName + " where ";
 
     query += propertyOfKey[0] + " = '" + valueOfKey[0] + "'";
@@ -163,31 +167,32 @@ public class ODBQueryEngine implements ODataSourceQueryEngine {
     try {
 
       try {
-        this.dbConnection = dataSource.getConnection(context);
+        dbConnection = dataSource.getConnection(context);
       } catch (Exception e) {
         e.printStackTrace();
       }
-      this.statement = dbConnection.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
-      this.results = statement.executeQuery(query);
+      statement = dbConnection.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+      result = statement.executeQuery(query);
 
     }catch(SQLException e) {
       context.getOutputManager().debug(e.getMessage());
       e.printStackTrace();
     }
-    return this.results;
+    OQueryResult queryResult = new OQueryResult(dbConnection, statement, result);
+    return queryResult;
 
   }
-  
+
 
   /**
    * @param bag
    * @return
    */
-  public ResultSet buildAggregateTableFromHierarchicalBag(OHierarchicalBag bag, OTeleportContext context) {
+  public OQueryResult buildAggregateTableFromHierarchicalBag(OHierarchicalBag bag, OTeleportContext context) {
 
-    this.results = null;
-    this.dbConnection = null;
-    this.statement = null;
+    ResultSet result = null;
+    Connection dbConnection = null;
+    Statement statement = null;
 
     Iterator<OEntity> it = bag.getDepth2entities().get(0).iterator();
     OEntity rootEntity = it.next();
@@ -219,11 +224,11 @@ public class ODBQueryEngine implements ODataSourceQueryEngine {
 
         query += "left join " + currentEntity.getName() + " as t" + thTable + 
             " on t0." + rootEntityPropertyOfKey[0] + " = t" + thTable + "." + currentEntityPropertyOfKey[0];
-        
+
         for(int k=1; k<currentEntityPropertyOfKey.length; k++) {
           query += " and " + rootEntityPropertyOfKey[k] + " = t" + thTable + "." + currentEntityPropertyOfKey[0];
         }
-        
+
         query += "\n";
         thTable++;
       }
@@ -232,37 +237,19 @@ public class ODBQueryEngine implements ODataSourceQueryEngine {
     try {
 
       try {
-        this.dbConnection = dataSource.getConnection(context);
+        dbConnection = dataSource.getConnection(context);
       } catch (Exception e) {
         e.printStackTrace();
       }
-      this.statement = dbConnection.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
-      this.results = statement.executeQuery(query);
+      statement = dbConnection.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+      result = statement.executeQuery(query);
 
     }catch(SQLException e) {
       context.getOutputManager().debug(e.getMessage());
       e.printStackTrace();
     }
-    return this.results;
-  }
-
-
-  public void closeAll(OTeleportContext context) {
-
-    try {
-      if(this.dbConnection != null && !this.dbConnection.isClosed()) 
-        this.dbConnection.close();
-      if(this.statement != null && !this.statement.isClosed()) 
-        this.statement.close();
-      if(this.results != null && !this.results.isClosed())
-        this.results.close();
-      if(this.aggregateTable != null && !this.aggregateTable.isClosed())
-        this.aggregateTable.close();
-    } catch(SQLException e) {
-      context.getOutputManager().debug(e.getMessage());
-      e.printStackTrace();
-    }
-
+    OQueryResult queryResult = new OQueryResult(dbConnection, statement, result);
+    return queryResult;
   }
 
 }

@@ -122,8 +122,6 @@ public class OSequentialExecutionsTestCase {
       assertEquals(OType.STRING, currentProperty.getType());
       assertFalse(itProperties.hasNext());
 
-//      orientGraph.drop();
-//      orientGraph.shutdown();
 
       /*
        * Modify of the db schema, adding a column
@@ -237,8 +235,6 @@ public class OSequentialExecutionsTestCase {
       assertEquals(OType.STRING, currentProperty.getType());
       assertFalse(itProperties.hasNext());
 
-//      orientGraph.drop();
-//      orientGraph.shutdown();
 
       /*
        * Modify of the db schema, removing a column
@@ -347,8 +343,6 @@ public class OSequentialExecutionsTestCase {
       assertEquals(OType.STRING, currentProperty.getType());
       assertFalse(itProperties.hasNext());
 
-//      orientGraph.drop();
-//      orientGraph.shutdown();
 
       /*
        * Modify of the db schema, changing a column (name and type)
@@ -501,10 +495,7 @@ public class OSequentialExecutionsTestCase {
       }
       assertEquals(2, count);
 
-//      orientGraph.drop();
-//      orientGraph.shutdown();
-
-
+      
       /*
        * Modify of the db schema, adding a table
        */
@@ -512,7 +503,7 @@ public class OSequentialExecutionsTestCase {
       String dropOldForeignKey = "alter table FILM drop constraint director";
       st.execute(dropOldForeignKey);
 
-      String addNewForeignKey = "alter table DIRECTOR add constraint bestfilm foreign key (BESTFILM) references FILM(ID)";
+      String addNewForeignKey = "alter table DIRECTOR add foreign key (BESTFILM) references FILM(ID)";
       st.execute(addNewForeignKey);
 
       this.naiveImportStrategy.executeStrategy("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", this.outOrientGraphUri, "basicDBMapper",  null, "java", context);
@@ -551,6 +542,13 @@ public class OSequentialExecutionsTestCase {
 
       count = 0;
       for(Edge e: orientGraph.getEdges()) {
+        assertNotNull(e.getId());
+        count++;
+      }
+      assertEquals(4, count);
+      
+      count = 0;
+      for(Edge e: orientGraph.getEdgesOfClass("HasDirector")) {
         assertNotNull(e.getId());
         count++;
       }
@@ -642,8 +640,6 @@ public class OSequentialExecutionsTestCase {
       assertEquals(OType.STRING, currentProperty.getType());
       assertFalse(itProperties.hasNext());
 
-//      orientGraph.drop();
-//      orientGraph.shutdown();
 
       /*
        * Modify of the db schema, adding a table
@@ -802,9 +798,6 @@ public class OSequentialExecutionsTestCase {
       }
       assertEquals(0, count);
 
-//      orientGraph.drop();
-//      orientGraph.shutdown();
-
 
       /*
        *  Adding a relationship (foreign key).
@@ -956,8 +949,6 @@ public class OSequentialExecutionsTestCase {
       assertEquals(OType.STRING, currentProperty.getType());
       assertFalse(itProperties.hasNext());
 
-//      orientGraph.drop();
-//      orientGraph.shutdown();
 
       /*
        * Modify of the db schema, removing a table
@@ -1111,12 +1102,9 @@ public class OSequentialExecutionsTestCase {
       }
       assertEquals(2, count);
 
-//      orientGraph.drop();
-//      orientGraph.shutdown();
-
 
       /*
-       *  Removing a relationship (foreign key).
+       *  Removing a relation 
        */
 
       String dropForeignKey = "alter table FILM drop constraint director";
@@ -1161,7 +1149,14 @@ public class OSequentialExecutionsTestCase {
         assertNotNull(e.getId());
         count++;
       }
-      assertEquals(0, count);
+      assertEquals(2, count);
+
+      count = 0;
+      for(Edge e: orientGraph.getEdgesOfClass("HasDirector")) {
+        assertNotNull(e.getId());
+        count++;
+      }
+      assertEquals(2, count);
 
 
     }catch(Exception e) {
@@ -1256,10 +1251,7 @@ public class OSequentialExecutionsTestCase {
       }
       assertEquals(0, count);
 
-//      orientGraph.drop();
-//      orientGraph.shutdown();
-
-
+      
       /*
        * Adding records to the film table
        */
@@ -1429,9 +1421,6 @@ public class OSequentialExecutionsTestCase {
       }
       assertEquals(8, count);
 
-//      orientGraph.drop();
-//      orientGraph.shutdown();
-
 
       /*
        * Adding records to the film, actor and join tables
@@ -1570,6 +1559,7 @@ public class OSequentialExecutionsTestCase {
         count++;
       }
       assertEquals(2, count);
+      
 
       /*
        * Adding a table with records e foreign key
@@ -1740,9 +1730,6 @@ public class OSequentialExecutionsTestCase {
         count++;
       }
       assertEquals(0, count);
-
-//      orientGraph.drop();
-//      orientGraph.shutdown();
 
 
       /*
@@ -1920,9 +1907,6 @@ public class OSequentialExecutionsTestCase {
         count++;
       }
       assertEquals(0, count);
-
-//      orientGraph.drop();
-//      orientGraph.shutdown();
 
 
       /*
