@@ -27,6 +27,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 
+
 import com.orientechnologies.common.exception.OException;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.metadata.schema.OType;
@@ -66,6 +67,8 @@ public class OGraphModelWriter {
     OTeleporterStatistics statistics = context.getStatistics();
     statistics.startWork3Time = new Date();
     statistics.runningStepNumber = 3;
+
+    //    if(!this.inheritanceChangesPresent(graphModel, orientGraph)) {
 
     try {
 
@@ -240,6 +243,13 @@ public class OGraphModelWriter {
 
     success = true;
     return success;
+
+    //    }
+    //    else {
+    //      context.getOutputManager().error("Changes on entities involved in hierarchical trees detected: Teleporter cannot support these variation and"
+    //          + "grant coherence between the two databases. Rebuild the schema from scratch.");
+    //      System.exit(0);
+    //    }
   }
 
 
@@ -307,13 +317,40 @@ public class OGraphModelWriter {
         updated = true;
       }
     }
-    
+
     // dropping properties
     for(String propertyName: toDrop) {
       orientElementType.dropProperty(propertyName);
     }
-    
+
     return updated;
+  }
+
+  public boolean inheritanceChangesPresent(OGraphModel graphModel, OrientGraphNoTx orientGraph) {
+
+    OrientVertexType orientCorrespondentVertexType;
+
+    for(OVertexType currentVertexType: graphModel.getVerticesType()) {
+
+      orientCorrespondentVertexType = orientGraph.getVertexType(currentVertexType.getName());
+
+      // check for changes if vertex type is already present in the orient schema
+      if(currentVertexType != null) {
+
+        if( (currentVertexType.getParentType() == null && orientCorrespondentVertexType != null)
+            || (currentVertexType.getParentType() != null && orientCorrespondentVertexType == null) )
+          return true;
+
+        else if(currentVertexType.getParentType() != null && orientCorrespondentVertexType != null) {
+          if(!currentVertexType.getParentType().getName().equalsIgnoreCase(orientCorrespondentVertexType.getSuperClass().getName()))
+            return true;
+        }
+      }
+
+    }
+
+    return false;
+
   }
 
 }
