@@ -44,11 +44,8 @@ import com.orientechnologies.orient.teleporter.persistence.util.OQueryResult;
 public class ODBQueryEngine implements ODataSourceQueryEngine {
 
   private ODBSourceConnection dataSource;
-  //  private Connection dbConnection;
-  //  private Statement statement;
-  //  public ResultSet results;
-  //  public ResultSet aggregateTable;
 
+  
   public ODBQueryEngine(String driver, String uri, String username, String password) {
     this.dataSource =  new ODBSourceConnection(driver, uri, username, password);
   }
@@ -81,14 +78,15 @@ public class ODBQueryEngine implements ODataSourceQueryEngine {
       try {
         dbConnection = dataSource.getConnection(context);
       } catch (Exception e) {
-        e.printStackTrace();
+        context.getOutputManager().error(e.getMessage());
+        context.getOutputManager().debug(e.getStackTrace().toString());
       }
       statement = dbConnection.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
       aggregateTable = statement.executeQuery(query);
 
     }catch(SQLException e) {
-      context.getOutputManager().debug(e.getMessage());
-      e.printStackTrace();
+      context.getOutputManager().error(e.getMessage());
+      context.getOutputManager().debug(e.getStackTrace().toString());
     }
     OQueryResult queryResult = new OQueryResult(dbConnection, statement, aggregateTable);
     return queryResult;
@@ -108,14 +106,15 @@ public class ODBQueryEngine implements ODataSourceQueryEngine {
       try {
         dbConnection = dataSource.getConnection(context);
       } catch (Exception e) {
-        e.printStackTrace();
+        context.getOutputManager().error(e.getMessage());
+        context.getOutputManager().debug(e.getStackTrace().toString());
       }
       statement = dbConnection.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
       result = statement.executeQuery(query);
 
     }catch(SQLException e) {
-      context.getOutputManager().debug(e.getMessage());
-      e.printStackTrace();
+      context.getOutputManager().error(e.getMessage());
+      context.getOutputManager().debug(e.getStackTrace().toString());
     }
     OQueryResult queryResult = new OQueryResult(dbConnection, statement, result);
     return queryResult;
@@ -136,14 +135,15 @@ public class ODBQueryEngine implements ODataSourceQueryEngine {
       try {
         dbConnection = dataSource.getConnection(context);
       } catch (Exception e) {
-        e.printStackTrace();
+        context.getOutputManager().error(e.getMessage());
+        context.getOutputManager().debug(e.getStackTrace().toString());
       }
       statement = dbConnection.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
       result = statement.executeQuery(query);
 
     }catch(SQLException e) {
-      context.getOutputManager().debug(e.getMessage());
-      e.printStackTrace();
+      context.getOutputManager().error(e.getMessage());
+      context.getOutputManager().debug(e.getStackTrace().toString());
     }
     OQueryResult queryResult = new OQueryResult(dbConnection, statement, result);
     return queryResult;
@@ -169,14 +169,15 @@ public class ODBQueryEngine implements ODataSourceQueryEngine {
       try {
         dbConnection = dataSource.getConnection(context);
       } catch (Exception e) {
-        e.printStackTrace();
+        context.getOutputManager().error(e.getMessage());
+        context.getOutputManager().debug(e.getStackTrace().toString());
       }
       statement = dbConnection.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
       result = statement.executeQuery(query);
 
     }catch(SQLException e) {
-      context.getOutputManager().debug(e.getMessage());
-      e.printStackTrace();
+      context.getOutputManager().error(e.getMessage());
+      context.getOutputManager().debug(e.getStackTrace().toString());
     }
     OQueryResult queryResult = new OQueryResult(dbConnection, statement, result);
     return queryResult;
@@ -239,14 +240,15 @@ public class ODBQueryEngine implements ODataSourceQueryEngine {
       try {
         dbConnection = dataSource.getConnection(context);
       } catch (Exception e) {
-        e.printStackTrace();
+        context.getOutputManager().error(e.getMessage());
+        context.getOutputManager().debug(e.getStackTrace().toString());
       }
       statement = dbConnection.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
       result = statement.executeQuery(query);
 
     }catch(SQLException e) {
-      context.getOutputManager().debug(e.getMessage());
-      e.printStackTrace();
+      context.getOutputManager().error(e.getMessage());
+      context.getOutputManager().debug(e.getStackTrace().toString());
     }
     OQueryResult queryResult = new OQueryResult(dbConnection, statement, result);
     return queryResult;

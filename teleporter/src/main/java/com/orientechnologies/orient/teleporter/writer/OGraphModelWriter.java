@@ -68,188 +68,188 @@ public class OGraphModelWriter {
     statistics.startWork3Time = new Date();
     statistics.runningStepNumber = 3;
 
-    //    if(!this.inheritanceChangesPresent(graphModel, orientGraph)) {
+    if(!this.inheritanceChangesPresent(graphModel, orientGraph)) {
 
-    try {
+      try {
 
-      /*
-       * Writing vertex-type
-       */
+        /*
+         * Writing vertex-type
+         */
 
-      context.getOutputManager().debug("Writing vertex-types on OrientDB Schema...");
-      int numberOfVertices = graphModel.getVerticesType().size();
-      statistics.totalNumberOfVertexType = numberOfVertices;
+        context.getOutputManager().debug("Writing vertex-types on OrientDB Schema...");
+        int numberOfVertices = graphModel.getVerticesType().size();
+        statistics.totalNumberOfVertexType = numberOfVertices;
 
-      OrientVertexType newVertexType;
-      String statement;
-      OCommandSQL sqlCommand;
-      OType type;
-      Iterator<OModelProperty> it = null;
+        OrientVertexType newVertexType;
+        String statement;
+        OCommandSQL sqlCommand;
+        OType type;
+        Iterator<OModelProperty> it = null;
 
-      int iteration = 1;
-      for(OVertexType currentVertexType: graphModel.getVerticesType()) {
-        context.getOutputManager().debug("Writing '" + currentVertexType.getName() + "' vertex-type  (" + iteration + "/" + numberOfVertices + ")...");
+        int iteration = 1;
+        for(OVertexType currentVertexType: graphModel.getVerticesType()) {
+          context.getOutputManager().debug("Writing '%s' vertex-type  (%s/%s)...", currentVertexType.getName(), iteration, numberOfVertices);
 
-        // check if vertex type is already present in the orient schema
-        newVertexType = orientGraph.getVertexType(currentVertexType.getName());
+          // check if vertex type is already present in the orient schema
+          newVertexType = orientGraph.getVertexType(currentVertexType.getName());
 
-        if(newVertexType == null) {
+          if(newVertexType == null) {
 
-          // inheritance case
-          if(currentVertexType.getParentType() != null)
-            newVertexType = orientGraph.createVertexType(currentVertexType.getName(), currentVertexType.getParentType().getName());
-          else
-            newVertexType = orientGraph.createVertexType(currentVertexType.getName());
+            // inheritance case
+            if(currentVertexType.getParentType() != null)
+              newVertexType = orientGraph.createVertexType(currentVertexType.getName(), currentVertexType.getParentType().getName());
+            else
+              newVertexType = orientGraph.createVertexType(currentVertexType.getName());
 
-          OModelProperty currentProperty = null;
-          it = currentVertexType.getProperties().iterator();
-          while(it.hasNext()) {
-            currentProperty = it.next();
-            type = handler.resolveType(currentProperty.getPropertyType().toLowerCase(Locale.ENGLISH), context);
-            if(type != null) {
-              String propertyName = currentProperty.getName();
-              newVertexType.createProperty(propertyName, type);
+            OModelProperty currentProperty = null;
+            it = currentVertexType.getProperties().iterator();
+            while(it.hasNext()) {
+              currentProperty = it.next();
+              type = handler.resolveType(currentProperty.getPropertyType().toLowerCase(Locale.ENGLISH), context);
+              if(type != null) {
+                String propertyName = currentProperty.getName();
+                newVertexType.createProperty(propertyName, type);
+              }
+              else {
+                it.remove();
+                statistics.warningMessages.add(currentProperty.getPropertyType() + " type is not supported, the correspondent property will be dropped.");
+              }
+            }
+            context.getOutputManager().debug("Vertex-type '%s' wrote.\n", currentVertexType.getName());
+          }
+          else  {
+            boolean updated = this.checkAndUpdateClass(orientGraph, currentVertexType, handler, context);
+
+            if(updated) {
+              context.getOutputManager().debug("Vertex-type '%s' updated.\n", currentVertexType.getName());
             }
             else {
-              it.remove();
-              statistics.warningMessages.add(currentProperty.getPropertyType() + " type is not supported, the correspondent property will be dropped.");
+              context.getOutputManager().debug("Vertex-type '%s' already present in the Orient schema.\n", currentVertexType.getName());
             }
           }
-          context.getOutputManager().debug("Vertex-type '" + currentVertexType.getName() + "' wrote.\n");
-        }
-        else  {
-          boolean updated = this.checkAndUpdateClass(orientGraph, currentVertexType, handler, context);
 
-          if(updated) {
-            context.getOutputManager().debug("Vertex-type '" + currentVertexType.getName() + "' updated.\n");
-          }
-          else {
-            context.getOutputManager().debug("Vertex-type '" + currentVertexType.getName() + "' already present in the Orient schema.\n");
-          }
+          iteration++;
+          statistics.wroteVertexType++;
         }
 
-        iteration++;
-        statistics.wroteVertexType++;
-      }
+        /*
+         * Writing edge-type
+         */
 
-      /*
-       * Writing edge-type
-       */
+        context.getOutputManager().debug("Writing edge-types on OrientDB Schema...");
+        int numberOfEdges = graphModel.getEdgesType().size();
+        statistics.totalNumberOfEdgeType = numberOfEdges;
 
-      context.getOutputManager().debug("Writing edge-types on OrientDB Schema...");
-      int numberOfEdges = graphModel.getEdgesType().size();
-      statistics.totalNumberOfEdgeType = numberOfEdges;
+        OrientEdgeType newEdgeType;
 
-      OrientEdgeType newEdgeType;
+        iteration = 1;
+        for(OEdgeType currentEdgeType: graphModel.getEdgesType()) {
+          context.getOutputManager().debug("Writing '%s' edge-type  (%s/%s)...", currentEdgeType.getName(), iteration, numberOfEdges);
 
-      iteration = 1;
-      for(OEdgeType currentEdgeType: graphModel.getEdgesType()) {
-        context.getOutputManager().debug("Writing '" + currentEdgeType.getName() + "' edge-type  (" + iteration + "/" + numberOfEdges + ")...");
+          // check if edge type is already present in the orient schema
+          newEdgeType = orientGraph.getEdgeType(currentEdgeType.getName());
 
-        // check if edge type is already present in the orient schema
-        newEdgeType = orientGraph.getEdgeType(currentEdgeType.getName());
+          if(newEdgeType == null) {
+            newEdgeType = orientGraph.createEdgeType(currentEdgeType.getName());
+            OModelProperty currentProperty = null;
+            it = currentEdgeType.getProperties().iterator();
+            while(it.hasNext()) {
+              currentProperty = it.next();
+              type = handler.resolveType(currentProperty.getPropertyType().toLowerCase(Locale.ENGLISH), context);
 
-        if(newEdgeType == null) {
-          newEdgeType = orientGraph.createEdgeType(currentEdgeType.getName());
-          OModelProperty currentProperty = null;
-          it = currentEdgeType.getProperties().iterator();
-          while(it.hasNext()) {
-            currentProperty = it.next();
-            type = handler.resolveType(currentProperty.getPropertyType().toLowerCase(Locale.ENGLISH), context);
-
-            if(type != null) {
-              newEdgeType.createProperty(currentProperty.getName(), type);
+              if(type != null) {
+                newEdgeType.createProperty(currentProperty.getName(), type);
+              }
+              else {  
+                it.remove();
+                statistics.warningMessages.add(currentProperty.getPropertyType() + " type is not supported, the correspondent property will be dropped.");
+              }
             }
-            else {  
-              it.remove();
-              statistics.warningMessages.add(currentProperty.getPropertyType() + " type is not supported, the correspondent property will be dropped.");
+            context.getOutputManager().debug("Edge-type '%s' wrote.\n", currentEdgeType.getName());
+          }
+          else {
+            boolean updated = this.checkAndUpdateClass(orientGraph, currentEdgeType, handler, context);
+
+            if(updated) {
+              context.getOutputManager().debug("Edge-type '%s' updated.\n", currentEdgeType.getName());
+            }
+            else {
+              context.getOutputManager().debug("Edge-type '%s' already present in the Orient schema.\n", currentEdgeType.getName());
             }
           }
-          context.getOutputManager().debug("Edge-type '" + currentEdgeType.getName() + "' wrote.\n");
+          iteration++;
+          statistics.wroteEdgeType++;
         }
-        else {
-          boolean updated = this.checkAndUpdateClass(orientGraph, currentEdgeType, handler, context);
 
-          if(updated) {
-            context.getOutputManager().debug("Edge-type '" + currentEdgeType.getName() + "' updated.\n");
+        /*
+         *  Writing indexes on properties belonging to the original primary key
+         */
+
+        context.getOutputManager().debug("Building indexes on properties belonging to the original primary key...");
+        statistics.totalNumberOfIndices = numberOfVertices;
+
+        String currentType = null;
+        List<String> properties = null;
+        iteration = 1;
+        boolean isPresent;
+        for(OVertexType currentVertexType: graphModel.getVerticesType()) {
+
+          currentType = currentVertexType.getName();
+          properties = new ArrayList<String>();
+          for(OModelProperty currentProperty: currentVertexType.getProperties()) {
+            if(currentProperty.isFromPrimaryKey()) {
+              properties.add(currentProperty.getName());
+            }
+          }
+
+          // check if vertex type is already present in the orient schema
+          isPresent = orientGraph.getRawGraph().getMetadata().getIndexManager().areIndexed(currentVertexType.getName(), properties);
+
+          if(!isPresent) {
+
+            String propertiesList = "";
+            int j = 0;
+            for(String property: properties) {
+              if(j == properties.size()-1) 
+                propertiesList += property;
+              else
+                propertiesList += property + ",";
+              j++;
+            }
+
+            if(!propertiesList.isEmpty()) {
+              context.getOutputManager().debug("Building index for '%s' on %s  (%s/%s)...", currentVertexType.getName(), propertiesList, iteration, numberOfVertices);
+              statement = "create index " + currentType + ".pkey" + " on " + currentType + " (" + propertiesList + ") unique_hash_index";
+              sqlCommand = new OCommandSQL(statement);
+              orientGraph.getRawGraph().command(sqlCommand).execute();
+              context.getOutputManager().debug("Index for %s built.\n", currentVertexType.getName());
+            }
+            else {
+              context.getStatistics().warningMessages.add("The table '" + currentVertexType.getName() + "' has not primary key constraints defined in the db schema,"
+                  + " thus the correspondent Class Vertex in Orient will not have a default index on the original primary key.");
+            }
           }
           else {
-            context.getOutputManager().debug("Edge-type '" + currentEdgeType.getName() + "' already present in the Orient schema.\n");
+            context.getOutputManager().debug("Index for %s already present in the Orient schema.\n", currentVertexType.getName());
           }
+          iteration++;
+          statistics.wroteIndices++;
         }
-        iteration++;
-        statistics.wroteEdgeType++;
-      }
+      }catch(OException e) {
+        e.printStackTrace();
+      }    
+      statistics.notifyListeners();
+      statistics.runningStepNumber = -1;
 
-      /*
-       *  Writing indexes on properties belonging to the original primary key
-       */
+      success = true;
+      return success;
 
-      context.getOutputManager().debug("Building indexes on properties belonging to the original primary key...");
-      statistics.totalNumberOfIndices = numberOfVertices;
-
-      String currentType = null;
-      List<String> properties = null;
-      iteration = 1;
-      boolean isPresent;
-      for(OVertexType currentVertexType: graphModel.getVerticesType()) {
-
-        currentType = currentVertexType.getName();
-        properties = new ArrayList<String>();
-        for(OModelProperty currentProperty: currentVertexType.getProperties()) {
-          if(currentProperty.isFromPrimaryKey()) {
-            properties.add(currentProperty.getName());
-          }
-        }
-
-        // check if vertex type is already present in the orient schema
-        isPresent = orientGraph.getRawGraph().getMetadata().getIndexManager().areIndexed(currentVertexType.getName(), properties);
-
-        if(!isPresent) {
-
-          String propertiesList = "";
-          int j = 0;
-          for(String property: properties) {
-            if(j == properties.size()-1) 
-              propertiesList += property;
-            else
-              propertiesList += property + ",";
-            j++;
-          }
-
-          if(!propertiesList.isEmpty()) {
-            context.getOutputManager().debug("Building index for '" + currentVertexType.getName() + "' on " + propertiesList + "  (" + iteration + "/" + numberOfVertices + ")...");
-            statement = "create index " + currentType + ".pkey" + " on " + currentType + " (" + propertiesList + ") unique_hash_index";
-            sqlCommand = new OCommandSQL(statement);
-            orientGraph.getRawGraph().command(sqlCommand).execute();
-            context.getOutputManager().debug("Index for " + currentVertexType.getName() + " built.\n");
-          }
-          else {
-            context.getStatistics().warningMessages.add("The table '" + currentVertexType.getName() + "' has not primary key constraints defined in the db schema,"
-                + " thus the correspondent Class Vertex in Orient will not have a default index on the original primary key.");
-          }
-        }
-        else {
-          context.getOutputManager().debug("Index for " + currentVertexType.getName() + " already present in the Orient schema.\n");
-        }
-        iteration++;
-        statistics.wroteIndices++;
-      }
-    }catch(OException e) {
-      e.printStackTrace();
-    }    
-    statistics.notifyListeners();
-    statistics.runningStepNumber = -1;
-
-    success = true;
-    return success;
-
-    //    }
-    //    else {
-    //      context.getOutputManager().error("Changes on entities involved in hierarchical trees detected: Teleporter cannot support these variation and"
-    //          + "grant coherence between the two databases. Rebuild the schema from scratch.");
-    //      System.exit(0);
-    //    }
+    }
+    else {
+      context.getOutputManager().error("Changes on entities involved in hierarchical trees detected: Teleporter cannot support these variation and"
+          + "grant coherence between the two databases. Rebuild the schema from scratch.");
+      return success;
+    }
   }
 
 
@@ -273,7 +273,7 @@ public class OGraphModelWriter {
       orientElementType = orientGraph.getEdgeType(currentElementType.getName());
     }
     else {
-      context.getOutputManager().error("Fatal error: current element type '" + currentElementType + "' is not instance neither of Vertex Type neither of EdgeType");
+      context.getOutputManager().error("Fatal error: current element type '%s' is not instance neither of Vertex Type neither of EdgeType", currentElementType.getName());
       System.exit(0);
     }
 
@@ -335,14 +335,14 @@ public class OGraphModelWriter {
       orientCorrespondentVertexType = orientGraph.getVertexType(currentVertexType.getName());
 
       // check for changes if vertex type is already present in the orient schema
-      if(currentVertexType != null) {
+      if(currentVertexType != null && orientCorrespondentVertexType != null) {
 
-        if( (currentVertexType.getParentType() == null && orientCorrespondentVertexType != null)
-            || (currentVertexType.getParentType() != null && orientCorrespondentVertexType == null) )
+        if( (currentVertexType.getParentType() == null && !orientCorrespondentVertexType.getSuperClass().getName().equals("V"))
+            || (currentVertexType.getParentType() != null && orientCorrespondentVertexType.getSuperClass().getName().equals("V")) )
           return true;
 
-        else if(currentVertexType.getParentType() != null && orientCorrespondentVertexType != null) {
-          if(!currentVertexType.getParentType().getName().equalsIgnoreCase(orientCorrespondentVertexType.getSuperClass().getName()))
+        else if(currentVertexType.getParentType() != null && !orientCorrespondentVertexType.getSuperClass().getName().equals("V")) {
+          if(!currentVertexType.getParentType().getName().equals(orientCorrespondentVertexType.getSuperClass().getName()))
             return true;
         }
       }

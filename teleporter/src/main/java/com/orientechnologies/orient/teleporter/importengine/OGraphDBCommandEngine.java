@@ -72,51 +72,65 @@ public class OGraphDBCommandEngine {
    */
   public boolean alreadyFullImportedInOrient(ResultSet record, OVertexType vertexType, Set<String> propertiesOfIndex, OTeleporterContext context) throws SQLException {
 
-    OrientGraphFactory factory = new OrientGraphFactory(this.graphDBUrl);
-    OrientGraphNoTx orientGraph = factory.getNoTx();
-    orientGraph.setStandardElementConstraints(false);
+    OrientGraphNoTx orientGraph = null;
 
-    boolean toResolveNames = false;
+    try {
 
-    // building keys and values for the lookup
+      OrientGraphFactory factory = new OrientGraphFactory(this.graphDBUrl);
+      orientGraph = factory.getNoTx();
+      orientGraph.setStandardElementConstraints(false);
 
-    if(propertiesOfIndex == null) {
-      toResolveNames = true;
-      propertiesOfIndex = new LinkedHashSet<String>();
+      boolean toResolveNames = false;
 
-      for(OModelProperty currentProperty: vertexType.getAllProperties()) {
-        // only attribute coming from the primary key are given
-        if(currentProperty.isFromPrimaryKey())
-          propertiesOfIndex.add(currentProperty.getName());
+      // building keys and values for the lookup
+
+      if(propertiesOfIndex == null) {
+        toResolveNames = true;
+        propertiesOfIndex = new LinkedHashSet<String>();
+
+        for(OModelProperty currentProperty: vertexType.getAllProperties()) {
+          // only attribute coming from the primary key are given
+          if(currentProperty.isFromPrimaryKey())
+            propertiesOfIndex.add(currentProperty.getName());
+        }
       }
+
+      String[] propertyOfKey = new String[propertiesOfIndex.size()];
+      String[] valueOfKey = new String[propertiesOfIndex.size()];
+
+      int cont = 0;
+      for(String property: propertiesOfIndex) {
+        propertyOfKey[cont] = property;
+        if(toResolveNames)
+          valueOfKey[cont] = record.getString(context.getNameResolver().reverseTransformation(property));
+        else
+          valueOfKey[cont] = record.getString(property);
+
+        cont++;
+      }
+
+      String s = "Keys and values in the lookup (upsertVisitedVertex):\t";
+      for(int i=0; i<propertyOfKey.length;i++) {
+        s += propertyOfKey[i] + ":" + valueOfKey[i];
+      }
+      context.getOutputManager().debug(s);
+
+      // lookup
+      OrientVertex vertex = this.getVertexByIndexedKey(orientGraph, propertyOfKey, valueOfKey, vertexType.getName());
+      orientGraph.shutdown();
+
+      if(vertex != null && vertexType.getAllProperties().size() <= vertex.getPropertyKeys().size()) // there aren't properties to add into the vertex (<=)
+        return true;
+
+    } catch(Exception e) {
+      context.getOutputManager().error(e.getMessage());
+//      StringWriter sw = new StringWriter();
+//      PrintWriter pw = new PrintWriter(sw);
+//      e.printStackTrace(pw);
+      context.getOutputManager().debug(e.getStackTrace().toString());
+      if(orientGraph != null)
+        orientGraph.shutdown();
     }
-
-    String[] propertyOfKey = new String[propertiesOfIndex.size()];
-    String[] valueOfKey = new String[propertiesOfIndex.size()];
-
-    int cont = 0;
-    for(String property: propertiesOfIndex) {
-      propertyOfKey[cont] = property;
-      if(toResolveNames)
-        valueOfKey[cont] = record.getString(context.getNameResolver().reverseTransformation(property));
-      else
-        valueOfKey[cont] = record.getString(property);
-
-      cont++;
-    }
-
-    String s = "Keys and values in the lookup (upsertVisitedVertex):\t";
-    for(int i=0; i<propertyOfKey.length;i++) {
-      s += propertyOfKey[i] + ":" + valueOfKey[i];
-    }
-    context.getOutputManager().debug(s);
-
-    // lookup
-    OrientVertex vertex = this.getVertexByIndexedKey(orientGraph, propertyOfKey, valueOfKey, vertexType.getName());
-    orientGraph.shutdown();
-
-    if(vertex != null && vertexType.getAllProperties().size() <= vertex.getPropertyKeys().size()) // there aren't properties to add into the vertex (<=)
-      return true;
 
     return false;
 
@@ -129,189 +143,201 @@ public class OGraphDBCommandEngine {
    * It return the vertex if present, null if not present. 
    * 
    * @param orientGraph
-   * @param relation
-   * @param currentVertexType
-   * @param record
+   * @param keys
+   * @param values
+   * @param ClassName
    * @return
    */
   public OrientVertex getVertexByIndexedKey(OrientBaseGraph orientGraph, String[] keys, String[] values, String vertexClassName) {
 
     OrientVertex vertex = null;
+
     Iterator<Vertex> iterator = orientGraph.getVertices(vertexClassName, keys, values).iterator();
 
     if(iterator.hasNext())
       vertex = (OrientVertex) iterator.next();
 
     return vertex;
-
   }
 
 
   /**
    * @param record
-   * @throws SQLException 
    */
-  public Vertex upsertVisitedVertex(ResultSet record, OVertexType vertexType, Set<String> propertiesOfIndex, OTeleporterContext context) throws SQLException {
+  public Vertex upsertVisitedVertex(ResultSet record, OVertexType vertexType, Set<String> propertiesOfIndex, OTeleporterContext context) {
 
-    OrientGraphFactory factory = new OrientGraphFactory(this.graphDBUrl);
-    OrientGraphNoTx orientGraph = factory.getNoTx();
-    orientGraph.setStandardElementConstraints(false);
-    Map<String,String> properties = new LinkedHashMap<String,String>();
+    OrientGraphNoTx orientGraph = null;
+    OrientVertex vertex = null;
 
-    OTeleporterStatistics statistics = context.getStatistics();
+    try {
 
-    boolean toResolveNames = false;
+      OrientGraphFactory factory = new OrientGraphFactory(this.graphDBUrl);
+      orientGraph = factory.getNoTx();
+      orientGraph.setStandardElementConstraints(false);
+      Map<String,String> properties = new LinkedHashMap<String,String>();
 
-    // building keys and values for the lookup
+      OTeleporterStatistics statistics = context.getStatistics();
 
-    if(propertiesOfIndex == null) {
-      toResolveNames = true;
-      propertiesOfIndex = new LinkedHashSet<String>();
+      boolean toResolveNames = false;
 
-      for(OModelProperty currentProperty: vertexType.getAllProperties()) {
-        // only attribute coming from the primary key are given
-        if(currentProperty.isFromPrimaryKey())
-          propertiesOfIndex.add(currentProperty.getName());
-      }
-    }
+      // building keys and values for the lookup
 
-    String[] propertyOfKey = new String[propertiesOfIndex.size()];
-    String[] valueOfKey = new String[propertiesOfIndex.size()];
+      if(propertiesOfIndex == null) {
+        toResolveNames = true;
+        propertiesOfIndex = new LinkedHashSet<String>();
 
-    int cont = 0;
-    for(String property: propertiesOfIndex) {
-      propertyOfKey[cont] = property;
-      if(toResolveNames)
-        valueOfKey[cont] = record.getString(context.getNameResolver().reverseTransformation(property));
-      else
-        valueOfKey[cont] = record.getString(property);
-
-      cont++;
-    }
-
-    String s = "Keys and values in the lookup (upsertVisitedVertex):\t";
-    for(int i=0; i<propertyOfKey.length;i++) {
-      s += propertyOfKey[i] + ":" + valueOfKey[i];
-    }
-    context.getOutputManager().debug(s);
-
-    // lookup
-    OrientVertex vertex = this.getVertexByIndexedKey(orientGraph, propertyOfKey, valueOfKey, vertexType.getName());
-
-    // setting properties to the vertex
-    String currentAttributeValue = null;
-    String currentDateValue;
-    String currentPropertyType;
-
-
-    // extraction of inherited and not inherited properties from the record (through "getAllProperties()" method)
-    for(OModelProperty currentProperty : vertexType.getAllProperties()) {
-
-      currentPropertyType = context.getDataTypeHandler().resolveType(currentProperty.getPropertyType().toLowerCase(Locale.ENGLISH),context).toString();
-
-      try {
-        currentAttributeValue = record.getString(context.getNameResolver().reverseTransformation(currentProperty.getName()));
-      }catch(Exception e) {
-        context.getOutputManager().error("Mismatch between 'parent-table' attributes and 'child-table' attributes, check the schema of the tables involved in inheritance relationships. ");
-        e.printStackTrace();
+        for(OModelProperty currentProperty: vertexType.getAllProperties()) {
+          // only attribute coming from the primary key are given
+          if(currentProperty.isFromPrimaryKey())
+            propertiesOfIndex.add(currentProperty.getName());
+        }
       }
 
-      if(currentAttributeValue != null) {
+      String[] propertyOfKey = new String[propertiesOfIndex.size()];
+      String[] valueOfKey = new String[propertiesOfIndex.size()];
 
-        if(currentPropertyType.equals("DATE")) {
-          currentDateValue = record.getDate(context.getNameResolver().reverseTransformation(currentProperty.getName())).toString();
-          properties.put(currentProperty.getName(), currentDateValue);
+      int cont = 0;
+      for(String property: propertiesOfIndex) {
+        propertyOfKey[cont] = property;
+        if(toResolveNames)
+          valueOfKey[cont] = record.getString(context.getNameResolver().reverseTransformation(property));
+        else
+          valueOfKey[cont] = record.getString(property);
+
+        cont++;
+      }
+
+      String s = "Keys and values in the lookup (upsertVisitedVertex):\t";
+      for(int i=0; i<propertyOfKey.length;i++) {
+        s += propertyOfKey[i] + ":" + valueOfKey[i];
+      }
+      context.getOutputManager().debug(s);
+
+      // lookup
+      vertex = this.getVertexByIndexedKey(orientGraph, propertyOfKey, valueOfKey, vertexType.getName());
+
+      // setting properties to the vertex
+      String currentAttributeValue = null;
+      String currentDateValue;
+      String currentPropertyType;
+
+
+      // extraction of inherited and not inherited properties from the record (through "getAllProperties()" method)
+      for(OModelProperty currentProperty : vertexType.getAllProperties()) {
+
+        currentPropertyType = context.getDataTypeHandler().resolveType(currentProperty.getPropertyType().toLowerCase(Locale.ENGLISH),context).toString();
+
+        try {
+          currentAttributeValue = record.getString(context.getNameResolver().reverseTransformation(currentProperty.getName()));
+        }catch(Exception e) {
+          context.getOutputManager().error(e.getMessage());
+          context.getOutputManager().error("Mismatch between 'parent-table' attributes and 'child-table' attributes, check the schema of the tables involved in inheritance relationships.");
+          context.getOutputManager().debug(e.getStackTrace().toString());
+          e.printStackTrace();
         }
 
-        else if(currentPropertyType.equals("DATETIME")) {
-          {
-            currentDateValue = record.getTimestamp(context.getNameResolver().reverseTransformation(currentProperty.getName())).toString();
+        if(currentAttributeValue != null) {
+
+          if(currentPropertyType.equals("DATE")) {
+            currentDateValue = record.getDate(context.getNameResolver().reverseTransformation(currentProperty.getName())).toString();
             properties.put(currentProperty.getName(), currentDateValue);
           }
-        }
 
-        else if(currentPropertyType.equals("BOOLEAN")) {
-          switch(currentAttributeValue) {
+          else if(currentPropertyType.equals("DATETIME")) {
+            {
+              currentDateValue = record.getTimestamp(context.getNameResolver().reverseTransformation(currentProperty.getName())).toString();
+              properties.put(currentProperty.getName(), currentDateValue);
+            }
+          }
 
-          case "t": properties.put(currentProperty.getName(), "true");
-          break;
-          case "f": properties.put(currentProperty.getName(), "false");
-          break;
-          default: break;
+          else if(currentPropertyType.equals("BOOLEAN")) {
+            switch(currentAttributeValue) {
+
+            case "t": properties.put(currentProperty.getName(), "true");
+            break;
+            case "f": properties.put(currentProperty.getName(), "false");
+            break;
+            default: break;
+            }
+          }
+
+          else {
+            properties.put(currentProperty.getName(), currentAttributeValue);
           }
         }
-
         else {
+          // null value is inserted in the property
           properties.put(currentProperty.getName(), currentAttributeValue);
         }
       }
-      else {
-        // null value is inserted in the property
-        properties.put(currentProperty.getName(), currentAttributeValue);
-      }
-    }
 
-    if(vertex == null) {
-      String classAndClusterName = vertexType.getName(); 
-      vertex = orientGraph.addVertex("class:"+classAndClusterName, properties);
-      statistics.orientVertices++;
-      context.getOutputManager().debug(properties.toString());
-      context.getOutputManager().debug("New vertex inserted (all props setted): " + vertex.toString() + "\n");
-    }
-    else {
-
-      // comparing old version of vertex with the new one: if the two versions are equals no rewriting is performed
-
-      boolean equalVersions = true;
-      boolean equalProperties = true;
-
-      if(vertex.getPropertyKeys().size() == properties.size()) {
-
-        // comparing properties
-        for(String propertyName: vertex.getPropertyKeys()) {
-          if(!properties.keySet().contains(propertyName)) {
-            equalProperties = false;
-            equalVersions = false;
-            break;
-          }
-        }
-
-        if(equalProperties) {
-          // comparing values of the properties
-          for(String propertyName: vertex.getPropertyKeys()) {
-            if(!(vertex.getProperty(propertyName) == null && properties.get(propertyName) == null) 
-                && !vertex.getProperty(propertyName).equals(properties.get(propertyName))) {
-              equalVersions = false;
-              break;
-            } 
-          }
-        }
-
-      }
-      else {
-        equalProperties = false;
-        equalVersions = false;
-      }
-
-      if(!equalVersions) {
-        // removing old eventual properties
-        for(String propertyKey: vertex.getPropertyKeys()) {
-          vertex.removeProperty(propertyKey);
-        }
-
-        // setting new properties and save
-        vertex.setProperties(properties);
-        vertex.save();
+      if(vertex == null) {
+        String classAndClusterName = vertexType.getName(); 
+        vertex = orientGraph.addVertex("class:"+classAndClusterName, properties);
         statistics.orientVertices++;
         context.getOutputManager().debug(properties.toString());
-        context.getOutputManager().debug("New vertex inserted (all props setted): " + vertex.toString() + "\n");
+        context.getOutputManager().debug("New vertex inserted (all props setted): %s\n", vertex.toString());
       }
+      else {
+
+        // comparing old version of vertex with the new one: if the two versions are equals no rewriting is performed
+
+        boolean equalVersions = true;
+        boolean equalProperties = true;
+
+        if(vertex.getPropertyKeys().size() == properties.size()) {
+
+          // comparing properties
+          for(String propertyName: vertex.getPropertyKeys()) {
+            if(!properties.keySet().contains(propertyName)) {
+              equalProperties = false;
+              equalVersions = false;
+              break;
+            }
+          }
+
+          if(equalProperties) {
+            // comparing values of the properties
+            for(String propertyName: vertex.getPropertyKeys()) {
+              if(!(vertex.getProperty(propertyName) == null && properties.get(propertyName) == null) 
+                  && !vertex.getProperty(propertyName).equals(properties.get(propertyName))) {
+                equalVersions = false;
+                break;
+              } 
+            }
+          }
+
+        }
+        else {
+          equalProperties = false;
+          equalVersions = false;
+        }
+
+        if(!equalVersions) {
+          // removing old eventual properties
+          for(String propertyKey: vertex.getPropertyKeys()) {
+            vertex.removeProperty(propertyKey);
+          }
+
+          // setting new properties and save
+          vertex.setProperties(properties);
+          vertex.save();
+          statistics.orientVertices++;
+          context.getOutputManager().debug(properties.toString());
+          context.getOutputManager().debug("New vertex inserted (all props setted): %s\n", vertex.toString());
+        }
+      }
+
+      orientGraph.shutdown();
+
+    } catch(Exception e) {
+      context.getOutputManager().error(e.getMessage());
+      context.getOutputManager().debug(e.getStackTrace().toString());
+      if(orientGraph != null)
+        orientGraph.shutdown();
     }
 
-    orientGraph.shutdown();
-
     return vertex;
-
   }
 
 
@@ -332,159 +358,180 @@ public class OGraphDBCommandEngine {
   public OrientVertex upsertReachedVertexWithEdge(ResultSet foreignRecord, ORelationship relation, OrientVertex currentOutVertex, OVertexType currentInVertexType,
       String edgeType, OTeleporterContext context) throws SQLException {
 
-    OrientGraphFactory factory = new OrientGraphFactory(this.graphDBUrl);
-    OrientGraphNoTx orientGraph = factory.getNoTx();
-    orientGraph.setStandardElementConstraints(false);
-
-    // building keys and values for the lookup 
-
-    String[] propertyOfKey = new String[relation.getForeignKey().getInvolvedAttributes().size()];
-    String[] valueOfKey = new String[relation.getForeignKey().getInvolvedAttributes().size()];
-
-    int index = 0;
-    for(OAttribute foreignAttribute: relation.getForeignKey().getInvolvedAttributes())  {
-      propertyOfKey[index] = context.getNameResolver().resolveVertexProperty(relation.getPrimaryKey().getInvolvedAttributes().get(index).getName());
-      valueOfKey[index] = foreignRecord.getString((foreignAttribute.getName()));
-      index++;
-    }
-
-    String s = "Keys and values in the lookup (upsertReachedVertex):\t";
-    for(int i=0; i<propertyOfKey.length;i++) {
-      s += propertyOfKey[i] + ":" + valueOfKey[i] + "\t";
-    }
-    context.getOutputManager().debug(s);
-
-    // new vertex is added only if all the values in the foreign key are different from null
-    boolean ok = true;
-
-    for(int i=0; i<valueOfKey.length; i++) {
-      if(valueOfKey[i] == null) {
-        ok = false;
-        break;
-      }
-    }
-
+    OrientGraphNoTx orientGraph = null;
     OrientVertex currentInVertex = null;
 
-    // all values are different from null, thus vertex is searched in the graph and in case is added if not found.
-    if(ok) {
+    try {
 
-      currentInVertex = this.getVertexByIndexedKey(orientGraph, propertyOfKey, valueOfKey, currentInVertexType.getName());
+      OrientGraphFactory factory = new OrientGraphFactory(this.graphDBUrl);
+      orientGraph = factory.getNoTx();
+      orientGraph.setStandardElementConstraints(false);
 
-      /*
-       *  if the vertex is not already present in the graph it's built, set and inserted to the graph,
-       *  then the edge beetwen the current-out-vertex and the current-in-vertex is added 
-       */
-      if(currentInVertex == null) {
+      // building keys and values for the lookup 
 
-        Map<String,String> partialProperties = new LinkedHashMap<String,String>();
+      String[] propertyOfKey = new String[relation.getForeignKey().getInvolvedAttributes().size()];
+      String[] valueOfKey = new String[relation.getForeignKey().getInvolvedAttributes().size()];
 
-        // for each attribute in the foreign key belonging to the relationship, attribute name and correspondent value are added to a 'properties map'
-        for(int i=0; i<propertyOfKey.length; i++) {                
-          partialProperties.put(propertyOfKey[i], valueOfKey[i]);
+      int index = 0;
+      for(OAttribute foreignAttribute: relation.getForeignKey().getInvolvedAttributes())  {
+        propertyOfKey[index] = context.getNameResolver().resolveVertexProperty(relation.getPrimaryKey().getInvolvedAttributes().get(index).getName());
+        valueOfKey[index] = foreignRecord.getString((foreignAttribute.getName()));
+        index++;
+      }
+
+      String s = "Keys and values in the lookup (upsertReachedVertex):\t";
+      for(int i=0; i<propertyOfKey.length;i++) {
+        s += propertyOfKey[i] + ":" + valueOfKey[i] + "\t";
+      }
+      context.getOutputManager().debug(s);
+
+      // new vertex is added only if all the values in the foreign key are different from null
+      boolean ok = true;
+
+      for(int i=0; i<valueOfKey.length; i++) {
+        if(valueOfKey[i] == null) {
+          ok = false;
+          break;
+        }
+      }
+
+      // all values are different from null, thus vertex is searched in the graph and in case is added if not found.
+      if(ok) {
+
+        currentInVertex = this.getVertexByIndexedKey(orientGraph, propertyOfKey, valueOfKey, currentInVertexType.getName());
+
+        /*
+         *  if the vertex is not already present in the graph it's built, set and inserted to the graph,
+         *  then the edge beetwen the current-out-vertex and the current-in-vertex is added 
+         */
+        if(currentInVertex == null) {
+
+          Map<String,String> partialProperties = new LinkedHashMap<String,String>();
+
+          // for each attribute in the foreign key belonging to the relationship, attribute name and correspondent value are added to a 'properties map'
+          for(int i=0; i<propertyOfKey.length; i++) {                
+            partialProperties.put(propertyOfKey[i], valueOfKey[i]);
+          }
+
+          context.getOutputManager().debug("NEW Reached vertex (id:value) --> %s:%s\n", Arrays.toString(propertyOfKey), Arrays.toString(valueOfKey));
+          String classAndClusterName = currentInVertexType.getName(); 
+          currentInVertex = orientGraph.addVertex("class:"+classAndClusterName, partialProperties);
+          context.getOutputManager().debug("New vertex inserted (only pk props setted): %s\n", currentInVertex.toString());
+
         }
 
-        context.getOutputManager().debug("NEW Reached vertex (id:value) --> " + Arrays.toString(propertyOfKey) + ":" + Arrays.toString(valueOfKey));
-        String classAndClusterName = currentInVertexType.getName(); 
-        currentInVertex = orientGraph.addVertex("class:"+classAndClusterName, partialProperties);
-        context.getOutputManager().debug("New vertex inserted (only pk props setted): " + currentInVertex.toString() + "\n");
+        else {
+          context.getOutputManager().debug("NOT NEW Reached vertex, vertex %s:%s already present in the Orient Graph.\n", Arrays.toString(propertyOfKey), Arrays.toString(valueOfKey));
+        }
 
+        // upsert of the edge between the currentOutVertex and the currentInVertex
+        this.upsertEdge(orientGraph, currentOutVertex, currentInVertex, edgeType, context);
       }
+      orientGraph.shutdown();
 
-      else {
-        context.getOutputManager().debug("NOT NEW Reached vertex, vertex " + Arrays.toString(propertyOfKey) + ":" + Arrays.toString(valueOfKey) + " already present in the Orient Graph.\n");
-      }
-
-      // upsert of the edge between the currentOutVertex and the currentInVertex
-      this.upsertEdge(orientGraph, currentOutVertex, currentInVertex, edgeType, context);
+    } catch(Exception e) {
+      context.getOutputManager().error(e.getMessage());
+      context.getOutputManager().debug(e.getStackTrace().toString());
+      if(orientGraph != null)
+        orientGraph.shutdown();
     }
-    orientGraph.shutdown();
 
     return currentInVertex;
   }
 
   public void upsertEdge(OrientGraphNoTx orientGraph, OrientVertex currentOutVertex, OrientVertex currentInVertex, String edgeType, OTeleporterContext context) {
 
-    boolean edgeAlreadyPresent = false;
-    Iterator<Edge> it = currentOutVertex.getEdges(Direction.OUT, edgeType).iterator();
-    Edge currentEdge;
+    try {
 
-    OTeleporterStatistics statistics = context.getStatistics();
+      boolean edgeAlreadyPresent = false;
+      Iterator<Edge> it = currentOutVertex.getEdges(Direction.OUT, edgeType).iterator();
+      Edge currentEdge;
 
+      OTeleporterStatistics statistics = context.getStatistics();
 
-    if(it.hasNext()) {
+      if(it.hasNext()) {
+        while(it.hasNext()) {
+          currentEdge = it.next();
 
-      while(it.hasNext()) {
-        currentEdge = it.next();
-
-        if(((OrientVertex)currentEdge.getVertex(Direction.IN)).getId().equals(currentInVertex.getId())) {
-          edgeAlreadyPresent = true;
-          break;
+          if(((OrientVertex)currentEdge.getVertex(Direction.IN)).getId().equals(currentInVertex.getId())) {
+            edgeAlreadyPresent = true;
+            break;
+          }
         }
-
-      }
-
-      if(edgeAlreadyPresent) {
-        context.getOutputManager().debug("Edge beetween '" + currentOutVertex.toString() + "' and '" + currentInVertex.toString() + "' already present.");
-        statistics.orientEdges++;
+        if(edgeAlreadyPresent) {
+          context.getOutputManager().debug("Edge beetween '%s' and '%s' already present.", currentOutVertex.toString(), currentInVertex.toString());
+          statistics.orientEdges++;
+        }
+        else {
+          OrientEdge edge = orientGraph.addEdge(null, currentOutVertex, currentInVertex, edgeType);
+          edge.save();
+          statistics.orientEdges++;
+          context.getOutputManager().debug("New edge inserted: %s", edge.toString());
+        }
       }
       else {
         OrientEdge edge = orientGraph.addEdge(null, currentOutVertex, currentInVertex, edgeType);
         edge.save();
         statistics.orientEdges++;
-        context.getOutputManager().debug("New edge inserted: " + edge.toString());
+        context.getOutputManager().debug("New edge inserted: %s", edge.toString());
       }
-
-    }
-    else {
-      OrientEdge edge = orientGraph.addEdge(null, currentOutVertex, currentInVertex, edgeType);
-      edge.save();
-      statistics.orientEdges++;
-      context.getOutputManager().debug("New edge inserted: " + edge.toString());
+    } catch(Exception e) {
+      context.getOutputManager().error(e.getMessage());
+      context.getOutputManager().debug(e.getStackTrace().toString());
+      if(orientGraph != null)
+        orientGraph.shutdown();
     }
   }
 
   public void upsertAggregatorEdge(ResultSet jointTableRecord, OEntity joinTable, OAggregatorEdge aggregatorEdge, OTeleporterContext context) throws SQLException {
 
-    OrientGraphFactory factory = new OrientGraphFactory(this.graphDBUrl);
-    OrientGraphNoTx orientGraph = factory.getNoTx();
-    orientGraph.setStandardElementConstraints(false);
+    OrientGraphNoTx orientGraph = null;
 
-    Iterator<ORelationship> it = joinTable.getRelationships().iterator();
-    ORelationship relationship1 = it.next();
-    ORelationship relationship2 = it.next();
+    try {
+
+      OrientGraphFactory factory = new OrientGraphFactory(this.graphDBUrl);
+      orientGraph = factory.getNoTx();
+      orientGraph.setStandardElementConstraints(false);
+
+      Iterator<ORelationship> it = joinTable.getRelationships().iterator();
+      ORelationship relationship1 = it.next();
+      ORelationship relationship2 = it.next();
 
 
-    // Building keys and values for out-vertex lookup
+      // Building keys and values for out-vertex lookup
 
-    String[] keysOutVertex = new String[relationship1.getForeignKey().getInvolvedAttributes().size()];
-    String[] valuesOutVertex = new String[relationship1.getForeignKey().getInvolvedAttributes().size()];
+      String[] keysOutVertex = new String[relationship1.getForeignKey().getInvolvedAttributes().size()];
+      String[] valuesOutVertex = new String[relationship1.getForeignKey().getInvolvedAttributes().size()];
 
-    int index = 0;
-    for(OAttribute foreignKeyAttribute: relationship1.getForeignKey().getInvolvedAttributes()) {
-      keysOutVertex[index] = context.getNameResolver().resolveVertexProperty(relationship1.getPrimaryKey().getInvolvedAttributes().get(index).getName());
-      valuesOutVertex[index] = jointTableRecord.getString(foreignKeyAttribute.getName());
-      index++;
+      int index = 0;
+      for(OAttribute foreignKeyAttribute: relationship1.getForeignKey().getInvolvedAttributes()) {
+        keysOutVertex[index] = context.getNameResolver().resolveVertexProperty(relationship1.getPrimaryKey().getInvolvedAttributes().get(index).getName());
+        valuesOutVertex[index] = jointTableRecord.getString(foreignKeyAttribute.getName());
+        index++;
+      }
+
+      // Building keys and values for in-vertex lookup
+
+      String[] keysInVertex = new String[relationship2.getPrimaryKey().getInvolvedAttributes().size()];
+      String[] valuesInVertex = new String[relationship2.getPrimaryKey().getInvolvedAttributes().size()];
+
+      index = 0;
+      for(OAttribute foreignKeyAttribute: relationship2.getForeignKey().getInvolvedAttributes()) {
+        keysInVertex[index] = context.getNameResolver().resolveVertexProperty(relationship2.getPrimaryKey().getInvolvedAttributes().get(index).getName());
+        valuesInVertex[index] = jointTableRecord.getString(foreignKeyAttribute.getName());
+        index++;
+      }
+
+      OrientVertex currentOutVertex = this.getVertexByIndexedKey(orientGraph, keysOutVertex, valuesOutVertex, aggregatorEdge.getOutVertexClassName());
+      OrientVertex currentInVertex = this.getVertexByIndexedKey(orientGraph, keysInVertex, valuesInVertex, aggregatorEdge.getInVertexClassName());
+
+      this.upsertEdge(orientGraph, currentOutVertex, currentInVertex, aggregatorEdge.getEdgeType(), context);
+      orientGraph.shutdown();
+    } catch(Exception e) {
+      context.getOutputManager().error(e.getMessage());
+      context.getOutputManager().debug(e.getStackTrace().toString());
+      orientGraph.shutdown();
     }
-
-
-    // Building keys and values for in-vertex lookup
-
-    String[] keysInVertex = new String[relationship2.getPrimaryKey().getInvolvedAttributes().size()];
-    String[] valuesInVertex = new String[relationship2.getPrimaryKey().getInvolvedAttributes().size()];
-
-    index = 0;
-    for(OAttribute foreignKeyAttribute: relationship2.getForeignKey().getInvolvedAttributes()) {
-      keysInVertex[index] = context.getNameResolver().resolveVertexProperty(relationship2.getPrimaryKey().getInvolvedAttributes().get(index).getName());
-      valuesInVertex[index] = jointTableRecord.getString(foreignKeyAttribute.getName());
-      index++;
-    }
-
-    OrientVertex currentOutVertex = this.getVertexByIndexedKey(orientGraph, keysOutVertex, valuesOutVertex, aggregatorEdge.getOutVertexClassName());
-    OrientVertex currentInVertex = this.getVertexByIndexedKey(orientGraph, keysInVertex, valuesInVertex, aggregatorEdge.getInVertexClassName());
-
-    this.upsertEdge(orientGraph, currentOutVertex, currentInVertex, aggregatorEdge.getEdgeType(), context);
-    orientGraph.shutdown();
   }
 
 }

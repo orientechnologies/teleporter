@@ -69,17 +69,17 @@ public class ONaiveAggregationImportStrategy extends ONaiveImportStrategy {
     // DataBase schema building
     mapper.buildSourceSchema(context);
     context.getOutputManager().info("");
-    context.getOutputManager().debug(((OER2GraphMapper)mapper).getDataBaseSchema().toString() + "\n");
+    context.getOutputManager().debug("%s\n", ((OER2GraphMapper)mapper).getDataBaseSchema().toString());
 
     // Graph model building
     mapper.buildGraphModel(nameResolver, context);
     context.getOutputManager().info("");
-    context.getOutputManager().debug(((OER2GraphMapper)mapper).getGraphModel().toString() + "\n");
+    context.getOutputManager().debug("%s\n", ((OER2GraphMapper)mapper).getGraphModel().toString());
 
     // Many-to-Many aggregation
     ((OER2GraphMapper)mapper).JoinTableDim2Aggregation(context);
     context.getOutputManager().debug("'Junction-Entity' aggregation complete.\n");
-    context.getOutputManager().debug(((OER2GraphMapper)mapper).getGraphModel().toString() + "\n");
+    context.getOutputManager().debug("%s\n", ((OER2GraphMapper)mapper).getGraphModel().toString());
 
 
     // Saving schema on Orient

@@ -82,7 +82,7 @@ public class ONaiveImportStrategy implements OImportStrategy {
 
     Date globalEnd = new Date();
 
-    context.getOutputManager().info("\n\nImporting Complete in " + OTimeFormatHandler.getHMSFormat(globalStart, globalEnd) + " !");
+    context.getOutputManager().info("\n\nImporting Complete in %s !", OTimeFormatHandler.getHMSFormat(globalStart, globalEnd));
     context.getOutputManager().info(context.getStatistics().toString());
 
   }
@@ -96,12 +96,12 @@ public class ONaiveImportStrategy implements OImportStrategy {
     // DataBase schema building
     mapper.buildSourceSchema(context);
     context.getOutputManager().info("");
-    context.getOutputManager().debug(mapper.getSourceSchema().toString() + "\n");
+    context.getOutputManager().debug("%s\n", mapper.getSourceSchema().toString());
 
     // Graph model building
     mapper.buildGraphModel(nameResolver, context);
     context.getOutputManager().info("");
-    context.getOutputManager().debug(mapper.getGraphModel().toString() + "\n");
+    context.getOutputManager().debug("%s\n", mapper.getGraphModel().toString());
 
     // Saving schema on Orient
     ODataTypeHandlerFactory factory = new ODataTypeHandlerFactory();
