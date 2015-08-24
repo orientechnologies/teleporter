@@ -20,6 +20,9 @@
 
 package com.orientechnologies.orient.teleporter.strategy;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.sql.ResultSet;
 import java.util.Arrays;
 import java.util.Date;
@@ -82,7 +85,7 @@ public class ONaiveImportStrategy implements OImportStrategy {
 
     Date globalEnd = new Date();
 
-    context.getOutputManager().info("\n\nImporting Complete in %s !", OTimeFormatHandler.getHMSFormat(globalStart, globalEnd));
+    context.getOutputManager().info("\n\nImporting complete in %s", OTimeFormatHandler.getHMSFormat(globalStart, globalEnd));
     context.getOutputManager().info(context.getStatistics().toString());
 
   }
@@ -196,7 +199,10 @@ public class ONaiveImportStrategy implements OImportStrategy {
       context.getOutputManager().info("");
 
     }catch(Exception e) {
-      e.printStackTrace();
+      context.getOutputManager().error(e.getMessage());
+      Writer writer = new StringWriter();
+      e.printStackTrace(new PrintWriter(writer));
+      context.getOutputManager().debug(writer.toString());
     }
   }
 
@@ -296,7 +302,7 @@ public class ONaiveImportStrategy implements OImportStrategy {
           }
           // closing resultset, connection and statement
           queryResult.closeAll(context);
-          queryResult.isAllClosed();
+          queryResult.isAllClosed(context);
 
         }
       }
@@ -305,7 +311,10 @@ public class ONaiveImportStrategy implements OImportStrategy {
       context.getOutputManager().info("");
 
     }catch(Exception e) {
-      e.printStackTrace();
+      context.getOutputManager().error(e.getMessage());
+      Writer writer = new StringWriter();
+      e.printStackTrace(new PrintWriter(writer));
+      context.getOutputManager().debug(writer.toString());
     }
 
   }
@@ -439,12 +448,12 @@ public class ONaiveImportStrategy implements OImportStrategy {
             
             // closing aggregateTable result
             queryResult2.closeAll(context);
-            queryResult2.isAllClosed();
+            queryResult2.isAllClosed(context);
 
           }
           // closing resultset, connection and statement
           queryResult1.closeAll(context);
-          queryResult1.isAllClosed();
+          queryResult1.isAllClosed(context);
 
         }
       }
@@ -453,7 +462,10 @@ public class ONaiveImportStrategy implements OImportStrategy {
       context.getOutputManager().info("");
 
     }catch(Exception e) {
-      e.printStackTrace();
+      context.getOutputManager().error(e.getMessage());
+      Writer writer = new StringWriter();
+      e.printStackTrace(new PrintWriter(writer));
+      context.getOutputManager().debug(writer.toString());
     }
   }
 
@@ -564,7 +576,7 @@ public class ONaiveImportStrategy implements OImportStrategy {
           }
           // closing resultset, connection and statement
           queryResult.closeAll(context);
-          queryResult.isAllClosed();
+          queryResult.isAllClosed(context);
 
         }
       }
@@ -573,7 +585,10 @@ public class ONaiveImportStrategy implements OImportStrategy {
       context.getOutputManager().info("");
 
     }catch(Exception e) {
-      e.printStackTrace();
+      context.getOutputManager().error(e.getMessage());
+      Writer writer = new StringWriter();
+      e.printStackTrace(new PrintWriter(writer));
+      context.getOutputManager().debug(writer.toString());
     }
   }
 
@@ -635,7 +650,10 @@ public class ONaiveImportStrategy implements OImportStrategy {
       }
 
     }catch(Exception e) {
-      e.printStackTrace();
+      context.getOutputManager().error(e.getMessage());
+      Writer writer = new StringWriter();
+      e.printStackTrace(new PrintWriter(writer));
+      context.getOutputManager().debug(writer.toString());
     }
 
     return entityName;
@@ -683,7 +701,10 @@ public class ONaiveImportStrategy implements OImportStrategy {
       }
 
     }catch(Exception e) {
-      e.printStackTrace();
+      context.getOutputManager().error(e.getMessage());
+      Writer writer = new StringWriter();
+      e.printStackTrace(new PrintWriter(writer));
+      context.getOutputManager().debug(writer.toString());
     }
 
     return entityName;
@@ -731,7 +752,10 @@ public class ONaiveImportStrategy implements OImportStrategy {
       }
 
     }catch(Exception e) {
-      e.printStackTrace();
+      context.getOutputManager().error(e.getMessage());
+      Writer writer = new StringWriter();
+      e.printStackTrace(new PrintWriter(writer));
+      context.getOutputManager().debug(writer.toString());
     }
 
     return entityName;
@@ -776,7 +800,9 @@ public class ONaiveImportStrategy implements OImportStrategy {
       }
     }catch(Exception e) {
       context.getOutputManager().error(e.getMessage());
-      e.printStackTrace();
+      Writer writer = new StringWriter();
+      e.printStackTrace(new PrintWriter(writer));
+      context.getOutputManager().debug(writer.toString());
     }
 
     return fullRecord;

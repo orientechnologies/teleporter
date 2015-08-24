@@ -32,11 +32,11 @@ import com.orientechnologies.orient.teleporter.util.OTimeFormatHandler;
  * 
  * Source DB Schema building: 100% [..................................................] Elapsed: 00:00:00 Remaining: 00:00:00 Warnings: 0
  * 
- * Graph Model building:       50% [.........................                         ] Elapsed: 00:00:00 Remaining: 00:00:00 Warnings: 3
+ * Graph Model building:      100% [..................................................] Elapsed: 00:00:00 Remaining: 00:00:00 Warnings: 3
  * 
- * OrientDB Schema writing:     0% [                                                  ] Elapsed: 00:00:00 Remaining: 00:00:00 Warnings: 5
+ * OrientDB Schema writing:   100% [..................................................] Elapsed: 00:00:00 Remaining: 00:00:00 Warnings: 5
  * 
- * OrientDB importing:         90% [                                                  ] Elapsed: 00:00:00 Remaining: 00:00:00 Warnings: 5
+ * OrientDB importing:         90% [...........................................       ] Elapsed: 00:00:00 Remaining: 00:00:00 Warnings: 5
  * 
  * @author Gabriele Ponzi
  * @email  <gabriele.ponzi--at--gmail.com>
@@ -56,10 +56,10 @@ public class OProgressMonitor implements OStatisticsListener {
    * initialize progress bar properties.
    */
   public OProgressMonitor(OTeleporterContext context) {
-    this.work1Title = "(1/4) Source DB Schema building:   ";
-    this.work2Title = "(2/4) Graph Model building:   ";
-    this.work3Title = "(3/4) OrientDB Schema writing:   ";
-    this.work4Title = "(4/4) OrientDB importing:   ";
+    this.work1Title = String.format("%-35s","(1/4) Source DB Schema building:");
+    this.work2Title = String.format("%-35s","(2/4) Graph Model building:");
+    this.work3Title = String.format("%-35s","(3/4) OrientDB Schema writing:");
+    this.work4Title = String.format("%-35s","(4/4) OrientDB importing:");
     this.context = context;
   }
 

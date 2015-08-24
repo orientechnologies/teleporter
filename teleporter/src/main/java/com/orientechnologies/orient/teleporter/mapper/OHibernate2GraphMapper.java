@@ -21,6 +21,9 @@
 package com.orientechnologies.orient.teleporter.mapper;
 
 import java.io.File;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
@@ -103,7 +106,10 @@ public class OHibernate2GraphMapper extends OER2GraphMapper {
       Collections.sort(super.dataBaseSchema.getEntities());
 
     }catch(Exception e) {
-      e.printStackTrace();
+      context.getOutputManager().error(e.getMessage());
+      Writer writer = new StringWriter();
+      e.printStackTrace(new PrintWriter(writer));
+      context.getOutputManager().debug(writer.toString());
     }
 
   }

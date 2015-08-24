@@ -54,7 +54,8 @@ public class OTeleporter {
 
     // Output Manager setting
     outputManager = new OOutputStreamManager(2);
-
+    outputManager.info("\n\n\t\t\t\t\t\t*** TELEPORTER ***\n");
+    
 
     /*
      * Input args validation
@@ -64,7 +65,7 @@ public class OTeleporter {
 
     if(args.length < 12) {
       outputManager.error("Syntax error, missing argument.");
-      outputManager.error("Use: drakkar.sh -d <db-driver> -jurl <db-uri> -u <username> -pswd <password> -ourl <output-orient-db-uri> -s <chosenStrategy>.");
+      outputManager.error("Use: teleport.sh -jdriver <db-driver> -jurl <db-uri> -juser <username> -jpasswd <password> -ourl <output-orient-db-uri> -s <chosenStrategy>.");
       exit();
     }
 
@@ -80,8 +81,8 @@ public class OTeleporter {
 
     // Mandatory args validation
 
-    if(!arguments.containsKey("-d")) {
-      outputManager.error("Argument -d is mandatory, please try again with expected argument: -d <your-db-driver-name>\n");
+    if(!arguments.containsKey("-jdriver")) {
+      outputManager.error("Argument -jdriver is mandatory, please try again with expected argument: -jdriver <your-db-driver-name>\n");
       exit();
     }
 
@@ -90,13 +91,13 @@ public class OTeleporter {
       exit();
     }
 
-    if(!arguments.containsKey("-u")) {
-      outputManager.error("Argument -u is mandatory, please try again with expected argument: -u <your-db-username>\n");
+    if(!arguments.containsKey("-juser")) {
+      outputManager.error("Argument -juser is mandatory, please try again with expected argument: -juser <your-db-username>\n");
       exit();
     }
 
-    if(!arguments.containsKey("-pswd")) {
-      outputManager.error("Argument -pswd is mandatory, please try again with expected argument: -pswd <your-db-access-password>\n");
+    if(!arguments.containsKey("-jpasswd")) {
+      outputManager.error("Argument -jpasswd is mandatory, please try again with expected argument: -jpasswd <your-db-access-password>\n");
       exit();
     }
 
@@ -113,7 +114,7 @@ public class OTeleporter {
 
     // simple syntax check on command
 
-    if(!arguments.get("-d").contains("Driver")) {
+    if(!arguments.get("-jdriver").contains("Driver")) {
       outputManager.error("Not valid db-driver name.\n");
       exit();
     }
@@ -153,10 +154,10 @@ public class OTeleporter {
     }
 
     // Mandatory arguments
-    String driver = arguments.get("-d");
+    String driver = arguments.get("-jdriver");
     String jurl = arguments.get("-jurl");
-    String username = arguments.get("-u");
-    String password = arguments.get("-pswd");
+    String username = arguments.get("-juser");
+    String password = arguments.get("-jpasswd");
     String outDbUrl = arguments.get("-ourl");
     String chosenStrategy = arguments.get("-s");
 

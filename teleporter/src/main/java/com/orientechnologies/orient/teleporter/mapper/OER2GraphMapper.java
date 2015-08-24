@@ -20,6 +20,9 @@
 
 package com.orientechnologies.orient.teleporter.mapper;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
@@ -161,7 +164,7 @@ public class OER2GraphMapper extends OSource2GraphMapper {
       statistics.totalNumberOfEntities = numberOfTables;
 
       // closing resultTable
-      this.closeCursor(resultTable);
+      this.closeCursor(resultTable, context);
 
       context.getOutputManager().debug("%s tables found.", numberOfTables);
 
@@ -193,7 +196,7 @@ public class OER2GraphMapper extends OSource2GraphMapper {
         if (currentTableRecordAmount.next()) {
           totalNumberOfRecord += currentTableRecordAmount.getInt(1);
         }
-        this.closeCursor(currentTableRecordAmount);
+        this.closeCursor(currentTableRecordAmount, context);
 
         // creating entity
         currentEntity = new OEntity(currentTableName);
@@ -220,8 +223,8 @@ public class OER2GraphMapper extends OSource2GraphMapper {
             pKey.addAttribute(currentAttribute);
           }
         }
-        this.closeCursor(resultColumns);
-        this.closeCursor(resultPrimaryKeys);
+        this.closeCursor(resultColumns, context);
+        this.closeCursor(resultPrimaryKeys, context);
 
         currentEntity.setPrimaryKey(pKey);
 
@@ -261,7 +264,7 @@ public class OER2GraphMapper extends OSource2GraphMapper {
           currentEntityRelationships2.add(row);
         }
 
-        this.closeCursor(resultForeignKeys);
+        this.closeCursor(resultForeignKeys, context);
 
         Iterator<LinkedHashMap<String,String>> it1 = currentEntityRelationships1.iterator();
         Iterator<LinkedHashMap<String,String>> it2 = currentEntityRelationships2.iterator();
@@ -323,14 +326,20 @@ public class OER2GraphMapper extends OSource2GraphMapper {
       }
 
     }catch(SQLException e) {
-      e.printStackTrace();
+      context.getOutputManager().error(e.getMessage());
+      Writer writer = new StringWriter();
+      e.printStackTrace(new PrintWriter(writer));
+      context.getOutputManager().debug(writer.toString());
     }finally {
       try {
         if(connection != null) {
           connection.close();
         }
       }catch(SQLException e) {
-        e.printStackTrace();
+        context.getOutputManager().error(e.getMessage());
+        Writer writer = new StringWriter();
+        e.printStackTrace(new PrintWriter(writer));
+        context.getOutputManager().debug(writer.toString());
       }
     }
 
@@ -341,7 +350,10 @@ public class OER2GraphMapper extends OSource2GraphMapper {
         statistics.warningMessages.add("Connection to DB not closed.");
       }      
     }catch(SQLException e) {
-      e.printStackTrace();
+      context.getOutputManager().error(e.getMessage());
+      Writer writer = new StringWriter();
+      e.printStackTrace(new PrintWriter(writer));
+      context.getOutputManager().debug(writer.toString());
     }
     statistics.notifyListeners();
     statistics.runningStepNumber = -1;
@@ -350,12 +362,15 @@ public class OER2GraphMapper extends OSource2GraphMapper {
   /**
    * @param result
    */
-  private void closeCursor(ResultSet result) {
+  private void closeCursor(ResultSet result, OTeleporterContext context) {
     try {
       if(result != null)
         result.close();
     } catch (SQLException e) {
-      e.printStackTrace();
+      context.getOutputManager().error(e.getMessage());
+      Writer writer = new StringWriter();
+      e.printStackTrace(new PrintWriter(writer));
+      context.getOutputManager().debug(writer.toString());
     }
 
   }
@@ -395,7 +410,9 @@ public class OER2GraphMapper extends OSource2GraphMapper {
       }
     }catch(SQLException e) {
       context.getOutputManager().error(e.getMessage());
-      e.printStackTrace();
+      Writer writer = new StringWriter();
+      e.printStackTrace(new PrintWriter(writer));
+      context.getOutputManager().debug(writer.toString());
     }
     return rows;
   }

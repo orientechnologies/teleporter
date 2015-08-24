@@ -30,6 +30,4 @@ package com.orientechnologies.orient.teleporter.model.dbschema;
 
 public interface ODataSourceSchema {
 	
-	
-
 }

@@ -21,6 +21,9 @@
 package com.orientechnologies.orient.teleporter.mapper;
 
 import java.io.File;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
@@ -122,16 +125,25 @@ public class OJPA2GraphMapper extends OER2GraphMapper {
       
       
     }catch(SQLException e) {
-      e.printStackTrace();
+      context.getOutputManager().error(e.getMessage());
+      Writer writer = new StringWriter();
+      e.printStackTrace(new PrintWriter(writer));
+      context.getOutputManager().debug(writer.toString());
     }catch(Exception e) {
-      e.printStackTrace();
+      context.getOutputManager().error(e.getMessage());
+      Writer writer = new StringWriter();
+      e.printStackTrace(new PrintWriter(writer));
+      context.getOutputManager().debug(writer.toString());
     }finally {
       try {
         if(connection != null) {
           connection.close();
         }
       }catch(SQLException e) {
-        e.printStackTrace();
+        context.getOutputManager().error(e.getMessage());
+        Writer writer = new StringWriter();
+        e.printStackTrace(new PrintWriter(writer));
+        context.getOutputManager().debug(writer.toString());
       }
     }
 
@@ -142,7 +154,10 @@ public class OJPA2GraphMapper extends OER2GraphMapper {
         statistics.warningMessages.add("Connection to DB not closed.");
       }      
     }catch(SQLException e) {
-      e.printStackTrace();
+      context.getOutputManager().error(e.getMessage());
+      Writer writer = new StringWriter();
+      e.printStackTrace(new PrintWriter(writer));
+      context.getOutputManager().debug(writer.toString());
     }
     
   }

@@ -73,56 +73,56 @@ public class OOutputStreamManager {
   }
 
   public void debug(String message) {
-    if(!(this.level == BLANK_LEVEL)) {
+    if(!(this.level == BLANK_LEVEL) && message != null) {
       if(this.level <= DEBUG_LEVEL ) 
         this.outputStream.println(message);
     }
   }
   
   public void debug(String format, Object... args) {
-    if(!(this.level == BLANK_LEVEL)) {
+    if(!(this.level == BLANK_LEVEL) && format != null) {
       if(this.level <= DEBUG_LEVEL ) 
         this.outputStream.printf(format, args);
     }
   }
 
   public void info(String message) {
-    if(!(this.level == BLANK_LEVEL)) {
+    if(!(this.level == BLANK_LEVEL) && message != null) {
       if(this.level <= INFO_LEVEL)
         this.outputStream.println(message);
     }
   }
   
   public void info(String format,  Object... args) {
-    if(!(this.level == BLANK_LEVEL)) {
+    if(!(this.level == BLANK_LEVEL) && format != null) {
       if(this.level <= INFO_LEVEL)
         this.outputStream.printf(format, args);
     }
   }
 
   public void warn(String message) {
-    if(!(this.level == BLANK_LEVEL)) {
+    if(!(this.level == BLANK_LEVEL) && message != null) {
       if(this.level <= WARNING_LEVEL)
         this.outputStream.println(message);
     }
   }
   
   public void warn(String format, Object... args) {
-    if(!(this.level == BLANK_LEVEL)) {
+    if(!(this.level == BLANK_LEVEL) && format != null) {
       if(this.level <= WARNING_LEVEL)
         this.outputStream.printf(format, args);
     }
   }
 
   public void error(String message) {
-    if(!(this.level == BLANK_LEVEL)) {
+    if(!(this.level == BLANK_LEVEL) && message != null) {
       if(this.level <= ERROR_LEVEL)
         this.outputStream.println("ERROR: " + message);
     }
   }
   
   public void error(String format, Object... args) {
-    if(!(this.level == BLANK_LEVEL)) {
+    if(!(this.level == BLANK_LEVEL) && format != null) {
       if(this.level <= ERROR_LEVEL)
         this.outputStream.printf(format, "ERROR: ", args);
     }

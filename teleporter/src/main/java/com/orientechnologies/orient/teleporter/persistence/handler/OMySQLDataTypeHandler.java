@@ -55,7 +55,7 @@ public class OMySQLDataTypeHandler implements ODriverDataTypeHandler {
 
     // Undefined Types
     else {
-      context.getStatistics().warningMessages.add("The original type '" + type + "' is not convertible into any Orient type thus, in order to prevent data loss, it will be converted to the Orient Type String.");
+      context.getStatistics().warningMessages.add("The original type '" + type + "' is not convertible into any OrientDB type thus, in order to prevent data loss, it will be converted to the OrientDB Type String.");
       return OType.STRING;
     }
 

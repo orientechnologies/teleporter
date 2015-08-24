@@ -20,11 +20,12 @@
 
 package com.orientechnologies.orient.teleporter.persistence.util;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-
-import javax.persistence.PersistenceException;
 
 import com.orientechnologies.orient.teleporter.context.OTeleporterContext;
 
@@ -60,10 +61,14 @@ public class ODBSourceConnection {
       connection = DriverManager.getConnection(uri,username, password);
     } catch (ClassNotFoundException e) {
       context.getOutputManager().error("ClassNotFoundException during connection attempting.\n");
-      throw new PersistenceException(e.getMessage());
+      Writer writer = new StringWriter();
+      e.printStackTrace(new PrintWriter(writer));
+      context.getOutputManager().debug(writer.toString());
     } catch(SQLException e) {
       context.getOutputManager().error("SQLException during connection attempting.\n");
-      throw new PersistenceException(e.getMessage());
+      Writer writer = new StringWriter();
+      e.printStackTrace(new PrintWriter(writer));
+      context.getOutputManager().debug(writer.toString());
     }
     return connection;
 

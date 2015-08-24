@@ -20,6 +20,9 @@
 
 package com.orientechnologies.orient.teleporter.persistence.util;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -83,43 +86,55 @@ public class OQueryResult {
       if(this.dbConnection != null && !this.dbConnection.isClosed()) 
         this.dbConnection.close();
     } catch(SQLException e) {
-      e.printStackTrace();
+      context.getOutputManager().error(e.getMessage());
+      Writer writer = new StringWriter();
+      e.printStackTrace(new PrintWriter(writer));
+      context.getOutputManager().debug(writer.toString());
     }
   }
 
-  public boolean isConnectionClosed() {
+  public boolean isConnectionClosed(OTeleporterContext context) {
     try {
       if(this.dbConnection != null)
         return dbConnection.isClosed();
     }catch(Exception e) {
-      e.printStackTrace();
+      context.getOutputManager().error(e.getMessage());
+      Writer writer = new StringWriter();
+      e.printStackTrace(new PrintWriter(writer));
+      context.getOutputManager().debug(writer.toString());
     }
     return false;
   }
   
-  public boolean isStatementClosed() {
+  public boolean isStatementClosed(OTeleporterContext context) {
     try {
       if(this.statement != null)
         return statement.isClosed();
     }catch(Exception e) {
-      e.printStackTrace();
+      context.getOutputManager().error(e.getMessage());
+      Writer writer = new StringWriter();
+      e.printStackTrace(new PrintWriter(writer));
+      context.getOutputManager().debug(writer.toString());
     }
     return false;
   }
   
-  public boolean isResultSetClosed() {
+  public boolean isResultSetClosed(OTeleporterContext context) {
     try {
       if(this.result != null)
         return result.isClosed();
     }catch(Exception e) {
-      e.printStackTrace();
+      context.getOutputManager().error(e.getMessage());
+      Writer writer = new StringWriter();
+      e.printStackTrace(new PrintWriter(writer));
+      context.getOutputManager().debug(writer.toString());
     }
     return false;
   }
 
-  public boolean isAllClosed() {
+  public boolean isAllClosed(OTeleporterContext context) {
 
-    if(isConnectionClosed() && isStatementClosed() && isResultSetClosed())
+    if(isConnectionClosed(context) && isStatementClosed(context) && isResultSetClosed(context))
       return true;
     else
       return false;

@@ -20,13 +20,15 @@
 
 package com.orientechnologies.orient.teleporter.writer;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
-
 
 import com.orientechnologies.common.exception.OException;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
@@ -203,7 +205,8 @@ public class OGraphModelWriter {
           }
 
           // check if vertex type is already present in the orient schema
-          isPresent = orientGraph.getRawGraph().getMetadata().getIndexManager().areIndexed(currentVertexType.getName(), properties);
+//          isPresent = orientGraph.getRawGraph().getMetadata().getIndexManager().areIndexed(currentType, currentType + ".pkey");
+          isPresent = orientGraph.getRawGraph().getMetadata().getIndexManager().existsIndex(currentType + ".pkey");
 
           if(!isPresent) {
 
@@ -236,7 +239,10 @@ public class OGraphModelWriter {
           statistics.wroteIndices++;
         }
       }catch(OException e) {
-        e.printStackTrace();
+        context.getOutputManager().error(e.getMessage());
+        Writer writer = new StringWriter();
+        e.printStackTrace(new PrintWriter(writer));
+        context.getOutputManager().debug(writer.toString());
       }    
       statistics.notifyListeners();
       statistics.runningStepNumber = -1;

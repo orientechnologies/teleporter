@@ -20,6 +20,9 @@
 
 package com.orientechnologies.orient.teleporter.strategy;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.sql.ResultSet;
 import java.util.Date;
 import java.util.List;
@@ -202,7 +205,10 @@ public class ONaiveAggregationImportStrategy extends ONaiveImportStrategy {
       context.getOutputManager().info("");
 
     }catch(Exception e){
-      e.printStackTrace();
+      context.getOutputManager().error(e.getMessage());
+      Writer writer = new StringWriter();
+      e.printStackTrace(new PrintWriter(writer));
+      context.getOutputManager().debug(writer.toString());
     }
   }
 

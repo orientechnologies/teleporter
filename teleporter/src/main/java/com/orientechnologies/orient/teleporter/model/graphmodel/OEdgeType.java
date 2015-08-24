@@ -34,7 +34,6 @@ public class OEdgeType extends OElementType {
 
   private OVertexType inVertexType;
   private OVertexType outVertexType;
-
   
   public OEdgeType(String edgeType) {
     super(edgeType);

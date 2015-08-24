@@ -20,6 +20,9 @@
 
 package com.orientechnologies.orient.teleporter.importengine;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Arrays;
@@ -124,10 +127,10 @@ public class OGraphDBCommandEngine {
 
     } catch(Exception e) {
       context.getOutputManager().error(e.getMessage());
-//      StringWriter sw = new StringWriter();
-//      PrintWriter pw = new PrintWriter(sw);
-//      e.printStackTrace(pw);
-      context.getOutputManager().debug(e.getStackTrace().toString());
+      Writer writer = new StringWriter();
+      e.printStackTrace(new PrintWriter(writer));
+      String s = writer.toString();
+      context.getOutputManager().debug(s);
       if(orientGraph != null)
         orientGraph.shutdown();
     }
@@ -232,8 +235,10 @@ public class OGraphDBCommandEngine {
         }catch(Exception e) {
           context.getOutputManager().error(e.getMessage());
           context.getOutputManager().error("Mismatch between 'parent-table' attributes and 'child-table' attributes, check the schema of the tables involved in inheritance relationships.");
-          context.getOutputManager().debug(e.getStackTrace().toString());
-          e.printStackTrace();
+          Writer writer = new StringWriter();
+          e.printStackTrace(new PrintWriter(writer));
+          String s1 = writer.toString();
+          context.getOutputManager().debug(s1);
         }
 
         if(currentAttributeValue != null) {
@@ -332,7 +337,10 @@ public class OGraphDBCommandEngine {
 
     } catch(Exception e) {
       context.getOutputManager().error(e.getMessage());
-      context.getOutputManager().debug(e.getStackTrace().toString());
+      Writer writer = new StringWriter();
+      e.printStackTrace(new PrintWriter(writer));
+      String s = writer.toString();
+      context.getOutputManager().debug(s);
       if(orientGraph != null)
         orientGraph.shutdown();
     }
@@ -431,7 +439,10 @@ public class OGraphDBCommandEngine {
 
     } catch(Exception e) {
       context.getOutputManager().error(e.getMessage());
-      context.getOutputManager().debug(e.getStackTrace().toString());
+      Writer writer = new StringWriter();
+      e.printStackTrace(new PrintWriter(writer));
+      String s = writer.toString();
+      context.getOutputManager().debug(s);
       if(orientGraph != null)
         orientGraph.shutdown();
     }
@@ -477,7 +488,10 @@ public class OGraphDBCommandEngine {
       }
     } catch(Exception e) {
       context.getOutputManager().error(e.getMessage());
-      context.getOutputManager().debug(e.getStackTrace().toString());
+      Writer writer = new StringWriter();
+      e.printStackTrace(new PrintWriter(writer));
+      String s = writer.toString();
+      context.getOutputManager().debug(s);
       if(orientGraph != null)
         orientGraph.shutdown();
     }
@@ -529,7 +543,10 @@ public class OGraphDBCommandEngine {
       orientGraph.shutdown();
     } catch(Exception e) {
       context.getOutputManager().error(e.getMessage());
-      context.getOutputManager().debug(e.getStackTrace().toString());
+      Writer writer = new StringWriter();
+      e.printStackTrace(new PrintWriter(writer));
+      String s = writer.toString();
+      context.getOutputManager().debug(s);
       orientGraph.shutdown();
     }
   }
