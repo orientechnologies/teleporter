@@ -46,7 +46,13 @@ public class OTeleporter {
 
   private static OOutputStreamManager outputManager;
 
-  private static final OStrategyFactory FACTORY = new OStrategyFactory();	
+  private static final OStrategyFactory FACTORY = new OStrategyFactory();
+
+  private static final String header =  "\t\t\t______________________________________________________________________________\n " +
+                                        "\t\t\t___  __/__  ____/__  /___  ____/__  __ \\_  __ \\__  __ \\__  __/__  ____/__  __ \\ \n" +
+                                        "\t\t\t__  /  __  __/  __  / __  __/  __  /_/ /  / / /_  /_/ /_  /  __  __/  __  /_/ / \n" +
+                                        "\t\t\t_  /   _  /___  _  /___  /___  _  ____// /_/ /_  _, _/_  /   _  /___  _  _, _/ \n" +
+                                        "\t\t\t/_/    /_____/  /_____/_____/  /_/     \\____/ /_/ |_| /_/    /_____/  /_/ |_|  \n";	
 
 
   public static void main(String[] args) {
@@ -54,7 +60,7 @@ public class OTeleporter {
 
     // Output Manager setting
     outputManager = new OOutputStreamManager(2);
-    outputManager.info("\n\n\t\t\t\t\t\t*** TELEPORTER ***\n");
+    outputManager.info("\n\n" + header + "\n");
     
 
     /*
