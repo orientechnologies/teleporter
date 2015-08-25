@@ -47,12 +47,30 @@ public class OTeleporter {
   private static OOutputStreamManager outputManager;
 
   private static final OStrategyFactory FACTORY = new OStrategyFactory();
-
-  private static final String header =  "\t\t\t______________________________________________________________________________\n " +
-                                        "\t\t\t___  __/__  ____/__  /___  ____/__  __ \\_  __ \\__  __ \\__  __/__  ____/__  __ \\ \n" +
-                                        "\t\t\t__  /  __  __/  __  / __  __/  __  /_/ /  / / /_  /_/ /_  /  __  __/  __  /_/ / \n" +
-                                        "\t\t\t_  /   _  /___  _  /___  /___  _  ____// /_/ /_  _, _/_  /   _  /___  _  _, _/ \n" +
-                                        "\t\t\t/_/    /_____/  /_____/_____/  /_/     \\____/ /_/ |_| /_/    /_____/  /_/ |_|  \n";	
+  
+  private static final String teleport =  "                                                                                                                                   `              \n" +
+                                          "             ``                                                                                                                    :              \n" +
+                                          "       :oooooooooooo;                                                                                                     `       ,:              \n" +
+                                          "    :ooo,          :ooo`                                                                                                  `       ::              \n" +
+                                          "   oo.                :oo                                                                                                  .      ::        ``    \n" +
+                                          " o                       ,o                                                                                                ..    ,::.    ...      \n" +
+                                          " oo                      oo                                                                                                ...         `...       \n" +
+                                          " o :oo:              'oo`.o                                                                                                 ..`        `..        \n" +
+                                          " o   :oooo',`  `,:oooo`  .o                                                                                                 .`          ``        \n" +
+                                          " o      `'oooooooo;      .o     ______________________________________________________________________________       .     `              ,       \n" +
+                                          " ooo                   `ooo     ___  __/__  ____/__  /___  ____/__  __ \\_  __ \\__  __ \\__  __/__  ____/__  __ \\       .:::::              ::::    \n" +
+                                          " o :oo               .oo,.o     __  /  __  __/  __  / __  __/  __  /_/ /  / / /_  /_/ /_  /  __  __/  __  /_/ /         ::::   OrientDB   :::::.  \n" +
+                                          " o   :ooo'.      ,:ooo;  .o     _  /   _  /___  _  /___  /___  _  ____// /_/ /_  _, _/_  /   _  /___  _  _, _/            `:              .     . \n" +
+                                          " o      :oooooooooo,     .o     /_/    /_____/  /_____/_____/  /_/     \\____/ /_/ |_| /_/    /_____/  /_/ |_|                `           .        \n" +
+                                          " ooo                    ooo                                                                                                 ..`         ..        \n" +
+                                          " o o:                oo:.o                                                                                                 ....        `...       \n" +
+                                          " o   oooo,        :oooo  .o                                                                            :.                 ...    `:::    ..       \n" +
+                                          " o     `ooooooooooo'     .o       ___  ____  ______   ________________________________________________/  ':.            ``        ::`     .       \n" +
+                                          " ,o                     ,o       /  / /   / /     /  /                                                      ':.                   ::       `      \n" +
+                                          "    ooo`            ,ooo        /__/ /___/ /_____/  /________________________________________________     ,:''                    ::       `      \n" +
+                                          "      oooooo:'':ooooo;                                                                              /  ,.'                        :               \n" +
+                                          "          :ooooo',                                                                                  :''                           .               \n" +
+                                          "                                                                                                                                 .          \n";	
 
 
   public static void main(String[] args) {
@@ -60,7 +78,7 @@ public class OTeleporter {
 
     // Output Manager setting
     outputManager = new OOutputStreamManager(2);
-    outputManager.info("\n\n" + header + "\n");
+    outputManager.info("\n\n" + teleport + "\n");
     
 
     /*
