@@ -48,29 +48,14 @@ public class OTeleporter {
 
   private static final OStrategyFactory FACTORY = new OStrategyFactory();
   
-  private static final String teleport =  "                                                                                                                                   `              \n" +
-                                          "             ``                                                                                                                    :              \n" +
-                                          "       :oooooooooooo;                                                                                                     `       ,:              \n" +
-                                          "    :ooo,          :ooo`                                                                                                  `       ::              \n" +
-                                          "   oo.                :oo                                                                                                  .      ::        ``    \n" +
-                                          " o                       ,o                                                                                                ..    ,::.    ...      \n" +
-                                          " oo                      oo                                                                                                ...         `...       \n" +
-                                          " o :oo:              'oo`.o                                                                                                 ..`        `..        \n" +
-                                          " o   :oooo',`  `,:oooo`  .o                                                                                                 .`          ``        \n" +
-                                          " o      `'oooooooo;      .o     ______________________________________________________________________________       .     `              ,       \n" +
-                                          " ooo                   `ooo     ___  __/__  ____/__  /___  ____/__  __ \\_  __ \\__  __ \\__  __/__  ____/__  __ \\       .:::::              ::::    \n" +
-                                          " o :oo               .oo,.o     __  /  __  __/  __  / __  __/  __  /_/ /  / / /_  /_/ /_  /  __  __/  __  /_/ /         ::::   OrientDB   :::::.  \n" +
-                                          " o   :ooo'.      ,:ooo;  .o     _  /   _  /___  _  /___  /___  _  ____// /_/ /_  _, _/_  /   _  /___  _  _, _/            `:              .     . \n" +
-                                          " o      :oooooooooo,     .o     /_/    /_____/  /_____/_____/  /_/     \\____/ /_/ |_| /_/    /_____/  /_/ |_|                `           .        \n" +
-                                          " ooo                    ooo                                                                                                 ..`         ..        \n" +
-                                          " o o:                oo:.o                                                                                                 ....        `...       \n" +
-                                          " o   oooo,        :oooo  .o                                                                            :.                 ...    `:::    ..       \n" +
-                                          " o     `ooooooooooo'     .o       ___  ____  ______   ________________________________________________/  ':.            ``        ::`     .       \n" +
-                                          " ,o                     ,o       /  / /   / /     /  /                                                      ':.                   ::       `      \n" +
-                                          "    ooo`            ,ooo        /__/ /___/ /_____/  /________________________________________________     ,:''                    ::       `      \n" +
-                                          "      oooooo:'':ooooo;                                                                              /  ,.'                        :               \n" +
-                                          "          :ooooo',                                                                                  :''                           .               \n" +
-                                          "                                                                                                                                 .          \n";	
+  private static final String teleport =  "OrientDB                  \n" +
+                                          " ______________________________________________________________________________ \n" +
+                                          " ___  __/__  ____/__  /___  ____/__  __ \\_  __ \\__  __\\__  __/__  ____/__  _ _ \\  \n" +
+                                          " __  /  __  __/  __  / __  __/  __  /_/ /  / / /_  /_/ /_  /  __  __/  __  /_/ /\n" +
+                                          " _  /   _  /___  _  /___  /___  _  ____// /_/ /_  _, _/_  /   _  /___  _  _, _/ \n" +
+                                          " /_/    /_____/  /_____/_____/  /_/     \\____/ /_/ |_| /_/    /_____/  /_/ |_|  \n" +
+                                          "\n" +
+                                          "                                                  http://orientdb.com/teleporter";	
 
 
   public static void main(String[] args) {
@@ -138,8 +123,9 @@ public class OTeleporter {
 
     // simple syntax check on command
 
-    if(!arguments.get("-jdriver").contains("Driver")) {
-      outputManager.error("Not valid db-driver name.\n");
+    if(!arguments.get("-jdriver").equalsIgnoreCase("Oracle") && !arguments.get("-jdriver").equalsIgnoreCase("MySQL") 
+        && !arguments.get("-jdriver").equalsIgnoreCase("PostgreSQL") && !arguments.get("-jdriver").equalsIgnoreCase("HyperSQL")) {
+      outputManager.error("Not valid db-driver name. Type one between: 'Oracle','MySQL','PostgreSQL','HyperSQL'\n");
       exit();
     }
 
@@ -176,7 +162,8 @@ public class OTeleporter {
       outputManager.error("It's not possible to use both 'include' and 'exclude' arguments.");
       exit();
     }
-
+    
+    
     // Mandatory arguments
     String driver = arguments.get("-jdriver");
     String jurl = arguments.get("-jurl");
@@ -211,6 +198,7 @@ public class OTeleporter {
       String[] arrayTables = tables.split(",");
       excludedTables = new ArrayList<String>(Arrays.asList(arrayTables));
     }
+    
 
     OTeleporter.execute(driver, jurl, username, password, outDbUrl, chosenStrategy, chosenMapper, xmlPath, nameResolver, outputLevel, includedTables, excludedTables);
   }
@@ -246,6 +234,9 @@ public class OTeleporter {
     context.setOutputManager(outputManager);
     OProgressMonitor progressMonitor = new OProgressMonitor(context);
     progressMonitor.initialize();
+    
+    // JDBC Driver configuration
+    String driverClassName = ODriverConfigurator.checkConfiguration(driver, context);
 
     OImportStrategy strategy = FACTORY.buildStrategy(chosenStrategy, context);
 
@@ -260,7 +251,7 @@ public class OTeleporter {
     }, 0, 1000);
 
     // the last argument represents the nameResolver (non is null)
-    strategy.executeStrategy(driver, jurl, username, password, outDbUrl, chosenMapper, xmlPath, nameResolver, includedTables, excludedTables, context);
+    strategy.executeStrategy(driverClassName, jurl, username, password, outDbUrl, chosenMapper, xmlPath, nameResolver, includedTables, excludedTables, context);
 
     timer.cancel();
 
