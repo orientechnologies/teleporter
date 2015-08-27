@@ -34,11 +34,11 @@ import java.util.Iterator;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.orientechnologies.orient.teleporter.context.OOutputStreamManager;
-import com.orientechnologies.orient.teleporter.context.OTeleporterContext;
-import com.orientechnologies.orient.teleporter.nameresolver.OJavaConventionNameResolver;
-import com.orientechnologies.orient.teleporter.persistence.handler.OHSQLDBDataTypeHandler;
-import com.orientechnologies.orient.teleporter.strategy.ONaiveAggregationImportStrategy;
+import com.orientechnologies.plugin.teleporter.context.OOutputStreamManager;
+import com.orientechnologies.plugin.teleporter.context.OTeleporterContext;
+import com.orientechnologies.plugin.teleporter.nameresolver.OJavaConventionNameResolver;
+import com.orientechnologies.plugin.teleporter.persistence.handler.OHSQLDBDataTypeHandler;
+import com.orientechnologies.plugin.teleporter.strategy.ONaiveAggregationImportStrategy;
 import com.tinkerpop.blueprints.Direction;
 import com.tinkerpop.blueprints.Edge;
 import com.tinkerpop.blueprints.Vertex;

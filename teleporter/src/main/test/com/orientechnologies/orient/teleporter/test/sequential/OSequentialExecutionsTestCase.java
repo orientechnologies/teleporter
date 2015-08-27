@@ -35,12 +35,12 @@ import org.junit.Test;
 
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.metadata.schema.OType;
-import com.orientechnologies.orient.teleporter.context.OOutputStreamManager;
-import com.orientechnologies.orient.teleporter.context.OTeleporterContext;
-import com.orientechnologies.orient.teleporter.nameresolver.OJavaConventionNameResolver;
-import com.orientechnologies.orient.teleporter.persistence.handler.OHSQLDBDataTypeHandler;
-import com.orientechnologies.orient.teleporter.strategy.ONaiveAggregationImportStrategy;
-import com.orientechnologies.orient.teleporter.strategy.ONaiveImportStrategy;
+import com.orientechnologies.plugin.teleporter.context.OOutputStreamManager;
+import com.orientechnologies.plugin.teleporter.context.OTeleporterContext;
+import com.orientechnologies.plugin.teleporter.nameresolver.OJavaConventionNameResolver;
+import com.orientechnologies.plugin.teleporter.persistence.handler.OHSQLDBDataTypeHandler;
+import com.orientechnologies.plugin.teleporter.strategy.ONaiveAggregationImportStrategy;
+import com.orientechnologies.plugin.teleporter.strategy.ONaiveImportStrategy;
 import com.tinkerpop.blueprints.Edge;
 import com.tinkerpop.blueprints.Vertex;
 import com.tinkerpop.blueprints.impls.orient.OrientGraphNoTx;

@@ -34,16 +34,16 @@ import java.util.Iterator;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.orientechnologies.orient.teleporter.context.OOutputStreamManager;
-import com.orientechnologies.orient.teleporter.context.OTeleporterContext;
-import com.orientechnologies.orient.teleporter.mapper.OER2GraphMapper;
-import com.orientechnologies.orient.teleporter.mapper.OHibernate2GraphMapper;
-import com.orientechnologies.orient.teleporter.model.dbschema.OEntity;
-import com.orientechnologies.orient.teleporter.model.dbschema.OHierarchicalBag;
-import com.orientechnologies.orient.teleporter.model.dbschema.ORelationship;
-import com.orientechnologies.orient.teleporter.model.graphmodel.OVertexType;
-import com.orientechnologies.orient.teleporter.nameresolver.OJavaConventionNameResolver;
-import com.orientechnologies.orient.teleporter.persistence.handler.OHSQLDBDataTypeHandler;
+import com.orientechnologies.plugin.teleporter.context.OOutputStreamManager;
+import com.orientechnologies.plugin.teleporter.context.OTeleporterContext;
+import com.orientechnologies.plugin.teleporter.mapper.OER2GraphMapper;
+import com.orientechnologies.plugin.teleporter.mapper.OHibernate2GraphMapper;
+import com.orientechnologies.plugin.teleporter.model.dbschema.OEntity;
+import com.orientechnologies.plugin.teleporter.model.dbschema.OHierarchicalBag;
+import com.orientechnologies.plugin.teleporter.model.dbschema.ORelationship;
+import com.orientechnologies.plugin.teleporter.model.graphmodel.OVertexType;
+import com.orientechnologies.plugin.teleporter.nameresolver.OJavaConventionNameResolver;
+import com.orientechnologies.plugin.teleporter.persistence.handler.OHSQLDBDataTypeHandler;
 
 /**
  * @author Gabriele Ponzi

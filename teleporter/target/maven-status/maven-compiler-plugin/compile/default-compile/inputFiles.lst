@@ -12,6 +12,7 @@
 /home/gabriele/workspace/teleporter/src/main/java/com/orientechnologies/orient/teleporter/mapper/OHibernate2GraphMapper.java
 /home/gabriele/workspace/teleporter/src/main/java/com/orientechnologies/orient/teleporter/importengine/ODataSourceQueryEngine.java
 /home/gabriele/workspace/teleporter/src/main/java/com/orientechnologies/orient/teleporter/factory/OStrategyFactory.java
+/home/gabriele/workspace/teleporter/src/main/java/com/orientechnologies/orient/teleporter/main/ODriverConfigurator.java
 /home/gabriele/workspace/teleporter/src/main/java/com/orientechnologies/orient/teleporter/model/graphmodel/OVertexType.java
 /home/gabriele/workspace/teleporter/src/main/java/com/orientechnologies/orient/teleporter/nameresolver/ONameResolver.java
 /home/gabriele/workspace/teleporter/src/main/java/com/orientechnologies/orient/teleporter/strategy/OImportStrategy.java
