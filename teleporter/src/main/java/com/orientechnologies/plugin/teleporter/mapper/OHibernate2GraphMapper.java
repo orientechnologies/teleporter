@@ -106,6 +106,7 @@ public class OHibernate2GraphMapper extends OER2GraphMapper {
       Collections.sort(super.dataBaseSchema.getEntities());
 
     }catch(Exception e) {
+    	e.printStackTrace();
       context.getOutputManager().error(e.getMessage());
       Writer writer = new StringWriter();
       e.printStackTrace(new PrintWriter(writer));
@@ -253,7 +254,7 @@ public class OHibernate2GraphMapper extends OER2GraphMapper {
 
         for(int j=0; j<propertiesElements.getLength(); j++) {
           currentPropertyElement = (Element) propertiesElements.item(j);
-          currentParentCorrespondingAttribute = parentEntity.getAttributeByNameIgnoreCase(currentPropertyElement.getAttribute("name"));
+          currentParentCorrespondingAttribute = parentEntity.getAttributeByNameIgnoreCase(currentPropertyElement.getAttribute("column"));
 
           // building child's attribute and removing the corresponding attribute from the parent entity
           currentChildAttribute = new OAttribute(currentParentCorrespondingAttribute.getName(), j+1, currentParentCorrespondingAttribute.getDataType(), currentChildEntity);

@@ -9,20 +9,18 @@
 			<generator class="increment"></generator>
 		</id>
 
-		<property name="name"></property>
+		<property name="name" column="name"></property>
 
 		<union-subclass name="Regular_Employee"
 			table="regular_employee">
-			<property name="salary"></property>
-			<property name="bonus"></property>
+			<property name="salary" column="salary"></property>
+			<property name="bonus" column="bonus"></property>
 		</union-subclass>
 
 		<union-subclass name="Contract_Employee"
 			table="contract_employee">
-			<property name="pay_per_hour"></property>
-			<property name="contract_duration"></property>
+			<property name="payPerHour" column="pay_per_hour"></property>
+			<property name="contractDuration" column="contract_duration"></property>
 		</union-subclass>
-
 	</class>
-
 </hibernate-mapping>  

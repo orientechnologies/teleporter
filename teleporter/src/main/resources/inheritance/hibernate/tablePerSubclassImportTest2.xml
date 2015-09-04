@@ -10,21 +10,21 @@
 			<generator class="increment"></generator>
 		</id>
 		<discriminator column="employee_type" type="string" />
-		<property name="name"></property>
+		<property name="name" column="name"></property>
 
 		<subclass name="Regular_Employee" discriminator-value="R">
 			<join table="regular_employee">
 				<key column="eid"></key>
-				<property name="salary"></property>
-				<property name="bonus"></property>
+				<property name="salary" column="salary"></property>
+				<property name="bonus" column="bonus"></property>
 			</join>
 		</subclass>
 
 		<subclass name="Contract_Employee" discriminator-value="C">
 			<join table="contract_employee">
 				<key column="eid"></key>
-				<property name="pay_per_hour"></property>
-				<property name="contract_duration"></property>
+				<property name="payPerHour" column="pay_per_hour"></property>
+				<property name="contractDuration" column="contract_duration"></property>
 			</join>
 		</subclass>
 	</class>
@@ -33,12 +33,12 @@
 			<generator class="increment"></generator>
 		</id>
 		<discriminator column="manager_type" type="string" />
-		<property name="name"></property>
+		<property name="name" column="name"></property>
 
 		<subclass name="Project_Manager" discriminator-value="R">
 			<join table="project_manager">
 				<key column="id"></key>
-				<property name="project"></property>
+				<property name="project" column="project"></property>
 			</join>
 		</subclass>
 	</class>
