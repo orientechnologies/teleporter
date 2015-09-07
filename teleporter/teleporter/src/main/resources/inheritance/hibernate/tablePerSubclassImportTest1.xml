@@ -1,0 +1,42 @@
+<?xml version='1.0' encoding='UTF-8'?>  
+<!DOCTYPE hibernate-mapping PUBLIC 
+   "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+   "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+
+<hibernate-mapping>
+	<class name="Employee" table="employee">
+		<id name="id" column="id">
+			<generator class="increment"></generator>
+		</id>
+
+		<property name="name" column="name"></property>
+
+		<joined-subclass name="Regular_Employee"
+			table="regular_employee">
+			<key column="eid"></key>
+			<property name="salary" column="salary"></property>
+			<property name="bonus" column="bonus"></property>
+		</joined-subclass>
+
+		<joined-subclass name="Contract_Employee"
+			table="contract_employee">
+			<key column="eid"></key>
+			<property name="payPerHour" column="pay_per_hour"></property>
+			<property name="contractDuration" column="contract_duration"></property>
+		</joined-subclass>
+	</class>
+	<class name="Manager" table="manager">
+		<id name="id" column="id">
+			<generator class="increment"></generator>
+		</id>
+
+		<property name="name" column="name"></property>
+
+		<joined-subclass name="Project_Manager"
+			table="project_manager">
+			<key column="id"></key>
+			<property name="project" column="project"></property>
+		</joined-subclass>
+	</class>
+</hibernate-mapping>  
