@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
@@ -10,7 +11,6 @@
 
 	<name>teleporter</name>
 	<description>Teleporter plugin for OrientDB NoSQL document graph dbms</description>
-	<url></url>
 	<inceptionYear>2015</inceptionYear>
 	<organization>
 		<name>Orient Technologies</name>
@@ -18,17 +18,69 @@
 	</organization>
 	<licenses>
 		<license>
-			<name>Apache 2</name>
-			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+			<name>Commercial</name>
 		</license>
 	</licenses>
+	<developers>
+        <developer>
+            <id>g.ponzi</id>
+            <name>Gabriele Ponzi</name>
+            <email>gabriele.ponzi--at--gmail.com</email>
+            <organization>Orient Technologies</organization>
+            <organizationUrl>http://www.orientechnologies.com</organizationUrl>
+            <roles>
+                <role>architect</role>
+                <role>developer</role>
+            </roles>
+            <timezone>+1</timezone>
+        </developer>
+    </developers>
+    
+    <scm>
+        <connection>scm:git:git@github.com:orientechnologies/orientdb-lucene.git</connection>
+        <developerConnection>scm:git:git@github.com:orientechnologies/orientdb-lucene.git</developerConnection>
+        <url>scm:git:git@github.com:orientechnologies/orientdb-lucene.git</url>
+    </scm>
+    <issueManagement>
+        <system>GitHub Issues</system>
+        <url>https://github.com/orientechnologies/teleporter/issues</url>
+    </issueManagement>
+    <ciManagement>
+        <system>jenkins</system>
+        <url>http://helios.orientechnologies.com/</url>
+    </ciManagement>
+    <distributionManagement>
+        <repository>
+            <id>sonatype-nexus-staging</id>
+            <name>OrientDB Maven2 Repository</name>
+            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2</url>
+        </repository>
+        <snapshotRepository>
+            <id>sonatype-nexus-snapshots</id>
+            <name>OrientDB Maven2 Snapshot Repository</name>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+        </snapshotRepository>
+    </distributionManagement>
 	
 	<properties>
 		<jdk.version>1.7</jdk.version>
 		<orientdb.version>2.1.0</orientdb.version>
-		<blueprints.version>2.6.0</blueprints.version>
 		<hsqldb.version>2.3.2</hsqldb.version>
 	</properties>
+	
+	<repositories>
+        <repository>
+            <id>sonatype-nexus-snapshots</id>
+            <name>Sonatype Nexus Snapshots</name>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
 	
 	<build>
 		<plugins>
@@ -46,7 +98,7 @@
 				<configuration>
 					<archive>
 						<manifest>
-							<mainClass>com.orientechnologies.plugin.teleporter.main.OTeleporter</mainClass>
+							<mainClass>com.orientechnologies.teleporter.main.OTeleporter</mainClass>
 						</manifest>
 					</archive>
 					<descriptorRefs>
@@ -54,6 +106,19 @@
 					</descriptorRefs>
 				</configuration>
 			</plugin>
+			<plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-release-plugin</artifactId>
+                <version>2.2.2</version>
+                <configuration>
+                    <mavenExecutorId>forked-path</mavenExecutorId>
+                    <useReleaseProfile>false</useReleaseProfile>
+                    <localCheckout>true</localCheckout>
+                    <pushChanges>false</pushChanges>
+                    <allowTimestampedSnapshots>true</allowTimestampedSnapshots>
+                    <arguments>-Prelease</arguments>
+                </configuration>
+            </plugin>
 		</plugins>
 	</build>
 
@@ -71,23 +136,11 @@
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
-			<groupId>com.tinkerpop.blueprints</groupId>
-			<artifactId>blueprints-core</artifactId>
-			<version>${blueprints.version}</version>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
 			<groupId>org.hsqldb</groupId>
 			<artifactId>hsqldb</artifactId>
 			<version>${hsqldb.version}</version>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
-	<repositories>
-		<repository>
-			<id>sonatype-nexus-releases</id>
-			<name>Sonatype Nexus Snapshots</name>
-			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
-		</repository>
-	</repositories>
+		
 </project>

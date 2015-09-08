@@ -36,11 +36,11 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.orientechnologies.plugin.teleporter.context.OOutputStreamManager;
-import com.orientechnologies.plugin.teleporter.context.OTeleporterContext;
-import com.orientechnologies.plugin.teleporter.nameresolver.OJavaConventionNameResolver;
-import com.orientechnologies.plugin.teleporter.persistence.handler.OHSQLDBDataTypeHandler;
-import com.orientechnologies.plugin.teleporter.strategy.ONaiveImportStrategy;
+import com.orientechnologies.teleporter.context.OOutputStreamManager;
+import com.orientechnologies.teleporter.context.OTeleporterContext;
+import com.orientechnologies.teleporter.nameresolver.OJavaConventionNameResolver;
+import com.orientechnologies.teleporter.persistence.handler.OHSQLDBDataTypeHandler;
+import com.orientechnologies.teleporter.strategy.ONaiveImportStrategy;
 import com.tinkerpop.blueprints.Direction;
 import com.tinkerpop.blueprints.Edge;
 import com.tinkerpop.blueprints.Vertex;
@@ -144,7 +144,7 @@ public class OFilterTableImportingTestCase {
 
       assertEquals(5, context.getStatistics().totalNumberOfRecords);
       assertEquals(5, context.getStatistics().importedRecords);
-      assertEquals(5, context.getStatistics().orientVertices);
+      assertEquals(5, context.getStatistics().orientAddedVertices);
 
 
       /*
@@ -404,7 +404,7 @@ public class OFilterTableImportingTestCase {
 
       assertEquals(5, context.getStatistics().totalNumberOfRecords);
       assertEquals(5, context.getStatistics().importedRecords);
-      assertEquals(5, context.getStatistics().orientVertices);
+      assertEquals(5, context.getStatistics().orientAddedVertices);
 
 
       /*
@@ -666,7 +666,7 @@ public class OFilterTableImportingTestCase {
 
       assertEquals(5, context.getStatistics().totalNumberOfRecords);
       assertEquals(5, context.getStatistics().importedRecords);
-      assertEquals(5, context.getStatistics().orientVertices);
+      assertEquals(5, context.getStatistics().orientAddedVertices);
 
 
       /*
@@ -988,7 +988,7 @@ public class OFilterTableImportingTestCase {
 
       assertEquals(8, context.getStatistics().totalNumberOfRecords);
       assertEquals(5, context.getStatistics().importedRecords);
-      assertEquals(5, context.getStatistics().orientVertices);
+      assertEquals(5, context.getStatistics().orientAddedVertices);
 
 
       /*
@@ -1306,7 +1306,7 @@ public class OFilterTableImportingTestCase {
 
       assertEquals(8, context.getStatistics().totalNumberOfRecords);
       assertEquals(5, context.getStatistics().importedRecords);
-      assertEquals(5, context.getStatistics().orientVertices);
+      assertEquals(5, context.getStatistics().orientAddedVertices);
 
 
       /*
@@ -1632,7 +1632,7 @@ public class OFilterTableImportingTestCase {
 
       assertEquals(8, context.getStatistics().totalNumberOfRecords);
       assertEquals(5, context.getStatistics().importedRecords);
-      assertEquals(5, context.getStatistics().orientVertices);
+      assertEquals(5, context.getStatistics().orientAddedVertices);
 
 
       /*

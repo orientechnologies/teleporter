@@ -11,11 +11,11 @@ import java.util.Iterator;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.orientechnologies.plugin.teleporter.context.OOutputStreamManager;
-import com.orientechnologies.plugin.teleporter.context.OTeleporterContext;
-import com.orientechnologies.plugin.teleporter.mapper.OER2GraphMapper;
-import com.orientechnologies.plugin.teleporter.model.dbschema.OEntity;
-import com.orientechnologies.plugin.teleporter.model.dbschema.ORelationship;
+import com.orientechnologies.teleporter.context.OOutputStreamManager;
+import com.orientechnologies.teleporter.context.OTeleporterContext;
+import com.orientechnologies.teleporter.mapper.OER2GraphMapper;
+import com.orientechnologies.teleporter.model.dbschema.OEntity;
+import com.orientechnologies.teleporter.model.dbschema.ORelationship;
 
 /*
  *

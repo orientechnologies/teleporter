@@ -9,12 +9,12 @@ import java.sql.Statement;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.orientechnologies.plugin.teleporter.context.OOutputStreamManager;
-import com.orientechnologies.plugin.teleporter.context.OTeleporterContext;
-import com.orientechnologies.plugin.teleporter.mapper.OER2GraphMapper;
-import com.orientechnologies.plugin.teleporter.model.graphmodel.OEdgeType;
-import com.orientechnologies.plugin.teleporter.model.graphmodel.OVertexType;
-import com.orientechnologies.plugin.teleporter.nameresolver.OJavaConventionNameResolver;
+import com.orientechnologies.teleporter.context.OOutputStreamManager;
+import com.orientechnologies.teleporter.context.OTeleporterContext;
+import com.orientechnologies.teleporter.mapper.OER2GraphMapper;
+import com.orientechnologies.teleporter.model.graphmodel.OEdgeType;
+import com.orientechnologies.teleporter.model.graphmodel.OVertexType;
+import com.orientechnologies.teleporter.nameresolver.OJavaConventionNameResolver;
 
 /*
  *

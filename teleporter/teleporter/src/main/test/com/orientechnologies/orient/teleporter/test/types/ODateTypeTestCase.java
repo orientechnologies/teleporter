@@ -29,11 +29,11 @@ import java.sql.Statement;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.orientechnologies.plugin.teleporter.context.OOutputStreamManager;
-import com.orientechnologies.plugin.teleporter.context.OTeleporterContext;
-import com.orientechnologies.plugin.teleporter.nameresolver.OJavaConventionNameResolver;
-import com.orientechnologies.plugin.teleporter.persistence.handler.OHSQLDBDataTypeHandler;
-import com.orientechnologies.plugin.teleporter.strategy.ONaiveImportStrategy;
+import com.orientechnologies.teleporter.context.OOutputStreamManager;
+import com.orientechnologies.teleporter.context.OTeleporterContext;
+import com.orientechnologies.teleporter.nameresolver.OJavaConventionNameResolver;
+import com.orientechnologies.teleporter.persistence.handler.OHSQLDBDataTypeHandler;
+import com.orientechnologies.teleporter.strategy.ONaiveImportStrategy;
 import com.tinkerpop.blueprints.impls.orient.OrientGraphNoTx;
 
 /**

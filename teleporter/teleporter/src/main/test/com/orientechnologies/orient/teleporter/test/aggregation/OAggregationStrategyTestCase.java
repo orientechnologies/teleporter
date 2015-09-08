@@ -34,11 +34,11 @@ import java.util.Iterator;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.orientechnologies.plugin.teleporter.context.OOutputStreamManager;
-import com.orientechnologies.plugin.teleporter.context.OTeleporterContext;
-import com.orientechnologies.plugin.teleporter.nameresolver.OJavaConventionNameResolver;
-import com.orientechnologies.plugin.teleporter.persistence.handler.OHSQLDBDataTypeHandler;
-import com.orientechnologies.plugin.teleporter.strategy.ONaiveAggregationImportStrategy;
+import com.orientechnologies.teleporter.context.OOutputStreamManager;
+import com.orientechnologies.teleporter.context.OTeleporterContext;
+import com.orientechnologies.teleporter.nameresolver.OJavaConventionNameResolver;
+import com.orientechnologies.teleporter.persistence.handler.OHSQLDBDataTypeHandler;
+import com.orientechnologies.teleporter.strategy.ONaiveAggregationImportStrategy;
 import com.tinkerpop.blueprints.Direction;
 import com.tinkerpop.blueprints.Edge;
 import com.tinkerpop.blueprints.Vertex;
@@ -140,8 +140,8 @@ public class OAggregationStrategyTestCase {
 
       assertEquals(21, context.getStatistics().totalNumberOfRecords);
       assertEquals(21, context.getStatistics().importedRecords);
-      assertEquals(11, context.getStatistics().orientVertices);
-      assertEquals(10, context.getStatistics().orientEdges);
+      assertEquals(11, context.getStatistics().orientAddedVertices);
+      assertEquals(10, context.getStatistics().orientAddedEdges);
 
       /*
        *  Testing built OrientDB

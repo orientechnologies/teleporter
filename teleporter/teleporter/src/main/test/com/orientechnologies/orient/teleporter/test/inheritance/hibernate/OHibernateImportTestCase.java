@@ -34,11 +34,11 @@ import java.util.Iterator;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.orientechnologies.plugin.teleporter.context.OOutputStreamManager;
-import com.orientechnologies.plugin.teleporter.context.OTeleporterContext;
-import com.orientechnologies.plugin.teleporter.nameresolver.OJavaConventionNameResolver;
-import com.orientechnologies.plugin.teleporter.persistence.handler.OHSQLDBDataTypeHandler;
-import com.orientechnologies.plugin.teleporter.strategy.ONaiveImportStrategy;
+import com.orientechnologies.teleporter.context.OOutputStreamManager;
+import com.orientechnologies.teleporter.context.OTeleporterContext;
+import com.orientechnologies.teleporter.nameresolver.OJavaConventionNameResolver;
+import com.orientechnologies.teleporter.persistence.handler.OHSQLDBDataTypeHandler;
+import com.orientechnologies.teleporter.strategy.ONaiveImportStrategy;
 import com.tinkerpop.blueprints.Direction;
 import com.tinkerpop.blueprints.Edge;
 import com.tinkerpop.blueprints.Vertex;
@@ -130,7 +130,7 @@ public class OHibernateImportTestCase {
 
       assertEquals(6, context.getStatistics().totalNumberOfRecords);
       assertEquals(6, context.getStatistics().importedRecords);
-      assertEquals(6, context.getStatistics().orientVertices);
+      assertEquals(6, context.getStatistics().orientAddedVertices);
 
 
       /*
@@ -478,7 +478,7 @@ public class OHibernateImportTestCase {
 
       assertEquals(9, context.getStatistics().totalNumberOfRecords);
       assertEquals(6, context.getStatistics().importedRecords);
-      assertEquals(6, context.getStatistics().orientVertices);
+      assertEquals(6, context.getStatistics().orientAddedVertices);
       
 
       /*
@@ -825,7 +825,7 @@ public class OHibernateImportTestCase {
 
       assertEquals(9, context.getStatistics().totalNumberOfRecords);
       assertEquals(6, context.getStatistics().importedRecords);
-      assertEquals(6, context.getStatistics().orientVertices);
+      assertEquals(6, context.getStatistics().orientAddedVertices);
 
 
       /*
@@ -1172,7 +1172,7 @@ public class OHibernateImportTestCase {
   
         assertEquals(9, context.getStatistics().totalNumberOfRecords);
         assertEquals(6, context.getStatistics().importedRecords);
-        assertEquals(6, context.getStatistics().orientVertices);
+        assertEquals(6, context.getStatistics().orientAddedVertices);
   
   
         /*
