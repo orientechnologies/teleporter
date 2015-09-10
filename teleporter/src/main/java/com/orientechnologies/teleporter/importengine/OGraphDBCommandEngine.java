@@ -235,9 +235,10 @@ public class OGraphDBCommandEngine {
 				currentPropertyType = context.getDataTypeHandler().resolveType(currentProperty.getPropertyType().toLowerCase(Locale.ENGLISH),context).toString();
 
 				try {
-					currentAttributeValue = record.getString(context.getNameResolver().reverseTransformation(currentProperty.getName()));
-//					currentBinaryValue = record.getBytes(context.getNameResolver().reverseTransformation(currentProperty.getName()));
-				}catch(Exception e) {
+
+					currentBinaryValue = record.getBytes(context.getNameResolver().reverseTransformation(currentProperty.getName()));
+				
+				} catch(Exception e) {
 					if(e.getMessage() != null)
 						context.getOutputManager().error(e.getClass().getName() + " - " + e.getMessage());
 					else
@@ -250,7 +251,7 @@ public class OGraphDBCommandEngine {
 					context.getOutputManager().error(s1);
 				}
 
-				if(currentAttributeValue != null) {
+				if(currentBinaryValue != null) {
 
 					if(currentPropertyType.equals("DATE")) {
 						currentDateValue = record.getDate(context.getNameResolver().reverseTransformation(currentProperty.getName()));
@@ -265,10 +266,7 @@ public class OGraphDBCommandEngine {
 					}
 					
 					else if(currentPropertyType.equals("BINARY")) {
-						{
-							currentBinaryValue = record.getBytes(context.getNameResolver().reverseTransformation(currentProperty.getName()));
 							properties.put(currentProperty.getName(), currentBinaryValue);
-						}
 					}
 
 					else if(currentPropertyType.equals("BOOLEAN")) {
@@ -290,7 +288,7 @@ public class OGraphDBCommandEngine {
 				}
 				else {
 					// null value is inserted in the property
-					properties.put(currentProperty.getName(), currentAttributeValue);
+					properties.put(currentProperty.getName(), currentBinaryValue);
 				}
 			}
 

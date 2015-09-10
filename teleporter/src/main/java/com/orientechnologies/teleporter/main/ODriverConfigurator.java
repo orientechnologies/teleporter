@@ -55,7 +55,6 @@ public class ODriverConfigurator {
 	public static String checkConfiguration(final String driverName, OTeleporterContext context) {
 
 		String classPath = "../lib/";
-//		String classPath = "/home/gabriele/lib/";
 		String driverClassName = null;
 
 		try {
