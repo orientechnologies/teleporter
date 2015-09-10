@@ -60,7 +60,7 @@ public class ODBSourceConnection {
 			//      Class.forName(driver);
 			//      connection = DriverManager.getConnection(uri,username, password);
 
-			URL u = new URL("jar:file://" + context.getDriverDependencyPath() + "!/");
+			URL u = new URL("jar:file:/" + context.getDriverDependencyPath() + "!/");
 			URLClassLoader ucl = new URLClassLoader(new URL[] { u });
 			Driver d = (Driver) Class.forName(this.driver, true, ucl).newInstance();
 			DriverManager.registerDriver(new ODriverShim(d));
