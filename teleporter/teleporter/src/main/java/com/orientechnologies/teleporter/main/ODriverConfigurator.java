@@ -49,138 +49,150 @@ import com.orientechnologies.teleporter.context.OTeleporterContext;
 public class ODriverConfigurator {
 
 
-  /*
-   * It Checks if the requested driver is already present in the classpath, if not present it downloads the last available driver version.
-   */
-  public static String checkConfiguration(final String driverName, OTeleporterContext context) {
+	/*
+	 * It Checks if the requested driver is already present in the classpath, if not present it downloads the last available driver version.
+	 */
+	public static String checkConfiguration(final String driverName, OTeleporterContext context) {
 
-    String classPath = "../lib/";
-//    String classPath = "/home/gabriele/lib/";
-    String driverClassName = null;
+//		String classPath = "../lib/";
+		String classPath = "/home/gabriele/lib/";
+		String driverClassName = null;
 
-    try {
+		try {
 
-      // fetching online JSON
-      ODocument json = readJsonFromUrl("http://orientdb.com/jdbc-drivers.json", context);
+			// fetching online JSON
+			ODocument json = readJsonFromUrl("http://orientdb.com/jdbc-drivers.json", context);
 
-      LinkedHashMap<String,String> fields = null;
+			LinkedHashMap<String,String> fields = null;
 
-      // recovering driver class name
-      if(driverName.equalsIgnoreCase("Oracle")) {
-        fields = json.field("Oracle");
-      }
-      else if(driverName.equalsIgnoreCase("MySQL")) {
-        fields = json.field("MySQL");
-      }
-      else if(driverName.equalsIgnoreCase("PostgreSQL")) {
-        fields = json.field("PostgreSQL");
-      }
-      else if(driverName.equalsIgnoreCase("HyperSQL")) {
-        fields = json.field("HyperSQL");
-      }
-      driverClassName = (String) fields.get("className");
+			// recovering driver class name
+			if(driverName.equalsIgnoreCase("Oracle")) {
+				fields = json.field("Oracle");
+			}
+			else if(driverName.equalsIgnoreCase("MySQL")) {
+				fields = json.field("MySQL");
+			}
+			else if(driverName.equalsIgnoreCase("PostgreSQL")) {
+				fields = json.field("PostgreSQL");
+			}
+			else if(driverName.equalsIgnoreCase("HyperSQL")) {
+				fields = json.field("HyperSQL");
+			}
+			driverClassName = (String) fields.get("className");
 
-      // if the driver is not present, it will be downloaded
-      String driverPath = isDriverAlreadyPresent(driverName, classPath);
+			// if the driver is not present, it will be downloaded
+			String driverPath = isDriverAlreadyPresent(driverName, classPath);
 
-      if(driverPath == null) {
+			if(driverPath == null) {
 
-        // download last available jdbc driver version
-        String driverDownldUrl = (String) fields.get("url");
-        URL website = new URL(driverDownldUrl);
-        String fileName = driverDownldUrl.substring(driverDownldUrl.lastIndexOf('/')+1, driverDownldUrl.length());
-        ReadableByteChannel rbc = Channels.newChannel(website.openStream());
-        @SuppressWarnings("resource")
-        FileOutputStream fos = new FileOutputStream(classPath+fileName);
-        fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
-        
-        driverPath = classPath+fileName;
-      }
-      
-      // saving driver
-      context.setDriverDependencyPath(driverPath);
-      
-    } catch(Exception e) {
-      context.getOutputManager().error(e.getMessage());
-      Writer writer = new StringWriter();
-      e.printStackTrace(new PrintWriter(writer));
-      context.getOutputManager().debug(writer.toString());
-      System.exit(0);
-    }
+				// download last available jdbc driver version
+				String driverDownldUrl = (String) fields.get("url");
+				URL website = new URL(driverDownldUrl);
+				String fileName = driverDownldUrl.substring(driverDownldUrl.lastIndexOf('/')+1, driverDownldUrl.length());
+				ReadableByteChannel rbc = Channels.newChannel(website.openStream());
+				@SuppressWarnings("resource")
+				FileOutputStream fos = new FileOutputStream(classPath+fileName);
+				fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
 
-    return driverClassName;
-  }
+				driverPath = classPath+fileName;
+			}
+
+			// saving driver
+			context.setDriverDependencyPath(driverPath);
+
+		} catch(Exception e) {
+			if(e.getMessage() != null)
+				context.getOutputManager().error(e.getClass().getName() + " - " + e.getMessage());
+			else
+				context.getOutputManager().error(e.getClass().getName());
+
+			Writer writer = new StringWriter();
+			e.printStackTrace(new PrintWriter(writer));
+			context.getOutputManager().debug(writer.toString());
+			System.exit(0);
+		}
+
+		return driverClassName;
+	}
 
 
-  /**
-   * @param driverName
-   * @return
-   */
-  private static String isDriverAlreadyPresent(String driverName, String classPath) {
+	/**
+	 * @param driverName
+	 * @return
+	 */
+	private static String isDriverAlreadyPresent(String driverName, String classPath) {
 
-    // renaming prefix if referred to Oracle driver
-    if(driverName.equalsIgnoreCase("Oracle"))
-      driverName = "ojdbc";
-    
-    File dir = new File(classPath);
+		// renaming prefix if referred to Oracle driver
+		if(driverName.equalsIgnoreCase("Oracle"))
+			driverName = "ojdbc";
 
-    File[] files = dir.listFiles(); 
-    
-    for(int i=0; i<files.length; i++) {
-      if(files[i].getName().startsWith(driverName))
-        return files[i].getPath();
-    }
+		File dir = new File(classPath);
 
-      return null;
-  }
+		File[] files = dir.listFiles(); 
 
-  private static String readAll(Reader rd) throws IOException {
-    StringBuilder sb = new StringBuilder();
-    int cp;
-    while ((cp = rd.read()) != -1) {
-      sb.append((char) cp);
-    }
-    return sb.toString();
-  }
+		for(int i=0; i<files.length; i++) {
+			if(files[i].getName().startsWith(driverName))
+				return files[i].getPath();
+		}
 
-  public static ODocument readJsonFromUrl(String url, OTeleporterContext context) {
+		return null;
+	}
 
-    InputStream is = null;
-    ODocument json = null;
-    
-    try {
+	private static String readAll(Reader rd) throws IOException {
+		StringBuilder sb = new StringBuilder();
+		int cp;
+		while ((cp = rd.read()) != -1) {
+			sb.append((char) cp);
+		}
+		return sb.toString();
+	}
 
-      URL urlObj = new URL(url);
-      URLConnection urlConn = urlObj.openConnection();
-      urlConn.setRequestProperty("User-Agent", "Teleporter");
-      is = urlConn.getInputStream();
+	public static ODocument readJsonFromUrl(String url, OTeleporterContext context) {
 
-      //    JSONObject json = null;
-      json = new ODocument();
+		InputStream is = null;
+		ODocument json = null;
 
-      BufferedReader rd = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF-8")));
-      String jsonText = readAll(rd);
-      //      json = new JSONObject(jsonText);
-      json.fromJSON(jsonText);
+		try {
 
-    } catch (Exception e) {
-      context.getOutputManager().error(e.getMessage());
-      Writer writer = new StringWriter();
-      e.printStackTrace(new PrintWriter(writer));
-      context.getOutputManager().debug(writer.toString());
-      System.exit(0);
-    }
-    finally {
-      try {
-      is.close();
-      } catch (Exception e) {
-        context.getOutputManager().error(e.getMessage());
-        Writer writer = new StringWriter();
-        e.printStackTrace(new PrintWriter(writer));
-        context.getOutputManager().debug(writer.toString());
-      }
-    }
-    return json;
-  }
+			URL urlObj = new URL(url);
+			URLConnection urlConn = urlObj.openConnection();
+			urlConn.setRequestProperty("User-Agent", "Teleporter");
+			is = urlConn.getInputStream();
+
+			//    JSONObject json = null;
+			json = new ODocument();
+
+			BufferedReader rd = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF-8")));
+			String jsonText = readAll(rd);
+			//      json = new JSONObject(jsonText);
+			json.fromJSON(jsonText);
+
+		} catch (Exception e) {
+			if(e.getMessage() != null)
+				context.getOutputManager().error(e.getClass().getName() + " - " + e.getMessage());
+			else
+				context.getOutputManager().error(e.getClass().getName());
+
+			Writer writer = new StringWriter();
+			e.printStackTrace(new PrintWriter(writer));
+			context.getOutputManager().debug(writer.toString());
+			System.exit(0);
+		}
+		finally {
+			try {
+				is.close();
+			} catch (Exception e) {
+				if(e.getMessage() != null)
+					context.getOutputManager().error(e.getClass().getName() + " - " + e.getMessage());
+				else
+					context.getOutputManager().error(e.getClass().getName());
+
+				Writer writer = new StringWriter();
+				e.printStackTrace(new PrintWriter(writer));
+				context.getOutputManager().debug(writer.toString());
+			}
+		}
+		return json;
+	}
 
 }

@@ -125,17 +125,19 @@ public class OGraphDBCommandEngine {
 				return true;
 
 		} catch(Exception e) {
-			context.getOutputManager().error(e.getMessage());
+			if(e.getMessage() != null)
+				context.getOutputManager().error(e.getClass().getName() + " - " + e.getMessage());
+			else
+				context.getOutputManager().error(e.getClass().getName());
+
 			Writer writer = new StringWriter();
 			e.printStackTrace(new PrintWriter(writer));
 			String s = writer.toString();
-			context.getOutputManager().debug(s);
+			context.getOutputManager().error(s);
 			if(orientGraph != null)
 				orientGraph.shutdown();
 		}
-
 		return false;
-
 	}
 
 
@@ -170,6 +172,8 @@ public class OGraphDBCommandEngine {
 
 		OrientGraphNoTx orientGraph = null;
 		OrientVertex vertex = null;
+		String[] propertyOfKey = null;
+		String[] valueOfKey = null;
 
 		try {
 
@@ -195,8 +199,8 @@ public class OGraphDBCommandEngine {
 				}
 			}
 
-			String[] propertyOfKey = new String[propertiesOfIndex.size()];
-			String[] valueOfKey = new String[propertiesOfIndex.size()];
+			propertyOfKey = new String[propertiesOfIndex.size()];
+			valueOfKey = new String[propertiesOfIndex.size()];
 
 			int cont = 0;
 			for(String property: propertiesOfIndex) {
@@ -220,7 +224,8 @@ public class OGraphDBCommandEngine {
 
 			// setting properties to the vertex
 			String currentAttributeValue = null;
-			Date currentDateValue;
+			Date currentDateValue = null;
+			byte[] currentBinaryValue = null;
 			String currentPropertyType;
 
 
@@ -231,13 +236,18 @@ public class OGraphDBCommandEngine {
 
 				try {
 					currentAttributeValue = record.getString(context.getNameResolver().reverseTransformation(currentProperty.getName()));
+//					currentBinaryValue = record.getBytes(context.getNameResolver().reverseTransformation(currentProperty.getName()));
 				}catch(Exception e) {
-					context.getOutputManager().error(e.getMessage());
+					if(e.getMessage() != null)
+						context.getOutputManager().error(e.getClass().getName() + " - " + e.getMessage());
+					else
+						context.getOutputManager().error(e.getClass().getName());
+
 					context.getOutputManager().error("Mismatch between 'parent-table' attributes and 'child-table' attributes, check the schema of the tables involved in inheritance relationships.");
 					Writer writer = new StringWriter();
 					e.printStackTrace(new PrintWriter(writer));
 					String s1 = writer.toString();
-					context.getOutputManager().debug(s1);
+					context.getOutputManager().error(s1);
 				}
 
 				if(currentAttributeValue != null) {
@@ -253,8 +263,16 @@ public class OGraphDBCommandEngine {
 							properties.put(currentProperty.getName(), currentDateValue);
 						}
 					}
+					
+					else if(currentPropertyType.equals("BINARY")) {
+						{
+							currentBinaryValue = record.getBytes(context.getNameResolver().reverseTransformation(currentProperty.getName()));
+							properties.put(currentProperty.getName(), currentBinaryValue);
+						}
+					}
 
 					else if(currentPropertyType.equals("BOOLEAN")) {
+						currentAttributeValue = record.getString(context.getNameResolver().reverseTransformation(currentProperty.getName()));
 						switch(currentAttributeValue) {
 
 						case "t": properties.put(currentProperty.getName(), "true");
@@ -266,6 +284,7 @@ public class OGraphDBCommandEngine {
 					}
 
 					else {
+						currentAttributeValue = record.getString(context.getNameResolver().reverseTransformation(currentProperty.getName()));
 						properties.put(currentProperty.getName(), currentAttributeValue);
 					}
 				}
@@ -284,65 +303,95 @@ public class OGraphDBCommandEngine {
 			}
 			else {
 
-				// comparing old version of vertex with the new one: if the two versions are equals no rewriting is performed
+				// discerning between a reached-vertex updating (only original primary key's properties are present) and a full-vertex updating
 
-				boolean equalVersions = true;
-				boolean equalProperties = true;
+				boolean justReachedVertex = true;
 
-				if(vertex.getPropertyKeys().size() == properties.size()) {
-
-					// comparing properties
-					for(String propertyName: vertex.getPropertyKeys()) {
-						if(!properties.keySet().contains(propertyName)) {
-							equalProperties = false;
-							equalVersions = false;
-							break;
-						}
-					}
-
-					if(equalProperties) {
-						// comparing values of the properties
-						for(String propertyName: vertex.getPropertyKeys()) {
-							if(!(vertex.getProperty(propertyName) == null && properties.get(propertyName) == null) ) {
-								currentPropertyType = context.getDataTypeHandler().resolveType(vertexType.getPropertyByName(propertyName).getPropertyType().toLowerCase(Locale.ENGLISH),context).toString();
-								if(!this.areEquals(vertex.getProperty(propertyName),properties.get(propertyName), currentPropertyType)) {
-									equalVersions = false;
-									break;
-								} 
-							}
-						}
-					}
-					else {
-						equalProperties = false;
-						equalVersions = false;
-					}
-
-					if(!equalVersions) {
-						// removing old eventual properties
-						for(String propertyKey: vertex.getPropertyKeys()) {
-							vertex.removeProperty(propertyKey);
-						}
-
-						// setting new properties and save
-						vertex.setProperties(properties);
-						vertex.save();
-						statistics.orientUpdatedVertices++;
-						context.getOutputManager().debug(properties.toString());
-						context.getOutputManager().debug("New vertex inserted (all props setted): %s\n", vertex.toString());
+				for(String property: vertex.getPropertyKeys()) {
+					if(!propertiesOfIndex.contains(property)) {
+						justReachedVertex = false;
+						break;
 					}
 				}
-				orientGraph.shutdown();
+
+				// updating a reached-vertex (only original primary key's properties are present)
+				if(justReachedVertex) {
+
+					// setting new properties and save
+					vertex.setProperties(properties);
+					vertex.save();
+					statistics.orientAddedVertices++;
+					context.getOutputManager().debug(properties.toString());
+					context.getOutputManager().debug("New vertex inserted (all props setted): %s\n", vertex.toString());
+				}
+
+				// updating a full-vertex
+				else {
+
+					// comparing old version of vertex with the new one: if the two versions are equals no rewriting is performed
+
+					boolean equalVersions = true;
+					boolean equalProperties = true;
+
+					if(vertex.getPropertyKeys().size() == properties.size()) {
+
+						// comparing properties
+						for(String propertyName: vertex.getPropertyKeys()) {
+							if(!properties.keySet().contains(propertyName)) {
+								equalProperties = false;
+								equalVersions = false;
+								break;
+							}
+						}
+
+						if(equalProperties) {
+							// comparing values of the properties
+							for(String propertyName: vertex.getPropertyKeys()) {
+								if(!(vertex.getProperty(propertyName) == null && properties.get(propertyName) == null) ) {
+									currentPropertyType = context.getDataTypeHandler().resolveType(vertexType.getPropertyByName(propertyName).getPropertyType().toLowerCase(Locale.ENGLISH),context).toString();
+									if(!this.areEquals(vertex.getProperty(propertyName),properties.get(propertyName), currentPropertyType)) {
+										equalVersions = false;
+										break;
+									} 
+								}
+							}
+						}
+						else {
+							equalProperties = false;
+							equalVersions = false;
+						}
+
+						if(!equalVersions) {
+							// removing old eventual properties
+							for(String propertyKey: vertex.getPropertyKeys()) {
+								vertex.removeProperty(propertyKey);
+							}
+
+							// setting new properties and save
+							vertex.setProperties(properties);
+							vertex.save();
+							statistics.orientUpdatedVertices++;
+							context.getOutputManager().debug(properties.toString());
+							context.getOutputManager().debug("New vertex inserted (all props setted): %s\n", vertex.toString());
+						}
+					}
+				}
 			} 
 		} catch(Exception e) {
-			context.getOutputManager().error(e.getMessage());
+			if(e.getMessage() != null)
+				context.getOutputManager().error(e.getClass().getName() + " - " + e.getMessage());
+			else
+				context.getOutputManager().error(e.getClass().getName());
+
 			Writer writer = new StringWriter();
 			e.printStackTrace(new PrintWriter(writer));
-			String s = writer.toString();
-			context.getOutputManager().debug(s);
+			String s2 = writer.toString();
+			context.getOutputManager().error(s2);
 			if(orientGraph != null)
 				orientGraph.shutdown();
 		}
 
+		orientGraph.shutdown();
 		return vertex;
 	}
 
@@ -356,37 +405,51 @@ public class OGraphDBCommandEngine {
 	 */
 	private boolean areEquals(Object oldProperty, Object newProperty, String currentPropertyType) {
 
-		if(currentPropertyType.equals("BOOLEAN")) {
+		if(oldProperty != null && newProperty != null) {
+
+			if(currentPropertyType.equals("BOOLEAN")) {
+
+				if (oldProperty.toString().equalsIgnoreCase(newProperty.toString()))
+					return true;
+
+				else if(oldProperty.toString().equalsIgnoreCase("t") && newProperty.toString().equalsIgnoreCase("true") 
+						|| oldProperty.toString().equalsIgnoreCase("f") && newProperty.toString().equalsIgnoreCase("false"))
+					return true;
+
+				else
+					return false;
+			}
+
+			else if(currentPropertyType.equals("DATE")) {
+				return oldProperty.equals(newProperty);
+			}
+
+			else if(currentPropertyType.equals("DATETIME")) {
+				// oldProperty : Date
+				// newProperty : Timestamp
+				Date oldPropertyDate = (Date) oldProperty;  
+				// new variable to compare dates
+				Date newPropertyDate = new Date(((Timestamp)newProperty).getTime());
+
+				return oldPropertyDate.equals(newPropertyDate);
+			}
 			
-			if (oldProperty.toString().equalsIgnoreCase(newProperty.toString()))
-				return true;
-			
-			else if(oldProperty.toString().equalsIgnoreCase("t") && newProperty.toString().equalsIgnoreCase("true") 
-					|| oldProperty.toString().equalsIgnoreCase("f") && newProperty.toString().equalsIgnoreCase("false"))
-				return true;
-			
-			else
-				return false;
+			else if(currentPropertyType.equals("BINARY")) {
+				byte[] oldPropertyBinary = (byte[]) oldProperty;
+				byte[] newPropertyBinary = (byte[]) newProperty;
+				return Arrays.equals(oldPropertyBinary, newPropertyBinary);
+			}
+
+			else {
+				return oldProperty.toString().equals(newProperty.toString());
+			}
 		}
 
-		else if(currentPropertyType.equals("DATE")) {
-			return oldProperty.equals(newProperty);
-		}
-		
-		else if(currentPropertyType.equals("DATETIME")) {
-			// oldProperty : Date
-			// newProperty : Timestamp
-			oldProperty = (Date) oldProperty;  
-			// new variable to compare dates
-			Date newPropertyDate = new Date(((Timestamp)newProperty).getTime());
-			
-			return oldProperty.equals(newPropertyDate);
-		}
+		else if(oldProperty == null && newProperty == null)
+			return true;
 
-		else {
-			return oldProperty.toString().equals(newProperty.toString());
-		}
-
+		else
+			return false;
 	}
 
 
@@ -414,8 +477,6 @@ public class OGraphDBCommandEngine {
 			OrientGraphFactory factory = new OrientGraphFactory(this.graphDBUrl);
 			orientGraph = factory.getNoTx();
 			orientGraph.setStandardElementConstraints(false);
-			
-			OTeleporterStatistics statistics = context.getStatistics();
 
 			// building keys and values for the lookup 
 
@@ -466,7 +527,6 @@ public class OGraphDBCommandEngine {
 					context.getOutputManager().debug("NEW Reached vertex (id:value) --> %s:%s\n", Arrays.toString(propertyOfKey), Arrays.toString(valueOfKey));
 					String classAndClusterName = currentInVertexType.getName(); 
 					currentInVertex = orientGraph.addVertex("class:"+classAndClusterName, partialProperties);
-					statistics.orientAddedVertices++;
 					context.getOutputManager().debug("New vertex inserted (only pk props setted): %s\n", currentInVertex.toString());
 
 				}
@@ -481,11 +541,15 @@ public class OGraphDBCommandEngine {
 			orientGraph.shutdown();
 
 		} catch(Exception e) {
-			context.getOutputManager().error(e.getMessage());
+			if(e.getMessage() != null)
+				context.getOutputManager().error(e.getClass().getName() + " - " + e.getMessage());
+			else
+				context.getOutputManager().error(e.getClass().getName());
+
 			Writer writer = new StringWriter();
 			e.printStackTrace(new PrintWriter(writer));
 			String s = writer.toString();
-			context.getOutputManager().debug(s);
+			context.getOutputManager().error(s);
 			if(orientGraph != null)
 				orientGraph.shutdown();
 		}
@@ -514,7 +578,7 @@ public class OGraphDBCommandEngine {
 				}
 				if(edgeAlreadyPresent) {
 					context.getOutputManager().debug("Edge beetween '%s' and '%s' already present.", currentOutVertex.toString(), currentInVertex.toString());
-//					statistics.orientEdges++;
+					//					statistics.orientEdges++;
 				}
 				else {
 					OrientEdge edge = orientGraph.addEdge(null, currentOutVertex, currentInVertex, edgeType);
@@ -530,11 +594,15 @@ public class OGraphDBCommandEngine {
 				context.getOutputManager().debug("New edge inserted: %s", edge.toString());
 			}
 		} catch(Exception e) {
-			context.getOutputManager().error(e.getMessage());
+			if(e.getMessage() != null)
+				context.getOutputManager().error(e.getClass().getName() + " - " + e.getMessage());
+			else
+				context.getOutputManager().error(e.getClass().getName());
+
 			Writer writer = new StringWriter();
 			e.printStackTrace(new PrintWriter(writer));
 			String s = writer.toString();
-			context.getOutputManager().debug(s);
+			context.getOutputManager().error(s);
 			if(orientGraph != null)
 				orientGraph.shutdown();
 		}
@@ -585,11 +653,15 @@ public class OGraphDBCommandEngine {
 			this.upsertEdge(orientGraph, currentOutVertex, currentInVertex, aggregatorEdge.getEdgeType(), context);
 			orientGraph.shutdown();
 		} catch(Exception e) {
-			context.getOutputManager().error(e.getMessage());
+			if(e.getMessage() != null)
+				context.getOutputManager().error(e.getClass().getName() + " - " + e.getMessage());
+			else
+				context.getOutputManager().error(e.getClass().getName());
+
 			Writer writer = new StringWriter();
 			e.printStackTrace(new PrintWriter(writer));
 			String s = writer.toString();
-			context.getOutputManager().debug(s);
+			context.getOutputManager().error(s);
 			orientGraph.shutdown();
 		}
 	}

@@ -39,57 +39,61 @@ import com.orientechnologies.teleporter.context.OTeleporterContext;
 
 public class ODBSourceConnection {
 
-  private String driver;
-  private String uri;
-  private String username;
-  private String password;
+	private String driver;
+	private String uri;
+	private String username;
+	private String password;
 
 
-  public ODBSourceConnection(String driver, String uri, String username, String password) {	
-    this.driver = driver;
-    this.uri = uri;
-    this.username = username;
-    this.password = password;
+	public ODBSourceConnection(String driver, String uri, String username, String password) {	
+		this.driver = driver;
+		this.uri = uri;
+		this.username = username;
+		this.password = password;
 
-  }
+	}
 
-  public Connection getConnection(OTeleporterContext context) {
+	public Connection getConnection(OTeleporterContext context) {
 
-    Connection connection = null;
-    try {
-      //      Class.forName(driver);
-      //      connection = DriverManager.getConnection(uri,username, password);
+		Connection connection = null;
+		try {
+			//      Class.forName(driver);
+			//      connection = DriverManager.getConnection(uri,username, password);
 
-      URL u = new URL("jar:file://" + context.getDriverDependencyPath() + "!/");
-      URLClassLoader ucl = new URLClassLoader(new URL[] { u });
-      Driver d = (Driver) Class.forName(this.driver, true, ucl).newInstance();
-      DriverManager.registerDriver(new ODriverShim(d));
-      connection = DriverManager.getConnection(uri, username, password);
+			URL u = new URL("jar:file://" + context.getDriverDependencyPath() + "!/");
+			URLClassLoader ucl = new URLClassLoader(new URL[] { u });
+			Driver d = (Driver) Class.forName(this.driver, true, ucl).newInstance();
+			DriverManager.registerDriver(new ODriverShim(d));
+			connection = DriverManager.getConnection(uri, username, password);
 
-    } catch(Exception e) {
-      context.getOutputManager().error(e.getMessage());
-      Writer writer = new StringWriter();
-      e.printStackTrace(new PrintWriter(writer));
-      context.getOutputManager().debug(writer.toString());
-      System.exit(0);
-    }
-    return connection;
+		} catch(Exception e) {
+			if(e.getMessage() != null)
+				context.getOutputManager().error(e.getClass().getName() + " - " + e.getMessage());
+			else
+				context.getOutputManager().error(e.getClass().getName());
 
-  }
+			Writer writer = new StringWriter();
+			e.printStackTrace(new PrintWriter(writer));
+			context.getOutputManager().debug(writer.toString());
+			System.exit(0);
+		}
+		return connection;
 
-  public String getDriver() {
-    return driver;
-  }
+	}
 
-  public String getUri() {
-    return uri;
-  }
+	public String getDriver() {
+		return driver;
+	}
 
-  public String getUsername() {
-    return username;
-  }
+	public String getUri() {
+		return uri;
+	}
 
-  public String getPassword() {
-    return password;
-  }
+	public String getUsername() {
+		return username;
+	}
+
+	public String getPassword() {
+		return password;
+	}
 }

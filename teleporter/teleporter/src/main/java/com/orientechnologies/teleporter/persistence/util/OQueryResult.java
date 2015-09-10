@@ -38,104 +38,120 @@ import com.orientechnologies.teleporter.context.OTeleporterContext;
 
 public class OQueryResult {
 
-  private Connection dbConnection;
-  private Statement statement;
-  private ResultSet result;
+	private Connection dbConnection;
+	private Statement statement;
+	private ResultSet result;
 
-  public OQueryResult(Connection connection, Statement statement, ResultSet result) {
-    this.dbConnection = connection;
-    this.statement = statement;
-    this.result = result;
-  }
+	public OQueryResult(Connection connection, Statement statement, ResultSet result) {
+		this.dbConnection = connection;
+		this.statement = statement;
+		this.result = result;
+	}
 
-  public Connection getDbConnection() {
-    return dbConnection;
-  }
+	public Connection getDbConnection() {
+		return dbConnection;
+	}
 
-  public void setDbConnection(Connection dbConnection) {
-    this.dbConnection = dbConnection;
-  }
+	public void setDbConnection(Connection dbConnection) {
+		this.dbConnection = dbConnection;
+	}
 
-  public Statement getStatement() {
-    return statement;
-  }
+	public Statement getStatement() {
+		return statement;
+	}
 
-  public void setStatement(Statement statement) {
-    this.statement = statement;
-  }
+	public void setStatement(Statement statement) {
+		this.statement = statement;
+	}
 
-  public ResultSet getResult() {
-    return result;
-  }
+	public ResultSet getResult() {
+		return result;
+	}
 
-  public void setResult(ResultSet result) {
-    this.result = result;
-  }
+	public void setResult(ResultSet result) {
+		this.result = result;
+	}
 
 
 
-  public void closeAll(OTeleporterContext context) {
+	public void closeAll(OTeleporterContext context) {
 
-    try {
-      if(this.statement != null && !this.statement.isClosed()) 
-        this.statement.close();
-      if(this.result != null && !this.result.isClosed())
-        this.result.close();
-      if(this.dbConnection != null && !this.dbConnection.isClosed()) 
-        this.dbConnection.close();
-    } catch(SQLException e) {
-      context.getOutputManager().error(e.getMessage());
-      Writer writer = new StringWriter();
-      e.printStackTrace(new PrintWriter(writer));
-      context.getOutputManager().debug(writer.toString());
-    }
-  }
+		try {
+			if(this.statement != null && !this.statement.isClosed()) 
+				this.statement.close();
+			if(this.result != null && !this.result.isClosed())
+				this.result.close();
+			if(this.dbConnection != null && !this.dbConnection.isClosed()) 
+				this.dbConnection.close();
+		} catch(SQLException e) {
+			if(e.getMessage() != null)
+				context.getOutputManager().error(e.getClass().getName() + " - " + e.getMessage());
+			else
+				context.getOutputManager().error(e.getClass().getName());
 
-  public boolean isConnectionClosed(OTeleporterContext context) {
-    try {
-      if(this.dbConnection != null)
-        return dbConnection.isClosed();
-    }catch(Exception e) {
-      context.getOutputManager().error(e.getMessage());
-      Writer writer = new StringWriter();
-      e.printStackTrace(new PrintWriter(writer));
-      context.getOutputManager().debug(writer.toString());
-    }
-    return false;
-  }
-  
-  public boolean isStatementClosed(OTeleporterContext context) {
-    try {
-      if(this.statement != null)
-        return statement.isClosed();
-    }catch(Exception e) {
-      context.getOutputManager().error(e.getMessage());
-      Writer writer = new StringWriter();
-      e.printStackTrace(new PrintWriter(writer));
-      context.getOutputManager().debug(writer.toString());
-    }
-    return false;
-  }
-  
-  public boolean isResultSetClosed(OTeleporterContext context) {
-    try {
-      if(this.result != null)
-        return result.isClosed();
-    }catch(Exception e) {
-      context.getOutputManager().error(e.getMessage());
-      Writer writer = new StringWriter();
-      e.printStackTrace(new PrintWriter(writer));
-      context.getOutputManager().debug(writer.toString());
-    }
-    return false;
-  }
+			Writer writer = new StringWriter();
+			e.printStackTrace(new PrintWriter(writer));
+			context.getOutputManager().debug(writer.toString());
+		}
+	}
 
-  public boolean isAllClosed(OTeleporterContext context) {
+	public boolean isConnectionClosed(OTeleporterContext context) {
+		try {
+			if(this.dbConnection != null)
+				return dbConnection.isClosed();
+		}catch(Exception e) {
+			if(e.getMessage() != null)
+				context.getOutputManager().error(e.getClass().getName() + " - " + e.getMessage());
+			else
+				context.getOutputManager().error(e.getClass().getName());
 
-    if(isConnectionClosed(context) && isStatementClosed(context) && isResultSetClosed(context))
-      return true;
-    else
-      return false;
-  }
+			Writer writer = new StringWriter();
+			e.printStackTrace(new PrintWriter(writer));
+			context.getOutputManager().debug(writer.toString());
+		}
+		return false;
+	}
+
+	public boolean isStatementClosed(OTeleporterContext context) {
+		try {
+			if(this.statement != null)
+				return statement.isClosed();
+		}catch(Exception e) {
+			if(e.getMessage() != null)
+				context.getOutputManager().error(e.getClass().getName() + " - " + e.getMessage());
+			else
+				context.getOutputManager().error(e.getClass().getName());
+
+			Writer writer = new StringWriter();
+			e.printStackTrace(new PrintWriter(writer));
+			context.getOutputManager().debug(writer.toString());
+		}
+		return false;
+	}
+
+	public boolean isResultSetClosed(OTeleporterContext context) {
+		try {
+			if(this.result != null)
+				return result.isClosed();
+		}catch(Exception e) {
+			if(e.getMessage() != null)
+				context.getOutputManager().error(e.getClass().getName() + " - " + e.getMessage());
+			else
+				context.getOutputManager().error(e.getClass().getName());
+
+			Writer writer = new StringWriter();
+			e.printStackTrace(new PrintWriter(writer));
+			context.getOutputManager().debug(writer.toString());
+		}
+		return false;
+	}
+
+	public boolean isAllClosed(OTeleporterContext context) {
+
+		if(isConnectionClosed(context) && isStatementClosed(context) && isResultSetClosed(context))
+			return true;
+		else
+			return false;
+	}
 
 }

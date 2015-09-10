@@ -26,6 +26,8 @@ import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import com.orientechnologies.orient.server.OServer;
+import com.orientechnologies.orient.server.config.OServerParameterConfiguration;
 import com.orientechnologies.orient.server.plugin.OServerPluginAbstract;
 import com.orientechnologies.teleporter.context.OOutputStreamManager;
 import com.orientechnologies.teleporter.context.OTeleporterContext;
@@ -71,10 +73,9 @@ public class OTeleporter extends OServerPluginAbstract {
 
 		// Missing argument validation
 
-		if(args.length < 12) {
-			outputManager.error("Syntax error, missing argument.");
-			outputManager.error("Use: teleport.sh -jdriver <db-driver> -jurl <db-uri> -juser <username> -jpasswd <password> -ourl <output-orient-db-uri> -s <chosenStrategy>.");
-			exit();
+		if(args.length < 10) {
+			outputManager.error("Syntax error, missing argument. Use:\n ./oteleporter.sh -jdriver <jdbc-driver> -jurl <jdbc-url> -juser <username> -jpasswd <password> -ourl <orientdb-url>.");
+			System.exit(0);
 		}
 
 
@@ -91,27 +92,27 @@ public class OTeleporter extends OServerPluginAbstract {
 
 		if(!arguments.containsKey("-jdriver")) {
 			outputManager.error("Argument -jdriver is mandatory, please try again with expected argument: -jdriver <your-db-driver-name>\n");
-			exit();
+			System.exit(0);
 		}
 
 		if(!arguments.containsKey("-jurl")) {
 			outputManager.error("Argument -jurl is mandatory, please try again with expected argument: -jurl <input-db-jdbc-URL>\n");
-			exit();
+			System.exit(0);
 		}
 
 		if(!arguments.containsKey("-juser")) {
 			outputManager.error("Argument -juser is mandatory, please try again with expected argument: -juser <your-db-username>\n");
-			exit();
+			System.exit(0);
 		}
 
 		if(!arguments.containsKey("-jpasswd")) {
 			outputManager.error("Argument -jpasswd is mandatory, please try again with expected argument: -jpasswd <your-db-access-password>\n");
-			exit();
+			System.exit(0);
 		}
 
 		if(!arguments.containsKey("-ourl")) {
 			outputManager.error("Argument -ourl is mandatory, please try again with expected argument: -ourl <output-orientdb-desired-URL>\n");
-			exit();
+			System.exit(0);
 		}
 
 
@@ -120,43 +121,43 @@ public class OTeleporter extends OServerPluginAbstract {
 		if(!arguments.get("-jdriver").equalsIgnoreCase("Oracle") && !arguments.get("-jdriver").equalsIgnoreCase("MySQL") 
 				&& !arguments.get("-jdriver").equalsIgnoreCase("PostgreSQL") && !arguments.get("-jdriver").equalsIgnoreCase("HyperSQL")) {
 			outputManager.error("Not valid db-driver name. Type one among: 'Oracle','MySQL','PostgreSQL','HyperSQL'\n");
-			exit();
+			System.exit(0);
 		}
 
 		if(!arguments.get("-jurl").contains("jdbc:") && !arguments.get("-jurl").contains("://")) {
 			outputManager.error("Not valid db-url.\n");
-			exit();
+			System.exit(0);
 		}
 
 		if(! (arguments.get("-ourl").contains("plocal:") | arguments.get("-ourl").contains("remote:") | arguments.get("-ourl").contains("memory:")) ) {
 			outputManager.error("Not valid output orient db uri.\n");
-			exit();
+			System.exit(0);
 		}
 
 		if(arguments.get("-s") != null) {
 			if(! (arguments.get("-s").equals("naive") | arguments.get("-s").equals("naive-aggregate")) ) {
 				outputManager.error("Not valid strategy.\n");
-				exit();
+				System.exit(0);
 			}
 		}
 
 		if(arguments.get("-v") != null) {
 			if(! (arguments.get("-v").equals("0") | arguments.get("-v").equals("1") | arguments.get("-v").equals("2") | arguments.get("-v").equals("3")) ) {
 				outputManager.error("Not valid output level. Available levels:\n0 - No messages\n1 - Debug\n2 - Info\n3 - Warning \n");
-				exit();
+				System.exit(0);
 			}
 		}
 
 		if(arguments.get("-inheritance") != null) {
 			if(! (arguments.get("-inheritance").contains("hibernate:") ) ) {
 				outputManager.error("Not valid inheritance argument. Syntax: -inheritance hibernate:<xml-path>");
-				exit();
+				System.exit(0);
 			}
 		}
 
 		if(arguments.get("-include") != null && arguments.get("-exclude") != null) {
 			outputManager.error("It's not possible to use both 'include' and 'exclude' arguments.");
-			exit();
+			System.exit(0);
 		}
 
 
@@ -254,15 +255,24 @@ public class OTeleporter extends OServerPluginAbstract {
 	}
 
 
-	public static void exit() {
-		System.exit(0);
-	}
-
-	
 	@Override
 	public String getName() {
-		
+
 		return "teleporter";
 	}
 
+	@Override
+	public void startup() {
+		super.startup();
+	}
+
+	@Override
+	public void config(OServer oServer, OServerParameterConfiguration[] iParams) {
+
+	}
+
+	@Override
+	public void shutdown() {
+		super.shutdown();
+	}
 }
