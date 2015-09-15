@@ -1,0 +1,10 @@
+<component name="libraryTable">
+  <library name="lib">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/src/main/resources/lib/mysql-connector-java-5.1.36.jar!/" />
+      <root url="jar://$PROJECT_DIR$/src/main/resources/lib/postgresql-9.4-1201.jdbc4.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
