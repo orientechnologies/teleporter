@@ -41,4 +41,4 @@ To the fullest extent permitted by applicable law, in no event shall Orient Tech
 
 9. Questions
 
-If you have questions, please contact us at info@orientecnologies.com
+If you have questions, please contact us at info@orientdb.com

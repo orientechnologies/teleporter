@@ -10,7 +10,7 @@
 	<packaging>jar</packaging>
 
 	<name>teleporter</name>
-	<description>Teleporter plugin for OrientDB NoSQL document graph dbms</description>
+	<description>Teleporter plugin for OrientDB NoSQL DBMS</description>
 	<inceptionYear>2015</inceptionYear>
 	<organization>
 		<name>Orient Technologies</name>
@@ -37,9 +37,9 @@
     </developers>
     
     <scm>
-        <connection>scm:git:git@github.com:orientechnologies/orientdb-lucene.git</connection>
-        <developerConnection>scm:git:git@github.com:orientechnologies/orientdb-lucene.git</developerConnection>
-        <url>scm:git:git@github.com:orientechnologies/orientdb-lucene.git</url>
+        <connection>scm:git:git@github.com:orientechnologies/teleporter.git</connection>
+        <developerConnection>scm:git:git@github.com:orientechnologies/teleporter.git</developerConnection>
+        <url>scm:git:git@github.com:orientechnologies/teleporter.git</url>
     </scm>
     <issueManagement>
         <system>GitHub Issues</system>
@@ -64,7 +64,7 @@
 	
 	<properties>
 		<jdk.version>1.7</jdk.version>
-		<orientdb.version>2.1.0</orientdb.version>
+		<orientdb.version>2.1.2</orientdb.version>
 		<hsqldb.version>2.3.2</hsqldb.version>
 	</properties>
 	
@@ -123,6 +123,12 @@
 	</build>
 
 	<dependencies>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.12</version>
+			<scope>test</scope>
+		</dependency>
 		<dependency>
 			<groupId>com.orientechnologies</groupId>
 			<artifactId>orientdb-core</artifactId>
