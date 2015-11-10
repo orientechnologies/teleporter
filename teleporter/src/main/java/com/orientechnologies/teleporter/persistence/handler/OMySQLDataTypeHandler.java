@@ -22,7 +22,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.orientechnologies.orient.core.metadata.schema.OType;
-import com.orientechnologies.teleporter.context.OTeleporterContext;
 
 /**
  * Handler that executes type conversions from MySQL DBMS to the OrientDB types.
@@ -32,31 +31,11 @@ import com.orientechnologies.teleporter.context.OTeleporterContext;
  *
  */
 
-public class OMySQLDataTypeHandler implements ODriverDataTypeHandler {
+public class OMySQLDataTypeHandler extends OGenericDataTypeHandler {
 
-
-	private Map<String,OType> dbmsType2OrientType;
 
 	public OMySQLDataTypeHandler(){
-		this.dbmsType2OrientType = fillTypesMap();
-	}
-
-	/**  
-	 * The method returns the Orient Type starting from the string name type of the MySQL DBMS.
-	 * If the starting type is not mapped, OType.STRING is returned.
-	 */
-	public OType resolveType(String type, OTeleporterContext context) {
-
-		// Defined Types
-		if(this.dbmsType2OrientType.keySet().contains(type))
-			return this.dbmsType2OrientType.get(type);
-
-		// Undefined Types
-		else {
-			context.getStatistics().warningMessages.add("The original type '" + type + "' is not convertible into any OrientDB type thus, in order to prevent data loss, it will be converted to the OrientDB Type String.");
-			return OType.STRING;
-		}
-
+		this.dbmsType2OrientType = this.fillTypesMap();
 	}
 
 
@@ -73,8 +52,11 @@ public class OMySQLDataTypeHandler implements ODriverDataTypeHandler {
 		dbmsType2OrientType.put("smallint", OType.SHORT);
 		dbmsType2OrientType.put("mediumint", OType.INTEGER);
 		dbmsType2OrientType.put("int", OType.INTEGER);
+		dbmsType2OrientType.put("integer", OType.INTEGER);
 		dbmsType2OrientType.put("bigint", OType.LONG);
 		dbmsType2OrientType.put("decimal", OType.DECIMAL);
+		dbmsType2OrientType.put("dec", OType.DECIMAL);
+		dbmsType2OrientType.put("fixed", OType.DECIMAL);
 		dbmsType2OrientType.put("numeric", OType.DECIMAL);
 		dbmsType2OrientType.put("real", OType.FLOAT);
 		dbmsType2OrientType.put("float", OType.FLOAT);

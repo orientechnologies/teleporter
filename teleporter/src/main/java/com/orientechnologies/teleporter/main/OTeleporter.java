@@ -118,9 +118,9 @@ public class OTeleporter extends OServerPluginAbstract {
 
 		// simple syntax check on command
 
-		if(!arguments.get("-jdriver").equalsIgnoreCase("Oracle") && !arguments.get("-jdriver").equalsIgnoreCase("MySQL") 
+		if(!arguments.get("-jdriver").equalsIgnoreCase("Oracle") && !arguments.get("-jdriver").equalsIgnoreCase("SQLServer") && !arguments.get("-jdriver").equalsIgnoreCase("MySQL") 
 				&& !arguments.get("-jdriver").equalsIgnoreCase("PostgreSQL") && !arguments.get("-jdriver").equalsIgnoreCase("HyperSQL")) {
-			outputManager.error("Not valid db-driver name. Type one of the following driver names: 'Oracle','MySQL','PostgreSQL','HyperSQL'\n");
+			outputManager.error("Not valid db-driver name. Type one of the following driver names: 'Oracle','SQLServer','MySQL','PostgreSQL','HyperSQL'\n");
 			System.exit(0);
 		}
 

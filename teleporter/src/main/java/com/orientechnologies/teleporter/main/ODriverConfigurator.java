@@ -68,6 +68,9 @@ public class ODriverConfigurator {
 			if(driverName.equalsIgnoreCase("Oracle")) {
 				fields = json.field("Oracle");
 			}
+			if(driverName.equalsIgnoreCase("SQLServer")) {
+				fields = json.field("SQLServer");
+			}
 			else if(driverName.equalsIgnoreCase("MySQL")) {
 				fields = json.field("MySQL");
 			}

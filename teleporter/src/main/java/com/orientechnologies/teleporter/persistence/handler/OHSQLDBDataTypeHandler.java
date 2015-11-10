@@ -22,7 +22,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.orientechnologies.orient.core.metadata.schema.OType;
-import com.orientechnologies.teleporter.context.OTeleporterContext;
 
 /**
  * Handler that executes type conversions from HSQLDB DBMS to the OrientDB types.
@@ -32,33 +31,13 @@ import com.orientechnologies.teleporter.context.OTeleporterContext;
  *
  */
 
-public class OHSQLDBDataTypeHandler implements ODriverDataTypeHandler {
+public class OHSQLDBDataTypeHandler extends OGenericDataTypeHandler {
 
-  private Map<String,OType> dbmsType2OrientType;
 
   public OHSQLDBDataTypeHandler() {
-    this.dbmsType2OrientType = fillTypesMap();
+    this.dbmsType2OrientType = this.fillTypesMap();
   }
 
-  
-  /**  
-   * The method returns the Orient Type starting from the string name type of the original DBMS.
-   * If the starting type is not mapped, OType.STRING is returned.
-   */
-  public OType resolveType(String type, OTeleporterContext context) {
-
-    // Defined Types
-    if(this.dbmsType2OrientType.keySet().contains(type))
-      return this.dbmsType2OrientType.get(type);
-
-    // Undefined Types
-    else {
-      context.getStatistics().warningMessages.add("The original type '" + type + "' is not convertible into any OrientDB type thus, in order to prevent data loss, it will be converted to the OrientDB Type String.");
-      return OType.STRING;
-    }
-
-  }
-  
   
   private Map<String, OType> fillTypesMap() {
 
@@ -108,7 +87,7 @@ public class OHSQLDBDataTypeHandler implements ODriverDataTypeHandler {
      * Date/Time Types
      * (doc at http://hsqldb.org/doc/guide/guide.html#sgc_datetime_types )
      */    
-    dbmsType2OrientType.put("date", OType.DATETIME);
+    dbmsType2OrientType.put("date", OType.DATE);
     dbmsType2OrientType.put("time", OType.STRING);
     dbmsType2OrientType.put("time with time zone", OType.STRING);
     dbmsType2OrientType.put("timestamp", OType.DATETIME);

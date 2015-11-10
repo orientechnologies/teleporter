@@ -22,7 +22,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.orientechnologies.orient.core.metadata.schema.OType;
-import com.orientechnologies.teleporter.context.OTeleporterContext;
 
 /**
  * Handler that executes type conversions from Oracle DBMS to the OrientDB types.
@@ -32,120 +31,101 @@ import com.orientechnologies.teleporter.context.OTeleporterContext;
  *
  */
 
-public class OOracleDataTypeHandler implements ODriverDataTypeHandler {
-
-  private Map<String,OType> dbmsType2OrientType;
-
-  public OOracleDataTypeHandler(){
-    this.dbmsType2OrientType = fillTypesMap();
-  }
-
-  /**  
-   * The method returns the Orient Type starting from the string name type of the Oracle DBMS.
-   * If the starting type is not mapped, OType.STRING is returned.
-   */
-  public OType resolveType(String type, OTeleporterContext context) {
-
-    // Defined Types
-    if(this.dbmsType2OrientType.keySet().contains(type))
-      return this.dbmsType2OrientType.get(type);
-
-    // Undefined Types
-    else {
-      context.getStatistics().warningMessages.add("The original type '" + type + "' is not convertible into any OrientDB type thus, in order to prevent data loss, it will be converted to the OrientDB Type String.");
-      return OType.STRING;
-    }
-
-  }
+public class OOracleDataTypeHandler extends OGenericDataTypeHandler {
 
 
-  private Map<String, OType> fillTypesMap() {
-
-    Map<String, OType> dbmsType2OrientType = new HashMap<String, OType>();
-
-    /*
-     * Character Types
-     * (doc at http://docs.oracle.com/cd/B28359_01/server.111/b28318/datatype.htm#CNCPT213 )
-     */
-    dbmsType2OrientType.put("char", OType.STRING);
-    dbmsType2OrientType.put("varchar", OType.STRING);
-    dbmsType2OrientType.put("varchar2", OType.STRING);
-    dbmsType2OrientType.put("nvarchar", OType.STRING);
-    dbmsType2OrientType.put("nvarchar2", OType.STRING);
-    dbmsType2OrientType.put("clob", OType.STRING);
-    dbmsType2OrientType.put("nclob", OType.STRING);
-    dbmsType2OrientType.put("long", OType.STRING);
+	public OOracleDataTypeHandler(){
+		this.dbmsType2OrientType = this.fillTypesMap();
+	}
 
 
-    /*
-     * Numeric Types
-     * (doc at http://docs.oracle.com/cd/B28359_01/server.111/b28318/datatype.htm#CNCPT313 )
-     */
-    dbmsType2OrientType.put("numeric", OType.DECIMAL); 
-    dbmsType2OrientType.put("float", OType.FLOAT);
-    dbmsType2OrientType.put("binary_float", OType.FLOAT);
-    dbmsType2OrientType.put("double", OType.DOUBLE);
-    dbmsType2OrientType.put("binary_double", OType.DOUBLE);
-    
+	private Map<String, OType> fillTypesMap() {
+
+		Map<String, OType> dbmsType2OrientType = new HashMap<String, OType>();
+
+		/*
+		 * Character Types
+		 * (doc at http://docs.oracle.com/cd/B28359_01/server.111/b28318/datatype.htm#CNCPT213 )
+		 */
+		dbmsType2OrientType.put("char", OType.STRING);
+		dbmsType2OrientType.put("varchar", OType.STRING);
+		dbmsType2OrientType.put("varchar2", OType.STRING);
+		dbmsType2OrientType.put("nvarchar", OType.STRING);
+		dbmsType2OrientType.put("nvarchar2", OType.STRING);
+		dbmsType2OrientType.put("clob", OType.STRING);
+		dbmsType2OrientType.put("nclob", OType.STRING);
+		dbmsType2OrientType.put("long", OType.STRING);
 
 
-    /*
-     * Date/Time Types
-     * (doc at http://docs.oracle.com/cd/B28359_01/server.111/b28318/datatype.htm#CNCPT413 )
-     */    
-    dbmsType2OrientType.put("date", OType.DATE);
-    dbmsType2OrientType.put("datetime", OType.DATETIME);
-    dbmsType2OrientType.put("timestamp", OType.DATETIME);
-    dbmsType2OrientType.put("timestamp with time zone", OType.DATETIME);
-    dbmsType2OrientType.put("timestamp with local time zone", OType.DATETIME);
+		/*
+		 * Numeric Types
+		 * (doc at http://docs.oracle.com/cd/B28359_01/server.111/b28318/datatype.htm#CNCPT313 )
+		 */
+		dbmsType2OrientType.put("numeric", OType.DECIMAL); 
+		dbmsType2OrientType.put("float", OType.FLOAT);
+		dbmsType2OrientType.put("binary_float", OType.FLOAT);
+		dbmsType2OrientType.put("double", OType.DOUBLE);
+		dbmsType2OrientType.put("binary_double", OType.DOUBLE);
 
 
-    /*
-     * Binary Data Types
-     * (doc at http://docs.oracle.com/cd/B28359_01/server.111/b28318/datatype.htm#CNCPT613 )
-     */
-    dbmsType2OrientType.put("blob", OType.BINARY);
-    dbmsType2OrientType.put("bfile", OType.BINARY);
-    dbmsType2OrientType.put("raw", OType.BINARY);
-    dbmsType2OrientType.put("long raw", OType.BINARY);
+
+		/*
+		 * Date/Time Types
+		 * (doc at http://docs.oracle.com/cd/B28359_01/server.111/b28318/datatype.htm#CNCPT413 )
+		 */    
+		dbmsType2OrientType.put("date", OType.DATE);
+		dbmsType2OrientType.put("datetime", OType.DATETIME);
+		dbmsType2OrientType.put("timestamp", OType.DATETIME);
+		dbmsType2OrientType.put("timestamp with time zone", OType.DATETIME);
+		dbmsType2OrientType.put("timestamp with local time zone", OType.DATETIME);
 
 
-    /*
-     * ROWID and UROWID Data Types
-     * (doc at http://docs.oracle.com/cd/B28359_01/server.111/b28318/datatype.htm#CNCPT713 )
-     */
-    dbmsType2OrientType.put("rowid", OType.STRING);
-    dbmsType2OrientType.put("urowid", OType.STRING);
+		/*
+		 * Binary Data Types
+		 * (doc at http://docs.oracle.com/cd/B28359_01/server.111/b28318/datatype.htm#CNCPT613 )
+		 */
+		dbmsType2OrientType.put("blob", OType.BINARY);
+		dbmsType2OrientType.put("bfile", OType.BINARY);
+		dbmsType2OrientType.put("raw", OType.BINARY);
+		dbmsType2OrientType.put("long raw", OType.BINARY);
 
 
-    /*
-     * ANSI, DB2, and SQL/DS Datatypes
-     * (doc at http://docs.oracle.com/cd/B28359_01/server.111/b28318/datatype.htm#CNCPT813)
-     */
-    // TODO !!!
+		/*
+		 * ROWID and UROWID Data Types
+		 * (doc at http://docs.oracle.com/cd/B28359_01/server.111/b28318/datatype.htm#CNCPT713 )
+		 */
+		dbmsType2OrientType.put("rowid", OType.STRING);
+		dbmsType2OrientType.put("urowid", OType.STRING);
 
 
-    /*
-     * XML Type
-     * (doc at http://docs.oracle.com/cd/B28359_01/server.111/b28318/datatype.htm#CNCPT913 )
-     */
-    dbmsType2OrientType.put("xmltype", OType.STRING);
+		/*
+		 * ANSI, DB2, and SQL/DS Datatypes
+		 * (doc at http://docs.oracle.com/cd/B28359_01/server.111/b28318/datatype.htm#CNCPT813)
+		 */
+		// TODO !!!
 
 
-    /*
-     * URI Type
-     * (doc at http://docs.oracle.com/cd/B28359_01/server.111/b28318/datatype.htm#CNCPT1856 )
-     */
-    dbmsType2OrientType.put("uritype", OType.STRING);
+		/*
+		 * XML Type
+		 * (doc at http://docs.oracle.com/cd/B28359_01/server.111/b28318/datatype.htm#CNCPT913 )
+		 */
+		dbmsType2OrientType.put("xmltype", OType.STRING);
 
 
-    /*
-     * User Defined Types  (Object data types and object views)
-     * (doc at http://www.postgresql.org/docs/9.3/static/rowtypes.html)
-     */
-    //    TODO! in EMBEDDED
+		/*
+		 * URI Type
+		 * (doc at http://docs.oracle.com/cd/B28359_01/server.111/b28318/datatype.htm#CNCPT1856 )
+		 */
+		dbmsType2OrientType.put("uritype", OType.STRING);
 
-    return dbmsType2OrientType;
-  }
+
+		/*
+		 * User Defined Types  (Object data types and object views)
+		 * (doc at http://www.postgresql.org/docs/9.3/static/rowtypes.html)
+		 */
+		//    TODO! in EMBEDDED
+
+		return dbmsType2OrientType;
+	}
 
 }

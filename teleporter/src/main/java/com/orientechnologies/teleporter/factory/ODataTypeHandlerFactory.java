@@ -25,6 +25,7 @@ import com.orientechnologies.teleporter.persistence.handler.OHSQLDBDataTypeHandl
 import com.orientechnologies.teleporter.persistence.handler.OMySQLDataTypeHandler;
 import com.orientechnologies.teleporter.persistence.handler.OOracleDataTypeHandler;
 import com.orientechnologies.teleporter.persistence.handler.OPostgreSQLDataTypeHandler;
+import com.orientechnologies.teleporter.persistence.handler.OSQLServerDataTypeHandler;
 
 /**
  * Factory used to instantiate a specific DataTypeHandler according to the driver of the
@@ -42,13 +43,16 @@ public class ODataTypeHandlerFactory {
 
     switch(driver) {
 
-    case "org.postgresql.Driver":   handler = new OPostgreSQLDataTypeHandler();
+    case "oracle.jdbc.driver.OracleDriver": handler = new OOracleDataTypeHandler();
+    break;
+    
+    case "com.microsoft.sqlserver.jdbc.SQLServerDriver": handler = new OSQLServerDataTypeHandler();
     break;
 
     case "com.mysql.jdbc.Driver":   handler = new OMySQLDataTypeHandler();
     break;
 
-    case "oracle.jdbc.driver.OracleDriver": handler = new OOracleDataTypeHandler();
+    case "org.postgresql.Driver":   handler = new OPostgreSQLDataTypeHandler();
     break;
     
     case "org.hsqldb.jdbc.JDBCDriver": handler = new OHSQLDBDataTypeHandler();
