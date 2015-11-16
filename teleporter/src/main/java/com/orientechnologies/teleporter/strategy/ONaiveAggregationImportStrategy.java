@@ -156,7 +156,7 @@ public class ONaiveAggregationImportStrategy extends ONaiveImportStrategy {
 				if(!entity.isJoinEntityDim2() && entity.getHierarchicalBag() == null) {
 
 					// for each entity in dbSchema all records are retrieved
-					queryResult = dbQueryEngine.getRecordsByEntity(entity.getName(), context);
+					queryResult = dbQueryEngine.getRecordsByEntity(entity.getName(), entity.getSchemaName(), context);
 					records = queryResult.getResult();
 					ResultSet currentRecord = null;
 
@@ -192,7 +192,7 @@ public class ONaiveAggregationImportStrategy extends ONaiveImportStrategy {
 				if(entity.isJoinEntityDim2() && entity.getHierarchicalBag() == null) {
 
 					// for each entity in dbSchema all records are retrieved
-					queryResult = dbQueryEngine.getRecordsByEntity(entity.getName(), context);
+					queryResult = dbQueryEngine.getRecordsByEntity(entity.getName(), entity.getSchemaName(), context);
 					records = queryResult.getResult();
 					ResultSet currentRecord = null;
 

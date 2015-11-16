@@ -128,7 +128,8 @@ public class OER2GraphMapper extends OSource2GraphMapper {
 
 			this.dataBaseSchema = new ODataBaseSchema(majorVersion, minorVersion, driverMajorVersion, driverMinorVersion, productName, productVersion);
 
-			List<String> tablesName = new ArrayList<String>();
+			//			List<String> tablesName = new ArrayList<String>();
+			Map<String,String> tablesName2schema = new LinkedHashMap<String,String>();
 
 			String tableCatalog = null;
 			String tableSchemaPattern = null;
@@ -151,14 +152,20 @@ public class OER2GraphMapper extends OSource2GraphMapper {
 			ResultSet resultPrimaryKeys;
 			ResultSet resultForeignKeys;
 
+			String tableSchema = null;
+			String tableName = null;
+
 			// Giving db's table names
 			while(resultTable.next()) {
-				String tableName = resultTable.getString(3);
+				//				System.out.println("   "+resultTable.getString("TABLE_CAT")+", "+resultTable.getString("TABLE_SCHEM")+", "+resultTable.getString("TABLE_NAME")+", "+resultTable.getString("TABLE_TYPE")); 
+				tableSchema = resultTable.getString("TABLE_SCHEM");
+				tableName = resultTable.getString("TABLE_NAME");
+
 				if(this.isTableAllowed(tableName))  // filtering tables according to "include-list" and "exclude-list"
-					tablesName.add(tableName);  
+					tablesName2schema.put(tableName,tableSchema);  
 			}
 
-			int numberOfTables = tablesName.size();
+			int numberOfTables = tablesName2schema.size();
 			statistics.totalNumberOfEntities = numberOfTables;
 
 			// closing resultTable
@@ -182,14 +189,19 @@ public class OER2GraphMapper extends OSource2GraphMapper {
 			/*
 			 *  Entity building
 			 */
-
+			String currentTableSchema;
 			int iteration = 1;
-			for(String currentTableName: tablesName) {
+			for(String currentTableName: tablesName2schema.keySet()) {
 
 				context.getOutputManager().debug("\nBuilding '%s' entity (%s/%s)...\n", currentTableName, iteration, numberOfTables);
 
 				// Counting current-table's record
-				sql = "select count(*) from " + currentTableName;
+				currentTableSchema = tablesName2schema.get(currentTableName);
+				if(currentTableSchema != null)
+					sql = "select count(*) from " + currentTableSchema + "." + currentTableName;
+				else
+					sql = "select count(*) from " + currentTableName;
+
 				currentTableRecordAmount = statement.executeQuery(sql);
 				if (currentTableRecordAmount.next()) {
 					totalNumberOfRecord += currentTableRecordAmount.getInt(1);
@@ -197,7 +209,7 @@ public class OER2GraphMapper extends OSource2GraphMapper {
 				this.closeCursor(currentTableRecordAmount, context);
 
 				// creating entity
-				currentEntity = new OEntity(currentTableName);
+				currentEntity = new OEntity(currentTableName, currentTableSchema);
 
 				// adding attributes and primary keys
 				pKey = new OPrimaryKey(currentEntity);

@@ -179,7 +179,7 @@ public class ONaiveImportStrategy implements OImportStrategy {
 				if(entity.getHierarchicalBag() == null) {
 
 					// for each entity in dbSchema all records are retrieved
-					queryResult = dbQueryEngine.getRecordsByEntity(entity.getName(), context);
+					queryResult = dbQueryEngine.getRecordsByEntity(entity.getName(), entity.getSchemaName(), context);
 					records = queryResult.getResult();
 					ResultSet currentRecord = null;
 
@@ -251,7 +251,9 @@ public class ONaiveImportStrategy implements OImportStrategy {
 
 			String currentDiscriminatorValue;
 			Iterator<OEntity> it = bag.getDepth2entities().get(0).iterator();
-			String physicalCurrentEntityName = it.next().getName();
+			OEntity physicalCurrentEntity = it.next();
+			String physicalCurrentEntityName = physicalCurrentEntity.getName();
+			String physicalCurrentEntitySchemaName = physicalCurrentEntity.getSchemaName();
 
 			OQueryResult queryResult = null;
 			ResultSet records = null;
@@ -261,7 +263,7 @@ public class ONaiveImportStrategy implements OImportStrategy {
 					currentDiscriminatorValue = bag.getEntityName2discriminatorValue().get(currentEntity.getName());
 
 					// for each entity in dbSchema all records are retrieved
-					queryResult = dbQueryEngine.getRecordsFromSingleTableByDiscriminatorValue(bag.getDiscriminatorColumn(), currentDiscriminatorValue, physicalCurrentEntityName, context);
+					queryResult = dbQueryEngine.getRecordsFromSingleTableByDiscriminatorValue(bag.getDiscriminatorColumn(), currentDiscriminatorValue, physicalCurrentEntityName, physicalCurrentEntitySchemaName, context);
 					records = queryResult.getResult();
 					ResultSet currentRecord = null;
 
@@ -307,8 +309,10 @@ public class ONaiveImportStrategy implements OImportStrategy {
 								}
 								if(ok) {
 									it = currentParentEntity.getHierarchicalBag().getDepth2entities().get(0).iterator();
-									String physicalArrivalEntityName = it.next().getName();
-									String currentArrivalEntityName = searchParentEntityType(currentParentEntity, propertyOfKey, valueOfKey, physicalArrivalEntityName, dbQueryEngine, context);
+									OEntity physicalArrivalEntity = it.next();
+									String physicalArrivalEntityName = physicalArrivalEntity.getName();
+									String physicalArrivalEntitySchemaName = physicalArrivalEntity.getSchemaName();
+									String currentArrivalEntityName = searchParentEntityType(currentParentEntity, propertyOfKey, valueOfKey, physicalArrivalEntityName, physicalArrivalEntitySchemaName, dbQueryEngine, context);
 									currentInVertexType = mapper.getVertexTypeByName(context.getNameResolver().resolveVertexName(currentArrivalEntityName));
 								}
 							}
@@ -384,7 +388,7 @@ public class ONaiveImportStrategy implements OImportStrategy {
 				for(OEntity currentEntity: bag.getDepth2entities().get(i)) {
 
 					// for each entity in dbSchema all records are retrieved
-					queryResult1 = dbQueryEngine.getRecordsByEntity(currentEntity.getName(), context);
+					queryResult1 = dbQueryEngine.getRecordsByEntity(currentEntity.getName(), currentEntity.getSchemaName(), context);
 					records = queryResult1.getResult();
 					currentRecord = null;
 
@@ -456,7 +460,7 @@ public class ONaiveImportStrategy implements OImportStrategy {
 										}
 									}
 									if(ok) {
-										String currentArrivalEntityName = searchParentEntityType(currentParentEntity, propertyOfKey, valueOfKey, null, dbQueryEngine, context);
+										String currentArrivalEntityName = searchParentEntityType(currentParentEntity, propertyOfKey, valueOfKey, null, null, dbQueryEngine, context);
 										currentInVertexType = mapper.getVertexTypeByName(context.getNameResolver().resolveVertexName(currentArrivalEntityName));
 									}
 								}
@@ -528,7 +532,7 @@ public class ONaiveImportStrategy implements OImportStrategy {
 				for(OEntity currentEntity: bag.getDepth2entities().get(i)) {
 
 					// for each entity in dbSchema all records are retrieved
-					queryResult = dbQueryEngine.getRecordsByEntity(currentEntity.getName(), context);
+					queryResult = dbQueryEngine.getRecordsByEntity(currentEntity.getName(), currentEntity.getSchemaName(), context);
 					records = queryResult.getResult();
 					currentRecord = null;
 
@@ -586,7 +590,7 @@ public class ONaiveImportStrategy implements OImportStrategy {
 										}
 									}
 									if(ok) {
-										String currentArrivalEntityName = searchParentEntityType(currentParentEntity, propertyOfKey, valueOfKey, null, dbQueryEngine, context);
+										String currentArrivalEntityName = searchParentEntityType(currentParentEntity, propertyOfKey, valueOfKey, null, null, dbQueryEngine, context);
 										currentInVertexType = mapper.getVertexTypeByName(context.getNameResolver().resolveVertexName(currentArrivalEntityName));
 									}
 								}
@@ -634,11 +638,11 @@ public class ONaiveImportStrategy implements OImportStrategy {
 	 * @param context
 	 * @return
 	 */
-	private String searchParentEntityType(OEntity currentParentEntity, String[] propertyOfKey, String[] valueOfKey, String physicalArrivalEntityName, ODBQueryEngine dbQueryEngine, OTeleporterContext context) {
+	private String searchParentEntityType(OEntity currentParentEntity, String[] propertyOfKey, String[] valueOfKey, String physicalArrivalEntityName, String physicalArrivalEntitySchemaName, ODBQueryEngine dbQueryEngine, OTeleporterContext context) {
 
 		switch(currentParentEntity.getHierarchicalBag().getInheritancePattern()) {
 
-		case "table-per-hierarchy": return searchParentEntityTypeFromSingleTable(currentParentEntity, propertyOfKey, valueOfKey, physicalArrivalEntityName, dbQueryEngine, context);
+		case "table-per-hierarchy": return searchParentEntityTypeFromSingleTable(currentParentEntity, propertyOfKey, valueOfKey, physicalArrivalEntityName, physicalArrivalEntitySchemaName, dbQueryEngine, context);
 
 		case "table-per-type": return searchParentEntityTypeFromSubclassTable(currentParentEntity, propertyOfKey, valueOfKey, dbQueryEngine, context);
 
@@ -660,7 +664,7 @@ public class ONaiveImportStrategy implements OImportStrategy {
 	 * @param context 
 	 * @return
 	 */
-	private String searchParentEntityTypeFromSingleTable(OEntity currentParentEntity, String[] propertyOfKey, String[] valueOfKey, String physicalEntityName, ODBQueryEngine dbQueryEngine, OTeleporterContext context) {
+	private String searchParentEntityTypeFromSingleTable(OEntity currentParentEntity, String[] propertyOfKey, String[] valueOfKey, String physicalEntityName, String physicalEntitySchemaName, ODBQueryEngine dbQueryEngine, OTeleporterContext context) {
 
 		OHierarchicalBag hierarchicalBag = currentParentEntity.getHierarchicalBag();
 		String discriminatorColumn = hierarchicalBag.getDiscriminatorColumn();
@@ -668,7 +672,7 @@ public class ONaiveImportStrategy implements OImportStrategy {
 
 		try {
 
-			OQueryResult queryResult = dbQueryEngine.getEntityTypeFromSingleTable(discriminatorColumn, physicalEntityName, propertyOfKey, valueOfKey, context);
+			OQueryResult queryResult = dbQueryEngine.getEntityTypeFromSingleTable(discriminatorColumn, physicalEntityName, physicalEntitySchemaName, propertyOfKey, valueOfKey, context);
 			ResultSet result = queryResult.getResult();
 			result.next();
 			String discriminatorValue = result.getString(discriminatorColumn);
@@ -722,7 +726,7 @@ public class ONaiveImportStrategy implements OImportStrategy {
 						propertyOfKey[j] = currentEntity.getPrimaryKey().getInvolvedAttributes().get(j).getName();
 					}
 
-					queryResult = dbQueryEngine.getRecordById(currentEntity.getName(),propertyOfKey, valueOfKey, context);
+					queryResult = dbQueryEngine.getRecordById(currentEntity.getName(), currentEntity.getSchemaName(), propertyOfKey, valueOfKey, context);
 					result = queryResult.getResult();
 
 					if(result != null) {
@@ -778,7 +782,7 @@ public class ONaiveImportStrategy implements OImportStrategy {
 						propertyOfKey[j] = currentEntity.getPrimaryKey().getInvolvedAttributes().get(j).getName();
 					}
 
-					queryResult = dbQueryEngine.getRecordById(currentEntity.getName(),propertyOfKey, valueOfKey, context);
+					queryResult = dbQueryEngine.getRecordById(currentEntity.getName(), currentEntity.getSchemaName(), propertyOfKey, valueOfKey, context);
 					result = queryResult.getResult();
 
 					if(result != null) {

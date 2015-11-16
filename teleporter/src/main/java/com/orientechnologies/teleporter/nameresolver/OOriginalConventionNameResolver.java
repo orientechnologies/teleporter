@@ -30,50 +30,68 @@ import com.orientechnologies.teleporter.model.dbschema.ORelationship;
 
 public class OOriginalConventionNameResolver implements ONameResolver {
 
-  
-  @Override
-  public String resolveVertexName(String candidateName) {
-    return candidateName;
-  }
 
- 
-  @Override
-  public String resolveVertexProperty(String candidateName) {
-    return candidateName;
-  }
+	@Override
+	public String resolveVertexName(String candidateName) {
 
-  
-  @Override
-  public String resolveEdgeName(ORelationship relationship) {
-    String finalName;
+		if(candidateName.contains(" ")) {
+			int pos;
+			while(candidateName.contains(" ")) {
+				pos = candidateName.indexOf(" ");
+				candidateName = candidateName.substring(0,pos) + (candidateName.charAt(pos+1)+"").toUpperCase() + candidateName.substring(pos+2);
+			}
+		}
 
-    // Foreign Key composed of 1 attribute
-    if(relationship.getForeignKey().getInvolvedAttributes().size() == 1) {
-      String columnName = relationship.getForeignKey().getInvolvedAttributes().get(0).getName();
-      columnName = columnName.replace("_id", "");
-      columnName = columnName.replace("_ID", "");
-      columnName = columnName.replace("_oid", "");
-      columnName = columnName.replace("_OID", "");
-      columnName = columnName.replace("_eid", "");
-      columnName = columnName.replace("_EID", "");
+		return candidateName;
+	}
 
 
-      // manipulating name (Java Convention)
-      finalName = "has_" + columnName;
-    }
+	@Override
+	public String resolveVertexProperty(String candidateName) {
+		
+		if(candidateName.contains(" ")) {
+			int pos;
+			while(candidateName.contains(" ")) {
+				pos = candidateName.indexOf(" ");
+				candidateName = candidateName.substring(0,pos) + (candidateName.charAt(pos+1)+"").toUpperCase() + candidateName.substring(pos+2);
+			}
+		}
+		
+		return candidateName;
+	}
 
-    // Foreign Key composed of multiple attribute
-    else {         
-      finalName = relationship.getForeignEntityName() + "2" + relationship.getParentEntityName();
-    }
 
-    return finalName;
-  }
+	@Override
+	public String resolveEdgeName(ORelationship relationship) {
+		String finalName;
 
-  
-  @Override
-  public String reverseTransformation(String transformedName) {
-    return transformedName;
-  }
+		// Foreign Key composed of 1 attribute
+		if(relationship.getForeignKey().getInvolvedAttributes().size() == 1) {
+			String columnName = relationship.getForeignKey().getInvolvedAttributes().get(0).getName();
+			columnName = columnName.replace("_id", "");
+			columnName = columnName.replace("_ID", "");
+			columnName = columnName.replace("_oid", "");
+			columnName = columnName.replace("_OID", "");
+			columnName = columnName.replace("_eid", "");
+			columnName = columnName.replace("_EID", "");
+
+
+			// manipulating name (Java Convention)
+			finalName = "has_" + columnName;
+		}
+
+		// Foreign Key composed of multiple attribute
+		else {         
+			finalName = relationship.getForeignEntityName() + "2" + relationship.getParentEntityName();
+		}
+
+		return finalName;
+	}
+
+
+	@Override
+	public String reverseTransformation(String transformedName) {
+		return transformedName;
+	}
 
 }

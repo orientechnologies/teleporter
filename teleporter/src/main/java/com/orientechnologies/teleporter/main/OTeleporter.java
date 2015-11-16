@@ -232,8 +232,10 @@ public class OTeleporter extends OServerPluginAbstract {
 		OProgressMonitor progressMonitor = new OProgressMonitor(context);
 		progressMonitor.initialize();
 
-		// JDBC Driver configuration
-		String driverClassName = ODriverConfigurator.checkConfiguration(driver, context);
+		// JDBC Driver configuration and driver class name fetching
+//		String driverClassName = ODriverConfigurator.checkConfiguration(driver, context);
+		String driverClassName = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
+		context.setDriverDependencyPath("/home/gabriele/orientdb-community-2.1.0/lib/sqljdbc4.jar");
 
 		OImportStrategy strategy = FACTORY.buildStrategy(chosenStrategy, context);
 		
@@ -250,7 +252,7 @@ public class OTeleporter extends OServerPluginAbstract {
 			}
 		}, 0, 1000);
 
-		// the last argument represents the nameResolver (non is null)
+		// the last argument represents the nameResolver
 		strategy.executeStrategy(driverClassName, jurl, username, password, outDbUrl, chosenMapper, xmlPath, nameResolver, includedTables, excludedTables, context);
 
 		timer.cancel();

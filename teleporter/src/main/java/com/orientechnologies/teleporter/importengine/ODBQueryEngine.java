@@ -59,14 +59,20 @@ public class ODBQueryEngine implements ODataSourceQueryEngine {
 	 * @param context
 	 * @return
 	 */
-	public OQueryResult getRecordById(String entityName, String[] propertyOfKey, String[] valueOfKey, OTeleporterContext context) {
+	public OQueryResult getRecordById(String entityName, String entitySchema, String[] propertyOfKey, String[] valueOfKey, OTeleporterContext context) {
 
 		ResultSet aggregateTable = null;
 		Connection dbConnection = null;
 		Statement statement = null;
-		String query = "select * from " + entityName + " where ";
+		String query;
+
+		if(entitySchema != null) 
+			query = "select * from " + entitySchema + "." + entityName + " where ";
+		else
+			query = "select * from " + entityName + " where ";
 
 		query += propertyOfKey[0] + " = '" + valueOfKey[0] + "'";
+
 
 		if(propertyOfKey.length > 1) {
 			for(int i=1; i<propertyOfKey.length; i++) {
@@ -97,7 +103,7 @@ public class ODBQueryEngine implements ODataSourceQueryEngine {
 				context.getOutputManager().error(e.getClass().getName() + " - " + e.getMessage());
 			else
 				context.getOutputManager().error(e.getClass().getName());
-			
+
 			Writer writer = new StringWriter();
 			e.printStackTrace(new PrintWriter(writer));
 			String s = writer.toString();
@@ -109,12 +115,17 @@ public class ODBQueryEngine implements ODataSourceQueryEngine {
 
 
 
-	public OQueryResult getRecordsByEntity(String entityName, OTeleporterContext context) {
+	public OQueryResult getRecordsByEntity(String entityName, String entitySchema, OTeleporterContext context) {
 
 		ResultSet result = null;
 		Connection dbConnection = null;
 		Statement statement = null;
-		String query = "select * from " + entityName;
+
+		String query;
+		if(entitySchema != null)
+			query = "select * from " + entitySchema + "." + entityName;
+		else
+			query = "select * from " + entityName;
 
 		try {
 
@@ -125,7 +136,7 @@ public class ODBQueryEngine implements ODataSourceQueryEngine {
 					context.getOutputManager().error(e.getClass().getName() + " - " + e.getMessage());
 				else
 					context.getOutputManager().error(e.getClass().getName());
-				
+
 				Writer writer = new StringWriter();
 				e.printStackTrace(new PrintWriter(writer));
 				String s = writer.toString();
@@ -139,7 +150,7 @@ public class ODBQueryEngine implements ODataSourceQueryEngine {
 				context.getOutputManager().error(e.getClass().getName() + " - " + e.getMessage());
 			else
 				context.getOutputManager().error(e.getClass().getName());
-			
+
 			Writer writer = new StringWriter();
 			e.printStackTrace(new PrintWriter(writer));
 			String s = writer.toString();
@@ -152,12 +163,19 @@ public class ODBQueryEngine implements ODataSourceQueryEngine {
 	/**
 	 * @param currentDiscriminatorValue
 	 */
-	public OQueryResult getRecordsFromSingleTableByDiscriminatorValue(String discriminatorColumn, String currentDiscriminatorValue, String entityName, OTeleporterContext context) {
+	public OQueryResult getRecordsFromSingleTableByDiscriminatorValue(String discriminatorColumn, String currentDiscriminatorValue, String entityName, String entitySchema, OTeleporterContext context) {
 
 		ResultSet result = null;
 		Connection dbConnection = null;
 		Statement statement = null;
-		String query = "select * from " + entityName + " where " + discriminatorColumn + "='" + currentDiscriminatorValue + "'";
+
+		String query;
+		if(entitySchema != null)
+			query = "select * from " + entitySchema + "." + entityName;
+		else
+			query = "select * from " + entityName;
+
+		query += " where " + discriminatorColumn + "='" + currentDiscriminatorValue + "'";
 
 		try {
 
@@ -168,7 +186,7 @@ public class ODBQueryEngine implements ODataSourceQueryEngine {
 					context.getOutputManager().error(e.getClass().getName() + " - " + e.getMessage());
 				else
 					context.getOutputManager().error(e.getClass().getName());
-				
+
 				Writer writer = new StringWriter();
 				e.printStackTrace(new PrintWriter(writer));
 				String s = writer.toString();
@@ -182,7 +200,7 @@ public class ODBQueryEngine implements ODataSourceQueryEngine {
 				context.getOutputManager().error(e.getClass().getName() + " - " + e.getMessage());
 			else
 				context.getOutputManager().error(e.getClass().getName());
-			
+
 			Writer writer = new StringWriter();
 			e.printStackTrace(new PrintWriter(writer));
 			String s = writer.toString();
@@ -193,11 +211,16 @@ public class ODBQueryEngine implements ODataSourceQueryEngine {
 	}
 
 
-	public OQueryResult getEntityTypeFromSingleTable(String discriminatorColumn, String physicalEntityName, String[] propertyOfKey, String[] valueOfKey, OTeleporterContext context) {
+	public OQueryResult getEntityTypeFromSingleTable(String discriminatorColumn, String physicalEntityName, String entitySchema, String[] propertyOfKey, String[] valueOfKey, OTeleporterContext context) {
 		ResultSet result = null;
 		Connection dbConnection = null;
 		Statement statement = null;
-		String query = "select " + discriminatorColumn + " from " + physicalEntityName + " where ";
+
+		String query;
+		if(entitySchema != null)
+			query = "select " + discriminatorColumn + " from " + entitySchema + "." + physicalEntityName + " where ";
+		else
+			query = "select " + discriminatorColumn + " from " + physicalEntityName + " where ";
 
 		query += propertyOfKey[0] + " = '" + valueOfKey[0] + "'";
 
@@ -216,7 +239,7 @@ public class ODBQueryEngine implements ODataSourceQueryEngine {
 					context.getOutputManager().error(e.getClass().getName() + " - " + e.getMessage());
 				else
 					context.getOutputManager().error(e.getClass().getName());
-				
+
 				Writer writer = new StringWriter();
 				e.printStackTrace(new PrintWriter(writer));
 				String s = writer.toString();
@@ -230,7 +253,7 @@ public class ODBQueryEngine implements ODataSourceQueryEngine {
 				context.getOutputManager().error(e.getClass().getName() + " - " + e.getMessage());
 			else
 				context.getOutputManager().error(e.getClass().getName());
-			
+
 			Writer writer = new StringWriter();
 			e.printStackTrace(new PrintWriter(writer));
 			String s = writer.toString();
@@ -255,7 +278,11 @@ public class ODBQueryEngine implements ODataSourceQueryEngine {
 		Iterator<OEntity> it = bag.getDepth2entities().get(0).iterator();
 		OEntity rootEntity = it.next();
 
-		String query = "select * from " + rootEntity.getName() + " as t0\n";
+		String query;
+		if(rootEntity.getSchemaName() != null)
+			query = "select * from " + rootEntity.getSchemaName() + "." + rootEntity.getName() + " as t0\n";
+		else
+			query = "select * from " + rootEntity.getName() + " as t0\n";
 
 		String[] rootEntityPropertyOfKey = new String[rootEntity.getPrimaryKey().getInvolvedAttributes().size()];  // collects the attributes of the root-entity's primary key
 
@@ -280,7 +307,12 @@ public class ODBQueryEngine implements ODataSourceQueryEngine {
 					index++;
 				}
 
-				query += "left join " + currentEntity.getName() + " as t" + thTable + 
+				if(currentEntity.getSchemaName() != null) 
+					query += "left join " + currentEntity.getSchemaName() + "." + currentEntity.getName();
+				else
+					query += "left join " + currentEntity.getName(); 
+
+				query += " as t" + thTable + 
 						" on t0." + rootEntityPropertyOfKey[0] + " = t" + thTable + "." + currentEntityPropertyOfKey[0];
 
 				for(int k=1; k<currentEntityPropertyOfKey.length; k++) {
@@ -301,7 +333,7 @@ public class ODBQueryEngine implements ODataSourceQueryEngine {
 					context.getOutputManager().error(e.getClass().getName() + " - " + e.getMessage());
 				else
 					context.getOutputManager().error(e.getClass().getName());
-				
+
 				Writer writer = new StringWriter();
 				e.printStackTrace(new PrintWriter(writer));
 				String s = writer.toString();
@@ -315,7 +347,7 @@ public class ODBQueryEngine implements ODataSourceQueryEngine {
 				context.getOutputManager().error(e.getClass().getName() + " - " + e.getMessage());
 			else
 				context.getOutputManager().error(e.getClass().getName());
-			
+
 			Writer writer = new StringWriter();
 			e.printStackTrace(new PrintWriter(writer));
 			String s = writer.toString();

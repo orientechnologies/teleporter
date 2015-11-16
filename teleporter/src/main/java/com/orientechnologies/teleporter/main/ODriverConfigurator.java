@@ -51,6 +51,7 @@ public class ODriverConfigurator {
 
 	/*
 	 * It Checks if the requested driver is already present in the classpath, if not present it downloads the last available driver version.
+	 * Moreover it gets the driver class name corresponding to the chosen DBMS.
 	 */
 	public static String checkConfiguration(final String driverName, OTeleporterContext context) {
 

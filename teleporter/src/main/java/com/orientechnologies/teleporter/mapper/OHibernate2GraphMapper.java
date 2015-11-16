@@ -240,7 +240,7 @@ public class OHibernate2GraphMapper extends OER2GraphMapper {
 					context.getOutputManager().error("XML Format error: problem in subclass definition, table attribute missing in the joined-subclass nodes.");
 					System.exit(0);
 				}
-				currentChildEntity = new OEntity(currentEntityElementName);
+				currentChildEntity = new OEntity(currentEntityElementName, null);
 
 				// entity's attributes setting
 				String discriminatorColumnName = discriminatorElement.getAttribute("column");
