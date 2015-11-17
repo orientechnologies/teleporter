@@ -31,55 +31,65 @@ import com.orientechnologies.teleporter.persistence.handler.ODriverDataTypeHandl
  */
 
 public class OTeleporterContext {
-  
-  private OTeleporterStatistics statistics;
-  private OOutputStreamManager outputManager;
-  private ODriverDataTypeHandler dataTypeHandler;
-  private ONameResolver nameResolver;
-  private String driverDependencyPath;
-  
-  public OTeleporterContext() {
-    this.statistics = new OTeleporterStatistics();
-  }
 
-  public OTeleporterStatistics getStatistics() {
-    return this.statistics;
-  }
+	private OTeleporterStatistics statistics;
+	private OOutputStreamManager outputManager;
+	private ODriverDataTypeHandler dataTypeHandler;
+	private String queryQuote;
+	private ONameResolver nameResolver;
+	private String driverDependencyPath;
 
-  public void setStatistics(OTeleporterStatistics statistics) {
-    this.statistics = statistics;
-  }
-  
-  public OOutputStreamManager getOutputManager() {
-    return this.outputManager;
-  }
 
-  public void setOutputManager(OOutputStreamManager outputManager) {
-    this.outputManager = outputManager;
-  }
+	public OTeleporterContext() {
+		this.statistics = new OTeleporterStatistics();
+	}
 
-  public ODriverDataTypeHandler getDataTypeHandler() {
-    return this.dataTypeHandler;
-  }
+	public OTeleporterStatistics getStatistics() {
+		return this.statistics;
+	}
 
-  public void setDataTypeHandler(ODriverDataTypeHandler dataTypeHandler) {
-    this.dataTypeHandler = dataTypeHandler;
-  }
+	public void setStatistics(OTeleporterStatistics statistics) {
+		this.statistics = statistics;
+	}
 
-  public ONameResolver getNameResolver() {
-    return this.nameResolver;
-  }
+	public OOutputStreamManager getOutputManager() {
+		return this.outputManager;
+	}
 
-  public void setNameResolver(ONameResolver nameResolver) {
-    this.nameResolver = nameResolver;
-  }
+	public void setOutputManager(OOutputStreamManager outputManager) {
+		this.outputManager = outputManager;
+	}
 
-  public String getDriverDependencyPath() {
-    return this.driverDependencyPath;
-  }
+	public ODriverDataTypeHandler getDataTypeHandler() {
+		return this.dataTypeHandler;
+	}
 
-  public void setDriverDependencyPath(String driverDependencyPath) {
-    this.driverDependencyPath = driverDependencyPath;
-  }
-  
+	public void setDataTypeHandler(ODriverDataTypeHandler dataTypeHandler) {
+		this.dataTypeHandler = dataTypeHandler;
+	}
+
+	public String getQueryQuote() {
+		return this.queryQuote;
+	}
+
+	public void setQueryQuoteType(String queryQuoteType) {
+		this.queryQuote = queryQuoteType;
+	}
+
+	public ONameResolver getNameResolver() {
+		return this.nameResolver;
+	}
+
+	public void setNameResolver(ONameResolver nameResolver) {
+		this.nameResolver = nameResolver;
+	}
+
+	public String getDriverDependencyPath() {
+		return this.driverDependencyPath;
+	}
+
+	public void setDriverDependencyPath(String driverDependencyPath) {
+		this.driverDependencyPath = driverDependencyPath;
+	}
+
 }

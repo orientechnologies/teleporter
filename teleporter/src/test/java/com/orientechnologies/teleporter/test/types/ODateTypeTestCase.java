@@ -158,7 +158,7 @@ public class ODateTypeTestCase {
        */
       orientGraph = new OrientGraphNoTx(this.outOrientGraphUri);
 
-      assertEquals("DATETIME", orientGraph.getRawGraph().getMetadata().getSchema().getClass("Film").getProperty("year").getType().toString());
+      assertEquals("DATE", orientGraph.getRawGraph().getMetadata().getSchema().getClass("Film").getProperty("year").getType().toString());
 
       
     }catch(Exception e) {

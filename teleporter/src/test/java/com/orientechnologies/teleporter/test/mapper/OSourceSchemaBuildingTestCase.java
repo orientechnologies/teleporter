@@ -53,6 +53,7 @@ public class OSourceSchemaBuildingTestCase {
   public void init() {
     this.context = new OTeleporterContext();
     context.setOutputManager(new OOutputStreamManager(0));
+    this.context.setQueryQuoteType("\"");
   }
 
 

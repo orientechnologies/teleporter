@@ -35,6 +35,7 @@ import com.orientechnologies.teleporter.context.OTeleporterStatistics;
 import com.orientechnologies.teleporter.factory.ODataTypeHandlerFactory;
 import com.orientechnologies.teleporter.factory.OMapperFactory;
 import com.orientechnologies.teleporter.factory.ONameResolverFactory;
+import com.orientechnologies.teleporter.factory.OQueryQuoteTypeFactory;
 import com.orientechnologies.teleporter.importengine.ODBQueryEngine;
 import com.orientechnologies.teleporter.importengine.OGraphDBCommandEngine;
 import com.orientechnologies.teleporter.mapper.OER2GraphMapper;
@@ -73,6 +74,9 @@ public class ONaiveImportStrategy implements OImportStrategy {
 			List<String> includedTables, List<String> excludedTables, OTeleporterContext context) {	
 
 		Date globalStart = new Date(); 
+		
+		OQueryQuoteTypeFactory quoteFactory = new OQueryQuoteTypeFactory();
+		quoteFactory.buildQueryQuoteType(driver, context);
 
 		// Step 1,2,3
 		ONameResolverFactory nameResolverFactory = new ONameResolverFactory();
@@ -138,7 +142,7 @@ public class ONaiveImportStrategy implements OImportStrategy {
 			statistics.runningStepNumber = 4;
 
 			OER2GraphMapper mapper = (OER2GraphMapper) genericMapper;
-			ODBQueryEngine dbQueryEngine = new ODBQueryEngine(driver, uri, username, password);    
+			ODBQueryEngine dbQueryEngine = new ODBQueryEngine(driver, uri, username, password, context);    
 			OGraphDBCommandEngine graphDBCommandEngine = new OGraphDBCommandEngine();
 
 			// OrientDB graph initialization/connection

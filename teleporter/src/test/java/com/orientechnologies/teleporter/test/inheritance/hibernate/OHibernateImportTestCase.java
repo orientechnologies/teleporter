@@ -70,6 +70,7 @@ public class OHibernateImportTestCase {
     this.context.setOutputManager(new OOutputStreamManager(0));
     this.context.setNameResolver(new OJavaConventionNameResolver());
     this.context.setDataTypeHandler(new OHSQLDBDataTypeHandler());
+    this.context.setQueryQuoteType("\"");
     this.importStrategy = new ONaiveImportStrategy();
     this.outOrientGraphUri = "memory:testOrientDB";
   }

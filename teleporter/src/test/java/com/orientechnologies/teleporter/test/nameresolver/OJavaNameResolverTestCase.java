@@ -74,8 +74,11 @@ public class OJavaNameResolverTestCase {
 		assertEquals(true, nameResolver.isCompliantToJavaClassConvention(newCandidateName));
 		assertEquals("Testclass", newCandidateName);
 
-		candidateName = "TESTCLASS";		// acceptable (no lowercase chars)
-		assertEquals(true, nameResolver.isCompliantToJavaClassConvention(candidateName));
+		candidateName = "TESTCLASS";		//  NOT acceptable (no lowercase chars)
+		assertEquals(false, nameResolver.isCompliantToJavaClassConvention(candidateName));
+		newCandidateName = nameResolver.resolveVertexName(candidateName);
+		assertEquals(true, nameResolver.isCompliantToJavaClassConvention(newCandidateName));
+		assertEquals("Testclass", newCandidateName);
 
 		// White space
 
@@ -107,7 +110,7 @@ public class OJavaNameResolverTestCase {
 		assertEquals(false, nameResolver.isCompliantToJavaClassConvention(candidateName));
 		newCandidateName = nameResolver.resolveVertexName(candidateName);
 		assertEquals(true, nameResolver.isCompliantToJavaClassConvention(newCandidateName));
-		assertEquals("TESTCLASS", newCandidateName);
+		assertEquals("TestClass", newCandidateName);
 		
 
 		// Underscore
@@ -140,7 +143,7 @@ public class OJavaNameResolverTestCase {
 		assertEquals(false, nameResolver.isCompliantToJavaClassConvention(candidateName));
 		newCandidateName = nameResolver.resolveVertexName(candidateName);
 		assertEquals(true, nameResolver.isCompliantToJavaClassConvention(newCandidateName));
-		assertEquals("TESTCLASS", newCandidateName);
+		assertEquals("TestClass", newCandidateName);
 
 	}
 
@@ -212,7 +215,7 @@ public class OJavaNameResolverTestCase {
 		assertEquals(false, nameResolver.isCompliantToJavaVariableConvention(candidateName));
 		newCandidateName = nameResolver.resolveVertexProperty(candidateName);
 		assertEquals(true, nameResolver.isCompliantToJavaVariableConvention(newCandidateName));
-		assertEquals("testvariable", newCandidateName);
+		assertEquals("testVariable", newCandidateName);
 		
 
 		// Underscore
@@ -245,7 +248,7 @@ public class OJavaNameResolverTestCase {
 		assertEquals(false, nameResolver.isCompliantToJavaVariableConvention(candidateName));
 		newCandidateName = nameResolver.resolveVertexProperty(candidateName);
 		assertEquals(true, nameResolver.isCompliantToJavaVariableConvention(newCandidateName));
-		assertEquals("testvariable", newCandidateName);
+		assertEquals("testVariable", newCandidateName);
 
 	}
 	

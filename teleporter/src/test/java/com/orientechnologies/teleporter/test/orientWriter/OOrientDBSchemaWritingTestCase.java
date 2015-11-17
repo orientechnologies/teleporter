@@ -61,6 +61,7 @@ public class OOrientDBSchemaWritingTestCase {
   public void init() {
     this.context = new OTeleporterContext();
     this.context.setOutputManager(new OOutputStreamManager(0));
+    this.context.setQueryQuoteType("\"");
     this.modelWriter = new OGraphModelWriter();
     this.outOrientGraphUri = "memory:testOrientDB";
   }
@@ -417,7 +418,7 @@ public class OOrientDBSchemaWritingTestCase {
 
       assertNotNull(articleVertexType.getProperty("date"));
       assertEquals("date", articleVertexType.getProperty("date").getName());
-      assertEquals(OType.DATETIME, articleVertexType.getProperty("date").getType());
+      assertEquals(OType.DATE, articleVertexType.getProperty("date").getType());
 
       assertNotNull(articleVertexType.getProperty("authorId"));
       assertEquals("authorId", articleVertexType.getProperty("authorId").getName());
@@ -666,7 +667,7 @@ public class OOrientDBSchemaWritingTestCase {
 
       assertNotNull(filmVertexType.getProperty("year"));
       assertEquals("year", filmVertexType.getProperty("year").getName());
-      assertEquals(OType.DATETIME, filmVertexType.getProperty("year").getType());
+      assertEquals(OType.DATE, filmVertexType.getProperty("year").getType());
 
       assertNotNull(film2actorVertexType.getProperty("filmId"));
       assertEquals("filmId", film2actorVertexType.getProperty("filmId").getName());

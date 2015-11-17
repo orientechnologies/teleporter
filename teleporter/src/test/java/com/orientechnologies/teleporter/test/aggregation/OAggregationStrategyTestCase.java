@@ -84,30 +84,30 @@ public class OAggregationStrategyTestCase {
 
       // Tables Building
 
-      String filmTableBuilding = "create memory table FILM (ID varchar(256) not null,"+
-          " TITLE varchar(256) not null, primary key (ID))";
+      String filmTableBuilding = "create memory table film (id varchar(256) not null,"+
+          " title varchar(256) not null, primary key (id))";
       st = connection.createStatement();
       st.execute(filmTableBuilding);
 
-      String actorTableBuilding = "create memory table ACTOR (ID varchar(256) not null, NAME  varchar(256),"+
-          " SURNAME varchar(256) not null, primary key (ID))";
+      String actorTableBuilding = "create memory table actor (id varchar(256) not null, name  varchar(256),"+
+          " surname varchar(256) not null, primary key (id))";
       st.execute(actorTableBuilding);
 
-      String film2actorTableBuilding = "create memory table FILM_ACTOR (FILM_ID varchar(256) not null, ACTOR_ID  varchar(256),"+
-          " primary key (FILM_ID,ACTOR_ID), foreign key (FILM_ID) references FILM(ID), foreign key (ACTOR_ID) references ACTOR(ID))";
+      String film2actorTableBuilding = "create memory table film_actor (film_id varchar(256) not null, actor_id  varchar(256),"+
+          " primary key (film_id,actor_id), foreign key (film_id) references film(id), foreign key (actor_id) references actor(id))";
       st.execute(film2actorTableBuilding);
 
 
       // Records Inserting
 
-      String filmFilling = "INSERT INTO FILM (ID,TITLE) VALUES ("
+      String filmFilling = "insert into film(id,title) values ("
           + "('F001','The Wolf Of Wall Street'),"
           + "('F002','Shutter Island'),"
           + "('F003','The Departed'),"
           + "('F004','Inception'))";
       st.execute(filmFilling);
 
-      String actorFilling = "INSERT INTO ACTOR (ID,NAME,SURNAME) VALUES ("
+      String actorFilling = "insert into actor (id,name,surname) values ("
           + "('A001','Leonardo','Di Caprio'),"
           + "('A002','Matthew', 'McConaughey'),"
           + "('A003','Ben','Kingsley'),"
@@ -117,7 +117,7 @@ public class OAggregationStrategyTestCase {
           + "('A007','Michael','Caine'))";
       st.execute(actorFilling);
 
-      String film2actorFilling = "INSERT INTO FILM_ACTOR (FILM_ID,ACTOR_ID) VALUES ("
+      String film2actorFilling = "insert into film_actor (film_id,actor_id) values ("
           + "('F001','A001'),"
           + "('F001','A002'),"
           + "('F002','A001'),"
@@ -382,7 +382,7 @@ public class OAggregationStrategyTestCase {
       try {
 
         // Dropping Source DB Schema and OrientGraph
-        String dbDropping = "DROP SCHEMA PUBLIC CASCADE";
+        String dbDropping = "drop schema public cascade";
         st.execute(dbDropping);
         connection.close();
       }catch(Exception e) {

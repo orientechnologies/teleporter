@@ -114,6 +114,7 @@ public class OER2GraphMapper extends OSource2GraphMapper {
 
 			connection = this.dbSourceConnection.getConnection(context);
 			DatabaseMetaData databaseMetaData = connection.getMetaData();
+			String quote = context.getQueryQuote();
 
 			/*
 			 *  General DB Info
@@ -157,7 +158,6 @@ public class OER2GraphMapper extends OSource2GraphMapper {
 
 			// Giving db's table names
 			while(resultTable.next()) {
-				//				System.out.println("   "+resultTable.getString("TABLE_CAT")+", "+resultTable.getString("TABLE_SCHEM")+", "+resultTable.getString("TABLE_NAME")+", "+resultTable.getString("TABLE_TYPE")); 
 				tableSchema = resultTable.getString("TABLE_SCHEM");
 				tableName = resultTable.getString("TABLE_NAME");
 
@@ -198,9 +198,9 @@ public class OER2GraphMapper extends OSource2GraphMapper {
 				// Counting current-table's record
 				currentTableSchema = tablesName2schema.get(currentTableName);
 				if(currentTableSchema != null)
-					sql = "select count(*) from " + currentTableSchema + "." + currentTableName;
+					sql = "select count(*) from " + currentTableSchema + "." + quote + currentTableName + quote;
 				else
-					sql = "select count(*) from " + currentTableName;
+					sql = "select count(*) from " + quote + currentTableName + quote;
 
 				currentTableRecordAmount = statement.executeQuery(sql);
 				if (currentTableRecordAmount.next()) {

@@ -233,9 +233,9 @@ public class OTeleporter extends OServerPluginAbstract {
 		progressMonitor.initialize();
 
 		// JDBC Driver configuration and driver class name fetching
-//		String driverClassName = ODriverConfigurator.checkConfiguration(driver, context);
-		String driverClassName = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
-		context.setDriverDependencyPath("/home/gabriele/orientdb-community-2.1.0/lib/sqljdbc4.jar");
+		String driverClassName = ODriverConfigurator.checkConfiguration(driver, context);
+//		String driverClassName = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
+//		context.setDriverDependencyPath("/home/gabriele/orientdb-community-2.1.0/lib/sqljdbc4.jar");
 
 		OImportStrategy strategy = FACTORY.buildStrategy(chosenStrategy, context);
 		

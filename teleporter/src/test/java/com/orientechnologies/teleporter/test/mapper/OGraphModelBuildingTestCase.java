@@ -52,6 +52,7 @@ public class OGraphModelBuildingTestCase {
   public void init() {
     this.context = new OTeleporterContext();
     this.context.setOutputManager(new OOutputStreamManager(0));
+    this.context.setQueryQuoteType("\"");
   }
 
 

@@ -98,6 +98,20 @@ public class OJavaConventionNameResolver implements ONameResolver {
 
 	protected String toJavaClassConvention(String name) {
 
+		// if all chars are uppercase, then name is transformed in a lowercase version
+
+		boolean allUpperCase = true;
+		for(int i=0; i<name.length(); i++) {
+			if(Character.isLowerCase(name.charAt(i))) {
+				allUpperCase = false;
+				break;
+			}
+		}
+
+		if(allUpperCase) {
+			name = name.toLowerCase();
+		}
+
 		if(name.contains(" ")) {
 			int pos;
 			while(name.contains(" ")) {
@@ -135,6 +149,20 @@ public class OJavaConventionNameResolver implements ONameResolver {
 
 	private String toJavaVariableConvention(String name) {
 
+		// if all chars are uppercase, then name is transformed in a lowercase version
+
+		boolean allUpperCase = true;
+		for(int i=0; i<name.length(); i++) {
+			if(Character.isLowerCase(name.charAt(i))) {
+				allUpperCase = false;
+				break;
+			}
+		}
+
+		if(allUpperCase) {
+			name = name.toLowerCase();
+		}
+
 		if(name.contains(" ")) {
 			int pos;
 			while(name.contains(" ")) {
@@ -157,20 +185,6 @@ public class OJavaConventionNameResolver implements ONameResolver {
 				pos = name.indexOf("-");
 				name = name.substring(0,pos) + (name.charAt(pos+1)+"").toUpperCase() + name.substring(pos+2);
 			}
-		}
-
-		// if all chars are uppercase, then name is transformed in a lowercase version
-
-		boolean allUpperCase = true;
-		for(int i=0; i<name.length(); i++) {
-			if(Character.isLowerCase(name.charAt(i))) {
-				allUpperCase = false;
-				break;
-			}
-		}
-
-		if(allUpperCase) {
-			name = name.toLowerCase();
 		}
 
 		// First char must be lowercase
@@ -199,8 +213,23 @@ public class OJavaConventionNameResolver implements ONameResolver {
 
 	public boolean isCompliantToJavaClassConvention(String candidateName) {
 
-		if( !(candidateName.contains(" ") || candidateName.contains("_") || candidateName.contains("-")) && Character.isUpperCase(candidateName.charAt(0))) 
-			return true;
+		if( !(candidateName.contains(" ") || candidateName.contains("_") || candidateName.contains("-")) && Character.isUpperCase(candidateName.charAt(0))) {
+
+			// if all chars are uppercase, then name is transformed in a lowercase version
+
+			boolean allUpperCase = true;
+			for(int i=0; i<candidateName.length(); i++) {
+				if(Character.isLowerCase(candidateName.charAt(i))) {
+					allUpperCase = false;
+					break;
+				}
+			}
+
+			if(allUpperCase) 
+				return false;
+			else
+				return true;
+		}
 		else 
 			return false;
 	}

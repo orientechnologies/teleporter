@@ -65,6 +65,7 @@ public class OSequentialExecutionsTestCase {
     this.context.setOutputManager(new OOutputStreamManager(0));
     this.context.setNameResolver(new OJavaConventionNameResolver());
     this.context.setDataTypeHandler(new OHSQLDBDataTypeHandler());
+    this.context.setQueryQuoteType("\"");
     this.naiveImportStrategy = new ONaiveImportStrategy();
     this.naiveAggregationImportStrategy = new ONaiveAggregationImportStrategy();
     this.outOrientGraphUri = "memory:testOrientDB";
@@ -152,7 +153,7 @@ public class OSequentialExecutionsTestCase {
       assertEquals(OType.STRING, currentProperty.getType());
       currentProperty = itProperties.next();
       assertEquals("birthday", currentProperty.getName());
-      assertEquals(OType.DATETIME, currentProperty.getType());
+      assertEquals(OType.DATE, currentProperty.getType());
       currentProperty = itProperties.next();
       assertEquals("name", currentProperty.getName());
       assertEquals(OType.STRING, currentProperty.getType());
@@ -226,7 +227,7 @@ public class OSequentialExecutionsTestCase {
       assertEquals(OType.STRING, currentProperty.getType());
       currentProperty = itProperties.next();
       assertEquals("birthday", currentProperty.getName());
-      assertEquals(OType.DATETIME, currentProperty.getType());
+      assertEquals(OType.DATE, currentProperty.getType());
       currentProperty = itProperties.next();
       assertEquals("name", currentProperty.getName());
       assertEquals(OType.STRING, currentProperty.getType());
@@ -377,7 +378,7 @@ public class OSequentialExecutionsTestCase {
       assertEquals(OType.STRING, currentProperty.getType());
       currentProperty = itProperties.next();
       assertEquals("anniversary", currentProperty.getName());
-      assertEquals(OType.DATETIME, currentProperty.getType());
+      assertEquals(OType.DATE, currentProperty.getType());
       currentProperty = itProperties.next();
       assertEquals("name", currentProperty.getName());
       assertEquals(OType.STRING, currentProperty.getType());

@@ -115,7 +115,7 @@ public class ONaiveAggregationImportStrategy extends ONaiveImportStrategy {
 			statistics.runningStepNumber = 4;
 
 			OER2GraphMapper mapper = (OER2GraphMapper) genericMapper;
-			ODBQueryEngine dbQueryEngine = new ODBQueryEngine(driver, uri, username, password);    
+			ODBQueryEngine dbQueryEngine = new ODBQueryEngine(driver, uri, username, password, context);    
 			OGraphDBCommandEngine graphDBCommandEngine = new OGraphDBCommandEngine();
 
 			// OrientDB graph initialization/connection

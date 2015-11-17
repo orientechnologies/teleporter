@@ -45,10 +45,12 @@ import com.orientechnologies.teleporter.persistence.util.OQueryResult;
 public class ODBQueryEngine implements ODataSourceQueryEngine {
 
 	private ODBSourceConnection dataSource;
+	private String quote;
 
 
-	public ODBQueryEngine(String driver, String uri, String username, String password) {
+	public ODBQueryEngine(String driver, String uri, String username, String password, OTeleporterContext context) {
 		this.dataSource =  new ODBSourceConnection(driver, uri, username, password);
+		this.quote = context.getQueryQuote();
 	}
 
 
@@ -67,16 +69,16 @@ public class ODBQueryEngine implements ODataSourceQueryEngine {
 		String query;
 
 		if(entitySchema != null) 
-			query = "select * from " + entitySchema + "." + entityName + " where ";
+			query = "select * from " + entitySchema + "." + this.quote + entityName + this.quote + " where ";
 		else
-			query = "select * from " + entityName + " where ";
+			query = "select * from " + this.quote + entityName + this.quote + " where ";
 
-		query += propertyOfKey[0] + " = '" + valueOfKey[0] + "'";
+		query += this.quote + propertyOfKey[0] + this.quote + " = '" + valueOfKey[0] + "'";
 
 
 		if(propertyOfKey.length > 1) {
 			for(int i=1; i<propertyOfKey.length; i++) {
-				query += " and " + propertyOfKey[i] + " = '" + valueOfKey[i] + "'";
+				query += " and " + this.quote + propertyOfKey[i] + this.quote + " = '" + valueOfKey[i] + "'";
 			}
 		}
 
@@ -123,9 +125,9 @@ public class ODBQueryEngine implements ODataSourceQueryEngine {
 
 		String query;
 		if(entitySchema != null)
-			query = "select * from " + entitySchema + "." + entityName;
+			query = "select * from " + entitySchema + "." + this.quote + entityName + this.quote;
 		else
-			query = "select * from " + entityName;
+			query = "select * from " + this.quote + entityName + this.quote;
 
 		try {
 
@@ -171,11 +173,11 @@ public class ODBQueryEngine implements ODataSourceQueryEngine {
 
 		String query;
 		if(entitySchema != null)
-			query = "select * from " + entitySchema + "." + entityName;
+			query = "select * from " + entitySchema + "." + this.quote + entityName + this.quote;
 		else
-			query = "select * from " + entityName;
+			query = "select * from " + this.quote + entityName + this.quote;
 
-		query += " where " + discriminatorColumn + "='" + currentDiscriminatorValue + "'";
+		query += " where " + this.quote + discriminatorColumn + this.quote + "='" + currentDiscriminatorValue + "'";
 
 		try {
 
@@ -218,15 +220,15 @@ public class ODBQueryEngine implements ODataSourceQueryEngine {
 
 		String query;
 		if(entitySchema != null)
-			query = "select " + discriminatorColumn + " from " + entitySchema + "." + physicalEntityName + " where ";
+			query = "select " + discriminatorColumn + " from " + entitySchema + "." + this.quote + physicalEntityName + this.quote + " where ";
 		else
-			query = "select " + discriminatorColumn + " from " + physicalEntityName + " where ";
+			query = "select " + discriminatorColumn + " from " + this.quote + physicalEntityName + this.quote + " where ";
 
-		query += propertyOfKey[0] + " = '" + valueOfKey[0] + "'";
+		query += this.quote + propertyOfKey[0] + this.quote + " = '" + valueOfKey[0] + "'";
 
 		if(propertyOfKey.length > 1) {
 			for(int i=1; i<propertyOfKey.length; i++) {
-				query += " and " + propertyOfKey[i] + " = '" + valueOfKey[i] + "'";
+				query += " and " + this.quote + propertyOfKey[i] + this.quote + " = '" + valueOfKey[i] + "'";
 			}
 		}
 
@@ -280,9 +282,9 @@ public class ODBQueryEngine implements ODataSourceQueryEngine {
 
 		String query;
 		if(rootEntity.getSchemaName() != null)
-			query = "select * from " + rootEntity.getSchemaName() + "." + rootEntity.getName() + " as t0\n";
+			query = "select * from " + rootEntity.getSchemaName() + "." + this.quote + rootEntity.getName() + this.quote + " as t0\n";
 		else
-			query = "select * from " + rootEntity.getName() + " as t0\n";
+			query = "select * from " + this.quote + rootEntity.getName() + this.quote + " as t0\n";
 
 		String[] rootEntityPropertyOfKey = new String[rootEntity.getPrimaryKey().getInvolvedAttributes().size()];  // collects the attributes of the root-entity's primary key
 
@@ -308,15 +310,15 @@ public class ODBQueryEngine implements ODataSourceQueryEngine {
 				}
 
 				if(currentEntity.getSchemaName() != null) 
-					query += "left join " + currentEntity.getSchemaName() + "." + currentEntity.getName();
+					query += "left join " + currentEntity.getSchemaName() + "." + this.quote + currentEntity.getName() + this.quote;
 				else
-					query += "left join " + currentEntity.getName(); 
+					query += "left join " + this.quote + currentEntity.getName() + this.quote; 
 
 				query += " as t" + thTable + 
-						" on t0." + rootEntityPropertyOfKey[0] + " = t" + thTable + "." + currentEntityPropertyOfKey[0];
+						" on t0." + this.quote + rootEntityPropertyOfKey[0] + this.quote + " = t" + thTable + "." + this.quote + currentEntityPropertyOfKey[0] + this.quote;
 
 				for(int k=1; k<currentEntityPropertyOfKey.length; k++) {
-					query += " and " + rootEntityPropertyOfKey[k] + " = t" + thTable + "." + currentEntityPropertyOfKey[0];
+					query += " and " + this.quote + rootEntityPropertyOfKey[k] + this.quote + " = t" + thTable + "." + this.quote + currentEntityPropertyOfKey[0] + this.quote;
 				}
 
 				query += "\n";

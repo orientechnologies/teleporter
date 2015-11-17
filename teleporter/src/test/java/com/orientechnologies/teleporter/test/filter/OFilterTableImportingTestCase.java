@@ -73,6 +73,7 @@ public class OFilterTableImportingTestCase {
     this.context.setOutputManager(new OOutputStreamManager(0));
     this.context.setNameResolver(new OJavaConventionNameResolver());
     this.context.setDataTypeHandler(new OHSQLDBDataTypeHandler());
+    this.context.setQueryQuoteType("\"");
     this.importStrategy = new ONaiveImportStrategy();
     this.outOrientGraphUri = "memory:testOrientDB";
   }
@@ -97,7 +98,7 @@ public class OFilterTableImportingTestCase {
       st.execute(countryTableBuilding);
 
       String residenceTableBuilding = "create memory table RESIDENCE(ID varchar(256) not null, CITY varchar(256), COUNTRY varchar(256), "
-          + "primary key (ID), foreign key (COUNTRY) references COUNTRY(ID))";
+          + "primary key (id), foreign key (country) references country(id))";
       st.execute(residenceTableBuilding);
 
       String managerTableBuilding = "create memory table MANAGER(ID varchar(256) not null, NAME varchar(256), PROJECT varchar(256), primary key (ID))";
@@ -105,29 +106,29 @@ public class OFilterTableImportingTestCase {
 
       String employeeTableBuilding = "create memory table EMPLOYEE (ID varchar(256) not null,"+
           " NAME varchar(256), SALARY decimal(10,2), RESIDENCE varchar(256), MANAGER varchar(256), "
-          + "primary key (id), foreign key (RESIDENCE) references RESIDENCE(ID), foreign key (MANAGER) references MANAGER(ID))";
+          + "primary key (ID), foreign key (RESIDENCE) references RESIDENCE(ID), foreign key (MANAGER) references MANAGER(ID))";
       st.execute(employeeTableBuilding);
 
 
       // Records Inserting
 
-      String countryFilling = "INSERT INTO COUNTRY (ID,NAME,CONTINENT) VALUES ("
+      String countryFilling = "insert into COUNTRY (ID,NAME,CONTINENT) values ("
           + "('C001','Italy','Europe'))";
       st.execute(countryFilling);
 
-      String residenceFilling = "INSERT INTO RESIDENCE (ID,CITY,COUNTRY) VALUES ("
+      String residenceFilling = "insert into RESIDENCE (ID,CITY,COUNTRY) values ("
           + "('R001','Rome','C001'),"
           + "('R002','Milan','C001'))";
       st.execute(residenceFilling);
 
-      String managerFilling = "INSERT INTO MANAGER (ID,NAME,PROJECT) VALUES ("
+      String managerFilling = "insert into MANAGER (ID,NAME,PROJECT) values ("
           + "('M001','Bill Right','New World'))";
       st.execute(managerFilling);
 
-      String employeeFilling = "INSERT INTO EMPLOYEE (ID,NAME,SALARY,RESIDENCE,MANAGER) VALUES ("
-          + "('E001','John Black',1500.00,'R001',NULL),"
+      String employeeFilling = "insert into EMPLOYEE (ID,NAME,SALARY,RESIDENCE,MANAGER) values ("
+          + "('E001','John Black',1500.00,'R001',null),"
           + "('E002','Andrew Brown','1000.00','R001','M001'),"
-          + "('E003','Jack Johnson',2000.00,'R002',NULL))";
+          + "('E003','Jack Johnson',2000.00,'R002',null))";
       st.execute(employeeFilling);
 
       List<String> includedTables = new ArrayList<String>();
@@ -327,7 +328,7 @@ public class OFilterTableImportingTestCase {
       try {
 
         // Dropping Source DB Schema and OrientGraph
-        String dbDropping = "DROP SCHEMA PUBLIC CASCADE";
+        String dbDropping = "drop schema public cascade";
         st.execute(dbDropping);
         connection.close();
       }catch(Exception e) {
@@ -367,29 +368,29 @@ public class OFilterTableImportingTestCase {
 
       String employeeTableBuilding = "create memory table EMPLOYEE (ID varchar(256) not null,"+
           " NAME varchar(256), SALARY decimal(10,2), RESIDENCE varchar(256), MANAGER varchar(256), "
-          + "primary key (id), foreign key (RESIDENCE) references RESIDENCE(ID), foreign key (MANAGER) references MANAGER(ID))";
+          + "primary key (ID), foreign key (RESIDENCE) references RESIDENCE(ID), foreign key (MANAGER) references MANAGER(ID))";
       st.execute(employeeTableBuilding);
 
 
       // Records Inserting
 
-      String countryFilling = "INSERT INTO COUNTRY (ID,NAME,CONTINENT) VALUES ("
+      String countryFilling = "insert into COUNTRY (ID,NAME,CONTINENT) values ("
           + "('C001','Italy','Europe'))";
       st.execute(countryFilling);
 
-      String residenceFilling = "INSERT INTO RESIDENCE (ID,CITY,COUNTRY) VALUES ("
+      String residenceFilling = "insert into RESIDENCE (ID,CITY,COUNTRY) values ("
           + "('R001','Rome','C001'),"
           + "('R002','Milan','C001'))";
       st.execute(residenceFilling);
 
-      String managerFilling = "INSERT INTO MANAGER (ID,NAME,PROJECT) VALUES ("
+      String managerFilling = "insert into MANAGER (ID,NAME,PROJECT) values ("
           + "('M001','Bill Right','New World'))";
       st.execute(managerFilling);
 
-      String employeeFilling = "INSERT INTO EMPLOYEE (ID,NAME,SALARY,RESIDENCE,MANAGER) VALUES ("
-          + "('E001','John Black',1500.00,'R001',NULL),"
+      String employeeFilling = "insert into EMPLOYEE (ID,NAME,SALARY,RESIDENCE,MANAGER) values ("
+          + "('E001','John Black',1500.00,'R001',null),"
           + "('E002','Andrew Brown','1000.00','R001','M001'),"
-          + "('E003','Jack Johnson',2000.00,'R002',NULL))";
+          + "('E003','Jack Johnson',2000.00,'R002',null))";
       st.execute(employeeFilling);
 
       List<String> excludedTables = new ArrayList<String>();
@@ -587,7 +588,7 @@ public class OFilterTableImportingTestCase {
       try {
 
         // Dropping Source DB Schema and OrientGraph
-        String dbDropping = "DROP SCHEMA PUBLIC CASCADE";
+        String dbDropping = "drop schema public cascade";
         st.execute(dbDropping);
         connection.close();
       }catch(Exception e) {
@@ -628,29 +629,29 @@ public class OFilterTableImportingTestCase {
       String employeeTableBuilding = "create memory table EMPLOYEE (ID varchar(256) not null,"+
           " TYPE varchar(256), NAME varchar(256), SALARY decimal(10,2), BONUS decimal(10,0), "
           + "PAY_PER_HOUR decimal(10,2), CONTRACT_DURATION varchar(256), RESIDENCE varchar(256), MANAGER varchar(256), "
-          + "primary key (id), foreign key (RESIDENCE) references RESIDENCE(ID), foreign key (MANAGER) references MANAGER(ID))";
+          + "primary key (ID), foreign key (RESIDENCE) references RESIDENCE(ID), foreign key (MANAGER) references MANAGER(ID))";
       st.execute(employeeTableBuilding);
 
 
       // Records Inserting
 
-      String countryFilling = "INSERT INTO COUNTRY (ID,NAME,CONTINENT) VALUES ("
+      String countryFilling = "insert into COUNTRY (ID,NAME,CONTINENT) values ("
           + "('C001','Italy','Europe'))";
       st.execute(countryFilling);
 
-      String residenceFilling = "INSERT INTO RESIDENCE (ID,CITY,COUNTRY) VALUES ("
+      String residenceFilling = "insert into RESIDENCE (ID,CITY,COUNTRY) values ("
           + "('R001','Rome','C001'),"
           + "('R002','Milan','C001'))";
       st.execute(residenceFilling);
 
-      String managerFilling = "INSERT INTO MANAGER (ID,TYPE,NAME,PROJECT) VALUES ("
+      String managerFilling = "insert into MANAGER (ID,TYPE,NAME,PROJECT) values ("
           + "('M001','prj_mgr','Bill Right','New World'))";
       st.execute(managerFilling);
 
-      String employeeFilling = "INSERT INTO EMPLOYEE (ID,TYPE,NAME,SALARY,BONUS,PAY_PER_HOUR,CONTRACT_DURATION,RESIDENCE,MANAGER) VALUES ("
-          + "('E001','emp','John Black',NULL,NULL,NULL,NULL,'R001',NULL),"
-          + "('E002','reg_emp','Andrew Brown','1000.00','10',NULL,NULL,'R001','M001'),"
-          + "('E003','cont_emp','Jack Johnson',NULL,NULL,'50.00','6','R002',NULL))";
+      String employeeFilling = "insert into EMPLOYEE (ID,TYPE,NAME,SALARY,BONUS,PAY_PER_HOUR,CONTRACT_DURATION,RESIDENCE,MANAGER) values ("
+          + "('E001','emp','John Black',null,null,null,null,'R001',null),"
+          + "('E002','reg_emp','Andrew Brown','1000.00','10',null,null,'R001','M001'),"
+          + "('E003','cont_emp','Jack Johnson',null,null,'50.00','6','R002',null))";
       st.execute(employeeFilling);
 
       List<String> includedTables = new ArrayList<String>();
@@ -885,7 +886,7 @@ public class OFilterTableImportingTestCase {
       try {
 
         // Dropping Source DB Schema and OrientGraph
-        String dbDropping = "DROP SCHEMA PUBLIC CASCADE";
+        String dbDropping = "drop schema public cascade";
         st.execute(dbDropping);
         connection.close();
       }catch(Exception e) {
@@ -927,7 +928,7 @@ public class OFilterTableImportingTestCase {
 
       String employeeTableBuilding = "create memory table EMPLOYEE (ID varchar(256) not null,"+
           " NAME varchar(256), RESIDENCE varchar(256), MANAGER varchar(256), primary key (ID), "
-          + "foreign key (RESIDENCE) references RESIDENCE(ID), foreign key (MANAGER) references MANAGER(ID))";
+          + "foreign key (RESIDENCE) references RESIDENCE(ID), foreign key (MANAGER) references manager(ID))";
       st.execute(employeeTableBuilding);
 
       String regularEmployeeTableBuilding = "create memory table REGULAR_EMPLOYEE (EID varchar(256) not null, "
@@ -941,34 +942,34 @@ public class OFilterTableImportingTestCase {
 
       // Records Inserting
 
-      String countryFilling = "INSERT INTO COUNTRY (ID,NAME,CONTINENT) VALUES ("
+      String countryFilling = "insert into COUNTRY (ID,NAME,CONTINENT) values ("
           + "('C001','Italy','Europe'))";
       st.execute(countryFilling);
 
-      String residenceFilling = "INSERT INTO RESIDENCE (ID,CITY,COUNTRY) VALUES ("
+      String residenceFilling = "insert into RESIDENCE (ID,CITY,COUNTRY) values ("
           + "('R001','Rome','C001'),"
           + "('R002','Milan','C001'))";
       st.execute(residenceFilling);
 
-      String managerFilling = "INSERT INTO MANAGER (ID,NAME) VALUES ("
+      String managerFilling = "insert into MANAGER (ID,NAME) values ("
           + "('M001','Bill Right'))";
       st.execute(managerFilling);
 
-      String projectManagerFilling = "INSERT INTO PROJECT_MANAGER (EID,PROJECT) VALUES ("
+      String projectManagerFilling = "insert into PROJECT_MANAGER (EID,PROJECT) values ("
           + "('M001','New World'))";
       st.execute(projectManagerFilling);
 
-      String employeeFilling = "INSERT INTO EMPLOYEE (ID,NAME,RESIDENCE,MANAGER) VALUES ("
-          + "('E001','John Black','R001',NULL),"
+      String employeeFilling = "insert into EMPLOYEE (ID,NAME,RESIDENCE,MANAGER) values ("
+          + "('E001','John Black','R001',null),"
           + "('E002','Andrew Brown','R001','M001'),"
-          + "('E003','Jack Johnson','R002',NULL))";
+          + "('E003','Jack Johnson','R002',null))";
       st.execute(employeeFilling);
 
-      String regularEmployeeFilling = "INSERT INTO REGULAR_EMPLOYEE (EID,SALARY,BONUS) VALUES ("
+      String regularEmployeeFilling = "insert into REGULAR_EMPLOYEE (EID,SALARY,BONUS) values ("
           + "('E002','1000.00','10'))";
       st.execute(regularEmployeeFilling);
 
-      String contractEmployeeFilling = "INSERT INTO CONTRACT_EMPLOYEE (EID,PAY_PER_HOUR,CONTRACT_DURATION) VALUES ("
+      String contractEmployeeFilling = "insert into CONTRACT_EMPLOYEE (EID,PAY_PER_HOUR,CONTRACT_DURATION) values ("
           + "('E003','50.00','6'))";
       st.execute(contractEmployeeFilling);
 
@@ -1207,7 +1208,7 @@ public class OFilterTableImportingTestCase {
       try {
 
         // Dropping Source DB Schema and OrientGraph
-        String dbDropping = "DROP SCHEMA PUBLIC CASCADE";
+        String dbDropping = "drop schema public cascade";
         st.execute(dbDropping);
         connection.close();
       }catch(Exception e) {
@@ -1263,34 +1264,34 @@ public class OFilterTableImportingTestCase {
 
       // Records Inserting
 
-      String countryFilling = "INSERT INTO COUNTRY (ID,NAME,CONTINENT) VALUES ("
+      String countryFilling = "insert into COUNTRY (ID,NAME,CONTINENT) values ("
           + "('C001','Italy','Europe'))";
       st.execute(countryFilling);
 
-      String residenceFilling = "INSERT INTO RESIDENCE (ID,CITY,COUNTRY) VALUES ("
+      String residenceFilling = "insert into RESIDENCE (ID,CITY,COUNTRY) values ("
           + "('R001','Rome','C001'),"
           + "('R002','Milan','C001'))";
       st.execute(residenceFilling);
 
-      String managerFilling = "INSERT INTO MANAGER (ID,NAME) VALUES ("
+      String managerFilling = "insert into MANAGER (ID,NAME) values ("
           + "('M001','Bill Right'))";
       st.execute(managerFilling);
 
-      String projectManagerFilling = "INSERT INTO PROJECT_MANAGER (EID,PROJECT) VALUES ("
+      String projectManagerFilling = "insert into PROJECT_MANAGER (EID,PROJECT) values ("
           + "('M001','New World'))";
       st.execute(projectManagerFilling);
 
-      String employeeFilling = "INSERT INTO EMPLOYEE (ID,NAME,RESIDENCE,MANAGER) VALUES ("
-          + "('E001','John Black','R001',NULL),"
+      String employeeFilling = "insert into EMPLOYEE (ID,NAME,RESIDENCE,MANAGER) values ("
+          + "('E001','John Black','R001',null),"
           + "('E002','Andrew Brown','R001','M001'),"
-          + "('E003','Jack Johnson','R002',NULL))";
+          + "('E003','Jack Johnson','R002',null))";
       st.execute(employeeFilling);
 
-      String regularEmployeeFilling = "INSERT INTO REGULAR_EMPLOYEE (EID,SALARY,BONUS) VALUES ("
+      String regularEmployeeFilling = "insert into REGULAR_EMPLOYEE (EID,SALARY,BONUS) values ("
           + "('E002','1000.00','10'))";
       st.execute(regularEmployeeFilling);
 
-      String contractEmployeeFilling = "INSERT INTO CONTRACT_EMPLOYEE (EID,PAY_PER_HOUR,CONTRACT_DURATION) VALUES ("
+      String contractEmployeeFilling = "insert into CONTRACT_EMPLOYEE (EID,PAY_PER_HOUR,CONTRACT_DURATION) values ("
           + "('E003','50.00','6'))";
       st.execute(contractEmployeeFilling);
 
@@ -1316,8 +1317,8 @@ public class OFilterTableImportingTestCase {
       orientGraph = new OrientGraphNoTx(this.outOrientGraphUri);
 
       OrientVertexType employeeVertexType = orientGraph.getVertexType("Employee");
-      OrientVertexType regularEmployeeVertexType = orientGraph.getVertexType("RegularEmployee");
-      OrientVertexType contractEmployeeVertexType = orientGraph.getVertexType("ContractEmployee");
+      OrientVertexType regularEmployeeVertexType = orientGraph.getVertexType("Regularemployee");
+      OrientVertexType contractEmployeeVertexType = orientGraph.getVertexType("Contractemployee");
 
       assertNotNull(employeeVertexType);
       assertNotNull(regularEmployeeVertexType);
@@ -1433,7 +1434,7 @@ public class OFilterTableImportingTestCase {
         assertNull(v.getProperty("payPerHour"));
         assertNull(v.getProperty("contractPeriod"));
 
-        edgesIt = v.getEdges(Direction.OUT, "HasResidence").iterator();
+        edgesIt = v.getEdges(Direction.OUT, "HasRESIDENCE").iterator();
         assertEquals(false, edgesIt.hasNext());
       }
       else {
@@ -1456,7 +1457,7 @@ public class OFilterTableImportingTestCase {
 
         edgesIt = v.getEdges(Direction.OUT, "HasResidence").iterator();
         assertEquals(false, edgesIt.hasNext());
-        edgesIt = v.getEdges(Direction.OUT, "HasManager").iterator();
+        edgesIt = v.getEdges(Direction.OUT, "HasMANAGER").iterator();
         assertEquals("M001", edgesIt.next().getVertex(Direction.IN).getProperty("id"));
         assertEquals(false, edgesIt.hasNext());
       }
@@ -1526,7 +1527,7 @@ public class OFilterTableImportingTestCase {
       try {
 
         // Dropping Source DB Schema and OrientGraph
-        String dbDropping = "DROP SCHEMA PUBLIC CASCADE";
+        String dbDropping = "drop schema public cascade";
         st.execute(dbDropping);
         connection.close();
       }catch(Exception e) {
@@ -1585,35 +1586,35 @@ public class OFilterTableImportingTestCase {
 
       // Records Inserting
 
-      String countryFilling = "INSERT INTO COUNTRY (ID,NAME,CONTINENT) VALUES ("
+      String countryFilling = "insert into COUNTRY (ID,NAME,CONTINENT) values ("
           + "('C001','Italy','Europe'))";
       st.execute(countryFilling);
 
-      String residenceFilling = "INSERT INTO RESIDENCE (ID,CITY,COUNTRY) VALUES ("
+      String residenceFilling = "insert into RESIDENCE (ID,CITY,COUNTRY) values ("
           + "('R001','Rome','C001'),"
           + "('R002','Milan','C001'))";
       st.execute(residenceFilling);
 
-      String managerFilling = "INSERT INTO MANAGER (ID,NAME) VALUES ("
+      String managerFilling = "insert into MANAGER (ID,NAME) values ("
           + "('M001','Bill Right'))";
       st.execute(managerFilling);
 
-      String projectManagerFilling = "INSERT INTO PROJECT_MANAGER (ID,NAME,PROJECT) VALUES ("
+      String projectManagerFilling = "insert into PROJECT_MANAGER (ID,NAME,PROJECT) values ("
           + "('M001','Bill Right','New World'))";
       st.execute(projectManagerFilling);
 
-      String employeeFilling = "INSERT INTO EMPLOYEE (ID,NAME,RESIDENCE,MANAGER) VALUES ("
-          + "('E001','John Black','R001',NULL),"
+      String employeeFilling = "insert into EMPLOYEE (ID,NAME,RESIDENCE,MANAGER) values ("
+          + "('E001','John Black','R001',null),"
           + "('E002','Andrew Brown','R001','M001'),"
-          + "('E003','Jack Johnson','R002',NULL))";
+          + "('E003','Jack Johnson','R002',null))";
       st.execute(employeeFilling);
 
-      String regularEmployeeFilling = "INSERT INTO REGULAR_EMPLOYEE (ID,NAME,RESIDENCE,MANAGER,SALARY,BONUS) VALUES ("
+      String regularEmployeeFilling = "insert into REGULAR_EMPLOYEE (ID,NAME,RESIDENCE,MANAGER,SALARY,BONUS) values ("
           + "('E002','Andrew Brown','R001','M001','1000.00','10'))";
       st.execute(regularEmployeeFilling);
 
-      String contractEmployeeFilling = "INSERT INTO CONTRACT_EMPLOYEE (ID,NAME,RESIDENCE,MANAGER,PAY_PER_HOUR,CONTRACT_DURATION) VALUES ("
-          + "('E003','Jack Johnson','R002',NULL,'50.00','6'))";
+      String contractEmployeeFilling = "insert into CONTRACT_EMPLOYEE (ID,NAME,RESIDENCE,MANAGER,PAY_PER_HOUR,CONTRACT_DURATION) values ("
+          + "('E003','Jack Johnson','R002',null,'50.00','6'))";
       st.execute(contractEmployeeFilling);
 
       List<String> includedTables = new ArrayList<String>();
@@ -1852,7 +1853,7 @@ public class OFilterTableImportingTestCase {
       try {
 
         // Dropping Source DB Schema and OrientGraph
-        String dbDropping = "DROP SCHEMA PUBLIC CASCADE";
+        String dbDropping = "drop schema public cascade";
         st.execute(dbDropping);
         connection.close();
       }catch(Exception e) {
