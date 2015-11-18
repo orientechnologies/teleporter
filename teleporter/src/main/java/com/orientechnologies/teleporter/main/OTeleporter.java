@@ -73,7 +73,7 @@ public class OTeleporter extends OServerPluginAbstract {
 
 		// Missing argument validation
 
-		if(args.length < 10) {
+		if(args.length < 6) {
 			outputManager.error("Syntax error, missing argument. Use:\n ./oteleporter.sh -jdriver <jdbc-driver> -jurl <jdbc-url> -juser <username> -jpasswd <password> -ourl <orientdb-url>.");
 			System.exit(0);
 		}
@@ -97,16 +97,6 @@ public class OTeleporter extends OServerPluginAbstract {
 
 		if(!arguments.containsKey("-jurl")) {
 			outputManager.error("Argument -jurl is mandatory, please try again with expected argument: -jurl <input-db-jdbc-URL>\n");
-			System.exit(0);
-		}
-
-		if(!arguments.containsKey("-juser")) {
-			outputManager.error("Argument -juser is mandatory, please try again with expected argument: -juser <your-db-username>\n");
-			System.exit(0);
-		}
-
-		if(!arguments.containsKey("-jpasswd")) {
-			outputManager.error("Argument -jpasswd is mandatory, please try again with expected argument: -jpasswd <your-db-password>\n");
 			System.exit(0);
 		}
 
@@ -164,11 +154,11 @@ public class OTeleporter extends OServerPluginAbstract {
 		// Mandatory arguments
 		String driver = arguments.get("-jdriver");
 		String jurl = arguments.get("-jurl");
-		String username = arguments.get("-juser");
-		String password = arguments.get("-jpasswd");
 		String outDbUrl = arguments.get("-ourl");
 
 		// Optional arguments
+		String username = arguments.get("-juser");
+		String password = arguments.get("-jpasswd");
 		String chosenStrategy = arguments.get("-s");
 		String nameResolver = arguments.get("-nr");
 		String outputLevel = arguments.get("-v");
@@ -233,9 +223,9 @@ public class OTeleporter extends OServerPluginAbstract {
 		progressMonitor.initialize();
 
 		// JDBC Driver configuration and driver class name fetching
-		String driverClassName = ODriverConfigurator.checkConfiguration(driver, context);
-//		String driverClassName = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
-//		context.setDriverDependencyPath("/home/gabriele/orientdb-community-2.1.0/lib/sqljdbc4.jar");
+//		String driverClassName = ODriverConfigurator.checkConfiguration(driver, context);
+		String driverClassName = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
+		context.setDriverDependencyPath("/home/gabriele/orientdb-community-2.1.0/lib/sqljdbc4-2.0.jar");
 
 		OImportStrategy strategy = FACTORY.buildStrategy(chosenStrategy, context);
 		
