@@ -76,7 +76,6 @@ public class ODBSourceConnection {
 			System.exit(0);
 		}
 		return connection;
-
 	}
 
 	public String getDriver() {

@@ -70,8 +70,6 @@ public class OFileManager {
 				String newFilePath = destinationFolderPath + File.separator + fileName;
 				File newFile = new File(newFilePath);
 
-				System.out.println("file unzip : "+ newFile.getAbsoluteFile());
-
 				FileOutputStream fileOutputStream = null;
 
 				// if the entry is a file, extracts it
@@ -97,9 +95,7 @@ public class OFileManager {
 			zipInputStream.closeEntry();
 			zipInputStream.close();
 
-			System.out.println("Done");
-
-		}catch(IOException ex){
+		} catch(IOException ex){
 			ex.printStackTrace(); 
 		}
 	}    

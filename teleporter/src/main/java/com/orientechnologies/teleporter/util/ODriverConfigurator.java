@@ -87,6 +87,8 @@ public class ODriverConfigurator {
 			String driverPath = isDriverAlreadyPresent(driverName, classPath);
 
 			if(driverPath == null) {
+				
+				context.getOutputManager().info("Downloading the necessary JDBC driver in ORIENTDB_HOME/lib ...");
 
 				// download last available jdbc driver version
 				String driverDownldUrl = (String) fields.get("url");
@@ -98,6 +100,15 @@ public class ODriverConfigurator {
 				fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
 
 				driverPath = classPath+fileName;
+				
+				if(driverName.equalsIgnoreCase("SQLServer")) {
+					OFileManager.extractAll(driverPath, classPath);
+					OFileManager.deleteFile(driverPath);
+					String[] split = driverPath.split(".jar");
+					driverPath = split[0] + ".jar";
+				}
+				
+				context.getOutputManager().info("Driver JDBC downloaded.");
 			}
 
 			// saving driver
