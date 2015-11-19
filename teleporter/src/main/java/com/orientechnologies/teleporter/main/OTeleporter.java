@@ -34,6 +34,7 @@ import com.orientechnologies.teleporter.context.OTeleporterContext;
 import com.orientechnologies.teleporter.factory.OStrategyFactory;
 import com.orientechnologies.teleporter.strategy.OImportStrategy;
 import com.orientechnologies.teleporter.ui.OProgressMonitor;
+import com.orientechnologies.teleporter.util.ODriverConfigurator;
 
 /**
  * Main Class from which the importing process starts.
@@ -223,9 +224,9 @@ public class OTeleporter extends OServerPluginAbstract {
 		progressMonitor.initialize();
 
 		// JDBC Driver configuration and driver class name fetching
-//		String driverClassName = ODriverConfigurator.checkConfiguration(driver, context);
-		String driverClassName = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
-		context.setDriverDependencyPath("/home/gabriele/orientdb-community-2.1.0/lib/sqljdbc4-2.0.jar");
+		String driverClassName = ODriverConfigurator.checkConfiguration(driver, context);
+//		String driverClassName = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
+//		context.setDriverDependencyPath("/home/gabriele/orientdb-community-2.1.0/lib/sqljdbc4-2.0.jar");
 
 		OImportStrategy strategy = FACTORY.buildStrategy(chosenStrategy, context);
 		

@@ -16,7 +16,7 @@
  * For more information: http://www.orientechnologies.com
  */
 
-package com.orientechnologies.teleporter.main;
+package com.orientechnologies.teleporter.util;
 
 import java.io.BufferedReader;
 import java.io.File;

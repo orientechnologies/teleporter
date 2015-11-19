@@ -18,30 +18,90 @@
 
 package com.orientechnologies.teleporter.util;
 
-/**
- * @author Gabriele Ponzi
- * @email  <gabriele.ponzi--at--gmail.com>
- *
- */
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 public class OFileManager {
 	
-	public static void renameFile() {
+	public static void deleteFile(String toDeleteFilePath) {
+		
+		File toDeleteFile = new File(toDeleteFilePath);
+		toDeleteFile.delete();
+		
+	}
+
+	public static void extractAll(String inputArchiveFilePath, String outputFolderPath) throws IOException {
+
+		File inputArchiveFile = new File(inputArchiveFilePath);
+		if (!inputArchiveFile.exists()) {
+			throw new IOException(inputArchiveFile.getAbsolutePath() + " does not exist");
+		}
+
+		// distinguishing archive format
+		//		TODO
+
+		// Extracting zip file
+		try {
+			unZipAll(inputArchiveFile, outputFolderPath);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 
 	}
 
-	public static void deleteFile() {
+	public static void unZipAll(File inputZipFile, String destinationFolderPath) throws IOException {
 
-	}
-	
-	public static void unwrapAll() {
+		byte[] buffer = new byte[1024];
 
-	}
+		try{
 
-	public static void unwrapFile() {
+			//get the zip file content
+			ZipInputStream zipInputStream = new ZipInputStream(new FileInputStream(inputZipFile));
+			//get the zipped file list entry
+			ZipEntry zipEntry = zipInputStream.getNextEntry();
 
-	}
+			while(zipEntry != null){
 
-	
+				String fileName = zipEntry.getName();
+				String newFilePath = destinationFolderPath + File.separator + fileName;
+				File newFile = new File(newFilePath);
+
+				System.out.println("file unzip : "+ newFile.getAbsoluteFile());
+
+				FileOutputStream fileOutputStream = null;
+
+				// if the entry is a file, extracts it
+				if (!zipEntry.isDirectory()) {
+					fileOutputStream = new FileOutputStream(newFile); 
+					int len;
+					while ((len = zipInputStream.read(buffer)) > 0) {
+						fileOutputStream.write(buffer, 0, len);
+					}
+
+				} else {
+					// if the entry is a directory, make the directory
+					File dir = new File(newFilePath);
+					dir.mkdir();
+				}
+
+				if(fileOutputStream != null)
+					fileOutputStream.close();   
+				zipEntry = zipInputStream.getNextEntry();
+
+			}
+
+			zipInputStream.closeEntry();
+			zipInputStream.close();
+
+			System.out.println("Done");
+
+		}catch(IOException ex){
+			ex.printStackTrace(); 
+		}
+	}    
 
 }
