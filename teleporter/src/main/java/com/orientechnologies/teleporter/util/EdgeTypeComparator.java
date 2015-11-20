@@ -16,11 +16,10 @@
  * For more information: http://www.orientechnologies.com
  */
 
-package com.orientechnologies.teleporter.strategy;
+package com.orientechnologies.teleporter.util;
 
 import java.util.Comparator;
 
-import com.orientechnologies.teleporter.model.dbschema.ORelationship;
 import com.orientechnologies.teleporter.model.graphmodel.OEdgeType;
 
 /**

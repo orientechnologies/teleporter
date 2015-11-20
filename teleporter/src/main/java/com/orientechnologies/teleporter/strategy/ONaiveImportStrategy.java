@@ -52,7 +52,9 @@ import com.orientechnologies.teleporter.model.graphmodel.OVertexType;
 import com.orientechnologies.teleporter.nameresolver.ONameResolver;
 import com.orientechnologies.teleporter.persistence.handler.ODriverDataTypeHandler;
 import com.orientechnologies.teleporter.persistence.util.OQueryResult;
+import com.orientechnologies.teleporter.util.EdgeTypeComparator;
 import com.orientechnologies.teleporter.util.OTimeFormatHandler;
+import com.orientechnologies.teleporter.util.RelationshipComparator;
 import com.orientechnologies.teleporter.writer.OGraphModelWriter;
 import com.tinkerpop.blueprints.impls.orient.OrientBaseGraph;
 import com.tinkerpop.blueprints.impls.orient.OrientGraphFactory;
@@ -118,8 +120,8 @@ public class ONaiveImportStrategy implements OImportStrategy {
 		context.getOutputManager().debug("\n%s\n", mapper.getGraphModel().toString());
 		
 		// TO DELETE !!!!!
-		Collections.sort(((ODataBaseSchema)mapper.getSourceSchema()).getRelationships(), new RelationshipComparator());
-		Collections.sort(mapper.getGraphModel().getEdgesType(), new EdgeTypeComparator());
+//		Collections.sort(((ODataBaseSchema)mapper.getSourceSchema()).getRelationships(), new RelationshipComparator());
+//		Collections.sort(mapper.getGraphModel().getEdgesType(), new EdgeTypeComparator());
 
 		// Step 3: Writing schema on Orient
 		ODataTypeHandlerFactory factory = new ODataTypeHandlerFactory();

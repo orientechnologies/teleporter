@@ -16,7 +16,7 @@
  * For more information: http://www.orientechnologies.com
  */
 
-package com.orientechnologies.teleporter.strategy;
+package com.orientechnologies.teleporter.util;
 
 import java.util.Comparator;
 
