@@ -65,6 +65,7 @@ public class OJavaConventionNameResolver implements ONameResolver {
 
 	@Override
 	public String resolveEdgeName(ORelationship relationship) {
+		
 		String finalName;
 
 		// Foreign Key composed of 1 attribute
@@ -92,6 +93,7 @@ public class OJavaConventionNameResolver implements ONameResolver {
 		}
 
 		return finalName;
+
 	}
 
 

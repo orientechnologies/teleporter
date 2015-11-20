@@ -23,6 +23,7 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.sql.ResultSet;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
@@ -41,6 +42,7 @@ import com.orientechnologies.teleporter.importengine.OGraphDBCommandEngine;
 import com.orientechnologies.teleporter.mapper.OER2GraphMapper;
 import com.orientechnologies.teleporter.mapper.OSource2GraphMapper;
 import com.orientechnologies.teleporter.model.dbschema.OAttribute;
+import com.orientechnologies.teleporter.model.dbschema.ODataBaseSchema;
 import com.orientechnologies.teleporter.model.dbschema.OEntity;
 import com.orientechnologies.teleporter.model.dbschema.OHierarchicalBag;
 import com.orientechnologies.teleporter.model.dbschema.ORelationship;
@@ -114,6 +116,10 @@ public class ONaiveImportStrategy implements OImportStrategy {
 		context.getStatistics().notifyListeners();
 		context.getOutputManager().info("");
 		context.getOutputManager().debug("\n%s\n", mapper.getGraphModel().toString());
+		
+		// TO DELETE !!!!!
+		Collections.sort(((ODataBaseSchema)mapper.getSourceSchema()).getRelationships(), new RelationshipComparator());
+		Collections.sort(mapper.getGraphModel().getEdgesType(), new EdgeTypeComparator());
 
 		// Step 3: Writing schema on Orient
 		ODataTypeHandlerFactory factory = new ODataTypeHandlerFactory();

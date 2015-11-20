@@ -48,7 +48,7 @@ public class OOriginalConventionNameResolver implements ONameResolver {
 
 	@Override
 	public String resolveVertexProperty(String candidateName) {
-		
+
 		if(candidateName.contains(" ")) {
 			int pos;
 			while(candidateName.contains(" ")) {
@@ -56,13 +56,14 @@ public class OOriginalConventionNameResolver implements ONameResolver {
 				candidateName = candidateName.substring(0,pos) + (candidateName.charAt(pos+1)+"").toUpperCase() + candidateName.substring(pos+2);
 			}
 		}
-		
+
 		return candidateName;
 	}
 
 
 	@Override
 	public String resolveEdgeName(ORelationship relationship) {
+		
 		String finalName;
 
 		// Foreign Key composed of 1 attribute
@@ -74,8 +75,7 @@ public class OOriginalConventionNameResolver implements ONameResolver {
 			columnName = columnName.replace("_OID", "");
 			columnName = columnName.replace("_eid", "");
 			columnName = columnName.replace("_EID", "");
-
-
+			
 			// manipulating name (Java Convention)
 			finalName = "has_" + columnName;
 		}

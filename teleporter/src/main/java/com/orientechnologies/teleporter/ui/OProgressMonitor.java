@@ -170,9 +170,9 @@ public class OProgressMonitor implements OStatisticsListener {
 		int work3DonePercentage;
 
 		if(statistics.totalNumberOfVertexType > 0 && statistics.totalNumberOfEdgeType > 0 && statistics.totalNumberOfIndices > 0) {
-			work3DonePercentage = (int) (((double)statistics.wroteVertexType/(double)statistics.totalNumberOfVertexType) * 100/3);
-			work3DonePercentage += (int) (((double)statistics.wroteEdgeType/(double)statistics.totalNumberOfEdgeType) * 100/3);
-			work3DonePercentage += (int) (((double)statistics.wroteIndexes/(double)statistics.totalNumberOfIndices) * 100/3);      
+			work3DonePercentage = (int) (((double)statistics.wroteVertexType/(double)statistics.totalNumberOfVertexType) * 0.35 * 100);
+			work3DonePercentage += (int) (((double)statistics.wroteEdgeType/(double)statistics.totalNumberOfEdgeType) * 0.35 * 100);
+			work3DonePercentage += (int) (((double)statistics.wroteIndexes/(double)statistics.totalNumberOfIndices) * 0.3  * 100);      
 		}
 		else if(statistics.totalNumberOfVertexType > 0 && statistics.totalNumberOfEdgeType > 0 && statistics.totalNumberOfIndices == 0) {
 			work3DonePercentage = (int) (((double)statistics.wroteVertexType/(double)statistics.totalNumberOfVertexType) * 100/2);

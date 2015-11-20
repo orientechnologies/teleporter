@@ -26,6 +26,7 @@ import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import com.orientechnologies.orient.core.config.OGlobalConfiguration;
 import com.orientechnologies.orient.server.OServer;
 import com.orientechnologies.orient.server.config.OServerParameterConfiguration;
 import com.orientechnologies.orient.server.plugin.OServerPluginAbstract;
@@ -211,6 +212,8 @@ public class OTeleporter extends OServerPluginAbstract {
 	public static void execute(String driver, String jurl, String username, String password, String outDbUrl, String chosenStrategy, String chosenMapper, String xmlPath, String nameResolver,
 			String outputLevel, List<String> includedTables, List<String> excludedTables) {
 
+		// Disabling query scan threshold tip
+		OGlobalConfiguration.QUERY_SCAN_THRESHOLD_TIP.setValue(-1);
 
 		// OutputStream setting
 
@@ -224,12 +227,11 @@ public class OTeleporter extends OServerPluginAbstract {
 		progressMonitor.initialize();
 
 		// JDBC Driver configuration and driver class name fetching
-		String driverClassName = ODriverConfigurator.checkConfiguration(driver, context);
-//		String driverClassName = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
-//		context.setDriverDependencyPath("/home/gabriele/orientdb-community-2.1.0/lib/sqljdbc4-2.0.jar");
+		ODriverConfigurator driverConfig = new ODriverConfigurator();
+		String driverClassName = driverConfig.checkConfiguration(driver, context);
 
 		OImportStrategy strategy = FACTORY.buildStrategy(chosenStrategy, context);
-		
+
 		if(strategy == null)
 			System.exit(0);
 
@@ -247,6 +249,9 @@ public class OTeleporter extends OServerPluginAbstract {
 		strategy.executeStrategy(driverClassName, jurl, username, password, outDbUrl, chosenMapper, xmlPath, nameResolver, includedTables, excludedTables, context);
 
 		timer.cancel();
+
+		// Disabling query scan threshold tip
+		OGlobalConfiguration.QUERY_SCAN_THRESHOLD_TIP.setValue(50000);
 
 	}
 
