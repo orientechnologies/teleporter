@@ -168,7 +168,7 @@ public class OProgressMonitor implements OStatisticsListener {
 		Date currentTime = new Date();
 
 		int work3DonePercentage;
-
+		
 		if(statistics.totalNumberOfVertexType > 0 && statistics.totalNumberOfEdgeType > 0 && statistics.totalNumberOfIndices > 0) {
 			work3DonePercentage = (int) (((double)statistics.wroteVertexType/(double)statistics.totalNumberOfVertexType) * 0.35 * 100);
 			work3DonePercentage += (int) (((double)statistics.wroteEdgeType/(double)statistics.totalNumberOfEdgeType) * 0.35 * 100);

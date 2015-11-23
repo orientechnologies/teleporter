@@ -67,6 +67,12 @@ public class OGraphModelWriter {
 		OTeleporterStatistics statistics = context.getStatistics();
 		statistics.startWork3Time = new Date();
 		statistics.runningStepNumber = 3;
+		
+		int numberOfVertices = graphModel.getVerticesType().size();
+		statistics.totalNumberOfVertexType = numberOfVertices;
+		int numberOfEdges = graphModel.getEdgesType().size();
+		statistics.totalNumberOfEdgeType = numberOfEdges;
+		statistics.totalNumberOfIndices = numberOfVertices;
 
 		if(!this.inheritanceChangesPresent(graphModel, orientGraph)) {
 
@@ -77,9 +83,7 @@ public class OGraphModelWriter {
 				 */
 
 				context.getOutputManager().debug("\nWriting vertex-types on OrientDB Schema...\n");
-				int numberOfVertices = graphModel.getVerticesType().size();
-				statistics.totalNumberOfVertexType = numberOfVertices;
-
+				
 				OrientVertexType newVertexType;
 				String statement;
 				OCommandSQL sqlCommand;
@@ -137,8 +141,6 @@ public class OGraphModelWriter {
 				 */
 
 				context.getOutputManager().debug("\nWriting edge-types on OrientDB Schema...\n");
-				int numberOfEdges = graphModel.getEdgesType().size();
-				statistics.totalNumberOfEdgeType = numberOfEdges;
 
 				OrientEdgeType newEdgeType;
 
@@ -186,7 +188,6 @@ public class OGraphModelWriter {
 				 */
 
 				context.getOutputManager().debug("\nBuilding indexes on properties belonging to the original primary keys...\n");
-				statistics.totalNumberOfIndices = numberOfVertices;
 
 				String currentType = null;
 				List<String> properties = null;

@@ -72,7 +72,6 @@ public class OGraphDBCommandEngine {
 		try {
 
 			boolean toResolveNames = false;
-
 			// building keys and values for the lookup
 
 			if(propertiesOfIndex == null) {
@@ -471,7 +470,7 @@ public class OGraphDBCommandEngine {
 
 			int index = 0;
 			for(OAttribute foreignAttribute: relation.getForeignKey().getInvolvedAttributes())  {
-				propertyOfKey[index] = context.getNameResolver().resolveVertexProperty(relation.getPrimaryKey().getInvolvedAttributes().get(index).getName());
+				propertyOfKey[index] = context.getNameResolver().resolveVertexProperty(relation.getForeignKey().getInvolvedAttributes().get(index).getName());
 				valueOfKey[index] = foreignRecord.getString((foreignAttribute.getName()));
 				index++;
 			}

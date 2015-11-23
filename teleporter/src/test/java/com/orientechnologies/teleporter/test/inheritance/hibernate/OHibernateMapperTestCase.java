@@ -479,7 +479,7 @@ public class OHibernateMapperTestCase {
       try {
 
         // Dropping Source DB Schema and OrientGraph
-        String dbDropping = "DROP SCHEMA PUBLIC CASCADE";
+        String dbDropping = "drop schema public cascade";
         st.execute(dbDropping);
         connection.close();
       }catch(Exception e) {
@@ -916,7 +916,7 @@ public class OHibernateMapperTestCase {
       try {
 
         // Dropping Source DB Schema and OrientGraph
-        String dbDropping = "DROP SCHEMA PUBLIC CASCADE";
+        String dbDropping = "drop schema public cascade";
         st.execute(dbDropping);
         connection.close();
       }catch(Exception e) {
@@ -1350,7 +1350,7 @@ public class OHibernateMapperTestCase {
       try {
 
         // Dropping Source DB Schema and OrientGraph
-        String dbDropping = "DROP SCHEMA PUBLIC CASCADE";
+        String dbDropping = "drop schema public cascade";
         st.execute(dbDropping);
         connection.close();
       }catch(Exception e) {
@@ -1768,7 +1768,7 @@ public class OHibernateMapperTestCase {
       try {
 
         // Dropping Source DB Schema and OrientGraph
-        String dbDropping = "DROP SCHEMA PUBLIC CASCADE";
+        String dbDropping = "drop schema public cascade";
         st.execute(dbDropping);
         connection.close();
       }catch(Exception e) {

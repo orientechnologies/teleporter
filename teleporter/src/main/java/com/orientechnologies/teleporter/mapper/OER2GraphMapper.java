@@ -161,7 +161,6 @@ public class OER2GraphMapper extends OSource2GraphMapper {
 				tableName = resultTable.getString("TABLE_NAME");
 
 				if(this.isTableAllowed(tableName))  // filtering tables according to "include-list" and "exclude-list"
-					//					if(!tableSchema.startsWith("sys"))  // filtering out system table of SQLServer
 					tablesName2schema.put(tableName,tableSchema);  
 			}
 

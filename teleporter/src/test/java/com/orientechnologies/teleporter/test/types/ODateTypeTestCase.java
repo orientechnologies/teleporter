@@ -85,7 +85,7 @@ public class ODateTypeTestCase {
 
       // Records Inserting
 
-      String filmFilling = "INSERT INTO FILM (ID,TITLE,YEAR) VALUES ("
+      String filmFilling = "insert into FILM (ID,TITLE,YEAR) values ("
           + "('F001','Pulp Fiction','1994'),"
           + "('F002','Shutter Island','2010'),"
           + "('F003','The Departed','2006'))";
@@ -107,7 +107,7 @@ public class ODateTypeTestCase {
       try {
 
         // Dropping Source DB Schema and OrientGraph
-        String dbDropping = "DROP SCHEMA PUBLIC CASCADE";
+        String dbDropping = "drop schema public cascade";
         st.execute(dbDropping);
         connection.close();
       }catch(Exception e) {
@@ -144,7 +144,7 @@ public class ODateTypeTestCase {
 
       // Records Inserting
 
-      String filmFilling = "INSERT INTO FILM (ID,TITLE,YEAR) VALUES ("
+      String filmFilling = "insert into FILM (ID,TITLE,YEAR) values ("
           + "('F001','Pulp Fiction','1994-09-10'),"
           + "('F002','Shutter Island','2010-02-13'),"
           + "('F003','The Departed','2006-09-26'))";
@@ -167,7 +167,7 @@ public class ODateTypeTestCase {
       try {
 
         // Dropping Source DB Schema and OrientGraph
-        String dbDropping = "DROP SCHEMA PUBLIC CASCADE";
+        String dbDropping = "drop schema public cascade";
         st.execute(dbDropping);
         connection.close();
       }catch(Exception e) {
@@ -204,7 +204,7 @@ public class ODateTypeTestCase {
 
       // Records Inserting
 
-      String filmFilling = "INSERT INTO FILM (ID,TITLE,YEAR,LAST_UPDATE) VALUES ("
+      String filmFilling = "insert into FILM (ID,TITLE,YEAR,LAST_UPDATE) values ("
           + "('F001','Pulp Fiction','1994-09-10','2012-08-08 20:08:08'),"
           + "('F002','Shutter Island','2010-02-13','2012-08-08 20:08:08'),"
           + "('F003','The Departed','2006-09-26','2012-08-08 20:08:08'))";
@@ -227,7 +227,7 @@ public class ODateTypeTestCase {
       try {
 
         // Dropping Source DB Schema and OrientGraph
-        String dbDropping = "DROP SCHEMA PUBLIC CASCADE";
+        String dbDropping = "drop schema public cascade";
         st.execute(dbDropping);
         connection.close();
       }catch(Exception e) {
@@ -265,7 +265,7 @@ public class ODateTypeTestCase {
 
       // Records Inserting
 
-      String filmFilling = "INSERT INTO FILM (ID,TITLE,YEAR,LAST_UPDATE) VALUES ("
+      String filmFilling = "insert into FILM (ID,TITLE,YEAR,LAST_UPDATE) values ("
           + "('F001','Pulp Fiction','1994-09-10','2012-08-08 20:08:08+8:00'),"
           + "('F002','Shutter Island','2010-02-13','2012-08-08 20:08:08+8:00'),"
           + "('F003','The Departed','2006-09-26','2012-08-08 20:08:08+8:00'))";
@@ -288,7 +288,7 @@ public class ODateTypeTestCase {
       try {
 
         // Dropping Source DB Schema and OrientGraph
-        String dbDropping = "DROP SCHEMA PUBLIC CASCADE";
+        String dbDropping = "drop schema public cascade";
         st.execute(dbDropping);
         connection.close();
       }catch(Exception e) {
@@ -326,7 +326,7 @@ public class ODateTypeTestCase {
 
       // Records Inserting
 
-      String filmFilling = "INSERT INTO FILM (ID,TITLE,YEAR,LAST_UPDATE) VALUES ("
+      String filmFilling = "insert into FILM (ID,TITLE,YEAR,LAST_UPDATE) values ("
           + "('F001','Pulp Fiction','1994-09-10','20:08:08.034900'),"
           + "('F002','Shutter Island','2010-02-13','20:08:08.034900'),"
           + "('F003','The Departed','2006-09-26','20:08:08.034900'))";
@@ -349,7 +349,7 @@ public class ODateTypeTestCase {
       try {
 
         // Dropping Source DB Schema and OrientGraph
-        String dbDropping = "DROP SCHEMA PUBLIC CASCADE";
+        String dbDropping = "drop schema public cascade";
         st.execute(dbDropping);
         connection.close();
       }catch(Exception e) {
@@ -386,7 +386,7 @@ public class ODateTypeTestCase {
 
       // Records Inserting
 
-      String filmFilling = "INSERT INTO FILM (ID,TITLE,YEAR,LAST_UPDATE) VALUES ("
+      String filmFilling = "insert into FILM (ID,TITLE,YEAR,LAST_UPDATE) values ("
           + "('F001','Pulp Fiction','1994-09-10','20:08:08.034900-8:00'),"
           + "('F002','Shutter Island','2010-02-13','20:08:08.034900-8:00'),"
           + "('F003','The Departed','2006-09-26','20:08:08.034900-8:00'))";
@@ -409,7 +409,7 @@ public class ODateTypeTestCase {
       try {
 
         // Dropping Source DB Schema and OrientGraph
-        String dbDropping = "DROP SCHEMA PUBLIC CASCADE";
+        String dbDropping = "drop schema public cascade";
         st.execute(dbDropping);
         connection.close();
       }catch(Exception e) {
@@ -419,8 +419,6 @@ public class ODateTypeTestCase {
     orientGraph.drop();
     orientGraph.shutdown();
   }
-  
-  
   
 }
 

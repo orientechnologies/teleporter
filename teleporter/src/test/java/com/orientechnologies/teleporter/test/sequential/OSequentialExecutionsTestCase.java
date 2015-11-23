@@ -169,7 +169,7 @@ public class OSequentialExecutionsTestCase {
       try {
 
         // Dropping Source DB Schema and OrientGraph
-        String dbDropping = "DROP SCHEMA PUBLIC CASCADE";
+        String dbDropping = "drop schema public cascade";
         st.execute(dbDropping);
         connection.close();
       }catch(Exception e) {
@@ -279,7 +279,7 @@ public class OSequentialExecutionsTestCase {
       try {
 
         // Dropping Source DB Schema and OrientGraph
-        String dbDropping = "DROP SCHEMA PUBLIC CASCADE";
+        String dbDropping = "drop schema public cascade";
         st.execute(dbDropping);
         connection.close();
       }catch(Exception e) {
@@ -394,7 +394,7 @@ public class OSequentialExecutionsTestCase {
       try {
 
         // Dropping Source DB Schema and OrientGraph
-        String dbDropping = "DROP SCHEMA PUBLIC CASCADE";
+        String dbDropping = "drop schema public cascade";
         st.execute(dbDropping);
         connection.close();
       }catch(Exception e) {
@@ -438,12 +438,12 @@ public class OSequentialExecutionsTestCase {
 
       // Records Inserting
 
-      String directorFilling = "INSERT INTO DIRECTOR (ID,NAME,SURNAME,BESTFILM) VALUES ("
+      String directorFilling = "insert into DIRECTOR (ID,NAME,SURNAME,BESTFILM) values ("
           + "('D001','Quentin','Tarantino','F001'),"
           + "('D002','Martin','Scorsese','F002'))";
       st.execute(directorFilling);
 
-      String filmFilling = "INSERT INTO FILM (ID,TITLE,DIRECTOR) VALUES ("
+      String filmFilling = "insert into FILM (ID,TITLE,DIRECTOR) values ("
           + "('F001','Pulp Fiction','D001'),"
           + "('F002','Shutter Island','D002'))";
       st.execute(filmFilling);
@@ -571,7 +571,7 @@ public class OSequentialExecutionsTestCase {
       try {
 
         // Dropping Source DB Schema and OrientGraph
-        String dbDropping = "DROP SCHEMA PUBLIC CASCADE";
+        String dbDropping = "drop schema public cascade";
         st.execute(dbDropping);
         connection.close();
       }catch(Exception e) {
@@ -705,7 +705,7 @@ public class OSequentialExecutionsTestCase {
       try {
 
         // Dropping Source DB Schema and OrientGraph
-        String dbDropping = "DROP SCHEMA PUBLIC CASCADE";
+        String dbDropping = "drop schema public cascade";
         st.execute(dbDropping);
         connection.close();
       }catch(Exception e) {
@@ -748,12 +748,12 @@ public class OSequentialExecutionsTestCase {
 
       // Records Inserting
 
-      String directorFilling = "INSERT INTO DIRECTOR (ID,NAME,SURNAME) VALUES ("
+      String directorFilling = "insert into DIRECTOR (ID,NAME,SURNAME) values ("
           + "('D001','Quentin','Tarantino'),"
           + "('D002','Martin','Scorsese'))";
       st.execute(directorFilling);
 
-      String filmFilling = "INSERT INTO FILM (ID,TITLE,DIRECTOR) VALUES ("
+      String filmFilling = "insert into FILM (ID,TITLE,DIRECTOR) values ("
           + "('F001','Pulp Fiction','D001'),"
           + "('F002','Shutter Island','D002'))";
       st.execute(filmFilling);
@@ -862,7 +862,7 @@ public class OSequentialExecutionsTestCase {
       try {
 
         // Dropping Source DB Schema and OrientGraph
-        String dbDropping = "DROP SCHEMA PUBLIC CASCADE";
+        String dbDropping = "drop schema public cascade";
         st.execute(dbDropping);
         connection.close();
       }catch(Exception e) {
@@ -1000,7 +1000,7 @@ public class OSequentialExecutionsTestCase {
       try {
 
         // Dropping Source DB Schema and OrientGraph
-        String dbDropping = "DROP SCHEMA PUBLIC CASCADE";
+        String dbDropping = "drop schema public cascade";
         st.execute(dbDropping);
         connection.close();
       }catch(Exception e) {
@@ -1045,12 +1045,12 @@ public class OSequentialExecutionsTestCase {
 
       // Records Inserting
 
-      String directorFilling = "INSERT INTO DIRECTOR (ID,NAME,SURNAME) VALUES ("
+      String directorFilling = "insert into DIRECTOR (ID,NAME,SURNAME) values ("
           + "('D001','Quentin','Tarantino'),"
           + "('D002','Martin','Scorsese'))";
       st.execute(directorFilling);
 
-      String filmFilling = "INSERT INTO FILM (ID,TITLE,DIRECTOR) VALUES ("
+      String filmFilling = "insert into FILM (ID,TITLE,DIRECTOR) values ("
           + "('F001','Pulp Fiction','D001'),"
           + "('F002','Shutter Island','D002'))";
       st.execute(filmFilling);
@@ -1166,7 +1166,7 @@ public class OSequentialExecutionsTestCase {
       try {
 
         // Dropping Source DB Schema and OrientGraph
-        String dbDropping = "DROP SCHEMA PUBLIC CASCADE";
+        String dbDropping = "drop schema public cascade";
         st.execute(dbDropping);
         connection.close();
       }catch(Exception e) {
@@ -1207,7 +1207,7 @@ public class OSequentialExecutionsTestCase {
 
       // Records Inserting
 
-      String actorFilling = "INSERT INTO ACTOR (ID,NAME,SURNAME) VALUES ("
+      String actorFilling = "insert into ACTOR (ID,NAME,SURNAME) values ("
           + "('A001','John','Travolta'),"
           + "('A002','Samuel','Lee Jackson'),"
           + "('A003','Bruce','Willis'),"
@@ -1257,7 +1257,7 @@ public class OSequentialExecutionsTestCase {
        * Adding records to the film table
        */
 
-      actorFilling = "INSERT INTO ACTOR (ID,NAME,SURNAME) VALUES ("
+      actorFilling = "insert into ACTOR (ID,NAME,SURNAME) values ("
           + "('A009','Christian','Bale'),"
           + "('A010','Hugh','Jackman'))";
       st.executeQuery(actorFilling);
@@ -1302,7 +1302,7 @@ public class OSequentialExecutionsTestCase {
       try {
 
         // Dropping Source DB Schema and OrientGraph
-        String dbDropping = "DROP SCHEMA PUBLIC CASCADE";
+        String dbDropping = "drop schema public cascade";
         st.execute(dbDropping);
         connection.close();
       }catch(Exception e) {
@@ -1348,13 +1348,13 @@ public class OSequentialExecutionsTestCase {
 
       // Records Inserting
 
-      String filmFilling = "INSERT INTO FILM (ID,TITLE) VALUES ("
+      String filmFilling = "insert into FILM (ID,TITLE) values ("
           + "('F001','The Wolf Of Wall Street'),"
           + "('F002','Shutter Island'),"
           + "('F003','The Departed'))";
       st.execute(filmFilling);
 
-      String actorFilling = "INSERT INTO ACTOR (ID,NAME,SURNAME) VALUES ("
+      String actorFilling = "insert into ACTOR (ID,NAME,SURNAME) values ("
           + "('A001','Leonardo','Di Caprio'),"
           + "('A002','Matthew', 'McConaughey'),"
           + "('A003','Ben','Kingsley'),"
@@ -1363,7 +1363,7 @@ public class OSequentialExecutionsTestCase {
           + "('A006','Matt','Damon'))";
       st.execute(actorFilling);
 
-      String film2actorFilling = "INSERT INTO FILM_ACTOR (FILM_ID,ACTOR_ID) VALUES ("
+      String film2actorFilling = "insert into FILM_ACTOR (FILM_ID,ACTOR_ID) values ("
           + "('F001','A001'),"
           + "('F001','A002'),"
           + "('F002','A001'),"
@@ -1427,15 +1427,15 @@ public class OSequentialExecutionsTestCase {
        * Adding records to the film, actor and join tables
        */
 
-      actorFilling = "INSERT INTO ACTOR (ID,NAME,SURNAME) VALUES ("
+      actorFilling = "insert into ACTOR (ID,NAME,SURNAME) values ("
           + "('A007','Michael','Caine'))";
       st.executeQuery(actorFilling);
 
-      filmFilling = "INSERT INTO FILM (ID,TITLE) VALUES ("
+      filmFilling = "insert into FILM (ID,TITLE) values ("
           + "('F004','Inception'))";
       st.executeQuery(filmFilling);
 
-      film2actorFilling = "INSERT INTO FILM_ACTOR (FILM_ID,ACTOR_ID) VALUES ("
+      film2actorFilling = "insert into FILM_ACTOR (FILM_ID,ACTOR_ID) values ("
           + "('F004','A001'),"
           + "('F004','A007'))";
       st.executeQuery(film2actorFilling);
@@ -1495,7 +1495,7 @@ public class OSequentialExecutionsTestCase {
       try {
 
         // Dropping Source DB Schema and OrientGraph
-        String dbDropping = "DROP SCHEMA PUBLIC CASCADE";
+        String dbDropping = "drop schema public cascade";
         st.execute(dbDropping);
         connection.close();
       }catch(Exception e) {
@@ -1532,7 +1532,7 @@ public class OSequentialExecutionsTestCase {
 
       // Records Inserting
 
-      String directorFilling = "INSERT INTO DIRECTOR (ID,NAME,SURNAME) VALUES ("
+      String directorFilling = "insert into DIRECTOR (ID,NAME,SURNAME) values ("
           + "('D001','Quentin','Tarantino'),"
           + "('D002','Martin','Scorsese'))";
       st.execute(directorFilling);    
@@ -1573,7 +1573,7 @@ public class OSequentialExecutionsTestCase {
 
       // Records Inserting
 
-      String filmFilling = "INSERT INTO FILM (ID,TITLE,DIRECTOR) VALUES ("
+      String filmFilling = "insert into FILM (ID,TITLE,DIRECTOR) values ("
           + "('F001','Pulp Fiction','D001'),"
           + "('F002','Shutter Island','D002'),"
           + "('F003','The Departed','D002'))";
@@ -1633,7 +1633,7 @@ public class OSequentialExecutionsTestCase {
       try {
 
         // Dropping Source DB Schema and OrientGraph
-        String dbDropping = "DROP SCHEMA PUBLIC CASCADE";
+        String dbDropping = "drop schema public cascade";
         st.execute(dbDropping);
         connection.close();
       }catch(Exception e) {
@@ -1676,13 +1676,13 @@ public class OSequentialExecutionsTestCase {
 
       // Records Inserting
 
-      String filmFilling = "INSERT INTO FILM (ID,TITLE) VALUES ("
+      String filmFilling = "insert into FILM (ID,TITLE) values ("
           + "('F001','The Wolf Of Wall Street'),"
           + "('F002','Shutter Island'),"
           + "('F003','The Departed'))";
       st.execute(filmFilling);
 
-      String actorFilling = "INSERT INTO ACTOR (ID,NAME,SURNAME) VALUES ("
+      String actorFilling = "insert into ACTOR (ID,NAME,SURNAME) values ("
           + "('A001','Leonardo','Di Caprio'),"
           + "('A002','Matthew', 'McConaughey'),"
           + "('A003','Ben','Kingsley'),"
@@ -1741,7 +1741,7 @@ public class OSequentialExecutionsTestCase {
           " primary key (FILM_ID,ACTOR_ID), foreign key (FILM_ID) references FILM(ID), foreign key (ACTOR_ID) references ACTOR(ID))";
       st.execute(film2actorTableBuilding);
 
-      String film2actorFilling = "INSERT INTO FILM_ACTOR (FILM_ID,ACTOR_ID) VALUES ("
+      String film2actorFilling = "insert into FILM_ACTOR (FILM_ID,ACTOR_ID) values ("
           + "('F001','A001'),"
           + "('F001','A002'),"
           + "('F002','A001'),"
@@ -1807,7 +1807,7 @@ public class OSequentialExecutionsTestCase {
       try {
 
         // Dropping Source DB Schema and OrientGraph
-        String dbDropping = "DROP SCHEMA PUBLIC CASCADE";
+        String dbDropping = "drop schema public cascade";
         st.execute(dbDropping);
         connection.close();
       }catch(Exception e) {
@@ -1846,7 +1846,7 @@ public class OSequentialExecutionsTestCase {
 
       // Records Inserting
 
-      String actorFilling = "INSERT INTO ACTOR (ID,NAME,SURNAME) VALUES ("
+      String actorFilling = "insert into ACTOR (ID,NAME,SURNAME) values ("
           + "('A001','John','Unaltravolta'),"
           + "('A002','Samuel','Lì Clacson'),"
           + "('A003','Bruce','Willis'),"
@@ -1980,7 +1980,7 @@ public class OSequentialExecutionsTestCase {
       try {
 
         // Dropping Source DB Schema and OrientGraph
-        String dbDropping = "DROP SCHEMA PUBLIC CASCADE";
+        String dbDropping = "drop schema public cascade";
         st.execute(dbDropping);
         connection.close();
       }catch(Exception e) {

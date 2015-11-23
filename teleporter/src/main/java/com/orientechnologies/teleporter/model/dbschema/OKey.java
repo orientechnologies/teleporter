@@ -33,82 +33,77 @@ import java.util.List;
 
 public class OKey {
 
-  protected OEntity belongingEntity;
-  protected List<OAttribute> involvedAttributes;
+	protected OEntity belongingEntity;
+	protected List<OAttribute> involvedAttributes;
 
-  public OKey() {
-    this.involvedAttributes = new LinkedList<OAttribute>();
-  }
+	public OKey() {
+		this.involvedAttributes = new LinkedList<OAttribute>();
+	}
 
-  public OKey(OEntity belongingEntity) {
-    this.belongingEntity = belongingEntity;
-    this.involvedAttributes = new LinkedList<OAttribute>();
-  }
+	public OKey(OEntity belongingEntity) {
+		this.belongingEntity = belongingEntity;
+		this.involvedAttributes = new LinkedList<OAttribute>();
+	}
 
-  public OEntity getBelongingEntity() {
-    return this.belongingEntity;
-  }
+	public OEntity getBelongingEntity() {
+		return this.belongingEntity;
+	}
 
-  public void setBelongingEntity(OEntity belongingEntity) {
-    this.belongingEntity = belongingEntity;
-  }
+	public void setBelongingEntity(OEntity belongingEntity) {
+		this.belongingEntity = belongingEntity;
+	}
 
-  public List<OAttribute> getInvolvedAttributes() {
-    return this.involvedAttributes;
-  }
+	public List<OAttribute> getInvolvedAttributes() {
+		return this.involvedAttributes;
+	}
 
-  public void setInvolvedAttributes(List<OAttribute> involvedAttributes) {
-    this.involvedAttributes = involvedAttributes;
-  }
+	public void setInvolvedAttributes(List<OAttribute> involvedAttributes) {
+		this.involvedAttributes = involvedAttributes;
+	}
 
-  public boolean addAttribute(OAttribute attribute) {
-    boolean added = this.involvedAttributes.add(attribute);
-    
-    if(added) {
-      Collections.sort(this.involvedAttributes);
-    }
-    return added;
-  }
+	public void addAttribute(OAttribute attribute) {
+		this.involvedAttributes.add(attribute);
+	}
 
-  public boolean removeAttribute(OAttribute toRemove) {
-    return this.involvedAttributes.remove(toRemove);
-  }
+	public boolean removeAttribute(OAttribute toRemove) {
+		return this.involvedAttributes.remove(toRemove);
+	}
 
-  @Override
-  public int hashCode() {
-    final int prime = 31;
-    int result = 1;
-    result = prime * result + ((belongingEntity == null) ? 0 : belongingEntity.getName().hashCode());
-    result = prime * result + ((involvedAttributes == null) ? 0 : involvedAttributes.hashCode());
-    return result;
-  }
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((belongingEntity == null) ? 0 : belongingEntity.getName().hashCode());
+		result = prime * result + ((involvedAttributes == null) ? 0 : involvedAttributes.hashCode());
+		return result;
+	}
 
-  @Override
-  public boolean equals(Object obj) {
-    OKey that = (OKey) obj;
+	@Override
+	public boolean equals(Object obj) {
+		OKey that = (OKey) obj;
 
-    if(this.belongingEntity.getName().equals(that.belongingEntity.getName())) {
-      if(this.involvedAttributes.equals(that.getInvolvedAttributes())) {
-        return true;
-      }
-    }
+		if(this.belongingEntity.getName().equals(that.belongingEntity.getName())) {
+			if(this.involvedAttributes.equals(that.getInvolvedAttributes())) {
+				return true;
+			}
+		}
 
-    return false;
-  }
-  
-  public String toString() {
-    String s = "[";
-    
-    for(OAttribute attribute: this.involvedAttributes) {
-      s += attribute.getName() + ",";
-    }
-    
-    s = s.substring(0, s.length()-1);
-    
-    s += "]";
-    
-    return s;
-  }
+		return false;
+	}
+
+	public String toString() {
+		String s = "[";
+
+		for(OAttribute attribute: this.involvedAttributes) {
+			s += attribute.getName() + ",";
+		}
+
+		s = s.substring(0, s.length()-1);
+
+		s += "]";
+
+		return s;
+	}
 
 
 

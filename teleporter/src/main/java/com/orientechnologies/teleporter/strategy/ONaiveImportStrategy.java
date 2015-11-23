@@ -23,7 +23,6 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.sql.ResultSet;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
@@ -42,7 +41,6 @@ import com.orientechnologies.teleporter.importengine.OGraphDBCommandEngine;
 import com.orientechnologies.teleporter.mapper.OER2GraphMapper;
 import com.orientechnologies.teleporter.mapper.OSource2GraphMapper;
 import com.orientechnologies.teleporter.model.dbschema.OAttribute;
-import com.orientechnologies.teleporter.model.dbschema.ODataBaseSchema;
 import com.orientechnologies.teleporter.model.dbschema.OEntity;
 import com.orientechnologies.teleporter.model.dbschema.OHierarchicalBag;
 import com.orientechnologies.teleporter.model.dbschema.ORelationship;
@@ -52,9 +50,7 @@ import com.orientechnologies.teleporter.model.graphmodel.OVertexType;
 import com.orientechnologies.teleporter.nameresolver.ONameResolver;
 import com.orientechnologies.teleporter.persistence.handler.ODriverDataTypeHandler;
 import com.orientechnologies.teleporter.persistence.util.OQueryResult;
-import com.orientechnologies.teleporter.util.EdgeTypeComparator;
 import com.orientechnologies.teleporter.util.OTimeFormatHandler;
-import com.orientechnologies.teleporter.util.RelationshipComparator;
 import com.orientechnologies.teleporter.writer.OGraphModelWriter;
 import com.tinkerpop.blueprints.impls.orient.OrientBaseGraph;
 import com.tinkerpop.blueprints.impls.orient.OrientGraphFactory;
@@ -119,10 +115,6 @@ public class ONaiveImportStrategy implements OImportStrategy {
 		context.getOutputManager().info("");
 		context.getOutputManager().debug("\n%s\n", mapper.getGraphModel().toString());
 		
-		// TO DELETE !!!!!
-//		Collections.sort(((ODataBaseSchema)mapper.getSourceSchema()).getRelationships(), new RelationshipComparator());
-//		Collections.sort(mapper.getGraphModel().getEdgesType(), new EdgeTypeComparator());
-
 		// Step 3: Writing schema on Orient
 		ODataTypeHandlerFactory factory = new ODataTypeHandlerFactory();
 		ODriverDataTypeHandler handler = factory.buildDataTypeHandler(driver, context);

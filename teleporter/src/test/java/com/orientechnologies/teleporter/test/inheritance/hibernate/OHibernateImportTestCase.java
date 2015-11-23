@@ -108,16 +108,16 @@ public class OHibernateImportTestCase {
 
       // Records Inserting
 
-      String residenceFilling = "INSERT INTO RESIDENCE (ID,CITY,COUNTRY) VALUES ("
+      String residenceFilling = "insert into RESIDENCE (ID,CITY,COUNTRY) values ("
           + "('R001','Rome','Italy'),"
           + "('R002','Milan','Italy'))";
       st.execute(residenceFilling);
 
-      String managerFilling = "INSERT INTO MANAGER (ID,TYPE,NAME,PROJECT) VALUES ("
+      String managerFilling = "insert into manager (ID,TYPE,NAME,PROJECT) values ("
           + "('M001','prj_mgr','Bill Right','New World'))";
       st.execute(managerFilling);
 
-      String employeeFilling = "INSERT INTO EMPLOYEE (ID,TYPE,NAME,SALARY,BONUS,PAY_PER_HOUR,CONTRACT_DURATION,RESIDENCE,MANAGER) VALUES ("
+      String employeeFilling = "insert into EMPLOYEE (ID,TYPE,NAME,SALARY,BONUS,PAY_PER_HOUR,CONTRACT_DURATION,RESIDENCE,MANAGER) values ("
           + "('E001','emp','John Black',NULL,NULL,NULL,NULL,'R001',NULL),"
           + "('E002','reg_emp','Andrew Brown','1000.00','10',NULL,NULL,'R001','M001'),"
           + "('E003','cont_emp','Jack Johnson',NULL,NULL,'50.00','6','R002',NULL))";
@@ -387,7 +387,7 @@ public class OHibernateImportTestCase {
       try {
 
         // Dropping Source DB Schema and OrientGraph
-        String dbDropping = "DROP SCHEMA PUBLIC CASCADE";
+        String dbDropping = "drop schema public cascade";
         st.execute(dbDropping);
         connection.close();
       }catch(Exception e) {
@@ -444,30 +444,30 @@ public class OHibernateImportTestCase {
 
       // Records Inserting
       
-      String residenceFilling = "INSERT INTO RESIDENCE (ID,CITY,COUNTRY) VALUES ("
+      String residenceFilling = "insert into RESIDENCE (ID,CITY,COUNTRY) values ("
           + "('R001','Rome','Italy'),"
           + "('R002','Milan','Italy'))";
       st.execute(residenceFilling);
       
-      String managerFilling = "INSERT INTO MANAGER (ID,NAME) VALUES ("
+      String managerFilling = "insert into MANAGER (ID,NAME) values ("
           + "('M001','Bill Right'))";
       st.execute(managerFilling);
       
-      String projectManagerFilling = "INSERT INTO PROJECT_MANAGER (EID,PROJECT) VALUES ("
+      String projectManagerFilling = "insert into PROJECT_MANAGER (EID,PROJECT) values ("
           + "('M001','New World'))";
       st.execute(projectManagerFilling);
       
-      String employeeFilling = "INSERT INTO EMPLOYEE (ID,NAME,RESIDENCE,MANAGER) VALUES ("
+      String employeeFilling = "insert into EMPLOYEE (ID,NAME,RESIDENCE,MANAGER) values ("
           + "('E001','John Black','R001',NULL),"
           + "('E002','Andrew Brown','R001','M001'),"
           + "('E003','Jack Johnson','R002',NULL))";
       st.execute(employeeFilling);
       
-      String regularEmployeeFilling = "INSERT INTO REGULAR_EMPLOYEE (EID,SALARY,BONUS) VALUES ("
+      String regularEmployeeFilling = "insert into REGULAR_EMPLOYEE (EID,SALARY,BONUS) values ("
           + "('E002','1000.00','10'))";
       st.execute(regularEmployeeFilling);
       
-      String contractEmployeeFilling = "INSERT INTO CONTRACT_EMPLOYEE (EID,PAY_PER_HOUR,CONTRACT_DURATION) VALUES ("
+      String contractEmployeeFilling = "insert into CONTRACT_EMPLOYEE (EID,PAY_PER_HOUR,CONTRACT_DURATION) values ("
           + "('E003','50.00','6'))";
       st.execute(contractEmployeeFilling);
 
@@ -735,7 +735,7 @@ public class OHibernateImportTestCase {
       try {
 
         // Dropping Source DB Schema and OrientGraph
-        String dbDropping = "DROP SCHEMA PUBLIC CASCADE";
+        String dbDropping = "drop schema public cascade";
         st.execute(dbDropping);
         connection.close();
       }catch(Exception e) {
@@ -791,30 +791,30 @@ public class OHibernateImportTestCase {
 
       // Records Inserting
       
-      String residenceFilling = "INSERT INTO RESIDENCE (ID,CITY,COUNTRY) VALUES ("
+      String residenceFilling = "insert into RESIDENCE (ID,CITY,COUNTRY) values ("
           + "('R001','Rome','Italy'),"
           + "('R002','Milan','Italy'))";
       st.execute(residenceFilling);
       
-      String managerFilling = "INSERT INTO MANAGER (ID,NAME) VALUES ("
+      String managerFilling = "insert into MANAGER (ID,NAME) values ("
           + "('M001','Bill Right'))";
       st.execute(managerFilling);
       
-      String projectManagerFilling = "INSERT INTO PROJECT_MANAGER (EID,PROJECT) VALUES ("
+      String projectManagerFilling = "insert into PROJECT_MANAGER (EID,PROJECT) values ("
           + "('M001','New World'))";
       st.execute(projectManagerFilling);
       
-      String employeeFilling = "INSERT INTO EMPLOYEE (ID,NAME,RESIDENCE,MANAGER) VALUES ("
+      String employeeFilling = "insert into EMPLOYEE (ID,NAME,RESIDENCE,MANAGER) values ("
           + "('E001','John Black','R001',NULL),"
           + "('E002','Andrew Brown','R001','M001'),"
           + "('E003','Jack Johnson','R002',NULL))";
       st.execute(employeeFilling);
       
-      String regularEmployeeFilling = "INSERT INTO REGULAR_EMPLOYEE (EID,SALARY,BONUS) VALUES ("
+      String regularEmployeeFilling = "insert into REGULAR_EMPLOYEE (EID,SALARY,BONUS) values ("
           + "('E002','1000.00','10'))";
       st.execute(regularEmployeeFilling);
       
-      String contractEmployeeFilling = "INSERT INTO CONTRACT_EMPLOYEE (EID,PAY_PER_HOUR,CONTRACT_DURATION) VALUES ("
+      String contractEmployeeFilling = "insert into CONTRACT_EMPLOYEE (EID,PAY_PER_HOUR,CONTRACT_DURATION) values ("
           + "('E003','50.00','6'))";
       st.execute(contractEmployeeFilling);
 
@@ -1082,7 +1082,7 @@ public class OHibernateImportTestCase {
       try {
 
         // Dropping Source DB Schema and OrientGraph
-        String dbDropping = "DROP SCHEMA PUBLIC CASCADE";
+        String dbDropping = "drop schema public cascade";
         st.execute(dbDropping);
         connection.close();
       }catch(Exception e) {
@@ -1138,30 +1138,30 @@ public class OHibernateImportTestCase {
   
         // Records Inserting
   
-        String residenceFilling = "INSERT INTO RESIDENCE (ID,CITY,COUNTRY) VALUES ("
+        String residenceFilling = "insert into RESIDENCE (ID,CITY,COUNTRY) values ("
             + "('R001','Rome','Italy'),"
             + "('R002','Milan','Italy'))";
         st.execute(residenceFilling);
   
-        String managerFilling = "INSERT INTO MANAGER (ID,NAME) VALUES ("
+        String managerFilling = "insert into MANAGER (ID,NAME) values ("
             + "('M001','Bill Right'))";
         st.execute(managerFilling);
         
-        String projectManagerFilling = "INSERT INTO PROJECT_MANAGER (ID,NAME,PROJECT) VALUES ("
+        String projectManagerFilling = "insert into PROJECT_MANAGER (ID,NAME,PROJECT) values ("
             + "('M001','Bill Right','New World'))";
         st.execute(projectManagerFilling);
   
-        String employeeFilling = "INSERT INTO EMPLOYEE (ID,NAME,RESIDENCE,MANAGER) VALUES ("
+        String employeeFilling = "insert into EMPLOYEE (ID,NAME,RESIDENCE,MANAGER) values ("
             + "('E001','John Black','R001',NULL),"
             + "('E002','Andrew Brown','R001','M001'),"
             + "('E003','Jack Johnson','R002',NULL))";
         st.execute(employeeFilling);
         
-        String regularEmployeeFilling = "INSERT INTO REGULAR_EMPLOYEE (ID,NAME,RESIDENCE,MANAGER,SALARY,BONUS) VALUES ("
+        String regularEmployeeFilling = "insert into REGULAR_EMPLOYEE (ID,NAME,RESIDENCE,MANAGER,SALARY,BONUS) values ("
             + "('E002','Andrew Brown','R001','M001','1000.00','10'))";
         st.execute(regularEmployeeFilling);
         
-        String contractEmployeeFilling = "INSERT INTO CONTRACT_EMPLOYEE (ID,NAME,RESIDENCE,MANAGER,PAY_PER_HOUR,CONTRACT_DURATION) VALUES ("
+        String contractEmployeeFilling = "insert into CONTRACT_EMPLOYEE (ID,NAME,RESIDENCE,MANAGER,PAY_PER_HOUR,CONTRACT_DURATION) values ("
             + "('E003','Jack Johnson','R002',NULL,'50.00','6'))";
         st.execute(contractEmployeeFilling);
   
@@ -1429,7 +1429,7 @@ public class OHibernateImportTestCase {
         try {
   
           // Dropping Source DB Schema and OrientGraph
-          String dbDropping = "DROP SCHEMA PUBLIC CASCADE";
+          String dbDropping = "drop schema public cascade";
           st.execute(dbDropping);
           connection.close();
         }catch(Exception e) {

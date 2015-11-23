@@ -106,12 +106,12 @@ public class OOrientDBImportingTestCase {
 
       // Records Inserting
       
-      String directorFilling = "INSERT INTO DIRECTOR (ID,NAME,SURNAME) VALUES ("
+      String directorFilling = "insert into DIRECTOR (ID,NAME,SURNAME) values ("
           + "('D001','Quentin','Tarantino'),"
           + "('D002','Martin','Scorsese'))";
       st.execute(directorFilling);
 
-      String categoryFilling = "INSERT INTO CATEGORY (ID,NAME) VALUES ("
+      String categoryFilling = "insert into CATEGORY (ID,NAME) values ("
           + "('C001','Thriller'),"
           + "('C002','Action'),"
           + "('C003','Sci-Fi'),"
@@ -121,13 +121,13 @@ public class OOrientDBImportingTestCase {
           + "('C007','War'))";
       st.execute(categoryFilling);
 
-      String filmFilling = "INSERT INTO FILM (ID,TITLE,DIRECTOR,CATEGORY) VALUES ("
+      String filmFilling = "insert into FILM (ID,TITLE,DIRECTOR,CATEGORY) values ("
           + "('F001','Pulp Fiction','D001','C002'),"
           + "('F002','Shutter Island','D002','C001'),"
           + "('F003','The Departed','D002','C001'))";
       st.execute(filmFilling);
 
-      String actorFilling = "INSERT INTO ACTOR (ID,NAME,SURNAME) VALUES ("
+      String actorFilling = "insert into ACTOR (ID,NAME,SURNAME) values ("
           + "('A001','John','Travolta'),"
           + "('A002','Samuel','Lee Jackson'),"
           + "('A003','Bruce','Willis'),"
@@ -138,7 +138,7 @@ public class OOrientDBImportingTestCase {
           + "('A008','Matt','Damon'))";
       st.execute(actorFilling);
 
-      String film2actorFilling = "INSERT INTO FILM_ACTOR (FILM_ID,ACTOR_ID) VALUES ("
+      String film2actorFilling = "insert into FILM_ACTOR (FILM_ID,ACTOR_ID) values ("
           + "('F001','A001'),"
           + "('F001','A002'),"
           + "('F001','A003'),"
@@ -695,7 +695,7 @@ public class OOrientDBImportingTestCase {
       try {
 
         // Dropping Source DB Schema and OrientGraph
-        String dbDropping = "DROP SCHEMA PUBLIC CASCADE";
+        String dbDropping = "drop schema public cascade";
         st.execute(dbDropping);
         connection.close();
       }catch(Exception e) {
