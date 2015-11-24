@@ -29,7 +29,6 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -83,10 +82,10 @@ public class OER2GraphMapper extends OSource2GraphMapper {
 
 	public OER2GraphMapper (String driver, String uri, String username, String password, List<String> includedTables, List<String> excludedTables) {
 		this.dbSourceConnection = new ODBSourceConnection(driver, uri, username, password);
-		this.entity2vertexType = new HashMap<OEntity,OVertexType>();
-		this.relationship2edgeType = new HashMap<ORelationship,OEdgeType>();
+		this.entity2vertexType = new LinkedHashMap<OEntity,OVertexType>();
+		this.relationship2edgeType = new LinkedHashMap<ORelationship,OEdgeType>();
 		this.edgeTypeName2count = new TreeMap<String,Integer>();
-		this.joinVertex2aggregatorEdges = new HashMap<String, OAggregatorEdge>();
+		this.joinVertex2aggregatorEdges = new LinkedHashMap<String, OAggregatorEdge>();
 
 		if(includedTables != null)
 			this.includedTables = includedTables;
@@ -694,6 +693,50 @@ public class OER2GraphMapper extends OSource2GraphMapper {
 		return this.entity2vertexType;
 	}
 
+	public OEntity getEntityByVertexType(String vertexType) {
+
+		if(vertexType != null) {
+
+			for(OEntity currentEntity: this.entity2vertexType.keySet()) {
+				if(this.entity2vertexType.get(currentEntity).getName().equals(vertexType)) {
+					return currentEntity;
+				}
+			}
+		}
+
+		return null;
+	}
+
+	public OAttribute getAttributeByVertexTypeAndProperty(String vertexType, String propertyName) {
+
+		int position = 0;
+		OModelProperty currentProperty;
+
+		if(vertexType != null) {
+
+			OVertexType currentVertexType;
+
+			for(OEntity currentEntity: this.entity2vertexType.keySet()) {
+				currentVertexType = this.entity2vertexType.get(currentEntity);
+				if(currentVertexType.getName().equals(vertexType)) {
+					currentProperty = currentVertexType.getPropertyByName(propertyName);
+
+					// if the current vertex has not the current property and if it has parents, a recursive lookup is performed (inheritance case)
+					OVertexType parentType = (OVertexType) currentVertexType.getParentType();
+					if(currentProperty == null && parentType != null) {
+						position = this.getAttributeByVertexTypeAndProperty(parentType.getName(), propertyName).getOrdinalPosition();
+					}
+					else {
+						position = currentVertexType.getPropertyByName(propertyName).getOrdinalPosition();
+					}
+					return currentEntity.getAttributeByOrdinalPosition(position);
+				}
+			}
+		}
+
+		return null;
+
+	}
 
 	public void setEntity2vertexType(Map<OEntity, OVertexType> entity2vertexType) {
 		this.entity2vertexType = entity2vertexType;

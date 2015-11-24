@@ -18,7 +18,6 @@
 
 package com.orientechnologies.teleporter.model.dbschema;
 
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 

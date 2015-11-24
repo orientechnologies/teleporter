@@ -168,7 +168,7 @@ public class OOrientDBImportingTestCase {
        *  Testing built OrientDB
        */
       orientGraph = new OrientGraphNoTx(this.outOrientGraphUri);
-
+      
       // vertices check
 
       int count = 0;

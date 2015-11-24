@@ -16,7 +16,7 @@
  * For more information: http://www.orientechnologies.com
  */
 
-package com.orientechnologies.teleporter.test.nameresolver;
+package com.orientechnologies.teleporter.test;
 
 import static org.junit.Assert.*;
 

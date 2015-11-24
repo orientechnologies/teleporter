@@ -21,11 +21,11 @@ package com.orientechnologies.teleporter.importengine;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.util.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -36,6 +36,7 @@ import java.util.Set;
 import com.orientechnologies.teleporter.context.OTeleporterContext;
 import com.orientechnologies.teleporter.context.OTeleporterStatistics;
 import com.orientechnologies.teleporter.mapper.OAggregatorEdge;
+import com.orientechnologies.teleporter.mapper.OER2GraphMapper;
 import com.orientechnologies.teleporter.model.dbschema.OAttribute;
 import com.orientechnologies.teleporter.model.dbschema.OEntity;
 import com.orientechnologies.teleporter.model.dbschema.ORelationship;
@@ -57,9 +58,13 @@ import com.tinkerpop.blueprints.impls.orient.OrientVertex;
  */
 
 public class OGraphDBCommandEngine {
+	
+	private OER2GraphMapper mapper;
 
 
-	public OGraphDBCommandEngine() {}
+	public OGraphDBCommandEngine(OER2GraphMapper mapper) {
+		this.mapper = mapper;
+	}
 
 
 	/**
@@ -92,7 +97,8 @@ public class OGraphDBCommandEngine {
 			for(String property: propertiesOfIndex) {
 				propertyOfKey[cont] = property;
 				if(toResolveNames)
-					valueOfKey[cont] = record.getString(context.getNameResolver().reverseTransformation(property));
+//					valueOfKey[cont] = record.getString(context.getNameResolver().reverseTransformation(property));
+					valueOfKey[cont] = record.getString(this.mapper.getAttributeByVertexTypeAndProperty(vertexType.getName(), property).getName());
 				else
 					valueOfKey[cont] = record.getString(property);
 
@@ -190,8 +196,10 @@ public class OGraphDBCommandEngine {
 			int cont = 0;
 			for(String property: propertiesOfIndex) {
 				propertyOfKey[cont] = property;
-				if(toResolveNames)
-					valueOfKey[cont] = record.getString(context.getNameResolver().reverseTransformation(property));
+				if(toResolveNames) 
+//					valueOfKey[cont] = record.getString(context.getNameResolver().reverseTransformation(property));
+				valueOfKey[cont] = record.getString(this.mapper.getAttributeByVertexTypeAndProperty(vertexType.getName(), property).getName());
+
 				else
 					valueOfKey[cont] = record.getString(property);
 
@@ -213,32 +221,39 @@ public class OGraphDBCommandEngine {
 			Date currentDateValue = null;
 			byte[] currentBinaryValue = null;
 			String currentPropertyType;
-
+			String currentPropertyName;
 
 			// extraction of inherited and not inherited properties from the record (through "getAllProperties()" method)
 			for(OModelProperty currentProperty : vertexType.getAllProperties()) {
+				
+				currentPropertyName = currentProperty.getName();
 
 				currentPropertyType = context.getDataTypeHandler().resolveType(currentProperty.getPropertyType().toLowerCase(Locale.ENGLISH),context).toString();
 
 				try {
 
 					if(currentPropertyType.equals("DATE")) {
-						currentDateValue = record.getDate(context.getNameResolver().reverseTransformation(currentProperty.getName()));
-						properties.put(currentProperty.getName(), currentDateValue);
+//						currentDateValue = record.getDate(context.getNameResolver().reverseTransformation(currentProperty.getName()));
+						currentDateValue = record.getDate(this.mapper.getAttributeByVertexTypeAndProperty(vertexType.getName(), currentPropertyName).getName());
+						properties.put(currentPropertyName, currentDateValue);
 					}
 
 					else if(currentPropertyType.equals("DATETIME")) {
-						currentDateValue = record.getTimestamp(context.getNameResolver().reverseTransformation(currentProperty.getName()));
+//						currentDateValue = record.getTimestamp(context.getNameResolver().reverseTransformation(currentProperty.getName()));
+						currentDateValue = record.getTimestamp(this.mapper.getAttributeByVertexTypeAndProperty(vertexType.getName(), currentPropertyName).getName());
 						properties.put(currentProperty.getName(), currentDateValue);
 					}
 
 					else if(currentPropertyType.equals("BINARY")) {
-						currentBinaryValue = record.getBytes(context.getNameResolver().reverseTransformation(currentProperty.getName()));
+//						currentBinaryValue = record.getBytes(context.getNameResolver().reverseTransformation(currentProperty.getName()));
+						currentBinaryValue = record.getBytes(this.mapper.getAttributeByVertexTypeAndProperty(vertexType.getName(), currentPropertyName).getName());
 						properties.put(currentProperty.getName(), currentBinaryValue);
 					}
 
 					else if(currentPropertyType.equals("BOOLEAN")) {
-						currentAttributeValue = record.getString(context.getNameResolver().reverseTransformation(currentProperty.getName()));
+//						currentAttributeValue = record.getString(context.getNameResolver().reverseTransformation(currentProperty.getName()));
+						currentAttributeValue = record.getString(this.mapper.getAttributeByVertexTypeAndProperty(vertexType.getName(), currentPropertyName).getName());
+
 						switch(currentAttributeValue) {
 
 						case "t": properties.put(currentProperty.getName(), "true");
@@ -250,7 +265,8 @@ public class OGraphDBCommandEngine {
 					}
 
 					else {
-						currentAttributeValue = record.getString(context.getNameResolver().reverseTransformation(currentProperty.getName()));
+//						currentAttributeValue = record.getString(context.getNameResolver().reverseTransformation(currentProperty.getName()));
+						currentAttributeValue = record.getString(this.mapper.getAttributeByVertexTypeAndProperty(vertexType.getName(), currentPropertyName).getName());
 						properties.put(currentProperty.getName(), currentAttributeValue);
 					}
 
@@ -411,12 +427,18 @@ public class OGraphDBCommandEngine {
 			}
 
 			else if(currentPropertyType.equals("DATE")) {
-				return oldProperty.equals(newProperty);
+				// oldProperty : Date
+				// newProperty : Date
+				Date oldPropertyDate = (Date) oldProperty;  
+				// new variable to compare dates
+				Date newPropertyDate = new Date(((java.sql.Date)newProperty).getTime());
+				
+				return oldPropertyDate.equals(newPropertyDate);
 			}
 
 			else if(currentPropertyType.equals("DATETIME")) {
 				// oldProperty : Date
-				// newProperty : Timestamp
+				// newProperty : Date
 				Date oldPropertyDate = (Date) oldProperty;  
 				// new variable to compare dates
 				Date newPropertyDate = new Date(((Timestamp)newProperty).getTime());
@@ -470,7 +492,7 @@ public class OGraphDBCommandEngine {
 
 			int index = 0;
 			for(OAttribute foreignAttribute: relation.getForeignKey().getInvolvedAttributes())  {
-				propertyOfKey[index] = context.getNameResolver().resolveVertexProperty(relation.getForeignKey().getInvolvedAttributes().get(index).getName());
+				propertyOfKey[index] = context.getNameResolver().resolveVertexProperty(relation.getPrimaryKey().getInvolvedAttributes().get(index).getName());
 				valueOfKey[index] = foreignRecord.getString((foreignAttribute.getName()));
 				index++;
 			}

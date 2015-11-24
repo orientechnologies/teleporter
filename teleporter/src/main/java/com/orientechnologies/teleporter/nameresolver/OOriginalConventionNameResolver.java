@@ -34,14 +34,7 @@ public class OOriginalConventionNameResolver implements ONameResolver {
 	@Override
 	public String resolveVertexName(String candidateName) {
 
-		if(candidateName.contains(" ")) {
-			int pos;
-			while(candidateName.contains(" ")) {
-				pos = candidateName.indexOf(" ");
-				candidateName = candidateName.substring(0,pos) + (candidateName.charAt(pos+1)+"").toUpperCase() + candidateName.substring(pos+2);
-			}
-		}
-
+		candidateName = candidateName.replace(" ", "_");
 		return candidateName;
 	}
 
@@ -49,14 +42,7 @@ public class OOriginalConventionNameResolver implements ONameResolver {
 	@Override
 	public String resolveVertexProperty(String candidateName) {
 
-		if(candidateName.contains(" ")) {
-			int pos;
-			while(candidateName.contains(" ")) {
-				pos = candidateName.indexOf(" ");
-				candidateName = candidateName.substring(0,pos) + (candidateName.charAt(pos+1)+"").toUpperCase() + candidateName.substring(pos+2);
-			}
-		}
-
+		candidateName = candidateName.replace(" ", "_");
 		return candidateName;
 	}
 

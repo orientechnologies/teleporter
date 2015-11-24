@@ -143,7 +143,7 @@ public class ONaiveImportStrategy implements OImportStrategy {
 
 			OER2GraphMapper mapper = (OER2GraphMapper) genericMapper;
 			ODBQueryEngine dbQueryEngine = new ODBQueryEngine(driver, uri, username, password, context);    
-			OGraphDBCommandEngine graphDBCommandEngine = new OGraphDBCommandEngine();
+			OGraphDBCommandEngine graphDBCommandEngine = new OGraphDBCommandEngine((OER2GraphMapper)mapper);
 
 			// OrientDB graph initialization/connection
 			OrientBaseGraph orientGraph = null;

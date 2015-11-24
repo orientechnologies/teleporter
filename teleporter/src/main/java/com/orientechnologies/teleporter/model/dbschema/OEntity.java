@@ -220,6 +220,21 @@ public class OEntity implements Comparable<OEntity> {
 		return toReturn;
 	}
 
+	public OAttribute getAttributeByOrdinalPosition(int position) {
+		
+		OAttribute toReturn = null;
+
+		for(OAttribute a: this.attributes) {
+			if(a.getOrdinalPosition() == position) {
+				toReturn = a;
+				break;
+			}
+		}
+
+		return toReturn;
+	}
+
+	
 	public OAttribute getInheritedAttributeByName(String name) {
 
 		OAttribute toReturn = null;
