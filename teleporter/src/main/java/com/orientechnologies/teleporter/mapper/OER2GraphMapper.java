@@ -724,12 +724,12 @@ public class OER2GraphMapper extends OSource2GraphMapper {
 					// if the current vertex has not the current property and if it has parents, a recursive lookup is performed (inheritance case)
 					OVertexType parentType = (OVertexType) currentVertexType.getParentType();
 					if(currentProperty == null && parentType != null) {
-						position = this.getAttributeByVertexTypeAndProperty(parentType.getName(), propertyName).getOrdinalPosition();
+						return this.getAttributeByVertexTypeAndProperty(parentType.getName(), propertyName);
 					}
 					else {
 						position = currentVertexType.getPropertyByName(propertyName).getOrdinalPosition();
+						return currentEntity.getAttributeByOrdinalPosition(position);
 					}
-					return currentEntity.getAttributeByOrdinalPosition(position);
 				}
 			}
 		}

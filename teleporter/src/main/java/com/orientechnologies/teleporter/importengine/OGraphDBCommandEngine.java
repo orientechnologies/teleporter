@@ -196,9 +196,11 @@ public class OGraphDBCommandEngine {
 			int cont = 0;
 			for(String property: propertiesOfIndex) {
 				propertyOfKey[cont] = property;
-				if(toResolveNames) 
+				if(toResolveNames) {
 //					valueOfKey[cont] = record.getString(context.getNameResolver().reverseTransformation(property));
-				valueOfKey[cont] = record.getString(this.mapper.getAttributeByVertexTypeAndProperty(vertexType.getName(), property).getName());
+					OAttribute attribute = this.mapper.getAttributeByVertexTypeAndProperty(vertexType.getName(), property);
+				valueOfKey[cont] = record.getString(attribute.getName());
+				}
 
 				else
 					valueOfKey[cont] = record.getString(property);
