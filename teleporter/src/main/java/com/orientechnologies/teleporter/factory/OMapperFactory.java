@@ -21,9 +21,10 @@ package com.orientechnologies.teleporter.factory;
 import java.util.List;
 
 import com.orientechnologies.teleporter.context.OTeleporterContext;
-import com.orientechnologies.teleporter.mapper.OER2GraphMapper;
-import com.orientechnologies.teleporter.mapper.OHibernate2GraphMapper;
 import com.orientechnologies.teleporter.mapper.OSource2GraphMapper;
+import com.orientechnologies.teleporter.mapper.neo4j.ONeo4jSchema2GraphMapper;
+import com.orientechnologies.teleporter.mapper.rdbms.OER2GraphMapper;
+import com.orientechnologies.teleporter.mapper.rdbms.OHibernate2GraphMapper;
 
 /**
  * Factory used to instantiate the chosen 'Mapper' which will be adopted for the source schema building.
@@ -34,25 +35,45 @@ import com.orientechnologies.teleporter.mapper.OSource2GraphMapper;
  */
 
 public class OMapperFactory {
-  
-  public OMapperFactory() {}
 
-  public OSource2GraphMapper buildMapper(String chosenMapper, String driver, String uri, String username, String password, String xmlPath, List<String> includedTables, List<String> excludedTables, OTeleporterContext context) {
-    
-    OSource2GraphMapper mapper = null;
+	public OMapperFactory() {}
 
-    switch(chosenMapper) {
-    
-    case "basicDBMapper":   mapper = new OER2GraphMapper(driver, uri, username, password, includedTables, excludedTables);
-    break;
+	public OSource2GraphMapper buildMapper(String chosenMapper, String driver, String uri, String username, String password, String xmlPath, List<String> includedTables, List<String> excludedTables, OTeleporterContext context) {
 
-    case "hibernate":   mapper = new OHibernate2GraphMapper(driver, uri, username, password, xmlPath, includedTables, excludedTables);
-    break;
+		OSource2GraphMapper mapper = null;
 
-    default :  mapper = new OER2GraphMapper(driver, uri, username, password, includedTables, excludedTables);
-    }
+		// choosing strategy for migration from neo4j
+		if(driver.equalsIgnoreCase("neo4j")) {
 
-    return mapper;
-  }
+			switch(chosenMapper) {
+
+			case "neo4jMapper":   mapper = new ONeo4jSchema2GraphMapper();
+			break;
+
+			default :  mapper = new ONeo4jSchema2GraphMapper();
+			}
+		}
+
+		// choosing strategy for migration from mongoDB
+		else if (driver.equalsIgnoreCase("mongoDB")) {
+			// DOES NOTHING: no mapper required
+		}
+
+		else {
+
+			switch(chosenMapper) {
+
+			case "basicDBMapper":   mapper = new OER2GraphMapper(driver, uri, username, password, includedTables, excludedTables);
+			break;
+
+			case "hibernate":   mapper = new OHibernate2GraphMapper(driver, uri, username, password, xmlPath, includedTables, excludedTables);
+			break;
+
+			default :  mapper = new OER2GraphMapper(driver, uri, username, password, includedTables, excludedTables);
+			}
+		}
+
+		return mapper;
+	}
 
 }

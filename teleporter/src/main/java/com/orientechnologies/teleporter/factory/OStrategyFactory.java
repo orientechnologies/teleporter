@@ -20,8 +20,11 @@ package com.orientechnologies.teleporter.factory;
 
 import com.orientechnologies.teleporter.context.OTeleporterContext;
 import com.orientechnologies.teleporter.strategy.OImportStrategy;
-import com.orientechnologies.teleporter.strategy.ONaiveAggregationImportStrategy;
-import com.orientechnologies.teleporter.strategy.ONaiveImportStrategy;
+import com.orientechnologies.teleporter.strategy.mongodb.OMongoDBAggregateStrategy;
+import com.orientechnologies.teleporter.strategy.mongodb.OMongoDBExpandStrategy;
+import com.orientechnologies.teleporter.strategy.neo4j.ONeo4jNaiveStrategy;
+import com.orientechnologies.teleporter.strategy.rdbms.ODBMSNaiveAggregationStrategy;
+import com.orientechnologies.teleporter.strategy.rdbms.ODBMSNaiveStrategy;
 
 /**
  * Factory used to instantiate the chosen strategy for the importing phase starting from its name.
@@ -35,24 +38,67 @@ public class OStrategyFactory {
 
 	public OStrategyFactory() {}
 
-	public OImportStrategy buildStrategy(String chosenStrategy, OTeleporterContext context) {
+	public OImportStrategy buildStrategy(String storageDriver, String chosenStrategy, OTeleporterContext context) {
 		OImportStrategy strategy = null;
 
-		if(chosenStrategy == null)  {
-			strategy = new ONaiveAggregationImportStrategy();
-		}
-		else {
-			switch(chosenStrategy) {
+		// choosing strategy for migration from neo4j
+		if(storageDriver.equalsIgnoreCase("neo4j")) {
 
-			case "naive":   strategy = new ONaiveImportStrategy();
-			break;
+			if(chosenStrategy == null)  {
+				strategy = new ONeo4jNaiveStrategy();
+			}
+			else {
+				switch(chosenStrategy) {
 
-			case "naive-aggregate":   strategy = new ONaiveAggregationImportStrategy();
-			break;
+				case "naive":   strategy = new ONeo4jNaiveStrategy();
+				break;
 
-			default :  context.getOutputManager().error("The typed strategy doesn't exist.\n");
+				default :  context.getOutputManager().error("The typed strategy doesn't exist for migration from Neo4j.\n");
+				}
 			}
 		}
+
+		// choosing strategy for migration from mongoDB
+		else if (storageDriver.equalsIgnoreCase("mongoDB")) {
+
+			if(chosenStrategy == null)  {
+				strategy = new OMongoDBExpandStrategy();
+			}
+			else {
+				switch(chosenStrategy) {
+
+				case "aggregate":   strategy = new OMongoDBAggregateStrategy();
+				break;
+				
+				case "expand":   strategy = new OMongoDBExpandStrategy();
+				break;
+
+				default :  context.getOutputManager().error("The typed strategy doesn't exist for migration from MongoDB.\n");
+				}
+			}
+		}
+
+		// choosing strategy for migration from RDBSs
+		else {
+
+			if(chosenStrategy == null)  {
+				strategy = new ODBMSNaiveAggregationStrategy();
+			}
+			else {
+				switch(chosenStrategy) {
+
+				case "naive":   strategy = new ODBMSNaiveStrategy();
+				break;
+
+				case "naive-aggregate":   strategy = new ODBMSNaiveAggregationStrategy();
+				break;
+
+				default :  context.getOutputManager().error("The typed strategy doesn't exist for migration from the chosen RDBMS.\n");
+				}
+			}
+		}
+
+
 		return strategy;
 	}
 

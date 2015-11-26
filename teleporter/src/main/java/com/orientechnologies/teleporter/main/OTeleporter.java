@@ -32,6 +32,7 @@ import com.orientechnologies.orient.server.config.OServerParameterConfiguration;
 import com.orientechnologies.orient.server.plugin.OServerPluginAbstract;
 import com.orientechnologies.teleporter.context.OOutputStreamManager;
 import com.orientechnologies.teleporter.context.OTeleporterContext;
+import com.orientechnologies.teleporter.exception.OTeleporterException;
 import com.orientechnologies.teleporter.factory.OStrategyFactory;
 import com.orientechnologies.teleporter.strategy.OImportStrategy;
 import com.orientechnologies.teleporter.ui.OProgressMonitor;
@@ -230,8 +231,8 @@ public class OTeleporter extends OServerPluginAbstract {
 		ODriverConfigurator driverConfig = new ODriverConfigurator();
 		String driverClassName = driverConfig.checkConfiguration(driver, context);
 
-		OImportStrategy strategy = FACTORY.buildStrategy(chosenStrategy, context);
-
+		OImportStrategy strategy = FACTORY.buildStrategy(driver, chosenStrategy, context);
+		
 		if(strategy == null)
 			System.exit(0);
 
