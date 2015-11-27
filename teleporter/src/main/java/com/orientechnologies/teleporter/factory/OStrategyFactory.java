@@ -19,6 +19,7 @@
 package com.orientechnologies.teleporter.factory;
 
 import com.orientechnologies.teleporter.context.OTeleporterContext;
+import com.orientechnologies.teleporter.exception.OTeleporterIOException;
 import com.orientechnologies.teleporter.strategy.OImportStrategy;
 import com.orientechnologies.teleporter.strategy.mongodb.OMongoDBAggregateStrategy;
 import com.orientechnologies.teleporter.strategy.mongodb.OMongoDBExpandStrategy;
@@ -38,7 +39,8 @@ public class OStrategyFactory {
 
 	public OStrategyFactory() {}
 
-	public OImportStrategy buildStrategy(String storageDriver, String chosenStrategy, OTeleporterContext context) {
+	public OImportStrategy buildStrategy(String storageDriver, String chosenStrategy, OTeleporterContext context) throws OTeleporterIOException {
+		
 		OImportStrategy strategy = null;
 
 		// choosing strategy for migration from neo4j
@@ -98,6 +100,8 @@ public class OStrategyFactory {
 			}
 		}
 
+		if(strategy == null)
+			throw new OTeleporterIOException("Strategy not available for the chosen source.");
 
 		return strategy;
 	}

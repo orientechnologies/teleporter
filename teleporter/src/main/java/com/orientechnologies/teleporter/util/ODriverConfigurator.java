@@ -40,6 +40,7 @@ import java.util.Map;
 
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.teleporter.context.OTeleporterContext;
+import com.orientechnologies.teleporter.exception.OTeleporterRuntimeException;
 
 /**
  * Executes an automatic configuration of the chosen driver JDBC.
@@ -168,7 +169,7 @@ public class ODriverConfigurator {
 			e.printStackTrace(new PrintWriter(writer));
 			String s = writer.toString();
 			context.getOutputManager().debug("\n" + s + "\n");
-			System.exit(0);
+			throw new OTeleporterRuntimeException();
 		}
 
 		return driverClassName;
@@ -233,7 +234,7 @@ public class ODriverConfigurator {
 			e.printStackTrace(new PrintWriter(writer));
 			String s = writer.toString();
 			context.getOutputManager().debug("\n" + s + "\n");
-			System.exit(0);
+			throw new OTeleporterRuntimeException();
 		}
 		finally {
 			try {

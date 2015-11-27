@@ -36,6 +36,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
 import com.orientechnologies.teleporter.context.OTeleporterContext;
+import com.orientechnologies.teleporter.exception.OTeleporterRuntimeException;
 import com.orientechnologies.teleporter.model.dbschema.OAttribute;
 import com.orientechnologies.teleporter.model.dbschema.OEntity;
 import com.orientechnologies.teleporter.model.dbschema.OHierarchicalBag;
@@ -92,7 +93,7 @@ public class OHibernate2GraphMapper extends OER2GraphMapper {
 					currentEntity = super.dataBaseSchema.getEntityByNameIgnoreCase(currentEntityElement.getAttribute("table"));
 				else {
 					context.getOutputManager().error("XML Format error: problem in class definition, table attribute missing in the class node.");
-					System.exit(0);
+					throw new OTeleporterRuntimeException();
 				}
 
 				// inheritance
@@ -114,7 +115,7 @@ public class OHibernate2GraphMapper extends OER2GraphMapper {
 			e.printStackTrace(new PrintWriter(writer));
 			String s = writer.toString();
 			context.getOutputManager().debug("\n" + s + "\n");
-			System.exit(0);
+			throw new OTeleporterRuntimeException();
 		}
 
 	}
@@ -238,7 +239,7 @@ public class OHibernate2GraphMapper extends OER2GraphMapper {
 					currentEntityElementName = currentEntityElement.getAttribute("name");
 				else {
 					context.getOutputManager().error("XML Format error: problem in subclass definition, table attribute missing in the joined-subclass nodes.");
-					System.exit(0);
+					throw new OTeleporterRuntimeException();
 				}
 				currentChildEntity = new OEntity(currentEntityElementName, null);
 
@@ -302,7 +303,7 @@ public class OHibernate2GraphMapper extends OER2GraphMapper {
 				currentChildEntityName = currentChildElement.getAttribute("table");
 			else {
 				context.getOutputManager().error("XML Format error: problem in subclass definition, table attribute missing in the joined-subclass nodes.");
-				System.exit(0);
+				throw new OTeleporterRuntimeException();
 			}
 			currentChildEntity = super.dataBaseSchema.getEntityByNameIgnoreCase(currentChildEntityName);
 			currentChildEntity.setParentEntity(parentEntity);
@@ -352,7 +353,7 @@ public class OHibernate2GraphMapper extends OER2GraphMapper {
 				currentChildEntityName = currentChildElement.getAttribute("table");
 			else {
 				context.getOutputManager().error("XML Format error: problem in subclass definition, table attribute missing in the joined-subclass nodes.");
-				System.exit(0);
+				throw new OTeleporterRuntimeException();
 			}
 
 			currentChildEntity = super.dataBaseSchema.getEntityByNameIgnoreCase(currentChildEntityName);

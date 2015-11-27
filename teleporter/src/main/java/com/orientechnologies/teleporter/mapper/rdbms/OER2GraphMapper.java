@@ -38,6 +38,7 @@ import java.util.TreeMap;
 
 import com.orientechnologies.teleporter.context.OTeleporterContext;
 import com.orientechnologies.teleporter.context.OTeleporterStatistics;
+import com.orientechnologies.teleporter.exception.OTeleporterRuntimeException;
 import com.orientechnologies.teleporter.mapper.OSource2GraphMapper;
 import com.orientechnologies.teleporter.model.dbschema.OAttribute;
 import com.orientechnologies.teleporter.model.dbschema.ODataBaseSchema;
@@ -344,7 +345,7 @@ public class OER2GraphMapper extends OSource2GraphMapper {
 			e.printStackTrace(new PrintWriter(writer));
 			String s = writer.toString();
 			context.getOutputManager().debug("\n" + s + "\n");
-			System.exit(0);
+			throw new OTeleporterRuntimeException();
 		}finally {
 			try {
 				if(connection != null) {
@@ -448,7 +449,7 @@ public class OER2GraphMapper extends OSource2GraphMapper {
 			e.printStackTrace(new PrintWriter(writer));
 			String s = writer.toString();
 			context.getOutputManager().debug("\n" + s + "\n");
-			System.exit(0);
+			throw new OTeleporterRuntimeException();
 		}
 		return rows;
 	}

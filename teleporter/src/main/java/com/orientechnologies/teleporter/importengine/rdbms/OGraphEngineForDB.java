@@ -35,6 +35,7 @@ import java.util.Set;
 
 import com.orientechnologies.teleporter.context.OTeleporterContext;
 import com.orientechnologies.teleporter.context.OTeleporterStatistics;
+import com.orientechnologies.teleporter.exception.OTeleporterRuntimeException;
 import com.orientechnologies.teleporter.mapper.rdbms.OAggregatorEdge;
 import com.orientechnologies.teleporter.mapper.rdbms.OER2GraphMapper;
 import com.orientechnologies.teleporter.model.dbschema.OAttribute;
@@ -97,7 +98,6 @@ public class OGraphEngineForDB {
 			for(String property: propertiesOfIndex) {
 				propertyOfKey[cont] = property;
 				if(toResolveNames)
-//					valueOfKey[cont] = record.getString(context.getNameResolver().reverseTransformation(property));
 					valueOfKey[cont] = record.getString(this.mapper.getAttributeByVertexTypeAndProperty(vertexType.getName(), property).getName());
 				else
 					valueOfKey[cont] = record.getString(property);
@@ -130,7 +130,7 @@ public class OGraphEngineForDB {
 			context.getOutputManager().debug("\n" + s + "\n");
 			if(orientGraph != null)
 				orientGraph.shutdown();
-			System.exit(0);
+			throw new OTeleporterRuntimeException();
 		}
 		return false;
 	}
@@ -235,25 +235,21 @@ public class OGraphEngineForDB {
 				try {
 
 					if(currentPropertyType.equals("DATE")) {
-//						currentDateValue = record.getDate(context.getNameResolver().reverseTransformation(currentProperty.getName()));
 						currentDateValue = record.getDate(this.mapper.getAttributeByVertexTypeAndProperty(vertexType.getName(), currentPropertyName).getName());
 						properties.put(currentPropertyName, currentDateValue);
 					}
 
 					else if(currentPropertyType.equals("DATETIME")) {
-//						currentDateValue = record.getTimestamp(context.getNameResolver().reverseTransformation(currentProperty.getName()));
 						currentDateValue = record.getTimestamp(this.mapper.getAttributeByVertexTypeAndProperty(vertexType.getName(), currentPropertyName).getName());
 						properties.put(currentProperty.getName(), currentDateValue);
 					}
 
 					else if(currentPropertyType.equals("BINARY")) {
-//						currentBinaryValue = record.getBytes(context.getNameResolver().reverseTransformation(currentProperty.getName()));
 						currentBinaryValue = record.getBytes(this.mapper.getAttributeByVertexTypeAndProperty(vertexType.getName(), currentPropertyName).getName());
 						properties.put(currentProperty.getName(), currentBinaryValue);
 					}
 
 					else if(currentPropertyType.equals("BOOLEAN")) {
-//						currentAttributeValue = record.getString(context.getNameResolver().reverseTransformation(currentProperty.getName()));
 						currentAttributeValue = record.getString(this.mapper.getAttributeByVertexTypeAndProperty(vertexType.getName(), currentPropertyName).getName());
 
 						switch(currentAttributeValue) {
@@ -267,7 +263,6 @@ public class OGraphEngineForDB {
 					}
 
 					else {
-//						currentAttributeValue = record.getString(context.getNameResolver().reverseTransformation(currentProperty.getName()));
 						currentAttributeValue = record.getString(this.mapper.getAttributeByVertexTypeAndProperty(vertexType.getName(), currentPropertyName).getName());
 						properties.put(currentProperty.getName(), currentAttributeValue);
 					}
@@ -381,7 +376,7 @@ public class OGraphEngineForDB {
 			context.getOutputManager().debug(s2);
 			if(orientGraph != null)
 				orientGraph.shutdown();
-			System.exit(0);
+			throw new OTeleporterRuntimeException();
 		}
 
 		return vertex;
@@ -561,7 +556,7 @@ public class OGraphEngineForDB {
 			context.getOutputManager().debug(s);
 			if(orientGraph != null)
 				orientGraph.shutdown();
-			System.exit(0);
+			throw new OTeleporterRuntimeException();
 		}
 
 		return currentInVertex;
@@ -614,7 +609,7 @@ public class OGraphEngineForDB {
 			context.getOutputManager().debug("\n" + s + "\n");
 			if(orientGraph != null)
 				orientGraph.shutdown();
-			System.exit(0);
+			throw new OTeleporterRuntimeException();
 		}
 	}
 
@@ -668,7 +663,7 @@ public class OGraphEngineForDB {
 			context.getOutputManager().debug(s);
 			if(orientGraph != null )
 				orientGraph.shutdown();
-			System.exit(0);
+			throw new OTeleporterRuntimeException();
 		}
 	}
 

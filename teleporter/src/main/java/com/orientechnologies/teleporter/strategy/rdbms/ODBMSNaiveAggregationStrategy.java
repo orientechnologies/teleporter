@@ -28,6 +28,7 @@ import java.util.List;
 import com.orientechnologies.orient.core.intent.OIntentMassiveInsert;
 import com.orientechnologies.teleporter.context.OTeleporterContext;
 import com.orientechnologies.teleporter.context.OTeleporterStatistics;
+import com.orientechnologies.teleporter.exception.OTeleporterRuntimeException;
 import com.orientechnologies.teleporter.factory.ODataTypeHandlerFactory;
 import com.orientechnologies.teleporter.factory.OMapperFactory;
 import com.orientechnologies.teleporter.importengine.rdbms.ODBQueryEngine;
@@ -95,7 +96,7 @@ public class ODBMSNaiveAggregationStrategy extends ODBMSImportStrategy {
 		boolean success = graphModelWriter.writeModelOnOrient(graphModel, handler, outOrientGraphUri, context);
 		if(!success) {
 			context.getOutputManager().error("Writing not complete. Something gone wrong.\n");
-			System.exit(0);
+			throw new OTeleporterRuntimeException();
 		}
 		context.getStatistics().notifyListeners();
 		context.getOutputManager().debug("\nOrientDB Schema writing complete.\n");

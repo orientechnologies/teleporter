@@ -34,6 +34,7 @@ import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.sql.OCommandSQL;
 import com.orientechnologies.teleporter.context.OTeleporterContext;
 import com.orientechnologies.teleporter.context.OTeleporterStatistics;
+import com.orientechnologies.teleporter.exception.OTeleporterRuntimeException;
 import com.orientechnologies.teleporter.model.graphmodel.OEdgeType;
 import com.orientechnologies.teleporter.model.graphmodel.OElementType;
 import com.orientechnologies.teleporter.model.graphmodel.OGraphModel;
@@ -246,7 +247,7 @@ public class OGraphModelWriter {
 				e.printStackTrace(new PrintWriter(writer));
 				String s = writer.toString();
 				context.getOutputManager().debug("\n" + s + "\n");
-				System.exit(0);
+				throw new OTeleporterRuntimeException();
 			}    
 			statistics.notifyListeners();
 			statistics.runningStepNumber = -1;
@@ -258,7 +259,7 @@ public class OGraphModelWriter {
 		else {
 			context.getOutputManager().error("Changes on entities involved in hierarchical trees detected: Teleporter cannot support these variation and neither"
 					+ "grant coherence between the two databases. Rebuild the schema from scratch.");
-			System.exit(0);
+			throw new OTeleporterRuntimeException();
 		}
 		
 		return success;
@@ -286,7 +287,7 @@ public class OGraphModelWriter {
 		}
 		else {
 			context.getOutputManager().error("Fatal error: current element type '%s' is not instance neither of Vertex Type nor of EdgeType", currentElementType.getName());
-			System.exit(0);
+			throw new OTeleporterRuntimeException();
 		}
 
 		OProperty orientSchemaProperty;

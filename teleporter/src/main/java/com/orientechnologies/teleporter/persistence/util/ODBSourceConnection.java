@@ -28,6 +28,7 @@ import java.sql.Driver;
 import java.sql.DriverManager;
 
 import com.orientechnologies.teleporter.context.OTeleporterContext;
+import com.orientechnologies.teleporter.exception.OTeleporterRuntimeException;
 
 /**
  * Utility class to which connection with source DB is delegated.
@@ -73,7 +74,7 @@ public class ODBSourceConnection {
 			e.printStackTrace(new PrintWriter(writer));
 			String s = writer.toString();
 			context.getOutputManager().debug("\n" + s + "\n");
-			System.exit(0);
+			throw new OTeleporterRuntimeException();
 		}
 		return connection;
 	}

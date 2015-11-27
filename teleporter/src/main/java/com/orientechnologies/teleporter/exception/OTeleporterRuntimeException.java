@@ -24,15 +24,13 @@ package com.orientechnologies.teleporter.exception;
  *
  */
 
-public class OTeleporterException extends Exception {
-
-	private String message;
-
-	/**
-	 * 
-	 */
-	public OTeleporterException(String message) {
-		this.message = message;
+@SuppressWarnings("serial")
+public class OTeleporterRuntimeException extends RuntimeException {
+	
+	public OTeleporterRuntimeException() {}
+	
+	public OTeleporterRuntimeException(String message) {
+		super(message);
 	}
 
 }

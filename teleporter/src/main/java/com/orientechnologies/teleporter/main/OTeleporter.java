@@ -32,7 +32,7 @@ import com.orientechnologies.orient.server.config.OServerParameterConfiguration;
 import com.orientechnologies.orient.server.plugin.OServerPluginAbstract;
 import com.orientechnologies.teleporter.context.OOutputStreamManager;
 import com.orientechnologies.teleporter.context.OTeleporterContext;
-import com.orientechnologies.teleporter.exception.OTeleporterException;
+import com.orientechnologies.teleporter.exception.OTeleporterIOException;
 import com.orientechnologies.teleporter.factory.OStrategyFactory;
 import com.orientechnologies.teleporter.strategy.OImportStrategy;
 import com.orientechnologies.teleporter.ui.OProgressMonitor;
@@ -62,7 +62,7 @@ public class OTeleporter extends OServerPluginAbstract {
 			"                                                  http://orientdb.com/teleporter";	
 
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws Exception {
 
 
 		// Output Manager setting
@@ -78,7 +78,7 @@ public class OTeleporter extends OServerPluginAbstract {
 
 		if(args.length < 6) {
 			outputManager.error("Syntax error, missing argument. Use:\n ./oteleporter.sh -jdriver <jdbc-driver> -jurl <jdbc-url> -juser <username> -jpasswd <password> -ourl <orientdb-url>.");
-			System.exit(0);
+			throw new OTeleporterIOException();
 		}
 
 
@@ -95,17 +95,17 @@ public class OTeleporter extends OServerPluginAbstract {
 
 		if(!arguments.containsKey("-jdriver")) {
 			outputManager.error("Argument -jdriver is mandatory, please try again with expected argument: -jdriver <your-db-driver-name>\n");
-			System.exit(0);
+			throw new OTeleporterIOException();
 		}
 
 		if(!arguments.containsKey("-jurl")) {
 			outputManager.error("Argument -jurl is mandatory, please try again with expected argument: -jurl <input-db-jdbc-URL>\n");
-			System.exit(0);
+			throw new OTeleporterIOException();
 		}
 
 		if(!arguments.containsKey("-ourl")) {
 			outputManager.error("Argument -ourl is mandatory, please try again with expected argument: -ourl <output-orientdb-desired-URL>\n");
-			System.exit(0);
+			throw new OTeleporterIOException();
 		}
 
 
@@ -114,43 +114,43 @@ public class OTeleporter extends OServerPluginAbstract {
 		if(!arguments.get("-jdriver").equalsIgnoreCase("Oracle") && !arguments.get("-jdriver").equalsIgnoreCase("SQLServer") && !arguments.get("-jdriver").equalsIgnoreCase("MySQL") 
 				&& !arguments.get("-jdriver").equalsIgnoreCase("PostgreSQL") && !arguments.get("-jdriver").equalsIgnoreCase("HyperSQL")) {
 			outputManager.error("Not valid db-driver name. Type one of the following driver names: 'Oracle','SQLServer','MySQL','PostgreSQL','HyperSQL'\n");
-			System.exit(0);
+			throw new OTeleporterIOException();
 		}
 
 		if(!arguments.get("-jurl").contains("jdbc:")) {
 			outputManager.error("Not valid db-url.\n");
-			System.exit(0);
+			throw new OTeleporterIOException();
 		}
 
 		if(! (arguments.get("-ourl").contains("plocal:") | arguments.get("-ourl").contains("remote:") | arguments.get("-ourl").contains("memory:")) ) {
 			outputManager.error("Not valid output orient db uri.\n");
-			System.exit(0);
+			throw new OTeleporterIOException();
 		}
 
 		if(arguments.get("-s") != null) {
 			if(! (arguments.get("-s").equals("naive") | arguments.get("-s").equals("naive-aggregate")) ) {
 				outputManager.error("Not valid strategy.\n");
-				System.exit(0);
+				throw new OTeleporterIOException();
 			}
 		}
 
 		if(arguments.get("-v") != null) {
 			if(! (arguments.get("-v").equals("0") | arguments.get("-v").equals("1") | arguments.get("-v").equals("2") | arguments.get("-v").equals("3")) ) {
 				outputManager.error("Not valid output level. Available levels:\n0 - No messages\n1 - Debug\n2 - Info\n3 - Warning \n4 - Error");
-				System.exit(0);
+				throw new OTeleporterIOException();
 			}
 		}
 
 		if(arguments.get("-inheritance") != null) {
 			if(! (arguments.get("-inheritance").contains("hibernate:") ) ) {
 				outputManager.error("Not valid inheritance argument. Syntax: -inheritance hibernate:<xml-path>");
-				System.exit(0);
+				throw new OTeleporterIOException();
 			}
 		}
 
 		if(arguments.get("-include") != null && arguments.get("-exclude") != null) {
 			outputManager.error("It's not possible to use both 'include' and 'exclude' arguments.");
-			System.exit(0);
+			throw new OTeleporterIOException();
 		}
 
 
@@ -207,11 +207,12 @@ public class OTeleporter extends OServerPluginAbstract {
 	 * @param outputLevel the level of the logging messages that will be printed on the OutputStream during the execution
 	 * @param excludedTables 
 	 * @param includedTables 
+	 * @throws OTeleporterException 
 	 */
 
 
 	public static void execute(String driver, String jurl, String username, String password, String outDbUrl, String chosenStrategy, String chosenMapper, String xmlPath, String nameResolver,
-			String outputLevel, List<String> includedTables, List<String> excludedTables) {
+			String outputLevel, List<String> includedTables, List<String> excludedTables) throws OTeleporterIOException  {
 
 		// Disabling query scan threshold tip
 		OGlobalConfiguration.QUERY_SCAN_THRESHOLD_TIP.setValue(-1);
@@ -233,9 +234,6 @@ public class OTeleporter extends OServerPluginAbstract {
 
 		OImportStrategy strategy = FACTORY.buildStrategy(driver, chosenStrategy, context);
 		
-		if(strategy == null)
-			System.exit(0);
-
 		// Timer for statistics notifying
 		Timer timer = new Timer();
 		timer.schedule(new TimerTask() {
