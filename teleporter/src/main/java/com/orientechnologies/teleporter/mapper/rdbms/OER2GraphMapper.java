@@ -225,7 +225,7 @@ public class OER2GraphMapper extends OSource2GraphMapper {
 				resultPrimaryKeys = databaseMetaData.getPrimaryKeys(primaryKeyCatalog, primaryKeySchema, currentTableName);
 
 				while(resultColumns.next()) {
-					OAttribute currentAttribute = new OAttribute(resultColumns.getString(4), resultColumns.getInt(17), resultColumns.getString(6), currentEntity);
+					OAttribute currentAttribute = new OAttribute(resultColumns.getString("COLUMN_NAME"), resultColumns.getInt("ORDINAL_POSITION"), resultColumns.getString("TYPE_NAME"), currentEntity);
 					currentEntity.addAttribute(currentAttribute);
 
 					// if the current attribute is involved in the primary key, it will be added to the attributes of pKey.

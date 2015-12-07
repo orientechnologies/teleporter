@@ -21,9 +21,9 @@ package com.orientechnologies.teleporter.importengine.rdbms;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.Iterator;
@@ -59,7 +59,7 @@ import com.tinkerpop.blueprints.impls.orient.OrientVertex;
  */
 
 public class OGraphEngineForDB {
-	
+
 	private OER2GraphMapper mapper;
 
 
@@ -197,9 +197,8 @@ public class OGraphEngineForDB {
 			for(String property: propertiesOfIndex) {
 				propertyOfKey[cont] = property;
 				if(toResolveNames) {
-//					valueOfKey[cont] = record.getString(context.getNameResolver().reverseTransformation(property));
 					OAttribute attribute = this.mapper.getAttributeByVertexTypeAndProperty(vertexType.getName(), property);
-				valueOfKey[cont] = record.getString(attribute.getName());
+					valueOfKey[cont] = record.getString(attribute.getName());
 				}
 
 				else
@@ -227,7 +226,7 @@ public class OGraphEngineForDB {
 
 			// extraction of inherited and not inherited properties from the record (through "getAllProperties()" method)
 			for(OModelProperty currentProperty : vertexType.getAllProperties()) {
-				
+
 				currentPropertyName = currentProperty.getName();
 
 				currentPropertyType = context.getDataTypeHandler().resolveType(currentProperty.getPropertyType().toLowerCase(Locale.ENGLISH),context).toString();
@@ -336,7 +335,7 @@ public class OGraphEngineForDB {
 							for(String propertyName: vertex.getPropertyKeys()) {
 								if(!(vertex.getProperty(propertyName) == null && properties.get(propertyName) == null) ) {
 									currentPropertyType = context.getDataTypeHandler().resolveType(vertexType.getPropertyByName(propertyName).getPropertyType().toLowerCase(Locale.ENGLISH),context).toString();
-									if(!this.areEquals(vertex.getProperty(propertyName),properties.get(propertyName), currentPropertyType)) {
+								if(!this.areEquals(vertex.getProperty(propertyName),properties.get(propertyName), currentPropertyType)) {
 										equalVersions = false;
 										break;
 									} 
@@ -409,8 +408,14 @@ public class OGraphEngineForDB {
 	private boolean areEquals(Object oldProperty, Object newProperty, String currentPropertyType) {
 
 		if(oldProperty != null && newProperty != null) {
+			
+			if(currentPropertyType.equals("BINARY")) {
+				byte[] oldPropertyBinary = (byte[]) oldProperty;
+				byte[] newPropertyBinary = (byte[]) newProperty;
+				return Arrays.equals(oldPropertyBinary, newPropertyBinary);
+			}
 
-			if(currentPropertyType.equals("BOOLEAN")) {
+			else if(currentPropertyType.equals("BOOLEAN")) {
 
 				if (oldProperty.toString().equalsIgnoreCase(newProperty.toString()))
 					return true;
@@ -423,32 +428,36 @@ public class OGraphEngineForDB {
 					return false;
 			}
 
-			else if(currentPropertyType.equals("DATE")) {
-				// oldProperty : Date
-				// newProperty : Date
-				Date oldPropertyDate = (Date) oldProperty;  
-				// new variable to compare dates
-				Date newPropertyDate = new Date(((java.sql.Date)newProperty).getTime());
-				
-				return oldPropertyDate.equals(newPropertyDate);
+			else if(currentPropertyType.equals("DATE") || currentPropertyType.equals("DATETIME")) {
+				// oldProperty : Date (year, month, day) OR Date (year, month, day, hours, minutes, seconds)
+
+				return oldProperty.equals((Date)newProperty);
 			}
 
-			else if(currentPropertyType.equals("DATETIME")) {
-				// oldProperty : Date
-				// newProperty : Date
-				Date oldPropertyDate = (Date) oldProperty;  
-				// new variable to compare dates
-				Date newPropertyDate = new Date(((Timestamp)newProperty).getTime());
-
-				return oldPropertyDate.equals(newPropertyDate);
+			else if(currentPropertyType.equals("DECIMAL")) {
+				return oldProperty.equals(new BigDecimal(newProperty.toString()));
 			}
 
-			else if(currentPropertyType.equals("BINARY")) {
-				byte[] oldPropertyBinary = (byte[]) oldProperty;
-				byte[] newPropertyBinary = (byte[]) newProperty;
-				return Arrays.equals(oldPropertyBinary, newPropertyBinary);
+			else if(currentPropertyType.equals("DOUBLE")) {
+				return oldProperty.equals(new Double(newProperty.toString()));
 			}
-
+			
+			else if(currentPropertyType.equals("FLOAT")) {
+				return oldProperty.equals(new Float(newProperty.toString()));
+			}
+			
+			else if(currentPropertyType.equals("INTEGER")) {
+				return oldProperty.equals(new Integer(newProperty.toString()));
+			}
+			
+			else if(currentPropertyType.equals("LONG")) {
+				return oldProperty.equals(new Long(newProperty.toString()));
+			}
+			
+			else if(currentPropertyType.equals("SHORT")) {
+				return oldProperty.equals(new Short(newProperty.toString()));
+			}
+			
 			else {
 				return oldProperty.toString().equals(newProperty.toString());
 			}
