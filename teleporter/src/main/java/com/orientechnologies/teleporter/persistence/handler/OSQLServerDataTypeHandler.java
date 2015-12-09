@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.orientechnologies.orient.core.metadata.schema.OType;
+import com.orientechnologies.teleporter.context.OTeleporterContext;
 
 /**
  * @author Gabriele Ponzi
@@ -34,6 +35,23 @@ public class OSQLServerDataTypeHandler extends OGenericDataTypeHandler {
 	
 	public OSQLServerDataTypeHandler(){
 		this.dbmsType2OrientType = this.fillTypesMap();
+	}
+	
+	@Override
+	public OType resolveType(String type, OTeleporterContext context) {
+
+		// dropping "identity" sqlserver property
+		type = type.replace("identity", "").trim();
+		
+		// Defined Types
+		if(this.dbmsType2OrientType.keySet().contains(type))
+			return this.dbmsType2OrientType.get(type);
+
+		// Undefined Types
+		else {
+			context.getStatistics().warningMessages.add("The original type '" + type + "' is not convertible into any OrientDB type thus, in order to prevent data loss, it will be converted to the OrientDB Type String.");
+			return OType.STRING;
+		}
 	}
 
 	

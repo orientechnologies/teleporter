@@ -293,10 +293,18 @@ public class OGraphEngineForDB {
 				// discerning between a reached-vertex updating (only original primary key's properties are present) and a full-vertex updating
 				boolean justReachedVertex = true;
 
-				for(String property: vertex.getPropertyKeys()) {
-					if(!this.containsProperty(propertiesOfIndex,property)) {
-						justReachedVertex = false;
-						break;
+				// first check: current vertex has less properties then the correspondent vertex type
+				if(vertex.getPropertyKeys().size() >= vertexType.getAllProperties().size()) {
+					justReachedVertex = false;
+				}
+
+				// second check: the set properties on the current vertex are only those correspondent to the primary key's attributes
+				if(justReachedVertex) {
+					for(String property: vertex.getPropertyKeys()) {
+						if(!this.containsProperty(propertiesOfIndex,property)) {
+							justReachedVertex = false;
+							break;
+						}
 					}
 				}
 
@@ -335,7 +343,7 @@ public class OGraphEngineForDB {
 							for(String propertyName: vertex.getPropertyKeys()) {
 								if(!(vertex.getProperty(propertyName) == null && properties.get(propertyName) == null) ) {
 									currentPropertyType = context.getDataTypeHandler().resolveType(vertexType.getPropertyByName(propertyName).getPropertyType().toLowerCase(Locale.ENGLISH),context).toString();
-								if(!this.areEquals(vertex.getProperty(propertyName),properties.get(propertyName), currentPropertyType)) {
+									if(!this.areEquals(vertex.getProperty(propertyName),properties.get(propertyName), currentPropertyType)) {
 										equalVersions = false;
 										break;
 									} 
@@ -408,7 +416,7 @@ public class OGraphEngineForDB {
 	private boolean areEquals(Object oldProperty, Object newProperty, String currentPropertyType) {
 
 		if(oldProperty != null && newProperty != null) {
-			
+
 			if(currentPropertyType.equals("BINARY")) {
 				byte[] oldPropertyBinary = (byte[]) oldProperty;
 				byte[] newPropertyBinary = (byte[]) newProperty;
@@ -441,23 +449,23 @@ public class OGraphEngineForDB {
 			else if(currentPropertyType.equals("DOUBLE")) {
 				return oldProperty.equals(new Double(newProperty.toString()));
 			}
-			
+
 			else if(currentPropertyType.equals("FLOAT")) {
 				return oldProperty.equals(new Float(newProperty.toString()));
 			}
-			
+
 			else if(currentPropertyType.equals("INTEGER")) {
 				return oldProperty.equals(new Integer(newProperty.toString()));
 			}
-			
+
 			else if(currentPropertyType.equals("LONG")) {
 				return oldProperty.equals(new Long(newProperty.toString()));
 			}
-			
+
 			else if(currentPropertyType.equals("SHORT")) {
 				return oldProperty.equals(new Short(newProperty.toString()));
 			}
-			
+
 			else {
 				return oldProperty.toString().equals(newProperty.toString());
 			}
