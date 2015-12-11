@@ -190,7 +190,7 @@ public class OTeleporter extends OServerPluginAbstract {
 		}
 
 
-		OTeleporter.execute(driver, jurl, username, password, outDbUrl, chosenStrategy, chosenMapper, xmlPath, nameResolver, outputLevel, includedTables, excludedTables);
+		OTeleporter.execute(driver, jurl, username, password, outDbUrl, chosenStrategy, chosenMapper, xmlPath, nameResolver, outputLevel, includedTables, excludedTables, outputManager);
 	}
 
 	/**
@@ -212,7 +212,7 @@ public class OTeleporter extends OServerPluginAbstract {
 
 
 	public static void execute(String driver, String jurl, String username, String password, String outDbUrl, String chosenStrategy, String chosenMapper, String xmlPath, String nameResolver,
-			String outputLevel, List<String> includedTables, List<String> excludedTables) throws OTeleporterIOException  {
+			String outputLevel, List<String> includedTables, List<String> excludedTables, OOutputStreamManager outputManager) throws OTeleporterIOException  {
 
 		// Disabling query scan threshold tip
 		OGlobalConfiguration.QUERY_SCAN_THRESHOLD_TIP.setValue(-1);

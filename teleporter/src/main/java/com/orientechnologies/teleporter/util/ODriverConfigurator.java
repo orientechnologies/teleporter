@@ -33,6 +33,7 @@ import java.net.URLConnection;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.charset.Charset;
+import java.sql.Connection;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -41,6 +42,7 @@ import java.util.Map;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.teleporter.context.OTeleporterContext;
 import com.orientechnologies.teleporter.exception.OTeleporterRuntimeException;
+import com.orientechnologies.teleporter.persistence.util.ODBSourceConnection;
 
 /**
  * Executes an automatic configuration of the chosen driver JDBC.
@@ -52,6 +54,7 @@ import com.orientechnologies.teleporter.exception.OTeleporterRuntimeException;
 
 public class ODriverConfigurator {
 
+	public static final String        DRIVERS = "http://orientdb.com/jdbc-drivers.json";
 	private Map<String,List<String>> driver2filesIdentifier;
 
 	public ODriverConfigurator() {
@@ -252,6 +255,21 @@ public class ODriverConfigurator {
 			}
 		}
 		return json;
+	}
+
+	public void checkConnection(String driver, String uri, String username, String password, OTeleporterContext context) throws Exception {
+
+		String driverName = checkConfiguration(driver, context);
+
+		ODBSourceConnection odbSourceConnection = new ODBSourceConnection(driverName, uri, username, password);
+		Connection connection = null;
+		try {
+			connection = odbSourceConnection.getConnection(context);
+		} finally {
+			if (connection != null) {
+				connection.close();
+			}
+		}
 	}
 
 }
