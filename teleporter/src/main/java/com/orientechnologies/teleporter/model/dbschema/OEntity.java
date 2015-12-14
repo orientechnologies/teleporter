@@ -42,10 +42,13 @@ public class OEntity implements Comparable<OEntity> {
 	private boolean inheritedAttributesRecovered;
 	private OPrimaryKey primaryKey;
 	private List<OForeignKey> foreignKeys;
-	private Set<ORelationship> relationships;
-	private Set<ORelationship> inheritedRelationships;
-	private boolean inheritedRelationshipsRecovered;
-	private Boolean isJoinEntityDim2;
+	private Set<ORelationship> outRelationships;
+	private Set<ORelationship> inheritedOutRelationships;
+	private boolean inheritedOutRelationshipsRecovered;
+	private Set<ORelationship> inRelationships;
+	private Set<ORelationship> inheritedInRelationships;
+	private boolean inheritedInRelationshipsRecovered;
+	private Boolean isAggregable;
 	private OEntity parentEntity;
 	private int inheritanceLevel;
 	private OHierarchicalBag hierarchicalBag;
@@ -57,34 +60,51 @@ public class OEntity implements Comparable<OEntity> {
 		this.inheritedAttributes = new LinkedHashSet<OAttribute>();
 		this.inheritedAttributesRecovered = false;
 		this.foreignKeys = new LinkedList<OForeignKey>();
-		this.relationships = new LinkedHashSet<ORelationship>();
-		this.inheritedRelationships = new LinkedHashSet<ORelationship>();
-		this.inheritedRelationshipsRecovered = false;
-		this.isJoinEntityDim2 = null;
+		this.outRelationships = new LinkedHashSet<ORelationship>();
+		this.inheritedOutRelationships = new LinkedHashSet<ORelationship>();
+		this.inheritedOutRelationshipsRecovered = false;
+		this.inRelationships = new LinkedHashSet<ORelationship>();
+		this.inheritedInRelationships = new LinkedHashSet<ORelationship>();
+		this.inheritedInRelationshipsRecovered = false;
+		this.isAggregable = null;
 		this.inheritanceLevel = 0;
 	}
 
 	/*
-	 * It's possible to aggregate an entity if it's a junction (or join) table of dimension 2.
+	 * It's possible to aggregate an entity if 
+	 * (i) it's a junction (or join) table of dimension 2.
+	 * (ii) It has not exported keys, that is it's not referenced by other entities.
 	 */
-	public boolean isJoinEntityDim2() {
+	public boolean isAggregableJoinTable() {
 
+		// (i) check
 		if(this.foreignKeys.size() != 2)
 			return false;
 
-		if(this.isJoinEntityDim2 == null) {
-
+		if(this.isAggregable != null) {
+			return this.isAggregable;
+		}
+		
+		else {
+			boolean aggregable = true;
+			
+			// (i) each attribute belonging to the primary key is involved also in a foreign key and vice versa.
 			for(OForeignKey currentFk: this.foreignKeys) {
 				for(OAttribute attribute: currentFk.getInvolvedAttributes()) {
 					if(!this.primaryKey.getInvolvedAttributes().contains(attribute)) {
-						return this.isJoinEntityDim2 = false;
+						aggregable = false;
+						break;
 					}
 				}
 			}
-			return this.isJoinEntityDim2 = true;
-		}
-		else {
-			return this.isJoinEntityDim2;
+			
+			// (ii) check
+			if(aggregable) {
+				if(this.getAllInRelationships().size() > 0)
+					aggregable = false;
+			}
+			
+			return this.isAggregable = aggregable;
 		}
 
 	}
@@ -96,8 +116,6 @@ public class OEntity implements Comparable<OEntity> {
 	public void setName(String name) {
 		this.name = name;
 	}
-
-
 
 	public String getSchemaName() {
 		return this.schemaName;
@@ -261,50 +279,99 @@ public class OEntity implements Comparable<OEntity> {
 
 		return toReturn;
 	}
+	
+	// Getter and Setter Out Relationships
 
-	public Set<ORelationship> getRelationships() {
-		return this.relationships;
+	public Set<ORelationship> getOutRelationships() {
+		return this.outRelationships;
 	}
 
-	public void setRelationships(Set<ORelationship> relationships) {
-		this.relationships = relationships;
+	public void setOutRelationships(Set<ORelationship> outRelationships) {
+		this.outRelationships = outRelationships;
 	}
 
-	public Set<ORelationship> getInheritedRelationships() {
+	public Set<ORelationship> getInheritedOutRelationships() {
 
-		if(inheritedRelationshipsRecovered)
-			return this.inheritedRelationships;
+		if(inheritedOutRelationshipsRecovered)
+			return this.inheritedOutRelationships;
 		else if(parentEntity != null) {
-			this.inheritedRelationships = parentEntity.getAllRelationships();
-			this.inheritedRelationshipsRecovered = true;
-			return this.inheritedRelationships;
+			this.inheritedOutRelationships = parentEntity.getAllOutRelationships();
+			this.inheritedOutRelationshipsRecovered = true;
+			return this.inheritedOutRelationships;
 		}
 		else
-			return this.inheritedRelationships; 
+			return this.inheritedOutRelationships; 
 	}
 
-	public void setInheritedRelationships(Set<ORelationship> inheritedRelationships) {
-		this.inheritedRelationships = inheritedRelationships;
+	public void setInheritedOutRelationships(Set<ORelationship> inheritedOutRelationships) {
+		this.inheritedOutRelationships = inheritedOutRelationships;
 	}
 
-	//Returns relationships and inherited relationships
-	public Set<ORelationship> getAllRelationships() {
+	//Returns relationships and inherited relationships (OUT)
+	public Set<ORelationship> getAllOutRelationships() {
 
 		Set<ORelationship> allRelationships = new LinkedHashSet<ORelationship>();
-		allRelationships.addAll(this.getInheritedRelationships());
-		allRelationships.addAll(this.relationships);
+		allRelationships.addAll(this.getInheritedOutRelationships());
+		allRelationships.addAll(this.outRelationships);
 
 		return allRelationships;
 	}
 
-	public boolean isInheritedRelationshipsRecovered() {
-		return inheritedRelationshipsRecovered;
+	public boolean isInheritedOutRelationshipsRecovered() {
+		return inheritedOutRelationshipsRecovered;
 	}
 
-	public void setInheritedRelationshipsRecovered(boolean inheritedRelationshipsRecovered) {
-		this.inheritedRelationshipsRecovered = inheritedRelationshipsRecovered;
+	public void setInheritedOutRelationshipsRecovered(boolean inheritedOutRelationshipsRecovered) {
+		this.inheritedOutRelationshipsRecovered = inheritedOutRelationshipsRecovered;
 	}
 
+	
+	// Getter and Setter In Relationships
+	
+	public Set<ORelationship> getInRelationships() {
+		return this.inRelationships;
+	}
+
+	public void setInRelationships(Set<ORelationship> inRelationships) {
+		this.inRelationships = inRelationships;
+	}
+
+	public Set<ORelationship> getInheritedInRelationships() {
+
+		if(inheritedInRelationshipsRecovered)
+			return this.inheritedInRelationships;
+		else if(parentEntity != null) {
+			this.inheritedInRelationships = parentEntity.getAllInRelationships();
+			this.inheritedInRelationshipsRecovered = true;
+			return this.inheritedInRelationships;
+		}
+		else
+			return this.inheritedInRelationships; 
+	}
+
+	public void setInheritedInRelationships(Set<ORelationship> inheritedInRelationships) {
+		this.inheritedInRelationships = inheritedInRelationships;
+	}
+
+	//Returns relationships and inherited relationships (IN)
+	public Set<ORelationship> getAllInRelationships() {
+
+		Set<ORelationship> allRelationships = new LinkedHashSet<ORelationship>();
+		allRelationships.addAll(this.getInheritedInRelationships());
+		allRelationships.addAll(this.inRelationships);
+
+		return allRelationships;
+	}
+
+	public boolean isInheritedInRelationshipsRecovered() {
+		return inheritedInRelationshipsRecovered;
+	}
+
+	public void setInheritedInRelationshipsRecovered(boolean inheritedInRelationshipsRecovered) {
+		this.inheritedInRelationshipsRecovered = inheritedInRelationshipsRecovered;
+	}
+	
+		
 	public OEntity getParentEntity() {
 		return this.parentEntity;
 	}
@@ -353,8 +420,8 @@ public class OEntity implements Comparable<OEntity> {
 	public String toString() {
 		String s = "Entity [name = " + this.name + ", number of attributes = " + this.attributes.size() + "]";	
 
-		if(this.isJoinEntityDim2())
-			s += "\t\t\tJoin Entity (Join Table of dimension 2)";
+		if(this.isAggregableJoinTable())
+			s += "\t\t\tJoin Entity (Aggregable Join Table)";
 
 		s += "\n|| ";
 
@@ -373,12 +440,12 @@ public class OEntity implements Comparable<OEntity> {
 			cont++;
 		}
 
-		if(this.relationships.size() > 0) {
+		if(this.outRelationships.size() > 0) {
 
-			s += "\nForeign Keys ("+relationships.size()+"):\n";
+			s += "\nForeign Keys ("+outRelationships.size()+"):\n";
 			int index = 1;
 
-			for(ORelationship relationship: this.relationships) {
+			for(ORelationship relationship: this.outRelationships) {
 				s += index +".  ";
 				s += "Foreign Entity: " + relationship.getForeignEntityName() + ", Foreign Key: " + relationship.getForeignKey().toString() + "\t||\t" 
 						+ "Parent Entity: " + relationship.getParentEntityName() + ", Primary Key: " + relationship.getForeignKey().toString() + "\n";

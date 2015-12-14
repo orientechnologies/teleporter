@@ -145,12 +145,12 @@ public class OSourceSchemaBuildingTestCase {
       assertEquals("FOREIGN_BOOK", foreignEntity.getAttributeByName("AUTHOR").getBelongingEntity().getName());
 
       // relationship, primary and foreign key check
-      assertEquals(1, foreignEntity.getRelationships().size());
-      assertEquals(0, parentEntity.getRelationships().size());
+      assertEquals(1, foreignEntity.getOutRelationships().size());
+      assertEquals(0, parentEntity.getOutRelationships().size());
       assertEquals(0,parentEntity.getForeignKeys().size());
       assertEquals(1,foreignEntity.getForeignKeys().size());
 
-      Iterator<ORelationship> it = foreignEntity.getRelationships().iterator();
+      Iterator<ORelationship> it = foreignEntity.getOutRelationships().iterator();
       ORelationship currentRelationship = it.next();
       assertEquals("PARENT_AUTHOR", currentRelationship.getParentEntityName());
       assertEquals("FOREIGN_BOOK", currentRelationship.getForeignEntityName());
@@ -274,12 +274,12 @@ public class OSourceSchemaBuildingTestCase {
       assertEquals("FOREIGN_BOOK", foreignEntity.getAttributeByName("AUTHOR_SURNAME").getBelongingEntity().getName());
 
       // relationship, primary and foreign key check
-      assertEquals(1, foreignEntity.getRelationships().size());
-      assertEquals(0, parentEntity.getRelationships().size());
+      assertEquals(1, foreignEntity.getOutRelationships().size());
+      assertEquals(0, parentEntity.getOutRelationships().size());
       assertEquals(0,parentEntity.getForeignKeys().size());
       assertEquals(1,foreignEntity.getForeignKeys().size());
 
-      Iterator<ORelationship> it = foreignEntity.getRelationships().iterator();
+      Iterator<ORelationship> it = foreignEntity.getOutRelationships().iterator();
       ORelationship currentRelationship = it.next();
       assertEquals("PARENT_AUTHOR", currentRelationship.getParentEntityName());
       assertEquals("FOREIGN_BOOK", currentRelationship.getForeignEntityName());
@@ -397,13 +397,13 @@ public class OSourceSchemaBuildingTestCase {
       assertEquals("FOREIGN_ARTICLE", foreignEntity.getAttributeByName("TRANSLATOR").getBelongingEntity().getName());
 
       // relationship, primary and foreign key check
-      assertEquals(2, foreignEntity.getRelationships().size());
-      assertEquals(0, parentEntity.getRelationships().size());
+      assertEquals(2, foreignEntity.getOutRelationships().size());
+      assertEquals(0, parentEntity.getOutRelationships().size());
       assertEquals(0,parentEntity.getForeignKeys().size());
       assertEquals(2,foreignEntity.getForeignKeys().size());
 
       // first relationship
-      Iterator<ORelationship> it = foreignEntity.getRelationships().iterator();
+      Iterator<ORelationship> it = foreignEntity.getOutRelationships().iterator();
       ORelationship currentRelationship = it.next();
       assertEquals("PARENT_PERSON", currentRelationship.getParentEntityName());
       assertEquals("FOREIGN_ARTICLE", currentRelationship.getForeignEntityName());
@@ -543,13 +543,13 @@ public class OSourceSchemaBuildingTestCase {
       assertEquals("FOREIGN_ARTICLE", foreignEntity.getAttributeByName("TRANSLATOR_SURNAME").getBelongingEntity().getName());
 
       // relationship, primary and foreign key check
-      assertEquals(2, foreignEntity.getRelationships().size());
-      assertEquals(0, parentEntity.getRelationships().size());
+      assertEquals(2, foreignEntity.getOutRelationships().size());
+      assertEquals(0, parentEntity.getOutRelationships().size());
       assertEquals(0,parentEntity.getForeignKeys().size());
       assertEquals(2,foreignEntity.getForeignKeys().size());
 
       // first relationship
-      Iterator<ORelationship> it = foreignEntity.getRelationships().iterator();
+      Iterator<ORelationship> it = foreignEntity.getOutRelationships().iterator();
       ORelationship currentRelationship = it.next();
       assertEquals("PARENT_PERSON", currentRelationship.getParentEntityName());
       assertEquals("FOREIGN_ARTICLE", currentRelationship.getForeignEntityName());
@@ -688,13 +688,13 @@ public class OSourceSchemaBuildingTestCase {
       assertEquals("FOREIGN_PROJECT", foreignEntity.getAttributeByName("PROJECT_MANAGER").getBelongingEntity().getName());
 
       // relationship, primary and foreign key check
-      assertEquals(1, foreignEntity.getRelationships().size());
-      assertEquals(1, parentEntity.getRelationships().size());
+      assertEquals(1, foreignEntity.getOutRelationships().size());
+      assertEquals(1, parentEntity.getOutRelationships().size());
       assertEquals(1,parentEntity.getForeignKeys().size());
       assertEquals(1,foreignEntity.getForeignKeys().size());
 
       // first relationship
-      Iterator<ORelationship> it = foreignEntity.getRelationships().iterator();
+      Iterator<ORelationship> it = foreignEntity.getOutRelationships().iterator();
       ORelationship currentRelationship = it.next();
       assertEquals("PARENT_EMPLOYEE", currentRelationship.getParentEntityName());
       assertEquals("FOREIGN_PROJECT", currentRelationship.getForeignEntityName());
@@ -705,7 +705,7 @@ public class OSourceSchemaBuildingTestCase {
       assertEquals("EMP_ID", parentEntity.getPrimaryKey().getInvolvedAttributes().get(0).getName());
 
       // second relationship
-      it = parentEntity.getRelationships().iterator();
+      it = parentEntity.getOutRelationships().iterator();
       currentRelationship = it.next();
       assertEquals("PARENT_EMPLOYEE", currentRelationship.getParentEntityName());
       assertEquals("PARENT_EMPLOYEE", currentRelationship.getForeignEntityName());
@@ -804,15 +804,15 @@ public class OSourceSchemaBuildingTestCase {
 
 
       // relationship, primary and foreign key check
-      assertEquals(0, filmEntity.getRelationships().size());
-      assertEquals(0, actorEntity.getRelationships().size());
-      assertEquals(2, film2actor.getRelationships().size());
+      assertEquals(0, filmEntity.getOutRelationships().size());
+      assertEquals(0, actorEntity.getOutRelationships().size());
+      assertEquals(2, film2actor.getOutRelationships().size());
       assertEquals(0,filmEntity.getForeignKeys().size());
       assertEquals(0,actorEntity.getForeignKeys().size());
       assertEquals(2,film2actor.getForeignKeys().size());
 
       // first relationship
-      Iterator<ORelationship> it = film2actor.getRelationships().iterator();
+      Iterator<ORelationship> it = film2actor.getOutRelationships().iterator();
       ORelationship currentRelationship = it.next();
       assertEquals("ACTOR", currentRelationship.getParentEntityName());
       assertEquals("FILM2ACTOR", currentRelationship.getForeignEntityName());

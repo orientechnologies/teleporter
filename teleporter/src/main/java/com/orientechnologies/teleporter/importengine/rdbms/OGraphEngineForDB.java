@@ -634,7 +634,7 @@ public class OGraphEngineForDB {
 
 		try {
 
-			Iterator<ORelationship> it = joinTable.getRelationships().iterator();
+			Iterator<ORelationship> it = joinTable.getOutRelationships().iterator();
 			ORelationship relationship1 = it.next();
 			ORelationship relationship2 = it.next();
 

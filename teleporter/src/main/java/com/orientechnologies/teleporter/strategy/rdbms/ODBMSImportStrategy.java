@@ -144,7 +144,7 @@ public abstract class ODBMSImportStrategy implements OImportStrategy {
 
 						// for each attribute of the entity belonging to the primary key, correspondent relationship is
 						// built as edge and for the referenced record a vertex is built (only id)
-						for(ORelationship currentRelation: currentEntity.getAllRelationships()) {
+						for(ORelationship currentRelation: currentEntity.getAllOutRelationships()) {
 
 							currentParentEntity = mapper.getDataBaseSchema().getEntityByNameIgnoreCase(currentRelation.getParentEntityName());
 
@@ -295,7 +295,7 @@ public abstract class ODBMSImportStrategy implements OImportStrategy {
 
 							// for each attribute of the entity belonging to the primary key, correspondent relationship is
 							// built as edge and for the referenced record a vertex is built (only id)
-							for(ORelationship currentRelation: currentEntity.getAllRelationships()) {
+							for(ORelationship currentRelation: currentEntity.getAllOutRelationships()) {
 
 								currentParentEntity = mapper.getDataBaseSchema().getEntityByNameIgnoreCase(currentRelation.getParentEntityName());
 								currentInVertexType = null; // reset for the current iteration
@@ -425,7 +425,7 @@ public abstract class ODBMSImportStrategy implements OImportStrategy {
 
 							// for each attribute of the entity belonging to the primary key, correspondent relationship is
 							// built as edge and for the referenced record a vertex is built (only id)
-							for(ORelationship currentRelation: currentEntity.getAllRelationships()) {
+							for(ORelationship currentRelation: currentEntity.getAllOutRelationships()) {
 
 								currentParentEntity = mapper.getDataBaseSchema().getEntityByNameIgnoreCase(currentRelation.getParentEntityName());
 								currentInVertexType = null; // reset for the current iteration

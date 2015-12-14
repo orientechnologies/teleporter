@@ -151,10 +151,10 @@ public class ODBMSNaiveAggregationStrategy extends ODBMSImportStrategy {
 			OQueryResult queryResult = null;
 			ResultSet records = null;
 
-			// Importing from Entities NOT belonging to hierarchical bags and NOT corresponding to join tables
+			// Importing from Entities NOT belonging to hierarchical bags NOR corresponding to join tables
 			for(OEntity entity: mapper.getDataBaseSchema().getEntities()) {
 
-				if(!entity.isJoinEntityDim2() && entity.getHierarchicalBag() == null) {
+				if(!entity.isAggregableJoinTable() && entity.getHierarchicalBag() == null) {
 
 					// for each entity in dbSchema all records are retrieved
 					queryResult = dbQueryEngine.getRecordsByEntity(entity.getName(), entity.getSchemaName(), context);
@@ -172,7 +172,7 @@ public class ODBMSNaiveAggregationStrategy extends ODBMSImportStrategy {
 
 						// for each attribute of the entity belonging to the primary key, correspondent relationship is
 						// built as edge and for the referenced record a vertex is built (only id)
-						for(ORelationship currentRelation: entity.getRelationships()) {
+						for(ORelationship currentRelation: entity.getOutRelationships()) {
 							currentInVertexType = mapper.getVertexTypeByName(context.getNameResolver().resolveVertexName(currentRelation.getParentEntityName()));
 							edgeType = mapper.getRelationship2edgeType().get(currentRelation);
 							graphEngine.upsertReachedVertexWithEdge(orientGraph, currentRecord, currentRelation, currentOutVertex, currentInVertexType, edgeType.getName(), context);
@@ -190,7 +190,7 @@ public class ODBMSNaiveAggregationStrategy extends ODBMSImportStrategy {
 			// Importing from Entities NOT belonging to hierarchical bags and corresponding to join tables
 			for(OEntity entity: mapper.getDataBaseSchema().getEntities()) {
 
-				if(entity.isJoinEntityDim2() && entity.getHierarchicalBag() == null) {
+				if(entity.isAggregableJoinTable() && entity.getHierarchicalBag() == null) {
 
 					// for each entity in dbSchema all records are retrieved
 					queryResult = dbQueryEngine.getRecordsByEntity(entity.getName(), entity.getSchemaName(), context);
