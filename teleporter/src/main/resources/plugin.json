@@ -1,10 +1,10 @@
 {
 	"name" : "teleporter",
 	"version" : "1.0-SNAPSHOT",
-	"javaClass": "com.orientechnologies.teleporter.main.OTeleporter",
+	"javaClass": "com.orientdb.teleporter.main.OTeleporter",
 	"description" : "This is Teleporter plugin",
-	"web" : "http://www.orientechnologies.com",
-	"copyrights" : "Orient Technologies LTD",
+	"web" : "http://www.orientdb.com",
+	"copyrights" : "OrientDB LTD",
 	"license" : "Commercial",
 	"parameters" : {}
 }

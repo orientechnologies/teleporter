@@ -1,6 +1,6 @@
 @echo off
 rem
-rem Copyright (c) 2015 Orient Technologies LTD - www.orientechnologies.com
+rem Copyright (c) 2015 OrientDB LTD - www.orientechnologies.com
 rem
 rem Guess ORIENTDB_HOME if not defined
 set CURRENT_DIR=%cd%

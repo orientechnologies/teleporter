@@ -4,7 +4,7 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>com.orientechnologies</groupId>
+	<groupId>com.orientdb</groupId>
 	<artifactId>orientdb-teleporter</artifactId>
 	<version>1.0</version>
 	<packaging>jar</packaging>
@@ -13,8 +13,8 @@
 	<description>Teleporter plugin for OrientDB NoSQL DBMS</description>
 	<inceptionYear>2015</inceptionYear>
 	<organization>
-		<name>Orient Technologies</name>
-		<url>http://www.orientechnologies.com</url>
+		<name>OrientDB</name>
+		<url>http://www.orientdb.com</url>
 	</organization>
 	<licenses>
 		<license>
@@ -26,8 +26,8 @@
             <id>g.ponzi</id>
             <name>Gabriele Ponzi</name>
             <email>gabriele.ponzi--at--gmail.com</email>
-            <organization>Orient Technologies</organization>
-            <organizationUrl>http://www.orientechnologies.com</organizationUrl>
+            <organization>OrientDB</organization>
+            <organizationUrl>http://www.orientdb.com</organizationUrl>
             <roles>
                 <role>architect</role>
                 <role>developer</role>

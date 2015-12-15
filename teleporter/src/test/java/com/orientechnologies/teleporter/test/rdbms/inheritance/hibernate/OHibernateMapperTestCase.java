@@ -1,21 +1,19 @@
 /*
- *
- *  *  Copyright 2015 Orient Technologies LTD (info(at)orientechnologies.com)
- *  *
- *  *  Licensed under the Apache License, Version 2.0 (the "License");
- *  *  you may not use this file except in compliance with the License.
- *  *  You may obtain a copy of the License at
- *  *
- *  *       http://www.apache.org/licenses/LICENSE-2.0
- *  *
- *  *  Unless required by applicable law or agreed to in writing, software
- *  *  distributed under the License is distributed on an "AS IS" BASIS,
- *  *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  *  See the License for the specific language governing permissions and
- *  *  limitations under the License.
- *  *
- *  * For more information: http://www.orientechnologies.com
- *
+ * Copyright 2015 OrientDB LTD (info--at--orientdb.com)
+ * All Rights Reserved. Commercial License.
+ * 
+ * NOTICE:  All information contained herein is, and remains the property of
+ * OrientDB LTD and its suppliers, if any.  The intellectual and
+ * technical concepts contained herein are proprietary to
+ * OrientDB LTD and its suppliers and may be covered by United
+ * Kingdom and Foreign Patents, patents in process, and are protected by trade
+ * secret or copyright law.
+ * 
+ * Dissemination of this information or reproduction of this material
+ * is strictly forbidden unless prior written permission is obtained
+ * from OrientDB LTD.
+ * 
+ * For more information: http://www.orientdb.com
  */
 
 package com.orientechnologies.teleporter.test.rdbms.inheritance.hibernate;
@@ -242,10 +240,18 @@ public class OHibernateMapperTestCase {
       assertEquals(0, regularEmployeeEntity.getOutRelationships().size());
       assertEquals(0, contractEmployeeEntity.getOutRelationships().size());
       assertEquals(1, employeeEntity.getOutRelationships().size());
+      assertEquals(0, residenceEntity.getOutRelationships().size());
+      assertEquals(0, regularEmployeeEntity.getInRelationships().size());
+      assertEquals(0, contractEmployeeEntity.getInRelationships().size());
+      assertEquals(0, employeeEntity.getInRelationships().size());
+      assertEquals(1, residenceEntity.getInRelationships().size());
+      
       assertEquals(0, regularEmployeeEntity.getForeignKeys().size());
       assertEquals(0, contractEmployeeEntity.getForeignKeys().size());
       assertEquals(1, employeeEntity.getForeignKeys().size());
+      assertEquals(0, residenceEntity.getForeignKeys().size());
 
+      
       Iterator<ORelationship> itEmp = employeeEntity.getOutRelationships().iterator();
       ORelationship currentEmpRel = itEmp.next();
       assertEquals("RESIDENCE", currentEmpRel.getParentEntityName());
@@ -253,11 +259,16 @@ public class OHibernateMapperTestCase {
       assertEquals(residenceEntity.getPrimaryKey(), currentEmpRel.getPrimaryKey());
       assertEquals(employeeEntity.getForeignKeys().get(0), currentEmpRel.getForeignKey());
       assertFalse(itEmp.hasNext());
+      
+      Iterator<ORelationship> itRes = residenceEntity.getInRelationships().iterator();
+      ORelationship currentResRel = itRes.next();
+      assertEquals(currentEmpRel, currentResRel);
 
       // inherited relationships check
       assertEquals(1, regularEmployeeEntity.getInheritedOutRelationships().size());
       assertEquals(1, contractEmployeeEntity.getInheritedOutRelationships().size());
       assertEquals(0, employeeEntity.getInheritedOutRelationships().size());
+      assertEquals(0, residenceEntity.getInheritedOutRelationships().size());
 
       Iterator<ORelationship> itRegEmp = regularEmployeeEntity.getInheritedOutRelationships().iterator();
       Iterator<ORelationship> itContEmp = contractEmployeeEntity.getInheritedOutRelationships().iterator();
@@ -280,10 +291,12 @@ public class OHibernateMapperTestCase {
       assertEquals(employeeEntity, regularEmployeeEntity.getParentEntity());
       assertEquals(employeeEntity, contractEmployeeEntity.getParentEntity());
       assertNull(employeeEntity.getParentEntity());
+      assertNull(residenceEntity.getParentEntity());
 
       assertEquals(1, regularEmployeeEntity.getInheritanceLevel());
       assertEquals(1, contractEmployeeEntity.getInheritanceLevel());
       assertEquals(0, employeeEntity.getInheritanceLevel());
+      assertEquals(0, residenceEntity.getInheritanceLevel());
 
       // Hierarchical Bag check
       assertEquals(1, mapper.getDataBaseSchema().getHierarchicalBags().size());
@@ -667,9 +680,16 @@ public class OHibernateMapperTestCase {
       assertEquals(1, regularEmployeeEntity.getOutRelationships().size());
       assertEquals(1, contractEmployeeEntity.getOutRelationships().size());
       assertEquals(1, employeeEntity.getOutRelationships().size());
+      assertEquals(0, residenceEntity.getOutRelationships().size());
+      assertEquals(0, regularEmployeeEntity.getInRelationships().size());
+      assertEquals(0, contractEmployeeEntity.getInRelationships().size());
+      assertEquals(2, employeeEntity.getInRelationships().size());
+      assertEquals(1, residenceEntity.getInRelationships().size());      
+      
       assertEquals(1, regularEmployeeEntity.getForeignKeys().size());
       assertEquals(1, contractEmployeeEntity.getForeignKeys().size());
       assertEquals(1, employeeEntity.getForeignKeys().size());
+      assertEquals(0, residenceEntity.getForeignKeys().size());
 
       Iterator<ORelationship> itEmp = employeeEntity.getOutRelationships().iterator();
       Iterator<ORelationship> itRegEmp = regularEmployeeEntity.getOutRelationships().iterator();
@@ -692,11 +712,24 @@ public class OHibernateMapperTestCase {
       assertFalse(itEmp.hasNext());
       assertFalse(itRegEmp.hasNext());
       assertFalse(itContEmp.hasNext());
+      
+      Iterator<ORelationship> itRes = residenceEntity.getInRelationships().iterator();
+      ORelationship currentResRel = itRes.next();
+      assertEquals(currentEmpRel, currentResRel);
+      
+      itEmp = employeeEntity.getInRelationships().iterator();
+      currentEmpRel = itEmp.next();
+      assertEquals(currentEmpRel, currentContEmpRel);
+      
+      currentEmpRel = itEmp.next();
+      assertEquals(currentEmpRel, currentRegEmpRel);
+      
 
       // inherited relationships check
       assertEquals(1, regularEmployeeEntity.getInheritedOutRelationships().size());
       assertEquals(1, contractEmployeeEntity.getInheritedOutRelationships().size());
       assertEquals(0, employeeEntity.getInheritedOutRelationships().size());
+      assertEquals(0, residenceEntity.getInheritedOutRelationships().size());
 
       itRegEmp = regularEmployeeEntity.getInheritedOutRelationships().iterator();
       itContEmp = contractEmployeeEntity.getInheritedOutRelationships().iterator();
@@ -722,10 +755,12 @@ public class OHibernateMapperTestCase {
       assertEquals(employeeEntity, regularEmployeeEntity.getParentEntity());
       assertEquals(employeeEntity, contractEmployeeEntity.getParentEntity());
       assertNull(employeeEntity.getParentEntity());
+      assertNull(residenceEntity.getParentEntity());
 
       assertEquals(1, regularEmployeeEntity.getInheritanceLevel());
       assertEquals(1, contractEmployeeEntity.getInheritanceLevel());
       assertEquals(0, employeeEntity.getInheritanceLevel());
+      assertEquals(0, residenceEntity.getInheritanceLevel());
 
       // Hierarchical Bag check
       assertEquals(1, mapper.getDataBaseSchema().getHierarchicalBags().size());
@@ -930,7 +965,7 @@ public class OHibernateMapperTestCase {
 
   /*
    * Table per Subclass Inheritance (<subclass> <join/> </subclass> tags)
-   * 3 tables, one parent and 2 childs ( http://www.javatpoint.com/table-per-subclass )
+   * 3 tables, one parent and 2 children ( http://www.javatpoint.com/table-per-subclass )
    */
 
   public void test3() {
@@ -1103,9 +1138,16 @@ public class OHibernateMapperTestCase {
       assertEquals(1, regularEmployeeEntity.getOutRelationships().size());
       assertEquals(1, contractEmployeeEntity.getOutRelationships().size());
       assertEquals(1, employeeEntity.getOutRelationships().size());
+      assertEquals(0, residenceEntity.getOutRelationships().size());
+      assertEquals(0, regularEmployeeEntity.getInRelationships().size());
+      assertEquals(0, contractEmployeeEntity.getInRelationships().size());
+      assertEquals(2, employeeEntity.getInRelationships().size());
+      assertEquals(1, residenceEntity.getInRelationships().size());      
+      
       assertEquals(1, regularEmployeeEntity.getForeignKeys().size());
       assertEquals(1, contractEmployeeEntity.getForeignKeys().size());
       assertEquals(1, employeeEntity.getForeignKeys().size());
+      assertEquals(0, residenceEntity.getForeignKeys().size());
 
       Iterator<ORelationship> itEmp = employeeEntity.getOutRelationships().iterator();
       Iterator<ORelationship> itRegEmp = regularEmployeeEntity.getOutRelationships().iterator();
@@ -1128,11 +1170,24 @@ public class OHibernateMapperTestCase {
       assertFalse(itEmp.hasNext());
       assertFalse(itRegEmp.hasNext());
       assertFalse(itContEmp.hasNext());
+      
+      Iterator<ORelationship> itRes = residenceEntity.getInRelationships().iterator();
+      ORelationship currentResRel = itRes.next();
+      assertEquals(currentEmpRel, currentResRel);
+      
+      itEmp = employeeEntity.getInRelationships().iterator();
+      currentEmpRel = itEmp.next();
+      assertEquals(currentEmpRel, currentContEmpRel);
+      
+      currentEmpRel = itEmp.next();
+      assertEquals(currentEmpRel, currentRegEmpRel);
+
 
       // inherited relationships check
       assertEquals(1, regularEmployeeEntity.getInheritedOutRelationships().size());
       assertEquals(1, contractEmployeeEntity.getInheritedOutRelationships().size());
       assertEquals(0, employeeEntity.getInheritedOutRelationships().size());
+      assertEquals(0, residenceEntity.getInheritedOutRelationships().size());
 
       itRegEmp = regularEmployeeEntity.getInheritedOutRelationships().iterator();
       itContEmp = contractEmployeeEntity.getInheritedOutRelationships().iterator();
@@ -1155,10 +1210,12 @@ public class OHibernateMapperTestCase {
       assertEquals(employeeEntity, regularEmployeeEntity.getParentEntity());
       assertEquals(employeeEntity, contractEmployeeEntity.getParentEntity());
       assertNull(employeeEntity.getParentEntity());
+      assertNull(residenceEntity.getParentEntity());
 
       assertEquals(1, regularEmployeeEntity.getInheritanceLevel());
       assertEquals(1, contractEmployeeEntity.getInheritanceLevel());
       assertEquals(0, employeeEntity.getInheritanceLevel());
+      assertEquals(0, residenceEntity.getInheritanceLevel());
 
       // Hierarchical Bag check
       assertEquals(1, mapper.getDataBaseSchema().getHierarchicalBags().size());
@@ -1537,9 +1594,16 @@ public class OHibernateMapperTestCase {
       assertEquals(0, regularEmployeeEntity.getOutRelationships().size());
       assertEquals(0, contractEmployeeEntity.getOutRelationships().size());
       assertEquals(1, employeeEntity.getOutRelationships().size());
+      assertEquals(0, residenceEntity.getOutRelationships().size());
+      assertEquals(0, regularEmployeeEntity.getInRelationships().size());
+      assertEquals(0, contractEmployeeEntity.getInRelationships().size());
+      assertEquals(0, employeeEntity.getInRelationships().size());
+      assertEquals(1, residenceEntity.getInRelationships().size());      
+      
       assertEquals(0, regularEmployeeEntity.getForeignKeys().size());
       assertEquals(0, contractEmployeeEntity.getForeignKeys().size());
       assertEquals(1, employeeEntity.getForeignKeys().size());
+      assertEquals(0, residenceEntity.getForeignKeys().size());
 
       Iterator<ORelationship> itEmp = employeeEntity.getOutRelationships().iterator();
       ORelationship currentEmpRel = itEmp.next();
@@ -1548,11 +1612,17 @@ public class OHibernateMapperTestCase {
       assertEquals(residenceEntity.getPrimaryKey(), currentEmpRel.getPrimaryKey());
       assertEquals(employeeEntity.getForeignKeys().get(0), currentEmpRel.getForeignKey());
       assertFalse(itEmp.hasNext());
+      
+      Iterator<ORelationship> itRes = residenceEntity.getInRelationships().iterator();
+      ORelationship currentResRel = itRes.next();
+      assertEquals(currentEmpRel, currentResRel);
+      
 
       // inherited relationships check
       assertEquals(1, regularEmployeeEntity.getInheritedOutRelationships().size());
       assertEquals(1, contractEmployeeEntity.getInheritedOutRelationships().size());
       assertEquals(0, employeeEntity.getInheritedOutRelationships().size());
+      assertEquals(0, residenceEntity.getInheritedOutRelationships().size());
 
       Iterator<ORelationship> itRegEmp = regularEmployeeEntity.getInheritedOutRelationships().iterator();
       Iterator<ORelationship> itContEmp = contractEmployeeEntity.getInheritedOutRelationships().iterator();
@@ -1575,10 +1645,12 @@ public class OHibernateMapperTestCase {
       assertEquals(employeeEntity, regularEmployeeEntity.getParentEntity());
       assertEquals(employeeEntity, contractEmployeeEntity.getParentEntity());
       assertNull(employeeEntity.getParentEntity());
+      assertNull(residenceEntity.getParentEntity());
 
       assertEquals(1, regularEmployeeEntity.getInheritanceLevel());
       assertEquals(1, contractEmployeeEntity.getInheritanceLevel());
       assertEquals(0, employeeEntity.getInheritanceLevel());
+      assertEquals(0, residenceEntity.getInheritanceLevel());
 
       // Hierarchical Bag check
       assertEquals(1, mapper.getDataBaseSchema().getHierarchicalBags().size());
