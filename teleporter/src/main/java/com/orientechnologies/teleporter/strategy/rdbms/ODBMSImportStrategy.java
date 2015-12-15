@@ -31,6 +31,7 @@ import java.util.Set;
 
 import com.orientechnologies.teleporter.context.OTeleporterContext;
 import com.orientechnologies.teleporter.context.OTeleporterStatistics;
+import com.orientechnologies.teleporter.factory.ODataTypeHandlerFactory;
 import com.orientechnologies.teleporter.factory.ONameResolverFactory;
 import com.orientechnologies.teleporter.factory.OQueryQuoteTypeFactory;
 import com.orientechnologies.teleporter.importengine.rdbms.ODBQueryEngine;
@@ -44,6 +45,7 @@ import com.orientechnologies.teleporter.model.dbschema.ORelationship;
 import com.orientechnologies.teleporter.model.graphmodel.OEdgeType;
 import com.orientechnologies.teleporter.model.graphmodel.OVertexType;
 import com.orientechnologies.teleporter.nameresolver.ONameResolver;
+import com.orientechnologies.teleporter.persistence.handler.ODBMSDataTypeHandler;
 import com.orientechnologies.teleporter.persistence.util.OQueryResult;
 import com.orientechnologies.teleporter.strategy.OImportStrategy;
 import com.orientechnologies.teleporter.util.OTimeFormatHandler;
@@ -58,23 +60,29 @@ import com.tinkerpop.blueprints.impls.orient.OrientVertex;
 
 public abstract class ODBMSImportStrategy implements OImportStrategy {
 
+	public ODBMSImportStrategy() {}
+
 	@Override
 	public void executeStrategy(String driver, String uri, String username, String password, String outOrientGraphUri, String chosenMapper, String xmlPath, String nameResolverConvention, 
 			List<String> includedTables, List<String> excludedTables, OTeleporterContext context) {	
 
 		Date globalStart = new Date(); 
-		
+
 		OQueryQuoteTypeFactory quoteFactory = new OQueryQuoteTypeFactory();
 		quoteFactory.buildQueryQuoteType(driver, context);
+
+		ODataTypeHandlerFactory factory = new ODataTypeHandlerFactory();
+		ODBMSDataTypeHandler handler = (ODBMSDataTypeHandler) factory.buildDataTypeHandler(driver, context);
+
 
 		// Step 1,2,3
 		ONameResolverFactory nameResolverFactory = new ONameResolverFactory();
 		ONameResolver nameResolver = nameResolverFactory.buildNameResolver(nameResolverConvention, context);
 		context.getStatistics().runningStepNumber = -1;
-		OSource2GraphMapper mapper = this.createSchemaMapper(driver, uri, username, password, outOrientGraphUri, chosenMapper, xmlPath, nameResolver, includedTables, excludedTables, context);
+		OSource2GraphMapper mapper = this.createSchemaMapper(driver, uri, username, password, outOrientGraphUri, chosenMapper, xmlPath, nameResolver, handler, includedTables, excludedTables, context);
 
 		// Step 4: Import
-		this.executeImport(driver, uri, username, password, outOrientGraphUri, mapper, context);
+		this.executeImport(driver, uri, username, password, outOrientGraphUri, mapper, handler, context);
 		context.getStatistics().notifyListeners();
 		context.getOutputManager().info("");
 		context.getStatistics().runningStepNumber = -1;
@@ -85,15 +93,15 @@ public abstract class ODBMSImportStrategy implements OImportStrategy {
 		context.getOutputManager().info(context.getStatistics().toString());
 
 	}
-	
 
-	public abstract OSource2GraphMapper createSchemaMapper(String driver, String uri, String username, String password, String outOrientGraphUri, String chosenMapper, String xmlPath, ONameResolver nameResolver,
-			List<String> includedTables, List<String> excludedTables, OTeleporterContext context);
 
-	
-	public abstract void executeImport(String driver, String uri, String username, String password, String outOrientGraphUri, OSource2GraphMapper mapper, OTeleporterContext context);
+	public abstract OSource2GraphMapper createSchemaMapper(String driver, String uri, String username, String password, String outOrientGraphUri, String chosenMapper, 
+			String xmlPath, ONameResolver nameResolver,	ODBMSDataTypeHandler handler, List<String> includedTables, List<String> excludedTables, OTeleporterContext context);
 
-	
+
+	public abstract void executeImport(String driver, String uri, String username, String password, String outOrientGraphUri, OSource2GraphMapper mapper, ODBMSDataTypeHandler handler, OTeleporterContext context);
+
+
 	/**
 	 * Performs import of all records of the entities contained in the hierarchical bag passed as parameter.
 	 * Adopted in case of "Table per Hierarchy" inheritance strategy.
@@ -137,7 +145,7 @@ public abstract class ODBMSImportStrategy implements OImportStrategy {
 
 					// each record is imported as vertex in the orient graph
 					while(records.next()) {
-						
+
 						// upsert of the vertex
 						currentRecord = records;
 						currentOutVertex = (OrientVertex) graphDBCommandEngine.upsertVisitedVertex(orientGraph, currentRecord, currentOutVertexType, null, context);
@@ -378,7 +386,7 @@ public abstract class ODBMSImportStrategy implements OImportStrategy {
 	 * @param context
 	 */
 	protected void tablePerConcreteTypeImport(OHierarchicalBag bag, OER2GraphMapper mapper, ODBQueryEngine dbQueryEngine, OGraphEngineForDB graphDBCommandEngine, OrientBaseGraph orientGraph, OTeleporterContext context) {
-		
+
 		try {
 
 			OTeleporterStatistics statistics = context.getStatistics();
@@ -728,6 +736,17 @@ public abstract class ODBMSImportStrategy implements OImportStrategy {
 
 		return fullRecord;
 	}
-	
+
+
+	protected boolean hasGeospatialAttributes(OEntity entity, ODBMSDataTypeHandler handler) {
+
+		for(OAttribute currentAttribute: entity.getAllAttributes()) {
+			if(handler.isGeospatial(currentAttribute.getDataType()))
+				return true;
+		}
+
+		return false;
+	}
+
 
 }

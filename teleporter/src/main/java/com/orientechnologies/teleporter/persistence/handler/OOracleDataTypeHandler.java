@@ -25,13 +25,14 @@ import com.orientechnologies.orient.core.metadata.schema.OType;
 
 /**
  * Handler that executes type conversions from Oracle DBMS to the OrientDB types.
+ * No Geospatial implemented.
  * 
  * @author Gabriele Ponzi
  * @email  <gabriele.ponzi--at--gmail.com>
  *
  */
 
-public class OOracleDataTypeHandler extends OGenericDataTypeHandler {
+public class OOracleDataTypeHandler extends ODBMSDataTypeHandler {
 
 
 	public OOracleDataTypeHandler(){

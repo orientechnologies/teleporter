@@ -20,7 +20,7 @@ package com.orientechnologies.teleporter.factory;
 
 import com.orientechnologies.teleporter.context.OTeleporterContext;
 import com.orientechnologies.teleporter.persistence.handler.ODriverDataTypeHandler;
-import com.orientechnologies.teleporter.persistence.handler.OGenericDataTypeHandler;
+import com.orientechnologies.teleporter.persistence.handler.ODBMSDataTypeHandler;
 import com.orientechnologies.teleporter.persistence.handler.OHSQLDBDataTypeHandler;
 import com.orientechnologies.teleporter.persistence.handler.OMySQLDataTypeHandler;
 import com.orientechnologies.teleporter.persistence.handler.OOracleDataTypeHandler;
@@ -58,7 +58,7 @@ public class ODataTypeHandlerFactory {
     case "org.hsqldb.jdbc.JDBCDriver": handler = new OHSQLDBDataTypeHandler();
     break;
 
-    default :  handler = new OGenericDataTypeHandler();
+    default :  handler = new ODBMSDataTypeHandler();
     context.getStatistics().warningMessages.add("Driver " + driver + " is not completely supported. Thus problems may occur during type conversion.");
     break;
     }

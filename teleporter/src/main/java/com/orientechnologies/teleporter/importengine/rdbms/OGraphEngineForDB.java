@@ -33,6 +33,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
+import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.teleporter.context.OTeleporterContext;
 import com.orientechnologies.teleporter.context.OTeleporterStatistics;
 import com.orientechnologies.teleporter.exception.OTeleporterRuntimeException;
@@ -43,6 +44,7 @@ import com.orientechnologies.teleporter.model.dbschema.OEntity;
 import com.orientechnologies.teleporter.model.dbschema.ORelationship;
 import com.orientechnologies.teleporter.model.graphmodel.OModelProperty;
 import com.orientechnologies.teleporter.model.graphmodel.OVertexType;
+import com.orientechnologies.teleporter.persistence.handler.ODBMSDataTypeHandler;
 import com.tinkerpop.blueprints.Direction;
 import com.tinkerpop.blueprints.Edge;
 import com.tinkerpop.blueprints.Vertex;
@@ -61,10 +63,11 @@ import com.tinkerpop.blueprints.impls.orient.OrientVertex;
 public class OGraphEngineForDB {
 
 	private OER2GraphMapper mapper;
+	private ODBMSDataTypeHandler handler;
 
-
-	public OGraphEngineForDB(OER2GraphMapper mapper) {
+	public OGraphEngineForDB(OER2GraphMapper mapper, ODBMSDataTypeHandler handler) {
 		this.mapper = mapper;
+		this.handler = handler;
 	}
 
 
@@ -221,7 +224,9 @@ public class OGraphEngineForDB {
 			String currentAttributeValue = null;
 			Date currentDateValue = null;
 			byte[] currentBinaryValue = null;
+			ODocument currentEmbeddedValue = null;
 			String currentPropertyType;
+			String currentOriginalType;
 			String currentPropertyName;
 
 			// extraction of inherited and not inherited properties from the record (through "getAllProperties()" method)
@@ -230,8 +235,11 @@ public class OGraphEngineForDB {
 				currentPropertyName = currentProperty.getName();
 
 				currentPropertyType = context.getDataTypeHandler().resolveType(currentProperty.getPropertyType().toLowerCase(Locale.ENGLISH),context).toString();
+				currentOriginalType = currentProperty.getPropertyType();
 
 				try {
+
+					// disambiguation on OrientDB Schema type
 
 					if(currentPropertyType.equals("DATE")) {
 						currentDateValue = record.getDate(this.mapper.getAttributeByVertexTypeAndProperty(vertexType.getName(), currentPropertyName).getName());
@@ -260,6 +268,22 @@ public class OGraphEngineForDB {
 						default: break;
 						}
 					}
+
+
+					// disambiguation on original-schema type
+
+					else if(currentOriginalType.equalsIgnoreCase("JSON")) {
+						currentBinaryValue = record.getBytes(this.mapper.getAttributeByVertexTypeAndProperty(vertexType.getName(), currentPropertyName).getName());
+						currentEmbeddedValue = this.handler.convertJSONToDocument(currentPropertyName, currentBinaryValue);
+						properties.put(currentProperty.getName(), currentEmbeddedValue);
+					}
+
+					// GEOSPATIAL
+//					else if(handler.isGeospatial(currentOriginalType)) {
+//						currentAttributeValue = record.getString(this.mapper.getAttributeByVertexTypeAndProperty(vertexType.getName(), currentPropertyName).getName());
+//						currentEmbeddedValue = OShapeFactory.INSTANCE.toDoc(currentAttributeValue);  // to change with transformation from wkt (currentAttrValue) into embedded
+//						properties.put(currentProperty.getName(), currentEmbeddedValue);
+//					}
 
 					else {
 						currentAttributeValue = record.getString(this.mapper.getAttributeByVertexTypeAndProperty(vertexType.getName(), currentPropertyName).getName());

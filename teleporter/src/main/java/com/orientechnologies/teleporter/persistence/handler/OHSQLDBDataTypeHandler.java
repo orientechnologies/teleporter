@@ -25,13 +25,14 @@ import com.orientechnologies.orient.core.metadata.schema.OType;
 
 /**
  * Handler that executes type conversions from HSQLDB DBMS to the OrientDB types.
+ * No Geospatial implementable (HSQLDB doesn't support this feature).
  * 
  * @author Gabriele Ponzi
  * @email  <gabriele.ponzi--at--gmail.com>
  *
  */
 
-public class OHSQLDBDataTypeHandler extends OGenericDataTypeHandler {
+public class OHSQLDBDataTypeHandler extends ODBMSDataTypeHandler {
 
 
   public OHSQLDBDataTypeHandler() {

@@ -18,16 +18,12 @@
 
 package com.orientechnologies.teleporter.util;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.io.Reader;
-import java.io.StringWriter;
-import java.io.Writer;
+import com.orientechnologies.orient.core.record.impl.ODocument;
+import com.orientechnologies.teleporter.context.OTeleporterContext;
+import com.orientechnologies.teleporter.exception.OTeleporterRuntimeException;
+import com.orientechnologies.teleporter.persistence.util.ODBSourceConnection;
+
+import java.io.*;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.channels.Channels;
@@ -39,10 +35,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import com.orientechnologies.orient.core.record.impl.ODocument;
-import com.orientechnologies.teleporter.context.OTeleporterContext;
-import com.orientechnologies.teleporter.exception.OTeleporterRuntimeException;
-import com.orientechnologies.teleporter.persistence.util.ODBSourceConnection;
 
 /**
  * Executes an automatic configuration of the chosen driver JDBC.

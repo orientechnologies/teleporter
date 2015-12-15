@@ -41,9 +41,10 @@ import com.orientechnologies.teleporter.model.graphmodel.OGraphModel;
 import com.orientechnologies.teleporter.model.graphmodel.OModelProperty;
 import com.orientechnologies.teleporter.model.graphmodel.OVertexType;
 import com.orientechnologies.teleporter.persistence.handler.ODriverDataTypeHandler;
+import com.tinkerpop.blueprints.impls.orient.OrientBaseGraph;
 import com.tinkerpop.blueprints.impls.orient.OrientEdgeType;
 import com.tinkerpop.blueprints.impls.orient.OrientElementType;
-import com.tinkerpop.blueprints.impls.orient.OrientGraphNoTx;
+import com.tinkerpop.blueprints.impls.orient.OrientGraphFactory;
 import com.tinkerpop.blueprints.impls.orient.OrientVertexType;
 
 /**
@@ -64,11 +65,14 @@ public class OGraphModelWriter {
 	public boolean writeModelOnOrient(OGraphModel graphModel, ODriverDataTypeHandler handler, String outOrientGraphUri, OTeleporterContext context) {
 		boolean success = false;
 
-		OrientGraphNoTx orientGraph = new OrientGraphNoTx(outOrientGraphUri);
+		OrientBaseGraph orientGraph = null;
+		OrientGraphFactory factory = new OrientGraphFactory(outOrientGraphUri);
+		orientGraph = factory.getNoTx();
+
 		OTeleporterStatistics statistics = context.getStatistics();
 		statistics.startWork3Time = new Date();
 		statistics.runningStepNumber = 3;
-		
+
 		int numberOfVertices = graphModel.getVerticesType().size();
 		statistics.totalNumberOfVertexType = numberOfVertices;
 		int numberOfEdges = graphModel.getEdgesType().size();
@@ -84,7 +88,7 @@ public class OGraphModelWriter {
 				 */
 
 				context.getOutputManager().debug("\nWriting vertex-types on OrientDB Schema...\n");
-				
+
 				OrientVertexType newVertexType;
 				String statement;
 				OCommandSQL sqlCommand;
@@ -252,7 +256,7 @@ public class OGraphModelWriter {
 			statistics.notifyListeners();
 			statistics.runningStepNumber = -1;
 			orientGraph.shutdown();
-			
+
 			success = true;
 
 		}
@@ -261,7 +265,7 @@ public class OGraphModelWriter {
 					+ "grant coherence between the two databases. Rebuild the schema from scratch.");
 			throw new OTeleporterRuntimeException();
 		}
-		
+
 		return success;
 	}
 
@@ -273,7 +277,7 @@ public class OGraphModelWriter {
 	 * @param currentElementType
 	 * @return
 	 */
-	private boolean checkAndUpdateClass(OrientGraphNoTx orientGraph, OElementType currentElementType, ODriverDataTypeHandler handler, OTeleporterContext context) {
+	private boolean checkAndUpdateClass(OrientBaseGraph orientGraph, OElementType currentElementType, ODriverDataTypeHandler handler, OTeleporterContext context) {
 
 		boolean updated = false;
 
@@ -338,7 +342,7 @@ public class OGraphModelWriter {
 		return updated;
 	}
 
-	public boolean inheritanceChangesPresent(OGraphModel graphModel, OrientGraphNoTx orientGraph) {
+	public boolean inheritanceChangesPresent(OGraphModel graphModel, OrientBaseGraph orientGraph) {
 
 		OrientVertexType orientCorrespondentVertexType;
 

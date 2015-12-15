@@ -18,10 +18,16 @@
 
 package com.orientechnologies.teleporter.persistence.handler;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.orientechnologies.orient.core.metadata.schema.OType;
+import com.orientechnologies.orient.core.record.impl.ODocument;
+import com.orientechnologies.teleporter.context.OTeleporterContext;
+import com.orientechnologies.teleporter.model.dbschema.OAttribute;
+import com.orientechnologies.teleporter.model.dbschema.OEntity;
 
 /**
  * Handler that executes type conversions from PostgreSQL DBMS to the OrientDB types.
@@ -31,11 +37,12 @@ import com.orientechnologies.orient.core.metadata.schema.OType;
  *
  */
 
-public class OPostgreSQLDataTypeHandler extends OGenericDataTypeHandler {
+public class OPostgreSQLDataTypeHandler extends ODBMSDataTypeHandler {
 
 
 	public OPostgreSQLDataTypeHandler() {
 		this.dbmsType2OrientType = this.fillTypesMap();
+		this.geospatialTypes = this.fillGeospatialList();
 	}
 
 
@@ -113,7 +120,7 @@ public class OPostgreSQLDataTypeHandler extends OGenericDataTypeHandler {
 		 *  Enumerated Types
 		 * (doc at http://www.postgresql.org/docs/9.3/static/datatype-enum.html )
 		 */
-		//TODO!
+		//TODO?!
 
 
 
@@ -128,6 +135,13 @@ public class OPostgreSQLDataTypeHandler extends OGenericDataTypeHandler {
 		dbmsType2OrientType.put("path", OType.STRING);
 		dbmsType2OrientType.put("polygon", OType.STRING);
 		dbmsType2OrientType.put("circle", OType.STRING);
+		// Postgis
+		dbmsType2OrientType.put("box2d", OType.EMBEDDED);
+		dbmsType2OrientType.put("box3d", OType.EMBEDDED);
+		dbmsType2OrientType.put("geometry", OType.EMBEDDED);
+		dbmsType2OrientType.put("geometry_dump", OType.EMBEDDED);
+		dbmsType2OrientType.put("geography", OType.EMBEDDED);
+
 
 
 		/*
@@ -173,7 +187,7 @@ public class OPostgreSQLDataTypeHandler extends OGenericDataTypeHandler {
 		 * JSON Type
 		 * (doc at http://www.postgresql.org/docs/9.3/static/datatype-json.html )
 		 */
-		dbmsType2OrientType.put("json", OType.STRING);
+		dbmsType2OrientType.put("json", OType.EMBEDDED);
 
 
 		/*
@@ -195,6 +209,55 @@ public class OPostgreSQLDataTypeHandler extends OGenericDataTypeHandler {
 		dbmsType2OrientType.put("daterange", OType.STRING);
 
 		return dbmsType2OrientType;
+	}
+
+	private List<String> fillGeospatialList() {
+
+		List<String> geospatialTypes = new ArrayList<String>();
+
+		geospatialTypes.add("box2d");
+		geospatialTypes.add("box3d");
+		geospatialTypes.add("geometry");
+		geospatialTypes.add("geometry_dump");
+		geospatialTypes.add("geography");
+
+		return geospatialTypes;
+	}
+
+	@Override
+	public String buildGeospatialQuery(OEntity entity, OTeleporterContext context) {
+
+		String quote = context.getQueryQuote();
+
+		String query = "select ";
+
+		for(OAttribute currentAttribute: entity.getAllAttributes()) {
+			if(super.isGeospatial(currentAttribute.getDataType()))
+				query += "ST_AsText(" + quote + currentAttribute.getName()  + quote +   ") as " + currentAttribute.getName() + ",";
+			else
+				query += quote + currentAttribute.getName() + quote + ",";
+		}
+
+		query = query.substring(0,query.length()-1);
+
+		String entitySchema = entity.getSchemaName();
+
+		if(entitySchema != null)
+			query += " from " + entitySchema + "." + quote + entity.getName() + quote;
+		else
+			query += " from " + quote + entity.getName() + quote;
+
+		return query;
+	}
+
+
+	public ODocument convertJSONToDocument(String currentProperty, byte[] currentBinaryValue) {
+
+		ODocument document = new ODocument(currentProperty);
+		String currentStringValue = new String(currentBinaryValue);
+		document.fromJSON(currentStringValue);
+
+		return document;
 	}
 
 }

@@ -82,6 +82,7 @@ public class OER2GraphMapper extends OSource2GraphMapper {
 	protected List<String> includedTables;
 	protected List<String> excludedTables;
 
+	
 	public OER2GraphMapper (String driver, String uri, String username, String password, List<String> includedTables, List<String> excludedTables) {
 		this.dbSourceConnection = new ODBSourceConnection(driver, uri, username, password);
 		this.entity2vertexType = new LinkedHashMap<OEntity,OVertexType>();

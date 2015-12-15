@@ -25,12 +25,15 @@ import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.teleporter.context.OTeleporterContext;
 
 /**
+ * Handler that executes type conversions from SQLServer DBMS to the OrientDB types.
+ * No Geospatial implemented.
+ * 
  * @author Gabriele Ponzi
  * @email  <gabriele.ponzi--at--gmail.com>
  *
  */
 
-public class OSQLServerDataTypeHandler extends OGenericDataTypeHandler {
+public class OSQLServerDataTypeHandler extends ODBMSDataTypeHandler {
 
 	
 	public OSQLServerDataTypeHandler(){
@@ -116,7 +119,7 @@ public class OSQLServerDataTypeHandler extends OGenericDataTypeHandler {
 		 *  https://msdn.microsoft.com/en-us/library/ms187819.aspx, https://msdn.microsoft.com/en-us/library/bb677335.aspx, https://msdn.microsoft.com/en-us/library/bb630289.aspx )
 		 */    
 		dbmsType2OrientType.put("date", OType.DATE);
-		dbmsType2OrientType.put("time", OType.STRING);
+		dbmsType2OrientType.put("time", OType.DATETIME);
 		dbmsType2OrientType.put("smalldatetime", OType.DATETIME);
 		dbmsType2OrientType.put("datetime", OType.DATETIME);
 		dbmsType2OrientType.put("datetime2", OType.DATETIME);

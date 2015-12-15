@@ -18,11 +18,15 @@
 
 package com.orientechnologies.teleporter.persistence.handler;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.orientechnologies.orient.core.metadata.schema.OType;
+import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.teleporter.context.OTeleporterContext;
+import com.orientechnologies.teleporter.model.dbschema.OEntity;
 
 /**
  * Generic Handler that executes generic type conversions to the OrientDB types.
@@ -32,12 +36,14 @@ import com.orientechnologies.teleporter.context.OTeleporterContext;
  *
  */
 
-public class OGenericDataTypeHandler implements ODriverDataTypeHandler {
+public class ODBMSDataTypeHandler implements ODriverDataTypeHandler {
 
 	protected Map<String,OType> dbmsType2OrientType;
+	protected List<String> geospatialTypes;
 
-	public OGenericDataTypeHandler() {
+	public ODBMSDataTypeHandler() {
 		this.dbmsType2OrientType = this.fillTypesMap();
+		this.geospatialTypes = new ArrayList<String>();
 	}
 
 	/**  
@@ -123,5 +129,23 @@ public class OGenericDataTypeHandler implements ODriverDataTypeHandler {
 
 		return dbmsType2OrientType;
 	}
+	
+	
+	public boolean isGeospatial(String type) {
+		return this.geospatialTypes.contains(type);
+	}
+
+
+	public String buildGeospatialQuery(OEntity entity, OTeleporterContext context) {
+		//TODO
+		return null;
+	}
+
+	public ODocument convertJSONToDocument(String currentProperty, byte[] currentBinaryValue) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
 
 }

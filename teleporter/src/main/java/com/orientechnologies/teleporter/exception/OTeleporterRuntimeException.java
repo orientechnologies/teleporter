@@ -28,11 +28,20 @@ package com.orientechnologies.teleporter.exception;
 
 @SuppressWarnings("serial")
 public class OTeleporterRuntimeException extends RuntimeException {
-	
-	public OTeleporterRuntimeException() {}
-	
+
+	public OTeleporterRuntimeException() {
+		super();
+	}
+
 	public OTeleporterRuntimeException(String message) {
 		super(message);
 	}
 
+	public OTeleporterRuntimeException(String message, Throwable cause) {
+		super(message, cause);
+	}
+
+	public OTeleporterRuntimeException(Throwable cause) {
+		super(cause);
+	}
 }

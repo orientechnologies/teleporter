@@ -29,7 +29,6 @@ import com.orientechnologies.orient.core.intent.OIntentMassiveInsert;
 import com.orientechnologies.teleporter.context.OTeleporterContext;
 import com.orientechnologies.teleporter.context.OTeleporterStatistics;
 import com.orientechnologies.teleporter.exception.OTeleporterRuntimeException;
-import com.orientechnologies.teleporter.factory.ODataTypeHandlerFactory;
 import com.orientechnologies.teleporter.factory.OMapperFactory;
 import com.orientechnologies.teleporter.importengine.rdbms.ODBQueryEngine;
 import com.orientechnologies.teleporter.importengine.rdbms.OGraphEngineForDB;
@@ -43,7 +42,7 @@ import com.orientechnologies.teleporter.model.graphmodel.OEdgeType;
 import com.orientechnologies.teleporter.model.graphmodel.OGraphModel;
 import com.orientechnologies.teleporter.model.graphmodel.OVertexType;
 import com.orientechnologies.teleporter.nameresolver.ONameResolver;
-import com.orientechnologies.teleporter.persistence.handler.ODriverDataTypeHandler;
+import com.orientechnologies.teleporter.persistence.handler.ODBMSDataTypeHandler;
 import com.orientechnologies.teleporter.persistence.util.OQueryResult;
 import com.orientechnologies.teleporter.writer.OGraphModelWriter;
 import com.tinkerpop.blueprints.impls.orient.OrientBaseGraph;
@@ -63,10 +62,11 @@ import com.tinkerpop.blueprints.impls.orient.OrientVertex;
 public class ODBMSNaiveAggregationStrategy extends ODBMSImportStrategy {	
 
 	public ODBMSNaiveAggregationStrategy() {}
+	
 
 	@Override
-	public OSource2GraphMapper createSchemaMapper(String driver, String uri, String username, String password, String outOrientGraphUri, String chosenMapper, String xmlPath, ONameResolver nameResolver,
-			List<String> includedTables, List<String> excludedTables, OTeleporterContext context) {
+	public OSource2GraphMapper createSchemaMapper(String driver, String uri, String username, String password, String outOrientGraphUri, String chosenMapper,
+			String xmlPath, ONameResolver nameResolver, ODBMSDataTypeHandler handler, List<String> includedTables, List<String> excludedTables, OTeleporterContext context) {
 
 		OMapperFactory mapperFactory = new OMapperFactory();
 		OSource2GraphMapper mapper = mapperFactory.buildMapper(chosenMapper, driver, uri, username, password, xmlPath, includedTables, excludedTables, context);
@@ -89,8 +89,6 @@ public class ODBMSNaiveAggregationStrategy extends ODBMSImportStrategy {
 		context.getOutputManager().debug("\n%s\n", ((OER2GraphMapper)mapper).getGraphModel().toString());
 
 		// Saving schema on Orient
-		ODataTypeHandlerFactory factory = new ODataTypeHandlerFactory();
-		ODriverDataTypeHandler handler = factory.buildDataTypeHandler(driver, context);
 		OGraphModelWriter graphModelWriter = new OGraphModelWriter();  
 		OGraphModel graphModel = ((OER2GraphMapper)mapper).getGraphModel();
 		boolean success = graphModelWriter.writeModelOnOrient(graphModel, handler, outOrientGraphUri, context);
@@ -107,7 +105,7 @@ public class ODBMSNaiveAggregationStrategy extends ODBMSImportStrategy {
 
 
 	@Override
-	public void executeImport(String driver, String uri, String username, String password, String outOrientGraphUri, OSource2GraphMapper genericMapper,  OTeleporterContext context) {
+	public void executeImport(String driver, String uri, String username, String password, String outOrientGraphUri, OSource2GraphMapper genericMapper, ODBMSDataTypeHandler handler, OTeleporterContext context) {
 
 		try {
 
@@ -117,7 +115,7 @@ public class ODBMSNaiveAggregationStrategy extends ODBMSImportStrategy {
 
 			OER2GraphMapper mapper = (OER2GraphMapper) genericMapper;
 			ODBQueryEngine dbQueryEngine = new ODBQueryEngine(driver, uri, username, password, context);    
-			OGraphEngineForDB graphEngine = new OGraphEngineForDB((OER2GraphMapper)mapper);
+			OGraphEngineForDB graphEngine = new OGraphEngineForDB((OER2GraphMapper)mapper, handler);
 
 			// OrientDB graph initialization/connection
 			OrientBaseGraph orientGraph = null;
@@ -157,7 +155,15 @@ public class ODBMSNaiveAggregationStrategy extends ODBMSImportStrategy {
 				if(!entity.isAggregableJoinTable() && entity.getHierarchicalBag() == null) {
 
 					// for each entity in dbSchema all records are retrieved
-					queryResult = dbQueryEngine.getRecordsByEntity(entity.getName(), entity.getSchemaName(), context);
+					
+					if(super.hasGeospatialAttributes(entity, handler)) {
+						String query = handler.buildGeospatialQuery(entity, context);
+						queryResult = dbQueryEngine.getRecordsByQuery(query, context);
+					}
+					else {
+						queryResult = dbQueryEngine.getRecordsByEntity(entity.getName(), entity.getSchemaName(), context);
+					}
+					
 					records = queryResult.getResult();
 					ResultSet currentRecord = null;
 
@@ -193,7 +199,15 @@ public class ODBMSNaiveAggregationStrategy extends ODBMSImportStrategy {
 				if(entity.isAggregableJoinTable() && entity.getHierarchicalBag() == null) {
 
 					// for each entity in dbSchema all records are retrieved
-					queryResult = dbQueryEngine.getRecordsByEntity(entity.getName(), entity.getSchemaName(), context);
+
+					if(super.hasGeospatialAttributes(entity, handler)) {
+						String query = handler.buildGeospatialQuery(entity, context);
+						queryResult = dbQueryEngine.getRecordsByQuery(query, context);
+					}
+					else {
+						queryResult = dbQueryEngine.getRecordsByEntity(entity.getName(), entity.getSchemaName(), context);
+					}
+					
 					records = queryResult.getResult();
 					ResultSet currentRecord = null;
 

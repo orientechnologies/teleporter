@@ -162,6 +162,44 @@ public class ODBQueryEngine implements ODataSourceQueryEngine {
 		OQueryResult queryResult = new OQueryResult(dbConnection, statement, result);
 		return queryResult;
 	}
+	
+	public OQueryResult getRecordsByQuery(String query, OTeleporterContext context) {
+
+		ResultSet result = null;
+		Connection dbConnection = null;
+		Statement statement = null;
+
+		try {
+			try {
+				dbConnection = dataSource.getConnection(context);
+			} catch (Exception e) {
+				if(e.getMessage() != null)
+					context.getOutputManager().error(e.getClass().getName() + " - " + e.getMessage());
+				else
+					context.getOutputManager().error(e.getClass().getName());
+
+				Writer writer = new StringWriter();
+				e.printStackTrace(new PrintWriter(writer));
+				String s = writer.toString();
+				context.getOutputManager().debug("\n" + s + "\n");
+			}
+			statement = dbConnection.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+			result = statement.executeQuery(query);
+
+		}catch(SQLException e) {
+			if(e.getMessage() != null)
+				context.getOutputManager().error(e.getClass().getName() + " - " + e.getMessage());
+			else
+				context.getOutputManager().error(e.getClass().getName());
+
+			Writer writer = new StringWriter();
+			e.printStackTrace(new PrintWriter(writer));
+			String s = writer.toString();
+			context.getOutputManager().debug("\n" + s + "\n");
+		}
+		OQueryResult queryResult = new OQueryResult(dbConnection, statement, result);
+		return queryResult;
+	}
 
 	/**
 	 * @param currentDiscriminatorValue
