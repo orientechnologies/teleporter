@@ -191,6 +191,7 @@ public class OER2GraphMapper extends OSource2GraphMapper {
        *  Entity building
        */
       String currentTableSchema;
+      List<String> currentPrimaryKeys;
       int iteration = 1;
       for(String currentTableName: tablesName2schema.keySet()) {
 
@@ -225,12 +226,14 @@ public class OER2GraphMapper extends OSource2GraphMapper {
         resultColumns = databaseMetaData.getColumns(columnCatalog, columnSchemaPattern, currentTableName, columnNamePattern);
         resultPrimaryKeys = databaseMetaData.getPrimaryKeys(primaryKeyCatalog, primaryKeySchema, currentTableName);
 
+        currentPrimaryKeys = this.getPrimaryKeysFromResulset(resultPrimaryKeys);
+
         while(resultColumns.next()) {
           OAttribute currentAttribute = new OAttribute(resultColumns.getString("COLUMN_NAME"), resultColumns.getInt("ORDINAL_POSITION"), resultColumns.getString("TYPE_NAME"), currentEntity);
           currentEntity.addAttribute(currentAttribute);
 
           // if the current attribute is involved in the primary key, it will be added to the attributes of pKey.
-          if(this.isPresentInResultPrimaryKeys(resultPrimaryKeys, currentAttribute.getName())) {
+          if(currentPrimaryKeys.contains(currentAttribute.getName())) {
             pKey.addAttribute(currentAttribute);
           }
         }
@@ -401,6 +404,17 @@ public class OER2GraphMapper extends OSource2GraphMapper {
     statistics.runningStepNumber = -1;
   }
 
+  private List<String> getPrimaryKeysFromResulset(ResultSet resultPrimaryKeys) throws SQLException {
+
+    List<String> currentPrimaryKeys = new LinkedList<String>();
+
+    while(resultPrimaryKeys.next()) {
+      currentPrimaryKeys.add(resultPrimaryKeys.getString(4));
+    }
+    return currentPrimaryKeys;
+  }
+
+
   /**
    * @param result
    */
@@ -420,16 +434,6 @@ public class OER2GraphMapper extends OSource2GraphMapper {
       context.getOutputManager().debug("\n" + s + "\n");
     }
 
-  }
-
-  private boolean isPresentInResultPrimaryKeys(ResultSet resultPrimaryKeys, String attributeName) throws SQLException {
-
-    while(resultPrimaryKeys.next()) {
-      if(resultPrimaryKeys.getString(4).equals(attributeName))
-        return true;
-    }
-
-    return false;   
   }
 
 
