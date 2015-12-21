@@ -1414,7 +1414,7 @@ public class OSequentialExecutionsTestCase {
       assertEquals(8, count);
 
       count = 0;
-      for(Edge e: orientGraph.getEdgesOfClass("HasFilm")) {
+      for(Edge e: orientGraph.getEdgesOfClass("FilmActor")) {
         assertNotNull(e.getId());
         count++;
       }
@@ -1480,7 +1480,7 @@ public class OSequentialExecutionsTestCase {
       assertEquals(10, count);
 
       count = 0;
-      for(Edge e: orientGraph.getEdgesOfClass("HasFilm")) {
+      for(Edge e: orientGraph.getEdgesOfClass("FilmActor")) {
         assertNotNull(e.getId());
         count++;
       }
@@ -1792,7 +1792,7 @@ public class OSequentialExecutionsTestCase {
       assertEquals(8, count);
 
       count = 0;
-      for(Edge e: orientGraph.getEdgesOfClass("HasFilm")) {
+      for(Edge e: orientGraph.getEdgesOfClass("FilmActor")) {
         assertNotNull(e.getId());
         count++;
       }

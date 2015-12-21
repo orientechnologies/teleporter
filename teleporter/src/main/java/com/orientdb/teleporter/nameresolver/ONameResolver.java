@@ -37,6 +37,4 @@ public interface ONameResolver {
 
   public String resolveEdgeName(ORelationship relationship);
 
-  public String reverseTransformation(String transformedName);
-
 }

@@ -74,10 +74,4 @@ public class OOriginalConventionNameResolver implements ONameResolver {
     return finalName;
   }
 
-
-  @Override
-  public String reverseTransformation(String transformedName) {
-    return transformedName;
-  }
-
 }

@@ -31,15 +31,18 @@ public class OEdgeType extends OElementType {
 
   private OVertexType inVertexType;
   private OVertexType outVertexType;
+  private int numberRelationshipsRepresented;  // the number of relationships represented by the edge
 
   public OEdgeType(String edgeType) {
     super(edgeType);
+    numberRelationshipsRepresented = 1;
   }
 
   public OEdgeType(String edgeType, OVertexType outVertexType, OVertexType inVertexType) {
     super(edgeType);
     this.outVertexType = outVertexType;
     this.inVertexType = inVertexType;
+    numberRelationshipsRepresented = 1;
   }
 
   public OVertexType getInVertexType() {
@@ -58,6 +61,13 @@ public class OEdgeType extends OElementType {
     this.outVertexType = outVertexType;
   }
 
+  public int getNumberRelationshipsRepresented() {
+    return this.numberRelationshipsRepresented;
+  }
+
+  public void setNumberRelationshipsRepresented(int numberRelationshipsRepresented) {
+    this.numberRelationshipsRepresented = numberRelationshipsRepresented;
+  }
 
   @Override
   public int hashCode() {

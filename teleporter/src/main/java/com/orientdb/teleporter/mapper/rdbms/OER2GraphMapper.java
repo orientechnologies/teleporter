@@ -579,10 +579,14 @@ public class OER2GraphMapper extends OSource2GraphMapper {
 
               currentEdgeType = this.graphModel.getEdgeTypeByName(edgeType);
               if(currentEdgeType == null) {
-                currentEdgeType = new OEdgeType(edgeType, null, currentInVertex);  // TO UPDATE !!!!!!!!
+                currentEdgeType = new OEdgeType(edgeType, null, currentInVertex);
                 this.graphModel.getEdgesType().add(currentEdgeType);
                 context.getOutputManager().debug("\nEdge-type %s built.\n", currentEdgeType.getName());
                 statistics.builtModelEdgeTypes++;
+              }
+              else {
+                // edge already present, the counter of relationships represented by the edge is incremented
+                currentEdgeType.setNumberRelationshipsRepresented(currentEdgeType.getNumberRelationshipsRepresented() +1);
               }
 
               // adding the edge to the two vertices
@@ -636,6 +640,7 @@ public class OER2GraphMapper extends OSource2GraphMapper {
     OVertexType inVertexType;
     String edgeType;
 
+    OTeleporterStatistics statistics = context.getStatistics();
     Iterator<OVertexType> iter = this.graphModel.getVerticesType().iterator();
     OVertexType currentVertex;
 
@@ -653,8 +658,8 @@ public class OER2GraphMapper extends OSource2GraphMapper {
         outVertexType = currentOutEdge1.getInVertexType();       
         currentOutEdge2 = currentVertex.getOutEdgesType().get(1); 
         inVertexType = currentOutEdge2.getInVertexType();       
-        edgeType = currentOutEdge2.getName();
-        newAggregatorEdge = new OEdgeType(edgeType, null, inVertexType);     // TO UPDATE  
+        edgeType = currentVertex.getName();
+        newAggregatorEdge = new OEdgeType(edgeType, null, inVertexType);
 
         // adding to the edge all properties not belonging to the primary key
         for(OModelProperty currentProperty: currentVertex.getProperties()) {
@@ -675,8 +680,17 @@ public class OER2GraphMapper extends OSource2GraphMapper {
 
 
         // removing old edges from graph model and from vertices' "in-edges" collection
-        this.graphModel.getEdgesType().remove(currentOutEdge1);
-        this.graphModel.getEdgesType().remove(currentOutEdge2);
+        currentOutEdge1.setNumberRelationshipsRepresented(currentOutEdge1.getNumberRelationshipsRepresented()-1);
+        currentOutEdge2.setNumberRelationshipsRepresented(currentOutEdge2.getNumberRelationshipsRepresented()-1);
+        
+        if(currentOutEdge1.getNumberRelationshipsRepresented() == 0) {
+          this.graphModel.getEdgesType().remove(currentOutEdge1);
+          statistics.builtModelEdgeTypes = statistics.builtModelEdgeTypes-1;
+        }
+        if(currentOutEdge2.getNumberRelationshipsRepresented() == 0) {
+          this.graphModel.getEdgesType().remove(currentOutEdge2);
+          statistics.builtModelEdgeTypes = statistics.builtModelEdgeTypes-1;
+        }
         outVertexType.getInEdgesType().remove(currentOutEdge1);
         inVertexType.getInEdgesType().remove(currentOutEdge2);
 
@@ -688,6 +702,7 @@ public class OER2GraphMapper extends OSource2GraphMapper {
 
         // adding new edge to graph model
         this.graphModel.getEdgesType().add(newAggregatorEdge);
+        statistics.builtModelEdgeTypes++;
 
         // adding new edge to the vertices' "in/out-edges" collections
         outVertexType.getOutEdgesType().add(newAggregatorEdge);

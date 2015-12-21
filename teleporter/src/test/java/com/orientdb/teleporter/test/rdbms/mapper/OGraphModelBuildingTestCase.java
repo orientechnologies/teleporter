@@ -155,6 +155,7 @@ public class OGraphModelBuildingTestCase {
       assertEquals("HasAuthor", authorEdgeType.getName());
       assertEquals(0, authorEdgeType.getProperties().size());
       assertEquals("BookAuthor", authorEdgeType.getInVertexType().getName());
+      assertEquals(1, authorEdgeType.getNumberRelationshipsRepresented());
 
 
     }catch(Exception e) {
@@ -301,10 +302,12 @@ public class OGraphModelBuildingTestCase {
       assertEquals("HasAuthor", authorEdgeType.getName());
       assertEquals(0, authorEdgeType.getProperties().size());
       assertEquals("Author", authorEdgeType.getInVertexType().getName());
+      assertEquals(1, authorEdgeType.getNumberRelationshipsRepresented());
 
       assertEquals("HasBook", bookEdgeType.getName());
       assertEquals(0, bookEdgeType.getProperties().size());
       assertEquals("Book", bookEdgeType.getInVertexType().getName());
+      assertEquals(1, bookEdgeType.getNumberRelationshipsRepresented());
 
 
     }catch(Exception e) {
@@ -454,6 +457,7 @@ public class OGraphModelBuildingTestCase {
       assertEquals("HasAuthor", authorEdgeType.getName());
       assertEquals(0, authorEdgeType.getProperties().size());
       assertEquals("Author", authorEdgeType.getInVertexType().getName());
+      assertEquals(2, authorEdgeType.getNumberRelationshipsRepresented());
 
 
     }catch(Exception e) {
@@ -580,6 +584,7 @@ public class OGraphModelBuildingTestCase {
       assertEquals("Book2Author", authorEdgeType.getName());
       assertEquals(0, authorEdgeType.getProperties().size());
       assertEquals("Author", authorEdgeType.getInVertexType().getName());
+      assertEquals(1, authorEdgeType.getNumberRelationshipsRepresented());
 
 
     }catch(Exception e) {
@@ -722,11 +727,12 @@ public class OGraphModelBuildingTestCase {
       assertEquals("HasFilm", filmEdgeType.getName());
       assertEquals(0, filmEdgeType.getProperties().size());
       assertEquals("Film", filmEdgeType.getInVertexType().getName());
+      assertEquals(1, filmEdgeType.getNumberRelationshipsRepresented());
 
       assertEquals("HasActor", actorEdgeType.getName());
       assertEquals(0, actorEdgeType.getProperties().size());
       assertEquals("Actor", actorEdgeType.getInVertexType().getName());
-
+      assertEquals(1, actorEdgeType.getNumberRelationshipsRepresented());
 
     }catch(Exception e) {
       e.printStackTrace();
@@ -849,11 +855,13 @@ public class OGraphModelBuildingTestCase {
       assertEquals("HasMgr", mgrEdgeType.getName());
       assertEquals(0, mgrEdgeType.getProperties().size());
       assertEquals("Employee", mgrEdgeType.getInVertexType().getName());
+      assertEquals(1, mgrEdgeType.getNumberRelationshipsRepresented());
 
       assertEquals("HasProjectManager", projectManagerEdgeType.getName());
       assertEquals(0, projectManagerEdgeType.getProperties().size());
       assertEquals("Employee", projectManagerEdgeType.getInVertexType().getName());
-
+      assertEquals(1, projectManagerEdgeType.getNumberRelationshipsRepresented());
+      
 
     }catch(Exception e) {
       e.printStackTrace();

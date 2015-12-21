@@ -197,22 +197,6 @@ public class OJavaConventionNameResolver implements ONameResolver {
   }
 
 
-  @Override
-  public String reverseTransformation(String transformedName) {
-
-    for(int i=0; i<transformedName.length(); i++) {
-      if(i == 0 && Character.isUpperCase(transformedName.charAt(i))) {
-        transformedName = transformedName.substring(0, i) + (transformedName.charAt(i)+"").toLowerCase() + transformedName.substring(i+1);      
-      }
-      if(Character.isUpperCase(transformedName.charAt(i))) {
-        transformedName = transformedName.substring(0, i) + "_" + (transformedName.charAt(i)+"").toLowerCase() + transformedName.substring(i+1);        
-      }
-    }
-    return transformedName;
-
-  }
-
-
   public boolean isCompliantToJavaClassConvention(String candidateName) {
 
     if( !(candidateName.contains(" ") || candidateName.contains("_") || candidateName.contains("-")) && Character.isUpperCase(candidateName.charAt(0))) {
