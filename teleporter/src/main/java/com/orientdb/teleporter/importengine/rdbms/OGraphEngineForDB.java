@@ -217,8 +217,9 @@ public class OGraphEngineForDB {
       s = s.substring(0, s.length()-1);
       context.getOutputManager().debug("\n" + s + "\n");
 
-      // lookup
-      vertex = this.getVertexByIndexedKey(orientGraph, propertyOfKey, valueOfKey, vertexType.getName());
+      // lookup (only if properties and values are different from null)
+      if(propertyOfKey.length > 0 && valueOfKey.length > 0 )
+        vertex = this.getVertexByIndexedKey(orientGraph, propertyOfKey, valueOfKey, vertexType.getName());
 
       // setting properties to the vertex
       String currentAttributeValue = null;
@@ -336,7 +337,6 @@ public class OGraphEngineForDB {
           // setting new properties and save
           vertex.setProperties(properties);
           vertex.save();
-          statistics.orientAddedVertices++;
           context.getOutputManager().debug("\nLoaded properties: " + properties.toString());
           context.getOutputManager().debug("\nNew vertex inserted (all props setted): %s\n", vertex.toString());
         }
@@ -538,6 +538,8 @@ public class OGraphEngineForDB {
 
     try {
 
+      OTeleporterStatistics statistics = context.getStatistics();
+
       // building keys and values for the lookup 
 
       String[] propertyOfKey = new String[relation.getForeignKey().getInvolvedAttributes().size()];
@@ -588,6 +590,7 @@ public class OGraphEngineForDB {
           context.getOutputManager().debug("\nNEW Reached vertex (id:value) --> %s:%s", Arrays.toString(propertyOfKey), Arrays.toString(valueOfKey));
           String classAndClusterName = currentInVertexType.getName(); 
           currentInVertex = orientGraph.addVertex("class:"+classAndClusterName, partialProperties);
+          statistics.orientAddedVertices++;
           context.getOutputManager().debug("\nNew vertex inserted (only pk props setted): %s\n", currentInVertex.toString());
 
         }

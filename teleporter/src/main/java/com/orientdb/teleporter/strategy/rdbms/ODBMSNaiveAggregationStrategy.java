@@ -119,7 +119,7 @@ public class ODBMSNaiveAggregationStrategy extends ODBMSImportStrategy {
 
       // OrientDB graph initialization/connection
       OrientBaseGraph orientGraph = null;
-      OrientGraphFactory factory = new OrientGraphFactory(outOrientGraphUri);
+      OrientGraphFactory factory = new OrientGraphFactory(outOrientGraphUri,"admin","admin");
       orientGraph = factory.getNoTx();
       orientGraph.getRawGraph().declareIntent(new OIntentMassiveInsert());
       orientGraph.setStandardElementConstraints(false);

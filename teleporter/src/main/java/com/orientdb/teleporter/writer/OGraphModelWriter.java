@@ -66,7 +66,7 @@ public class OGraphModelWriter {
     boolean success = false;
 
     OrientBaseGraph orientGraph = null;
-    OrientGraphFactory factory = new OrientGraphFactory(outOrientGraphUri);
+    OrientGraphFactory factory = new OrientGraphFactory(outOrientGraphUri,"admin","admin");
     orientGraph = factory.getNoTx();
 
     OTeleporterStatistics statistics = context.getStatistics();
