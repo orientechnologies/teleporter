@@ -442,6 +442,7 @@ public class OAggregationStrategyTestCase {
        */
 
       assertEquals(5, context.getStatistics().totalNumberOfModelVertices);
+      assertEquals(5, context.getStatistics().builtModelVertexTypes);
       assertEquals(5, context.getStatistics().analizedRelationships);
       assertEquals(2, context.getStatistics().builtModelEdgeTypes);
 
@@ -483,7 +484,8 @@ public class OAggregationStrategyTestCase {
        *  Testing context information
        */
 
-      assertEquals(5, context.getStatistics().totalNumberOfModelVertices);
+      assertEquals(3, context.getStatistics().totalNumberOfModelVertices);
+      assertEquals(3, context.getStatistics().builtModelVertexTypes);
       assertEquals(5, context.getStatistics().analizedRelationships);
       assertEquals(3, context.getStatistics().builtModelEdgeTypes);
 
@@ -518,7 +520,6 @@ public class OAggregationStrategyTestCase {
       assertEquals(1, deptEdgeType.getNumberRelationshipsRepresented());
       assertEquals(1, deptEmpEdgeType.getNumberRelationshipsRepresented());
       assertEquals(1, deptManagerEdgeType.getNumberRelationshipsRepresented());
-
 
 
     } catch(Exception e) {

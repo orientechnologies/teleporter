@@ -385,7 +385,6 @@ public class OGraphEngineForDB {
 
               // setting new properties and save
               vertex.setProperties(properties);
-              vertex.save();
               statistics.orientUpdatedVertices++;
               context.getOutputManager().debug("\nLoaded properties: " + properties.toString());
               context.getOutputManager().debug("\nNew vertex inserted (all props setted): %s\n", vertex.toString());

@@ -242,6 +242,11 @@ public class OER2GraphMapper extends OSource2GraphMapper {
 
         currentEntity.setPrimaryKey(pKey);
 
+        // if the primary key doesn't involve any attribute, a warning message is generated
+        if(pKey.getInvolvedAttributes().size() == 0)
+          context.getStatistics().warningMessages.add("It's not declared a primary key for the Entity " + currentEntity + ", this will lead to issues during the migration above all during the synch executions "
+              + "(the first importing is quite safe).");
+
         // adding entity to db schema
         this.dataBaseSchema.getEntities().add(currentEntity);
 
@@ -652,6 +657,7 @@ public class OER2GraphMapper extends OSource2GraphMapper {
       // if vertex is obtained from a join table of dimension 2,
       // then aggregation is performed
       if(currentVertex.isFromJoinTable() && currentVertex.getOutEdgesType().size() == 2) { 
+        statistics.totalNumberOfModelVertices--;
 
         // building new edge
         currentOutEdge1 = currentVertex.getOutEdgesType().get(0);
@@ -682,14 +688,14 @@ public class OER2GraphMapper extends OSource2GraphMapper {
         // removing old edges from graph model and from vertices' "in-edges" collection
         currentOutEdge1.setNumberRelationshipsRepresented(currentOutEdge1.getNumberRelationshipsRepresented()-1);
         currentOutEdge2.setNumberRelationshipsRepresented(currentOutEdge2.getNumberRelationshipsRepresented()-1);
-        
+
         if(currentOutEdge1.getNumberRelationshipsRepresented() == 0) {
           this.graphModel.getEdgesType().remove(currentOutEdge1);
-          statistics.builtModelEdgeTypes = statistics.builtModelEdgeTypes-1;
+          statistics.builtModelEdgeTypes--;
         }
         if(currentOutEdge2.getNumberRelationshipsRepresented() == 0) {
           this.graphModel.getEdgesType().remove(currentOutEdge2);
-          statistics.builtModelEdgeTypes = statistics.builtModelEdgeTypes-1;
+          statistics.builtModelEdgeTypes--;
         }
         outVertexType.getInEdgesType().remove(currentOutEdge1);
         inVertexType.getInEdgesType().remove(currentOutEdge2);
@@ -699,6 +705,7 @@ public class OER2GraphMapper extends OSource2GraphMapper {
 
         // removing old vertex
         iter.remove();
+        statistics.builtModelVertexTypes--;
 
         // adding new edge to graph model
         this.graphModel.getEdgesType().add(newAggregatorEdge);
