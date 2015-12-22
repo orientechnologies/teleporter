@@ -1,25 +1,30 @@
 /*
- * Copyright 2015 OrientDB LTD (info--at--orientdb.com)
+ * Copyright 2015 Orient Technologies LTD (info--at--orientechnologies.com)
  * All Rights Reserved. Commercial License.
  * 
  * NOTICE:  All information contained herein is, and remains the property of
- * OrientDB LTD and its suppliers, if any.  The intellectual and
+ * Orient Technologies LTD and its suppliers, if any.  The intellectual and
  * technical concepts contained herein are proprietary to
- * OrientDB LTD and its suppliers and may be covered by United
+ * Orient Technologies LTD and its suppliers and may be covered by United
  * Kingdom and Foreign Patents, patents in process, and are protected by trade
  * secret or copyright law.
  * 
  * Dissemination of this information or reproduction of this material
  * is strictly forbidden unless prior written permission is obtained
- * from OrientDB LTD.
+ * from Orient Technologies LTD.
  * 
- * For more information: http://www.orientdb.com
+ * For more information: http://www.orientechnologies.com
  */
 
 package com.orientdb.teleporter.main;
 
-import java.util.*;
-
+import com.orientechnologies.orient.core.config.OGlobalConfiguration;
+import com.orientechnologies.orient.core.exception.OConfigurationException;
+import com.orientechnologies.orient.server.OServer;
+import com.orientechnologies.orient.server.config.OServerParameterConfiguration;
+import com.orientechnologies.orient.server.network.OServerNetworkListener;
+import com.orientechnologies.orient.server.network.protocol.http.ONetworkProtocolHttpAbstract;
+import com.orientechnologies.orient.server.plugin.OServerPluginAbstract;
 import com.orientdb.teleporter.context.OOutputStreamManager;
 import com.orientdb.teleporter.context.OTeleporterContext;
 import com.orientdb.teleporter.exception.OTeleporterIOException;
@@ -28,13 +33,8 @@ import com.orientdb.teleporter.http.OServerCommandTeleporter;
 import com.orientdb.teleporter.strategy.OImportStrategy;
 import com.orientdb.teleporter.ui.OProgressMonitor;
 import com.orientdb.teleporter.util.ODriverConfigurator;
-import com.orientechnologies.orient.core.config.OGlobalConfiguration;
-import com.orientechnologies.orient.core.exception.OConfigurationException;
-import com.orientechnologies.orient.server.OServer;
-import com.orientechnologies.orient.server.config.OServerParameterConfiguration;
-import com.orientechnologies.orient.server.network.OServerNetworkListener;
-import com.orientechnologies.orient.server.network.protocol.http.ONetworkProtocolHttpAbstract;
-import com.orientechnologies.orient.server.plugin.OServerPluginAbstract;
+
+import java.util.*;
 
 /**
  * Main Class from which the importing process starts.
@@ -51,13 +51,13 @@ public class OTeleporter extends OServerPluginAbstract {
   private static final OStrategyFactory FACTORY  = new OStrategyFactory();
 
   private static final String           teleport = "OrientDB                  \n"
-      + " ______________________________________________________________________________ \n"
-      + " ___  __/__  ____/__  /___  ____/__  __ \\_  __ \\__  __\\__  __/__  ____/__  _ _ \\  \n"
-      + " __  /  __  __/  __  / __  __/  __  /_/ /  / / /_  /_/ /_  /  __  __/  __  /_/ /\n"
-      + " _  /   _  /___  _  /___  /___  _  ____// /_/ /_  _, _/_  /   _  /___  _  _, _/ \n"
-      + " /_/    /_____/  /_____/_____/  /_/     \\____/ /_/ |_| /_/    /_____/  /_/ |_|  \n"
-      + "\n"
-      + "                                                  http://orientdb.com/teleporter";
+                                                     + " ______________________________________________________________________________ \n"
+                                                     + " ___  __/__  ____/__  /___  ____/__  __ \\_  __ \\__  __\\__  __/__  ____/__  _ _ \\  \n"
+                                                     + " __  /  __  __/  __  / __  __/  __  /_/ /  / / /_  /_/ /_  /  __  __/  __  /_/ /\n"
+                                                     + " _  /   _  /___  _  /___  /___  _  ____// /_/ /_  _, _/_  /   _  /___  _  _, _/ \n"
+                                                     + " /_/    /_____/  /_____/_____/  /_/     \\____/ /_/ |_| /_/    /_____/  /_/ |_|  \n"
+                                                     + "\n"
+                                                     + "                                                  http://orientdb.com/teleporter";
   private OServer                       server;
 
   public static void main(String[] args) throws Exception {
@@ -74,7 +74,7 @@ public class OTeleporter extends OServerPluginAbstract {
 
     if (args.length < 6) {
       outputManager
-      .error("Syntax error, missing argument. Use:\n ./oteleporter.sh -jdriver <jdbc-driver> -jurl <jdbc-url> -juser <username> -jpasswd <password> -ourl <orientdb-url>.");
+          .error("Syntax error, missing argument. Use:\n ./oteleporter.sh -jdriver <jdbc-driver> -jurl <jdbc-url> -juser <username> -jpasswd <password> -ourl <orientdb-url>.");
       throw new OTeleporterIOException();
     }
 
@@ -91,7 +91,7 @@ public class OTeleporter extends OServerPluginAbstract {
 
     if (!arguments.containsKey("-jdriver")) {
       outputManager
-      .error("Argument -jdriver is mandatory, please try again with expected argument: -jdriver <your-db-driver-name>\n");
+          .error("Argument -jdriver is mandatory, please try again with expected argument: -jdriver <your-db-driver-name>\n");
       throw new OTeleporterIOException();
     }
 
@@ -102,7 +102,7 @@ public class OTeleporter extends OServerPluginAbstract {
 
     if (!arguments.containsKey("-ourl")) {
       outputManager
-      .error("Argument -ourl is mandatory, please try again with expected argument: -ourl <output-orientdb-desired-URL>\n");
+          .error("Argument -ourl is mandatory, please try again with expected argument: -ourl <output-orientdb-desired-URL>\n");
       throw new OTeleporterIOException();
     }
 
@@ -112,7 +112,7 @@ public class OTeleporter extends OServerPluginAbstract {
         && !arguments.get("-jdriver").equalsIgnoreCase("MySQL") && !arguments.get("-jdriver").equalsIgnoreCase("PostgreSQL")
         && !arguments.get("-jdriver").equalsIgnoreCase("HyperSQL")) {
       outputManager
-      .error("Not valid db-driver name. Type one of the following driver names: 'Oracle','SQLServer','MySQL','PostgreSQL','HyperSQL'\n");
+          .error("Not valid db-driver name. Type one of the following driver names: 'Oracle','SQLServer','MySQL','PostgreSQL','HyperSQL'\n");
       throw new OTeleporterIOException();
     }
 
@@ -138,7 +138,7 @@ public class OTeleporter extends OServerPluginAbstract {
       if (!(arguments.get("-v").equals("0") | arguments.get("-v").equals("1") | arguments.get("-v").equals("2") | arguments.get(
           "-v").equals("3"))) {
         outputManager
-        .error("Not valid output level. Available levels:\n0 - No messages\n1 - Debug\n2 - Info\n3 - Warning \n4 - Error");
+            .error("Not valid output level. Available levels:\n0 - No messages\n1 - Debug\n2 - Info\n3 - Warning \n4 - Error");
         throw new OTeleporterIOException();
       }
     }
@@ -216,7 +216,7 @@ public class OTeleporter extends OServerPluginAbstract {
    *          the level of the logging messages that will be printed on the OutputStream during the execution
    * @param excludedTables
    * @param includedTables
-   * @throws OTeleporterException
+   * @throws OTeleporterIOException
    */
 
   public static void execute(String driver, String jurl, String username, String password, String outDbUrl, String chosenStrategy,
@@ -283,8 +283,7 @@ public class OTeleporter extends OServerPluginAbstract {
 
   @Override
   public void config(OServer oServer, OServerParameterConfiguration[] iParams) {
-
-    this.server = oServer;
+    server = oServer;
   }
 
   @Override

@@ -18,12 +18,16 @@
 
 package com.orientdb.teleporter.util;
 
-import com.orientdb.teleporter.context.OTeleporterContext;
-import com.orientdb.teleporter.exception.OTeleporterRuntimeException;
-import com.orientdb.teleporter.persistence.util.ODBSourceConnection;
-import com.orientechnologies.orient.core.record.impl.ODocument;
-
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.io.Reader;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.channels.Channels;
@@ -35,22 +39,27 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import com.orientdb.teleporter.context.OTeleporterContext;
+import com.orientdb.teleporter.exception.OTeleporterRuntimeException;
+import com.orientdb.teleporter.persistence.util.ODBSourceConnection;
+import com.orientechnologies.orient.core.record.impl.ODocument;
+
 
 /**
  * Executes an automatic configuration of the chosen driver JDBC.
  * 
  * @author Gabriele Ponzi
- * @email  <gabriele.ponzi--at--gmail.com>
+ * @email <gabriele.ponzi--at--gmail.com>
  *
  */
 
 public class ODriverConfigurator {
 
   public static final String        DRIVERS = "http://orientdb.com/jdbc-drivers.json";
-  private Map<String,List<String>> driver2filesIdentifier;
+  private Map<String, List<String>> driver2filesIdentifier;
 
   public ODriverConfigurator() {
-    this.driver2filesIdentifier = new LinkedHashMap<String,List<String>>();
+    this.driver2filesIdentifier = new LinkedHashMap<String, List<String>>();
     this.fillMap();
   }
 
@@ -85,12 +94,11 @@ public class ODriverConfigurator {
     hypersqlIdentifiers.add("hsqldb");
     driver2filesIdentifier.put("hypersql", hypersqlIdentifiers);
 
-
   }
 
   /*
-   * It Checks if the requested driver is already present in the classpath, if not present it downloads the last available driver version.
-   * Moreover it gets the driver class name corresponding to the chosen DBMS.
+   * It Checks if the requested driver is already present in the classpath, if not present it downloads the last available driver
+   * version. Moreover it gets the driver class name corresponding to the chosen DBMS.
    */
   public String checkConfiguration(String driverName, OTeleporterContext context) {
 
@@ -101,24 +109,21 @@ public class ODriverConfigurator {
     try {
 
       // fetching online JSON
-      ODocument json = readJsonFromUrl("http://orientdb.com/jdbc-drivers.json", context);
+      ODocument json = readJsonFromUrl(DRIVERS, context);
 
-      LinkedHashMap<String,String> fields = null;
+      LinkedHashMap<String, String> fields = null;
 
       // recovering driver class name
-      if(driverName.equals("oracle")) {
+      if (driverName.equals("oracle")) {
         fields = json.field("Oracle");
       }
-      if(driverName.equals("sqlserver")) {
+      if (driverName.equals("sqlserver")) {
         fields = json.field("SQLServer");
-      }
-      else if(driverName.equals("mysql")) {
+      } else if (driverName.equals("mysql")) {
         fields = json.field("MySQL");
-      }
-      else if(driverName.equals("postgresql")) {
+      } else if (driverName.equals("postgresql")) {
         fields = json.field("PostgreSQL");
-      }
-      else if(driverName.equals("hypersql")) {
+      } else if (driverName.equals("hypersql")) {
         fields = json.field("HyperSQL");
       }
       driverClassName = (String) fields.get("className");
@@ -126,22 +131,22 @@ public class ODriverConfigurator {
       // if the driver is not present, it will be downloaded
       String driverPath = isDriverAlreadyPresent(driverName, classPath);
 
-      if(driverPath == null) {
+      if (driverPath == null) {
 
         context.getOutputManager().info("Downloading the necessary JDBC driver in ORIENTDB_HOME/lib ...");
 
         // download last available jdbc driver version
         String driverDownldUrl = (String) fields.get("url");
         URL website = new URL(driverDownldUrl);
-        String fileName = driverDownldUrl.substring(driverDownldUrl.lastIndexOf('/')+1, driverDownldUrl.length());
+        String fileName = driverDownldUrl.substring(driverDownldUrl.lastIndexOf('/') + 1, driverDownldUrl.length());
         ReadableByteChannel rbc = Channels.newChannel(website.openStream());
         @SuppressWarnings("resource")
-        FileOutputStream fos = new FileOutputStream(classPath+fileName);
+        FileOutputStream fos = new FileOutputStream(classPath + fileName);
         fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
 
-        driverPath = classPath+fileName;
+        driverPath = classPath + fileName;
 
-        if(driverName.equalsIgnoreCase("SQLServer")) {
+        if (driverName.equalsIgnoreCase("SQLServer")) {
           OFileManager.extractAll(driverPath, classPath);
           OFileManager.deleteFile(driverPath);
           String[] split = driverPath.split(".jar");
@@ -154,8 +159,8 @@ public class ODriverConfigurator {
       // saving driver
       context.setDriverDependencyPath(driverPath);
 
-    } catch(Exception e) {
-      if(e.getMessage() != null)
+    } catch (Exception e) {
+      if (e.getMessage() != null)
         context.getOutputManager().error(e.getClass().getName() + " - " + e.getMessage());
       else
         context.getOutputManager().error(e.getClass().getName());
@@ -170,7 +175,6 @@ public class ODriverConfigurator {
     return driverClassName;
   }
 
-
   /**
    * @param driverName
    * @return the path of the driver
@@ -178,12 +182,12 @@ public class ODriverConfigurator {
   private String isDriverAlreadyPresent(String driverName, String classPath) {
 
     File dir = new File(classPath);
-    File[] files = dir.listFiles(); 
+    File[] files = dir.listFiles();
 
-    for(String identifier: this.driver2filesIdentifier.get(driverName)) {
+    for (String identifier : this.driver2filesIdentifier.get(driverName)) {
 
-      for(int i=0; i<files.length; i++) {
-        if(files[i].getName().startsWith(identifier))
+      for (int i = 0; i < files.length; i++) {
+        if (files[i].getName().startsWith(identifier))
           return files[i].getPath();
       }
     }
@@ -220,7 +224,7 @@ public class ODriverConfigurator {
       json.fromJSON(jsonText);
 
     } catch (Exception e) {
-      if(e.getMessage() != null)
+      if (e.getMessage() != null)
         context.getOutputManager().error(e.getClass().getName() + " - " + e.getMessage());
       else
         context.getOutputManager().error(e.getClass().getName());
@@ -230,12 +234,11 @@ public class ODriverConfigurator {
       String s = writer.toString();
       context.getOutputManager().debug("\n" + s + "\n");
       throw new OTeleporterRuntimeException();
-    }
-    finally {
+    } finally {
       try {
         is.close();
       } catch (Exception e) {
-        if(e.getMessage() != null)
+        if (e.getMessage() != null)
           context.getOutputManager().error(e.getClass().getName() + " - " + e.getMessage());
         else
           context.getOutputManager().error(e.getClass().getName());
@@ -249,7 +252,8 @@ public class ODriverConfigurator {
     return json;
   }
 
-  public void checkConnection(String driver, String uri, String username, String password, OTeleporterContext context) throws Exception {
+  public void checkConnection(String driver, String uri, String username, String password, OTeleporterContext context)
+      throws Exception {
 
     String driverName = checkConfiguration(driver, context);
 
