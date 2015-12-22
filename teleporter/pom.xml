@@ -98,7 +98,7 @@
 				<configuration>
 					<archive>
 						<manifest>
-							<mainClass>com.orientechnologies.teleporter.main.OTeleporter</mainClass>
+							<mainClass>com.orientdb.teleporter.main.OTeleporter</mainClass>
 						</manifest>
 					</archive>
 					<descriptorRefs>
