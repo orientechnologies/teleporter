@@ -26,6 +26,8 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.Statement;
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -877,20 +879,38 @@ public class OOrientDBSchemaWritingTestCase {
       authorVertexType =  orientGraph.getVertexType("Author");
       assertEquals(4, authorVertexType.properties().size());
       Iterator<OProperty> it = authorVertexType.properties().iterator();
-      assertEquals("id", it.next().getName());
-      assertEquals("age", it.next().getName());
-      assertEquals("name", it.next().getName());
-      assertEquals("surname", it.next().getName());
-      assertFalse(it.hasNext());
+
+      List<String> props = new LinkedList<String>();
+      while (it.hasNext()) {
+        props.add(it.next().getName());
+      }
+//      assertEquals("id", it.next().getName());
+//      assertEquals("age", it.next().getName());
+//      assertEquals("name", it.next().getName());
+//      assertEquals("surname", it.next().getName());
+      assertEquals(4, props.size());
+      assertEquals(true, props.contains("id"));
+      assertEquals(true, props.contains("age"));
+      assertEquals(true, props.contains("name"));
+      assertEquals(true, props.contains("surname"));
 
       modelWriter.writeModelOnOrient(mapper.getGraphModel(), new OHSQLDBDataTypeHandler(), this.outOrientGraphUri, context);
       authorVertexType =  orientGraph.getVertexType("Author");
       assertEquals(3, authorVertexType.properties().size());
       it = authorVertexType.properties().iterator();
-      assertEquals("id", it.next().getName());
-      assertEquals("name", it.next().getName());
-      assertEquals("age", it.next().getName());
-      assertFalse(it.hasNext());
+
+      props.clear();
+      while (it.hasNext()) {
+        props.add(it.next().getName());
+      }
+//      assertEquals("id", it.next().getName());
+//      assertEquals("name", it.next().getName());
+//      assertEquals("age", it.next().getName());
+//      assertFalse(it.hasNext());
+      assertEquals(3, props.size());
+      assertEquals(true, props.contains("id"));
+      assertEquals(true, props.contains("age"));
+      assertEquals(true, props.contains("name"));
 
       // dropping property from Graph Model (from Book)
       OrientVertexType articleVertexType = orientGraph.getVertexType("Article");
@@ -903,21 +923,39 @@ public class OOrientDBSchemaWritingTestCase {
 
       assertEquals(4, articleVertexType.properties().size());
       it = articleVertexType.properties().iterator();
-      assertEquals("id", it.next().getName());
-      assertEquals("title", it.next().getName());
-      assertEquals("authorId", it.next().getName());
-      assertEquals("date", it.next().getName());
-      assertFalse(it.hasNext());
+
+      props.clear();
+      while (it.hasNext()) {
+        props.add(it.next().getName());
+      }
+//      assertEquals("id", it.next().getName());
+//      assertEquals("title", it.next().getName());
+//      assertEquals("authorId", it.next().getName());
+//      assertEquals("date", it.next().getName());
+//      assertFalse(it.hasNext());
+      assertEquals(4, props.size());
+      assertEquals(true, props.contains("id"));
+      assertEquals(true, props.contains("title"));
+      assertEquals(true, props.contains("authorId"));
+      assertEquals(true, props.contains("date"));
 
       modelWriter.writeModelOnOrient(mapper.getGraphModel(), new OHSQLDBDataTypeHandler(), this.outOrientGraphUri, context);
       assertEquals(3, articleVertexType.properties().size());
       articleVertexType = orientGraph.getVertexType("Article");
       it = articleVertexType.properties().iterator();
-      assertEquals("id", it.next().getName());
-      assertEquals("authorId", it.next().getName());
-      assertEquals("date", it.next().getName());
-      assertFalse(it.hasNext());
 
+      props.clear();
+      while (it.hasNext()) {
+        props.add(it.next().getName());
+      }
+//      assertEquals("id", it.next().getName());
+//      assertEquals("authorId", it.next().getName());
+//      assertEquals("date", it.next().getName());
+//      assertFalse(it.hasNext());
+      assertEquals(3, props.size());
+      assertEquals(true, props.contains("id"));
+      assertEquals(true, props.contains("authorId"));
+      assertEquals(true, props.contains("date"));
 
       // adding a property to OrientDB Schema (to HasAuthor)
       OrientEdgeType authorEdgeType = orientGraph.getEdgeType("HasAuthor");

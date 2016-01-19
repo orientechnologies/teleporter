@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: com.orientechnologies:orientdb-graphdb:2.2.0-SNAPSHOT">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/com/orientechnologies/orientdb-graphdb/2.2.0-SNAPSHOT/orientdb-graphdb-2.2.0-20160115.215503-129.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/com/orientechnologies/orientdb-graphdb/2.2.0-SNAPSHOT/orientdb-graphdb-2.2.0-20160115.215503-129-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/com/orientechnologies/orientdb-graphdb/2.2.0-SNAPSHOT/orientdb-graphdb-2.2.0-20160115.215503-129-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

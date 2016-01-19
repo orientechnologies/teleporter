@@ -26,7 +26,9 @@ import static org.junit.Assert.assertNull;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.Statement;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -110,16 +112,24 @@ public class OSequentialExecutionsTestCase {
 
       OProperty currentProperty = null;
       Iterator<OProperty> itProperties = actorVertexType.properties().iterator();
-      currentProperty = itProperties.next();
+
+      Map<String, OProperty> name2props = new HashMap<String, OProperty>();
+
+      while (itProperties.hasNext()) {
+        currentProperty = itProperties.next();
+        name2props.put(currentProperty.getName(), currentProperty);
+      }
+
+      assertEquals(3, name2props.keySet().size());
+      currentProperty = name2props.get("id");
       assertEquals("id", currentProperty.getName());
       assertEquals(OType.STRING, currentProperty.getType());
-      currentProperty = itProperties.next();
+      currentProperty = name2props.get("name");
       assertEquals("name", currentProperty.getName());
       assertEquals(OType.STRING, currentProperty.getType());
-      currentProperty = itProperties.next();
+      currentProperty = name2props.get("surname");
       assertEquals("surname", currentProperty.getName());
       assertEquals(OType.STRING, currentProperty.getType());
-      assertFalse(itProperties.hasNext());
 
 
       /*
@@ -146,19 +156,27 @@ public class OSequentialExecutionsTestCase {
 
       currentProperty = null;
       itProperties = actorVertexType.properties().iterator();
-      currentProperty = itProperties.next();
+
+      name2props = new HashMap<String, OProperty>();
+
+      while (itProperties.hasNext()) {
+        currentProperty = itProperties.next();
+        name2props.put(currentProperty.getName(), currentProperty);
+      }
+
+      assertEquals(4, name2props.keySet().size());
+      currentProperty = name2props.get("id");
       assertEquals("id", currentProperty.getName());
       assertEquals(OType.STRING, currentProperty.getType());
-      currentProperty = itProperties.next();
+      currentProperty = name2props.get("birthday");
       assertEquals("birthday", currentProperty.getName());
       assertEquals(OType.DATE, currentProperty.getType());
-      currentProperty = itProperties.next();
+      currentProperty = name2props.get("name");
       assertEquals("name", currentProperty.getName());
       assertEquals(OType.STRING, currentProperty.getType());
-      currentProperty = itProperties.next();
+      currentProperty = name2props.get("surname");
       assertEquals("surname", currentProperty.getName());
       assertEquals(OType.STRING, currentProperty.getType());
-      assertFalse(itProperties.hasNext());
 
 
     }catch(Exception e) {
@@ -220,19 +238,27 @@ public class OSequentialExecutionsTestCase {
 
       OProperty currentProperty = null;
       Iterator<OProperty> itProperties = actorVertexType.properties().iterator();
-      currentProperty = itProperties.next();
+
+      Map<String, OProperty> name2props = new HashMap<String, OProperty>();
+
+      while (itProperties.hasNext()) {
+        currentProperty = itProperties.next();
+        name2props.put(currentProperty.getName(), currentProperty);
+      }
+
+      assertEquals(4, name2props.keySet().size());
+      currentProperty = name2props.get("id");
       assertEquals("id", currentProperty.getName());
       assertEquals(OType.STRING, currentProperty.getType());
-      currentProperty = itProperties.next();
+      currentProperty = name2props.get("birthday");
       assertEquals("birthday", currentProperty.getName());
       assertEquals(OType.DATE, currentProperty.getType());
-      currentProperty = itProperties.next();
+      currentProperty = name2props.get("name");
       assertEquals("name", currentProperty.getName());
       assertEquals(OType.STRING, currentProperty.getType());
-      currentProperty = itProperties.next();
+      currentProperty = name2props.get("surname");
       assertEquals("surname", currentProperty.getName());
       assertEquals(OType.STRING, currentProperty.getType());
-      assertFalse(itProperties.hasNext());
 
 
       /*
@@ -259,16 +285,24 @@ public class OSequentialExecutionsTestCase {
 
       currentProperty = null;
       itProperties = actorVertexType.properties().iterator();
-      currentProperty = itProperties.next();
+
+      name2props = new HashMap<String, OProperty>();
+
+      while (itProperties.hasNext()) {
+        currentProperty = itProperties.next();
+        name2props.put(currentProperty.getName(), currentProperty);
+      }
+
+      assertEquals(3, name2props.keySet().size());
+      currentProperty = name2props.get("id");
       assertEquals("id", currentProperty.getName());
       assertEquals(OType.STRING, currentProperty.getType());
-      currentProperty = itProperties.next();
+      currentProperty = name2props.get("name");
       assertEquals("name", currentProperty.getName());
       assertEquals(OType.STRING, currentProperty.getType());
-      currentProperty = itProperties.next();
+      currentProperty = name2props.get("surname");
       assertEquals("surname", currentProperty.getName());
       assertEquals(OType.STRING, currentProperty.getType());
-      assertFalse(itProperties.hasNext());
 
 
     }catch(Exception e) {
@@ -328,19 +362,27 @@ public class OSequentialExecutionsTestCase {
 
       OProperty currentProperty = null;
       Iterator<OProperty> itProperties = actorVertexType.properties().iterator();
-      currentProperty = itProperties.next();
+
+      Map<String, OProperty> name2props = new HashMap<String, OProperty>();
+
+      while (itProperties.hasNext()) {
+        currentProperty = itProperties.next();
+        name2props.put(currentProperty.getName(), currentProperty);
+      }
+
+      assertEquals(4, name2props.keySet().size());
+      currentProperty = name2props.get("id");
       assertEquals("id", currentProperty.getName());
       assertEquals(OType.STRING, currentProperty.getType());
-      currentProperty = itProperties.next();
+      currentProperty = name2props.get("birthday");
       assertEquals("birthday", currentProperty.getName());
       assertEquals(OType.STRING, currentProperty.getType());
-      currentProperty = itProperties.next();
+      currentProperty = name2props.get("name");
       assertEquals("name", currentProperty.getName());
       assertEquals(OType.STRING, currentProperty.getType());
-      currentProperty = itProperties.next();
+      currentProperty = name2props.get("surname");
       assertEquals("surname", currentProperty.getName());
       assertEquals(OType.STRING, currentProperty.getType());
-      assertFalse(itProperties.hasNext());
 
 
       /*
@@ -371,19 +413,27 @@ public class OSequentialExecutionsTestCase {
 
       currentProperty = null;
       itProperties = actorVertexType.properties().iterator();
-      currentProperty = itProperties.next();
+
+      name2props = new HashMap<String, OProperty>();
+
+      while (itProperties.hasNext()) {
+        currentProperty = itProperties.next();
+        name2props.put(currentProperty.getName(), currentProperty);
+      }
+
+      assertEquals(4, name2props.keySet().size());
+      currentProperty = name2props.get("id");
       assertEquals("id", currentProperty.getName());
       assertEquals(OType.STRING, currentProperty.getType());
-      currentProperty = itProperties.next();
+      currentProperty = name2props.get("anniversary");
       assertEquals("anniversary", currentProperty.getName());
       assertEquals(OType.DATE, currentProperty.getType());
-      currentProperty = itProperties.next();
+      currentProperty = name2props.get("name");
       assertEquals("name", currentProperty.getName());
       assertEquals(OType.STRING, currentProperty.getType());
-      currentProperty = itProperties.next();
+      currentProperty = name2props.get("surname");
       assertEquals("surname", currentProperty.getName());
       assertEquals(OType.STRING, currentProperty.getType());
-      assertFalse(itProperties.hasNext());
 
 
     }catch(Exception e) {
@@ -625,19 +675,27 @@ public class OSequentialExecutionsTestCase {
 
       OProperty currentProperty = null;
       Iterator<OProperty> itProperties = actorVertexType.properties().iterator();
-      currentProperty = itProperties.next();
+
+      Map<String, OProperty> name2props = new HashMap<String, OProperty>();
+
+      while (itProperties.hasNext()) {
+        currentProperty = itProperties.next();
+        name2props.put(currentProperty.getName(), currentProperty);
+      }
+
+      assertEquals(4, name2props.keySet().size());
+      currentProperty = name2props.get("id");
       assertEquals("id", currentProperty.getName());
       assertEquals(OType.STRING, currentProperty.getType());
-      currentProperty = itProperties.next();
+      currentProperty = name2props.get("birthday");
       assertEquals("birthday", currentProperty.getName());
       assertEquals(OType.STRING, currentProperty.getType());
-      currentProperty = itProperties.next();
+      currentProperty = name2props.get("name");
       assertEquals("name", currentProperty.getName());
       assertEquals(OType.STRING, currentProperty.getType());
-      currentProperty = itProperties.next();
+      currentProperty = name2props.get("surname");
       assertEquals("surname", currentProperty.getName());
       assertEquals(OType.STRING, currentProperty.getType());
-      assertFalse(itProperties.hasNext());
 
 
       /*
@@ -664,19 +722,27 @@ public class OSequentialExecutionsTestCase {
 
       currentProperty = null;
       itProperties = actorVertexType.properties().iterator();
-      currentProperty = itProperties.next();
+
+      name2props = new HashMap<String, OProperty>();
+
+      while (itProperties.hasNext()) {
+        currentProperty = itProperties.next();
+        name2props.put(currentProperty.getName(), currentProperty);
+      }
+
+      assertEquals(4, name2props.keySet().size());
+      currentProperty = name2props.get("id");
       assertEquals("id", currentProperty.getName());
       assertEquals(OType.STRING, currentProperty.getType());
-      currentProperty = itProperties.next();
+      currentProperty = name2props.get("birthday");
       assertEquals("birthday", currentProperty.getName());
       assertEquals(OType.STRING, currentProperty.getType());
-      currentProperty = itProperties.next();
+      currentProperty = name2props.get("name");
       assertEquals("name", currentProperty.getName());
       assertEquals(OType.STRING, currentProperty.getType());
-      currentProperty = itProperties.next();
+      currentProperty = name2props.get("surname");
       assertEquals("surname", currentProperty.getName());
       assertEquals(OType.STRING, currentProperty.getType());
-      assertFalse(itProperties.hasNext());
 
       OrientVertexType filmVertexType = orientGraph.getVertexType("Film");
 
@@ -685,16 +751,24 @@ public class OSequentialExecutionsTestCase {
 
       currentProperty = null;
       itProperties = filmVertexType.properties().iterator();
-      currentProperty = itProperties.next();
+
+      name2props = new HashMap<String, OProperty>();
+
+      while (itProperties.hasNext()) {
+        currentProperty = itProperties.next();
+        name2props.put(currentProperty.getName(), currentProperty);
+      }
+
+      assertEquals(3, name2props.keySet().size());
+      currentProperty = name2props.get("id");
       assertEquals("id", currentProperty.getName());
       assertEquals(OType.STRING, currentProperty.getType());
-      currentProperty = itProperties.next();
+      currentProperty = name2props.get("title");
       assertEquals("title", currentProperty.getName());
       assertEquals(OType.STRING, currentProperty.getType());
-      currentProperty = itProperties.next();
+      currentProperty = name2props.get("director");
       assertEquals("director", currentProperty.getName());
       assertEquals(OType.STRING, currentProperty.getType());
-      assertFalse(itProperties.hasNext());
 
 
     }catch(Exception e) {
@@ -916,19 +990,27 @@ public class OSequentialExecutionsTestCase {
 
       OProperty currentProperty = null;
       Iterator<OProperty> itProperties = actorVertexType.properties().iterator();
-      currentProperty = itProperties.next();
+
+      Map<String, OProperty> name2props = new HashMap<String, OProperty>();
+
+      while (itProperties.hasNext()) {
+        currentProperty = itProperties.next();
+        name2props.put(currentProperty.getName(), currentProperty);
+      }
+
+      assertEquals(4, name2props.keySet().size());
+      currentProperty = name2props.get("id");
       assertEquals("id", currentProperty.getName());
       assertEquals(OType.STRING, currentProperty.getType());
-      currentProperty = itProperties.next();
+      currentProperty = name2props.get("birthday");
       assertEquals("birthday", currentProperty.getName());
       assertEquals(OType.STRING, currentProperty.getType());
-      currentProperty = itProperties.next();
+      currentProperty = name2props.get("name");
       assertEquals("name", currentProperty.getName());
       assertEquals(OType.STRING, currentProperty.getType());
-      currentProperty = itProperties.next();
+      currentProperty = name2props.get("surname");
       assertEquals("surname", currentProperty.getName());
       assertEquals(OType.STRING, currentProperty.getType());
-      assertFalse(itProperties.hasNext());
 
       OrientVertexType filmVertexType = orientGraph.getVertexType("Film");
 
@@ -937,16 +1019,24 @@ public class OSequentialExecutionsTestCase {
 
       currentProperty = null;
       itProperties = filmVertexType.properties().iterator();
-      currentProperty = itProperties.next();
+
+      name2props = new HashMap<String, OProperty>();
+
+      while (itProperties.hasNext()) {
+        currentProperty = itProperties.next();
+        name2props.put(currentProperty.getName(), currentProperty);
+      }
+
+      assertEquals(3, name2props.keySet().size());
+      currentProperty = name2props.get("id");
       assertEquals("id", currentProperty.getName());
       assertEquals(OType.STRING, currentProperty.getType());
-      currentProperty = itProperties.next();
+      currentProperty = name2props.get("title");
       assertEquals("title", currentProperty.getName());
       assertEquals(OType.STRING, currentProperty.getType());
-      currentProperty = itProperties.next();
+      currentProperty = name2props.get("director");
       assertEquals("director", currentProperty.getName());
       assertEquals(OType.STRING, currentProperty.getType());
-      assertFalse(itProperties.hasNext());
 
 
       /*
@@ -972,24 +1062,31 @@ public class OSequentialExecutionsTestCase {
 
       currentProperty = null;
       itProperties = actorVertexType.properties().iterator();
-      currentProperty = itProperties.next();
+
+      name2props = new HashMap<String, OProperty>();
+
+      while (itProperties.hasNext()) {
+        currentProperty = itProperties.next();
+        name2props.put(currentProperty.getName(), currentProperty);
+      }
+
+      assertEquals(4, name2props.keySet().size());
+      currentProperty = name2props.get("id");
       assertEquals("id", currentProperty.getName());
       assertEquals(OType.STRING, currentProperty.getType());
-      currentProperty = itProperties.next();
+      currentProperty = name2props.get("birthday");
       assertEquals("birthday", currentProperty.getName());
       assertEquals(OType.STRING, currentProperty.getType());
-      currentProperty = itProperties.next();
+      currentProperty = name2props.get("name");
       assertEquals("name", currentProperty.getName());
       assertEquals(OType.STRING, currentProperty.getType());
-      currentProperty = itProperties.next();
+      currentProperty = name2props.get("surname");
       assertEquals("surname", currentProperty.getName());
       assertEquals(OType.STRING, currentProperty.getType());
-      assertFalse(itProperties.hasNext());
 
       filmVertexType = orientGraph.getVertexType(filmTableBuilding);
 
       assertNull(filmVertexType);
-
 
 
     }catch(Exception e) {
