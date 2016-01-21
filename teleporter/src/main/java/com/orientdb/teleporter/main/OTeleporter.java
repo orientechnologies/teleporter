@@ -245,7 +245,7 @@ public class OTeleporter extends OServerPluginAbstract {
 
     // Timer for statistics notifying
     Timer timer = new Timer();
-    timer.schedule(new TimerTask() {
+    timer.scheduleAtFixedRate(new TimerTask() {
 
       @Override
       public void run() {
