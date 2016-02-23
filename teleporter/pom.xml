@@ -64,7 +64,7 @@
 	
 	<properties>
 		<jdk.version>1.7</jdk.version>
-		<orientdb.version>2.2.0-SNAPSHOT</orientdb.version>
+		<orientdb.version>2.2.0-beta</orientdb.version>
 		<hsqldb.version>2.3.3</hsqldb.version>
 	</properties>
 	
