@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: com.orientechnologies:orientdb-enterprise:2.2.0-beta">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/com/orientechnologies/orientdb-enterprise/2.2.0-beta/orientdb-enterprise-2.2.0-beta.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/com/orientechnologies/orientdb-enterprise/2.2.0-beta/orientdb-enterprise-2.2.0-beta-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/com/orientechnologies/orientdb-enterprise/2.2.0-beta/orientdb-enterprise-2.2.0-beta-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

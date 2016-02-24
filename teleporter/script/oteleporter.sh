@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# Copyright (c) 2015 Luca Garulli
+# Copyright (c) 2015 OrientDB LTD - www.orientdb.com
 #
 
 #set current working directory
