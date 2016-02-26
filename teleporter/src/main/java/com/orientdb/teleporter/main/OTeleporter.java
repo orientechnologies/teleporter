@@ -38,10 +38,10 @@ import java.util.*;
 
 /**
  * Main Class from which the importing process starts.
- * 
+ *
  * @author Gabriele Ponzi
  * @email <gabriele.ponzi--at--gmail.com>
- * 
+ *
  */
 
 public class OTeleporter extends OServerPluginAbstract {
@@ -51,13 +51,13 @@ public class OTeleporter extends OServerPluginAbstract {
   private static final OStrategyFactory FACTORY  = new OStrategyFactory();
 
   private static final String           teleport = "OrientDB                  \n"
-                                                     + " ______________________________________________________________________________ \n"
-                                                     + " ___  __/__  ____/__  /___  ____/__  __ \\_  __ \\__  __\\__  __/__  ____/__  _ _ \\  \n"
-                                                     + " __  /  __  __/  __  / __  __/  __  /_/ /  / / /_  /_/ /_  /  __  __/  __  /_/ /\n"
-                                                     + " _  /   _  /___  _  /___  /___  _  ____// /_/ /_  _, _/_  /   _  /___  _  _, _/ \n"
-                                                     + " /_/    /_____/  /_____/_____/  /_/     \\____/ /_/ |_| /_/    /_____/  /_/ |_|  \n"
-                                                     + "\n"
-                                                     + "                                                  http://orientdb.com/teleporter";
+      + " ______________________________________________________________________________ \n"
+      + " ___  __/__  ____/__  /___  ____/__  __ \\_  __ \\__  __\\__  __/__  ____/__  _ _ \\  \n"
+      + " __  /  __  __/  __  / __  __/  __  /_/ /  / / /_  /_/ /_  /  __  __/  __  /_/ /\n"
+      + " _  /   _  /___  _  /___  /___  _  ____// /_/ /_  _, _/_  /   _  /___  _  _, _/ \n"
+      + " /_/    /_____/  /_____/_____/  /_/     \\____/ /_/ |_| /_/    /_____/  /_/ |_|  \n"
+      + "\n"
+      + "                                                  http://orientdb.com/teleporter";
   private OServer                       server;
 
   public static void main(String[] args) throws Exception {
@@ -196,7 +196,7 @@ public class OTeleporter extends OServerPluginAbstract {
 
   /**
    * Executes the import of the source DB in a OrientDB Graph through different parameters.
-   * 
+   *
    * @param driver
    *          the driver name of the DBMS from which you want to execute the import
    * @param jurl
@@ -245,22 +245,26 @@ public class OTeleporter extends OServerPluginAbstract {
 
     // Timer for statistics notifying
     Timer timer = new Timer();
-    timer.scheduleAtFixedRate(new TimerTask() {
+    try {
+      timer.scheduleAtFixedRate(new TimerTask() {
 
-      @Override
-      public void run() {
-        context.getStatistics().notifyListeners();
-      }
-    }, 0, 1000);
+        @Override
+        public void run() {
+          context.getStatistics().notifyListeners();
+        }
+      }, 0, 1000);
 
-    // the last argument represents the nameResolver
-    strategy.executeStrategy(driverClassName, jurl, username, password, outDbUrl, chosenMapper, xmlPath, nameResolver,
-        includedTables, excludedTables, context);
+      // the last argument represents the nameResolver
+      strategy.executeStrategy(driverClassName, jurl, username, password, outDbUrl, chosenMapper, xmlPath, nameResolver, includedTables, excludedTables, context);
 
-    timer.cancel();
+//      timer.cancel();
 
-    // Disabling query scan threshold tip
-    OGlobalConfiguration.QUERY_SCAN_THRESHOLD_TIP.setValue(50000);
+      // Disabling query scan threshold tip
+      OGlobalConfiguration.QUERY_SCAN_THRESHOLD_TIP.setValue(50000);
+
+    } finally {
+      timer.cancel();
+    }
 
   }
 

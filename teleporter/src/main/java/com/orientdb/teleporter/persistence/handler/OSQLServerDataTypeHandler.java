@@ -121,7 +121,7 @@ public class OSQLServerDataTypeHandler extends ODBMSDataTypeHandler {
      *  https://msdn.microsoft.com/en-us/library/ms187819.aspx, https://msdn.microsoft.com/en-us/library/bb677335.aspx, https://msdn.microsoft.com/en-us/library/bb630289.aspx )
      */    
     dbmsType2OrientType.put("date", OType.DATE);
-    dbmsType2OrientType.put("time", OType.DATETIME);
+    dbmsType2OrientType.put("time", OType.STRING);
     dbmsType2OrientType.put("smalldatetime", OType.DATETIME);
     dbmsType2OrientType.put("datetime", OType.DATETIME);
     dbmsType2OrientType.put("datetime2", OType.DATETIME);

@@ -31,6 +31,7 @@ import java.util.Set;
 
 import com.orientdb.teleporter.context.OTeleporterContext;
 import com.orientdb.teleporter.context.OTeleporterStatistics;
+import com.orientdb.teleporter.exception.OTeleporterRuntimeException;
 import com.orientdb.teleporter.factory.ODataTypeHandlerFactory;
 import com.orientdb.teleporter.factory.ONameResolverFactory;
 import com.orientdb.teleporter.factory.OQueryQuoteTypeFactory;
@@ -219,6 +220,7 @@ public abstract class ODBMSImportStrategy implements OImportStrategy {
       e.printStackTrace(new PrintWriter(writer));
       String s = writer.toString();
       context.getOutputManager().debug("\n" + s + "\n");
+      throw new OTeleporterRuntimeException();
     }
 
   }
@@ -372,6 +374,7 @@ public abstract class ODBMSImportStrategy implements OImportStrategy {
       e.printStackTrace(new PrintWriter(writer));
       String s = writer.toString();
       context.getOutputManager().debug("\n" + s + "\n");
+      throw new OTeleporterRuntimeException();
     }
   }
 
@@ -498,6 +501,7 @@ public abstract class ODBMSImportStrategy implements OImportStrategy {
       e.printStackTrace(new PrintWriter(writer));
       String s = writer.toString();
       context.getOutputManager().debug("\n" + s + "\n");
+      throw new OTeleporterRuntimeException();
     }
   }
 
@@ -507,7 +511,7 @@ public abstract class ODBMSImportStrategy implements OImportStrategy {
    * @param propertyOfKey
    * @param valueOfKey
    * @param physicalArrivalEntityName
-   * @param aggregateTableRecords 
+   * @param physicalArrivalEntitySchemaName
    * @param dbQueryEngine
    * @param context
    * @return
@@ -530,7 +534,7 @@ public abstract class ODBMSImportStrategy implements OImportStrategy {
 
 
   /**
-   * @param currentEntity
+   * @param currentParentEntity
    * @param valueOfKey 
    * @param propertyOfKey 
    * @param physicalEntityName
@@ -568,6 +572,7 @@ public abstract class ODBMSImportStrategy implements OImportStrategy {
       e.printStackTrace(new PrintWriter(writer));
       String s = writer.toString();
       context.getOutputManager().debug("\n" + s + "\n");
+      throw new OTeleporterRuntimeException();
     }
 
     return entityName;
@@ -624,6 +629,7 @@ public abstract class ODBMSImportStrategy implements OImportStrategy {
       e.printStackTrace(new PrintWriter(writer));
       String s = writer.toString();
       context.getOutputManager().debug("\n" + s + "\n");
+      throw new OTeleporterRuntimeException();
     }
 
     return entityName;
@@ -680,6 +686,7 @@ public abstract class ODBMSImportStrategy implements OImportStrategy {
       e.printStackTrace(new PrintWriter(writer));
       String s = writer.toString();
       context.getOutputManager().debug("\n" + s + "\n");
+      throw new OTeleporterRuntimeException();
     }
 
     return entityName;
@@ -688,9 +695,8 @@ public abstract class ODBMSImportStrategy implements OImportStrategy {
 
   /**
    * @param aggregateTableRecords 
-   * @param propertyOfKey
+   * @param aggregateTablePropertyOfKey
    * @param valueOfKey
-   * @param valueOfKey2 
    * @param context
    * @return
    */
@@ -732,6 +738,7 @@ public abstract class ODBMSImportStrategy implements OImportStrategy {
       e.printStackTrace(new PrintWriter(writer));
       String s = writer.toString();
       context.getOutputManager().debug("\n" + s + "\n");
+      throw new OTeleporterRuntimeException();
     }
 
     return fullRecord;

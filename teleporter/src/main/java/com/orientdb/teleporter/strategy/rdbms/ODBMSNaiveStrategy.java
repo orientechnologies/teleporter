@@ -51,10 +51,10 @@ import com.tinkerpop.blueprints.impls.orient.OrientVertex;
 /**
  * A strategy that performs a "naive" import of the data source. The data source schema is
  * translated semi-directly in a correspondent and coherent graph model.
- * 
+ *
  * @author Gabriele Ponzi
  * @email  <gabriele.ponzi--at--gmail.com>
- * 
+ *
  */
 
 public class ODBMSNaiveStrategy extends ODBMSImportStrategy {
@@ -82,7 +82,7 @@ public class ODBMSNaiveStrategy extends ODBMSImportStrategy {
     context.getOutputManager().debug("\n%s\n", mapper.getGraphModel().toString());
 
     // Step 3: Writing schema on Orient
-    OGraphModelWriter graphModelWriter = new OGraphModelWriter();  
+    OGraphModelWriter graphModelWriter = new OGraphModelWriter();
     OGraphModel graphModel = ((OER2GraphMapper)mapper).getGraphModel();
     boolean success = graphModelWriter.writeModelOnOrient(graphModel, handler, outOrientGraphUri, context);
     if(!success) {
@@ -106,34 +106,37 @@ public class ODBMSNaiveStrategy extends ODBMSImportStrategy {
       statistics.runningStepNumber = 4;
 
       OER2GraphMapper mapper = (OER2GraphMapper) genericMapper;
-      ODBQueryEngine dbQueryEngine = new ODBQueryEngine(driver, uri, username, password, context);    
-      OGraphEngineForDB graphEngine = new OGraphEngineForDB((OER2GraphMapper)mapper, handler);
+      ODBQueryEngine dbQueryEngine = new ODBQueryEngine(driver, uri, username, password, context);
+      OGraphEngineForDB graphEngine = new OGraphEngineForDB((OER2GraphMapper) mapper, handler);
 
       // OrientDB graph initialization/connection
       OrientBaseGraph orientGraph = null;
-      OrientGraphFactory factory = new OrientGraphFactory(outOrientGraphUri,"admin","admin");
+      OrientGraphFactory factory = new OrientGraphFactory(outOrientGraphUri, "admin", "admin");
       orientGraph = factory.getNoTx();
       orientGraph.getRawGraph().declareIntent(new OIntentMassiveInsert());
       orientGraph.setStandardElementConstraints(false);
 
-      OVertexType currentOutVertexType = null;  
-      OVertexType currentInVertexType = null;  
+      OVertexType currentOutVertexType = null;
+      OVertexType currentInVertexType = null;
       OrientVertex currentOutVertex = null;
       OEdgeType edgeType = null;
 
       // Importing from Entities belonging to hierarchical bags
-      for(OHierarchicalBag bag: mapper.getDataBaseSchema().getHierarchicalBags()) {
+      for (OHierarchicalBag bag : mapper.getDataBaseSchema().getHierarchicalBags()) {
 
-        switch(bag.getInheritancePattern()) {
+        switch (bag.getInheritancePattern()) {
 
-        case "table-per-hierarchy": super.tablePerHierarchyImport(bag, mapper, dbQueryEngine, graphEngine, orientGraph, context);
-        break;
+        case "table-per-hierarchy":
+          super.tablePerHierarchyImport(bag, mapper, dbQueryEngine, graphEngine, orientGraph, context);
+          break;
 
-        case "table-per-type": super.tablePerTypeImport(bag, mapper, dbQueryEngine, graphEngine, orientGraph, context);
-        break;
+        case "table-per-type":
+          super.tablePerTypeImport(bag, mapper, dbQueryEngine, graphEngine, orientGraph, context);
+          break;
 
-        case "table-per-concrete-type": super.tablePerConcreteTypeImport(bag, mapper, dbQueryEngine, graphEngine, orientGraph, context);
-        break;
+        case "table-per-concrete-type":
+          super.tablePerConcreteTypeImport(bag, mapper, dbQueryEngine, graphEngine, orientGraph, context);
+          break;
 
         }
       }
@@ -142,19 +145,18 @@ public class ODBMSNaiveStrategy extends ODBMSImportStrategy {
       ResultSet records = null;
 
       // Importing from Entities NOT belonging to hierarchical bags
-      for(OEntity entity: mapper.getDataBaseSchema().getEntities()) {
+      for (OEntity entity : mapper.getDataBaseSchema().getEntities()) {
 
-        if(entity.getHierarchicalBag() == null) {
+        if (entity.getHierarchicalBag() == null) {
 
           // for each entity in dbSchema all records are retrieved
 
-          if(handler.geospatialImplemented && super.hasGeospatialAttributes(entity, handler)) {
+          if (handler.geospatialImplemented && super.hasGeospatialAttributes(entity, handler)) {
             String query = handler.buildGeospatialQuery(entity, context);
             queryResult = dbQueryEngine.getRecordsByQuery(query, context);
-          }
-          else {
+          } else {
             queryResult = dbQueryEngine.getRecordsByEntity(entity.getName(), entity.getSchemaName(), context);
-          }					
+          }
 
           records = queryResult.getResult();
           ResultSet currentRecord = null;
@@ -162,18 +164,21 @@ public class ODBMSNaiveStrategy extends ODBMSImportStrategy {
           currentOutVertexType = mapper.getEntity2vertexType().get(entity);
 
           // each record is imported as vertex in the orient graph
-          while(records.next()) {
+          while (records.next()) {
             // upsert of the vertex
             currentRecord = records;
-            currentOutVertex = (OrientVertex) graphEngine.upsertVisitedVertex(orientGraph, currentRecord, currentOutVertexType, null, context);
+            currentOutVertex = (OrientVertex) graphEngine
+                .upsertVisitedVertex(orientGraph, currentRecord, currentOutVertexType, null, context);
 
             // for each attribute of the entity belonging to the primary key, correspondent relationship is
             // built as edge and for the referenced record a vertex is built (only id)
-            for(ORelationship currentRelation: entity.getOutRelationships()) {
+            for (ORelationship currentRelation : entity.getOutRelationships()) {
               currentInVertexType = mapper.getVertexTypeByName(context.getNameResolver().resolveVertexName(currentRelation.getParentEntityName()));
               edgeType = mapper.getRelationship2edgeType().get(currentRelation);
-              graphEngine.upsertReachedVertexWithEdge(orientGraph, currentRecord, currentRelation, currentOutVertex, currentInVertexType, edgeType.getName(), context);
-            }   
+              graphEngine
+                  .upsertReachedVertexWithEdge(orientGraph, currentRecord, currentRelation, currentOutVertex, currentInVertexType,
+                      edgeType.getName(), context);
+            }
 
             // Statistics updated
             statistics.analyzedRecords++;
@@ -190,6 +195,8 @@ public class ODBMSNaiveStrategy extends ODBMSImportStrategy {
       orientGraph.shutdown();
       context.getOutputManager().info("");
 
+    } catch(OTeleporterRuntimeException e) {
+        throw e;
     } catch(Exception e) {
       if(e.getMessage() != null)
         context.getOutputManager().error(e.getClass().getName() + " - " + e.getMessage());

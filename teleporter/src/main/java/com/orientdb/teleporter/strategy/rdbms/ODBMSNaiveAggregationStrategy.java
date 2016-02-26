@@ -232,6 +232,8 @@ public class ODBMSNaiveAggregationStrategy extends ODBMSImportStrategy {
       orientGraph.shutdown();
       context.getOutputManager().info("");
 
+    } catch(OTeleporterRuntimeException e) {
+      throw e;
     } catch(Exception e){
       if(e.getMessage() != null)
         context.getOutputManager().error(e.getClass().getName() + " - " + e.getMessage());
