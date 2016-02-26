@@ -146,7 +146,7 @@ public class OGraphEngineForDB {
       context.getOutputManager().debug("\n" + s + "\n");
       if(orientGraph != null)
         orientGraph.shutdown();
-      throw new OTeleporterRuntimeException();
+      throw new OTeleporterRuntimeException(e);
     }
     return false;
   }
@@ -426,7 +426,7 @@ public class OGraphEngineForDB {
       context.getOutputManager().debug(s2);
       if(orientGraph != null)
         orientGraph.shutdown();
-      throw new OTeleporterRuntimeException();
+      throw new OTeleporterRuntimeException(e);
     }
 
     return vertex;
@@ -649,7 +649,7 @@ public class OGraphEngineForDB {
       context.getOutputManager().debug(s);
       if(orientGraph != null)
         orientGraph.shutdown();
-      throw new OTeleporterRuntimeException();
+      throw new OTeleporterRuntimeException(e);
     }
 
     return currentInVertex;
@@ -705,7 +705,7 @@ public class OGraphEngineForDB {
       context.getOutputManager().debug("\n" + s + "\n");
       if(orientGraph != null)
         orientGraph.shutdown();
-      throw new OTeleporterRuntimeException();
+      throw new OTeleporterRuntimeException(e);
     }
   }
 
@@ -759,7 +759,7 @@ public class OGraphEngineForDB {
       context.getOutputManager().debug(s);
       if(orientGraph != null )
         orientGraph.shutdown();
-      throw new OTeleporterRuntimeException();
+      throw new OTeleporterRuntimeException(e);
     }
   }
 

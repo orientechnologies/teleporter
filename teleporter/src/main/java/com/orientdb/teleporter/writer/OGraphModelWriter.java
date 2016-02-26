@@ -50,7 +50,7 @@ import com.tinkerpop.blueprints.impls.orient.OrientVertexType;
 /**
  * Writer that has the responsibility to write the model of the destination Orient Graph
  * on OrientDB as an OrientDB Schema.
- * 
+ *
  * @author Gabriele Ponzi
  * @email  <gabriele.ponzi--at--gmail.com>
  *
@@ -167,7 +167,7 @@ public class OGraphModelWriter {
               if(type != null) {
                 newEdgeType.createProperty(currentProperty.getName(), type);
               }
-              else {  
+              else {
                 it.remove();
                 statistics.warningMessages.add(currentProperty.getPropertyType() + " type is not supported, the correspondent property will be dropped.");
               }
@@ -216,7 +216,7 @@ public class OGraphModelWriter {
             String propertiesList = "";
             int j = 0;
             for(String property: properties) {
-              if(j == properties.size()-1) 
+              if(j == properties.size()-1)
                 propertiesList += property;
               else
                 propertiesList += property + ",";
@@ -251,8 +251,8 @@ public class OGraphModelWriter {
         e.printStackTrace(new PrintWriter(writer));
         String s = writer.toString();
         context.getOutputManager().debug("\n" + s + "\n");
-        throw new OTeleporterRuntimeException();
-      }    
+        throw new OTeleporterRuntimeException(e);
+      }
       statistics.notifyListeners();
       statistics.runningStepNumber = -1;
       orientGraph.shutdown();
@@ -271,8 +271,8 @@ public class OGraphModelWriter {
 
 
   /**
-   * 
-   * 
+   *
+   *
    * @param orientGraph
    * @param currentElementType
    * @return

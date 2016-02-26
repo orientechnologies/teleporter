@@ -169,7 +169,7 @@ public class ODriverConfigurator {
       e.printStackTrace(new PrintWriter(writer));
       String s = writer.toString();
       context.getOutputManager().debug("\n" + s + "\n");
-      throw new OTeleporterRuntimeException();
+      throw new OTeleporterRuntimeException(e);
     }
 
     return driverClassName;
@@ -233,7 +233,7 @@ public class ODriverConfigurator {
       e.printStackTrace(new PrintWriter(writer));
       String s = writer.toString();
       context.getOutputManager().debug("\n" + s + "\n");
-      throw new OTeleporterRuntimeException();
+      throw new OTeleporterRuntimeException(e);
     } finally {
       try {
         is.close();
