@@ -49,6 +49,7 @@ public class OProgressMonitor implements OStatisticsListener {
   private final String work2Title;
   private final String work3Title;
   private final String work4Title;
+  private boolean firstPrint;
 
   /**
    * initialize progress bar properties.
@@ -59,9 +60,15 @@ public class OProgressMonitor implements OStatisticsListener {
     this.work3Title = String.format("%-35s","(3/4) OrientDB Schema writing:");
     this.work4Title = String.format("%-35s","(4/4) OrientDB importing:");
     this.context = context;
+    this.firstPrint = true;
   }
 
   public void updateOnEvent(OTeleporterStatistics statistics) {
+
+    if(firstPrint) {
+      System.out.println("");
+      this.firstPrint = false;
+    }
 
     switch(statistics.runningStepNumber) {
     case 1: this.updateWork1OnEvent(statistics);

@@ -143,7 +143,7 @@ public class OGraphEngineForDB {
       Writer writer = new StringWriter();
       e.printStackTrace(new PrintWriter(writer));
       String s = writer.toString();
-      context.getOutputManager().debug("\n" + s + "\n");
+      context.getOutputManager().error("\n" + s + "\n");
       if(orientGraph != null)
         orientGraph.shutdown();
       throw new OTeleporterRuntimeException(e);
@@ -423,7 +423,7 @@ public class OGraphEngineForDB {
       Writer writer = new StringWriter();
       e.printStackTrace(new PrintWriter(writer));
       String s2 = writer.toString();
-      context.getOutputManager().debug(s2);
+      context.getOutputManager().error(s2);
       if(orientGraph != null)
         orientGraph.shutdown();
       throw new OTeleporterRuntimeException(e);
@@ -646,7 +646,7 @@ public class OGraphEngineForDB {
       Writer writer = new StringWriter();
       e.printStackTrace(new PrintWriter(writer));
       String s = writer.toString();
-      context.getOutputManager().debug(s);
+      context.getOutputManager().error(s);
       if(orientGraph != null)
         orientGraph.shutdown();
       throw new OTeleporterRuntimeException(e);
@@ -702,7 +702,7 @@ public class OGraphEngineForDB {
       Writer writer = new StringWriter();
       e.printStackTrace(new PrintWriter(writer));
       String s = writer.toString();
-      context.getOutputManager().debug("\n" + s + "\n");
+      context.getOutputManager().error("\n" + s + "\n");
       if(orientGraph != null)
         orientGraph.shutdown();
       throw new OTeleporterRuntimeException(e);
@@ -756,7 +756,7 @@ public class OGraphEngineForDB {
       Writer writer = new StringWriter();
       e.printStackTrace(new PrintWriter(writer));
       String s = writer.toString();
-      context.getOutputManager().debug(s);
+      context.getOutputManager().error(s);
       if(orientGraph != null )
         orientGraph.shutdown();
       throw new OTeleporterRuntimeException(e);

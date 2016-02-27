@@ -257,8 +257,6 @@ public class OTeleporter extends OServerPluginAbstract {
       // the last argument represents the nameResolver
       strategy.executeStrategy(driverClassName, jurl, username, password, outDbUrl, chosenMapper, xmlPath, nameResolver, includedTables, excludedTables, context);
 
-//      timer.cancel();
-
       // Disabling query scan threshold tip
       OGlobalConfiguration.QUERY_SCAN_THRESHOLD_TIP.setValue(50000);
 

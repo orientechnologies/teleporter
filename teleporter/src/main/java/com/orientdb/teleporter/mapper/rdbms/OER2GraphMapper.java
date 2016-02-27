@@ -244,7 +244,7 @@ public class OER2GraphMapper extends OSource2GraphMapper {
 
         // if the primary key doesn't involve any attribute, a warning message is generated
         if(pKey.getInvolvedAttributes().size() == 0)
-          context.getStatistics().warningMessages.add("It's not declared a primary key for the Entity " + currentEntity + ", this will lead to issues during the migration above all during the synch executions "
+          context.getStatistics().warningMessages.add("It's not declared a primary key for the Entity " + currentEntity.getName() + ", this might lead to issues during the migration or the sync executions "
               + "(the first importing is quite safe).");
 
         // adding entity to db schema
@@ -368,7 +368,7 @@ public class OER2GraphMapper extends OSource2GraphMapper {
       Writer writer = new StringWriter();
       e.printStackTrace(new PrintWriter(writer));
       String s = writer.toString();
-      context.getOutputManager().debug("\n" + s + "\n");
+      context.getOutputManager().error("\n" + s + "\n");
       throw new OTeleporterRuntimeException(e);
     }finally {
       try {
@@ -473,7 +473,7 @@ public class OER2GraphMapper extends OSource2GraphMapper {
       Writer writer = new StringWriter();
       e.printStackTrace(new PrintWriter(writer));
       String s = writer.toString();
-      context.getOutputManager().debug("\n" + s + "\n");
+      context.getOutputManager().error("\n" + s + "\n");
       throw new OTeleporterRuntimeException(e);
     }
     return rows;
