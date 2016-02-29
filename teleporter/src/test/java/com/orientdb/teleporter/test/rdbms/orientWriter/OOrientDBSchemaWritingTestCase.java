@@ -25,12 +25,10 @@ import static org.junit.Assert.assertNotNull;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.Statement;
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.orientechnologies.orient.core.index.OIndex;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -156,13 +154,7 @@ public class OOrientDBSchemaWritingTestCase {
       assertEquals("HasAuthor", authorEdgeType.getName());
 
       // Indices check
-      Collection<? extends OIndex<?>> indexes = orientGraph.getRawGraph().getMetadata().getIndexManager().getIndexes();
-
-      for (OIndex<?> index : indexes) {
-        System.out.println(index);
-      }
-
-      assertEquals(2+3, indexes.size());
+      assertEquals(2+3, orientGraph.getRawGraph().getMetadata().getIndexManager().getIndexes().size());
 
       assertEquals(true, orientGraph.getRawGraph().getMetadata().getIndexManager().existsIndex("BookAuthor.pkey"));
       assertEquals(true, orientGraph.getRawGraph().getMetadata().getIndexManager().areIndexed("BookAuthor", "id"));
