@@ -18,25 +18,19 @@
 
 package com.orientdb.teleporter.test.rdbms.orientWriter;
 
-<<<<<<< HEAD
-=======
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 
-import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.Statement;
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.orientechnologies.orient.core.index.OIndex;
 import org.junit.Before;
 import org.junit.Test;
 
->>>>>>> f5278daf0601da2e1b107d4467af950fb8c46f6f
 import com.orientdb.teleporter.context.OOutputStreamManager;
 import com.orientdb.teleporter.context.OTeleporterContext;
 import com.orientdb.teleporter.mapper.rdbms.OER2GraphMapper;
@@ -170,17 +164,6 @@ public class OOrientDBSchemaWritingTestCase {
       assertEquals("HasAuthor", authorEdgeType.getName());
 
       // Indices check
-<<<<<<< HEAD
-=======
-      Collection<? extends OIndex<?>> indexes = orientGraph.getRawGraph().getMetadata().getIndexManager().getIndexes();
-
-      for (OIndex<?> index : indexes) {
-        System.out.println(index);
-      }
-
-      assertEquals(2+3, indexes.size());
-
->>>>>>> f5278daf0601da2e1b107d4467af950fb8c46f6f
       assertEquals(true, orientGraph.getRawGraph().getMetadata().getIndexManager().existsIndex("BookAuthor.pkey"));
       assertEquals(true, orientGraph.getRawGraph().getMetadata().getIndexManager().areIndexed("BookAuthor", "id"));
 
