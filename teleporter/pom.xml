@@ -122,6 +122,7 @@
                             <mainClass>com.orientdb.teleporter.main.OTeleporter</mainClass>
                         </manifest>
                     </archive>
+                    <appendAssemblyId>false</appendAssemblyId>
                     <descriptors>
                         <descriptor>src/assembly/assembly-descriptor.xml</descriptor>
                     </descriptors>
