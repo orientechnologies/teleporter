@@ -42,6 +42,7 @@
             <outputDirectory>orientdb-teleporter</outputDirectory>
             <includes>
                 <include>LICENSE.txt</include>
+                <include>README.txt</include>
             </includes>
             <filtered>false</filtered>
         </fileSet>
