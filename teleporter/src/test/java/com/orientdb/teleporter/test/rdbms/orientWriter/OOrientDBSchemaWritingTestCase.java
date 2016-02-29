@@ -18,20 +18,6 @@
 
 package com.orientdb.teleporter.test.rdbms.orientWriter;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.Statement;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-
-import org.junit.Before;
-import org.junit.Test;
-
 import com.orientdb.teleporter.context.OOutputStreamManager;
 import com.orientdb.teleporter.context.OTeleporterContext;
 import com.orientdb.teleporter.mapper.rdbms.OER2GraphMapper;
@@ -43,6 +29,17 @@ import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.tinkerpop.blueprints.impls.orient.OrientEdgeType;
 import com.tinkerpop.blueprints.impls.orient.OrientGraphNoTx;
 import com.tinkerpop.blueprints.impls.orient.OrientVertexType;
+import org.junit.Before;
+import org.junit.Test;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.Statement;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+
+import static org.junit.Assert.*;
 
 /**
  * @author Gabriele Ponzi
@@ -154,8 +151,6 @@ public class OOrientDBSchemaWritingTestCase {
       assertEquals("HasAuthor", authorEdgeType.getName());
 
       // Indices check
-      assertEquals(2+3, orientGraph.getRawGraph().getMetadata().getIndexManager().getIndexes().size());
-
       assertEquals(true, orientGraph.getRawGraph().getMetadata().getIndexManager().existsIndex("BookAuthor.pkey"));
       assertEquals(true, orientGraph.getRawGraph().getMetadata().getIndexManager().areIndexed("BookAuthor", "id"));
 
@@ -289,18 +284,13 @@ public class OOrientDBSchemaWritingTestCase {
       assertEquals("HasBook", bookEdgeType.getName());
 
       // Indices check
-      assertEquals(3+3, orientGraph.getRawGraph().getMetadata().getIndexManager().getIndexes().size());
-
       assertEquals(true, orientGraph.getRawGraph().getMetadata().getIndexManager().existsIndex("Author.pkey"));
-      assertEquals(1, authorVertexType.getIndexedProperties().size());
       assertEquals(true, orientGraph.getRawGraph().getMetadata().getIndexManager().areIndexed("Author", "id"));
 
       assertEquals(true, orientGraph.getRawGraph().getMetadata().getIndexManager().existsIndex("Book.pkey"));
-      assertEquals(1, authorVertexType.getIndexedProperties().size());
       assertEquals(true, orientGraph.getRawGraph().getMetadata().getIndexManager().areIndexed("Book", "id"));
 
       assertEquals(true, orientGraph.getRawGraph().getMetadata().getIndexManager().existsIndex("Item.pkey"));
-      assertEquals(1, authorVertexType.getIndexedProperties().size());
       assertEquals(true, orientGraph.getRawGraph().getMetadata().getIndexManager().areIndexed("Item", "id"));
 
 
@@ -430,8 +420,6 @@ public class OOrientDBSchemaWritingTestCase {
       assertEquals("HasAuthor", authorEdgeType.getName());
 
       // Indices check
-      assertEquals(3+3, orientGraph.getRawGraph().getMetadata().getIndexManager().getIndexes().size());
-
       assertEquals(true, orientGraph.getRawGraph().getMetadata().getIndexManager().existsIndex("Author.pkey"));
       assertEquals(true, orientGraph.getRawGraph().getMetadata().getIndexManager().areIndexed("Author", "id"));
 
@@ -552,8 +540,6 @@ public class OOrientDBSchemaWritingTestCase {
       assertEquals("Book2Author", authorEdgeType.getName());
 
       // Indices check
-      assertEquals(2+3, orientGraph.getRawGraph().getMetadata().getIndexManager().getIndexes().size());
-
       assertEquals(true, orientGraph.getRawGraph().getMetadata().getIndexManager().existsIndex("Author.pkey"));
       assertEquals(true, orientGraph.getRawGraph().getMetadata().getIndexManager().areIndexed("Author", "name", "surname"));
 
@@ -685,8 +671,6 @@ public class OOrientDBSchemaWritingTestCase {
       assertEquals("HasActor", actorEdgeType.getName());
 
       // Indices check
-      assertEquals(3+3, orientGraph.getRawGraph().getMetadata().getIndexManager().getIndexes().size());
-
       assertEquals(true, orientGraph.getRawGraph().getMetadata().getIndexManager().existsIndex("Actor.pkey"));
       assertEquals(true, orientGraph.getRawGraph().getMetadata().getIndexManager().areIndexed("Actor", "id"));
 
@@ -807,14 +791,11 @@ public class OOrientDBSchemaWritingTestCase {
       assertEquals("HasProjectManager", projectManagerEdgeType.getName());
 
       // Indices check
-      assertEquals(2+3, orientGraph.getRawGraph().getMetadata().getIndexManager().getIndexes().size());
-
       assertEquals(true, orientGraph.getRawGraph().getMetadata().getIndexManager().existsIndex("Employee.pkey"));
       assertEquals(true, orientGraph.getRawGraph().getMetadata().getIndexManager().areIndexed("Employee", "empId"));
 
       assertEquals(true, orientGraph.getRawGraph().getMetadata().getIndexManager().existsIndex("Project.pkey"));
       assertEquals(true, orientGraph.getRawGraph().getMetadata().getIndexManager().areIndexed("Project", "id"));
-
 
 
     }catch(Exception e) {
