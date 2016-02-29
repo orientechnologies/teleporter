@@ -133,7 +133,7 @@ public class ODriverConfigurator {
 
       if (driverPath == null) {
 
-        context.getOutputManager().info("Downloading the necessary JDBC driver in ORIENTDB_HOME/lib ...");
+        context.getOutputManager().info("\nDownloading the necessary JDBC driver in ORIENTDB_HOME/lib ...");
 
         // download last available jdbc driver version
         String driverDownldUrl = (String) fields.get("url");
