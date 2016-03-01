@@ -111,6 +111,7 @@
                 <configuration>
                     <archive>
                         <manifest>
+                            <addClasspath>true</addClasspath>
                             <mainClass>com.orientdb.teleporter.main.OTeleporter</mainClass>
                         </manifest>
                     </archive>
