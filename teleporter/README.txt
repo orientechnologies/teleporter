@@ -9,12 +9,13 @@ OrientDB
                                                   http://orientdb.com/teleporter
 
 
-OrientDB Teleporter is a tool that synchronizes a RDBMS to an OrientDB database. You can use Teleporter to:
+OrientDB Teleporter is a tool that synchronizes a RDBMS to an OrientDB database.
+You can use Teleporter to:
 
 - Import your existing RDBMS to OrientDB.
-- Keep your OrientDB database synchronized with changes from the RDBMS. In this case the database on your RDBMS
-  remains the primary and the database on OrientDB a synchronized copy. Synchronization is one way, so all the changes
-  in OrientDB database will not be propagated to the RDBMS.
+- Keep your OrientDB database synchronized with changes from the RDBMS. In this case the database
+  on your RDBMS remains the primary and the database on OrientDB a synchronized copy. 
+  Synchronization is one way, so all the changes in OrientDB database will not be propagated to the RDBMS.
 
 
 ---------------
@@ -23,9 +24,10 @@ HOW TO INSTALL
 
 Teleporter is really easy to install, just follow these two steps:
 
-1. Move orientdb-teleporter-1.0.1-SNAPSHOT.jar contained in plugin/ folder to the $ORIENTDB_HOME/plugins folder.
-2. Move the scripts oteleporter.sh and oteleporter.bat (for Windows users) contained in script/ folder to the
-   $ORIENTDB_HOME/bin folder.
+1. Move orientdb-teleporter-1.0.1-SNAPSHOT.jar contained in plugin/ folder to the 
+   $ORIENTDB_HOME/plugins folder.
+2. Move the scripts oteleporter.sh and oteleporter.bat (for Windows users) contained in script/ folder
+   to the $ORIENTDB_HOME/bin folder.
 
 Teleporter is now ready, you can execute it via OrientDB Studio as described here:
 https://github.com/orientechnologies/orientdb-labs/blob/master/Studio-Teleporter.md
