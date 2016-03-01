@@ -8,16 +8,6 @@
     </formats>
     <includeBaseDirectory>false</includeBaseDirectory>
     <fileSets>
-        <!--<fileSet>-->
-        <!--<outputDirectory>orientdb-teleporter</outputDirectory>-->
-        <!--<includes>-->
-        <!--<include>target/orientdb-teleporter*.jar</include>-->
-        <!--<include>script/oteleporter.sh</include>-->
-        <!--<include>script/oteleporter.bat</include>-->
-        <!--<include>LICENSE.txt</include>-->
-        <!--</includes>-->
-        <!--</fileSet>-->
-
         <fileSet>
             <directory>${basedir}/script</directory>
             <outputDirectory>orientdb-teleporter/script</outputDirectory>
@@ -44,7 +34,7 @@
                 <include>LICENSE.txt</include>
                 <include>README.txt</include>
             </includes>
-            <filtered>false</filtered>
+            <filtered>true</filtered>
         </fileSet>
     </fileSets>
 </assembly>
