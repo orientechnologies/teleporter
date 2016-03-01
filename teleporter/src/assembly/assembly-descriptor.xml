@@ -24,8 +24,6 @@
             <includes>
                 <include>orientdb-teleporter*.jar</include>
             </includes>
-            <fileMode>755</fileMode>
-            <filtered>true</filtered>
         </fileSet>
         <fileSet>
             <directory>${basedir}</directory>
