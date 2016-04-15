@@ -18,34 +18,21 @@
 
 package com.orientdb.teleporter.writer;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.io.Writer;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Locale;
-
 import com.orientdb.teleporter.context.OTeleporterContext;
 import com.orientdb.teleporter.context.OTeleporterStatistics;
 import com.orientdb.teleporter.exception.OTeleporterRuntimeException;
-import com.orientdb.teleporter.model.graphmodel.OEdgeType;
-import com.orientdb.teleporter.model.graphmodel.OElementType;
-import com.orientdb.teleporter.model.graphmodel.OGraphModel;
-import com.orientdb.teleporter.model.graphmodel.OModelProperty;
-import com.orientdb.teleporter.model.graphmodel.OVertexType;
+import com.orientdb.teleporter.model.graphmodel.*;
 import com.orientdb.teleporter.persistence.handler.ODriverDataTypeHandler;
 import com.orientechnologies.common.exception.OException;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.sql.OCommandSQL;
-import com.tinkerpop.blueprints.impls.orient.OrientBaseGraph;
-import com.tinkerpop.blueprints.impls.orient.OrientEdgeType;
-import com.tinkerpop.blueprints.impls.orient.OrientElementType;
-import com.tinkerpop.blueprints.impls.orient.OrientGraphFactory;
-import com.tinkerpop.blueprints.impls.orient.OrientVertexType;
+import com.tinkerpop.blueprints.impls.orient.*;
+
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.io.Writer;
+import java.util.*;
 
 /**
  * Writer that has the responsibility to write the model of the destination Orient Graph
@@ -67,7 +54,20 @@ public class OGraphModelWriter {
 
     OrientBaseGraph orientGraph = null;
     OrientGraphFactory factory = new OrientGraphFactory(outOrientGraphUri,"admin","admin");
-    orientGraph = factory.getNoTx();
+    try {
+      orientGraph = factory.getNoTx();
+    } catch(Exception e) {
+      if(e.getMessage() != null)
+        context.getOutputManager().error(e.getClass().getName() + " - " + e.getMessage());
+      else
+        context.getOutputManager().error(e.getClass().getName());
+
+      Writer writer = new StringWriter();
+      e.printStackTrace(new PrintWriter(writer));
+      String s = writer.toString();
+      context.getOutputManager().error("\n" + s + "\n");
+      throw new OTeleporterRuntimeException(e);
+    }
 
     OTeleporterStatistics statistics = context.getStatistics();
     statistics.startWork3Time = new Date();
@@ -295,7 +295,9 @@ public class OGraphModelWriter {
     }
 
     OProperty orientSchemaProperty;
-    OType type;
+    OType actualOrientType;   // the actual type present in the orientdb schema from last execution
+    OType newResolvedType;    // the type returned by the resolver on the basis of the actual source
+
 
     // check from model properties
     Iterator<OModelProperty> it1 = currentElementType.getProperties().iterator();
@@ -303,20 +305,21 @@ public class OGraphModelWriter {
     while(it1.hasNext()) {
       currentProperty = it1.next();
       orientSchemaProperty = orientElementType.getProperty(currentProperty.getName());
-      type = handler.resolveType(currentProperty.getPropertyType().toLowerCase(Locale.ENGLISH), context);
+      newResolvedType = handler.resolveType(currentProperty.getPropertyType().toLowerCase(Locale.ENGLISH), context);
 
       if(orientSchemaProperty != null) {
         // property present in orientdb schema, check if is it equal (type check), in case it's modified
+        actualOrientType = orientSchemaProperty.getType();
 
         // if types are not equal the property will be dropped and added again with the correct type
-        if(!currentProperty.getPropertyType().equalsIgnoreCase(type.toString())) {
+        if(!actualOrientType.toString().equalsIgnoreCase(newResolvedType.toString())) {
           orientElementType.dropProperty(currentProperty.getName());
-          orientElementType.createProperty(currentProperty.getName(), type);
+          orientElementType.createProperty(currentProperty.getName(), newResolvedType);
         }
       }
       else {
         // property not present in orientdb schema, then it's added (if type allows it)
-        orientElementType.createProperty(currentProperty.getName(), type);
+        orientElementType.createProperty(currentProperty.getName(), newResolvedType);
         updated = true;
       }
     }

@@ -18,42 +18,21 @@
 
 package com.orientdb.teleporter.mapper.rdbms;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.io.Writer;
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
-
 import com.orientdb.teleporter.context.OTeleporterContext;
 import com.orientdb.teleporter.context.OTeleporterStatistics;
 import com.orientdb.teleporter.exception.OTeleporterRuntimeException;
 import com.orientdb.teleporter.mapper.OSource2GraphMapper;
-import com.orientdb.teleporter.model.dbschema.OAttribute;
-import com.orientdb.teleporter.model.dbschema.ODataBaseSchema;
-import com.orientdb.teleporter.model.dbschema.ODataSourceSchema;
-import com.orientdb.teleporter.model.dbschema.OEntity;
-import com.orientdb.teleporter.model.dbschema.OForeignKey;
-import com.orientdb.teleporter.model.dbschema.OPrimaryKey;
-import com.orientdb.teleporter.model.dbschema.ORelationship;
-import com.orientdb.teleporter.model.graphmodel.OEdgeType;
-import com.orientdb.teleporter.model.graphmodel.OElementType;
-import com.orientdb.teleporter.model.graphmodel.OGraphModel;
-import com.orientdb.teleporter.model.graphmodel.OModelProperty;
-import com.orientdb.teleporter.model.graphmodel.OVertexType;
+import com.orientdb.teleporter.model.dbschema.*;
+import com.orientdb.teleporter.model.graphmodel.*;
 import com.orientdb.teleporter.nameresolver.ONameResolver;
 import com.orientdb.teleporter.persistence.util.ODBSourceConnection;
+
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.io.Writer;
+import java.sql.*;
+import java.util.*;
+import java.util.Date;
 
 /**
  * Implementation of OSource2GraphMapper that manages the source DB schema and the destination graph model with their correspondences.
@@ -455,7 +434,8 @@ public class OER2GraphMapper extends OSource2GraphMapper {
 
       while(resultForeignKeys.next()) {
 
-        if(this.isTableAllowed(resultForeignKeys.getString("pktable_name"))) {
+        if(this.isTableAllowed(resultForeignKeys.getString("pktable_name")) && this.dataBaseSchema.getEntityByName(resultForeignKeys.getString("pktable_name")) != null) {
+//          if(this.isTableAllowed(resultForeignKeys.getString("pktable_name")) && this.dataBaseSchema.getEntityByName(resultForeignKeys.getString("pktable_name")) != null) {
 
           LinkedHashMap<String,String> row = new LinkedHashMap<String,String>();
           for(int i=1; i<=columnsAmount; i++) {

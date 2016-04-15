@@ -18,21 +18,6 @@
 
 package com.orientdb.teleporter.importengine.rdbms;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.io.Writer;
-import java.math.BigDecimal;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
-
 import com.orientdb.teleporter.context.OTeleporterContext;
 import com.orientdb.teleporter.context.OTeleporterStatistics;
 import com.orientdb.teleporter.exception.OTeleporterRuntimeException;
@@ -51,6 +36,14 @@ import com.tinkerpop.blueprints.Vertex;
 import com.tinkerpop.blueprints.impls.orient.OrientBaseGraph;
 import com.tinkerpop.blueprints.impls.orient.OrientEdge;
 import com.tinkerpop.blueprints.impls.orient.OrientVertex;
+
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.io.Writer;
+import java.math.BigDecimal;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.*;
 
 /**
  * Executes the necessary operations of insert and upsert for the destination Orient DB populating.
@@ -335,7 +328,7 @@ public class OGraphEngineForDB {
         // discerning between a reached-vertex updating (only original primary key's properties are present) and a full-vertex updating
         boolean justReachedVertex = true;
 
-        // first check: current vertex has less properties then the correspondent vertex type
+        // first check: if the current vertex has less properties then the correspondent vertex type then it's justReached
         if(vertex.getPropertyKeys().size() >= vertexType.getAllProperties().size()) {
           justReachedVertex = false;
         }
@@ -350,7 +343,7 @@ public class OGraphEngineForDB {
           }
         }
 
-        // updating a reached-vertex (only original primary key's properties are present)
+        // UPDATING A REACHED VERTEX (only original primary key's properties are present)
         if(justReachedVertex) {
 
           // setting new properties and save
@@ -360,7 +353,7 @@ public class OGraphEngineForDB {
           context.getOutputManager().debug("\nNew vertex inserted (all props setted): %s\n", vertex.toString());
         }
 
-        // updating a full-vertex
+        // UPDATING A FULL VERTEX
         else {
 
           // comparing old version of vertex with the new one: if the two versions are equals no rewriting is performed
@@ -403,6 +396,7 @@ public class OGraphEngineForDB {
               }
 
               // setting new properties and save
+              //              long millis = ((Date)properties.get("datanascita")).getTime();
               vertex.setProperties(properties);
               statistics.orientUpdatedVertices++;
               context.getOutputManager().debug("\nLoaded properties: " + properties.toString());
@@ -479,10 +473,28 @@ public class OGraphEngineForDB {
           return false;
       }
 
-      else if(currentPropertyType.equals("DATE") || currentPropertyType.equals("DATETIME")) {
-        // oldProperty : Date (year, month, day) OR Date (year, month, day, hours, minutes, seconds)
+      else if(currentPropertyType.equals("DATE")) {
 
-        return oldProperty.equals((Date)newProperty);
+        // oldProperty : Date (year, month, day)
+        Calendar oldDate = Calendar.getInstance();
+        oldDate.setTime((Date)oldProperty);
+        Calendar newDate = Calendar.getInstance();
+        newDate.setTime((Date)newProperty);
+
+        if(oldDate.get(Calendar.ERA) == newDate.get(Calendar.ERA) &&
+            oldDate.get(Calendar.YEAR) == newDate.get(Calendar.YEAR) &&
+            oldDate.get(Calendar.MONTH) == newDate.get(Calendar.MONTH) &&
+            oldDate.get(Calendar.DAY_OF_MONTH) == newDate.get(Calendar.DAY_OF_MONTH)) {
+          return true;
+        }
+        else {
+          return false;
+        }
+      }
+
+      else if(currentPropertyType.equals("DATETIME")) {
+        // oldProperty : Date (year, month, day, hours, minutes, seconds, millis)
+        return ((Date)oldProperty).equals((Date)newProperty);
       }
 
       else if(currentPropertyType.equals("DECIMAL")) {

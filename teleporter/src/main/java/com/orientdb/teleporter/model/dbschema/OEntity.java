@@ -27,10 +27,10 @@ import java.util.Set;
 
 /**
  * It represents an entity of the source DB.
- * 
+ *
  * @author Gabriele Ponzi
  * @email  <gabriele.ponzi--at--gmail.com>
- * 
+ *
  */
 
 public class OEntity implements Comparable<OEntity> {
@@ -71,42 +71,51 @@ public class OEntity implements Comparable<OEntity> {
   }
 
   /*
-   * It's possible to aggregate an entity if 
-   * (i) it's a junction (or join) table of dimension 2.
+   * It's possible to aggregate an entity iff
+   * (i) It's a junction (or join) table of dimension 2.
    * (ii) It has not exported keys, that is it's not referenced by other entities.
    */
   public boolean isAggregableJoinTable() {
 
-    // (i) check
-    if(this.foreignKeys.size() != 2)
-      return false;
-
-    if(this.isAggregable != null) {
+    // if already known, just retrieve the info
+    if (this.isAggregable != null) {
       return this.isAggregable;
     }
 
     else {
-      boolean aggregable = true;
 
-      // (i) each attribute belonging to the primary key is involved also in a foreign key and vice versa.
-      for(OForeignKey currentFk: this.foreignKeys) {
-        for(OAttribute attribute: currentFk.getInvolvedAttributes()) {
-          if(!this.primaryKey.getInvolvedAttributes().contains(attribute)) {
-            aggregable = false;
-            break;
-          }
-        }
+      // (i) preliminar check
+      if (this.foreignKeys.size() != 2)
+        return false;
+
+      else {
+        boolean aggregable = isJunctionTable();
+        this.isAggregable = aggregable;
+        return this.isAggregable;
       }
-
-      // (ii) check
-      if(aggregable) {
-        if(this.getAllInRelationships().size() > 0)
-          aggregable = false;
-      }
-
-      return this.isAggregable = aggregable;
     }
 
+  }
+
+  private boolean isJunctionTable() {
+    boolean isJunctionTable = true;
+
+    // (i) it's a junction table iff each attribute belonging to the primary key is involved also in a foreign key that imports all the attributes of the primary key of the referenced table.
+    for (OForeignKey currentFk : this.foreignKeys) {
+      for (OAttribute attribute : currentFk.getInvolvedAttributes()) {
+        if (!this.primaryKey.getInvolvedAttributes().contains(attribute)) {
+          isJunctionTable = false;
+          break;
+        }
+      }
+    }
+
+    // (ii) check
+    if (isJunctionTable) {
+      if (this.getAllInRelationships().size() > 0)
+        isJunctionTable = false;
+    }
+    return isJunctionTable;
   }
 
   public String getName() {
@@ -155,7 +164,7 @@ public class OEntity implements Comparable<OEntity> {
     allAttributes.addAll(this.attributes);
 
     return allAttributes;
-  }  
+  }
 
   public void setInheritedAttributes(Set<OAttribute> inheritedAttributes) {
     this.inheritedAttributes = inheritedAttributes;
@@ -300,7 +309,7 @@ public class OEntity implements Comparable<OEntity> {
       return this.inheritedOutRelationships;
     }
     else
-      return this.inheritedOutRelationships; 
+      return this.inheritedOutRelationships;
   }
 
   public void setInheritedOutRelationships(Set<ORelationship> inheritedOutRelationships) {
@@ -346,7 +355,7 @@ public class OEntity implements Comparable<OEntity> {
       return this.inheritedInRelationships;
     }
     else
-      return this.inheritedInRelationships; 
+      return this.inheritedInRelationships;
   }
 
   public void setInheritedInRelationships(Set<ORelationship> inheritedInRelationships) {
@@ -418,7 +427,7 @@ public class OEntity implements Comparable<OEntity> {
 
   @Override
   public String toString() {
-    String s = "Entity [name = " + this.name + ", number of attributes = " + this.attributes.size() + "]";	
+    String s = "Entity [name = " + this.name + ", number of attributes = " + this.attributes.size() + "]";
 
     if(this.isAggregableJoinTable())
       s += "\t\t\tJoin Entity (Aggregable Join Table)";
@@ -447,7 +456,7 @@ public class OEntity implements Comparable<OEntity> {
 
       for(ORelationship relationship: this.outRelationships) {
         s += index +".  ";
-        s += "Foreign Entity: " + relationship.getForeignEntityName() + ", Foreign Key: " + relationship.getForeignKey().toString() + "\t||\t" 
+        s += "Foreign Entity: " + relationship.getForeignEntityName() + ", Foreign Key: " + relationship.getForeignKey().toString() + "\t||\t"
             + "Parent Entity: " + relationship.getParentEntityName() + ", Primary Key: " + relationship.getForeignKey().toString() + "\n";
         index++;
       }

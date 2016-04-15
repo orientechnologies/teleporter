@@ -18,10 +18,10 @@
 
 package com.orientdb.teleporter.persistence.handler;
 
+import com.orientechnologies.orient.core.metadata.schema.OType;
+
 import java.util.HashMap;
 import java.util.Map;
-
-import com.orientechnologies.orient.core.metadata.schema.OType;
 
 /**
  * Handler that executes type conversions from Oracle DBMS to the OrientDB types.
@@ -64,7 +64,8 @@ public class OOracleDataTypeHandler extends ODBMSDataTypeHandler {
      * Numeric Types
      * (doc at http://docs.oracle.com/cd/B28359_01/server.111/b28318/datatype.htm#CNCPT313 )
      */
-    dbmsType2OrientType.put("numeric", OType.DECIMAL); 
+    dbmsType2OrientType.put("number", OType.DOUBLE);
+    dbmsType2OrientType.put("numeric", OType.DECIMAL);
     dbmsType2OrientType.put("float", OType.FLOAT);
     dbmsType2OrientType.put("binary_float", OType.FLOAT);
     dbmsType2OrientType.put("double", OType.DOUBLE);
