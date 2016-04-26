@@ -26,7 +26,6 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
 import java.io.*;
 import java.net.URL;
 import java.net.URLConnection;
-import java.net.UnknownHostException;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.charset.Charset;
@@ -211,12 +210,12 @@ public class ODriverConfigurator {
 
       try {
         is = urlConn.getInputStream();
-      } catch (UnknownHostException uhe) {
+      } catch (IOException ne) {
 
         try {
           // read json from the file in the ORIENTDB_HOME/config path
           is = new FileInputStream(new File(this.localJsonPath));
-        } catch (FileNotFoundException e) {
+        } catch (IOException e) {
           context.getOutputManager().error("The jdbc-drivers configuration cannot be found. The connection to orientdb.com did not succeed and the configuration file \"jdbc-drivers.json\" is not present in ORIENTDB_HOME/config.\n");
           if (e.getMessage() != null)
             context.getOutputManager().error(e.getClass().getName() + " - " + e.getMessage());
