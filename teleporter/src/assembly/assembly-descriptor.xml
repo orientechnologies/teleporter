@@ -10,17 +10,25 @@
     <fileSets>
         <fileSet>
             <directory>${basedir}/script</directory>
-            <outputDirectory>orientdb-teleporter/script</outputDirectory>
+            <outputDirectory>orientdb-teleporter/bin</outputDirectory>
             <includes>
                 <include>oteleporter.*</include>
             </includes>
             <fileMode>755</fileMode>
             <filtered>true</filtered>
         </fileSet>
-
+        <fileSet>
+            <directory>${basedir}/src/main/resources</directory>
+            <outputDirectory>orientdb-teleporter/config</outputDirectory>
+            <includes>
+                <include>jdbc-drivers*</include>
+            </includes>
+            <fileMode>755</fileMode>
+            <filtered>true</filtered>
+        </fileSet>
         <fileSet>
             <directory>${basedir}/target</directory>
-            <outputDirectory>orientdb-teleporter/plugin</outputDirectory>
+            <outputDirectory>orientdb-teleporter/plugins</outputDirectory>
             <includes>
                 <include>orientdb-teleporter*.jar</include>
             </includes>

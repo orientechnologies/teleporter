@@ -18,18 +18,15 @@
 
 package com.orientdb.teleporter.util;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.io.Reader;
-import java.io.StringWriter;
-import java.io.Writer;
+import com.orientdb.teleporter.context.OTeleporterContext;
+import com.orientdb.teleporter.exception.OTeleporterRuntimeException;
+import com.orientdb.teleporter.persistence.util.ODBSourceConnection;
+import com.orientechnologies.orient.core.record.impl.ODocument;
+
+import java.io.*;
 import java.net.URL;
 import java.net.URLConnection;
+import java.net.UnknownHostException;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.charset.Charset;
@@ -39,15 +36,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import com.orientdb.teleporter.context.OTeleporterContext;
-import com.orientdb.teleporter.exception.OTeleporterRuntimeException;
-import com.orientdb.teleporter.persistence.util.ODBSourceConnection;
-import com.orientechnologies.orient.core.record.impl.ODocument;
-
 
 /**
  * Executes an automatic configuration of the chosen driver JDBC.
- * 
+ *
  * @author Gabriele Ponzi
  * @email <gabriele.ponzi--at--gmail.com>
  *
@@ -55,7 +47,8 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
 
 public class ODriverConfigurator {
 
-  public static final String        DRIVERS = "http://orientdb.com/jdbc-drivers.json";
+  public static final String DRIVERS = "http://orientdb.com/jdbc-drivers.json";
+  private final String localJsonPath = "../config/jdbc-drivers.json";
   private Map<String, List<String>> driver2filesIdentifier;
 
   public ODriverConfigurator() {
@@ -64,7 +57,7 @@ public class ODriverConfigurator {
   }
 
   /**
-   * 
+   *
    */
   private void fillMap() {
 
@@ -215,7 +208,28 @@ public class ODriverConfigurator {
       URL urlObj = new URL(url);
       URLConnection urlConn = urlObj.openConnection();
       urlConn.setRequestProperty("User-Agent", "Teleporter");
-      is = urlConn.getInputStream();
+
+      try {
+        is = urlConn.getInputStream();
+      } catch (UnknownHostException uhe) {
+
+        try {
+          // read json from the file in the ORIENTDB_HOME/config path
+          is = new FileInputStream(new File(this.localJsonPath));
+        } catch (FileNotFoundException e) {
+          context.getOutputManager().error("The jdbc-drivers configuration cannot be found. The connection to orientdb.com did not succeed and the configuration file \"jdbc-drivers.json\" is not present in ORIENTDB_HOME/config.\n");
+          if (e.getMessage() != null)
+            context.getOutputManager().error(e.getClass().getName() + " - " + e.getMessage());
+          else
+            context.getOutputManager().error(e.getClass().getName());
+
+          Writer writer = new StringWriter();
+          e.printStackTrace(new PrintWriter(writer));
+          String s = writer.toString();
+          context.getOutputManager().error("\n" + s + "\n");
+          throw new OTeleporterRuntimeException(e);
+        }
+      }
 
       json = new ODocument();
 
@@ -247,6 +261,7 @@ public class ODriverConfigurator {
         e.printStackTrace(new PrintWriter(writer));
         String s = writer.toString();
         context.getOutputManager().debug("\n" + s + "\n");
+        throw new OTeleporterRuntimeException(e);
       }
     }
     return json;
