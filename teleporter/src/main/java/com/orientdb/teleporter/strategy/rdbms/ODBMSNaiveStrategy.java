@@ -18,13 +18,6 @@
 
 package com.orientdb.teleporter.strategy.rdbms;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.io.Writer;
-import java.sql.ResultSet;
-import java.util.Date;
-import java.util.List;
-
 import com.orientdb.teleporter.context.OTeleporterContext;
 import com.orientdb.teleporter.context.OTeleporterStatistics;
 import com.orientdb.teleporter.exception.OTeleporterRuntimeException;
@@ -47,6 +40,13 @@ import com.orientechnologies.orient.core.intent.OIntentMassiveInsert;
 import com.tinkerpop.blueprints.impls.orient.OrientBaseGraph;
 import com.tinkerpop.blueprints.impls.orient.OrientGraphFactory;
 import com.tinkerpop.blueprints.impls.orient.OrientVertex;
+
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.io.Writer;
+import java.sql.ResultSet;
+import java.util.Date;
+import java.util.List;
 
 /**
  * A strategy that performs a "naive" import of the data source. The data source schema is
@@ -167,17 +167,14 @@ public class ODBMSNaiveStrategy extends ODBMSImportStrategy {
           while (records.next()) {
             // upsert of the vertex
             currentRecord = records;
-            currentOutVertex = (OrientVertex) graphEngine
-                .upsertVisitedVertex(orientGraph, currentRecord, currentOutVertexType, null, context);
+            currentOutVertex = (OrientVertex) graphEngine.upsertVisitedVertex(orientGraph, currentRecord, currentOutVertexType, null, context);
 
             // for each attribute of the entity belonging to the primary key, correspondent relationship is
             // built as edge and for the referenced record a vertex is built (only id)
             for (ORelationship currentRelation : entity.getOutRelationships()) {
               currentInVertexType = mapper.getVertexTypeByName(context.getNameResolver().resolveVertexName(currentRelation.getParentEntityName()));
               edgeType = mapper.getRelationship2edgeType().get(currentRelation);
-              graphEngine
-                  .upsertReachedVertexWithEdge(orientGraph, currentRecord, currentRelation, currentOutVertex, currentInVertexType,
-                      edgeType.getName(), context);
+              graphEngine.upsertReachedVertexWithEdge(orientGraph, currentRecord, currentRelation, currentOutVertex, currentInVertexType, edgeType.getName(), context);
             }
 
             // Statistics updated
@@ -196,7 +193,7 @@ public class ODBMSNaiveStrategy extends ODBMSImportStrategy {
       context.getOutputManager().info("");
 
     } catch(OTeleporterRuntimeException e) {
-        throw e;
+      throw e;
     } catch(Exception e) {
       if(e.getMessage() != null)
         context.getOutputManager().error(e.getClass().getName() + " - " + e.getMessage());

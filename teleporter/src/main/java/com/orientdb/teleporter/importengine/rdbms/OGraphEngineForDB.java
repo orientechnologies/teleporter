@@ -195,25 +195,40 @@ public class OGraphEngineForDB {
 
         for(OModelProperty currentProperty: vertexType.getAllProperties()) {
           // only attribute coming from the primary key are given
-          if(currentProperty.isFromPrimaryKey())
+          if(currentProperty.isFromPrimaryKey()) {
             propertiesOfIndex.add(currentProperty.getName());
+          }
         }
       }
 
       propertyOfKey = new String[propertiesOfIndex.size()];
       valueOfKey = new String[propertiesOfIndex.size()];
+      String currentValue;
 
       int cont = 0;
       for(String property: propertiesOfIndex) {
         propertyOfKey[cont] = property;
         if(toResolveNames) {
           OAttribute attribute = this.mapper.getAttributeByVertexTypeAndProperty(vertexType.getName(), property);
-          valueOfKey[cont] = record.getString(attribute.getName());
+          currentValue = record.getString(attribute.getName());
+        }
+        else {
+          currentValue = record.getString(property);
         }
 
-        else
-          valueOfKey[cont] = record.getString(property);
+        // converting eventual "t" or "f" values in "true" and "false"
+        OModelProperty prop = vertexType.getPropertyByNameAmongAll(context.getNameResolver().resolveVertexProperty(property));
+        if(prop.getPropertyType().equalsIgnoreCase("boolean")) {
+          switch(currentValue) {
+          case "t": currentValue = "true";
+            break;
+          case "f": currentValue = "false";
+            break;
+          default: break;
+          }
+        }
 
+        valueOfKey[cont] = currentValue;
         cont++;
       }
 

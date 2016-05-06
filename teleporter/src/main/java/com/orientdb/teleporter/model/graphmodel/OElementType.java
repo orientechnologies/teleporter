@@ -118,6 +118,15 @@ public class OElementType implements Comparable<OElementType> {
     return null;
   }
 
+  public OModelProperty getPropertyByNameAmongAll(String name) {
+    for (OModelProperty property : this.getAllProperties()) {
+      if (property.getName().equals(name)) {
+        return property;
+      }
+    }
+    return null;
+  }
+
 
   // Returns properties and inherited properties
   public Set<OModelProperty> getAllProperties() {
