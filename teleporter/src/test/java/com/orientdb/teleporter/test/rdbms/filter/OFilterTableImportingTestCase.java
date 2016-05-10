@@ -18,22 +18,6 @@
 
 package com.orientdb.teleporter.test.rdbms.filter;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
-import org.junit.Before;
-import org.junit.Test;
-
 import com.orientdb.teleporter.context.OOutputStreamManager;
 import com.orientdb.teleporter.context.OTeleporterContext;
 import com.orientdb.teleporter.nameresolver.OJavaConventionNameResolver;
@@ -45,6 +29,17 @@ import com.tinkerpop.blueprints.Vertex;
 import com.tinkerpop.blueprints.impls.orient.OrientGraphNoTx;
 import com.tinkerpop.blueprints.impls.orient.OrientVertex;
 import com.tinkerpop.blueprints.impls.orient.OrientVertexType;
+import org.junit.Before;
+import org.junit.Test;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
+import static org.junit.Assert.*;
 
 /**
  * @author Gabriele Ponzi
@@ -58,11 +53,10 @@ public class OFilterTableImportingTestCase {
   private ODBMSNaiveStrategy importStrategy;
   private String outOrientGraphUri;
 
-  private final static String XML_TABLE_PER_CLASS = "src/main/resources/inheritance/hibernate/tablePerClassHierarchyImportTest.xml";
-  private final static String XML_TABLE_PER_SUBCLASS1 = "src/main/resources/inheritance/hibernate/tablePerSubclassImportTest1.xml";
-  private final static String XML_TABLE_PER_SUBCLASS2 = "src/main/resources/inheritance/hibernate/tablePerSubclassImportTest2.xml";
-  private final static String XML_TABLE_PER_CONCRETE_CLASS = "src/main/resources/inheritance/hibernate/tablePerConcreteClassImportTest.xml";
-
+  private final static String XML_TABLE_PER_CLASS = "src/test/resources/inheritance/hibernate/tablePerClassHierarchyImportTest.xml";
+  private final static String XML_TABLE_PER_SUBCLASS1 = "src/test/resources/inheritance/hibernate/tablePerSubclassImportTest1.xml";
+  private final static String XML_TABLE_PER_SUBCLASS2 = "src/test/resources/inheritance/hibernate/tablePerSubclassImportTest2.xml";
+  private final static String XML_TABLE_PER_CONCRETE_CLASS = "src/test/resources/inheritance/hibernate/tablePerConcreteClassImportTest.xml";
 
 
   @Before
