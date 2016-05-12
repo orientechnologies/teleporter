@@ -37,6 +37,7 @@ import com.orientdb.teleporter.persistence.handler.ODBMSDataTypeHandler;
 import com.orientdb.teleporter.persistence.util.OQueryResult;
 import com.orientdb.teleporter.writer.OGraphModelWriter;
 import com.orientechnologies.orient.core.intent.OIntentMassiveInsert;
+import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.tinkerpop.blueprints.impls.orient.OrientBaseGraph;
 import com.tinkerpop.blueprints.impls.orient.OrientGraphFactory;
 import com.tinkerpop.blueprints.impls.orient.OrientVertex;
@@ -64,10 +65,10 @@ public class ODBMSNaiveStrategy extends ODBMSImportStrategy {
 
 
   public OSource2GraphMapper createSchemaMapper(String driver, String uri, String username, String password, String outOrientGraphUri, String chosenMapper, String xmlPath, ONameResolver nameResolver,
-      ODBMSDataTypeHandler handler, List<String> includedTables, List<String> excludedTables, OTeleporterContext context) {
+      ODBMSDataTypeHandler handler, List<String> includedTables, List<String> excludedTables, ODocument config, OTeleporterContext context) {
 
     OMapperFactory mapperFactory = new OMapperFactory();
-    OSource2GraphMapper mapper = mapperFactory.buildMapper(chosenMapper, driver, uri, username, password, xmlPath, includedTables, excludedTables, context);
+    OSource2GraphMapper mapper = mapperFactory.buildMapper(chosenMapper, driver, uri, username, password, xmlPath, includedTables, excludedTables, config, context);
 
     // Step 1: DataBase schema building
     mapper.buildSourceSchema(context);

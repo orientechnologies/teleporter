@@ -124,7 +124,7 @@ public class OFilterTableMappingTestCase {
       includedTables.add("MANAGER");
       includedTables.add("EMPLOYEE");
 
-      this.mapper = new OER2GraphMapper("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", includedTables, null);
+      this.mapper = new OER2GraphMapper("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", includedTables, null, null);
       mapper.buildSourceSchema(this.context);
       mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
 
@@ -430,7 +430,7 @@ public class OFilterTableMappingTestCase {
       List<String> excludedTables = new ArrayList<String>();
       excludedTables.add("RESIDENCE");
 
-      this.mapper = new OER2GraphMapper("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", null, excludedTables);
+      this.mapper = new OER2GraphMapper("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", null, excludedTables, null);
       mapper.buildSourceSchema(this.context);
       mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
 
@@ -736,7 +736,7 @@ public class OFilterTableMappingTestCase {
       includedTables.add("MANAGER");
       includedTables.add("EMPLOYEE");
 
-      this.mapper = new OHibernate2GraphMapper("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", OFilterTableMappingTestCase.XML_TABLE_PER_CLASS, includedTables, null);
+      this.mapper = new OHibernate2GraphMapper("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", OFilterTableMappingTestCase.XML_TABLE_PER_CLASS, includedTables, null, null);
       mapper.buildSourceSchema(this.context);
       mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
 
@@ -1389,7 +1389,7 @@ public class OFilterTableMappingTestCase {
       includedTables.add("REGULAR_EMPLOYEE");
       includedTables.add("CONTRACT_EMPLOYEE");
 
-      this.mapper = new OHibernate2GraphMapper("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", OFilterTableMappingTestCase.XML_TABLE_PER_SUBCLASS1, includedTables, null);
+      this.mapper = new OHibernate2GraphMapper("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", OFilterTableMappingTestCase.XML_TABLE_PER_SUBCLASS1, includedTables, null, null);
       mapper.buildSourceSchema(this.context);
       mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
 
@@ -2043,7 +2043,7 @@ public class OFilterTableMappingTestCase {
       List<String> excludedTables = new ArrayList<String>();
       excludedTables.add("RESIDENCE");
 
-      this.mapper = new OHibernate2GraphMapper("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", OFilterTableMappingTestCase.XML_TABLE_PER_SUBCLASS2, null, excludedTables);
+      this.mapper = new OHibernate2GraphMapper("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", OFilterTableMappingTestCase.XML_TABLE_PER_SUBCLASS2, null, excludedTables, null);
       mapper.buildSourceSchema(this.context);
       mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
 
@@ -2704,7 +2704,7 @@ public class OFilterTableMappingTestCase {
       includedTables.add("REGULAR_EMPLOYEE");
       includedTables.add("CONTRACT_EMPLOYEE");
 
-      this.mapper = new OHibernate2GraphMapper("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", OFilterTableMappingTestCase.XML_TABLE_PER_CONCRETE_CLASS, includedTables, null);
+      this.mapper = new OHibernate2GraphMapper("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", OFilterTableMappingTestCase.XML_TABLE_PER_CONCRETE_CLASS, includedTables, null, null);
       mapper.buildSourceSchema(this.context);
       mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
 

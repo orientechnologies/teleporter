@@ -26,7 +26,10 @@ import com.orientdb.teleporter.model.dbschema.ORelationship;
 import com.orientdb.teleporter.model.graphmodel.OEdgeType;
 import com.orientdb.teleporter.model.graphmodel.OVertexType;
 import com.orientdb.teleporter.nameresolver.OJavaConventionNameResolver;
+import com.orientdb.teleporter.util.OFileManager;
+import com.orientechnologies.orient.core.record.impl.ODocument;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.sql.Connection;
@@ -75,7 +78,7 @@ public class OConfigurationMapping {
       connection = DriverManager.getConnection("jdbc:hsqldb:mem:mydb", "SA", "");
 
       String parentTableBuilding = "create memory table EMPLOYEE (EMP_ID varchar(256) not null,"+
-          " FIRST_NAME varchar(256) not null, LAST_NAME varchar(256) not null, primary key (EMP_ID))";
+          " FIRST_NAME varchar(256) not null, LAST_NAME varchar(256) not null, PROJECT varchar(256) not null, primary key (EMP_ID))";
       st = connection.createStatement();
       st.execute(parentTableBuilding);
 
@@ -83,7 +86,9 @@ public class OConfigurationMapping {
           " TITLE varchar(256) not null, PROJECT_MANAGER varchar(256) not null, primary key (ID))";
       st.execute(foreignTableBuilding);
 
-      this.mapper = new OER2GraphMapper("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", null, null);
+      ODocument config = OFileManager.buildJsonFromFile("src/test/resources/configuration-mapping/config.json");
+
+      this.mapper = new OER2GraphMapper("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", null, null, config);
       mapper.buildSourceSchema(this.context);
       mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
 
@@ -111,7 +116,7 @@ public class OConfigurationMapping {
       assertNotNull(projectEntity);
 
       // attributes check
-      assertEquals(3, employeeEntity.getAttributes().size());
+      assertEquals(4, employeeEntity.getAttributes().size());
 
       assertNotNull(employeeEntity.getAttributeByName("EMP_ID"));
       assertEquals("EMP_ID", employeeEntity.getAttributeByName("EMP_ID").getName());
@@ -130,6 +135,12 @@ public class OConfigurationMapping {
       assertEquals("VARCHAR", employeeEntity.getAttributeByName("LAST_NAME").getDataType());
       assertEquals(3, employeeEntity.getAttributeByName("LAST_NAME").getOrdinalPosition());
       assertEquals("EMPLOYEE", employeeEntity.getAttributeByName("LAST_NAME").getBelongingEntity().getName());
+
+      assertNotNull(employeeEntity.getAttributeByName("PROJECT"));
+      assertEquals("PROJECT", employeeEntity.getAttributeByName("PROJECT").getName());
+      assertEquals("VARCHAR", employeeEntity.getAttributeByName("PROJECT").getDataType());
+      assertEquals(4, employeeEntity.getAttributeByName("PROJECT").getOrdinalPosition());
+      assertEquals("EMPLOYEE", employeeEntity.getAttributeByName("PROJECT").getBelongingEntity().getName());
 
       assertEquals(3, projectEntity.getAttributes().size());
 
@@ -157,8 +168,8 @@ public class OConfigurationMapping {
       assertEquals(1, employeeEntity.getOutRelationships().size());
       assertEquals(1, projectEntity.getInRelationships().size());
       assertEquals(1, employeeEntity.getInRelationships().size());
-      assertEquals(1,employeeEntity.getForeignKeys().size());
-      assertEquals(1,projectEntity.getForeignKeys().size());
+      assertEquals(1, employeeEntity.getForeignKeys().size());
+      assertEquals(1, projectEntity.getForeignKeys().size());
 
       Iterator<ORelationship> it = projectEntity.getOutRelationships().iterator();
       ORelationship currentRelationship = it.next();
@@ -183,12 +194,12 @@ public class OConfigurationMapping {
       assertEquals(projectEntity.getPrimaryKey(), currentRelationship.getPrimaryKey());
       assertEquals(employeeEntity.getForeignKeys().get(0), currentRelationship.getForeignKey());
 
-      it2 = employeeEntity.getInRelationships().iterator();
+      it2 = projectEntity.getInRelationships().iterator();
       currentRelationship2 = it2.next();
       assertEquals(currentRelationship, currentRelationship2);
 
-      assertEquals("PROJECT_MANAGER", projectEntity.getForeignKeys().get(0).getInvolvedAttributes().get(0).getName());
-      assertEquals("EMP_ID", employeeEntity.getPrimaryKey().getInvolvedAttributes().get(0).getName());
+      assertEquals("PROJECT", employeeEntity.getForeignKeys().get(0).getInvolvedAttributes().get(0).getName());
+      assertEquals("ID", projectEntity.getPrimaryKey().getInvolvedAttributes().get(0).getName());
 
       assertFalse(it.hasNext());
 
@@ -208,45 +219,51 @@ public class OConfigurationMapping {
       assertNotNull(projectVertexType);
 
       // properties check
-//      assertEquals(3, employeeVertexType.getProperties().size());
-//
-//      assertNotNull(employeeVertexType.getPropertyByName("empId"));
-//      assertEquals("empId", employeeVertexType.getPropertyByName("empId").getName());
-//      assertEquals("VARCHAR", employeeVertexType.getPropertyByName("empId").getPropertyType());
-//      assertEquals(1, employeeVertexType.getPropertyByName("empId").getOrdinalPosition());
-//      assertEquals(true, employeeVertexType.getPropertyByName("empId").isFromPrimaryKey());
-//
-//      assertNotNull(employeeVertexType.getPropertyByName("mgrId"));
-//      assertEquals("mgrId", employeeVertexType.getPropertyByName("mgrId").getName());
-//      assertEquals("VARCHAR", employeeVertexType.getPropertyByName("mgrId").getPropertyType());
-//      assertEquals(2, employeeVertexType.getPropertyByName("mgrId").getOrdinalPosition());
-//      assertEquals(false, employeeVertexType.getPropertyByName("mgrId").isFromPrimaryKey());
-//
-//      assertNotNull(employeeVertexType.getPropertyByName("name"));
-//      assertEquals("name", employeeVertexType.getPropertyByName("name").getName());
-//      assertEquals("VARCHAR", employeeVertexType.getPropertyByName("name").getPropertyType());
-//      assertEquals(3, employeeVertexType.getPropertyByName("name").getOrdinalPosition());
-//      assertEquals(false, employeeVertexType.getPropertyByName("name").isFromPrimaryKey());
-//
-//      assertEquals(3, projectVertexType.getProperties().size());
-//
-//      assertNotNull(projectVertexType.getPropertyByName("id"));
-//      assertEquals("id", projectVertexType.getPropertyByName("id").getName());
-//      assertEquals("VARCHAR", projectVertexType.getPropertyByName("id").getPropertyType());
-//      assertEquals(1, projectVertexType.getPropertyByName("id").getOrdinalPosition());
-//      assertEquals(true, projectVertexType.getPropertyByName("id").isFromPrimaryKey());
-//
-//      assertNotNull(projectVertexType.getPropertyByName("title"));
-//      assertEquals("title", projectVertexType.getPropertyByName("title").getName());
-//      assertEquals("VARCHAR", projectVertexType.getPropertyByName("title").getPropertyType());
-//      assertEquals(2, projectVertexType.getPropertyByName("title").getOrdinalPosition());
-//      assertEquals(false, projectVertexType.getPropertyByName("title").isFromPrimaryKey());
-//
-//      assertNotNull(projectVertexType.getPropertyByName("projectManager"));
-//      assertEquals("projectManager", projectVertexType.getPropertyByName("projectManager").getName());
-//      assertEquals("VARCHAR", projectVertexType.getPropertyByName("projectManager").getPropertyType());
-//      assertEquals(3, projectVertexType.getPropertyByName("projectManager").getOrdinalPosition());
-//      assertEquals(false, projectVertexType.getPropertyByName("projectManager").isFromPrimaryKey());
+      assertEquals(4, employeeVertexType.getProperties().size());
+
+      assertNotNull(employeeVertexType.getPropertyByName("empId"));
+      assertEquals("empId", employeeVertexType.getPropertyByName("empId").getName());
+      assertEquals("VARCHAR", employeeVertexType.getPropertyByName("empId").getPropertyType());
+      assertEquals(1, employeeVertexType.getPropertyByName("empId").getOrdinalPosition());
+      assertEquals(true, employeeVertexType.getPropertyByName("empId").isFromPrimaryKey());
+
+      assertNotNull(employeeVertexType.getPropertyByName("firstName"));
+      assertEquals("firstName", employeeVertexType.getPropertyByName("firstName").getName());
+      assertEquals("VARCHAR", employeeVertexType.getPropertyByName("firstName").getPropertyType());
+      assertEquals(2, employeeVertexType.getPropertyByName("firstName").getOrdinalPosition());
+      assertEquals(false, employeeVertexType.getPropertyByName("firstName").isFromPrimaryKey());
+
+      assertNotNull(employeeVertexType.getPropertyByName("lastName"));
+      assertEquals("lastName", employeeVertexType.getPropertyByName("lastName").getName());
+      assertEquals("VARCHAR", employeeVertexType.getPropertyByName("lastName").getPropertyType());
+      assertEquals(3, employeeVertexType.getPropertyByName("lastName").getOrdinalPosition());
+      assertEquals(false, employeeVertexType.getPropertyByName("lastName").isFromPrimaryKey());
+
+      assertNotNull(employeeVertexType.getPropertyByName("project"));
+      assertEquals("project", employeeVertexType.getPropertyByName("project").getName());
+      assertEquals("VARCHAR", employeeVertexType.getPropertyByName("project").getPropertyType());
+      assertEquals(4, employeeVertexType.getPropertyByName("project").getOrdinalPosition());
+      assertEquals(false, employeeVertexType.getPropertyByName("project").isFromPrimaryKey());
+
+      assertEquals(3, projectVertexType.getProperties().size());
+
+      assertNotNull(projectVertexType.getPropertyByName("id"));
+      assertEquals("id", projectVertexType.getPropertyByName("id").getName());
+      assertEquals("VARCHAR", projectVertexType.getPropertyByName("id").getPropertyType());
+      assertEquals(1, projectVertexType.getPropertyByName("id").getOrdinalPosition());
+      assertEquals(true, projectVertexType.getPropertyByName("id").isFromPrimaryKey());
+
+      assertNotNull(projectVertexType.getPropertyByName("title"));
+      assertEquals("title", projectVertexType.getPropertyByName("title").getName());
+      assertEquals("VARCHAR", projectVertexType.getPropertyByName("title").getPropertyType());
+      assertEquals(2, projectVertexType.getPropertyByName("title").getOrdinalPosition());
+      assertEquals(false, projectVertexType.getPropertyByName("title").isFromPrimaryKey());
+
+      assertNotNull(projectVertexType.getPropertyByName("projectManager"));
+      assertEquals("projectManager", projectVertexType.getPropertyByName("projectManager").getName());
+      assertEquals("VARCHAR", projectVertexType.getPropertyByName("projectManager").getPropertyType());
+      assertEquals(3, projectVertexType.getPropertyByName("projectManager").getOrdinalPosition());
+      assertEquals(false, projectVertexType.getPropertyByName("projectManager").isFromPrimaryKey());
 
       // edges check
       assertEquals(2, mapper.getGraphModel().getEdgesType().size());
@@ -279,6 +296,7 @@ public class OConfigurationMapping {
     }
   }
 
+  @Ignore
   @Test
 
   /*
@@ -320,7 +338,7 @@ public class OConfigurationMapping {
           " foreign key (PROJECT_MANAGER) references EMPLOYEE(EMP_ID))";
       st.execute(foreignTableBuilding);
 
-      this.mapper = new OER2GraphMapper("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", null, null);
+      this.mapper = new OER2GraphMapper("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", null, null, null);
       mapper.buildSourceSchema(this.context);
       mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
 
@@ -421,6 +439,7 @@ public class OConfigurationMapping {
     }
   }
 
+  @Ignore
   @Test
 
   /*
@@ -452,7 +471,7 @@ public class OConfigurationMapping {
           " foreign key (ACTOR_ID) references ACTOR(ID))";
       st.execute(film2actorTableBuilding);
 
-      this.mapper = new OER2GraphMapper("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", null, null);
+      this.mapper = new OER2GraphMapper("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", null, null, null);
       mapper.buildSourceSchema(this.context);
       mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
 

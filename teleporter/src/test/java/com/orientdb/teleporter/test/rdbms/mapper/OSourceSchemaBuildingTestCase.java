@@ -18,23 +18,20 @@
 
 package com.orientdb.teleporter.test.rdbms.mapper;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
+import com.orientdb.teleporter.context.OOutputStreamManager;
+import com.orientdb.teleporter.context.OTeleporterContext;
+import com.orientdb.teleporter.mapper.rdbms.OER2GraphMapper;
+import com.orientdb.teleporter.model.dbschema.OEntity;
+import com.orientdb.teleporter.model.dbschema.ORelationship;
+import org.junit.Before;
+import org.junit.Test;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.Statement;
 import java.util.Iterator;
 
-import org.junit.Before;
-import org.junit.Test;
-
-import com.orientdb.teleporter.context.OOutputStreamManager;
-import com.orientdb.teleporter.context.OTeleporterContext;
-import com.orientdb.teleporter.mapper.rdbms.OER2GraphMapper;
-import com.orientdb.teleporter.model.dbschema.OEntity;
-import com.orientdb.teleporter.model.dbschema.ORelationship;
+import static org.junit.Assert.*;
 
 /**
  * @author Gabriele Ponzi
@@ -81,7 +78,7 @@ public class OSourceSchemaBuildingTestCase {
           " AUTHOR varchar(256) not null, primary key (BOOK_ID), foreign key (AUTHOR) references PARENT_AUTHOR(AUTHOR_ID))";
       st.execute(foreignTableBuilding);
 
-      this.mapper = new OER2GraphMapper("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", null, null);
+      this.mapper = new OER2GraphMapper("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", null, null, null);
       mapper.buildSourceSchema(this.context);
 
 
@@ -210,7 +207,7 @@ public class OSourceSchemaBuildingTestCase {
           " foreign key (AUTHOR_NAME,AUTHOR_SURNAME) references PARENT_AUTHOR(AUTHOR_NAME,AUTHOR_SURNAME))";
       st.execute(foreignTableBuilding);
 
-      this.mapper = new OER2GraphMapper("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", null, null);
+      this.mapper = new OER2GraphMapper("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", null, null, null);
       mapper.buildSourceSchema(this.context);
 
 
@@ -345,7 +342,7 @@ public class OSourceSchemaBuildingTestCase {
           " foreign key (TRANSLATOR) references PARENT_PERSON(PERSON_ID))";
       st.execute(foreignTableBuilding);
 
-      this.mapper = new OER2GraphMapper("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", null, null);
+      this.mapper = new OER2GraphMapper("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", null, null, null);
       mapper.buildSourceSchema(this.context);
 
 
@@ -488,7 +485,7 @@ public class OSourceSchemaBuildingTestCase {
           " foreign key (TRANSLATOR_NAME,TRANSLATOR_SURNAME) references PARENT_PERSON(NAME,SURNAME))";
       st.execute(foreignTableBuilding);
 
-      this.mapper = new OER2GraphMapper("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", null, null);
+      this.mapper = new OER2GraphMapper("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", null, null, null);
       mapper.buildSourceSchema(this.context);
 
 
@@ -648,7 +645,7 @@ public class OSourceSchemaBuildingTestCase {
           " foreign key (PROJECT_MANAGER) references PARENT_EMPLOYEE(EMP_ID))";
       st.execute(foreignTableBuilding);
 
-      this.mapper = new OER2GraphMapper("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", null, null);
+      this.mapper = new OER2GraphMapper("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", null, null, null);
       mapper.buildSourceSchema(this.context);
 
 
@@ -806,7 +803,7 @@ public class OSourceSchemaBuildingTestCase {
 
       connection.commit();
 
-      this.mapper = new OER2GraphMapper("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", null, null);
+      this.mapper = new OER2GraphMapper("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", null, null, null);
       mapper.buildSourceSchema(this.context);
 
 

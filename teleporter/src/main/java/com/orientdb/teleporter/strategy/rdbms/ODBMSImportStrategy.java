@@ -18,17 +18,6 @@
 
 package com.orientdb.teleporter.strategy.rdbms;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.io.Writer;
-import java.sql.ResultSet;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
-
 import com.orientdb.teleporter.context.OTeleporterContext;
 import com.orientdb.teleporter.context.OTeleporterStatistics;
 import com.orientdb.teleporter.exception.OTeleporterRuntimeException;
@@ -49,9 +38,17 @@ import com.orientdb.teleporter.nameresolver.ONameResolver;
 import com.orientdb.teleporter.persistence.handler.ODBMSDataTypeHandler;
 import com.orientdb.teleporter.persistence.util.OQueryResult;
 import com.orientdb.teleporter.strategy.OImportStrategy;
+import com.orientdb.teleporter.util.OFileManager;
 import com.orientdb.teleporter.util.OTimeFormatHandler;
+import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.tinkerpop.blueprints.impls.orient.OrientBaseGraph;
 import com.tinkerpop.blueprints.impls.orient.OrientVertex;
+
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.io.Writer;
+import java.sql.ResultSet;
+import java.util.*;
 
 /**
  * @author Gabriele Ponzi
@@ -64,10 +61,10 @@ public abstract class ODBMSImportStrategy implements OImportStrategy {
   public ODBMSImportStrategy() {}
 
   @Override
-  public void executeStrategy(String driver, String uri, String username, String password, String outOrientGraphUri, String chosenMapper, String xmlPath, String nameResolverConvention, 
-      List<String> includedTables, List<String> excludedTables, OTeleporterContext context) {	
+  public void executeStrategy(String driver, String uri, String username, String password, String outOrientGraphUri, String chosenMapper, String xmlPath, String nameResolverConvention,
+      List<String> includedTables, List<String> excludedTables, OTeleporterContext context) {
 
-    Date globalStart = new Date(); 
+    Date globalStart = new Date();
 
     OQueryQuoteTypeFactory quoteFactory = new OQueryQuoteTypeFactory();
     quoteFactory.buildQueryQuoteType(driver, context);
@@ -80,7 +77,16 @@ public abstract class ODBMSImportStrategy implements OImportStrategy {
     ONameResolverFactory nameResolverFactory = new ONameResolverFactory();
     ONameResolver nameResolver = nameResolverFactory.buildNameResolver(nameResolverConvention, context);
     context.getStatistics().runningStepNumber = -1;
-    OSource2GraphMapper mapper = this.createSchemaMapper(driver, uri, username, password, outOrientGraphUri, chosenMapper, xmlPath, nameResolver, handler, includedTables, excludedTables, context);
+
+    // loading eventual configuration
+    ODocument config = OFileManager.buildJsonFromFile("src/main/resources/config.json");
+    if(config == null) {
+      context.getOutputManager().error("No configuration file was found. Migration will be performed with standard mapping policies.");
+    }
+    else {
+      context.getOutputManager().error("Configuration correctly loaded.");
+    }
+    OSource2GraphMapper mapper = this.createSchemaMapper(driver, uri, username, password, outOrientGraphUri, chosenMapper, xmlPath, nameResolver, handler, includedTables, excludedTables, config, context);
 
     // Step 4: Import
     this.executeImport(driver, uri, username, password, outOrientGraphUri, mapper, handler, context);
@@ -95,9 +101,9 @@ public abstract class ODBMSImportStrategy implements OImportStrategy {
 
   }
 
-
-  public abstract OSource2GraphMapper createSchemaMapper(String driver, String uri, String username, String password, String outOrientGraphUri, String chosenMapper, 
-      String xmlPath, ONameResolver nameResolver,	ODBMSDataTypeHandler handler, List<String> includedTables, List<String> excludedTables, OTeleporterContext context);
+  public abstract OSource2GraphMapper createSchemaMapper(String driver, String uri, String username, String password, String outOrientGraphUri, String chosenMapper,
+      String xmlPath, ONameResolver nameResolver, ODBMSDataTypeHandler handler, List<String> includedTables, List<String> excludedTables,
+      ODocument config, OTeleporterContext context);
 
 
   public abstract void executeImport(String driver, String uri, String username, String password, String outOrientGraphUri, OSource2GraphMapper mapper, ODBMSDataTypeHandler handler, OTeleporterContext context);
@@ -107,8 +113,8 @@ public abstract class ODBMSImportStrategy implements OImportStrategy {
    * Performs import of all records of the entities contained in the hierarchical bag passed as parameter.
    * Adopted in case of "Table per Hierarchy" inheritance strategy.
    * @param bag
-   * @param orientGraph 
-   * @param 
+   * @param orientGraph
+   * @param
    * @param context
    */
   protected void tablePerHierarchyImport(OHierarchicalBag bag, OER2GraphMapper mapper, ODBQueryEngine dbQueryEngine, OGraphEngineForDB graphDBCommandEngine, OrientBaseGraph orientGraph, OTeleporterContext context) {
@@ -119,8 +125,8 @@ public abstract class ODBMSImportStrategy implements OImportStrategy {
 
       OEntity currentParentEntity = null;
 
-      OVertexType currentOutVertexType = null;  
-      OVertexType currentInVertexType = null;  
+      OVertexType currentOutVertexType = null;
+      OVertexType currentInVertexType = null;
       OrientVertex currentOutVertex = null;
       OEdgeType edgeType = null;
 
@@ -161,7 +167,7 @@ public abstract class ODBMSImportStrategy implements OImportStrategy {
               if(currentParentEntity.getHierarchicalBag() == null)
                 currentInVertexType = mapper.getVertexTypeByName(context.getNameResolver().resolveVertexName(currentRelation.getParentEntityName()));
 
-              // if the parent entity belongs to hierarchical bag, we need to know which is it the more stringent subclass of the record with a certain id
+                // if the parent entity belongs to hierarchical bag, we need to know which is it the more stringent subclass of the record with a certain id
               else {
                 String[] propertyOfKey = new String[currentRelation.getForeignKey().getInvolvedAttributes().size()];
                 String[] valueOfKey = new String[currentRelation.getForeignKey().getInvolvedAttributes().size()];
@@ -232,8 +238,8 @@ public abstract class ODBMSImportStrategy implements OImportStrategy {
    * @param bag
    * @param mapper
    * @param dbQueryEngine
-   * @param graphDBCommandEngine 
-   * @param orientGraph 
+   * @param graphDBCommandEngine
+   * @param orientGraph
    * @param context
    */
   protected void tablePerTypeImport(OHierarchicalBag bag, OER2GraphMapper mapper, ODBQueryEngine dbQueryEngine, OGraphEngineForDB graphDBCommandEngine, OrientBaseGraph orientGraph, OTeleporterContext context) {
@@ -246,8 +252,8 @@ public abstract class ODBMSImportStrategy implements OImportStrategy {
 
       OEntity currentParentEntity = null;
 
-      OVertexType currentOutVertexType = null;  
-      OVertexType currentInVertexType = null;  
+      OVertexType currentOutVertexType = null;
+      OVertexType currentInVertexType = null;
       OrientVertex currentOutVertex = null;
       OEdgeType edgeType = null;
       ResultSet records;
@@ -314,7 +320,7 @@ public abstract class ODBMSImportStrategy implements OImportStrategy {
                 if(currentParentEntity.getHierarchicalBag() == null)
                   currentInVertexType = mapper.getVertexTypeByName(context.getNameResolver().resolveVertexName(currentRelation.getParentEntityName()));
 
-                // if the parent entity belongs to hierarchical bag, we need to know which is it the more stringent subclass of the record with a certain id
+                  // if the parent entity belongs to hierarchical bag, we need to know which is it the more stringent subclass of the record with a certain id
                 else if(!currentEntity.getHierarchicalBag().equals(currentParentEntity.getHierarchicalBag())){
                   propertyOfKey = new String[currentRelation.getForeignKey().getInvolvedAttributes().size()];
                   valueOfKey = new String[currentRelation.getForeignKey().getInvolvedAttributes().size()];
@@ -385,7 +391,7 @@ public abstract class ODBMSImportStrategy implements OImportStrategy {
    * Adopted in case of "Table per Concrete Type" inheritance strategy.
    * @param bag
    * @param dbQueryEngine
-   * @param orientGraph 
+   * @param orientGraph
    * @param context
    */
   protected void tablePerConcreteTypeImport(OHierarchicalBag bag, OER2GraphMapper mapper, ODBQueryEngine dbQueryEngine, OGraphEngineForDB graphDBCommandEngine, OrientBaseGraph orientGraph, OTeleporterContext context) {
@@ -396,8 +402,8 @@ public abstract class ODBMSImportStrategy implements OImportStrategy {
 
       OEntity currentParentEntity = null;
 
-      OVertexType currentOutVertexType = null;  
-      OVertexType currentInVertexType = null;  
+      OVertexType currentOutVertexType = null;
+      OVertexType currentInVertexType = null;
       OrientVertex currentOutVertex = null;
       OEdgeType edgeType = null;
       ResultSet records;
@@ -445,7 +451,7 @@ public abstract class ODBMSImportStrategy implements OImportStrategy {
                 if(currentParentEntity.getHierarchicalBag() == null)
                   currentInVertexType = mapper.getVertexTypeByName(context.getNameResolver().resolveVertexName(currentRelation.getParentEntityName()));
 
-                // if the parent entity belongs to hierarchical bag, we need to know which is it the more stringent subclass of the record with a certain id
+                  // if the parent entity belongs to hierarchical bag, we need to know which is it the more stringent subclass of the record with a certain id
                 else if(!currentEntity.getHierarchicalBag().equals(currentParentEntity.getHierarchicalBag())) {
                   propertyOfKey = new String[currentRelation.getForeignKey().getInvolvedAttributes().size()];
                   String[] valueOfKey = new String[currentRelation.getForeignKey().getInvolvedAttributes().size()];
@@ -535,11 +541,11 @@ public abstract class ODBMSImportStrategy implements OImportStrategy {
 
   /**
    * @param currentParentEntity
-   * @param valueOfKey 
-   * @param propertyOfKey 
+   * @param valueOfKey
+   * @param propertyOfKey
    * @param physicalEntityName
    * @param dbQueryEngine
-   * @param context 
+   * @param context
    * @return
    */
   private String searchParentEntityTypeFromSingleTable(OEntity currentParentEntity, String[] propertyOfKey, String[] valueOfKey, String physicalEntityName, String physicalEntitySchemaName, ODBQueryEngine dbQueryEngine, OTeleporterContext context) {
@@ -694,7 +700,7 @@ public abstract class ODBMSImportStrategy implements OImportStrategy {
 
 
   /**
-   * @param aggregateTableRecords 
+   * @param aggregateTableRecords
    * @param aggregateTablePropertyOfKey
    * @param valueOfKey
    * @param context

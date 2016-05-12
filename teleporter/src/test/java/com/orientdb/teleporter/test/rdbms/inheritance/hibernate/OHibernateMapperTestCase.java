@@ -92,7 +92,7 @@ public class OHibernateMapperTestCase {
           + "primary key (id), foreign key (RESIDENCE) references RESIDENCE(ID))";
       st.execute(employeeTableBuilding);
 
-      this.mapper = new OHibernate2GraphMapper("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", OHibernateMapperTestCase.XML_TABLE_PER_CLASS, null, null);
+      this.mapper = new OHibernate2GraphMapper("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", OHibernateMapperTestCase.XML_TABLE_PER_CLASS, null, null, null);
       mapper.buildSourceSchema(this.context);
       mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
 
@@ -531,7 +531,7 @@ public class OHibernateMapperTestCase {
           + "PAY_PER_HOUR decimal(10,2), CONTRACT_DURATION varchar(256), primary key (EID), foreign key (EID) references EMPLOYEE(ID))";
       st.execute(contractEmployeeTableBuilding);
 
-      this.mapper = new OHibernate2GraphMapper("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", OHibernateMapperTestCase.XML_TABLE_PER_SUBCLASS1, null, null);
+      this.mapper = new OHibernate2GraphMapper("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", OHibernateMapperTestCase.XML_TABLE_PER_SUBCLASS1, null, null, null);
       mapper.buildSourceSchema(this.context);
       mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
 
@@ -990,7 +990,7 @@ public class OHibernateMapperTestCase {
           + "PAY_PER_HOUR decimal(10,2), CONTRACT_DURATION varchar(256), primary key (EID), foreign key (EID) references EMPLOYEE(ID))";
       st.execute(contractEmployeeTableBuilding);
 
-      this.mapper = new OHibernate2GraphMapper("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", OHibernateMapperTestCase.XML_TABLE_PER_SUBCLASS2, null, null);
+      this.mapper = new OHibernate2GraphMapper("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", OHibernateMapperTestCase.XML_TABLE_PER_SUBCLASS2, null, null, null);
       mapper.buildSourceSchema(this.context);
       mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
 
@@ -1445,7 +1445,7 @@ public class OHibernateMapperTestCase {
           + "NAME varchar(256), RESIDENCE varchar(256), PAY_PER_HOUR decimal(10,2), CONTRACT_DURATION varchar(256), primary key (ID))";
       st.execute(contractEmployeeTableBuilding);
 
-      this.mapper = new OHibernate2GraphMapper("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", OHibernateMapperTestCase.XML_TABLE_PER_CONCRETE_CLASS, null, null);
+      this.mapper = new OHibernate2GraphMapper("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", OHibernateMapperTestCase.XML_TABLE_PER_CONCRETE_CLASS, null, null, null);
       mapper.buildSourceSchema(this.context);
       mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
 

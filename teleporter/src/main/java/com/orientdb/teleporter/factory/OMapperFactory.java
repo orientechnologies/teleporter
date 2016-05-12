@@ -18,13 +18,14 @@
 
 package com.orientdb.teleporter.factory;
 
-import java.util.List;
-
 import com.orientdb.teleporter.context.OTeleporterContext;
 import com.orientdb.teleporter.mapper.OSource2GraphMapper;
 import com.orientdb.teleporter.mapper.neo4j.ONeo4jSchema2GraphMapper;
 import com.orientdb.teleporter.mapper.rdbms.OER2GraphMapper;
 import com.orientdb.teleporter.mapper.rdbms.OHibernate2GraphMapper;
+import com.orientechnologies.orient.core.record.impl.ODocument;
+
+import java.util.List;
 
 /**
  * Factory used to instantiate the chosen 'Mapper' which will be adopted for the source schema building.
@@ -38,7 +39,8 @@ public class OMapperFactory {
 
   public OMapperFactory() {}
 
-  public OSource2GraphMapper buildMapper(String chosenMapper, String driver, String uri, String username, String password, String xmlPath, List<String> includedTables, List<String> excludedTables, OTeleporterContext context) {
+  public OSource2GraphMapper buildMapper(String chosenMapper, String driver, String uri, String username, String password, String xmlPath, List<String> includedTables, List<String> excludedTables,
+      ODocument configuration, OTeleporterContext context) {
 
     OSource2GraphMapper mapper = null;
 
@@ -63,13 +65,13 @@ public class OMapperFactory {
 
       switch(chosenMapper) {
 
-      case "basicDBMapper":   mapper = new OER2GraphMapper(driver, uri, username, password, includedTables, excludedTables);
+      case "basicDBMapper":   mapper = new OER2GraphMapper(driver, uri, username, password, includedTables, excludedTables, configuration);
       break;
 
-      case "hibernate":   mapper = new OHibernate2GraphMapper(driver, uri, username, password, xmlPath, includedTables, excludedTables);
+      case "hibernate":   mapper = new OHibernate2GraphMapper(driver, uri, username, password, xmlPath, includedTables, excludedTables, configuration);
       break;
 
-      default :  mapper = new OER2GraphMapper(driver, uri, username, password, includedTables, excludedTables);
+      default :  mapper = new OER2GraphMapper(driver, uri, username, password, includedTables, excludedTables, configuration);
       }
     }
 

@@ -41,6 +41,9 @@ public class OElementType implements Comparable<OElementType> {
   protected Set<OModelProperty> allProperties;
   protected OElementType parentType;
   protected int inheritanceLevel;
+  protected boolean mandatory;
+  protected boolean readOnly;
+  protected boolean notNull;
 
   public OElementType(String type) {
     this.name = type;
@@ -150,5 +153,29 @@ public class OElementType implements Comparable<OElementType> {
     else
       return this.name.compareTo(toCompare.getName());
 
+  }
+
+  public boolean isMandatory() {
+    return this.mandatory;
+  }
+
+  public void setMandatory(boolean mandatory) {
+    this.mandatory = mandatory;
+  }
+
+  public boolean isReadOnly() {
+    return this.readOnly;
+  }
+
+  public void setReadOnly(boolean readOnly) {
+    this.readOnly = readOnly;
+  }
+
+  public boolean isNotNull() {
+    return this.notNull;
+  }
+
+  public void setNotNull(boolean notNull) {
+    this.notNull = notNull;
   }
 }

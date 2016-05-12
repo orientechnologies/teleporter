@@ -18,20 +18,6 @@
 
 package com.orientdb.teleporter.test.rdbms.aggregation;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.Statement;
-import java.util.Iterator;
-
-import org.junit.Before;
-import org.junit.Test;
-
 import com.orientdb.teleporter.context.OOutputStreamManager;
 import com.orientdb.teleporter.context.OTeleporterContext;
 import com.orientdb.teleporter.mapper.rdbms.OER2GraphMapper;
@@ -44,6 +30,15 @@ import com.tinkerpop.blueprints.Direction;
 import com.tinkerpop.blueprints.Edge;
 import com.tinkerpop.blueprints.Vertex;
 import com.tinkerpop.blueprints.impls.orient.OrientGraphNoTx;
+import org.junit.Before;
+import org.junit.Test;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.Statement;
+import java.util.Iterator;
+
+import static org.junit.Assert.*;
 
 /**
  * @author Gabriele Ponzi
@@ -431,7 +426,7 @@ public class OAggregationStrategyTestCase {
       st.execute(branchTableBuilding);
 
 
-      OER2GraphMapper mapper = new OER2GraphMapper("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", null, null);
+      OER2GraphMapper mapper = new OER2GraphMapper("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", null, null, null);
       context.setQueryQuoteType("\"");
       mapper.buildSourceSchema(this.context);
       mapper.buildGraphModel(new OJavaConventionNameResolver(), context);

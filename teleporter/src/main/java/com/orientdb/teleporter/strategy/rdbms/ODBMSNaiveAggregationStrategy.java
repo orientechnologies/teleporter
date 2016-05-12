@@ -18,13 +18,6 @@
 
 package com.orientdb.teleporter.strategy.rdbms;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.io.Writer;
-import java.sql.ResultSet;
-import java.util.Date;
-import java.util.List;
-
 import com.orientdb.teleporter.context.OTeleporterContext;
 import com.orientdb.teleporter.context.OTeleporterStatistics;
 import com.orientdb.teleporter.exception.OTeleporterRuntimeException;
@@ -45,9 +38,17 @@ import com.orientdb.teleporter.persistence.handler.ODBMSDataTypeHandler;
 import com.orientdb.teleporter.persistence.util.OQueryResult;
 import com.orientdb.teleporter.writer.OGraphModelWriter;
 import com.orientechnologies.orient.core.intent.OIntentMassiveInsert;
+import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.tinkerpop.blueprints.impls.orient.OrientBaseGraph;
 import com.tinkerpop.blueprints.impls.orient.OrientGraphFactory;
 import com.tinkerpop.blueprints.impls.orient.OrientVertex;
+
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.io.Writer;
+import java.sql.ResultSet;
+import java.util.Date;
+import java.util.List;
 
 /**
  * A strategy that performs a "naive" import of the data source. The data source schema is
@@ -65,11 +66,11 @@ public class ODBMSNaiveAggregationStrategy extends ODBMSImportStrategy {
 
 
   @Override
-  public OSource2GraphMapper createSchemaMapper(String driver, String uri, String username, String password, String outOrientGraphUri, String chosenMapper,
-      String xmlPath, ONameResolver nameResolver, ODBMSDataTypeHandler handler, List<String> includedTables, List<String> excludedTables, OTeleporterContext context) {
+  public OSource2GraphMapper createSchemaMapper(String driver, String uri, String username, String password, String outOrientGraphUri, String chosenMapper, String xmlPath, ONameResolver nameResolver,
+      ODBMSDataTypeHandler handler, List<String> includedTables, List<String> excludedTables, ODocument config, OTeleporterContext context) {
 
     OMapperFactory mapperFactory = new OMapperFactory();
-    OSource2GraphMapper mapper = mapperFactory.buildMapper(chosenMapper, driver, uri, username, password, xmlPath, includedTables, excludedTables, context);
+    OSource2GraphMapper mapper = mapperFactory.buildMapper(chosenMapper, driver, uri, username, password, xmlPath, includedTables, excludedTables, config, context);
 
     // DataBase schema building
     mapper.buildSourceSchema(context);

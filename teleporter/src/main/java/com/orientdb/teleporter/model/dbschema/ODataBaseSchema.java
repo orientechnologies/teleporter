@@ -53,9 +53,7 @@ public class ODataBaseSchema implements ODataSourceSchema {
     this.hierarchicalBags = new ArrayList<OHierarchicalBag>();
   }
 
-  public ODataBaseSchema(String productName, String productVersion) {		
-    this.productName = productName;
-    this.productVersion = productVersion;
+  public ODataBaseSchema() {
     this.entities = new ArrayList<OEntity>();
     this.relationships = new ArrayList<ORelationship>();
     this.hierarchicalBags = new ArrayList<OHierarchicalBag>();
@@ -153,6 +151,47 @@ public class ODataBaseSchema implements ODataSourceSchema {
     return null;
   }
 
+  public ORelationship getRelationshipByInvolvedEntitiesAndAttributes(String currentForeignEntityName, String currentParentEntityName,
+      List<String> fromColumns, List<String> toColumns) {
+
+    for(ORelationship currentRelationship: this.relationships) {
+      if(currentRelationship.getForeignEntityName().equals(currentForeignEntityName) && currentRelationship.getParentEntityName().equals(currentParentEntityName)) {
+        if(sameAttributesInvolved(currentRelationship.getForeignKey(), fromColumns) && sameAttributesInvolved(currentRelationship.getPrimaryKey(), toColumns)) {
+          return currentRelationship;
+        }
+      }
+    }
+    return null;
+  }
+
+  /**
+   * It checks if the attributes of a OKey passed as parameter correspond to the string names in the array columns.
+   * Order is not relevant.
+   *
+   * @param key
+   * @param columns
+   * @return
+   */
+  private boolean sameAttributesInvolved(OKey key, List<String> columns) {
+
+    if(key.getInvolvedAttributes().size() != columns.size()) {
+      return false;
+    }
+
+    for(String column: columns) {
+      if(key.getAttributeByName(column) == null) {
+        return false;
+      }
+    }
+
+    for(String column: columns) {
+      if(key.getAttributeByName(column) == null) {
+        return false;
+      }
+    }
+
+    return true;
+  }
 
   public String toString() {
     String s = "\n\n\n------------------------------ DB SCHEMA DESCRIPTION ------------------------------\n\n" + 
@@ -167,7 +206,5 @@ public class ODataBaseSchema implements ODataSourceSchema {
       s += e.toString();
     return s;		
   }
-
-
 
 }

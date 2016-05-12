@@ -18,10 +18,10 @@
 
 package com.orientdb.teleporter.util;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import com.orientechnologies.orient.core.record.impl.ODocument;
+
+import java.io.*;
+import java.nio.charset.Charset;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -98,6 +98,38 @@ public class OFileManager {
     } catch(IOException ex){
       ex.printStackTrace(); 
     }
-  }    
+  }
+
+  public static String readAllTextFile(Reader rd) throws IOException {
+    StringBuilder sb = new StringBuilder();
+    int cp;
+    while ((cp = rd.read()) != -1) {
+      sb.append((char) cp);
+    }
+    return sb.toString();
+  }
+
+  /**
+   * It returns a ODocument starting from a json file.
+   *
+   * @param filePath
+   * @return ODocument (null if the file does not exist or problem are encountered during the reading)
+   */
+  public static ODocument buildJsonFromFile(String filePath) {
+    try {
+      File jsonFile = new File(filePath);
+      FileInputStream is = new FileInputStream(jsonFile);
+      BufferedReader rd = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF-8")));
+      ODocument json = new ODocument();
+      String jsonText = OFileManager.readAllTextFile(rd);
+      json.fromJSON(jsonText, "noMap");
+      return json;
+    } catch (IOException e) {
+      return null;
+    }
+
+  }
+
+
 
 }

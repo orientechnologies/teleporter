@@ -68,6 +68,32 @@ public class OKey {
     return this.involvedAttributes.remove(toRemove);
   }
 
+  public OAttribute getAttributeByName(String name) {
+
+    OAttribute toReturn = null;
+
+    for(OAttribute a: this.involvedAttributes) {
+      if(a.getName().equals(name)) {
+        toReturn = a;
+        break;
+      }
+    }
+    return toReturn;
+  }
+
+  public OAttribute getAttributeByNameIgnoreCase(String name) {
+
+    OAttribute toReturn = null;
+
+    for(OAttribute a: this.involvedAttributes) {
+      if(a.getName().equalsIgnoreCase(name)) {
+        toReturn = a;
+        break;
+      }
+    }
+    return toReturn;
+  }
+
   @Override
   public int hashCode() {
     final int prime = 31;

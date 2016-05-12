@@ -230,11 +230,11 @@ public class OEntity implements Comparable<OEntity> {
         break;
       }
     }
-
     return toReturn;
   }
 
   public OAttribute getAttributeByNameIgnoreCase(String name) {
+
     OAttribute toReturn = null;
 
     for(OAttribute a: this.attributes) {
@@ -243,7 +243,6 @@ public class OEntity implements Comparable<OEntity> {
         break;
       }
     }
-
     return toReturn;
   }
 

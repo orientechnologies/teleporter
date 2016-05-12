@@ -188,15 +188,6 @@ public class ODriverConfigurator {
     return null;
   }
 
-  private String readAll(Reader rd) throws IOException {
-    StringBuilder sb = new StringBuilder();
-    int cp;
-    while ((cp = rd.read()) != -1) {
-      sb.append((char) cp);
-    }
-    return sb.toString();
-  }
-
   public ODocument readJsonFromUrl(String url, OTeleporterContext context) {
 
     InputStream is = null;
@@ -233,7 +224,7 @@ public class ODriverConfigurator {
       json = new ODocument();
 
       BufferedReader rd = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF-8")));
-      String jsonText = readAll(rd);
+      String jsonText = OFileManager.readAllTextFile(rd);
       json.fromJSON(jsonText);
 
     } catch (Exception e) {

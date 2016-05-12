@@ -18,28 +18,23 @@
 
 package com.orientdb.teleporter.mapper.rdbms;
 
-import java.io.File;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.io.Writer;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
-
 import com.orientdb.teleporter.context.OTeleporterContext;
 import com.orientdb.teleporter.exception.OTeleporterRuntimeException;
 import com.orientdb.teleporter.model.dbschema.OAttribute;
 import com.orientdb.teleporter.model.dbschema.OEntity;
 import com.orientdb.teleporter.model.dbschema.OHierarchicalBag;
+import com.orientechnologies.orient.core.record.impl.ODocument;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import java.io.File;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.io.Writer;
+import java.util.*;
 
 /**
  * Extends OER2GraphMapper thus manages the source DB schema and the destination graph model with their correspondences.
@@ -54,8 +49,8 @@ public class OHibernate2GraphMapper extends OER2GraphMapper {
 
   private String xmlPath;
 
-  public OHibernate2GraphMapper(String driver, String uri, String username, String password, String xmlPath, List<String> includedTables, List<String> excludedTables) {
-    super(driver, uri, username, password, includedTables, excludedTables);
+  public OHibernate2GraphMapper(String driver, String uri, String username, String password, String xmlPath, List<String> includedTables, List<String> excludedTables, ODocument configuration) {
+    super(driver, uri, username, password, includedTables, excludedTables, configuration);
     this.xmlPath = xmlPath;
   }
 
