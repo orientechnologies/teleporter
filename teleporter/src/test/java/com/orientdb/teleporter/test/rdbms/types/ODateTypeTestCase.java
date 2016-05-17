@@ -18,21 +18,21 @@
 
 package com.orientdb.teleporter.test.rdbms.types;
 
-import static org.junit.Assert.assertEquals;
-
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.Statement;
-
-import org.junit.Before;
-import org.junit.Test;
-
 import com.orientdb.teleporter.context.OOutputStreamManager;
 import com.orientdb.teleporter.context.OTeleporterContext;
 import com.orientdb.teleporter.nameresolver.OJavaConventionNameResolver;
 import com.orientdb.teleporter.persistence.handler.OHSQLDBDataTypeHandler;
 import com.orientdb.teleporter.strategy.rdbms.ODBMSNaiveStrategy;
 import com.tinkerpop.blueprints.impls.orient.OrientGraphNoTx;
+import org.junit.Before;
+import org.junit.Test;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.Statement;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 /**
  * @author Gabriele Ponzi
@@ -101,6 +101,7 @@ public class ODateTypeTestCase {
 
     }catch(Exception e) {
       e.printStackTrace();
+      fail();
     }finally {
       try {
 
@@ -110,6 +111,7 @@ public class ODateTypeTestCase {
         connection.close();
       }catch(Exception e) {
         e.printStackTrace();
+        fail();
       }
       orientGraph.drop();
       orientGraph.shutdown();
@@ -161,6 +163,7 @@ public class ODateTypeTestCase {
 
     }catch(Exception e) {
       e.printStackTrace();
+      fail();
     }finally {
       try {
 
@@ -170,6 +173,7 @@ public class ODateTypeTestCase {
         connection.close();
       }catch(Exception e) {
         e.printStackTrace();
+        fail();
       }
     }
     orientGraph.drop();
@@ -221,6 +225,7 @@ public class ODateTypeTestCase {
 
     }catch(Exception e) {
       e.printStackTrace();
+      fail();
     }finally {
       try {
 
@@ -230,6 +235,7 @@ public class ODateTypeTestCase {
         connection.close();
       }catch(Exception e) {
         e.printStackTrace();
+        fail();
       }
     }
     orientGraph.drop();
@@ -282,6 +288,7 @@ public class ODateTypeTestCase {
 
     }catch(Exception e) {
       e.printStackTrace();
+      fail();
     }finally {
       try {
 
@@ -291,6 +298,7 @@ public class ODateTypeTestCase {
         connection.close();
       }catch(Exception e) {
         e.printStackTrace();
+        fail();
       }
     }
     orientGraph.drop();
@@ -343,6 +351,7 @@ public class ODateTypeTestCase {
 
     }catch(Exception e) {
       e.printStackTrace();
+      fail();
     }finally {
       try {
 
@@ -352,6 +361,7 @@ public class ODateTypeTestCase {
         connection.close();
       }catch(Exception e) {
         e.printStackTrace();
+        fail();
       }
     }
     orientGraph.drop();
@@ -403,6 +413,7 @@ public class ODateTypeTestCase {
 
     }catch(Exception e) {
       e.printStackTrace();
+      fail();
     }finally {
       try {
 
@@ -412,6 +423,7 @@ public class ODateTypeTestCase {
         connection.close();
       }catch(Exception e) {
         e.printStackTrace();
+        fail();
       }
     }
     orientGraph.drop();

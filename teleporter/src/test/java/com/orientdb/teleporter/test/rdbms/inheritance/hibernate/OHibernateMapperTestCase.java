@@ -483,6 +483,7 @@ public class OHibernateMapperTestCase {
 
     }catch(Exception e) {
       e.printStackTrace();
+      fail();
     }finally {      
       try {
 
@@ -492,6 +493,7 @@ public class OHibernateMapperTestCase {
         connection.close();
       }catch(Exception e) {
         e.printStackTrace();
+        fail();
       }
     }
   }
@@ -942,6 +944,7 @@ public class OHibernateMapperTestCase {
 
     }catch(Exception e) {
       e.printStackTrace();
+      fail();
     }finally {      
       try {
 
@@ -951,6 +954,7 @@ public class OHibernateMapperTestCase {
         connection.close();
       }catch(Exception e) {
         e.printStackTrace();
+        fail();
       }
     }
   }
@@ -1398,6 +1402,7 @@ public class OHibernateMapperTestCase {
 
     }catch(Exception e) {
       e.printStackTrace();
+      fail();
     }finally {      
       try {
 
@@ -1407,6 +1412,7 @@ public class OHibernateMapperTestCase {
         connection.close();
       }catch(Exception e) {
         e.printStackTrace();
+        fail();
       }
     }
   }
@@ -1831,6 +1837,7 @@ public class OHibernateMapperTestCase {
 
     }catch(Exception e) {
       e.printStackTrace();
+      fail();
     }finally {      
       try {
 
@@ -1840,6 +1847,7 @@ public class OHibernateMapperTestCase {
         connection.close();
       }catch(Exception e) {
         e.printStackTrace();
+        fail();
       }
     }
   }

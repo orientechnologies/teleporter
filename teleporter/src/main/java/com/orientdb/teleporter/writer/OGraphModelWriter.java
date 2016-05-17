@@ -117,7 +117,18 @@ public class OGraphModelWriter {
               type = handler.resolveType(currentProperty.getPropertyType().toLowerCase(Locale.ENGLISH), context);
               if(type != null) {
                 String propertyName = currentProperty.getName();
-                newVertexType.createProperty(propertyName, type);
+                OProperty orientdbProperty = newVertexType.createProperty(propertyName, type);
+
+                // setting constraints if present
+                if(currentProperty.isMandatory() != null) {
+                  orientdbProperty.setMandatory(currentProperty.isMandatory());
+                }
+                if(currentProperty.isReadOnly() != null) {
+                  orientdbProperty.setReadonly(currentProperty.isReadOnly());
+                }
+                if(currentProperty.isNotNull() != null) {
+                  orientdbProperty.setNotNull(currentProperty.isNotNull());
+                }
               }
               else {
                 it.remove();
@@ -165,7 +176,18 @@ public class OGraphModelWriter {
               type = handler.resolveType(currentProperty.getPropertyType().toLowerCase(Locale.ENGLISH), context);
 
               if(type != null) {
-                newEdgeType.createProperty(currentProperty.getName(), type);
+                OProperty orientdbProperty = newEdgeType.createProperty(currentProperty.getName(), type);
+
+                // setting constraints if present
+                if(currentProperty.isMandatory() != null) {
+                  orientdbProperty.setMandatory(currentProperty.isMandatory());
+                }
+                if(currentProperty.isReadOnly() != null) {
+                  orientdbProperty.setReadonly(currentProperty.isReadOnly());
+                }
+                if(currentProperty.isNotNull() != null) {
+                  orientdbProperty.setNotNull(currentProperty.isNotNull());
+                }
               }
               else {
                 it.remove();

@@ -372,6 +372,7 @@ public class OAggregationStrategyTestCase {
 
     } catch(Exception e) {
       e.printStackTrace();
+      fail();
     }finally {
       try {
 
@@ -381,6 +382,7 @@ public class OAggregationStrategyTestCase {
         connection.close();
       }catch(Exception e) {
         e.printStackTrace();
+        fail();
       }
       orientGraph.drop();
       orientGraph.shutdown();
@@ -519,6 +521,7 @@ public class OAggregationStrategyTestCase {
 
     } catch(Exception e) {
       e.printStackTrace();
+      fail();
     }finally {
       try {
 
@@ -528,6 +531,7 @@ public class OAggregationStrategyTestCase {
         connection.close();
       }catch(Exception e) {
         e.printStackTrace();
+        fail();
       }
     }  
   }

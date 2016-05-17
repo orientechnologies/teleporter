@@ -18,21 +18,6 @@
 
 package com.orientdb.teleporter.test.rdbms.sequential;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.Statement;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-
-import org.junit.Before;
-import org.junit.Test;
-
 import com.orientdb.teleporter.context.OOutputStreamManager;
 import com.orientdb.teleporter.context.OTeleporterContext;
 import com.orientdb.teleporter.nameresolver.OJavaConventionNameResolver;
@@ -45,6 +30,17 @@ import com.tinkerpop.blueprints.Edge;
 import com.tinkerpop.blueprints.Vertex;
 import com.tinkerpop.blueprints.impls.orient.OrientGraphNoTx;
 import com.tinkerpop.blueprints.impls.orient.OrientVertexType;
+import org.junit.Before;
+import org.junit.Test;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.Statement;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+
+import static org.junit.Assert.*;
 
 /**
  * @author Gabriele Ponzi
@@ -181,6 +177,7 @@ public class OSequentialExecutionsTestCase {
 
     }catch(Exception e) {
       e.printStackTrace();
+      fail();
     }finally {
       try {
 
@@ -190,6 +187,7 @@ public class OSequentialExecutionsTestCase {
         connection.close();
       }catch(Exception e) {
         e.printStackTrace();
+        fail();
       }
       orientGraph.drop();
       orientGraph.shutdown();
@@ -307,6 +305,7 @@ public class OSequentialExecutionsTestCase {
 
     }catch(Exception e) {
       e.printStackTrace();
+      fail();
     }finally {
       try {
 
@@ -316,6 +315,7 @@ public class OSequentialExecutionsTestCase {
         connection.close();
       }catch(Exception e) {
         e.printStackTrace();
+        fail();
       }
       orientGraph.drop();
       orientGraph.shutdown();
@@ -438,6 +438,7 @@ public class OSequentialExecutionsTestCase {
 
     }catch(Exception e) {
       e.printStackTrace();
+      fail();
     }finally {
       try {
 
@@ -447,6 +448,7 @@ public class OSequentialExecutionsTestCase {
         connection.close();
       }catch(Exception e) {
         e.printStackTrace();
+        fail();
       }
       orientGraph.drop();
       orientGraph.shutdown();
@@ -615,6 +617,7 @@ public class OSequentialExecutionsTestCase {
 
     }catch(Exception e) {
       e.printStackTrace();
+      fail();
     }finally {
       try {
 
@@ -624,6 +627,7 @@ public class OSequentialExecutionsTestCase {
         connection.close();
       }catch(Exception e) {
         e.printStackTrace();
+        fail();
       }
       orientGraph.drop();
       orientGraph.shutdown();
@@ -773,6 +777,7 @@ public class OSequentialExecutionsTestCase {
 
     }catch(Exception e) {
       e.printStackTrace();
+      fail();
     }finally {
       try {
 
@@ -782,6 +787,7 @@ public class OSequentialExecutionsTestCase {
         connection.close();
       }catch(Exception e) {
         e.printStackTrace();
+        fail();
       }
       orientGraph.drop();
       orientGraph.shutdown();
@@ -930,6 +936,7 @@ public class OSequentialExecutionsTestCase {
 
     }catch(Exception e) {
       e.printStackTrace();
+      fail();
     }finally {
       try {
 
@@ -939,6 +946,7 @@ public class OSequentialExecutionsTestCase {
         connection.close();
       }catch(Exception e) {
         e.printStackTrace();
+        fail();
       }
       orientGraph.drop();
       orientGraph.shutdown();
@@ -1091,6 +1099,7 @@ public class OSequentialExecutionsTestCase {
 
     }catch(Exception e) {
       e.printStackTrace();
+      fail();
     }finally {
       try {
 
@@ -1100,6 +1109,7 @@ public class OSequentialExecutionsTestCase {
         connection.close();
       }catch(Exception e) {
         e.printStackTrace();
+        fail();
       }
       orientGraph.drop();
       orientGraph.shutdown();
@@ -1257,6 +1267,7 @@ public class OSequentialExecutionsTestCase {
 
     }catch(Exception e) {
       e.printStackTrace();
+      fail();
     }finally {
       try {
 
@@ -1266,6 +1277,7 @@ public class OSequentialExecutionsTestCase {
         connection.close();
       }catch(Exception e) {
         e.printStackTrace();
+        fail();
       }
       orientGraph.drop();
       orientGraph.shutdown();
@@ -1393,6 +1405,7 @@ public class OSequentialExecutionsTestCase {
 
     }catch(Exception e) {
       e.printStackTrace();
+      fail();
     }finally {
       try {
 
@@ -1402,6 +1415,7 @@ public class OSequentialExecutionsTestCase {
         connection.close();
       }catch(Exception e) {
         e.printStackTrace();
+        fail();
       }
       orientGraph.drop();
       orientGraph.shutdown();
@@ -1586,6 +1600,7 @@ public class OSequentialExecutionsTestCase {
 
     }catch(Exception e) {
       e.printStackTrace();
+      fail();
     }finally {
       try {
 
@@ -1595,6 +1610,7 @@ public class OSequentialExecutionsTestCase {
         connection.close();
       }catch(Exception e) {
         e.printStackTrace();
+        fail();
       }
       orientGraph.drop();
       orientGraph.shutdown();
@@ -1724,6 +1740,7 @@ public class OSequentialExecutionsTestCase {
 
     }catch(Exception e) {
       e.printStackTrace();
+      fail();
     }finally {
       try {
 
@@ -1733,6 +1750,7 @@ public class OSequentialExecutionsTestCase {
         connection.close();
       }catch(Exception e) {
         e.printStackTrace();
+        fail();
       }
       orientGraph.drop();
       orientGraph.shutdown();
@@ -1898,6 +1916,7 @@ public class OSequentialExecutionsTestCase {
 
     }catch(Exception e) {
       e.printStackTrace();
+      fail();
     }finally {
       try {
 
@@ -1907,6 +1926,7 @@ public class OSequentialExecutionsTestCase {
         connection.close();
       }catch(Exception e) {
         e.printStackTrace();
+        fail();
       }
       orientGraph.drop();
       orientGraph.shutdown();
@@ -2071,6 +2091,7 @@ public class OSequentialExecutionsTestCase {
 
     }catch(Exception e) {
       e.printStackTrace();
+      fail();
     }finally {
       try {
 
@@ -2080,6 +2101,7 @@ public class OSequentialExecutionsTestCase {
         connection.close();
       }catch(Exception e) {
         e.printStackTrace();
+        fail();
       }
       orientGraph.drop();
       orientGraph.shutdown();

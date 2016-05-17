@@ -33,12 +33,26 @@ public class OModelProperty {
   private int ordinalPosition;
   private String propertyType;
   private boolean fromPrimaryKey;
+  // costraints
+  private Boolean mandatory;
+  private Boolean readOnly;
+  private Boolean notNull;
 
   public OModelProperty(String name, int ordinalPosition, String propertyType, boolean fromPrimaryKey) {
     this.name = name;
     this.ordinalPosition = ordinalPosition;
     this.propertyType = propertyType;
     this.fromPrimaryKey = fromPrimaryKey;
+  }
+
+  public OModelProperty(String name, int ordinalPosition, String propertyType, boolean fromPrimaryKey, boolean mandatory, boolean readOnly, boolean notNull) {
+    this.name = name;
+    this.ordinalPosition = ordinalPosition;
+    this.propertyType = propertyType;
+    this.fromPrimaryKey = fromPrimaryKey;
+    this.mandatory = mandatory;
+    this.readOnly = readOnly;
+    this.notNull = notNull;
   }
 
   public String getName() {
@@ -71,6 +85,30 @@ public class OModelProperty {
 
   public void setFromPrimaryKey(boolean fromPrimaryKey) {
     this.fromPrimaryKey = fromPrimaryKey;
+  }
+
+  public Boolean isMandatory() {
+    return this.mandatory;
+  }
+
+  public void setMandatory(Boolean mandatory) {
+    this.mandatory = mandatory;
+  }
+
+  public Boolean isReadOnly() {
+    return this.readOnly;
+  }
+
+  public void setReadOnly(Boolean readOnly) {
+    this.readOnly = readOnly;
+  }
+
+  public Boolean isNotNull() {
+    return this.notNull;
+  }
+
+  public void setNotNull(Boolean notNull) {
+    this.notNull = notNull;
   }
 
   @Override

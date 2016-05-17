@@ -584,6 +584,7 @@ public class OGraphEngineForDB {
 
     OrientVertex currentInVertex = null;
     String propsAndValuesOfKey = "";
+    String direction = relation.getDirection();
 
     try {
 
@@ -653,7 +654,7 @@ public class OGraphEngineForDB {
         }
 
         // upsert of the edge between the currentOutVertex and the currentInVertex
-        this.upsertEdge(orientGraph, currentOutVertex, currentInVertex, edgeType, context);
+        this.upsertEdge(orientGraph, currentOutVertex, currentInVertex, edgeType, direction, context);
       }
 
     } catch(Exception e) {
@@ -682,7 +683,7 @@ public class OGraphEngineForDB {
     return currentInVertex;
   }
 
-  public void upsertEdge(OrientBaseGraph orientGraph, OrientVertex currentOutVertex, OrientVertex currentInVertex, String edgeType, OTeleporterContext context) {
+  public void upsertEdge(OrientBaseGraph orientGraph, OrientVertex currentOutVertex, OrientVertex currentInVertex, String edgeType, String direction, OTeleporterContext context) {
 
     try {
 
@@ -705,14 +706,26 @@ public class OGraphEngineForDB {
           context.getOutputManager().debug("\nEdge beetween '%s' and '%s' already present.\n", currentOutVertex.toString(), currentInVertex.toString());
         }
         else {
-          OrientEdge edge = orientGraph.addEdge(null, currentOutVertex, currentInVertex, edgeType);
+          OrientEdge edge = null;
+          if(direction != null && direction.equals("direct")) {
+            edge = orientGraph.addEdge(null, currentOutVertex, currentInVertex, edgeType);
+          }
+          else if(direction != null && direction.equals("inverse")) {
+            edge = orientGraph.addEdge(null, currentInVertex, currentOutVertex, edgeType);
+          }
           edge.save();
           statistics.orientAddedEdges++;
           context.getOutputManager().debug("\nNew edge inserted: %s\n", edge.toString());
         }
       }
       else {
-        OrientEdge edge = orientGraph.addEdge(null, currentOutVertex, currentInVertex, edgeType);
+        OrientEdge edge = null;
+        if(direction != null && direction.equals("direct")) {
+          edge = orientGraph.addEdge(null, currentOutVertex, currentInVertex, edgeType);
+        }
+        else if(direction != null && direction.equals("inverse")) {
+          edge = orientGraph.addEdge(null, currentInVertex, currentOutVertex, edgeType);
+        }
         edge.save();
         statistics.orientAddedEdges++;
         context.getOutputManager().debug("\nNew edge inserted: %s\n", edge.toString());
@@ -772,7 +785,7 @@ public class OGraphEngineForDB {
       OrientVertex currentOutVertex = this.getVertexByIndexedKey(orientGraph, keysOutVertex, valuesOutVertex, aggregatorEdge.getOutVertexClassName());
       OrientVertex currentInVertex = this.getVertexByIndexedKey(orientGraph, keysInVertex, valuesInVertex, aggregatorEdge.getInVertexClassName());
 
-      this.upsertEdge(orientGraph, currentOutVertex, currentInVertex, aggregatorEdge.getEdgeType(), context);
+      this.upsertEdge(orientGraph, currentOutVertex, currentInVertex, aggregatorEdge.getEdgeType(), null, context);
 
     } catch(Exception e) {
       if(e.getMessage() != null)

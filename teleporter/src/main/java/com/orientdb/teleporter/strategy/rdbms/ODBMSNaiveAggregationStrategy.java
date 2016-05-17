@@ -179,10 +179,10 @@ public class ODBMSNaiveAggregationStrategy extends ODBMSImportStrategy {
 
             // for each attribute of the entity belonging to the primary key, correspondent relationship is
             // built as edge and for the referenced record a vertex is built (only id)
-            for(ORelationship currentRelation: entity.getOutRelationships()) {
-              currentInVertexType = mapper.getVertexTypeByName(context.getNameResolver().resolveVertexName(currentRelation.getParentEntityName()));
-              edgeType = mapper.getRelationship2edgeType().get(currentRelation);
-              graphEngine.upsertReachedVertexWithEdge(orientGraph, currentRecord, currentRelation, currentOutVertex, currentInVertexType, edgeType.getName(), context);
+            for(ORelationship currentRelationship: entity.getOutRelationships()) {
+              currentInVertexType = mapper.getVertexTypeByName(context.getNameResolver().resolveVertexName(currentRelationship.getParentEntityName()));
+              edgeType = mapper.getRelationship2edgeType().get(currentRelationship);
+              graphEngine.upsertReachedVertexWithEdge(orientGraph, currentRecord, currentRelationship, currentOutVertex, currentInVertexType, edgeType.getName(), context);
             }   
 
             // Statistics updated

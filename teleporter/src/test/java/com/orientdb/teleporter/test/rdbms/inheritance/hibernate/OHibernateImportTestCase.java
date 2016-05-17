@@ -376,6 +376,7 @@ public class OHibernateImportTestCase {
 
     }catch(Exception e) {
       e.printStackTrace();
+      fail();
     }finally {      
       try {
 
@@ -385,6 +386,7 @@ public class OHibernateImportTestCase {
         connection.close();
       }catch(Exception e) {
         e.printStackTrace();
+        fail();
       }
       orientGraph.drop();
       orientGraph.shutdown();
@@ -724,6 +726,7 @@ public class OHibernateImportTestCase {
 
     }catch(Exception e) {
       e.printStackTrace();
+      fail();
     }finally {      
       try {
 
@@ -733,6 +736,7 @@ public class OHibernateImportTestCase {
         connection.close();
       }catch(Exception e) {
         e.printStackTrace();
+        fail();
       }
       orientGraph.drop();
       orientGraph.shutdown();
@@ -1071,6 +1075,7 @@ public class OHibernateImportTestCase {
 
     }catch(Exception e) {
       e.printStackTrace();
+      fail();
     }finally {      
       try {
 
@@ -1080,6 +1085,7 @@ public class OHibernateImportTestCase {
         connection.close();
       }catch(Exception e) {
         e.printStackTrace();
+        fail();
       }
       orientGraph.drop();
       orientGraph.shutdown();
@@ -1418,6 +1424,7 @@ public class OHibernateImportTestCase {
 
     }catch(Exception e) {
       e.printStackTrace();
+      fail();
     }finally {      
       try {
 
@@ -1427,6 +1434,7 @@ public class OHibernateImportTestCase {
         connection.close();
       }catch(Exception e) {
         e.printStackTrace();
+        fail();
       }
       orientGraph.drop();
       orientGraph.shutdown();

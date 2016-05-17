@@ -2,7 +2,7 @@
 	"entities": {
 		"Employee": {
 			"table": "EMPLOYEE",
-			"vertexClass": "Employee",
+			"class": "Employee",
 			"edges": {
 				"WorksAtProject": {
 					"mapping": {
@@ -16,7 +16,13 @@
 						"updatedOn": {
 							"type": "DATE",
 							"value": "$from.date",
-							"mandatory": false,
+							"mandatory": true,
+							"readOnly": false,
+							"notNull": false
+						},
+						"propWithoutTypeField": {
+							"value": "$from.date",
+							"mandatory": true,
 							"readOnly": false,
 							"notNull": false
 						}
@@ -26,9 +32,9 @@
 		},
 		"Project": {
 			"table": "PROJECT",
-			"vertexClass": "Project",
+			"class": "Project",
 			"edges": {
-				"WorksAtProject": {
+				"HasManager": {
 					"mapping": {
 						"fromTable": "PROJECT",
 						"fromColumns": ["PROJECT_MANAGER"],
@@ -40,9 +46,7 @@
 						"updatedOn": {
 							"type": "DATE",
 							"value": "$from.date",
-							"mandatory": false,
-							"readOnly": false,
-							"notNull": false
+							"mandatory": false
 						}
 					}
 				}

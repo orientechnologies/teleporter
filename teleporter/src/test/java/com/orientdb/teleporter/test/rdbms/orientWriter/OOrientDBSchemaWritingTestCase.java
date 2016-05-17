@@ -160,6 +160,7 @@ public class OOrientDBSchemaWritingTestCase {
 
     }catch(Exception e) {
       e.printStackTrace();
+      fail();
     }finally {
       try {
 
@@ -169,6 +170,7 @@ public class OOrientDBSchemaWritingTestCase {
         connection.close();
       }catch(Exception e) {
         e.printStackTrace();
+        fail();
       }
       orientGraph.drop();
       orientGraph.shutdown();
@@ -296,6 +298,7 @@ public class OOrientDBSchemaWritingTestCase {
 
     }catch(Exception e) {
       e.printStackTrace();
+      fail();
     }finally {
       try {
 
@@ -305,6 +308,7 @@ public class OOrientDBSchemaWritingTestCase {
         connection.close();
       }catch(Exception e) {
         e.printStackTrace();
+        fail();
       }
       orientGraph.drop();
       orientGraph.shutdown();
@@ -432,6 +436,7 @@ public class OOrientDBSchemaWritingTestCase {
 
     }catch(Exception e) {
       e.printStackTrace();
+      fail();
     }finally {
       try {
 
@@ -441,6 +446,7 @@ public class OOrientDBSchemaWritingTestCase {
         connection.close();
       }catch(Exception e) {
         e.printStackTrace();
+        fail();
       }
       orientGraph.drop();
       orientGraph.shutdown();
@@ -549,6 +555,7 @@ public class OOrientDBSchemaWritingTestCase {
 
     }catch(Exception e) {
       e.printStackTrace();
+      fail();
     }finally {
       try {
 
@@ -558,6 +565,7 @@ public class OOrientDBSchemaWritingTestCase {
         connection.close();
       }catch(Exception e) {
         e.printStackTrace();
+        fail();
       }
       orientGraph.drop();
       orientGraph.shutdown();
@@ -683,6 +691,7 @@ public class OOrientDBSchemaWritingTestCase {
 
     }catch(Exception e) {
       e.printStackTrace();
+      fail();
     }finally {
       try {
 
@@ -692,6 +701,7 @@ public class OOrientDBSchemaWritingTestCase {
         connection.close();
       }catch(Exception e) {
         e.printStackTrace();
+        fail();
       }
       orientGraph.drop();
       orientGraph.shutdown();
@@ -800,6 +810,7 @@ public class OOrientDBSchemaWritingTestCase {
 
     }catch(Exception e) {
       e.printStackTrace();
+      fail();
     }finally {
       try {
 
@@ -809,6 +820,7 @@ public class OOrientDBSchemaWritingTestCase {
         connection.close();
       }catch(Exception e) {
         e.printStackTrace();
+        fail();
       }
       orientGraph.drop();
       orientGraph.shutdown();
@@ -953,6 +965,7 @@ public class OOrientDBSchemaWritingTestCase {
 
     }catch(Exception e) {
       e.printStackTrace();
+      fail();
     }finally {
       try {
 
@@ -962,6 +975,7 @@ public class OOrientDBSchemaWritingTestCase {
         connection.close();
       }catch(Exception e) {
         e.printStackTrace();
+        fail();
       }
       orientGraph.drop();
       orientGraph.shutdown();

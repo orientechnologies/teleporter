@@ -1,0 +1,34 @@
+{
+	"entities": {
+		"Employee": {
+			"table": "EMPLOYEE",
+			"class": "Employee",
+			"edges": {
+				"HasEmployee": {
+					"mapping": {
+						"fromTable": "EMPLOYEE",
+						"fromColumns": ["PROJECT"],
+						"toTable": "PROJECT",
+						"toColumns": ["ID"],
+						"direction": "inverse"
+					},
+					"properties": {
+						"updatedOn": {
+							"type": "DATE",
+							"value": "$from.date",
+							"mandatory": true,
+							"readOnly": false,
+							"notNull": false
+						},
+						"propWithoutTypeField": {
+							"value": "$from.date",
+							"mandatory": true,
+							"readOnly": false,
+							"notNull": false
+						}
+					}
+				}
+			}
+		}
+	}
+}

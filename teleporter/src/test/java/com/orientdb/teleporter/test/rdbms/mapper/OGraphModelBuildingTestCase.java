@@ -33,6 +33,7 @@ import java.sql.Statement;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
 
 /**
  * @author Gabriele Ponzi
@@ -159,6 +160,7 @@ public class OGraphModelBuildingTestCase {
 
     }catch(Exception e) {
       e.printStackTrace();
+      fail();
     }finally {      
       try {
 
@@ -168,6 +170,7 @@ public class OGraphModelBuildingTestCase {
         connection.close();
       }catch(Exception e) {
         e.printStackTrace();
+        fail();
       }
     }
   }
@@ -311,6 +314,7 @@ public class OGraphModelBuildingTestCase {
 
     }catch(Exception e) {
       e.printStackTrace();
+      fail();
     }finally {      
       try {
 
@@ -320,6 +324,7 @@ public class OGraphModelBuildingTestCase {
         connection.close();
       }catch(Exception e) {
         e.printStackTrace();
+        fail();
       }
     }
   }
@@ -461,6 +466,7 @@ public class OGraphModelBuildingTestCase {
 
     }catch(Exception e) {
       e.printStackTrace();
+      fail();
     }finally {      
       try {
 
@@ -470,6 +476,7 @@ public class OGraphModelBuildingTestCase {
         connection.close();
       }catch(Exception e) {
         e.printStackTrace();
+        fail();
       }
     }
   }
@@ -588,6 +595,7 @@ public class OGraphModelBuildingTestCase {
 
     }catch(Exception e) {
       e.printStackTrace();
+      fail();
     }finally {      
       try {
 
@@ -597,6 +605,7 @@ public class OGraphModelBuildingTestCase {
         connection.close();
       }catch(Exception e) {
         e.printStackTrace();
+        fail();
       }
     }
   }
@@ -735,6 +744,7 @@ public class OGraphModelBuildingTestCase {
 
     }catch(Exception e) {
       e.printStackTrace();
+      fail();
     }finally {      
       try {
 
@@ -744,6 +754,7 @@ public class OGraphModelBuildingTestCase {
         connection.close();
       }catch(Exception e) {
         e.printStackTrace();
+        fail();
       }
     }
   }
@@ -864,6 +875,7 @@ public class OGraphModelBuildingTestCase {
 
     }catch(Exception e) {
       e.printStackTrace();
+      fail();
     }finally {      
       try {
 
@@ -873,6 +885,7 @@ public class OGraphModelBuildingTestCase {
         connection.close();
       }catch(Exception e) {
         e.printStackTrace();
+        fail();
       }
     }
   }

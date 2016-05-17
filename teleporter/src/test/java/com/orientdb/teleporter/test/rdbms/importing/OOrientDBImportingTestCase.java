@@ -18,19 +18,6 @@
 
 package com.orientdb.teleporter.test.rdbms.importing;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.Statement;
-import java.util.Iterator;
-
-import org.junit.Before;
-import org.junit.Test;
-
 import com.orientdb.teleporter.context.OOutputStreamManager;
 import com.orientdb.teleporter.context.OTeleporterContext;
 import com.orientdb.teleporter.nameresolver.OJavaConventionNameResolver;
@@ -40,6 +27,15 @@ import com.tinkerpop.blueprints.Direction;
 import com.tinkerpop.blueprints.Edge;
 import com.tinkerpop.blueprints.Vertex;
 import com.tinkerpop.blueprints.impls.orient.OrientGraphNoTx;
+import org.junit.Before;
+import org.junit.Test;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.Statement;
+import java.util.Iterator;
+
+import static org.junit.Assert.*;
 
 /**
  * @author Gabriele Ponzi
@@ -689,6 +685,7 @@ public class OOrientDBImportingTestCase {
 
     }catch(Exception e) {
       e.printStackTrace();
+      fail();
     }finally {
       try {
 
@@ -698,6 +695,7 @@ public class OOrientDBImportingTestCase {
         connection.close();
       }catch(Exception e) {
         e.printStackTrace();
+        fail();
       }
       orientGraph.drop();
       orientGraph.shutdown();

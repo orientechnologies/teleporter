@@ -361,6 +361,7 @@ public class OFilterTableMappingTestCase {
 
     } catch(Exception e) {
       e.printStackTrace();
+      fail();
     }finally {      
       try {
 
@@ -370,6 +371,7 @@ public class OFilterTableMappingTestCase {
         connection.close();
       }catch(Exception e) {
         e.printStackTrace();
+        fail();
       }
     }
   }
@@ -664,6 +666,7 @@ public class OFilterTableMappingTestCase {
 
     } catch(Exception e) {
       e.printStackTrace();
+      fail();
     }finally {      
       try {
 
@@ -673,6 +676,7 @@ public class OFilterTableMappingTestCase {
         connection.close();
       }catch(Exception e) {
         e.printStackTrace();
+        fail();
       }
     }
   }
@@ -1293,6 +1297,7 @@ public class OFilterTableMappingTestCase {
 
     }catch(Exception e) {
       e.printStackTrace();
+      fail();
     }finally {      
       try {
 
@@ -1302,6 +1307,7 @@ public class OFilterTableMappingTestCase {
         connection.close();
       }catch(Exception e) {
         e.printStackTrace();
+        fail();
       }
     }
   }
@@ -1952,6 +1958,7 @@ public class OFilterTableMappingTestCase {
 
     } catch(Exception e) {
       e.printStackTrace();
+      fail();
     }finally {      
       try {
 
@@ -1961,6 +1968,7 @@ public class OFilterTableMappingTestCase {
         connection.close();
       }catch(Exception e) {
         e.printStackTrace();
+        fail();
       }
     }
   }
@@ -2605,6 +2613,7 @@ public class OFilterTableMappingTestCase {
 
     } catch(Exception e) {
       e.printStackTrace();
+      fail();
     }finally {      
       try {
 
@@ -2614,6 +2623,7 @@ public class OFilterTableMappingTestCase {
         connection.close();
       }catch(Exception e) {
         e.printStackTrace();
+        fail();
       }
     }
   }
@@ -3255,6 +3265,7 @@ public class OFilterTableMappingTestCase {
 
     } catch(Exception e) {
       e.printStackTrace();
+      fail();
     }finally {      
       try {
 
@@ -3264,6 +3275,7 @@ public class OFilterTableMappingTestCase {
         connection.close();
       }catch(Exception e) {
         e.printStackTrace();
+        fail();
       }
     }
   }

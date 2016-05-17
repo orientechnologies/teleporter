@@ -165,6 +165,7 @@ public class OSourceSchemaBuildingTestCase {
 
     }catch(Exception e) {
       e.printStackTrace();
+      fail();
     }finally {      
       try {
 
@@ -174,6 +175,7 @@ public class OSourceSchemaBuildingTestCase {
         connection.close();
       }catch(Exception e) {
         e.printStackTrace();
+        fail();
       }
     }
   }
@@ -302,6 +304,7 @@ public class OSourceSchemaBuildingTestCase {
 
     }catch(Exception e) {
       e.printStackTrace();
+      fail();
     }finally {      
       try {
 
@@ -311,6 +314,7 @@ public class OSourceSchemaBuildingTestCase {
         connection.close();
       }catch(Exception e) {
         e.printStackTrace();
+        fail();
       }
     }
   }
@@ -443,6 +447,7 @@ public class OSourceSchemaBuildingTestCase {
 
     }catch(Exception e) {
       e.printStackTrace();
+      fail();
     }finally {      
       try {
 
@@ -452,6 +457,7 @@ public class OSourceSchemaBuildingTestCase {
         connection.close();
       }catch(Exception e) {
         e.printStackTrace();
+        fail();
       }
     }
   }
@@ -603,6 +609,7 @@ public class OSourceSchemaBuildingTestCase {
 
     }catch(Exception e) {
       e.printStackTrace();
+      fail();
     }finally {      
       try {
 
@@ -612,6 +619,7 @@ public class OSourceSchemaBuildingTestCase {
         connection.close();
       }catch(Exception e) {
         e.printStackTrace();
+        fail();
       }
     }
   }
@@ -753,6 +761,7 @@ public class OSourceSchemaBuildingTestCase {
 
     }catch(Exception e) {
       e.printStackTrace();
+      fail();
     }finally {      
       try {
 
@@ -762,6 +771,7 @@ public class OSourceSchemaBuildingTestCase {
         connection.close();
       }catch(Exception e) {
         e.printStackTrace();
+        fail();
       }
     }
   }
@@ -882,6 +892,7 @@ public class OSourceSchemaBuildingTestCase {
 
     }catch(Exception e) {
       e.printStackTrace();
+      fail();
     }finally {      
       try {
 
@@ -891,6 +902,7 @@ public class OSourceSchemaBuildingTestCase {
         connection.close();
       }catch(Exception e) {
         e.printStackTrace();
+        fail();
       }
     }
   }

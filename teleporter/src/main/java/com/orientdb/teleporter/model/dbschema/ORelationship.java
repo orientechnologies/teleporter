@@ -33,6 +33,7 @@ public class ORelationship {
   private String parentEntityName;				// Entity exporting the key (arrival entity)
   private OForeignKey foreignKey;
   private OPrimaryKey primaryKey;
+  private String direction;               // represents the direction of the relationship
 
   public ORelationship(String foreignEntityName, String parentEntityName) {
     this.foreignEntityName = foreignEntityName;
@@ -76,6 +77,14 @@ public class ORelationship {
 
   public void setPrimaryKey(OPrimaryKey primaryKey) {
     this.primaryKey = primaryKey;
+  }
+
+  public String getDirection() {
+    return this.direction;
+  }
+
+  public void setDirection(String direction) {
+    this.direction = direction;
   }
 
   @Override

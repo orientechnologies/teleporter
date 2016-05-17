@@ -316,6 +316,7 @@ public class OFilterTableImportingTestCase {
 
     } catch(Exception e) {
       e.printStackTrace();
+      fail();
     }finally {      
       try {
 
@@ -325,6 +326,7 @@ public class OFilterTableImportingTestCase {
         connection.close();
       }catch(Exception e) {
         e.printStackTrace();
+        fail();
       }
       orientGraph.drop();
       orientGraph.shutdown();
@@ -576,6 +578,7 @@ public class OFilterTableImportingTestCase {
 
     } catch(Exception e) {
       e.printStackTrace();
+      fail();
     }finally {      
       try {
 
@@ -585,6 +588,7 @@ public class OFilterTableImportingTestCase {
         connection.close();
       }catch(Exception e) {
         e.printStackTrace();
+        fail();
       }
       orientGraph.drop();
       orientGraph.shutdown();
@@ -874,6 +878,7 @@ public class OFilterTableImportingTestCase {
 
     }catch(Exception e) {
       e.printStackTrace();
+      fail();
     }finally {      
       try {
 
@@ -883,6 +888,7 @@ public class OFilterTableImportingTestCase {
         connection.close();
       }catch(Exception e) {
         e.printStackTrace();
+        fail();
       }
       orientGraph.drop();
       orientGraph.shutdown();
@@ -1196,6 +1202,7 @@ public class OFilterTableImportingTestCase {
 
     } catch(Exception e) {
       e.printStackTrace();
+      fail();
     }finally {      
       try {
 
@@ -1205,6 +1212,7 @@ public class OFilterTableImportingTestCase {
         connection.close();
       }catch(Exception e) {
         e.printStackTrace();
+        fail();
       }
       orientGraph.drop();
       orientGraph.shutdown();
@@ -1515,6 +1523,7 @@ public class OFilterTableImportingTestCase {
 
     } catch(Exception e) {
       e.printStackTrace();
+      fail();
     }finally {      
       try {
 
@@ -1524,6 +1533,7 @@ public class OFilterTableImportingTestCase {
         connection.close();
       }catch(Exception e) {
         e.printStackTrace();
+        fail();
       }
       orientGraph.drop();
       orientGraph.shutdown();
@@ -1841,6 +1851,7 @@ public class OFilterTableImportingTestCase {
 
     } catch(Exception e) {
       e.printStackTrace();
+      fail();
     }finally {      
       try {
 
@@ -1850,6 +1861,7 @@ public class OFilterTableImportingTestCase {
         connection.close();
       }catch(Exception e) {
         e.printStackTrace();
+        fail();
       }
       orientGraph.drop();
       orientGraph.shutdown();
