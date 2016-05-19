@@ -18,10 +18,10 @@
 
 package com.orientdb.teleporter.strategy.mongodb;
 
-import java.util.List;
-
 import com.orientdb.teleporter.context.OTeleporterContext;
 import com.orientdb.teleporter.strategy.OImportStrategy;
+
+import java.util.List;
 
 /**
  * @author Gabriele Ponzi
@@ -33,7 +33,7 @@ public class OMongoDBAggregateStrategy implements OImportStrategy {
 
   @Override
   public void executeStrategy(String driver, String uri, String username, String password, String outOrientGraphUri, String chosenMapper, String xmlPath, String nameResolverConvention, List<String> includedTables,
-      List<String> excludedTables, OTeleporterContext context) {
+      List<String> excludedTables, String configurationPath, OTeleporterContext context) {
     // TODO Auto-generated method stub
 
   }

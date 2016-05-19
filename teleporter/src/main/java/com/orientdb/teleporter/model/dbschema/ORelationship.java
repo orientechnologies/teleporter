@@ -38,6 +38,7 @@ public class ORelationship {
   public ORelationship(String foreignEntityName, String parentEntityName) {
     this.foreignEntityName = foreignEntityName;
     this.parentEntityName = parentEntityName;
+    this.direction = "direct";
   }
 
   public ORelationship(String foreignEntityName, String parentEntityName, OForeignKey foreignKey, OPrimaryKey primaryKey) {
@@ -45,6 +46,7 @@ public class ORelationship {
     this.parentEntityName = parentEntityName;
     this.foreignKey = foreignKey;
     this.primaryKey = primaryKey;
+    this.direction = "direct";
   }
 
   public String getForeignEntityName() {

@@ -91,7 +91,7 @@ public class OGraphModelBuildingTestCase {
 
       assertEquals(2, context.getStatistics().totalNumberOfModelVertices);
       assertEquals(2, context.getStatistics().builtModelVertexTypes);
-      assertEquals(1, context.getStatistics().analizedRelationships);
+      assertEquals(1, context.getStatistics().analyzedRelationships);
       assertEquals(1, context.getStatistics().builtModelEdgeTypes);
 
 
@@ -216,7 +216,7 @@ public class OGraphModelBuildingTestCase {
 
       assertEquals(3, context.getStatistics().totalNumberOfModelVertices);
       assertEquals(3, context.getStatistics().builtModelVertexTypes); 
-      assertEquals(2, context.getStatistics().analizedRelationships);
+      assertEquals(2, context.getStatistics().analyzedRelationships);
       assertEquals(2, context.getStatistics().builtModelEdgeTypes);
 
 
@@ -370,7 +370,7 @@ public class OGraphModelBuildingTestCase {
 
       assertEquals(3, context.getStatistics().totalNumberOfModelVertices);
       assertEquals(3, context.getStatistics().builtModelVertexTypes);  
-      assertEquals(2, context.getStatistics().analizedRelationships);
+      assertEquals(2, context.getStatistics().analyzedRelationships);
       assertEquals(1, context.getStatistics().builtModelEdgeTypes);
 
 
@@ -520,7 +520,7 @@ public class OGraphModelBuildingTestCase {
 
       assertEquals(2, context.getStatistics().totalNumberOfModelVertices);
       assertEquals(2, context.getStatistics().builtModelVertexTypes);  
-      assertEquals(1, context.getStatistics().analizedRelationships);
+      assertEquals(1, context.getStatistics().analyzedRelationships);
       assertEquals(1, context.getStatistics().builtModelEdgeTypes);
 
 
@@ -652,7 +652,7 @@ public class OGraphModelBuildingTestCase {
 
       assertEquals(3, context.getStatistics().totalNumberOfModelVertices);
       assertEquals(3, context.getStatistics().builtModelVertexTypes);  
-      assertEquals(2, context.getStatistics().analizedRelationships);
+      assertEquals(2, context.getStatistics().analyzedRelationships);
       assertEquals(2, context.getStatistics().builtModelEdgeTypes);
 
 
@@ -798,7 +798,7 @@ public class OGraphModelBuildingTestCase {
 
       assertEquals(2, context.getStatistics().totalNumberOfModelVertices);
       assertEquals(2, context.getStatistics().builtModelVertexTypes);  
-      assertEquals(2, context.getStatistics().analizedRelationships);
+      assertEquals(2, context.getStatistics().analyzedRelationships);
       assertEquals(2, context.getStatistics().builtModelEdgeTypes);
 
 

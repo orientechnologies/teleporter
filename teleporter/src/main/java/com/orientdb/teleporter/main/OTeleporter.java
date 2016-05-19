@@ -18,13 +18,6 @@
 
 package com.orientdb.teleporter.main;
 
-import com.orientechnologies.orient.core.config.OGlobalConfiguration;
-import com.orientechnologies.orient.core.exception.OConfigurationException;
-import com.orientechnologies.orient.server.OServer;
-import com.orientechnologies.orient.server.config.OServerParameterConfiguration;
-import com.orientechnologies.orient.server.network.OServerNetworkListener;
-import com.orientechnologies.orient.server.network.protocol.http.ONetworkProtocolHttpAbstract;
-import com.orientechnologies.orient.server.plugin.OServerPluginAbstract;
 import com.orientdb.teleporter.context.OOutputStreamManager;
 import com.orientdb.teleporter.context.OTeleporterContext;
 import com.orientdb.teleporter.exception.OTeleporterIOException;
@@ -33,7 +26,16 @@ import com.orientdb.teleporter.http.OServerCommandTeleporter;
 import com.orientdb.teleporter.strategy.OImportStrategy;
 import com.orientdb.teleporter.ui.OProgressMonitor;
 import com.orientdb.teleporter.util.ODriverConfigurator;
+import com.orientechnologies.orient.core.config.OGlobalConfiguration;
+import com.orientechnologies.orient.core.exception.OConfigurationException;
+import com.orientechnologies.orient.server.OServer;
+import com.orientechnologies.orient.server.config.OServerParameterConfiguration;
+import com.orientechnologies.orient.server.network.OServerNetworkListener;
+import com.orientechnologies.orient.server.network.protocol.http.ONetworkProtocolHttpAbstract;
+import com.orientechnologies.orient.server.plugin.OServerPluginAbstract;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.*;
 
 /**
@@ -155,6 +157,16 @@ public class OTeleporter extends OServerPluginAbstract {
       throw new OTeleporterIOException();
     }
 
+    if (arguments.get("-conf") != null) {
+      File file = new File(arguments.get("-conf"));
+      try {
+        file.getCanonicalPath();
+      } catch (IOException e) {
+        outputManager.error("Configuration file path not valid.");
+        throw new OTeleporterIOException(e);
+      }
+    }
+
     // Mandatory arguments
     String driver = arguments.get("-jdriver");
     String jurl = arguments.get("-jurl");
@@ -189,9 +201,10 @@ public class OTeleporter extends OServerPluginAbstract {
       String[] arrayTables = tables.split(",");
       excludedTables = new ArrayList<String>(Arrays.asList(arrayTables));
     }
+    String configurationPath = arguments.get("-conf");
 
     OTeleporter.execute(driver, jurl, username, password, outDbUrl, chosenStrategy, chosenMapper, xmlPath, nameResolver,
-        outputLevel, includedTables, excludedTables, outputManager);
+        outputLevel, includedTables, excludedTables, configurationPath, outputManager);
   }
 
   /**
@@ -216,12 +229,13 @@ public class OTeleporter extends OServerPluginAbstract {
    *          the level of the logging messages that will be printed on the OutputStream during the execution
    * @param excludedTables
    * @param includedTables
+   * @param configurationPath
    * @throws OTeleporterIOException
    */
 
   public static void execute(String driver, String jurl, String username, String password, String outDbUrl, String chosenStrategy,
       String chosenMapper, String xmlPath, String nameResolver, String outputLevel, List<String> includedTables,
-      List<String> excludedTables, OOutputStreamManager outputManager) throws OTeleporterIOException {
+      List<String> excludedTables, String configurationPath, OOutputStreamManager outputManager) throws OTeleporterIOException {
 
     // Disabling query scan threshold tip
     OGlobalConfiguration.QUERY_SCAN_THRESHOLD_TIP.setValue(-1);
@@ -255,7 +269,7 @@ public class OTeleporter extends OServerPluginAbstract {
       }, 0, 1000);
 
       // the last argument represents the nameResolver
-      strategy.executeStrategy(driverClassName, jurl, username, password, outDbUrl, chosenMapper, xmlPath, nameResolver, includedTables, excludedTables, context);
+      strategy.executeStrategy(driverClassName, jurl, username, password, outDbUrl, chosenMapper, xmlPath, nameResolver, includedTables, excludedTables, configurationPath, context);
 
       // Disabling query scan threshold tip
       OGlobalConfiguration.QUERY_SCAN_THRESHOLD_TIP.setValue(50000);
@@ -264,6 +278,12 @@ public class OTeleporter extends OServerPluginAbstract {
       timer.cancel();
     }
 
+  }
+
+  public static void execute(String driver, String jurl, String username, String password, String outDbUrl, String chosenStrategy,
+      String chosenMapper, String xmlPath, String nameResolver, String outputLevel, List<String> includedTables,
+      List<String> excludedTables, OOutputStreamManager outputManager) throws OTeleporterIOException {
+    execute(driver, jurl, username, password, outDbUrl, chosenStrategy, chosenMapper, xmlPath, nameResolver, outputLevel, includedTables, excludedTables, null, outputManager);
   }
 
   @Override

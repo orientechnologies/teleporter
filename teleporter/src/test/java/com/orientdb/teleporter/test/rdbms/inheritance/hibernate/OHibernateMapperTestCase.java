@@ -106,7 +106,7 @@ public class OHibernateMapperTestCase {
       assertEquals(1, context.getStatistics().detectedRelationships);
 
       assertEquals(4, context.getStatistics().totalNumberOfModelVertices);
-      assertEquals(1, context.getStatistics().analizedRelationships);
+      assertEquals(1, context.getStatistics().analyzedRelationships);
       assertEquals(1, context.getStatistics().builtModelEdgeTypes);
 
       /*
@@ -547,7 +547,7 @@ public class OHibernateMapperTestCase {
       assertEquals(3, context.getStatistics().detectedRelationships);
 
       assertEquals(4, context.getStatistics().totalNumberOfModelVertices);
-      assertEquals(3, context.getStatistics().analizedRelationships);
+      assertEquals(3, context.getStatistics().analyzedRelationships);
       assertEquals(1, context.getStatistics().builtModelEdgeTypes);
 
       /*
@@ -1008,7 +1008,7 @@ public class OHibernateMapperTestCase {
       assertEquals(3, context.getStatistics().detectedRelationships);
 
       assertEquals(4, context.getStatistics().totalNumberOfModelVertices);
-      assertEquals(3, context.getStatistics().analizedRelationships);
+      assertEquals(3, context.getStatistics().analyzedRelationships);
       assertEquals(1, context.getStatistics().builtModelEdgeTypes);
 
       /*
@@ -1465,7 +1465,7 @@ public class OHibernateMapperTestCase {
       assertEquals(1, context.getStatistics().detectedRelationships);
 
       assertEquals(4, context.getStatistics().totalNumberOfModelVertices);
-      assertEquals(1, context.getStatistics().analizedRelationships);
+      assertEquals(1, context.getStatistics().analyzedRelationships);
       assertEquals(1, context.getStatistics().builtModelEdgeTypes);
 
       /*

@@ -127,7 +127,7 @@ public class OAggregationStrategyTestCase {
       st.execute(film2actorFilling);
 
 
-      this.importStrategy.executeStrategy("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", this.outOrientGraphUri, "basicDBMapper", null, "java", null, null, context);
+      this.importStrategy.executeStrategy("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", this.outOrientGraphUri, "basicDBMapper", null, "java", null, null, null, context);
 
 
       /*
@@ -440,7 +440,7 @@ public class OAggregationStrategyTestCase {
 
       assertEquals(5, context.getStatistics().totalNumberOfModelVertices);
       assertEquals(5, context.getStatistics().builtModelVertexTypes);
-      assertEquals(5, context.getStatistics().analizedRelationships);
+      assertEquals(5, context.getStatistics().analyzedRelationships);
       assertEquals(2, context.getStatistics().builtModelEdgeTypes);
 
 
@@ -483,7 +483,7 @@ public class OAggregationStrategyTestCase {
 
       assertEquals(3, context.getStatistics().totalNumberOfModelVertices);
       assertEquals(3, context.getStatistics().builtModelVertexTypes);
-      assertEquals(5, context.getStatistics().analizedRelationships);
+      assertEquals(5, context.getStatistics().analyzedRelationships);
       assertEquals(3, context.getStatistics().builtModelEdgeTypes);
 
 

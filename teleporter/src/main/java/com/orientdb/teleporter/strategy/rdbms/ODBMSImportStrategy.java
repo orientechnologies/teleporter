@@ -44,9 +44,8 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.tinkerpop.blueprints.impls.orient.OrientBaseGraph;
 import com.tinkerpop.blueprints.impls.orient.OrientVertex;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.io.Writer;
+import java.io.*;
+import java.nio.channels.FileChannel;
 import java.sql.ResultSet;
 import java.util.*;
 
@@ -58,11 +57,13 @@ import java.util.*;
 
 public abstract class ODBMSImportStrategy implements OImportStrategy {
 
+  private final String configFileName = "config.json";
+
   public ODBMSImportStrategy() {}
 
   @Override
   public void executeStrategy(String driver, String uri, String username, String password, String outOrientGraphUri, String chosenMapper, String xmlPath, String nameResolverConvention,
-      List<String> includedTables, List<String> excludedTables, OTeleporterContext context) {
+      List<String> includedTables, List<String> excludedTables, String configurationPath, OTeleporterContext context) {
 
     Date globalStart = new Date();
 
@@ -73,20 +74,74 @@ public abstract class ODBMSImportStrategy implements OImportStrategy {
     ODBMSDataTypeHandler handler = (ODBMSDataTypeHandler) factory.buildDataTypeHandler(driver, context);
 
 
-    // Step 1,2,3
+    /*
+     * Step 1,2,3
+     */
     ONameResolverFactory nameResolverFactory = new ONameResolverFactory();
     ONameResolver nameResolver = nameResolverFactory.buildNameResolver(nameResolverConvention, context);
     context.getStatistics().runningStepNumber = -1;
 
-    // loading eventual configuration
-    ODocument config = OFileManager.buildJsonFromFile("src/main/resources/config.json");
-    if(config == null) {
-      context.getOutputManager().error("No configuration file was found. Migration will be performed with standard mapping policies.");
+    /*
+     * Loading eventual configuration.
+     * Look for the config in the <db-path>/teleporter-config/ path:
+     *  (i) - if db and configuration are present use the default config
+     *      - else
+     *       (ii)  - if an external config path was passed as argument then load the config, use it for the steps 1,2,3 and then copy it
+     *               in the <db-path>/teleporter-config/ path (configuration.json)
+     *       (iii) - else execute strategy without configuration
+     */
+
+    // checking the presence of the configuration in the target db
+    if(!(outOrientGraphUri.charAt(outOrientGraphUri.length()-1) == '/' || outOrientGraphUri.charAt(outOrientGraphUri.length()-1) == '\\')) {
+      outOrientGraphUri += "/";
+    }
+    String outDBConfigPath = outOrientGraphUri + this.configFileName;
+    outDBConfigPath = outDBConfigPath.replace("plocal:","");
+    File confFileInOrientDB = new File(outDBConfigPath);
+    boolean configPresentInDB;
+
+    if(confFileInOrientDB.exists())
+      configPresentInDB = true;
+    else
+      configPresentInDB = false;
+
+    // (i)
+    ODocument config;
+    if(configPresentInDB) {
+      config = OFileManager.buildJsonFromFile(outDBConfigPath);
+      context.getOutputManager().error("Configuration correctly loaded from %s.", outDBConfigPath);
     }
     else {
-      context.getOutputManager().error("Configuration correctly loaded.");
+      config = OFileManager.buildJsonFromFile(configurationPath);
+      // (ii)
+      if(config != null) {
+        context.getOutputManager().error("Configuration correctly loaded from %s.", configurationPath);
+      }
+      // (iii)
+      else {
+        context.getOutputManager().error("No configuration file was found. Migration will be performed with standard mapping policies.");
+      }
     }
+
     OSource2GraphMapper mapper = this.createSchemaMapper(driver, uri, username, password, outOrientGraphUri, chosenMapper, xmlPath, nameResolver, handler, includedTables, excludedTables, config, context);
+
+    // if config was not present in the DB then write it in the <db-path>/teleporter-config/ path
+    if(!configPresentInDB) {
+      try {
+        this.copyConfigIntoTargetDB(configurationPath, outDBConfigPath);
+      } catch(IOException e) {
+        if(e.getMessage() != null)
+          context.getOutputManager().error(e.getClass().getName() + " - " + e.getMessage());
+        else
+          context.getOutputManager().error(e.getClass().getName());
+
+        Writer writer = new StringWriter();
+        e.printStackTrace(new PrintWriter(writer));
+        String s = writer.toString();
+        context.getOutputManager().error("\n" + s + "\n");
+        throw new OTeleporterRuntimeException(e);
+      }
+    }
 
     // Step 4: Import
     this.executeImport(driver, uri, username, password, outOrientGraphUri, mapper, handler, context);
@@ -108,6 +163,14 @@ public abstract class ODBMSImportStrategy implements OImportStrategy {
 
   public abstract void executeImport(String driver, String uri, String username, String password, String outOrientGraphUri, OSource2GraphMapper mapper, ODBMSDataTypeHandler handler, OTeleporterContext context);
 
+  private void copyConfigIntoTargetDB(String sourceConfigPath, String destinationConfigPath) throws IOException {
+
+    File sourceConfig = new File(sourceConfigPath);
+    File destinationConfig = new File(destinationConfigPath);
+    FileChannel in = new FileInputStream(sourceConfig).getChannel();
+    FileChannel out = new FileOutputStream(destinationConfig).getChannel();
+    out.transferFrom(in, 0, in.size());
+  }
 
   /**
    * Performs import of all records of the entities contained in the hierarchical bag passed as parameter.

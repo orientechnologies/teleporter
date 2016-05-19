@@ -128,7 +128,7 @@ public class OFilterTableImportingTestCase {
       includedTables.add("MANAGER");
       includedTables.add("EMPLOYEE");
 
-      this.importStrategy.executeStrategy("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", this.outOrientGraphUri, "basicDBMapper", null, "java", includedTables, null, context);
+      this.importStrategy.executeStrategy("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", this.outOrientGraphUri, "basicDBMapper", null, "java", includedTables, null, null, context);
 
 
       /*
@@ -390,7 +390,7 @@ public class OFilterTableImportingTestCase {
       List<String> excludedTables = new ArrayList<String>();
       excludedTables.add("RESIDENCE");
 
-      this.importStrategy.executeStrategy("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", this.outOrientGraphUri, "basicDBMapper", null, "java", null, excludedTables, context);
+      this.importStrategy.executeStrategy("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", this.outOrientGraphUri, "basicDBMapper", null, "java", null, excludedTables, null, context);
 
 
       /*
@@ -655,7 +655,7 @@ public class OFilterTableImportingTestCase {
       includedTables.add("MANAGER");
       includedTables.add("EMPLOYEE");
 
-      this.importStrategy.executeStrategy("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", this.outOrientGraphUri, "hibernate", OFilterTableImportingTestCase.XML_TABLE_PER_CLASS, "java", includedTables, null, context);
+      this.importStrategy.executeStrategy("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", this.outOrientGraphUri, "hibernate", OFilterTableImportingTestCase.XML_TABLE_PER_CLASS, "java", includedTables, null, null, context);
 
       /*
        *  Testing context information
@@ -979,7 +979,7 @@ public class OFilterTableImportingTestCase {
       includedTables.add("REGULAR_EMPLOYEE");
       includedTables.add("CONTRACT_EMPLOYEE");
 
-      this.importStrategy.executeStrategy("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", this.outOrientGraphUri, "hibernate", OFilterTableImportingTestCase.XML_TABLE_PER_SUBCLASS1, "java", includedTables, null, context);
+      this.importStrategy.executeStrategy("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", this.outOrientGraphUri, "hibernate", OFilterTableImportingTestCase.XML_TABLE_PER_SUBCLASS1, "java", includedTables, null, null, context);
 
       /*
        *  Testing context information
@@ -1298,7 +1298,7 @@ public class OFilterTableImportingTestCase {
       List<String> excludedTables = new ArrayList<String>();
       excludedTables.add("RESIDENCE");
 
-      this.importStrategy.executeStrategy("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", this.outOrientGraphUri, "hibernate", OFilterTableImportingTestCase.XML_TABLE_PER_SUBCLASS2, "java", null, excludedTables, context);
+      this.importStrategy.executeStrategy("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", this.outOrientGraphUri, "hibernate", OFilterTableImportingTestCase.XML_TABLE_PER_SUBCLASS2, "java", null, excludedTables, null, context);
 
 
       /*
@@ -1627,7 +1627,7 @@ public class OFilterTableImportingTestCase {
       includedTables.add("REGULAR_EMPLOYEE");
       includedTables.add("CONTRACT_EMPLOYEE");
 
-      this.importStrategy.executeStrategy("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", this.outOrientGraphUri, "hibernate", OFilterTableImportingTestCase.XML_TABLE_PER_CONCRETE_CLASS, "java", includedTables, null, context);
+      this.importStrategy.executeStrategy("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", this.outOrientGraphUri, "hibernate", OFilterTableImportingTestCase.XML_TABLE_PER_CONCRETE_CLASS, "java", includedTables, null, null, context);
 
       /*
        *  Testing context information

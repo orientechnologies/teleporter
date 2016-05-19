@@ -138,7 +138,7 @@ public class OFilterTableMappingTestCase {
       assertEquals(1, context.getStatistics().detectedRelationships);
 
       assertEquals(3, context.getStatistics().totalNumberOfModelVertices);
-      assertEquals(1, context.getStatistics().analizedRelationships);
+      assertEquals(1, context.getStatistics().analyzedRelationships);
       assertEquals(1, context.getStatistics().builtModelEdgeTypes);
 
 
@@ -446,7 +446,7 @@ public class OFilterTableMappingTestCase {
       assertEquals(1, context.getStatistics().detectedRelationships);
 
       assertEquals(3, context.getStatistics().totalNumberOfModelVertices);
-      assertEquals(1, context.getStatistics().analizedRelationships);
+      assertEquals(1, context.getStatistics().analyzedRelationships);
       assertEquals(1, context.getStatistics().builtModelEdgeTypes);
 
 
@@ -754,7 +754,7 @@ public class OFilterTableMappingTestCase {
       assertEquals(1, context.getStatistics().detectedRelationships);
 
       assertEquals(6, context.getStatistics().totalNumberOfModelVertices);
-      assertEquals(1, context.getStatistics().analizedRelationships);
+      assertEquals(1, context.getStatistics().analyzedRelationships);
       assertEquals(1, context.getStatistics().builtModelEdgeTypes);
 
 
@@ -1409,7 +1409,7 @@ public class OFilterTableMappingTestCase {
       assertEquals(4, context.getStatistics().detectedRelationships); // 3 of these are hierarchical relationships
 
       assertEquals(6, context.getStatistics().totalNumberOfModelVertices);
-      assertEquals(4, context.getStatistics().analizedRelationships); // 3 of these are hierarchical relationships
+      assertEquals(4, context.getStatistics().analyzedRelationships); // 3 of these are hierarchical relationships
       assertEquals(1, context.getStatistics().builtModelEdgeTypes);
 
 
@@ -2065,7 +2065,7 @@ public class OFilterTableMappingTestCase {
       assertEquals(4, context.getStatistics().detectedRelationships); // 3 of these are hierarchical relationships
 
       assertEquals(6, context.getStatistics().totalNumberOfModelVertices);
-      assertEquals(4, context.getStatistics().analizedRelationships); // 3 of these are hierarchical relationships
+      assertEquals(4, context.getStatistics().analyzedRelationships); // 3 of these are hierarchical relationships
       assertEquals(1, context.getStatistics().builtModelEdgeTypes);
 
 
@@ -2728,7 +2728,7 @@ public class OFilterTableMappingTestCase {
       assertEquals(1, context.getStatistics().detectedRelationships);
 
       assertEquals(6, context.getStatistics().totalNumberOfModelVertices);
-      assertEquals(1, context.getStatistics().analizedRelationships);
+      assertEquals(1, context.getStatistics().analyzedRelationships);
       assertEquals(1, context.getStatistics().builtModelEdgeTypes);
 
 

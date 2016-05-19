@@ -18,9 +18,9 @@
 
 package com.orientdb.teleporter.strategy;
 
-import java.util.List;
-
 import com.orientdb.teleporter.context.OTeleporterContext;
+
+import java.util.List;
 
 /**
  * Interface that represents a specific approach of data importing.
@@ -33,6 +33,6 @@ import com.orientdb.teleporter.context.OTeleporterContext;
 public interface OImportStrategy {
 
   public void executeStrategy(String driver, String uri, String username, String password, String outOrientGraphUri, String chosenMapper, String xmlPath, String nameResolverConvention,
-      List<String> includedTables, List<String> excludedTables, OTeleporterContext context);
+      List<String> includedTables, List<String> excludedTables, String configurationPath, OTeleporterContext context);
 
 }

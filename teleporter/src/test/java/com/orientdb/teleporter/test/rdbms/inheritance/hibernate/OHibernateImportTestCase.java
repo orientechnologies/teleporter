@@ -116,7 +116,7 @@ public class OHibernateImportTestCase {
           + "('E003','cont_emp','Jack Johnson',NULL,NULL,'50.00','6','R002',NULL))";
       st.execute(employeeFilling);
 
-      this.importStrategy.executeStrategy("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", this.outOrientGraphUri, "hibernate", OHibernateImportTestCase.XML_TABLE_PER_CLASS, "java", null, null, context);
+      this.importStrategy.executeStrategy("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", this.outOrientGraphUri, "hibernate", OHibernateImportTestCase.XML_TABLE_PER_CLASS, "java", null, null, null, context);
 
       /*
        *  Testing context information
@@ -466,7 +466,7 @@ public class OHibernateImportTestCase {
           + "('E003','50.00','6'))";
       st.execute(contractEmployeeFilling);
 
-      this.importStrategy.executeStrategy("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", this.outOrientGraphUri, "hibernate", OHibernateImportTestCase.XML_TABLE_PER_SUBCLASS1, "java", null, null, context);
+      this.importStrategy.executeStrategy("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", this.outOrientGraphUri, "hibernate", OHibernateImportTestCase.XML_TABLE_PER_SUBCLASS1, "java", null, null, null, context);
 
       /*
        *  Testing context information
@@ -815,7 +815,7 @@ public class OHibernateImportTestCase {
           + "('E003','50.00','6'))";
       st.execute(contractEmployeeFilling);
 
-      this.importStrategy.executeStrategy("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", this.outOrientGraphUri, "hibernate", OHibernateImportTestCase.XML_TABLE_PER_SUBCLASS2, "java", null, null, context);
+      this.importStrategy.executeStrategy("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", this.outOrientGraphUri, "hibernate", OHibernateImportTestCase.XML_TABLE_PER_SUBCLASS2, "java", null, null, null, context);
 
       /*
        *  Testing context information
@@ -1164,7 +1164,7 @@ public class OHibernateImportTestCase {
           + "('E003','Jack Johnson','R002',NULL,'50.00','6'))";
       st.execute(contractEmployeeFilling);
 
-      this.importStrategy.executeStrategy("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", this.outOrientGraphUri, "hibernate", OHibernateImportTestCase.XML_TABLE_PER_CONCRETE_CLASS, "java", null, null, context);
+      this.importStrategy.executeStrategy("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", this.outOrientGraphUri, "hibernate", OHibernateImportTestCase.XML_TABLE_PER_CONCRETE_CLASS, "java", null, null, null, context);
 
       /*
        *  Testing context information

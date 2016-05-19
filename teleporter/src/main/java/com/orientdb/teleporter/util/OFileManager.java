@@ -116,6 +116,11 @@ public class OFileManager {
    * @return ODocument (null if the file does not exist or problem are encountered during the reading)
    */
   public static ODocument buildJsonFromFile(String filePath) {
+
+    if(filePath == null) {
+      return null;
+    }
+
     try {
       File jsonFile = new File(filePath);
       FileInputStream is = new FileInputStream(jsonFile);

@@ -38,4 +38,12 @@ public class OTeleporterIOException extends IOException {
     super(message);
   }
 
+  public OTeleporterIOException(String message, Throwable cause) {
+    super(message, cause);
+  }
+
+  public OTeleporterIOException(Throwable cause) {
+    super(cause);
+  }
+
 }

@@ -18,13 +18,9 @@
 
 package com.orientdb.teleporter.context;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 import com.orientdb.teleporter.ui.OStatisticsListener;
+
+import java.util.*;
 
 /**
  * Collects and updates statistics about the Drakkar execution state.
@@ -52,11 +48,11 @@ public class OTeleporterStatistics {
   public volatile Date startWork1Time;
 
   // Graph Model building statistics
-  public volatile int totalNumberOfModelVertices;
-  public volatile int builtModelVertexTypes;
-  public volatile int totalNumberOfRelationships;
-  public volatile int analizedRelationships;
-  public volatile int builtModelEdgeTypes;
+  public volatile int  totalNumberOfModelVertices;
+  public volatile int  builtModelVertexTypes;
+  public volatile int  totalNumberOfRelationships;
+  public volatile int  analyzedRelationships;
+  public volatile int  builtModelEdgeTypes;
   public volatile Date startWork2Time;
 
   // OrientDB Schema writing statistics
@@ -101,7 +97,7 @@ public class OTeleporterStatistics {
     this.totalNumberOfModelVertices = 0;
     this.builtModelVertexTypes = 0;
     this.totalNumberOfRelationships = 0;
-    this.analizedRelationships = 0;
+    this.analyzedRelationships = 0;
     this.builtModelEdgeTypes = 0;
 
     this.totalNumberOfVertexType = 0;

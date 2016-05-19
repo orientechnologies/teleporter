@@ -16,7 +16,7 @@
  * For more information: http://www.orientdb.com
  */
 
-package com.orientdb.teleporter.test.rdbms.mapper;
+package com.orientdb.teleporter.test.rdbms.configuration.mapping;
 
 import com.orientdb.teleporter.context.OOutputStreamManager;
 import com.orientdb.teleporter.context.OTeleporterContext;
@@ -101,7 +101,7 @@ public class OConfigurationMapping {
 
       assertEquals(2, context.getStatistics().totalNumberOfModelVertices);
       assertEquals(2, context.getStatistics().builtModelVertexTypes);
-      assertEquals(2, context.getStatistics().analizedRelationships);
+      assertEquals(2, context.getStatistics().analyzedRelationships);
       assertEquals(2, context.getStatistics().builtModelEdgeTypes);
 
        /*
@@ -213,7 +213,6 @@ public class OConfigurationMapping {
       OVertexType projectVertexType = mapper.getGraphModel().getVertexByName("Project");
       OEdgeType worksAtEdgeType = mapper.getGraphModel().getEdgeTypeByName("WorksAtProject");
       OEdgeType hasManagerEdgeType = mapper.getGraphModel().getEdgeTypeByName("HasManager");
-
 
 
       // vertices check
@@ -369,7 +368,7 @@ public class OConfigurationMapping {
       connection = DriverManager.getConnection("jdbc:hsqldb:mem:mydb", "SA", "");
 
       String parentTableBuilding = "create memory table EMPLOYEE (EMP_ID varchar(256) not null,"+
-          " FIRST_NAME varchar(256) not null, LAST_NAME varchar(256) not null, PROJECT varchar(256) not null, primary key (EMP_ID))"; //foreign key (PROJECT) references PROJECT(ID)
+          " FIRST_NAME varchar(256) not null, LAST_NAME varchar(256) not null, PROJECT varchar(256) not null, primary key (EMP_ID))";
       st = connection.createStatement();
       st.execute(parentTableBuilding);
 
@@ -395,7 +394,7 @@ public class OConfigurationMapping {
 
       assertEquals(2, context.getStatistics().totalNumberOfModelVertices);
       assertEquals(2, context.getStatistics().builtModelVertexTypes);
-      assertEquals(2, context.getStatistics().analizedRelationships);
+      assertEquals(2, context.getStatistics().analyzedRelationships);
       assertEquals(2, context.getStatistics().builtModelEdgeTypes);
 
       /*
@@ -507,7 +506,6 @@ public class OConfigurationMapping {
       OVertexType projectVertexType = mapper.getGraphModel().getVertexByName("Project");
       OEdgeType hasEmployeeEdgeType = mapper.getGraphModel().getEdgeTypeByName("HasEmployee");
       OEdgeType hasProjectManagerEdgeType = mapper.getGraphModel().getEdgeTypeByName("HasProjectManager");
-
 
 
       // vertices check
