@@ -46,7 +46,7 @@ import static org.junit.Assert.*;
  *
  */
 
-public class OConfigurationMapping {
+public class ConfigurationMappingTest {
 
   private OER2GraphMapper    mapper;
   private  OTeleporterContext context;
@@ -211,7 +211,7 @@ public class OConfigurationMapping {
        */
       OVertexType employeeVertexType = mapper.getGraphModel().getVertexByName("Employee");
       OVertexType projectVertexType = mapper.getGraphModel().getVertexByName("Project");
-      OEdgeType worksAtEdgeType = mapper.getGraphModel().getEdgeTypeByName("WorksAtProject");
+      OEdgeType worksAtProjectEdgeType = mapper.getGraphModel().getEdgeTypeByName("WorksAtProject");
       OEdgeType hasManagerEdgeType = mapper.getGraphModel().getEdgeTypeByName("HasManager");
 
 
@@ -248,7 +248,7 @@ public class OConfigurationMapping {
       assertEquals(false, employeeVertexType.getPropertyByName("project").isFromPrimaryKey());
 
       assertEquals(1, employeeVertexType.getOutEdgesType().size());
-      assertEquals(worksAtEdgeType, employeeVertexType.getOutEdgesType().get(0));
+      assertEquals(worksAtProjectEdgeType, employeeVertexType.getOutEdgesType().get(0));
       assertEquals(1, employeeVertexType.getInEdgesType().size());
       assertEquals(hasManagerEdgeType, employeeVertexType.getInEdgesType().get(0));
 
@@ -275,20 +275,20 @@ public class OConfigurationMapping {
       assertEquals(1, projectVertexType.getOutEdgesType().size());
       assertEquals(hasManagerEdgeType, projectVertexType.getOutEdgesType().get(0));
       assertEquals(1, projectVertexType.getInEdgesType().size());
-      assertEquals(worksAtEdgeType, projectVertexType.getInEdgesType().get(0));
+      assertEquals(worksAtProjectEdgeType, projectVertexType.getInEdgesType().get(0));
 
       // edges check
       assertEquals(2, mapper.getGraphModel().getEdgesType().size());
-      assertNotNull(worksAtEdgeType);
+      assertNotNull(worksAtProjectEdgeType);
       assertNotNull(hasManagerEdgeType);
 
-      assertEquals("WorksAtProject", worksAtEdgeType.getName());
-      assertEquals(1, worksAtEdgeType.getProperties().size());
-      assertEquals("Project", worksAtEdgeType.getInVertexType().getName());
-      assertEquals(1, worksAtEdgeType.getNumberRelationshipsRepresented());
+      assertEquals("WorksAtProject", worksAtProjectEdgeType.getName());
+      assertEquals(1, worksAtProjectEdgeType.getProperties().size());
+      assertEquals("Project", worksAtProjectEdgeType.getInVertexType().getName());
+      assertEquals(1, worksAtProjectEdgeType.getNumberRelationshipsRepresented());
 
-      assertEquals(1, worksAtEdgeType.getAllProperties().size());
-      OModelProperty updatedOnProperty = worksAtEdgeType.getPropertyByName("updatedOn");
+      assertEquals(1, worksAtProjectEdgeType.getAllProperties().size());
+      OModelProperty updatedOnProperty = worksAtProjectEdgeType.getPropertyByName("updatedOn");
       assertNotNull(updatedOnProperty);
       assertEquals("updatedOn", updatedOnProperty.getName());
       assertEquals(1, updatedOnProperty.getOrdinalPosition());
@@ -502,6 +502,7 @@ public class OConfigurationMapping {
       /*
        *  Testing built graph model
        */
+
       OVertexType employeeVertexType = mapper.getGraphModel().getVertexByName("Employee");
       OVertexType projectVertexType = mapper.getGraphModel().getVertexByName("Project");
       OEdgeType hasEmployeeEdgeType = mapper.getGraphModel().getEdgeTypeByName("HasEmployee");

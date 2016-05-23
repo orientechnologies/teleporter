@@ -1,0 +1,71 @@
+// Mapping RELAZIONE - EDGE con cardinalità 1-1 o 1-N
+
+Es: relazione ACTOR-FILM 1-N
+
+{
+	"vertices": {
+	},
+	"edges": [{
+			"Performs": {
+					"mapping": {
+						"fromTable": "ACTOR",
+						"fromColumn": ["A_ID"],
+						"toTable": "FILM",
+						"toColumn": ["F_ID"],
+						"direction": "direct"
+					},
+					"properties": {
+						"updatedOn": {
+							"type": "DATE",
+							"value": "$from.date",
+							"mandatory": false,
+							"readOnly": false,
+							"notNull": false
+						},
+						"author": {
+							"type": "string",
+							"value": "$to.AUTHOR_NAME"
+						}
+					}
+				}
+			}]
+}
+
+
+// Mapping RELAZIONE - EDGE con cardinalità N-N
+
+Es: relazione ACTOR-FILM N-N
+
+{
+	"vertices": {
+	},
+	"edges": [{
+			"Performs": {
+					"mapping": {
+						"fromTable": "ACTOR",
+						"fromColumn": ["A_ID"],
+						"toTable": "FILM",
+						"toColumn": ["F_ID"],
+						"joinTable": {
+							"tableName": "ACTOR2FILM",
+							"fromColumn": ["ACTOR_ID"],
+							"toColumn": ["FILM_ID"],
+							}
+						"direction": "direct"
+					},
+					"properties": {
+						"updatedOn": {
+							"type": "DATE",
+							"value": "$from.date",
+							"mandatory": false,
+							"readOnly": false,
+							"notNull": false
+						},
+						"author": {
+							"type": "string",
+							"value": "$to.AUTHOR_NAME"
+						}
+					}
+				}
+			}]
+}

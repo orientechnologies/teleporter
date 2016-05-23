@@ -31,7 +31,7 @@ import com.orientdb.teleporter.nameresolver.OJavaConventionNameResolver;
  *
  */
 
-public class OJavaNameResolverTestCase {
+public class JavaNameResolverTest {
 
 
   private OJavaConventionNameResolver nameResolver;

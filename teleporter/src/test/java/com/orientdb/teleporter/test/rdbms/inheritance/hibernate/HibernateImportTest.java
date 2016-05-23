@@ -45,7 +45,7 @@ import static org.junit.Assert.*;
  *
  */
 
-public class OHibernateImportTestCase {
+public class HibernateImportTest {
 
   private OTeleporterContext context;
   private ODBMSNaiveStrategy importStrategy;
@@ -116,7 +116,7 @@ public class OHibernateImportTestCase {
           + "('E003','cont_emp','Jack Johnson',NULL,NULL,'50.00','6','R002',NULL))";
       st.execute(employeeFilling);
 
-      this.importStrategy.executeStrategy("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", this.outOrientGraphUri, "hibernate", OHibernateImportTestCase.XML_TABLE_PER_CLASS, "java", null, null, null, context);
+      this.importStrategy.executeStrategy("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", this.outOrientGraphUri, "hibernate", HibernateImportTest.XML_TABLE_PER_CLASS, "java", null, null, null, context);
 
       /*
        *  Testing context information
@@ -388,8 +388,10 @@ public class OHibernateImportTestCase {
         e.printStackTrace();
         fail();
       }
-      orientGraph.drop();
-      orientGraph.shutdown();
+      if(orientGraph != null) {
+        orientGraph.drop();
+        orientGraph.shutdown();
+      }
     }
   }
 
@@ -466,7 +468,7 @@ public class OHibernateImportTestCase {
           + "('E003','50.00','6'))";
       st.execute(contractEmployeeFilling);
 
-      this.importStrategy.executeStrategy("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", this.outOrientGraphUri, "hibernate", OHibernateImportTestCase.XML_TABLE_PER_SUBCLASS1, "java", null, null, null, context);
+      this.importStrategy.executeStrategy("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", this.outOrientGraphUri, "hibernate", HibernateImportTest.XML_TABLE_PER_SUBCLASS1, "java", null, null, null, context);
 
       /*
        *  Testing context information
@@ -738,8 +740,10 @@ public class OHibernateImportTestCase {
         e.printStackTrace();
         fail();
       }
-      orientGraph.drop();
-      orientGraph.shutdown();
+      if(orientGraph != null) {
+        orientGraph.drop();
+        orientGraph.shutdown();
+      }
     }
   }
 
@@ -815,7 +819,7 @@ public class OHibernateImportTestCase {
           + "('E003','50.00','6'))";
       st.execute(contractEmployeeFilling);
 
-      this.importStrategy.executeStrategy("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", this.outOrientGraphUri, "hibernate", OHibernateImportTestCase.XML_TABLE_PER_SUBCLASS2, "java", null, null, null, context);
+      this.importStrategy.executeStrategy("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", this.outOrientGraphUri, "hibernate", HibernateImportTest.XML_TABLE_PER_SUBCLASS2, "java", null, null, null, context);
 
       /*
        *  Testing context information
@@ -1087,8 +1091,10 @@ public class OHibernateImportTestCase {
         e.printStackTrace();
         fail();
       }
-      orientGraph.drop();
-      orientGraph.shutdown();
+      if(orientGraph != null) {
+        orientGraph.drop();
+        orientGraph.shutdown();
+      }
     }
   }
 
@@ -1164,7 +1170,7 @@ public class OHibernateImportTestCase {
           + "('E003','Jack Johnson','R002',NULL,'50.00','6'))";
       st.execute(contractEmployeeFilling);
 
-      this.importStrategy.executeStrategy("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", this.outOrientGraphUri, "hibernate", OHibernateImportTestCase.XML_TABLE_PER_CONCRETE_CLASS, "java", null, null, null, context);
+      this.importStrategy.executeStrategy("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", this.outOrientGraphUri, "hibernate", HibernateImportTest.XML_TABLE_PER_CONCRETE_CLASS, "java", null, null, null, context);
 
       /*
        *  Testing context information
@@ -1436,8 +1442,10 @@ public class OHibernateImportTestCase {
         e.printStackTrace();
         fail();
       }
-      orientGraph.drop();
-      orientGraph.shutdown();
+      if(orientGraph != null) {
+        orientGraph.drop();
+        orientGraph.shutdown();
+      }
     }
   }
 

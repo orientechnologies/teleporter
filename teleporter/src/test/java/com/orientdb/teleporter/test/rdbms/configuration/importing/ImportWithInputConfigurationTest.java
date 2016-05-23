@@ -45,7 +45,7 @@ import static org.junit.Assert.*;
  *
  */
 
-public class OImportWithInputConfiguration {
+public class ImportWithInputConfigurationTest {
 
   private OTeleporterContext context;
   private ODBMSNaiveStrategy importStrategy;
@@ -349,8 +349,10 @@ public class OImportWithInputConfiguration {
         e.printStackTrace();
         fail();
       }
-      orientGraph.drop();
-      orientGraph.shutdown();
+      if(orientGraph != null) {
+        orientGraph.drop();
+        orientGraph.shutdown();
+      }
     }
   }
 
@@ -657,8 +659,10 @@ public class OImportWithInputConfiguration {
         e.printStackTrace();
         fail();
       }
-      orientGraph.drop();
-      orientGraph.shutdown();
+      if(orientGraph != null) {
+        orientGraph.drop();
+        orientGraph.shutdown();
+      }
     }
   }
 

@@ -47,7 +47,7 @@ import static org.junit.Assert.*;
  *
  */
 
-public class OOrientDBSchemaWritingTestCase {
+public class OrientDBSchemaWritingTest {
 
   private OER2GraphMapper mapper;
   private OTeleporterContext context;
@@ -85,7 +85,6 @@ public class OOrientDBSchemaWritingTestCase {
           " NAME varchar(256) not null, AGE integer not null, primary key (ID))";
       st = connection.createStatement();
       st.execute(parentTableBuilding);
-
 
       String foreignTableBuilding = "create memory table BOOK (ID varchar(256) not null, TITLE  varchar(256),"+
           " AUTHOR_ID varchar(256) not null, primary key (ID), foreign key (AUTHOR_ID) references BOOK_AUTHOR(ID))";
@@ -310,8 +309,10 @@ public class OOrientDBSchemaWritingTestCase {
         e.printStackTrace();
         fail();
       }
-      orientGraph.drop();
-      orientGraph.shutdown();
+      if(orientGraph != null) {
+        orientGraph.drop();
+        orientGraph.shutdown();
+      }
     }
   }
 
@@ -448,8 +449,10 @@ public class OOrientDBSchemaWritingTestCase {
         e.printStackTrace();
         fail();
       }
-      orientGraph.drop();
-      orientGraph.shutdown();
+      if(orientGraph != null) {
+        orientGraph.drop();
+        orientGraph.shutdown();
+      }
     }
   }
 
@@ -567,8 +570,10 @@ public class OOrientDBSchemaWritingTestCase {
         e.printStackTrace();
         fail();
       }
-      orientGraph.drop();
-      orientGraph.shutdown();
+      if(orientGraph != null) {
+        orientGraph.drop();
+        orientGraph.shutdown();
+      }
     }
   }
 
@@ -703,8 +708,10 @@ public class OOrientDBSchemaWritingTestCase {
         e.printStackTrace();
         fail();
       }
-      orientGraph.drop();
-      orientGraph.shutdown();
+      if(orientGraph != null) {
+        orientGraph.drop();
+        orientGraph.shutdown();
+      }
     }
   }
 
@@ -822,8 +829,10 @@ public class OOrientDBSchemaWritingTestCase {
         e.printStackTrace();
         fail();
       }
-      orientGraph.drop();
-      orientGraph.shutdown();
+      if(orientGraph != null) {
+        orientGraph.drop();
+        orientGraph.shutdown();
+      }
     }
   }
 
@@ -877,10 +886,6 @@ public class OOrientDBSchemaWritingTestCase {
       while (it.hasNext()) {
         props.add(it.next().getName());
       }
-//      assertEquals("id", it.next().getName());
-//      assertEquals("age", it.next().getName());
-//      assertEquals("name", it.next().getName());
-//      assertEquals("surname", it.next().getName());
       assertEquals(4, props.size());
       assertEquals(true, props.contains("id"));
       assertEquals(true, props.contains("age"));
@@ -896,10 +901,6 @@ public class OOrientDBSchemaWritingTestCase {
       while (it.hasNext()) {
         props.add(it.next().getName());
       }
-//      assertEquals("id", it.next().getName());
-//      assertEquals("name", it.next().getName());
-//      assertEquals("age", it.next().getName());
-//      assertFalse(it.hasNext());
       assertEquals(3, props.size());
       assertEquals(true, props.contains("id"));
       assertEquals(true, props.contains("age"));
@@ -921,11 +922,6 @@ public class OOrientDBSchemaWritingTestCase {
       while (it.hasNext()) {
         props.add(it.next().getName());
       }
-//      assertEquals("id", it.next().getName());
-//      assertEquals("title", it.next().getName());
-//      assertEquals("authorId", it.next().getName());
-//      assertEquals("date", it.next().getName());
-//      assertFalse(it.hasNext());
       assertEquals(4, props.size());
       assertEquals(true, props.contains("id"));
       assertEquals(true, props.contains("title"));
@@ -941,10 +937,6 @@ public class OOrientDBSchemaWritingTestCase {
       while (it.hasNext()) {
         props.add(it.next().getName());
       }
-//      assertEquals("id", it.next().getName());
-//      assertEquals("authorId", it.next().getName());
-//      assertEquals("date", it.next().getName());
-//      assertFalse(it.hasNext());
       assertEquals(3, props.size());
       assertEquals(true, props.contains("id"));
       assertEquals(true, props.contains("authorId"));
@@ -977,8 +969,10 @@ public class OOrientDBSchemaWritingTestCase {
         e.printStackTrace();
         fail();
       }
-      orientGraph.drop();
-      orientGraph.shutdown();
+      if(orientGraph != null) {
+        orientGraph.drop();
+        orientGraph.shutdown();
+      }
     }
   }
 

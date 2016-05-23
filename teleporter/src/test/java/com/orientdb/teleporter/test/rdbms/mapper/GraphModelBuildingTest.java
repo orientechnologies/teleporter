@@ -41,7 +41,7 @@ import static org.junit.Assert.fail;
  *
  */
 
-public class OGraphModelBuildingTestCase {
+public class GraphModelBuildingTest {
 
   private OER2GraphMapper mapper;
   private OTeleporterContext context;

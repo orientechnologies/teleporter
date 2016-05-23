@@ -57,7 +57,11 @@ import java.util.*;
 
 public abstract class ODBMSImportStrategy implements OImportStrategy {
 
+  // config info
+  private final String configurationDirectoryName = "teleporter-config/";
   private final String configFileName = "config.json";
+  private String outDBConfigPath;       // path ORIENTDB_HOME/<db-name>/teleporter-config/config.json
+  private boolean configPresentInDB;
 
   public ODBMSImportStrategy() {}
 
@@ -73,7 +77,6 @@ public abstract class ODBMSImportStrategy implements OImportStrategy {
     ODataTypeHandlerFactory factory = new ODataTypeHandlerFactory();
     ODBMSDataTypeHandler handler = (ODBMSDataTypeHandler) factory.buildDataTypeHandler(driver, context);
 
-
     /*
      * Step 1,2,3
      */
@@ -81,67 +84,15 @@ public abstract class ODBMSImportStrategy implements OImportStrategy {
     ONameResolver nameResolver = nameResolverFactory.buildNameResolver(nameResolverConvention, context);
     context.getStatistics().runningStepNumber = -1;
 
-    /*
-     * Loading eventual configuration.
-     * Look for the config in the <db-path>/teleporter-config/ path:
-     *  (i) - if db and configuration are present use the default config
-     *      - else
-     *       (ii)  - if an external config path was passed as argument then load the config, use it for the steps 1,2,3 and then copy it
-     *               in the <db-path>/teleporter-config/ path (configuration.json)
-     *       (iii) - else execute strategy without configuration
-     */
+    // manage conf if present: loading
+    ODocument config = this.loadConfiguration(outOrientGraphUri, configurationPath, context);
 
-    // checking the presence of the configuration in the target db
-    if(!(outOrientGraphUri.charAt(outOrientGraphUri.length()-1) == '/' || outOrientGraphUri.charAt(outOrientGraphUri.length()-1) == '\\')) {
-      outOrientGraphUri += "/";
-    }
-    String outDBConfigPath = outOrientGraphUri + this.configFileName;
-    outDBConfigPath = outDBConfigPath.replace("plocal:","");
-    File confFileInOrientDB = new File(outDBConfigPath);
-    boolean configPresentInDB;
+    OSource2GraphMapper mapper = this
+        .createSchemaMapper(driver, uri, username, password, outOrientGraphUri, chosenMapper, xmlPath, nameResolver, handler,
+            includedTables, excludedTables, config, context);
 
-    if(confFileInOrientDB.exists())
-      configPresentInDB = true;
-    else
-      configPresentInDB = false;
-
-    // (i)
-    ODocument config;
-    if(configPresentInDB) {
-      config = OFileManager.buildJsonFromFile(outDBConfigPath);
-      context.getOutputManager().error("Configuration correctly loaded from %s.", outDBConfigPath);
-    }
-    else {
-      config = OFileManager.buildJsonFromFile(configurationPath);
-      // (ii)
-      if(config != null) {
-        context.getOutputManager().error("Configuration correctly loaded from %s.", configurationPath);
-      }
-      // (iii)
-      else {
-        context.getOutputManager().error("No configuration file was found. Migration will be performed with standard mapping policies.");
-      }
-    }
-
-    OSource2GraphMapper mapper = this.createSchemaMapper(driver, uri, username, password, outOrientGraphUri, chosenMapper, xmlPath, nameResolver, handler, includedTables, excludedTables, config, context);
-
-    // if config was not present in the DB then write it in the <db-path>/teleporter-config/ path
-    if(!configPresentInDB) {
-      try {
-        this.copyConfigIntoTargetDB(configurationPath, outDBConfigPath);
-      } catch(IOException e) {
-        if(e.getMessage() != null)
-          context.getOutputManager().error(e.getClass().getName() + " - " + e.getMessage());
-        else
-          context.getOutputManager().error(e.getClass().getName());
-
-        Writer writer = new StringWriter();
-        e.printStackTrace(new PrintWriter(writer));
-        String s = writer.toString();
-        context.getOutputManager().error("\n" + s + "\n");
-        throw new OTeleporterRuntimeException(e);
-      }
-    }
+    // manage conf if present: updating in the db directory
+    this.updateConfigurationInDatabase(config, configurationPath, context);
 
     // Step 4: Import
     this.executeImport(driver, uri, username, password, outOrientGraphUri, mapper, handler, context);
@@ -161,12 +112,81 @@ public abstract class ODBMSImportStrategy implements OImportStrategy {
       ODocument config, OTeleporterContext context);
 
 
+  /**
+   * Loading eventual configuration.
+   * Look for the config in the <db-path>/teleporter-config/ path:
+   *  (i) - if db and configuration are present use the default config
+   *      - else
+   *       (ii)  - if an external config path was passed as argument then load the config, use it for the steps 1,2,3 and then copy it
+   *               in the <db-path>/teleporter-config/ path (configuration.json)
+   *       (iii) - else execute strategy without configuration
+   **/
+  private ODocument loadConfiguration(String outOrientGraphUri, String configurationPath, OTeleporterContext context) {
+
+    // checking the presence of the configuration in the target db
+    if (!(outOrientGraphUri.charAt(outOrientGraphUri.length() - 1) == '/'
+        || outOrientGraphUri.charAt(outOrientGraphUri.length() - 1) == '\\')) {
+      outOrientGraphUri += "/";
+    }
+    this.outDBConfigPath = outOrientGraphUri + this.configurationDirectoryName + this.configFileName;
+    this.outDBConfigPath = this.outDBConfigPath.replace("plocal:", "");
+    File confFileInOrientDB = new File(this.outDBConfigPath);
+
+    if (confFileInOrientDB.exists())
+      this.configPresentInDB = true;
+    else
+      this.configPresentInDB = false;
+
+    // (i)
+    ODocument config;
+    if (this.configPresentInDB) {
+      config = OFileManager.buildJsonFromFile(this.outDBConfigPath);
+      context.getOutputManager().error("Configuration correctly loaded from %s.", this.outDBConfigPath);
+    } else {
+      config = OFileManager.buildJsonFromFile(configurationPath);
+      // (ii)
+      if (config != null) {
+        context.getOutputManager().error("Configuration correctly loaded from %s.", configurationPath);
+      }
+      // (iii)
+      else {
+        context.getOutputManager().error("No configuration file was found. Migration will be performed with standard mapping policies.");
+      }
+    }
+
+    return config;
+  }
+
+  public void updateConfigurationInDatabase(ODocument config, String configurationPath, OTeleporterContext context) {
+    // if we have config in input and it was not present in the DB then write it in the <db-path>/teleporter-config/ path
+    if (config != null) {
+      if (!this.configPresentInDB) {
+        try {
+          this.copyConfigIntoTargetDB(configurationPath, this.outDBConfigPath);
+        } catch (IOException e) {
+          if (e.getMessage() != null)
+            context.getOutputManager().error(e.getClass().getName() + " - " + e.getMessage());
+          else
+            context.getOutputManager().error(e.getClass().getName());
+
+          Writer writer = new StringWriter();
+          e.printStackTrace(new PrintWriter(writer));
+          String s = writer.toString();
+          context.getOutputManager().error("\n" + s + "\n");
+          throw new OTeleporterRuntimeException(e);
+        }
+      }
+    }
+  }
+
   public abstract void executeImport(String driver, String uri, String username, String password, String outOrientGraphUri, OSource2GraphMapper mapper, ODBMSDataTypeHandler handler, OTeleporterContext context);
 
   private void copyConfigIntoTargetDB(String sourceConfigPath, String destinationConfigPath) throws IOException {
 
     File sourceConfig = new File(sourceConfigPath);
     File destinationConfig = new File(destinationConfigPath);
+    destinationConfig.getParentFile().mkdirs();
+    destinationConfig.createNewFile();
     FileChannel in = new FileInputStream(sourceConfig).getChannel();
     FileChannel out = new FileOutputStream(destinationConfig).getChannel();
     out.transferFrom(in, 0, in.size());

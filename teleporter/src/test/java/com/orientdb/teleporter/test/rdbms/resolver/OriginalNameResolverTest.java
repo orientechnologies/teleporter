@@ -31,7 +31,7 @@ import com.orientdb.teleporter.nameresolver.OOriginalConventionNameResolver;
  *
  */
 
-public class OOriginalNameResolverTestCase {
+public class OriginalNameResolverTest {
 
   private OOriginalConventionNameResolver nameResolver;
 

@@ -39,7 +39,7 @@ import static org.junit.Assert.*;
  *
  */
 
-public class OSourceSchemaBuildingTestCase {
+public class SourceSchemaBuildingTest {
 
   private OER2GraphMapper mapper;
   private OTeleporterContext context;

@@ -46,7 +46,7 @@ import static org.junit.Assert.*;
  *
  */
 
-public class OAggregationStrategyTestCase {
+public class AggregationStrategyTest {
 
   private OTeleporterContext context;
   private ODBMSNaiveAggregationStrategy importStrategy;
@@ -65,7 +65,7 @@ public class OAggregationStrategyTestCase {
 
   @Test
   /*
-   * Aggregation Strategy Test
+   * Aggregation Strategy Test: executing import
    */
   public void test1() {
 
@@ -384,15 +384,17 @@ public class OAggregationStrategyTestCase {
         e.printStackTrace();
         fail();
       }
-      orientGraph.drop();
-      orientGraph.shutdown();
-    }  
+      if(orientGraph != null) {
+        orientGraph.drop();
+        orientGraph.shutdown();
+      }
+    }
   }
 
 
   @Test
   /*
-   * Aggregation Strategy Test
+   * Aggregation Strategy Test: executing mapping
    */
   public void test2() {
 
@@ -462,7 +464,7 @@ public class OAggregationStrategyTestCase {
       assertNotNull(deptEmpVertexType);
       assertNotNull(deptManagerVertexType);
       assertNotNull(branchVertexType);
-      
+
       // edges check
       assertEquals(2, mapper.getGraphModel().getEdgesType().size());
       assertNotNull(deptEdgeType);
@@ -507,7 +509,7 @@ public class OAggregationStrategyTestCase {
       assertNull(deptEmpVertexType);
       assertNull(deptManagerVertexType);
       assertNotNull(branchVertexType);
-      
+
       // edges check
       assertEquals(3, mapper.getGraphModel().getEdgesType().size());
       assertNotNull(deptEdgeType);
@@ -533,7 +535,7 @@ public class OAggregationStrategyTestCase {
         e.printStackTrace();
         fail();
       }
-    }  
+    }
   }
 
 }

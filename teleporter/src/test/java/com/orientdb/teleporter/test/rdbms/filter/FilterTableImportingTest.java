@@ -47,7 +47,7 @@ import static org.junit.Assert.*;
  *
  */
 
-public class OFilterTableImportingTestCase {
+public class FilterTableImportingTest {
 
   private OTeleporterContext context;
   private ODBMSNaiveStrategy importStrategy;
@@ -328,8 +328,10 @@ public class OFilterTableImportingTestCase {
         e.printStackTrace();
         fail();
       }
-      orientGraph.drop();
-      orientGraph.shutdown();
+      if(orientGraph != null) {
+        orientGraph.drop();
+        orientGraph.shutdown();
+      }
     }
   }
 
@@ -590,8 +592,10 @@ public class OFilterTableImportingTestCase {
         e.printStackTrace();
         fail();
       }
-      orientGraph.drop();
-      orientGraph.shutdown();
+      if(orientGraph != null) {
+        orientGraph.drop();
+        orientGraph.shutdown();
+      }
     }
   }
 
@@ -655,7 +659,7 @@ public class OFilterTableImportingTestCase {
       includedTables.add("MANAGER");
       includedTables.add("EMPLOYEE");
 
-      this.importStrategy.executeStrategy("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", this.outOrientGraphUri, "hibernate", OFilterTableImportingTestCase.XML_TABLE_PER_CLASS, "java", includedTables, null, null, context);
+      this.importStrategy.executeStrategy("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", this.outOrientGraphUri, "hibernate", FilterTableImportingTest.XML_TABLE_PER_CLASS, "java", includedTables, null, null, context);
 
       /*
        *  Testing context information
@@ -890,8 +894,10 @@ public class OFilterTableImportingTestCase {
         e.printStackTrace();
         fail();
       }
-      orientGraph.drop();
-      orientGraph.shutdown();
+      if(orientGraph != null) {
+        orientGraph.drop();
+        orientGraph.shutdown();
+      }
     }
   }
 
@@ -979,7 +985,7 @@ public class OFilterTableImportingTestCase {
       includedTables.add("REGULAR_EMPLOYEE");
       includedTables.add("CONTRACT_EMPLOYEE");
 
-      this.importStrategy.executeStrategy("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", this.outOrientGraphUri, "hibernate", OFilterTableImportingTestCase.XML_TABLE_PER_SUBCLASS1, "java", includedTables, null, null, context);
+      this.importStrategy.executeStrategy("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", this.outOrientGraphUri, "hibernate", FilterTableImportingTest.XML_TABLE_PER_SUBCLASS1, "java", includedTables, null, null, context);
 
       /*
        *  Testing context information
@@ -1214,8 +1220,10 @@ public class OFilterTableImportingTestCase {
         e.printStackTrace();
         fail();
       }
-      orientGraph.drop();
-      orientGraph.shutdown();
+      if(orientGraph != null) {
+        orientGraph.drop();
+        orientGraph.shutdown();
+      }
     }
   }
 
@@ -1298,7 +1306,7 @@ public class OFilterTableImportingTestCase {
       List<String> excludedTables = new ArrayList<String>();
       excludedTables.add("RESIDENCE");
 
-      this.importStrategy.executeStrategy("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", this.outOrientGraphUri, "hibernate", OFilterTableImportingTestCase.XML_TABLE_PER_SUBCLASS2, "java", null, excludedTables, null, context);
+      this.importStrategy.executeStrategy("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", this.outOrientGraphUri, "hibernate", FilterTableImportingTest.XML_TABLE_PER_SUBCLASS2, "java", null, excludedTables, null, context);
 
 
       /*
@@ -1535,8 +1543,10 @@ public class OFilterTableImportingTestCase {
         e.printStackTrace();
         fail();
       }
-      orientGraph.drop();
-      orientGraph.shutdown();
+      if(orientGraph != null) {
+        orientGraph.drop();
+        orientGraph.shutdown();
+      }
     }
   }
 
@@ -1627,7 +1637,7 @@ public class OFilterTableImportingTestCase {
       includedTables.add("REGULAR_EMPLOYEE");
       includedTables.add("CONTRACT_EMPLOYEE");
 
-      this.importStrategy.executeStrategy("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", this.outOrientGraphUri, "hibernate", OFilterTableImportingTestCase.XML_TABLE_PER_CONCRETE_CLASS, "java", includedTables, null, null, context);
+      this.importStrategy.executeStrategy("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", this.outOrientGraphUri, "hibernate", FilterTableImportingTest.XML_TABLE_PER_CONCRETE_CLASS, "java", includedTables, null, null, context);
 
       /*
        *  Testing context information
@@ -1863,12 +1873,13 @@ public class OFilterTableImportingTestCase {
         e.printStackTrace();
         fail();
       }
-      orientGraph.drop();
-      orientGraph.shutdown();
+      if(orientGraph != null) {
+        if(orientGraph != null) {
+          orientGraph.drop();
+          orientGraph.shutdown();
+        }
+      }
     }
   }
-
-
-
 
 }

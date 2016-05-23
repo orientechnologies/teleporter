@@ -40,7 +40,7 @@ import static org.junit.Assert.fail;
  *
  */
 
-public class ODateTypeTestCase {
+public class DateTypeTest {
 
 
   private OTeleporterContext context;

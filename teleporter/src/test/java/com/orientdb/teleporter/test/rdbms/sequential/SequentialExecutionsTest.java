@@ -48,7 +48,7 @@ import static org.junit.Assert.*;
  *
  */
 
-public class OSequentialExecutionsTestCase {
+public class SequentialExecutionsTest {
 
   private OTeleporterContext context;
   private ODBMSNaiveStrategy naiveImportStrategy;
@@ -189,8 +189,10 @@ public class OSequentialExecutionsTestCase {
         e.printStackTrace();
         fail();
       }
-      orientGraph.drop();
-      orientGraph.shutdown();
+      if(orientGraph != null) {
+        orientGraph.drop();
+        orientGraph.shutdown();
+      }
     }  
   }
 
@@ -317,8 +319,10 @@ public class OSequentialExecutionsTestCase {
         e.printStackTrace();
         fail();
       }
-      orientGraph.drop();
-      orientGraph.shutdown();
+      if(orientGraph != null) {
+        orientGraph.drop();
+        orientGraph.shutdown();
+      }
     }  
   }
 
@@ -450,8 +454,10 @@ public class OSequentialExecutionsTestCase {
         e.printStackTrace();
         fail();
       }
-      orientGraph.drop();
-      orientGraph.shutdown();
+      if(orientGraph != null) {
+        orientGraph.drop();
+        orientGraph.shutdown();
+      }
     }  
   }
 
@@ -629,8 +635,10 @@ public class OSequentialExecutionsTestCase {
         e.printStackTrace();
         fail();
       }
-      orientGraph.drop();
-      orientGraph.shutdown();
+      if(orientGraph != null) {
+        orientGraph.drop();
+        orientGraph.shutdown();
+      }
     }  
 
   }
@@ -789,8 +797,10 @@ public class OSequentialExecutionsTestCase {
         e.printStackTrace();
         fail();
       }
-      orientGraph.drop();
-      orientGraph.shutdown();
+      if(orientGraph != null) {
+        orientGraph.drop();
+        orientGraph.shutdown();
+      }
     } 
   }
 
@@ -948,8 +958,10 @@ public class OSequentialExecutionsTestCase {
         e.printStackTrace();
         fail();
       }
-      orientGraph.drop();
-      orientGraph.shutdown();
+      if(orientGraph != null) {
+        orientGraph.drop();
+        orientGraph.shutdown();
+      }
     }  
 
   }
@@ -1111,8 +1123,10 @@ public class OSequentialExecutionsTestCase {
         e.printStackTrace();
         fail();
       }
-      orientGraph.drop();
-      orientGraph.shutdown();
+      if(orientGraph != null) {
+        orientGraph.drop();
+        orientGraph.shutdown();
+      }
     } 
   }
 
@@ -1279,8 +1293,10 @@ public class OSequentialExecutionsTestCase {
         e.printStackTrace();
         fail();
       }
-      orientGraph.drop();
-      orientGraph.shutdown();
+      if(orientGraph != null) {
+        orientGraph.drop();
+        orientGraph.shutdown();
+      }
     } 
 
   }
@@ -1417,8 +1433,10 @@ public class OSequentialExecutionsTestCase {
         e.printStackTrace();
         fail();
       }
-      orientGraph.drop();
-      orientGraph.shutdown();
+      if(orientGraph != null) {
+        orientGraph.drop();
+        orientGraph.shutdown();
+      }
     } 
   }
 
@@ -1612,8 +1630,10 @@ public class OSequentialExecutionsTestCase {
         e.printStackTrace();
         fail();
       }
-      orientGraph.drop();
-      orientGraph.shutdown();
+      if(orientGraph != null) {
+        orientGraph.drop();
+        orientGraph.shutdown();
+      }
     } 
   }
 
@@ -1752,8 +1772,10 @@ public class OSequentialExecutionsTestCase {
         e.printStackTrace();
         fail();
       }
-      orientGraph.drop();
-      orientGraph.shutdown();
+      if(orientGraph != null) {
+        orientGraph.drop();
+        orientGraph.shutdown();
+      }
     } 
 
   }
@@ -1928,8 +1950,10 @@ public class OSequentialExecutionsTestCase {
         e.printStackTrace();
         fail();
       }
-      orientGraph.drop();
-      orientGraph.shutdown();
+      if(orientGraph != null) {
+        orientGraph.drop();
+        orientGraph.shutdown();
+      }
     } 
   }
 
@@ -2103,8 +2127,10 @@ public class OSequentialExecutionsTestCase {
         e.printStackTrace();
         fail();
       }
-      orientGraph.drop();
-      orientGraph.shutdown();
+      if(orientGraph != null) {
+        orientGraph.drop();
+        orientGraph.shutdown();
+      }
     } 
   }
 

@@ -43,7 +43,7 @@ import static org.junit.Assert.*;
  *
  */
 
-public class OOrientDBImportingTestCase {
+public class OrientDBImportingTest {
 
   private OTeleporterContext context;
   private ODBMSNaiveStrategy importStrategy;
@@ -697,8 +697,10 @@ public class OOrientDBImportingTestCase {
         e.printStackTrace();
         fail();
       }
-      orientGraph.drop();
-      orientGraph.shutdown();
+      if(orientGraph != null) {
+        orientGraph.drop();
+        orientGraph.shutdown();
+      }
     }  
 
   }
