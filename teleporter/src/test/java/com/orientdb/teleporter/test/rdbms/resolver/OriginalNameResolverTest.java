@@ -18,12 +18,11 @@
 
 package com.orientdb.teleporter.test.rdbms.resolver;
 
-import static org.junit.Assert.assertEquals;
-
+import com.orientdb.teleporter.nameresolver.OOriginalConventionNameResolver;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.orientdb.teleporter.nameresolver.OOriginalConventionNameResolver;
+import static org.junit.Assert.assertEquals;
 
 /**
  * @author Gabriele Ponzi
@@ -201,5 +200,4 @@ public class OriginalNameResolverTest {
     assertEquals("TEST_VARIABLE", newCandidateName);
 
   }
-
 }

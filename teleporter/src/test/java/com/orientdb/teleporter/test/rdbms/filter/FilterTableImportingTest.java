@@ -1857,8 +1857,6 @@ public class FilterTableImportingTest {
         fail("Query fail!");
       }
 
-
-
     } catch(Exception e) {
       e.printStackTrace();
       fail();

@@ -171,8 +171,10 @@ public class OrientDBSchemaWritingTest {
         e.printStackTrace();
         fail();
       }
-      orientGraph.drop();
-      orientGraph.shutdown();
+      if(orientGraph != null) {
+        orientGraph.drop();
+        orientGraph.shutdown();
+      }
     }
   }
 

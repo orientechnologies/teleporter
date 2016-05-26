@@ -56,6 +56,7 @@ public class OrientDBSchemaWritingWithConfigTest {
   public void init() {
     this.context = new OTeleporterContext();
     this.context.setOutputManager(new OOutputStreamManager(0));
+    this.context.setNameResolver(new OJavaConventionNameResolver());
     this.context.setQueryQuoteType("\"");
     this.modelWriter = new OGraphModelWriter();
     this.outOrientGraphUri = "memory:testOrientDB";
@@ -103,8 +104,8 @@ public class OrientDBSchemaWritingWithConfigTest {
 
       assertEquals(2, context.getStatistics().totalNumberOfVertexType);
       assertEquals(2, context.getStatistics().wroteVertexType);
-      assertEquals(1, context.getStatistics().totalNumberOfEdgeType);
-      assertEquals(1, context.getStatistics().wroteEdgeType);
+      assertEquals(2, context.getStatistics().totalNumberOfEdgeType);
+      assertEquals(2, context.getStatistics().wroteEdgeType);
       assertEquals(2, context.getStatistics().totalNumberOfIndices);
       assertEquals(2, context.getStatistics().wroteIndexes);
 
@@ -133,62 +134,64 @@ public class OrientDBSchemaWritingWithConfigTest {
       assertNotNull(employeeVertexType.getProperty("firstName"));
       assertEquals("firstName", employeeVertexType.getProperty("firstName").getName());
       assertEquals(OType.STRING, employeeVertexType.getProperty("firstName").getType());
-      assertEquals(false, employeeVertexType.getProperty("empId").isMandatory());
-      assertEquals(false, employeeVertexType.getProperty("empId").isReadonly());
-      assertEquals(false, employeeVertexType.getProperty("empId").isNotNull());
+      assertEquals(false, employeeVertexType.getProperty("firstName").isMandatory());
+      assertEquals(false, employeeVertexType.getProperty("firstName").isReadonly());
+      assertEquals(false, employeeVertexType.getProperty("firstName").isNotNull());
 
       assertNotNull(employeeVertexType.getProperty("lastName"));
       assertEquals("lastName", employeeVertexType.getProperty("lastName").getName());
       assertEquals(OType.STRING, employeeVertexType.getProperty("lastName").getType());
-      assertEquals(false, employeeVertexType.getProperty("empId").isMandatory());
-      assertEquals(false, employeeVertexType.getProperty("empId").isReadonly());
-      assertEquals(false, employeeVertexType.getProperty("empId").isNotNull());
+      assertEquals(false, employeeVertexType.getProperty("lastName").isMandatory());
+      assertEquals(false, employeeVertexType.getProperty("lastName").isReadonly());
+      assertEquals(false, employeeVertexType.getProperty("lastName").isNotNull());
 
       assertNotNull(employeeVertexType.getProperty("project"));
       assertEquals("project", employeeVertexType.getProperty("project").getName());
       assertEquals(OType.STRING, employeeVertexType.getProperty("project").getType());
-      assertEquals(false, employeeVertexType.getProperty("empId").isMandatory());
-      assertEquals(false, employeeVertexType.getProperty("empId").isReadonly());
-      assertEquals(false, employeeVertexType.getProperty("empId").isNotNull());
+      assertEquals(false, employeeVertexType.getProperty("project").isMandatory());
+      assertEquals(false, employeeVertexType.getProperty("project").isReadonly());
+      assertEquals(false, employeeVertexType.getProperty("project").isNotNull());
 
       assertNotNull(projectVertexType.getProperty("id"));
       assertEquals("id", projectVertexType.getProperty("id").getName());
       assertEquals(OType.STRING, projectVertexType.getProperty("id").getType());
-      assertEquals(false, employeeVertexType.getProperty("empId").isMandatory());
-      assertEquals(false, employeeVertexType.getProperty("empId").isReadonly());
-      assertEquals(false, employeeVertexType.getProperty("empId").isNotNull());
+      assertEquals(false, projectVertexType.getProperty("id").isMandatory());
+      assertEquals(false, projectVertexType.getProperty("id").isReadonly());
+      assertEquals(false, projectVertexType.getProperty("id").isNotNull());
 
       assertNotNull(projectVertexType.getProperty("title"));
       assertEquals("title", projectVertexType.getProperty("title").getName());
       assertEquals(OType.STRING, projectVertexType.getProperty("title").getType());
-      assertEquals(false, employeeVertexType.getProperty("empId").isMandatory());
-      assertEquals(false, employeeVertexType.getProperty("empId").isReadonly());
-      assertEquals(false, employeeVertexType.getProperty("empId").isNotNull());
+      assertEquals(false, projectVertexType.getProperty("title").isMandatory());
+      assertEquals(false, projectVertexType.getProperty("title").isReadonly());
+      assertEquals(false, projectVertexType.getProperty("title").isNotNull());
 
       assertNotNull(projectVertexType.getProperty("projectManager"));
       assertEquals("projectManager", projectVertexType.getProperty("projectManager").getName());
       assertEquals(OType.STRING, projectVertexType.getProperty("projectManager").getType());
-      assertEquals(false, employeeVertexType.getProperty("empId").isMandatory());
-      assertEquals(false, employeeVertexType.getProperty("empId").isReadonly());
-      assertEquals(false, employeeVertexType.getProperty("empId").isNotNull());
+      assertEquals(false, projectVertexType.getProperty("projectManager").isMandatory());
+      assertEquals(false, projectVertexType.getProperty("projectManager").isReadonly());
+      assertEquals(false, projectVertexType.getProperty("projectManager").isNotNull());
 
       // edges check
       assertNotNull(worksAtProjectEdgeType);
       assertNotNull(hasManagerEdgeType);
 
       assertEquals("WorksAtProject", worksAtProjectEdgeType.getName());
+      assertEquals(1, worksAtProjectEdgeType.propertiesMap().size());
       assertEquals("updatedOn", worksAtProjectEdgeType.getProperty("updatedOn").getName());
       assertEquals(OType.DATE, worksAtProjectEdgeType.getProperty("updatedOn").getType());
-      assertEquals(true, worksAtProjectEdgeType.getProperty("empId").isMandatory());
-      assertEquals(false, worksAtProjectEdgeType.getProperty("empId").isReadonly());
-      assertEquals(false, worksAtProjectEdgeType.getProperty("empId").isNotNull());
+      assertEquals(true, worksAtProjectEdgeType.getProperty("updatedOn").isMandatory());
+      assertEquals(false, worksAtProjectEdgeType.getProperty("updatedOn").isReadonly());
+      assertEquals(false, worksAtProjectEdgeType.getProperty("updatedOn").isNotNull());
 
-      assertEquals("HasProjectManager", hasManagerEdgeType.getName());
-      assertEquals("updatedOn", worksAtProjectEdgeType.getProperty("updatedOn").getName());
-      assertEquals(OType.DATE, worksAtProjectEdgeType.getProperty("updatedOn").getType());
-      assertEquals(false, worksAtProjectEdgeType.getProperty("empId").isMandatory());
-      assertEquals(false, worksAtProjectEdgeType.getProperty("empId").isReadonly());
-      assertEquals(false, worksAtProjectEdgeType.getProperty("empId").isNotNull());
+      assertEquals("HasManager", hasManagerEdgeType.getName());
+      assertEquals(1, hasManagerEdgeType.propertiesMap().size());
+      assertEquals("updatedOn", hasManagerEdgeType.getProperty("updatedOn").getName());
+      assertEquals(OType.DATE, hasManagerEdgeType.getProperty("updatedOn").getType());
+      assertEquals(false, hasManagerEdgeType.getProperty("updatedOn").isMandatory());
+      assertEquals(false, hasManagerEdgeType.getProperty("updatedOn").isReadonly());
+      assertEquals(false, hasManagerEdgeType.getProperty("updatedOn").isNotNull());
 
       // Indices check
       assertEquals(true, orientGraph.getRawGraph().getMetadata().getIndexManager().existsIndex("Employee.pkey"));
@@ -211,8 +214,10 @@ public class OrientDBSchemaWritingWithConfigTest {
         e.printStackTrace();
         fail();
       }
-      orientGraph.drop();
-      orientGraph.shutdown();
+      if(orientGraph != null) {
+        orientGraph.drop();
+        orientGraph.shutdown();
+      }
     }
 
   }
@@ -271,6 +276,7 @@ public class OrientDBSchemaWritingWithConfigTest {
       this.mapper = new OER2GraphMapper("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", null, null, config);
       mapper.buildSourceSchema(this.context);
       mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
+      modelWriter.writeModelOnOrient(mapper.getGraphModel(), new OHSQLDBDataTypeHandler(), this.outOrientGraphUri, context);
 
 
       /*
@@ -309,55 +315,56 @@ public class OrientDBSchemaWritingWithConfigTest {
       assertNotNull(employeeVertexType.getProperty("firstName"));
       assertEquals("firstName", employeeVertexType.getProperty("firstName").getName());
       assertEquals(OType.STRING, employeeVertexType.getProperty("firstName").getType());
-      assertEquals(false, employeeVertexType.getProperty("empId").isMandatory());
-      assertEquals(false, employeeVertexType.getProperty("empId").isReadonly());
-      assertEquals(false, employeeVertexType.getProperty("empId").isNotNull());
+      assertEquals(false, employeeVertexType.getProperty("firstName").isMandatory());
+      assertEquals(false, employeeVertexType.getProperty("firstName").isReadonly());
+      assertEquals(false, employeeVertexType.getProperty("firstName").isNotNull());
 
       assertNotNull(employeeVertexType.getProperty("lastName"));
       assertEquals("lastName", employeeVertexType.getProperty("lastName").getName());
       assertEquals(OType.STRING, employeeVertexType.getProperty("lastName").getType());
-      assertEquals(false, employeeVertexType.getProperty("empId").isMandatory());
-      assertEquals(false, employeeVertexType.getProperty("empId").isReadonly());
-      assertEquals(false, employeeVertexType.getProperty("empId").isNotNull());
+      assertEquals(false, employeeVertexType.getProperty("lastName").isMandatory());
+      assertEquals(false, employeeVertexType.getProperty("lastName").isReadonly());
+      assertEquals(false, employeeVertexType.getProperty("lastName").isNotNull());
 
       assertNotNull(employeeVertexType.getProperty("project"));
       assertEquals("project", employeeVertexType.getProperty("project").getName());
       assertEquals(OType.STRING, employeeVertexType.getProperty("project").getType());
-      assertEquals(false, employeeVertexType.getProperty("empId").isMandatory());
-      assertEquals(false, employeeVertexType.getProperty("empId").isReadonly());
-      assertEquals(false, employeeVertexType.getProperty("empId").isNotNull());
+      assertEquals(false, employeeVertexType.getProperty("project").isMandatory());
+      assertEquals(false, employeeVertexType.getProperty("project").isReadonly());
+      assertEquals(false, employeeVertexType.getProperty("project").isNotNull());
 
       assertNotNull(projectVertexType.getProperty("id"));
       assertEquals("id", projectVertexType.getProperty("id").getName());
       assertEquals(OType.STRING, projectVertexType.getProperty("id").getType());
-      assertEquals(false, employeeVertexType.getProperty("empId").isMandatory());
-      assertEquals(false, employeeVertexType.getProperty("empId").isReadonly());
-      assertEquals(false, employeeVertexType.getProperty("empId").isNotNull());
+      assertEquals(false, projectVertexType.getProperty("id").isMandatory());
+      assertEquals(false, projectVertexType.getProperty("id").isReadonly());
+      assertEquals(false, projectVertexType.getProperty("id").isNotNull());
 
       assertNotNull(projectVertexType.getProperty("title"));
       assertEquals("title", projectVertexType.getProperty("title").getName());
       assertEquals(OType.STRING, projectVertexType.getProperty("title").getType());
-      assertEquals(false, employeeVertexType.getProperty("empId").isMandatory());
-      assertEquals(false, employeeVertexType.getProperty("empId").isReadonly());
-      assertEquals(false, employeeVertexType.getProperty("empId").isNotNull());
+      assertEquals(false, projectVertexType.getProperty("title").isMandatory());
+      assertEquals(false, projectVertexType.getProperty("title").isReadonly());
+      assertEquals(false, projectVertexType.getProperty("title").isNotNull());
 
       assertNotNull(projectVertexType.getProperty("projectManager"));
       assertEquals("projectManager", projectVertexType.getProperty("projectManager").getName());
       assertEquals(OType.STRING, projectVertexType.getProperty("projectManager").getType());
-      assertEquals(false, employeeVertexType.getProperty("empId").isMandatory());
-      assertEquals(false, employeeVertexType.getProperty("empId").isReadonly());
-      assertEquals(false, employeeVertexType.getProperty("empId").isNotNull());
+      assertEquals(false, projectVertexType.getProperty("projectManager").isMandatory());
+      assertEquals(false, projectVertexType.getProperty("projectManager").isReadonly());
+      assertEquals(false, projectVertexType.getProperty("projectManager").isNotNull());
 
       // edges check
       assertNotNull(hasEmployeeEdgeType);
       assertNotNull(hasProjectManagerEdgeType);
 
       assertEquals("HasEmployee", hasEmployeeEdgeType.getName());
+      assertEquals(1, hasEmployeeEdgeType.propertiesMap().size());
       assertEquals("updatedOn", hasEmployeeEdgeType.getProperty("updatedOn").getName());
       assertEquals(OType.DATE, hasEmployeeEdgeType.getProperty("updatedOn").getType());
-      assertEquals(true, hasEmployeeEdgeType.getProperty("empId").isMandatory());
-      assertEquals(false, hasEmployeeEdgeType.getProperty("empId").isReadonly());
-      assertEquals(false, hasEmployeeEdgeType.getProperty("empId").isNotNull());
+      assertEquals(true, hasEmployeeEdgeType.getProperty("updatedOn").isMandatory());
+      assertEquals(false, hasEmployeeEdgeType.getProperty("updatedOn").isReadonly());
+      assertEquals(false, hasEmployeeEdgeType.getProperty("updatedOn").isNotNull());
 
       assertEquals("HasProjectManager", hasProjectManagerEdgeType.getName());
       assertEquals(0, hasProjectManagerEdgeType.propertiesMap().size());
@@ -383,8 +390,10 @@ public class OrientDBSchemaWritingWithConfigTest {
         e.printStackTrace();
         fail();
       }
-      orientGraph.drop();
-      orientGraph.shutdown();
+      if(orientGraph != null) {
+        orientGraph.drop();
+        orientGraph.shutdown();
+      }
     }
 
   }

@@ -113,8 +113,10 @@ public class DateTypeTest {
         e.printStackTrace();
         fail();
       }
-      orientGraph.drop();
-      orientGraph.shutdown();
+      if(orientGraph != null) {
+        orientGraph.drop();
+        orientGraph.shutdown();
+      }
     }  
   }
 
@@ -176,8 +178,10 @@ public class DateTypeTest {
         fail();
       }
     }
-    orientGraph.drop();
-    orientGraph.shutdown();
+    if(orientGraph != null) {
+      orientGraph.drop();
+      orientGraph.shutdown();
+    }
   }
 
   /*
@@ -238,8 +242,10 @@ public class DateTypeTest {
         fail();
       }
     }
-    orientGraph.drop();
-    orientGraph.shutdown();
+    if(orientGraph != null) {
+      orientGraph.drop();
+      orientGraph.shutdown();
+    }
   }
 
 
@@ -301,8 +307,10 @@ public class DateTypeTest {
         fail();
       }
     }
-    orientGraph.drop();
-    orientGraph.shutdown();
+    if(orientGraph != null) {
+      orientGraph.drop();
+      orientGraph.shutdown();
+    }
   }
 
 
@@ -364,8 +372,10 @@ public class DateTypeTest {
         fail();
       }
     }
-    orientGraph.drop();
-    orientGraph.shutdown();
+    if(orientGraph != null) {
+      orientGraph.drop();
+      orientGraph.shutdown();
+    }
   }
 
   /*
@@ -426,8 +436,10 @@ public class DateTypeTest {
         fail();
       }
     }
-    orientGraph.drop();
-    orientGraph.shutdown();
+    if(orientGraph != null) {
+      orientGraph.drop();
+      orientGraph.shutdown();
+    }
   }
 
 }

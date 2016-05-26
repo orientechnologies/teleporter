@@ -97,6 +97,8 @@ public class OStrategyFactory {
 
         default :  context.getOutputManager().error("The typed strategy doesn't exist for migration from the chosen RDBMS.\n");
         }
+
+        context.setExecutionStrategy(chosenStrategy);
       }
     }
 

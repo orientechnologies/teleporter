@@ -49,9 +49,12 @@ public class OEntity implements Comparable<OEntity> {
   private Set<ORelationship> inheritedInRelationships;
   private boolean inheritedInRelationshipsRecovered;
   private Boolean isAggregable;
+  private String directionOfN2NRepresentedRelationship;  // when the entity corresponds to an aggregable join table it's 'direct' by default (at the first invocation of 'isAggregableJoinTable()')
+  private String nameOfN2NRepresentedRelationship;      // we can have this parameter only in a join table and with the manual configuration of its represented relationship
   private OEntity parentEntity;
   private int inheritanceLevel;
   private OHierarchicalBag hierarchicalBag;
+
 
   public OEntity(String name, String schemaName) {
     this.name = name;
@@ -91,6 +94,12 @@ public class OEntity implements Comparable<OEntity> {
       else {
         boolean aggregable = isJunctionTable();
         this.isAggregable = aggregable;
+
+        // if the entity is an aggregable join table then the direction of the N-N represented relationship is set to 'direct' by default.
+        if(this.isAggregable && this.directionOfN2NRepresentedRelationship == null) {
+          this.directionOfN2NRepresentedRelationship = "direct";
+        }
+
         return this.isAggregable;
       }
     }
@@ -118,6 +127,22 @@ public class OEntity implements Comparable<OEntity> {
     return isJunctionTable;
   }
 
+  public String getDirectionOfN2NRepresentedRelationship() {
+    return this.directionOfN2NRepresentedRelationship;
+  }
+
+  public void setDirectionOfN2NRepresentedRelationship(String directionOfN2NRepresentedRelationship) {
+    this.directionOfN2NRepresentedRelationship = directionOfN2NRepresentedRelationship;
+  }
+
+  public String getNameOfN2NRepresentedRelationship() {
+    return this.nameOfN2NRepresentedRelationship;
+  }
+
+  public void setNameOfN2NRepresentedRelationship(String nameOfN2NRepresentedRelationship) {
+    this.nameOfN2NRepresentedRelationship = nameOfN2NRepresentedRelationship;
+  }
+
   public String getName() {
     return this.name;
   }
@@ -129,7 +154,6 @@ public class OEntity implements Comparable<OEntity> {
   public String getSchemaName() {
     return this.schemaName;
   }
-
 
   public void setSchemaName(String schemaName) {
     this.schemaName = schemaName;

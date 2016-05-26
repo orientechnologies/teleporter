@@ -54,7 +54,9 @@ public class OER2GraphMapper extends OSource2GraphMapper {
 
   // Rules
   protected Map<OEntity,OVertexType> entity2vertexType;
+  protected Map<OVertexType,OEntity> vertexType2entity;
   protected Map<ORelationship,OEdgeType> relationship2edgeType;
+  protected Map<OEdgeType, ORelationship> edgeType2relationship;
   protected Map<String,Integer> edgeTypeName2count;
   protected Map<String,OAggregatorEdge> joinVertex2aggregatorEdges;
 
@@ -69,7 +71,9 @@ public class OER2GraphMapper extends OSource2GraphMapper {
   public OER2GraphMapper (String driver, String uri, String username, String password, List<String> includedTables, List<String> excludedTables, ODocument configuration) {
     this.dbSourceConnection = new ODBSourceConnection(driver, uri, username, password);
     this.entity2vertexType = new LinkedHashMap<OEntity,OVertexType>();
+    this.vertexType2entity = new LinkedHashMap<OVertexType,OEntity>();
     this.relationship2edgeType = new LinkedHashMap<ORelationship,OEdgeType>();
+    this.edgeType2relationship = new LinkedHashMap<OEdgeType,ORelationship>();
     this.edgeTypeName2count = new TreeMap<String,Integer>();
     this.joinVertex2aggregatorEdges = new LinkedHashMap<String, OAggregatorEdge>();
 
@@ -89,6 +93,16 @@ public class OER2GraphMapper extends OSource2GraphMapper {
     this.dataBaseSchema = new ODataBaseSchema();
     this.graphModel = new OGraphModel();
 
+  }
+
+  public void updateEntityVertexRules(OVertexType currentVertexType, OEntity currentEntity) {
+    this.entity2vertexType.put(currentEntity, currentVertexType);
+    this.vertexType2entity.put(currentVertexType, currentEntity);
+  }
+
+  public void updateRelationshipEdgeRules(ORelationship currentRelationship, OEdgeType currentEdgeType) {
+    this.relationship2edgeType.put(currentRelationship, currentEdgeType);
+    this.edgeType2relationship.put(currentEdgeType, currentRelationship);
   }
 
   /**
@@ -342,7 +356,7 @@ public class OER2GraphMapper extends OSource2GraphMapper {
 
       }
 
-      // Adding relationships in the manual configuration
+      // Adding/updating relationships in the manual configuration
       if(this.configuration != null) {
         this.upsertRelationshipsFromConfiguration(context);
       }
@@ -426,177 +440,285 @@ public class OER2GraphMapper extends OSource2GraphMapper {
 
     String currentForeignEntityName = null;
     String currentParentEntityName = null;
-    List<String> fromColumns;
-    List<String> toColumns;
 
-    OVertexType currentInVertexType;
-    OVertexType currentOutVertexType;
-    OEdgeType currentEdgeType = null;
+    // building the current-in-vertex and the current-out-vertex and adding the edge to them
+    ONameResolver nameResolver = context.getNameResolver();
 
     for(ODocument currentEdge: edgesDoc) {
 
-      String[] currentEdgeFiels = currentEdge.fieldNames();
-      if(currentEdgeFiels.length != 1) {
+      String[] currentEdgeFields = currentEdge.fieldNames();
+      if(currentEdgeFields.length != 1) {
 
       }
-      String edgeName = currentEdgeFiels[0];
+      String edgeName = currentEdgeFields[0];
       ODocument currentEdgeInfo = currentEdge.field(edgeName);
       ODocument mappingDoc = currentEdgeInfo.field("mapping");
 
       // building relationship
       if(mappingDoc != null) {
+
         currentForeignEntityName = mappingDoc.field("fromTable");
         currentParentEntityName = mappingDoc.field("toTable");
-        fromColumns = mappingDoc.field("fromColumns");
-        toColumns = mappingDoc.field("toColumns");
+        List<String> fromColumns = mappingDoc.field("fromColumns");
+        List<String> toColumns = mappingDoc.field("toColumns");
+        ODocument joinTableDoc = mappingDoc.field("joinTable");
         String direction = mappingDoc.field("direction");
 
-        // fetching foreign entity
-        currentForeignEntity = this.dataBaseSchema.getEntityByName(currentForeignEntityName);
-
-        // fetch relationship from current db schema, if not present create a new one
-        boolean relationshipAlreadyPresentInDBSchema = true;
-        currentRelationship = this.dataBaseSchema.getRelationshipByInvolvedEntitiesAndAttributes(currentForeignEntityName, currentParentEntityName, fromColumns, toColumns);
-        if(currentRelationship == null) {
-          currentRelationship = new ORelationship(currentForeignEntityName, currentParentEntityName);
-          relationshipAlreadyPresentInDBSchema = false;
-          // updating statistics
-          statistics.detectedRelationships += 1;
-        }
-        currentFk = new OForeignKey(currentForeignEntity);
-
-        // adding attributes involved in the foreign key
-        for(String column: fromColumns) {
-          currentFk.addAttribute(currentForeignEntity.getAttributeByName(column));
+        if(direction != null && !(direction.equals("direct") || direction.equals("inverse"))) {
+          context.getOutputManager().error("Configuration error: direction for the edge %s cannot be '%s'. Allowed values: 'direct' or 'inverse'", edgeName, direction);
         }
 
-        // searching correspondent primary key
-        currentPk = this.dataBaseSchema.getEntityByName(currentParentEntityName).getPrimaryKey();
+        boolean foreignEntityIsJoinTableToAggregate = false;
 
-        // adding the direction of the relationship if different from null
-        if(direction != null) {
-          if((direction.equals("direct") || direction.equals("inverse"))) {
-            currentRelationship.setDirection(direction);
+        if(joinTableDoc == null) {
+
+          // building relationship
+          currentRelationship = buildRelationshipFrom(currentForeignEntityName, currentParentEntityName, fromColumns, toColumns, direction, context);
+
+          // building correspondent edgeType (check on inheritance not needed)
+          buildEdgeTypeFromRelationship(currentRelationship, currentForeignEntityName, currentParentEntityName, edgeName, currentEdgeInfo, foreignEntityIsJoinTableToAggregate, context);
+
+        }
+        else {
+
+          String joinTableName = joinTableDoc.field("tableName");
+          foreignEntityIsJoinTableToAggregate = true;
+
+          if(context.getExecutionStrategy().equals("naive-aggregate")) { // strategy is aggregated
+            List<String> joinTableFromColumns = joinTableDoc.field("fromColumns");
+            List<String> joinTableToColumns = joinTableDoc.field("toColumns");
+
+            // building left relationship
+            currentRelationship = buildRelationshipFrom(joinTableName, currentForeignEntityName, joinTableFromColumns, fromColumns, direction, context);
+
+            // building correspondent edgeType (check on inheritance not needed)
+            buildEdgeTypeFromRelationship(currentRelationship, joinTableName, currentForeignEntityName, edgeName + "-left", currentEdgeInfo, foreignEntityIsJoinTableToAggregate, context);
+
+            // building right relationship
+            currentRelationship = buildRelationshipFrom(joinTableName, currentParentEntityName, joinTableToColumns, toColumns, direction, context);
+            // building correspondent edgeType (check on inheritance not needed)
+            buildEdgeTypeFromRelationship(currentRelationship, joinTableName, currentParentEntityName, edgeName + "-right", currentEdgeInfo, foreignEntityIsJoinTableToAggregate, context);
+
+            OEntity joinTable = this.dataBaseSchema.getEntityByName(joinTableName);
+            joinTable.setDirectionOfN2NRepresentedRelationship(direction);
+            joinTable.setNameOfN2NRepresentedRelationship(edgeName);
+
           }
-          else {
-            context.getOutputManager().error("Wrong value for the direction of the relationship between %s and %s: \"%s\" is not a valid direction. "
-                + "Please choose between \"direct\" or \"inverse\"", currentRelationship.getForeignEntityName(), currentRelationship.getParentEntityName(), direction);
+          else if(context.getExecutionStrategy().equals("naive")) {
+            context.getOutputManager().warn("Configuration not compliant with the chosen strategy: you cannot perform the aggregation declared in the configuration for the "
+                + "join table %s while executing migration with a not-aggregating strategy. Thus no aggregation will be performed.", joinTableName);
           }
-        }
 
-        // adding foreign key to the entity and the relationship, the foreign key to the 'foreign entity' and the relationship to the db schema
-        currentRelationship.setPrimaryKey(currentPk);
-        currentRelationship.setForeignKey(currentFk);
-        if(!relationshipAlreadyPresentInDBSchema) {
-          currentForeignEntity.getForeignKeys().add(currentFk);
-          this.dataBaseSchema.getRelationships().add(currentRelationship);
         }
+      }
+    }
 
-        // adding relationship to the current entity
-        currentForeignEntity.getOutRelationships().add(currentRelationship);
+  }
+
+
+  private ORelationship buildRelationshipFrom(String currentForeignEntityName, String currentParentEntityName, List<String> fromColumns,
+      List<String> toColumns, String direction, OTeleporterContext context) {
+
+    OTeleporterStatistics statistics = context.getStatistics();
+    OEntity currentForeignEntity;
+    ORelationship currentRelationship;
+    OForeignKey currentFk;
+    OPrimaryKey currentPk;// fetching foreign entity
+    currentForeignEntity = this.dataBaseSchema.getEntityByName(currentForeignEntityName);
+
+    // fetch relationship from current db schema, if not present create a new one
+    boolean relationshipAlreadyPresentInDBSchema = true;
+    currentRelationship = this.dataBaseSchema
+        .getRelationshipByInvolvedEntitiesAndAttributes(currentForeignEntityName, currentParentEntityName, fromColumns,
+            toColumns);
+    if (currentRelationship == null) {
+      currentRelationship = new ORelationship(currentForeignEntityName, currentParentEntityName);
+      relationshipAlreadyPresentInDBSchema = false;
+      // updating statistics
+      statistics.detectedRelationships += 1;
+    }
+    currentFk = new OForeignKey(currentForeignEntity);
+
+    // adding attributes involved in the foreign key
+    for (String column : fromColumns) {
+      currentFk.addAttribute(currentForeignEntity.getAttributeByName(column));
+    }
+
+    // searching correspondent primary key
+    currentPk = this.dataBaseSchema.getEntityByName(currentParentEntityName).getPrimaryKey();
+
+    // adding the direction of the relationship if different from null
+    if (direction != null) {
+      if ((direction.equals("direct") || direction.equals("inverse"))) {
+        currentRelationship.setDirection(direction);
+      } else {
+        context.getOutputManager().error(
+            "Wrong value for the direction of the relationship between %s and %s: \"%s\" is not a valid direction. " + "Please choose between \"direct\" or \"inverse\"", currentRelationship.getForeignEntityName(),
+            currentRelationship.getParentEntityName(), direction);
+      }
+    }
+
+    // adding foreign key to the entity and the relationship, the foreign key to the 'foreign entity' and the relationship to the db schema
+    currentRelationship.setPrimaryKey(currentPk);
+    currentRelationship.setForeignKey(currentFk);
+    if (!relationshipAlreadyPresentInDBSchema) {
+      currentForeignEntity.getForeignKeys().add(currentFk);
+      this.dataBaseSchema.getRelationships().add(currentRelationship);
+    }
+
+    // adding relationship to the current entity
+    currentForeignEntity.getOutRelationships().add(currentRelationship);
+    return currentRelationship;
+  }
+
+  private void buildEdgeTypeFromRelationship(ORelationship currentRelationship, String currentForeignEntityName, String currentParentEntityName,
+      String edgeName, ODocument currentEdgeInfo, boolean foreignEntityIsJoinTableToAggregate, OTeleporterContext context) {
+
+    OTeleporterStatistics statistics = context.getStatistics();
+    ONameResolver nameResolver = context.getNameResolver();
+
+    // retrieving edge type, if not present is created from scratch
+    OEdgeType currentEdgeType = this.graphModel.getEdgeTypeByName(edgeName);
+    if(currentEdgeType == null) {
+      currentEdgeType = new OEdgeType(edgeName, null, null);
+      this.graphModel.getEdgesType().add(currentEdgeType);
+      context.getOutputManager().debug("\nEdge-type %s built.\n", currentEdgeType.getName());
+      statistics.builtModelEdgeTypes++;
+    }
+    else {
+      // edge already present, the counter of relationships represented by the edge is incremented
+      currentEdgeType.setNumberRelationshipsRepresented(currentEdgeType.getNumberRelationshipsRepresented() +1);
+    }
+
+    // extracting properties info if present and adding them to the current edge-type
+    List<OModelProperty> properties = new LinkedList<OModelProperty>();
+    ODocument edgePropsDoc = currentEdgeInfo.field("properties");
+    // adding properties to the edge
+    if(edgePropsDoc != null) {
+      String[] propertiesFields = edgePropsDoc.fieldNames();
+
+      int ordinalPosition = currentEdgeType.getProperties().size() + 1;
+      for(String propertyName: propertiesFields) {
+        ODocument currentEdgePropertyDoc = edgePropsDoc.field(propertyName);
+        String propertyType = currentEdgePropertyDoc.field("type");
+        if(propertyType == null) {
+          context.getStatistics().warningMessages.add("The property " + propertyName + " will not added to the Edge-Type " + currentEdgeType.getName() + " because the type is badly defined or not defined at all.");
+          continue;
+        }
+        OModelProperty currentProperty = currentEdgeType.getPropertyByName(propertyName);
+        if(currentProperty == null) {
+          currentProperty = new OModelProperty(propertyName, ordinalPosition, propertyType, false);
+          ordinalPosition++;
+        }
+        currentProperty.setFromPrimaryKey(false);
+        Boolean mandatory = currentEdgePropertyDoc.field("mandatory");
+        if(mandatory != null) {
+          currentProperty.setMandatory(mandatory);
+        }
+        Boolean readOnly = currentEdgePropertyDoc.field("readOnly");
+        if(readOnly != null) {
+          currentProperty.setReadOnly(readOnly);
+        }
+        Boolean notNull = currentEdgePropertyDoc.field("notNull");
+        if(notNull != null) {
+          currentProperty.setNotNull(notNull);
+        }
+        currentEdgeType.getProperties().add(currentProperty);
       }
 
-          /*
-           * building correspondent edgeType (check on inheritance not needed)
-           */
+    }
 
-      // retrieving edge type, if not present is created from scratch
-      currentEdgeType = this.graphModel.getEdgeTypeByName(edgeName);
-      if(currentEdgeType == null) {
-        currentEdgeType = new OEdgeType(edgeName, null, null);
-        this.graphModel.getEdgesType().add(currentEdgeType);
-        context.getOutputManager().debug("\nEdge-type %s built.\n", currentEdgeType.getName());
-        statistics.builtModelEdgeTypes++;
+    String currentRelationshipDirection = currentRelationship.getDirection();
+    OVertexType currentInVertexType;
+    OVertexType currentOutVertexType;
+
+    /**
+     *  Direction of the edge is decided according to three conditions:
+     *  - direction != null or direction == null
+     *  - current foreign entity is a join table or not
+     *  - direction is direct or inverse
+     */
+
+    // if direction is null the edge will be direct by default
+    if(currentRelationshipDirection == null) {
+      currentInVertexType = this.loadOrCreateVertexType(nameResolver.resolveVertexName(currentParentEntityName));
+      currentOutVertexType = this.loadOrCreateVertexType(nameResolver.resolveVertexName(currentForeignEntityName));
+    }
+    else {
+
+      // if the current foreign entity is a join table we will aggregate then the edge will be direct
+      if(foreignEntityIsJoinTableToAggregate) {
+        currentInVertexType = this.loadOrCreateVertexType(nameResolver.resolveVertexName(currentParentEntityName));
+        currentOutVertexType = this.loadOrCreateVertexType(nameResolver.resolveVertexName(currentForeignEntityName));
       }
       else {
-        // edge already present, the counter of relationships represented by the edge is incremented
-        currentEdgeType.setNumberRelationshipsRepresented(currentEdgeType.getNumberRelationshipsRepresented() +1);
-      }
 
-      // extracting properties info if present and adding them to the current edge-type
-      List<OModelProperty> properties = new LinkedList<OModelProperty>();
-      ODocument edgePropsDoc = currentEdgeInfo.field("properties");
-      // adding properties to the edge
-      if(edgePropsDoc != null) {
-        String[] propertiesFields = edgePropsDoc.fieldNames();
-
-        int ordinalPosition = currentEdgeType.getProperties().size() + 1;
-        for(String propertyName: propertiesFields) {
-          ODocument currentEdgePropertyDoc = edgePropsDoc.field(propertyName);
-          String propertyType = currentEdgePropertyDoc.field("type");
-          if(propertyType == null) {
-            context.getStatistics().warningMessages.add("The property " + propertyName + " will not added to the Edge-Type " + currentEdgeType.getName() + " because the type is badly defined or not defined at all.");
-            continue;
-          }
-          OModelProperty currentProperty = currentEdgeType.getPropertyByName(propertyName);
-          if(currentProperty == null) {
-            currentProperty = new OModelProperty(propertyName, ordinalPosition, propertyType, false);
-            ordinalPosition++;
-          }
-          currentProperty.setFromPrimaryKey(false);
-          Boolean mandatory = currentEdgePropertyDoc.field("mandatory");
-          if(mandatory != null) {
-            currentProperty.setMandatory(mandatory);
-          }
-          Boolean readOnly = currentEdgePropertyDoc.field("readOnly");
-          if(readOnly != null) {
-            currentProperty.setReadOnly(readOnly);
-          }
-          Boolean notNull = currentEdgePropertyDoc.field("notNull");
-          if(notNull != null) {
-            currentProperty.setNotNull(notNull);
-          }
-          currentEdgeType.getProperties().add(currentProperty);
+        // edge direction chosen according to the value of the parameter direction
+        if(currentRelationshipDirection.equals("direct")) {
+          currentInVertexType = this.loadOrCreateVertexType(nameResolver.resolveVertexName(currentParentEntityName));
+          currentOutVertexType = this.loadOrCreateVertexType(nameResolver.resolveVertexName(currentForeignEntityName));
+        }
+        else {
+          currentInVertexType = this.loadOrCreateVertexType(nameResolver.resolveVertexName(currentForeignEntityName));
+          currentOutVertexType = this.loadOrCreateVertexType(nameResolver.resolveVertexName(currentParentEntityName));
         }
 
       }
 
-
-      // building the current-in-vertex and the current-out-vertex and adding the edge to them
-      ONameResolver nameResolver = context.getNameResolver();
-
-      if(currentRelationship.getDirection() != null && currentRelationship.getDirection().equals("inverse")) {
-        currentInVertexType = this.graphModel.getVertexByName(nameResolver.resolveVertexName(currentForeignEntityName));
-      }
-      else {
-        currentInVertexType = this.graphModel.getVertexByName(nameResolver.resolveVertexName(currentParentEntityName));
-      }
-
-      if(currentInVertexType == null) {
-        if(currentRelationship.getDirection() != null && currentRelationship.getDirection().equals("inverse"))
-          currentInVertexType = new OVertexType(nameResolver.resolveVertexName(currentForeignEntityName));
-        else
-          currentInVertexType = new OVertexType(nameResolver.resolveVertexName(currentParentEntityName));
-
-        this.graphModel.getVerticesType().add(currentInVertexType);
-      }
-
-      if(currentRelationship.getDirection() != null && currentRelationship.getDirection().equals("inverse")) {
-        currentOutVertexType = this.graphModel.getVertexByName(nameResolver.resolveVertexName(currentParentEntityName));
-      }
-      else {
-        currentOutVertexType = this.graphModel.getVertexByName(nameResolver.resolveVertexName(currentForeignEntityName));
-      }
-
-      if(currentOutVertexType == null) {
-        if(currentRelationship.getDirection() != null && currentRelationship.getDirection().equals("inverse"))
-          currentOutVertexType = new OVertexType(nameResolver.resolveVertexName(currentParentEntityName));
-        else
-          currentOutVertexType = new OVertexType(nameResolver.resolveVertexName(currentForeignEntityName));
-
-        this.graphModel.getVerticesType().add(currentOutVertexType);
-      }
-      currentInVertexType.getInEdgesType().add(currentEdgeType);
-      currentOutVertexType.getOutEdgesType().add(currentEdgeType);
-      currentEdgeType.setInVertexType(currentInVertexType);
-
-      // rules updating
-      this.relationship2edgeType.put(currentRelationship, currentEdgeType);
 
     }
 
 
 
+//    if(currentRelationshipDirection != null && currentRelationshipDirection.equals("inverse")) {
+//      currentInVertexType = this.graphModel.getVertexByName(nameResolver.resolveVertexName(currentForeignEntityName));
+//      if(currentInVertexType == null) {
+//        currentInVertexType = new OVertexType(nameResolver.resolveVertexName(currentForeignEntityName));
+//        this.graphModel.getVerticesType().add(currentInVertexType);
+//      }
+//    }
+//    else {
+//      currentInVertexType = this.graphModel.getVertexByName(nameResolver.resolveVertexName(currentParentEntityName));
+//      if(currentInVertexType == null) {
+//        currentInVertexType = new OVertexType(nameResolver.resolveVertexName(currentParentEntityName));
+//        this.graphModel.getVerticesType().add(currentInVertexType);
+//      }
+//    }
+//
+//
+//    if(currentRelationshipDirection != null && currentRelationshipDirection.equals("inverse")) {
+//      currentOutVertexType = this.graphModel.getVertexByName(nameResolver.resolveVertexName(currentParentEntityName));
+//      if(currentOutVertexType == null) {
+//        currentOutVertexType = new OVertexType(nameResolver.resolveVertexName(currentParentEntityName));
+//        this.graphModel.getVerticesType().add(currentOutVertexType);
+//      }
+//    }
+//    else {
+//      currentOutVertexType = this.graphModel.getVertexByName(nameResolver.resolveVertexName(currentForeignEntityName));
+//      if(currentOutVertexType == null) {
+//        currentOutVertexType = new OVertexType(nameResolver.resolveVertexName(currentForeignEntityName));
+//        this.graphModel.getVerticesType().add(currentOutVertexType);
+//      }
+//    }
+
+    currentInVertexType.getInEdgesType().add(currentEdgeType);
+    currentOutVertexType.getOutEdgesType().add(currentEdgeType);
+    currentEdgeType.setInVertexType(currentInVertexType);
+
+    // rules updating
+    updateRelationshipEdgeRules(currentRelationship, currentEdgeType);
+  }
+
+  // It loads the vertex type by name. If it is not present it will be created and added to the graph model.
+  private OVertexType loadOrCreateVertexType(String vertexTypeName) {
+
+    OVertexType vertexType = this.graphModel.getVertexByName(vertexTypeName);
+    if(vertexType == null) {
+      vertexType = new OVertexType(vertexTypeName);
+      this.graphModel.getVerticesType().add(vertexType);
+    }
+
+    return vertexType;
   }
 
   private List<String> getPrimaryKeysFromResulset(ResultSet resultPrimaryKeys) throws SQLException {
@@ -737,7 +859,7 @@ public class OER2GraphMapper extends OSource2GraphMapper {
       }
 
       // rules updating
-      this.entity2vertexType.put(currentEntity, currentVertexType);
+      this.updateEntityVertexRules(currentVertexType, currentEntity);
 
       iteration++;
       context.getOutputManager().debug("\nVertex-type %s built.\n", currentVertexTypeName);
@@ -771,44 +893,47 @@ public class OER2GraphMapper extends OSource2GraphMapper {
           currentInVertex = this.graphModel.getVertexByName(nameResolver.resolveVertexName(relationship.getParentEntityName()));
           context.getOutputManager().debug("\nBuilding edge-type from '%s' to '%s' (%s/%s)...\n", currentOutVertex.getName(), currentInVertex.getName(), iteration, numberOfEdgeType);
 
-          if(currentOutVertex != null && currentInVertex != null && !this.relationship2edgeType.containsKey(relationship)) {   // check on the presence of the relationship in the map performed in order to avoid generating several edgeTypes for the same relationship.
+          if(currentOutVertex != null && currentInVertex != null) {
+
+            // check on the presence of the relationship in the map performed in order to avoid generating several edgeTypes for the same relationship.
             // when the edge was built before from the configuration and the relationship was inserted with that edgeType in the map, the relationships
             // mustn't be analyzed at this point! CHANGE IT when you'll implement the pipeline
+            if(!this.relationship2edgeType.containsKey(relationship)) {
 
-            // relationships which represents inheritance between different entities don't generate new edge-types,
-            // thus new edge type is created iff the parent-table's name (of the relationship) does not coincide
-            // with the name of the parent entity of the current entity.
-            if(currentEntity.getParentEntity() == null || !currentEntity.getParentEntity().getName().equals(relationship.getParentEntityName())) {
+              // relationships which represents inheritance between different entities don't generate new edge-types,
+              // thus new edge type is created iff the parent-table's name (of the relationship) does not coincide
+              // with the name of the parent entity of the current entity.
+              if (currentEntity.getParentEntity() == null || !currentEntity.getParentEntity().getName().equals(relationship.getParentEntityName())) {
 
-              // if the class edge doesn't exists, it will be created
-              edgeType = nameResolver.resolveEdgeName(relationship);
+                // if the class edge doesn't exists, it will be created
+                edgeType = nameResolver.resolveEdgeName(relationship);
 
-              currentEdgeType = this.graphModel.getEdgeTypeByName(edgeType);
-              if(currentEdgeType == null) {
-                currentEdgeType = new OEdgeType(edgeType, null, currentInVertex);
-                this.graphModel.getEdgesType().add(currentEdgeType);
-                context.getOutputManager().debug("\nEdge-type %s built.\n", currentEdgeType.getName());
-                statistics.builtModelEdgeTypes++;
+                currentEdgeType = this.graphModel.getEdgeTypeByName(edgeType);
+                if (currentEdgeType == null) {
+                  currentEdgeType = new OEdgeType(edgeType, null, currentInVertex);
+                  this.graphModel.getEdgesType().add(currentEdgeType);
+                  context.getOutputManager().debug("\nEdge-type %s built.\n", currentEdgeType.getName());
+                  statistics.builtModelEdgeTypes++;
+                } else {
+                  // edge already present, the counter of relationships represented by the edge is incremented
+                  currentEdgeType.setNumberRelationshipsRepresented(currentEdgeType.getNumberRelationshipsRepresented() + 1);
+                }
+
+                // adding the edge to the two vertices
+                if (!currentOutVertex.getOutEdgesType().contains(currentEdgeType)) {
+                  currentOutVertex.getOutEdgesType().add(currentEdgeType);
+                }
+                if (!currentInVertex.getInEdgesType().contains(currentEdgeType)) {
+                  currentInVertex.getInEdgesType().add(currentEdgeType);
+                }
+
+                // rules updating
+                this.updateRelationshipEdgeRules(relationship, currentEdgeType);
               }
-              else {
-                // edge already present, the counter of relationships represented by the edge is incremented
-                currentEdgeType.setNumberRelationshipsRepresented(currentEdgeType.getNumberRelationshipsRepresented() +1);
-              }
-
-              // adding the edge to the two vertices
-              if(!currentOutVertex.getOutEdgesType().contains(currentEdgeType)) {
-                currentOutVertex.getOutEdgesType().add(currentEdgeType);
-              }
-              if(!currentInVertex.getInEdgesType().contains(currentEdgeType)) {
-                currentInVertex.getInEdgesType().add(currentEdgeType);
-              }
-
-              // rules updating
-              this.relationship2edgeType.put(relationship, currentEdgeType);
             }
           }
           else {
-            context.getOutputManager().error("Error during graph model building phase: informations loss, relationship missed. Edge-type not built.\n");
+            context.getOutputManager().error("Error during graph model building phase: information loss, relationship missed. Edge-type not built.\n");
           }
 
           iteration++;
@@ -830,7 +955,7 @@ public class OER2GraphMapper extends OSource2GraphMapper {
             context.getOutputManager().debug("\nEdge-type built.\n");
           }
           else {
-            context.getOutputManager().error("Error during graph model building phase: informations loss, relationship missed. Edge-type not built.\n");
+            context.getOutputManager().error("Error during graph model building phase: information loss, relationship missed. Edge-type not built.\n");
           }
         }
       }
@@ -840,55 +965,93 @@ public class OER2GraphMapper extends OSource2GraphMapper {
     statistics.runningStepNumber = -1;
   }
 
-
   public void JoinTableDim2Aggregation(OTeleporterContext context) {
 
-    OEdgeType newAggregatorEdge;
-    OEdgeType currentOutEdge1;
-    OEdgeType currentOutEdge2;
-    OVertexType outVertexType;
-    OVertexType inVertexType;
-    String edgeType;
-
     OTeleporterStatistics statistics = context.getStatistics();
-    Iterator<OVertexType> iter = this.graphModel.getVerticesType().iterator();
-    OVertexType currentVertex;
+    Iterator<OVertexType> it = this.graphModel.getVerticesType().iterator();
 
     context.getOutputManager().debug("\n\nJoin Table aggregation phase...\n");
 
-    while(iter.hasNext()) {
-      currentVertex = iter.next();
+    while(it.hasNext()) {
+      OVertexType currentVertexType = it.next();
 
       // if vertex is obtained from a join table of dimension 2,
       // then aggregation is performed
-      if(currentVertex.isFromJoinTable() && currentVertex.getOutEdgesType().size() == 2) {
+      if(currentVertexType.isFromJoinTable() && currentVertexType.getOutEdgesType().size() == 2) {
         statistics.totalNumberOfModelVertices--;
 
         // building new edge
-        currentOutEdge1 = currentVertex.getOutEdgesType().get(0);
-        outVertexType = currentOutEdge1.getInVertexType();
-        currentOutEdge2 = currentVertex.getOutEdgesType().get(1);
-        inVertexType = currentOutEdge2.getInVertexType();
-        edgeType = currentVertex.getName();
-        newAggregatorEdge = new OEdgeType(edgeType, null, inVertexType);
+        OEdgeType currentOutEdge1 = currentVertexType.getOutEdgesType().get(0);
+        OEdgeType currentOutEdge2 = currentVertexType.getOutEdgesType().get(1);
 
+        OVertexType outVertexType;
+        OVertexType inVertexType;
+        String direction = this.vertexType2entity.get(currentVertexType).getDirectionOfN2NRepresentedRelationship();
+        if(direction.equals("direct")) {
+          outVertexType = currentOutEdge1.getInVertexType();
+          inVertexType = currentOutEdge2.getInVertexType();
+        }
+        else {
+          outVertexType = currentOutEdge2.getInVertexType();
+          inVertexType = currentOutEdge1.getInVertexType();
+        }
+
+        OEntity joinTable = this.vertexType2entity.get(currentVertexType);
+        String nameOfRelationship = joinTable.getNameOfN2NRepresentedRelationship();
+        String edgeType;
+        if(nameOfRelationship != null)
+          edgeType = nameOfRelationship;
+        else
+          edgeType = currentVertexType.getName();
+
+        OEdgeType newAggregatorEdge = new OEdgeType(edgeType, null, inVertexType);
+
+        int position = 1;
+        OModelProperty newProperty;
         // adding to the edge all properties not belonging to the primary key
-        for(OModelProperty currentProperty: currentVertex.getProperties()) {
+        for(OModelProperty currentProperty: currentVertexType.getProperties()) {
 
           // if property does not belong to the primary key
           if(!currentProperty.isFromPrimaryKey()) {
-            newAggregatorEdge.getProperties().add(currentProperty);
+            newProperty = new OModelProperty(currentProperty.getName(), position, currentProperty.getPropertyType(), currentProperty.isFromPrimaryKey());
+            if(currentProperty.isMandatory() != null)
+              newProperty.setMandatory(currentProperty.isMandatory());
+            if(currentProperty.isReadOnly() != null)
+              newProperty.setReadOnly(currentProperty.isReadOnly());
+            if(currentProperty.isNotNull() != null)
+              newProperty.setNotNull(currentProperty.isNotNull());
+            newAggregatorEdge.getProperties().add(newProperty);
+            position++;
           }
         }
 
         // adding to the edge all properties belonging to the old edges
         for(OModelProperty currentProperty: currentOutEdge1.getProperties()) {
-          newAggregatorEdge.getProperties().add(currentProperty);
+          if(newAggregatorEdge.getPropertyByName(currentProperty.getName()) == null) {
+            newProperty = new OModelProperty(currentProperty.getName(), position, currentProperty.getPropertyType(), currentProperty.isFromPrimaryKey());
+            if(currentProperty.isMandatory() != null)
+              newProperty.setMandatory(currentProperty.isMandatory());
+            if(currentProperty.isReadOnly() != null)
+              newProperty.setReadOnly(currentProperty.isReadOnly());
+            if(currentProperty.isNotNull() != null)
+              newProperty.setNotNull(currentProperty.isNotNull());
+            newAggregatorEdge.getProperties().add(newProperty);
+            position++;
+          }
         }
         for(OModelProperty currentProperty: currentOutEdge2.getProperties()) {
-          newAggregatorEdge.getProperties().add(currentProperty);
+          if(newAggregatorEdge.getPropertyByName(currentProperty.getName()) == null) {
+            newProperty = new OModelProperty(currentProperty.getName(), position, currentProperty.getPropertyType(), currentProperty.isFromPrimaryKey());
+            if(currentProperty.isMandatory() != null)
+              newProperty.setMandatory(currentProperty.isMandatory());
+            if(currentProperty.isReadOnly() != null)
+              newProperty.setReadOnly(currentProperty.isReadOnly());
+            if(currentProperty.isNotNull() != null)
+              newProperty.setNotNull(currentProperty.isNotNull());
+            newAggregatorEdge.getProperties().add(newProperty);
+            position++;
+          }
         }
-
 
         // removing old edges from graph model and from vertices' "in-edges" collection
         currentOutEdge1.setNumberRelationshipsRepresented(currentOutEdge1.getNumberRelationshipsRepresented()-1);
@@ -902,14 +1065,20 @@ public class OER2GraphMapper extends OSource2GraphMapper {
           this.graphModel.getEdgesType().remove(currentOutEdge2);
           statistics.builtModelEdgeTypes--;
         }
-        outVertexType.getInEdgesType().remove(currentOutEdge1);
-        inVertexType.getInEdgesType().remove(currentOutEdge2);
+        if(direction.equals("direct")) {
+          outVertexType.getInEdgesType().remove(currentOutEdge1);
+          inVertexType.getInEdgesType().remove(currentOutEdge2);
+        }
+        else {
+          outVertexType.getInEdgesType().remove(currentOutEdge2);
+          inVertexType.getInEdgesType().remove(currentOutEdge1);
+        }
 
         // adding entry to the map
-        this.joinVertex2aggregatorEdges.put(currentVertex.getName(), new OAggregatorEdge(outVertexType.getName(), inVertexType.getName(), newAggregatorEdge.getName()));
+        this.joinVertex2aggregatorEdges.put(currentVertexType.getName(), new OAggregatorEdge(outVertexType.getName(), inVertexType.getName(), newAggregatorEdge.getName()));
 
         // removing old vertex
-        iter.remove();
+        it.remove();
         statistics.builtModelVertexTypes--;
 
         // adding new edge to graph model

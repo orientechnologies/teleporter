@@ -1,0 +1,35 @@
+{
+  "vertices": {
+    "Film": {
+      "table": "FILM"
+    },
+    "Actor": {
+      "table": "ACTOR"
+    }
+  },
+  "edges": [{
+    "Performs": {
+      "mapping": {
+        "fromTable": "ACTOR",
+        "fromColumns": ["ID"],
+        "toTable": "FILM",
+        "toColumns": ["ID"],
+        "joinTable": {
+          "tableName": "ACTOR_FILM",
+          "fromColumns": ["ACTOR_ID"],
+          "toColumns": ["FILM_ID"]
+        },
+        "direction": "direct"
+      },
+      "properties": {
+        "year": {
+          "type": "DATE",
+          "value": "$from.date",
+          "mandatory": true,
+          "readOnly": false,
+          "notNull": false
+        }
+      }
+    }
+  }]
+}

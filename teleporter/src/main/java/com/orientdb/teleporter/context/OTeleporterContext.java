@@ -38,6 +38,7 @@ public class OTeleporterContext {
   private String queryQuote;
   private ONameResolver nameResolver;
   private String driverDependencyPath;
+  private String executionStrategy;
 
 
   public OTeleporterContext() {
@@ -92,4 +93,11 @@ public class OTeleporterContext {
     this.driverDependencyPath = driverDependencyPath;
   }
 
+  public String getExecutionStrategy() {
+    return this.executionStrategy;
+  }
+
+  public void setExecutionStrategy(String executionStrategy) {
+    this.executionStrategy = executionStrategy;
+  }
 }
