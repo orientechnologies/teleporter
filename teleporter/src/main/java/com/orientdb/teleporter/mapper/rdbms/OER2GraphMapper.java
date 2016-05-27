@@ -965,7 +965,7 @@ public class OER2GraphMapper extends OSource2GraphMapper {
     statistics.runningStepNumber = -1;
   }
 
-  public void JoinTableDim2Aggregation(OTeleporterContext context) {
+  public void joinTableDim2Aggregation(OTeleporterContext context) {
 
     OTeleporterStatistics statistics = context.getStatistics();
     Iterator<OVertexType> it = this.graphModel.getVerticesType().iterator();
@@ -1075,7 +1075,7 @@ public class OER2GraphMapper extends OSource2GraphMapper {
         }
 
         // adding entry to the map
-        this.joinVertex2aggregatorEdges.put(currentVertexType.getName(), new OAggregatorEdge(outVertexType.getName(), inVertexType.getName(), newAggregatorEdge.getName()));
+        this.joinVertex2aggregatorEdges.put(currentVertexType.getName(), new OAggregatorEdge(outVertexType.getName(), inVertexType.getName(), newAggregatorEdge));
 
         // removing old vertex
         it.remove();
@@ -1125,6 +1125,7 @@ public class OER2GraphMapper extends OSource2GraphMapper {
     return null;
   }
 
+  // TO UPDATE WITH THE INVERTED MAP vertexType2entity (right?)
   public OAttribute getAttributeByVertexTypeAndProperty(String vertexType, String propertyName) {
 
     int position = 0;
@@ -1153,7 +1154,25 @@ public class OER2GraphMapper extends OSource2GraphMapper {
     }
 
     return null;
+  }
 
+  /**
+   * It returns the attribute of the join table correspondent to the aggregator edge.
+   * @param edgeType
+   * @param propertyName
+   * @return
+   */
+  // TO UPDATE WITH THE INVERTED MAP (right?)
+  public OAttribute getAttributeByAggregatorEdgeTypeAndProperty(String edgeType, String propertyName) {
+
+    for(Map.Entry<String,OAggregatorEdge> entry: this.joinVertex2aggregatorEdges.entrySet()) {
+      if(entry.getValue().getEdgeType().getName().equals(edgeType)) {
+        String joinVertexTypeName = entry.getKey();
+        return this.getAttributeByVertexTypeAndProperty(joinVertexTypeName, propertyName);
+      }
+    }
+
+    return null;
   }
 
   public void setEntity2vertexType(Map<OEntity, OVertexType> entity2vertexType) {

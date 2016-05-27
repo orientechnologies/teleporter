@@ -22,6 +22,7 @@ import com.orientdb.teleporter.context.OOutputStreamManager;
 import com.orientdb.teleporter.context.OTeleporterContext;
 import com.orientdb.teleporter.nameresolver.OJavaConventionNameResolver;
 import com.orientdb.teleporter.persistence.handler.OHSQLDBDataTypeHandler;
+import com.orientdb.teleporter.strategy.rdbms.ODBMSNaiveAggregationStrategy;
 import com.orientdb.teleporter.strategy.rdbms.ODBMSNaiveStrategy;
 import com.tinkerpop.blueprints.Direction;
 import com.tinkerpop.blueprints.Edge;
@@ -47,12 +48,15 @@ import static org.junit.Assert.*;
 
 public class ImportWithInputConfigurationTest {
 
-  private OTeleporterContext context;
-  private ODBMSNaiveStrategy importStrategy;
-  private String             outOrientGraphUri;
-  private String             dbParentDirectoryPath;
+  private OTeleporterContext            context;
+  private ODBMSNaiveStrategy            naiveStrategy;
+  private ODBMSNaiveAggregationStrategy naiveAggregationStrategy;
+  private String                        outOrientGraphUri;
+  private String                        dbParentDirectoryPath;
   private final String configDirectEdgesPath = "src/test/resources/configuration-mapping/relationships-mapping-direct-edges.json";
   private final String configInverseEdgesPath = "src/test/resources/configuration-mapping/relationships-mapping-inverted-edges.json";
+  private final String configJoinTableDirectEdgesPath = "src/test/resources/configuration-mapping/joint-table-relationships-mapping-direct-edges.json";
+  private final String configJoinTableInverseEdgesPath = "src/test/resources/configuration-mapping/joint-table-relationships-mapping-inverted-edges.json";
 
   @Before
   public void init() {
@@ -60,7 +64,8 @@ public class ImportWithInputConfigurationTest {
     this.context.setOutputManager(new OOutputStreamManager(0));
     this.context.setNameResolver(new OJavaConventionNameResolver());
     this.context.setDataTypeHandler(new OHSQLDBDataTypeHandler());
-    this.importStrategy = new ODBMSNaiveStrategy();
+    this.naiveStrategy = new ODBMSNaiveStrategy();
+    this.naiveAggregationStrategy = new ODBMSNaiveAggregationStrategy();
     this.outOrientGraphUri = "plocal:target/testOrientDB";
     this.dbParentDirectoryPath = this.outOrientGraphUri.replace("plocal:","");
   }
@@ -72,6 +77,14 @@ public class ImportWithInputConfigurationTest {
    *  Two tables: 2 relationships not declared through foreign keys.
    *  EMPLOYEE --[WorksAtProject]--> PROJECT
    *  PROJECT --[HasManager]--> EMPLOYEE
+   *
+   *  Properties manually configured on edges:
+   *
+   *  * WorksAtProject:
+   *    - updatedOn (type DATE): mandatory=T, readOnly=F, notNull=F.
+   *    - propWithoutTypeField (type not present in config --> property will be dropped): mandatory=T, readOnly=F, notNull=F.
+   *  * HasManager:
+   *    - updatedOn (type DATE): mandatory=F.
    */
 
   public void test1() {
@@ -111,7 +124,8 @@ public class ImportWithInputConfigurationTest {
           + "('P002','Contracts Update','E005'))";
       st.execute(projectFilling);
 
-      this.importStrategy.executeStrategy("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", this.outOrientGraphUri, "basicDBMapper", null, "java", null, null, this.configDirectEdgesPath, context);
+      this.naiveStrategy
+          .executeStrategy("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", this.outOrientGraphUri, "basicDBMapper", null, "java", null, null, this.configDirectEdgesPath, context);
 
 
       /*
@@ -368,7 +382,7 @@ public class ImportWithInputConfigurationTest {
    *  EMPLOYEE: foreign key (PROJECT) references PROJECT(ID)
    *  PROJECT: foreign key (PROJECT_MANAGER) references EMPLOYEE(EMP_ID)
    *
-   *  With default mapping we would have:
+   *  With default mapping we would obtain:
    *
    *  EMPLOYEE --[HasProject]--> PROJECT
    *  PROJECT --[HasProjectManager]--> EMPLOYEE
@@ -378,6 +392,11 @@ public class ImportWithInputConfigurationTest {
    *  PROJECT --[HasEmployee]--> EMPLOYEE
    *  PROJECT --[HasProjectManager]--> EMPLOYEE
    *
+   *  Properties manually configured on edges:
+   *
+   *  * HasEmployee:
+   *    - updatedOn (type DATE): mandatory=T, readOnly=F, notNull=F.
+   *    - propWithoutTypeField (type not present in config --> property will be dropped): mandatory=T, readOnly=F, notNull=F.
    */
 
   public void test2() {
@@ -421,7 +440,8 @@ public class ImportWithInputConfigurationTest {
       st = connection.createStatement();
       st.execute(parentTableBuilding);
 
-      this.importStrategy.executeStrategy("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", this.outOrientGraphUri, "basicDBMapper", null, "java", null, null, this.configInverseEdgesPath, context);
+      this.naiveStrategy
+          .executeStrategy("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", this.outOrientGraphUri, "basicDBMapper", null, "java", null, null, this.configInverseEdgesPath, context);
 
 
       /*
@@ -665,6 +685,815 @@ public class ImportWithInputConfigurationTest {
       }
     }
   }
+
+
+  @Test
+
+  /*
+   *  Three tables: 1  N-N relationship, no foreign keys declared for the join table in the db.
+   *  Through the configuration we obtain the following schema:
+   *
+   *  ACTOR
+   *  FILM
+   *  ACTOR2FILM: foreign key (ACTOR_ID) references ACTOR(ID)
+   *              foreign key (FILM_ID) references FILM(ID)
+   *
+   *  With "direct" direction in the configuration we obtain:
+   *
+   *  ACTOR --[Performs]--> FILM
+   *
+   *  Properties manually configured on edges:
+   *
+   *  Performs:
+   *    - year (type DATE): mandatory=T, readOnly=F, notNull=F.
+   */
+
+  public void test3() {
+
+    this.context.setExecutionStrategy("naive-aggregate");
+    Connection connection = null;
+    Statement st = null;
+    OrientGraphNoTx orientGraph = null;
+
+    try {
+
+      Class.forName("org.hsqldb.jdbc.JDBCDriver");
+      connection = DriverManager.getConnection("jdbc:hsqldb:mem:mydb", "SA", "");
+
+      String parentTableBuilding = "create memory table ACTOR (ID varchar(256) not null,"+
+          " FIRST_NAME varchar(256) not null, LAST_NAME varchar(256) not null, primary key (ID))";
+      st = connection.createStatement();
+      st.execute(parentTableBuilding);
+
+      String foreignTableBuilding = "create memory table FILM (ID varchar(256),"+
+          " TITLE varchar(256) not null, CATEGORY varchar(256), primary key (ID))";
+      st.execute(foreignTableBuilding);
+
+      String actorFilmTableBuilding = "create memory table ACTOR_FILM (ACTOR_ID  varchar(256),"+
+          " FILM_ID varchar(256) not null, PAYMENT integer, primary key (ACTOR_ID, FILM_ID))";
+      st.execute(actorFilmTableBuilding);
+
+
+      // Records Inserting
+
+      String filmFilling = "insert into FILM (ID,TITLE,CATEGORY) values ("
+          + "('F001','Pulp Fiction','Action'),"
+          + "('F002','Shutter Island','Thriller'),"
+          + "('F003','The Departed','Action-Thriller'))";
+      st.execute(filmFilling);
+
+      String actorFilling = "insert into ACTOR (ID,FIRST_NAME,LAST_NAME) values ("
+          + "('A001','John','Travolta'),"
+          + "('A002','Samuel','Lee Jackson'),"
+          + "('A003','Bruce','Willis'),"
+          + "('A004','Leonardo','Di Caprio'),"
+          + "('A005','Ben','Kingsley'),"
+          + "('A006','Mark','Ruffalo'),"
+          + "('A007','Jack','Nicholson'),"
+          + "('A008','Matt','Damon'))";
+      st.execute(actorFilling);
+
+      String film2actorFilling = "insert into ACTOR_FILM (ACTOR_ID,FILM_ID,PAYMENT) values ("
+          + "('A001','F001','12000000'),"
+          + "('A002','F001','10000000'),"
+          + "('A003','F001','15000000'),"
+          + "('A004','F002','30000000'),"
+          + "('A004','F003','40000000'),"
+          + "('A005','F002','35000000'),"
+          + "('A006','F002','9000000'),"
+          + "('A007','F003','25000000'),"
+          + "('A008','F003','15000000'))";
+      st.execute(film2actorFilling);
+
+      this.naiveAggregationStrategy
+          .executeStrategy("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", this.outOrientGraphUri, "basicDBMapper", null, "java", null, null, this.configJoinTableDirectEdgesPath, context);
+
+      /*
+       *  Testing context information
+       */
+
+      assertEquals(20, context.getStatistics().totalNumberOfRecords);
+      assertEquals(20, context.getStatistics().analyzedRecords);
+      assertEquals(11, context.getStatistics().orientAddedVertices);
+      assertEquals(9, context.getStatistics().orientAddedEdges);
+
+
+      /*
+       *  Testing built OrientDB
+       */
+      orientGraph = new OrientGraphNoTx(this.outOrientGraphUri);
+
+      // vertices check
+
+      int count = 0;
+      for(Vertex v: orientGraph.getVertices()) {
+        assertNotNull(v.getId());
+        count++;
+      }
+      assertEquals(11, count);
+
+      count = 0;
+      for(Vertex v: orientGraph.getVerticesOfClass("Film")) {
+        assertNotNull(v.getId());
+        count++;
+      }
+      assertEquals(3, count);
+
+      count = 0;
+      for(Vertex v: orientGraph.getVerticesOfClass("Actor")) {
+        assertNotNull(v.getId());
+        count++;
+      }
+      assertEquals(8, count);
+
+
+      // edges check
+      count = 0;
+      for(Edge e: orientGraph.getEdges()) {
+        assertNotNull(e.getId());
+        count++;
+      }
+      assertEquals(9, count);
+
+      count = 0;
+      for(Edge e: orientGraph.getEdgesOfClass("Performs")) {
+        assertNotNull(e.getId());
+        count++;
+      }
+      assertEquals(9, count);
+
+
+      // vertex properties and connections check
+      Iterator<Edge> edgesIt = null;
+      String[] keys = {"id"};
+      String[] values = {"F001"};
+
+      Vertex v = null;
+      Edge currentEdge = null;
+      Iterator<Vertex> iterator = orientGraph.getVertices("Film", keys, values).iterator();
+      assertTrue(iterator.hasNext());
+      if(iterator.hasNext()) {
+        v = iterator.next();
+        assertEquals("F001", v.getProperty("id"));
+        assertEquals("Pulp Fiction", v.getProperty("title"));
+        assertEquals("Action", v.getProperty("category"));
+        edgesIt = v.getEdges(Direction.IN, "Performs").iterator();
+        currentEdge = edgesIt.next();
+        assertEquals("A001", currentEdge.getVertex(Direction.OUT).getProperty("id"));
+        assertEquals(12000000, currentEdge.getProperty("payment"));
+        assertNull(currentEdge.getProperty("year"));
+        currentEdge = edgesIt.next();
+        assertEquals("A002", currentEdge.getVertex(Direction.OUT).getProperty("id"));
+        assertEquals(10000000, currentEdge.getProperty("payment"));
+        assertNull(currentEdge.getProperty("year"));
+        currentEdge = edgesIt.next();
+        assertEquals("A003", currentEdge.getVertex(Direction.OUT).getProperty("id"));
+        assertEquals(15000000, currentEdge.getProperty("payment"));
+        assertNull(currentEdge.getProperty("year"));
+        assertEquals(false, edgesIt.hasNext());
+      }
+      else {
+        fail("Query fail!");
+      }
+
+      values[0] = "F002";
+      iterator = orientGraph.getVertices("Film", keys, values).iterator();
+      assertTrue(iterator.hasNext());
+      if(iterator.hasNext()) {
+        v = iterator.next();
+        assertEquals("F002", v.getProperty("id"));
+        assertEquals("Shutter Island", v.getProperty("title"));
+        assertEquals("Thriller", v.getProperty("category"));
+        edgesIt = v.getEdges(Direction.IN, "Performs").iterator();
+        currentEdge = edgesIt.next();
+        assertEquals("A004", currentEdge.getVertex(Direction.OUT).getProperty("id"));
+        assertEquals(30000000, currentEdge.getProperty("payment"));
+        assertNull(currentEdge.getProperty("year"));
+        currentEdge = edgesIt.next();
+        assertEquals("A005", currentEdge.getVertex(Direction.OUT).getProperty("id"));
+        assertEquals(35000000, currentEdge.getProperty("payment"));
+        assertNull(currentEdge.getProperty("year"));
+        currentEdge = edgesIt.next();
+        assertEquals("A006", currentEdge.getVertex(Direction.OUT).getProperty("id"));
+        assertEquals(9000000, currentEdge.getProperty("payment"));
+        assertNull(currentEdge.getProperty("year"));
+        assertEquals(false, edgesIt.hasNext());
+      }
+      else {
+        fail("Query fail!");
+      }
+
+      values[0] = "F003";
+      iterator = orientGraph.getVertices("Film", keys, values).iterator();
+      assertTrue(iterator.hasNext());
+      if(iterator.hasNext()) {
+        v = iterator.next();
+        assertEquals("F003", v.getProperty("id"));
+        assertEquals("The Departed", v.getProperty("title"));
+        assertEquals("Action-Thriller", v.getProperty("category"));
+        edgesIt = v.getEdges(Direction.IN, "Performs").iterator();
+        currentEdge = edgesIt.next();
+        assertEquals("A004", currentEdge.getVertex(Direction.OUT).getProperty("id"));
+        assertEquals(40000000, currentEdge.getProperty("payment"));
+        assertNull(currentEdge.getProperty("year"));
+        currentEdge = edgesIt.next();
+        assertEquals("A007", currentEdge.getVertex(Direction.OUT).getProperty("id"));
+        assertEquals(25000000, currentEdge.getProperty("payment"));
+        assertNull(currentEdge.getProperty("year"));
+        currentEdge = edgesIt.next();
+        assertEquals("A008", currentEdge.getVertex(Direction.OUT).getProperty("id"));
+        assertEquals(15000000, currentEdge.getProperty("payment"));
+        assertNull(currentEdge.getProperty("year"));
+        assertEquals(false, edgesIt.hasNext());
+      }
+      else {
+        fail("Query fail!");
+      }
+
+      values[0] = "A001";
+      iterator = orientGraph.getVertices("Actor", keys, values).iterator();
+      assertTrue(iterator.hasNext());
+      if(iterator.hasNext()) {
+        v = iterator.next();
+        assertEquals("A001", v.getProperty("id"));
+        assertEquals("John", v.getProperty("firstName"));
+        assertEquals("Travolta", v.getProperty("lastName"));
+        edgesIt = v.getEdges(Direction.OUT, "Performs").iterator();
+        currentEdge = edgesIt.next();
+        assertEquals("F001", currentEdge.getVertex(Direction.IN).getProperty("id"));
+        assertEquals(12000000, currentEdge.getProperty("payment"));
+        assertNull(currentEdge.getProperty("year"));
+        assertEquals(false, edgesIt.hasNext());
+      }
+      else {
+        fail("Query fail!");
+      }
+
+      values[0] = "A002";
+      iterator =  orientGraph.getVertices("Actor", keys, values).iterator();
+      assertTrue(iterator.hasNext());
+      if(iterator.hasNext()) {
+        v = iterator.next();
+        assertEquals("A002", v.getProperty("id"));
+        assertEquals("Samuel", v.getProperty("firstName"));
+        assertEquals("Lee Jackson", v.getProperty("lastName"));
+        edgesIt = v.getEdges(Direction.OUT, "Performs").iterator();
+        currentEdge = edgesIt.next();
+        assertEquals("F001", currentEdge.getVertex(Direction.IN).getProperty("id"));
+        assertEquals(10000000, currentEdge.getProperty("payment"));
+        assertNull(currentEdge.getProperty("year"));
+        assertEquals(false, edgesIt.hasNext());
+      }
+      else {
+        fail("Query fail!");
+      }
+
+      values[0] = "A003";
+      iterator = orientGraph.getVertices("Actor", keys, values).iterator();
+      assertTrue(iterator.hasNext());
+      if(iterator.hasNext()) {
+        v = iterator.next();
+        assertEquals("A003", v.getProperty("id"));
+        assertEquals("Bruce", v.getProperty("firstName"));
+        assertEquals("Willis", v.getProperty("lastName"));
+        edgesIt = v.getEdges(Direction.OUT, "Performs").iterator();
+        currentEdge = edgesIt.next();
+        assertEquals("F001", currentEdge.getVertex(Direction.IN).getProperty("id"));
+        assertEquals(15000000, currentEdge.getProperty("payment"));
+        assertNull(currentEdge.getProperty("year"));
+        assertEquals(false, edgesIt.hasNext());
+      }
+      else {
+        fail("Query fail!");
+      }
+
+      values[0] = "A004";
+      iterator =  orientGraph.getVertices("Actor", keys, values).iterator();
+      assertTrue(iterator.hasNext());
+      if(iterator.hasNext()) {
+        v = iterator.next();
+        assertEquals("A004", v.getProperty("id"));
+        assertEquals("Leonardo", v.getProperty("firstName"));
+        assertEquals("Di Caprio", v.getProperty("lastName"));
+        edgesIt = v.getEdges(Direction.OUT, "Performs").iterator();
+        currentEdge = edgesIt.next();
+        assertEquals("F002", currentEdge.getVertex(Direction.IN).getProperty("id"));
+        assertEquals(30000000, currentEdge.getProperty("payment"));
+        assertNull(currentEdge.getProperty("year"));
+        currentEdge = edgesIt.next();
+        assertEquals("F003", currentEdge.getVertex(Direction.IN).getProperty("id"));
+        assertEquals(40000000, currentEdge.getProperty("payment"));
+        assertNull(currentEdge.getProperty("year"));
+        assertEquals(false, edgesIt.hasNext());
+      }
+      else {
+        fail("Query fail!");
+      }
+
+      values[0] = "A005";
+      iterator = orientGraph.getVertices("Actor", keys, values).iterator();
+      assertTrue(iterator.hasNext());
+      if(iterator.hasNext()) {
+        v = iterator.next();
+        assertEquals("A005", v.getProperty("id"));
+        assertEquals("Ben", v.getProperty("firstName"));
+        assertEquals("Kingsley", v.getProperty("lastName"));
+        edgesIt = v.getEdges(Direction.OUT, "Performs").iterator();
+        currentEdge = edgesIt.next();
+        assertEquals("F002", currentEdge.getVertex(Direction.IN).getProperty("id"));
+        assertEquals(35000000, currentEdge.getProperty("payment"));
+        assertNull(currentEdge.getProperty("year"));
+        assertEquals(false, edgesIt.hasNext());
+      }
+      else {
+        fail("Query fail!");
+      }
+
+      values[0] = "A006";
+      iterator = orientGraph.getVertices("Actor", keys, values).iterator();
+      assertTrue(iterator.hasNext());
+      if(iterator.hasNext()) {
+        v = iterator.next();
+        assertEquals("A006", v.getProperty("id"));
+        assertEquals("Mark", v.getProperty("firstName"));
+        assertEquals("Ruffalo", v.getProperty("lastName"));
+        edgesIt = v.getEdges(Direction.OUT, "Performs").iterator();
+        currentEdge = edgesIt.next();
+        assertEquals("F002", currentEdge.getVertex(Direction.IN).getProperty("id"));
+        assertEquals(9000000, currentEdge.getProperty("payment"));
+        assertNull(currentEdge.getProperty("year"));
+        assertEquals(false, edgesIt.hasNext());
+      }
+      else {
+        fail("Query fail!");
+      }
+
+      values[0] = "A007";
+      iterator = orientGraph.getVertices("Actor", keys, values).iterator();
+      assertTrue(iterator.hasNext());
+      if(iterator.hasNext()) {
+        v = iterator.next();
+        assertEquals("A007", v.getProperty("id"));
+        assertEquals("Jack", v.getProperty("firstName"));
+        assertEquals("Nicholson", v.getProperty("lastName"));
+        edgesIt = v.getEdges(Direction.OUT, "Performs").iterator();
+        currentEdge = edgesIt.next();
+        assertEquals("F003", currentEdge.getVertex(Direction.IN).getProperty("id"));
+        assertEquals(25000000, currentEdge.getProperty("payment"));
+        assertNull(currentEdge.getProperty("year"));
+        assertEquals(false, edgesIt.hasNext());
+      }
+      else {
+        fail("Query fail!");
+      }
+
+      values[0] = "A008";
+      iterator = orientGraph.getVertices("Actor", keys, values).iterator();
+      assertTrue(iterator.hasNext());
+      if(iterator.hasNext()) {
+        v = iterator.next();
+        assertEquals("A008", v.getProperty("id"));
+        assertEquals("Matt", v.getProperty("firstName"));
+        assertEquals("Damon", v.getProperty("lastName"));
+        edgesIt = v.getEdges(Direction.OUT, "Performs").iterator();
+        currentEdge = edgesIt.next();
+        assertEquals("F003", currentEdge.getVertex(Direction.IN).getProperty("id"));
+        assertEquals(15000000, currentEdge.getProperty("payment"));
+        assertNull(currentEdge.getProperty("year"));
+        assertEquals(false, edgesIt.hasNext());
+      }
+      else {
+        fail("Query fail!");
+      }
+
+
+    }catch(Exception e) {
+      e.printStackTrace();
+      fail();
+    }finally {
+      try {
+
+        // Dropping Source DB Schema and OrientGraph
+        String dbDropping = "drop schema public cascade";
+        st.execute(dbDropping);
+        connection.close();
+        this.deleteFile(this.dbParentDirectoryPath);
+      }catch(Exception e) {
+        e.printStackTrace();
+        fail();
+      }
+      if(orientGraph != null) {
+        orientGraph.drop();
+        orientGraph.shutdown();
+      }
+    }
+  }
+
+
+
+    @Test
+
+  /*
+   *  Three tables: 1  N-N relationship, no foreign keys declared for the join table in the db.
+   *  Through the configuration we obtain the following schema:
+   *
+   *  ACTOR
+   *  FILM
+   *  ACTOR2FILM: foreign key (ACTOR_ID) references ACTOR(ID)
+   *              foreign key (FILM_ID) references FILM(ID)
+   *
+   *  With "direct" direction in the configuration we would obtain:
+   *
+   *  FILM --[Performs]--> ACTOR
+   *
+   *  But with the "inverse" direction we obtain:
+   *
+   *  ACTOR --[Performs]--> FILM
+   *
+   *  Performs:
+   *    - year (type DATE): mandatory=T, readOnly=F, notNull=F.
+   */
+
+    public void test4() {
+
+      this.context.setExecutionStrategy("naive-aggregate");
+      Connection connection = null;
+      Statement st = null;
+      OrientGraphNoTx orientGraph = null;
+
+      try {
+
+        Class.forName("org.hsqldb.jdbc.JDBCDriver");
+        connection = DriverManager.getConnection("jdbc:hsqldb:mem:mydb", "SA", "");
+
+        String parentTableBuilding = "create memory table ACTOR (ID varchar(256) not null,"+
+            " FIRST_NAME varchar(256) not null, LAST_NAME varchar(256) not null, primary key (ID))";
+        st = connection.createStatement();
+        st.execute(parentTableBuilding);
+
+        String foreignTableBuilding = "create memory table FILM (ID varchar(256),"+
+            " TITLE varchar(256) not null, CATEGORY varchar(256), primary key (ID))";
+        st.execute(foreignTableBuilding);
+
+        String actorFilmTableBuilding = "create memory table FILM_ACTOR (FILM_ID  varchar(256),"+
+            " ACTOR_ID varchar(256) not null, PAYMENT integer, primary key (FILM_ID, ACTOR_ID))";
+        st.execute(actorFilmTableBuilding);
+
+
+        // Records Inserting
+
+        String filmFilling = "insert into FILM (ID,TITLE,CATEGORY) values ("
+            + "('F001','Pulp Fiction','Action'),"
+            + "('F002','Shutter Island','Thriller'),"
+            + "('F003','The Departed','Action-Thriller'))";
+        st.execute(filmFilling);
+
+        String actorFilling = "insert into ACTOR (ID,FIRST_NAME,LAST_NAME) values ("
+            + "('A001','John','Travolta'),"
+            + "('A002','Samuel','Lee Jackson'),"
+            + "('A003','Bruce','Willis'),"
+            + "('A004','Leonardo','Di Caprio'),"
+            + "('A005','Ben','Kingsley'),"
+            + "('A006','Mark','Ruffalo'),"
+            + "('A007','Jack','Nicholson'),"
+            + "('A008','Matt','Damon'))";
+        st.execute(actorFilling);
+
+        String film2actorFilling = "insert into FILM_ACTOR (FILM_ID,ACTOR_ID,PAYMENT) values ("
+            + "('F001','A001','12000000'),"
+            + "('F001','A002','10000000'),"
+            + "('F001','A003','15000000'),"
+            + "('F002','A004','30000000'),"
+            + "('F002','A005','35000000'),"
+            + "('F002','A006','9000000'),"
+            + "('F003','A004','40000000'),"
+            + "('F003','A007','25000000'),"
+            + "('F003','A008','15000000'))";
+        st.execute(film2actorFilling);
+
+        this.naiveAggregationStrategy
+            .executeStrategy("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", this.outOrientGraphUri, "basicDBMapper", null, "java", null, null, this.configJoinTableInverseEdgesPath, context);
+
+      /*
+       *  Testing context information
+       */
+
+        assertEquals(20, context.getStatistics().totalNumberOfRecords);
+        assertEquals(20, context.getStatistics().analyzedRecords);
+        assertEquals(11, context.getStatistics().orientAddedVertices);
+        assertEquals(9, context.getStatistics().orientAddedEdges);
+
+
+      /*
+       *  Testing built OrientDB
+       */
+        orientGraph = new OrientGraphNoTx(this.outOrientGraphUri);
+
+        // vertices check
+
+        int count = 0;
+        for(Vertex v: orientGraph.getVertices()) {
+          assertNotNull(v.getId());
+          count++;
+        }
+        assertEquals(11, count);
+
+        count = 0;
+        for(Vertex v: orientGraph.getVerticesOfClass("Film")) {
+          assertNotNull(v.getId());
+          count++;
+        }
+        assertEquals(3, count);
+
+        count = 0;
+        for(Vertex v: orientGraph.getVerticesOfClass("Actor")) {
+          assertNotNull(v.getId());
+          count++;
+        }
+        assertEquals(8, count);
+
+
+        // edges check
+        count = 0;
+        for(Edge e: orientGraph.getEdges()) {
+          assertNotNull(e.getId());
+          count++;
+        }
+        assertEquals(9, count);
+
+        count = 0;
+        for(Edge e: orientGraph.getEdgesOfClass("Performs")) {
+          assertNotNull(e.getId());
+          count++;
+        }
+        assertEquals(9, count);
+
+
+        // vertex properties and connections check
+        Iterator<Edge> edgesIt = null;
+        String[] keys = {"id"};
+        String[] values = {"F001"};
+
+        Vertex v = null;
+        Edge currentEdge = null;
+        Iterator<Vertex> iterator = orientGraph.getVertices("Film", keys, values).iterator();
+        assertTrue(iterator.hasNext());
+        if(iterator.hasNext()) {
+          v = iterator.next();
+          assertEquals("F001", v.getProperty("id"));
+          assertEquals("Pulp Fiction", v.getProperty("title"));
+          assertEquals("Action", v.getProperty("category"));
+          edgesIt = v.getEdges(Direction.IN, "Performs").iterator();
+          currentEdge = edgesIt.next();
+          assertEquals("A001", currentEdge.getVertex(Direction.OUT).getProperty("id"));
+          assertEquals(12000000, currentEdge.getProperty("payment"));
+          assertNull(currentEdge.getProperty("year"));
+          currentEdge = edgesIt.next();
+          assertEquals("A002", currentEdge.getVertex(Direction.OUT).getProperty("id"));
+          assertEquals(10000000, currentEdge.getProperty("payment"));
+          assertNull(currentEdge.getProperty("year"));
+          currentEdge = edgesIt.next();
+          assertEquals("A003", currentEdge.getVertex(Direction.OUT).getProperty("id"));
+          assertEquals(15000000, currentEdge.getProperty("payment"));
+          assertNull(currentEdge.getProperty("year"));
+          assertEquals(false, edgesIt.hasNext());
+        }
+        else {
+          fail("Query fail!");
+        }
+
+        values[0] = "F002";
+        iterator = orientGraph.getVertices("Film", keys, values).iterator();
+        assertTrue(iterator.hasNext());
+        if(iterator.hasNext()) {
+          v = iterator.next();
+          assertEquals("F002", v.getProperty("id"));
+          assertEquals("Shutter Island", v.getProperty("title"));
+          assertEquals("Thriller", v.getProperty("category"));
+          edgesIt = v.getEdges(Direction.IN, "Performs").iterator();
+          currentEdge = edgesIt.next();
+          assertEquals("A004", currentEdge.getVertex(Direction.OUT).getProperty("id"));
+          assertEquals(30000000, currentEdge.getProperty("payment"));
+          assertNull(currentEdge.getProperty("year"));
+          currentEdge = edgesIt.next();
+          assertEquals("A005", currentEdge.getVertex(Direction.OUT).getProperty("id"));
+          assertEquals(35000000, currentEdge.getProperty("payment"));
+          assertNull(currentEdge.getProperty("year"));
+          currentEdge = edgesIt.next();
+          assertEquals("A006", currentEdge.getVertex(Direction.OUT).getProperty("id"));
+          assertEquals(9000000, currentEdge.getProperty("payment"));
+          assertNull(currentEdge.getProperty("year"));
+          assertEquals(false, edgesIt.hasNext());
+        }
+        else {
+          fail("Query fail!");
+        }
+
+        values[0] = "F003";
+        iterator = orientGraph.getVertices("Film", keys, values).iterator();
+        assertTrue(iterator.hasNext());
+        if(iterator.hasNext()) {
+          v = iterator.next();
+          assertEquals("F003", v.getProperty("id"));
+          assertEquals("The Departed", v.getProperty("title"));
+          assertEquals("Action-Thriller", v.getProperty("category"));
+          edgesIt = v.getEdges(Direction.IN, "Performs").iterator();
+          currentEdge = edgesIt.next();
+          assertEquals("A004", currentEdge.getVertex(Direction.OUT).getProperty("id"));
+          assertEquals(40000000, currentEdge.getProperty("payment"));
+          assertNull(currentEdge.getProperty("year"));
+          currentEdge = edgesIt.next();
+          assertEquals("A007", currentEdge.getVertex(Direction.OUT).getProperty("id"));
+          assertEquals(25000000, currentEdge.getProperty("payment"));
+          assertNull(currentEdge.getProperty("year"));
+          currentEdge = edgesIt.next();
+          assertEquals("A008", currentEdge.getVertex(Direction.OUT).getProperty("id"));
+          assertEquals(15000000, currentEdge.getProperty("payment"));
+          assertNull(currentEdge.getProperty("year"));
+          assertEquals(false, edgesIt.hasNext());
+        }
+        else {
+          fail("Query fail!");
+        }
+
+        values[0] = "A001";
+        iterator = orientGraph.getVertices("Actor", keys, values).iterator();
+        assertTrue(iterator.hasNext());
+        if(iterator.hasNext()) {
+          v = iterator.next();
+          assertEquals("A001", v.getProperty("id"));
+          assertEquals("John", v.getProperty("firstName"));
+          assertEquals("Travolta", v.getProperty("lastName"));
+          edgesIt = v.getEdges(Direction.OUT, "Performs").iterator();
+          currentEdge = edgesIt.next();
+          assertEquals("F001", currentEdge.getVertex(Direction.IN).getProperty("id"));
+          assertEquals(12000000, currentEdge.getProperty("payment"));
+          assertNull(currentEdge.getProperty("year"));
+          assertEquals(false, edgesIt.hasNext());
+        }
+        else {
+          fail("Query fail!");
+        }
+
+        values[0] = "A002";
+        iterator =  orientGraph.getVertices("Actor", keys, values).iterator();
+        assertTrue(iterator.hasNext());
+        if(iterator.hasNext()) {
+          v = iterator.next();
+          assertEquals("A002", v.getProperty("id"));
+          assertEquals("Samuel", v.getProperty("firstName"));
+          assertEquals("Lee Jackson", v.getProperty("lastName"));
+          edgesIt = v.getEdges(Direction.OUT, "Performs").iterator();
+          currentEdge = edgesIt.next();
+          assertEquals("F001", currentEdge.getVertex(Direction.IN).getProperty("id"));
+          assertEquals(10000000, currentEdge.getProperty("payment"));
+          assertNull(currentEdge.getProperty("year"));
+          assertEquals(false, edgesIt.hasNext());
+        }
+        else {
+          fail("Query fail!");
+        }
+
+        values[0] = "A003";
+        iterator = orientGraph.getVertices("Actor", keys, values).iterator();
+        assertTrue(iterator.hasNext());
+        if(iterator.hasNext()) {
+          v = iterator.next();
+          assertEquals("A003", v.getProperty("id"));
+          assertEquals("Bruce", v.getProperty("firstName"));
+          assertEquals("Willis", v.getProperty("lastName"));
+          edgesIt = v.getEdges(Direction.OUT, "Performs").iterator();
+          currentEdge = edgesIt.next();
+          assertEquals("F001", currentEdge.getVertex(Direction.IN).getProperty("id"));
+          assertEquals(15000000, currentEdge.getProperty("payment"));
+          assertNull(currentEdge.getProperty("year"));
+          assertEquals(false, edgesIt.hasNext());
+        }
+        else {
+          fail("Query fail!");
+        }
+
+        values[0] = "A004";
+        iterator =  orientGraph.getVertices("Actor", keys, values).iterator();
+        assertTrue(iterator.hasNext());
+        if(iterator.hasNext()) {
+          v = iterator.next();
+          assertEquals("A004", v.getProperty("id"));
+          assertEquals("Leonardo", v.getProperty("firstName"));
+          assertEquals("Di Caprio", v.getProperty("lastName"));
+          edgesIt = v.getEdges(Direction.OUT, "Performs").iterator();
+          currentEdge = edgesIt.next();
+          assertEquals("F002", currentEdge.getVertex(Direction.IN).getProperty("id"));
+          assertEquals(30000000, currentEdge.getProperty("payment"));
+          assertNull(currentEdge.getProperty("year"));
+          currentEdge = edgesIt.next();
+          assertEquals("F003", currentEdge.getVertex(Direction.IN).getProperty("id"));
+          assertEquals(40000000, currentEdge.getProperty("payment"));
+          assertNull(currentEdge.getProperty("year"));
+          assertEquals(false, edgesIt.hasNext());
+        }
+        else {
+          fail("Query fail!");
+        }
+
+        values[0] = "A005";
+        iterator = orientGraph.getVertices("Actor", keys, values).iterator();
+        assertTrue(iterator.hasNext());
+        if(iterator.hasNext()) {
+          v = iterator.next();
+          assertEquals("A005", v.getProperty("id"));
+          assertEquals("Ben", v.getProperty("firstName"));
+          assertEquals("Kingsley", v.getProperty("lastName"));
+          edgesIt = v.getEdges(Direction.OUT, "Performs").iterator();
+          currentEdge = edgesIt.next();
+          assertEquals("F002", currentEdge.getVertex(Direction.IN).getProperty("id"));
+          assertEquals(35000000, currentEdge.getProperty("payment"));
+          assertNull(currentEdge.getProperty("year"));
+          assertEquals(false, edgesIt.hasNext());
+        }
+        else {
+          fail("Query fail!");
+        }
+
+        values[0] = "A006";
+        iterator = orientGraph.getVertices("Actor", keys, values).iterator();
+        assertTrue(iterator.hasNext());
+        if(iterator.hasNext()) {
+          v = iterator.next();
+          assertEquals("A006", v.getProperty("id"));
+          assertEquals("Mark", v.getProperty("firstName"));
+          assertEquals("Ruffalo", v.getProperty("lastName"));
+          edgesIt = v.getEdges(Direction.OUT, "Performs").iterator();
+          currentEdge = edgesIt.next();
+          assertEquals("F002", currentEdge.getVertex(Direction.IN).getProperty("id"));
+          assertEquals(9000000, currentEdge.getProperty("payment"));
+          assertNull(currentEdge.getProperty("year"));
+          assertEquals(false, edgesIt.hasNext());
+        }
+        else {
+          fail("Query fail!");
+        }
+
+        values[0] = "A007";
+        iterator = orientGraph.getVertices("Actor", keys, values).iterator();
+        assertTrue(iterator.hasNext());
+        if(iterator.hasNext()) {
+          v = iterator.next();
+          assertEquals("A007", v.getProperty("id"));
+          assertEquals("Jack", v.getProperty("firstName"));
+          assertEquals("Nicholson", v.getProperty("lastName"));
+          edgesIt = v.getEdges(Direction.OUT, "Performs").iterator();
+          currentEdge = edgesIt.next();
+          assertEquals("F003", currentEdge.getVertex(Direction.IN).getProperty("id"));
+          assertEquals(25000000, currentEdge.getProperty("payment"));
+          assertNull(currentEdge.getProperty("year"));
+          assertEquals(false, edgesIt.hasNext());
+        }
+        else {
+          fail("Query fail!");
+        }
+
+        values[0] = "A008";
+        iterator = orientGraph.getVertices("Actor", keys, values).iterator();
+        assertTrue(iterator.hasNext());
+        if(iterator.hasNext()) {
+          v = iterator.next();
+          assertEquals("A008", v.getProperty("id"));
+          assertEquals("Matt", v.getProperty("firstName"));
+          assertEquals("Damon", v.getProperty("lastName"));
+          edgesIt = v.getEdges(Direction.OUT, "Performs").iterator();
+          currentEdge = edgesIt.next();
+          assertEquals("F003", currentEdge.getVertex(Direction.IN).getProperty("id"));
+          assertEquals(15000000, currentEdge.getProperty("payment"));
+          assertNull(currentEdge.getProperty("year"));
+          assertEquals(false, edgesIt.hasNext());
+        }
+        else {
+          fail("Query fail!");
+        }
+
+
+      }catch(Exception e) {
+        e.printStackTrace();
+        fail();
+      }finally {
+        try {
+
+          // Dropping Source DB Schema and OrientGraph
+          String dbDropping = "drop schema public cascade";
+          st.execute(dbDropping);
+          connection.close();
+          this.deleteFile(this.dbParentDirectoryPath);
+        }catch(Exception e) {
+          e.printStackTrace();
+          fail();
+        }
+        if(orientGraph != null) {
+          orientGraph.drop();
+          orientGraph.shutdown();
+        }
+      }
+    }
 
   private void deleteFile(String resourcePath) throws IOException {
 

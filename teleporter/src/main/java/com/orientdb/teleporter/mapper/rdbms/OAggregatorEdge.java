@@ -18,6 +18,8 @@
 
 package com.orientdb.teleporter.mapper.rdbms;
 
+import com.orientdb.teleporter.model.graphmodel.OEdgeType;
+
 /**
  * @author Gabriele Ponzi
  * @email  <gabriele.ponzi--at--gmail.com>
@@ -26,11 +28,11 @@ package com.orientdb.teleporter.mapper.rdbms;
 
 public class OAggregatorEdge {
 
-  private String outVertexClassName;
-  private String inVertexClassName;
-  private String edgeType;
+  private String    outVertexClassName;
+  private String    inVertexClassName;
+  private OEdgeType edgeType;
 
-  public OAggregatorEdge(String outVertexClassName, String inVertexClassName, String edgeType) {
+  public OAggregatorEdge(String outVertexClassName, String inVertexClassName, OEdgeType edgeType) {
     this.outVertexClassName = outVertexClassName;
     this.inVertexClassName = inVertexClassName;
     this.edgeType = edgeType;
@@ -52,11 +54,11 @@ public class OAggregatorEdge {
     this.inVertexClassName = inVertexClassName;
   }
 
-  public String getEdgeType() {
+  public OEdgeType getEdgeType() {
     return this.edgeType;
   }
 
-  public void setEdgeType(String edgeType) {
+  public void setEdgeType(OEdgeType edgeType) {
     this.edgeType = edgeType;
   }
 

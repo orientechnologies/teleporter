@@ -85,7 +85,7 @@ public class ODBMSNaiveAggregationStrategy extends ODBMSImportStrategy {
     context.getOutputManager().debug("\n%s\n", ((OER2GraphMapper)mapper).getGraphModel().toString());
 
     // Many-to-Many aggregation
-    ((OER2GraphMapper)mapper).JoinTableDim2Aggregation(context);
+    ((OER2GraphMapper)mapper).joinTableDim2Aggregation(context);
     context.getOutputManager().debug("\n'Junction-Entity' aggregation complete.\n");
     context.getOutputManager().debug("\n%s\n", ((OER2GraphMapper)mapper).getGraphModel().toString());
 

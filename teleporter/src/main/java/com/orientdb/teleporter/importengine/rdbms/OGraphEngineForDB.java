@@ -26,6 +26,7 @@ import com.orientdb.teleporter.mapper.rdbms.OER2GraphMapper;
 import com.orientdb.teleporter.model.dbschema.OAttribute;
 import com.orientdb.teleporter.model.dbschema.OEntity;
 import com.orientdb.teleporter.model.dbschema.ORelationship;
+import com.orientdb.teleporter.model.graphmodel.OEdgeType;
 import com.orientdb.teleporter.model.graphmodel.OModelProperty;
 import com.orientdb.teleporter.model.graphmodel.OVertexType;
 import com.orientdb.teleporter.persistence.handler.ODBMSDataTypeHandler;
@@ -247,22 +248,20 @@ public class OGraphEngineForDB {
       if(propertyOfKey.length > 0 && valueOfKey.length > 0 )
         vertex = this.getVertexByIndexedKey(orientGraph, propertyOfKey, valueOfKey, vertexType.getName());
 
-      // setting properties to the vertex
-      String currentAttributeValue = null;
-      Date currentDateValue = null;
-      byte[] currentBinaryValue = null;
-      ODocument currentEmbeddedValue = null;
-      String currentPropertyType;
-      String currentOriginalType;
-      String currentPropertyName = null;
-
       // extraction of inherited and not inherited properties from the record (through "getAllProperties()" method)
+      String currentPropertyType;
+      String currentPropertyName = null;
       for(OModelProperty currentProperty : vertexType.getAllProperties()) {
+
+        String currentAttributeValue;
+        Date currentDateValue;
+        byte[] currentBinaryValue;
+        ODocument currentEmbeddedValue = null;
 
         currentPropertyName = currentProperty.getName();
 
         currentPropertyType = context.getDataTypeHandler().resolveType(currentProperty.getPropertyType().toLowerCase(Locale.ENGLISH),context).toString();
-        currentOriginalType = currentProperty.getPropertyType();
+        String currentOriginalType = currentProperty.getPropertyType();
 
         try {
 
@@ -654,7 +653,7 @@ public class OGraphEngineForDB {
         }
 
         // upsert of the edge between the currentOutVertex and the currentInVertex
-        this.upsertEdge(orientGraph, currentOutVertex, currentInVertex, edgeType, direction, context);
+        this.upsertEdge(orientGraph, currentOutVertex, currentInVertex, edgeType, null, direction, context);
       }
 
     } catch(Exception e) {
@@ -683,7 +682,7 @@ public class OGraphEngineForDB {
     return currentInVertex;
   }
 
-  public void upsertEdge(OrientBaseGraph orientGraph, OrientVertex currentOutVertex, OrientVertex currentInVertex, String edgeType, String direction, OTeleporterContext context) {
+  public void upsertEdge(OrientBaseGraph orientGraph, OrientVertex currentOutVertex, OrientVertex currentInVertex, String edgeType, Map<String, Object> properties, String direction, OTeleporterContext context) {
 
     try {
 
@@ -713,6 +712,7 @@ public class OGraphEngineForDB {
           else if(direction != null && direction.equals("inverse")) {
             edge = orientGraph.addEdge(null, currentInVertex, currentOutVertex, edgeType);
           }
+          edge.setProperties(properties);
           edge.save();
           statistics.orientAddedEdges++;
           context.getOutputManager().debug("\nNew edge inserted: %s\n", edge.toString());
@@ -726,6 +726,7 @@ public class OGraphEngineForDB {
         else if(direction != null && direction.equals("inverse")) {
           edge = orientGraph.addEdge(null, currentInVertex, currentOutVertex, edgeType);
         }
+        edge.setProperties(properties);
         edge.save();
         statistics.orientAddedEdges++;
         context.getOutputManager().debug("\nNew edge inserted: %s\n", edge.toString());
@@ -782,13 +783,104 @@ public class OGraphEngineForDB {
         index++;
       }
 
-      OrientVertex currentOutVertex = this.getVertexByIndexedKey(orientGraph, keysOutVertex, valuesOutVertex, aggregatorEdge.getOutVertexClassName());
-      OrientVertex currentInVertex = this.getVertexByIndexedKey(orientGraph, keysInVertex, valuesInVertex, aggregatorEdge.getInVertexClassName());
-
       // String direction
-      String direction = "direct";
+      String direction = joinTable.getDirectionOfN2NRepresentedRelationship();
 
-      this.upsertEdge(orientGraph, currentOutVertex, currentInVertex, aggregatorEdge.getEdgeType(), direction, context);
+
+      OrientVertex currentOutVertex;
+      OrientVertex currentInVertex;
+      if(direction.equals("direct")) {
+        currentOutVertex = this.getVertexByIndexedKey(orientGraph, keysOutVertex, valuesOutVertex, aggregatorEdge.getOutVertexClassName());
+        currentInVertex = this.getVertexByIndexedKey(orientGraph, keysInVertex, valuesInVertex, aggregatorEdge.getInVertexClassName());
+      }
+      else {
+        currentOutVertex = this.getVertexByIndexedKey(orientGraph, keysOutVertex, valuesOutVertex, aggregatorEdge.getInVertexClassName());
+        currentInVertex = this.getVertexByIndexedKey(orientGraph, keysInVertex, valuesInVertex, aggregatorEdge.getOutVertexClassName());
+      }
+
+      // extracting edge properties from the join table
+      Map<String,Object> properties = new LinkedHashMap<String,Object>();
+      OEdgeType edgeType = aggregatorEdge.getEdgeType();
+
+      for(OModelProperty currentProperty: edgeType.getAllProperties()) {
+
+        String currentAttributeValue = null;
+        Date currentDateValue = null;
+        byte[] currentBinaryValue = null;
+        ODocument currentEmbeddedValue = null;
+
+        String currentPropertyName = currentProperty.getName();
+
+        String currentPropertyType = context.getDataTypeHandler().resolveType(currentProperty.getPropertyType().toLowerCase(Locale.ENGLISH),context).toString();
+        String currentOriginalType = currentProperty.getPropertyType();
+
+        try {
+
+          // disambiguation on OrientDB Schema type
+
+          if(currentPropertyType.equals("DATE")) {
+            currentDateValue = jointTableRecord.getDate(this.mapper.getAttributeByAggregatorEdgeTypeAndProperty(edgeType.getName(), currentPropertyName).getName());
+            properties.put(currentPropertyName, currentDateValue);
+          }
+
+          else if(currentPropertyType.equals("DATETIME")) {
+            currentDateValue = jointTableRecord.getTimestamp(this.mapper.getAttributeByAggregatorEdgeTypeAndProperty(edgeType.getName(), currentPropertyName).getName());
+            properties.put(currentProperty.getName(), currentDateValue);
+          }
+
+          else if(currentPropertyType.equals("BINARY")) {
+            currentBinaryValue = jointTableRecord.getBytes(this.mapper.getAttributeByAggregatorEdgeTypeAndProperty(edgeType.getName(), currentPropertyName).getName());
+            properties.put(currentProperty.getName(), currentBinaryValue);
+          }
+
+          else if(currentPropertyType.equals("BOOLEAN")) {
+            currentAttributeValue = jointTableRecord.getString(this.mapper.getAttributeByAggregatorEdgeTypeAndProperty(edgeType.getName(), currentPropertyName).getName());
+
+            switch(currentAttributeValue) {
+
+            case "t": properties.put(currentProperty.getName(), "true");
+              break;
+            case "f": properties.put(currentProperty.getName(), "false");
+              break;
+            default: break;
+            }
+          }
+
+          // JSON
+          else if(handler.jsonImplemented && currentOriginalType.equalsIgnoreCase("JSON")) {
+            currentBinaryValue = jointTableRecord.getBytes(this.mapper.getAttributeByAggregatorEdgeTypeAndProperty(edgeType.getName(), currentPropertyName).getName());
+            currentEmbeddedValue = this.handler.convertJSONToDocument(currentPropertyName, currentBinaryValue);
+            properties.put(currentProperty.getName(), currentEmbeddedValue);
+          }
+
+          // GEOSPATIAL
+          else if(handler.geospatialImplemented && handler.isGeospatial(currentOriginalType)) {
+            currentAttributeValue = jointTableRecord.getString(this.mapper.getAttributeByAggregatorEdgeTypeAndProperty(edgeType.getName(), currentPropertyName).getName());
+            //						currentEmbeddedValue = OShapeFactory.INSTANCE.toDoc(currentAttributeValue);  // to change with transformation from wkt (currentAttrValue) into embedded
+            properties.put(currentProperty.getName(), currentEmbeddedValue);
+          }
+
+          else {
+            currentAttributeValue = jointTableRecord.getString(this.mapper.getAttributeByAggregatorEdgeTypeAndProperty(edgeType.getName(), currentPropertyName).getName());
+            properties.put(currentProperty.getName(), currentAttributeValue);
+          }
+
+        } catch(Exception e) {
+          String mess =  "Problem encountered during the extraction of the values from the records. Edge Type: " + edgeType.getName() + ";\tProperty: " + currentProperty.getName() + ";\tOriginal join table: " + joinTable.getName();
+          if(e.getMessage() != null)
+            mess += "\n" + e.getClass().getName() + " - " + e.getMessage();
+          else
+            mess += "\n" + e.getClass().getName();
+
+          context.getOutputManager().error(mess);
+          Writer writer = new StringWriter();
+          e.printStackTrace(new PrintWriter(writer));
+          String s1 = writer.toString();
+          context.getOutputManager().debug(s1);
+        }
+      }
+
+      this.upsertEdge(orientGraph, currentOutVertex, currentInVertex, aggregatorEdge.getEdgeType().getName(), properties, direction, context);
 
     } catch(Exception e) {
       if(e.getMessage() != null)

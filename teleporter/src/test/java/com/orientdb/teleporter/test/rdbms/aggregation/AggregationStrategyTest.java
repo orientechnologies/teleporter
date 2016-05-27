@@ -476,7 +476,7 @@ public class AggregationStrategyTest {
       /*
        * Aggregation of join tables
        */
-      mapper.JoinTableDim2Aggregation(context);
+      mapper.joinTableDim2Aggregation(context);
       
       
       /*

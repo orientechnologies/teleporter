@@ -50,6 +50,10 @@ public class ConfigurationMappingTest {
 
   private OER2GraphMapper    mapper;
   private  OTeleporterContext context;
+  private final String configDirectEdgesPath = "src/test/resources/configuration-mapping/relationships-mapping-direct-edges.json";
+  private final String configInverseEdgesPath = "src/test/resources/configuration-mapping/relationships-mapping-inverted-edges.json";
+  private final String configJoinTableDirectEdgesPath = "src/test/resources/configuration-mapping/joint-table-relationships-mapping-direct-edges.json";
+  private final String configJoinTableInverseEdgesPath = "src/test/resources/configuration-mapping/joint-table-relationships-mapping-inverted-edges.json";
 
   @Before
   public void init() {
@@ -96,7 +100,7 @@ public class ConfigurationMappingTest {
           " TITLE varchar(256) not null, PROJECT_MANAGER varchar(256) not null, primary key (ID))";
       st.execute(foreignTableBuilding);
 
-      ODocument config = OFileManager.buildJsonFromFile("src/test/resources/configuration-mapping/relationships-mapping-direct-edges.json");
+      ODocument config = OFileManager.buildJsonFromFile(this.configDirectEdgesPath);
 
       this.mapper = new OER2GraphMapper("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", null, null, config);
       mapper.buildSourceSchema(this.context);
@@ -400,7 +404,7 @@ public class ConfigurationMappingTest {
       st = connection.createStatement();
       st.execute(parentTableBuilding);
 
-      ODocument config = OFileManager.buildJsonFromFile("src/test/resources/configuration-mapping/relationships-mapping-inverted-edges.json");
+      ODocument config = OFileManager.buildJsonFromFile(this.configInverseEdgesPath);
 
       this.mapper = new OER2GraphMapper("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", null, null, config);
       mapper.buildSourceSchema(this.context);
@@ -685,7 +689,7 @@ public class ConfigurationMappingTest {
           " FILM_ID varchar(256) not null, PAYMENT integer, primary key (ACTOR_ID, FILM_ID))";
       st.execute(actorFilmTableBuilding);
 
-      ODocument config = OFileManager.buildJsonFromFile("src/test/resources/configuration-mapping/joint-table-relationship-mapping-direct-edges.json");
+      ODocument config = OFileManager.buildJsonFromFile(this.configJoinTableDirectEdgesPath);
 
       this.mapper = new OER2GraphMapper("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", null, null, config);
       mapper.buildSourceSchema(this.context);
@@ -954,7 +958,7 @@ public class ConfigurationMappingTest {
       /**
        * performing aggregation
        */
-      mapper.JoinTableDim2Aggregation(this.context);
+      mapper.joinTableDim2Aggregation(this.context);
 
 
       /*
@@ -1130,7 +1134,7 @@ public class ConfigurationMappingTest {
           " FILM_ID varchar(256) not null, PAYMENT integer, primary key (ACTOR_ID, FILM_ID))";
       st.execute(actorFilmTableBuilding);
 
-      ODocument config = OFileManager.buildJsonFromFile("src/test/resources/configuration-mapping/joint-table-relationship-mapping-inverted-edges.json");
+      ODocument config = OFileManager.buildJsonFromFile(this.configJoinTableInverseEdgesPath);
 
       this.mapper = new OER2GraphMapper("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", null, null, config);
       mapper.buildSourceSchema(this.context);
@@ -1400,7 +1404,7 @@ public class ConfigurationMappingTest {
       /**
        * performing aggregation
        */
-      mapper.JoinTableDim2Aggregation(this.context);
+      mapper.joinTableDim2Aggregation(this.context);
 
 
       /*
@@ -1527,6 +1531,5 @@ public class ConfigurationMappingTest {
       }
     }
   }
-
 
 }
