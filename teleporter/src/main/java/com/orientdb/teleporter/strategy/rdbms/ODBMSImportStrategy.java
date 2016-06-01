@@ -59,7 +59,7 @@ public abstract class ODBMSImportStrategy implements OImportStrategy {
 
   // config info
   private final String configurationDirectoryName = "teleporter-config/";
-  private final String configFileName = "config.json";
+  private final String configFileName = "migration-config.json";
   private String outDBConfigPath;       // path ORIENTDB_HOME/<db-name>/teleporter-config/config.json
   private boolean configPresentInDB;
 
@@ -91,9 +91,6 @@ public abstract class ODBMSImportStrategy implements OImportStrategy {
         .createSchemaMapper(driver, uri, username, password, outOrientGraphUri, chosenMapper, xmlPath, nameResolver, handler,
             includedTables, excludedTables, config, context);
 
-    // manage conf if present: updating in the db directory
-    this.updateConfigurationInDatabase(config, configurationPath, context);
-
     // Step 4: Import
     this.executeImport(driver, uri, username, password, outOrientGraphUri, mapper, handler, context);
     context.getStatistics().notifyListeners();
@@ -112,6 +109,9 @@ public abstract class ODBMSImportStrategy implements OImportStrategy {
       ODocument config, OTeleporterContext context);
 
 
+  public abstract void executeImport(String driver, String uri, String username, String password, String outOrientGraphUri, OSource2GraphMapper mapper, ODBMSDataTypeHandler handler, OTeleporterContext context);
+
+
   /**
    * Loading eventual configuration.
    * Look for the config in the <db-path>/teleporter-config/ path:
@@ -123,9 +123,12 @@ public abstract class ODBMSImportStrategy implements OImportStrategy {
    **/
   private ODocument loadConfiguration(String outOrientGraphUri, String configurationPath, OTeleporterContext context) {
 
+    if(outOrientGraphUri.contains("\\")) {
+      outOrientGraphUri = outOrientGraphUri.replace("\\","/");
+    }
+
     // checking the presence of the configuration in the target db
-    if (!(outOrientGraphUri.charAt(outOrientGraphUri.length() - 1) == '/'
-        || outOrientGraphUri.charAt(outOrientGraphUri.length() - 1) == '\\')) {
+    if (!(outOrientGraphUri.charAt(outOrientGraphUri.length() - 1) == '/')) {
       outOrientGraphUri += "/";
     }
     this.outDBConfigPath = outOrientGraphUri + this.configurationDirectoryName + this.configFileName;
@@ -142,11 +145,15 @@ public abstract class ODBMSImportStrategy implements OImportStrategy {
     if (this.configPresentInDB) {
       config = OFileManager.buildJsonFromFile(this.outDBConfigPath);
       context.getOutputManager().error("Configuration correctly loaded from %s.", this.outDBConfigPath);
-    } else {
+    }
+    else {
       config = OFileManager.buildJsonFromFile(configurationPath);
       // (ii)
       if (config != null) {
-        context.getOutputManager().error("Configuration correctly loaded from %s.", configurationPath);
+        context.getOutputManager().error("Configuration correctly loaded from %s and saved in %s.", configurationPath, this.outDBConfigPath);
+
+        // manage conf if present: updating in the db directory
+        this.copyConfigurationInDatabase(config, configurationPath, context);
       }
       // (iii)
       else {
@@ -157,8 +164,9 @@ public abstract class ODBMSImportStrategy implements OImportStrategy {
     return config;
   }
 
-  public void updateConfigurationInDatabase(ODocument config, String configurationPath, OTeleporterContext context) {
-    // if we have config in input and it was not present in the DB then write it in the <db-path>/teleporter-config/ path
+  public void copyConfigurationInDatabase(ODocument config, String configurationPath, OTeleporterContext context) {
+
+    // if we have config in input and it is not present in the DB then we copy it in the <db-path>/teleporter-config/ path
     if (config != null) {
       if (!this.configPresentInDB) {
         try {
@@ -178,8 +186,6 @@ public abstract class ODBMSImportStrategy implements OImportStrategy {
       }
     }
   }
-
-  public abstract void executeImport(String driver, String uri, String username, String password, String outOrientGraphUri, OSource2GraphMapper mapper, ODBMSDataTypeHandler handler, OTeleporterContext context);
 
   private void copyConfigIntoTargetDB(String sourceConfigPath, String destinationConfigPath) throws IOException {
 
