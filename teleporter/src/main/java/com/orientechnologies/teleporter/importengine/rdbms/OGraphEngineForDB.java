@@ -18,6 +18,7 @@
 
 package com.orientechnologies.teleporter.importengine.rdbms;
 
+import com.orientechnologies.orient.core.exception.OValidationException;
 import com.orientechnologies.teleporter.context.OTeleporterContext;
 import com.orientechnologies.teleporter.context.OTeleporterStatistics;
 import com.orientechnologies.teleporter.exception.OTeleporterRuntimeException;
@@ -128,11 +129,6 @@ public class OGraphEngineForDB {
         mess += "\n" + e.getClass().getName();
 
       context.getOutputManager().error(mess + "\n");
-
-      if(e.getMessage() != null)
-        context.getOutputManager().error(e.getClass().getName() + " - " + e.getMessage());
-      else
-        context.getOutputManager().error(e.getClass().getName());
 
       Writer writer = new StringWriter();
       e.printStackTrace(new PrintWriter(writer));
@@ -332,7 +328,12 @@ public class OGraphEngineForDB {
 
       if(vertex == null) {
         String classAndClusterName = vertexType.getName();
-        vertex = orientGraph.addVertex("class:"+classAndClusterName, properties);
+
+        try {
+          vertex = orientGraph.addVertex("class:" + classAndClusterName, properties);
+        }catch(OValidationException e) {
+          context.getStatistics().warningMessages.add(e.getMessage());
+        }
         statistics.orientAddedVertices++;
         context.getOutputManager().debug("\nLoaded properties: %s\n", properties.toString());
         context.getOutputManager().debug("\nNew vertex inserted (all props setted): %s\n", vertex.toString());
@@ -361,7 +362,11 @@ public class OGraphEngineForDB {
         if(justReachedVertex) {
 
           // setting new properties and save
-          vertex.setProperties(properties);
+          try {
+            vertex.setProperties(properties);
+          }catch(OValidationException e) {
+            context.getStatistics().warningMessages.add(e.getMessage());
+          }
           vertex.save();
           context.getOutputManager().debug("\nLoaded properties: %s\n", properties.toString());
           context.getOutputManager().debug("\nNew vertex inserted (all props setted): %s\n", vertex.toString());
@@ -411,7 +416,11 @@ public class OGraphEngineForDB {
 
               // setting new properties and save
               //              long millis = ((Date)properties.get("datanascita")).getTime();
-              vertex.setProperties(properties);
+              try {
+                vertex.setProperties(properties);
+              }catch(OValidationException e) {
+                context.getStatistics().warningMessages.add(e.getMessage());
+              }
               statistics.orientUpdatedVertices++;
               context.getOutputManager().debug("\nLoaded properties: %s\n", properties.toString());
               context.getOutputManager().debug("\nNew vertex inserted (all props setted): %s\n", vertex.toString());
@@ -642,7 +651,11 @@ public class OGraphEngineForDB {
 
           context.getOutputManager().debug("\nNEW Reached vertex (id:value) --> %s:%s\n", Arrays.toString(propertyOfKey), Arrays.toString(valueOfKey));
           String classAndClusterName = currentInVertexType.getName();
-          currentInVertex = orientGraph.addVertex("class:"+classAndClusterName, partialProperties);
+          try {
+            currentInVertex = orientGraph.addVertex("class:" + classAndClusterName, partialProperties);
+          }catch(OValidationException e) {
+            context.getStatistics().warningMessages.add(e.getMessage());
+          }
           statistics.orientAddedVertices++;
           context.getOutputManager().debug("\nNew vertex inserted (only pk props setted): %s\n", currentInVertex.toString());
 
@@ -664,11 +677,6 @@ public class OGraphEngineForDB {
         mess += "\n" + e.getClass().getName();
 
       context.getOutputManager().error(mess);
-
-      if(e.getMessage() != null)
-        context.getOutputManager().error(e.getClass().getName() + " - " + e.getMessage());
-      else
-        context.getOutputManager().error(e.getClass().getName());
 
       Writer writer = new StringWriter();
       e.printStackTrace(new PrintWriter(writer));
@@ -883,10 +891,13 @@ public class OGraphEngineForDB {
       this.upsertEdge(orientGraph, currentOutVertex, currentInVertex, aggregatorEdge.getEdgeType().getName(), properties, direction, context);
 
     } catch(Exception e) {
+      String mess = "";
       if(e.getMessage() != null)
-        context.getOutputManager().error(e.getClass().getName() + " - " + e.getMessage());
+        mess += "\n" + e.getClass().getName() + " - " + e.getMessage();
       else
-        context.getOutputManager().error(e.getClass().getName());
+        mess += "\n" + e.getClass().getName();
+
+      context.getOutputManager().error(mess);
 
       Writer writer = new StringWriter();
       e.printStackTrace(new PrintWriter(writer));

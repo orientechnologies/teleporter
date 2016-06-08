@@ -102,21 +102,7 @@ public class OProgressMonitor implements OStatisticsListener {
     int work1DonePercentage = (int)( (((double)statistics.builtEntities/(double)statistics.totalNumberOfEntities) * 0.25 * 100) +
         (((double)statistics.doneEntity4Relationship/(double)statistics.totalNumberOfEntities) * 0.75 * 100) );
 
-    int pointCharsWork1 = (work1DonePercentage/5);
-    int emptyCharsWork1 = 20-pointCharsWork1;
-
-    String progressBarWork1 = "[";
-    while (pointCharsWork1 > 0) {
-      progressBarWork1 += '.';
-      pointCharsWork1--;
-    }
-
-    while (emptyCharsWork1 > 0) {
-      progressBarWork1 += ' ';
-      emptyCharsWork1--;
-    }
-
-    progressBarWork1 += "]";
+    String progressBarWork1 = this.getProgressBar(work1DonePercentage);
 
     // Time
     long elapsedTime = (currentTime.getTime() - statistics.startWork1Time.getTime());
@@ -134,7 +120,6 @@ public class OProgressMonitor implements OStatisticsListener {
 
     int work2DonePercentage;
 
-
     if(statistics.totalNumberOfModelVertices > 0 && statistics.totalNumberOfRelationships > 0) {
       work2DonePercentage = (int) (((double)statistics.builtModelVertexTypes/(double)statistics.totalNumberOfModelVertices) * 100/2);
       work2DonePercentage += (int) (((double)statistics.analyzedRelationships /(double)statistics.totalNumberOfRelationships) * 100/2);
@@ -146,21 +131,7 @@ public class OProgressMonitor implements OStatisticsListener {
       work2DonePercentage = 0;
     }
 
-    int pointCharsWork2 = (work2DonePercentage/5);
-    int emptyCharsWork2 = 20-pointCharsWork2;
-
-    String progressBarWork2 = "[";
-    while (pointCharsWork2 > 0) {
-      progressBarWork2 += '.';
-      pointCharsWork2--;
-    }
-
-    while (emptyCharsWork2 > 0) {
-      progressBarWork2 += ' ';
-      emptyCharsWork2--;
-    }
-
-    progressBarWork2 += "]";
+    String progressBarWork2 = this.getProgressBar(work2DonePercentage);
 
     // Time
     long elapsedTime = (currentTime.getTime() - statistics.startWork2Time.getTime());
@@ -199,21 +170,7 @@ public class OProgressMonitor implements OStatisticsListener {
       work3DonePercentage = 0;
     }
 
-    int pointCharsWork3 = (work3DonePercentage/5);
-    int emptyCharsWork3 = 20-pointCharsWork3;
-
-    String progressBarWork3 = "[";
-    while (pointCharsWork3 > 0) {
-      progressBarWork3 += '.';
-      pointCharsWork3--;
-    }
-
-    while (emptyCharsWork3 > 0) {
-      progressBarWork3 += ' ';
-      emptyCharsWork3--;
-    }
-
-    progressBarWork3 += "]";
+    String progressBarWork3 = this.getProgressBar(work3DonePercentage);;
 
     // Time
     long elapsedTime = (currentTime.getTime() - statistics.startWork3Time.getTime());
@@ -237,21 +194,7 @@ public class OProgressMonitor implements OStatisticsListener {
       work4DonePercentage = 0;
     }
 
-    int pointCharsWork4 = (work4DonePercentage/5);
-    int emptyCharsWork4 = 20-pointCharsWork4;
-
-    String progressBarWork4 = "[";
-    while (pointCharsWork4 > 0) {
-      progressBarWork4 += '.';
-      pointCharsWork4--;
-    }
-
-    while (emptyCharsWork4 > 0) {
-      progressBarWork4 += ' ';
-      emptyCharsWork4--;
-    }
-
-    progressBarWork4 += "]";
+    String progressBarWork4 = this.getProgressBar(work4DonePercentage);;
 
     // Time
     long elapsedTime = (currentTime.getTime() - statistics.startWork4Time.getTime());
@@ -288,4 +231,26 @@ public class OProgressMonitor implements OStatisticsListener {
 
     return message;
   }
+
+  public String getProgressBar(int workDonePercentage) {
+
+    int pointCharsWork = (workDonePercentage/5);
+    int emptyCharsWork = 20-pointCharsWork;
+
+    String progressBarWork = "[";
+    while (pointCharsWork > 0) {
+      progressBarWork += '.';
+      pointCharsWork--;
+    }
+
+    while (emptyCharsWork > 0) {
+      progressBarWork += ' ';
+      emptyCharsWork--;
+    }
+
+    progressBarWork += "]";
+
+    return progressBarWork;
+  }
+
 }

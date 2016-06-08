@@ -51,24 +51,39 @@ public class OConfigurationManager {
       this.configPresentInDB = false;
 
     // (i)
-    ODocument config;
-    if (this.configPresentInDB) {
-      config = OFileManager.buildJsonFromFile(this.outDBConfigPath);
-      context.getOutputManager().info("Configuration correctly loaded from %s.\n", this.outDBConfigPath);
-    }
-    else {
-      config = OFileManager.buildJsonFromFile(configurationPath);
-      // (ii)
-      if (config != null) {
-        context.getOutputManager().info("Configuration correctly loaded from %s and saved in %s.\n", configurationPath, this.outDBConfigPath);
+    ODocument config = null;
+    try {
+      if (this.configPresentInDB) {
+        config = OFileManager.buildJsonFromFile(this.outDBConfigPath);
+        context.getOutputManager().info("Configuration correctly loaded from %s.\n", this.outDBConfigPath);
+      } else {
+        config = OFileManager.buildJsonFromFile(configurationPath);
+        // (ii)
+        if (config != null) {
+          context.getOutputManager().info("Configuration correctly loaded from %s and saved in %s.\n", configurationPath, this.outDBConfigPath);
 
-        // manage conf if present: updating in the db directory
-        this.copyConfigurationInDatabase(config, configurationPath, context);
+          // manage conf if present: updating in the db directory
+          this.copyConfigurationInDatabase(config, configurationPath, context);
+        }
+        // (iii)
+        else {
+          context.getOutputManager().info("No configuration file was found. Migration will be performed with standard mapping policies.\n");
+        }
       }
-      // (iii)
-      else {
-        context.getOutputManager().info("No configuration file was found. Migration will be performed with standard mapping policies.\n");
-      }
+    } catch(Exception e) {
+      String mess = "";
+      if(e.getMessage() != null)
+        mess += "\n" + e.getClass().getName() + " - " + e.getMessage();
+      else
+        mess += "\n" + e.getClass().getName();
+
+      context.getOutputManager().error(mess);
+
+      Writer writer = new StringWriter();
+      e.printStackTrace(new PrintWriter(writer));
+      String s = writer.toString();
+      context.getOutputManager().debug("\n" + s + "\n");
+      throw new OTeleporterRuntimeException(e);
     }
 
     return config;
@@ -82,10 +97,13 @@ public class OConfigurationManager {
         try {
           this.copyConfigIntoTargetDB(configurationPath, this.outDBConfigPath);
         } catch (IOException e) {
-          if (e.getMessage() != null)
-            context.getOutputManager().error(e.getClass().getName() + " - " + e.getMessage());
+          String mess = "";
+          if(e.getMessage() != null)
+            mess += "\n" + e.getClass().getName() + " - " + e.getMessage();
           else
-            context.getOutputManager().error(e.getClass().getName());
+            mess += "\n" + e.getClass().getName();
+
+          context.getOutputManager().error(mess);
 
           Writer writer = new StringWriter();
           e.printStackTrace(new PrintWriter(writer));

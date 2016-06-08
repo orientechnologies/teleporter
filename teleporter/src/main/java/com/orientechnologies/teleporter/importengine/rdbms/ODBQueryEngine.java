@@ -88,10 +88,13 @@ public class ODBQueryEngine implements ODataSourceQueryEngine {
       try {
         dbConnection = dataSource.getConnection(context);
       } catch (Exception e) {
+        String mess = "";
         if(e.getMessage() != null)
-          context.getOutputManager().error(e.getClass().getName() + " - " + e.getMessage());
+          mess += "\n" + e.getClass().getName() + " - " + e.getMessage();
         else
-          context.getOutputManager().error(e.getClass().getName());
+          mess += "\n" + e.getClass().getName();
+
+        context.getOutputManager().error(mess);
 
         Writer writer = new StringWriter();
         e.printStackTrace(new PrintWriter(writer));
@@ -135,10 +138,13 @@ public class ODBQueryEngine implements ODataSourceQueryEngine {
       try {
         dbConnection = dataSource.getConnection(context);
       } catch (Exception e) {
+        String mess = "";
         if(e.getMessage() != null)
-          context.getOutputManager().error(e.getClass().getName() + " - " + e.getMessage());
+          mess += "\n" + e.getClass().getName() + " - " + e.getMessage();
         else
-          context.getOutputManager().error(e.getClass().getName());
+          mess += "\n" + e.getClass().getName();
+
+        context.getOutputManager().error(mess);
 
         Writer writer = new StringWriter();
         e.printStackTrace(new PrintWriter(writer));
@@ -173,10 +179,13 @@ public class ODBQueryEngine implements ODataSourceQueryEngine {
       try {
         dbConnection = dataSource.getConnection(context);
       } catch (Exception e) {
+        String mess = "";
         if(e.getMessage() != null)
-          context.getOutputManager().error(e.getClass().getName() + " - " + e.getMessage());
+          mess += "\n" + e.getClass().getName() + " - " + e.getMessage();
         else
-          context.getOutputManager().error(e.getClass().getName());
+          mess += "\n" + e.getClass().getName();
+
+        context.getOutputManager().error(mess);
 
         Writer writer = new StringWriter();
         e.printStackTrace(new PrintWriter(writer));
@@ -223,10 +232,13 @@ public class ODBQueryEngine implements ODataSourceQueryEngine {
       try {
         dbConnection = dataSource.getConnection(context);
       } catch (Exception e) {
+        String mess = "";
         if(e.getMessage() != null)
-          context.getOutputManager().error(e.getClass().getName() + " - " + e.getMessage());
+          mess += "\n" + e.getClass().getName() + " - " + e.getMessage();
         else
-          context.getOutputManager().error(e.getClass().getName());
+          mess += "\n" + e.getClass().getName();
+
+        context.getOutputManager().error(mess);
 
         Writer writer = new StringWriter();
         e.printStackTrace(new PrintWriter(writer));
@@ -276,10 +288,13 @@ public class ODBQueryEngine implements ODataSourceQueryEngine {
       try {
         dbConnection = dataSource.getConnection(context);
       } catch (Exception e) {
+        String mess = "";
         if(e.getMessage() != null)
-          context.getOutputManager().error(e.getClass().getName() + " - " + e.getMessage());
+          mess += "\n" + e.getClass().getName() + " - " + e.getMessage();
         else
-          context.getOutputManager().error(e.getClass().getName());
+          mess += "\n" + e.getClass().getName();
+
+        context.getOutputManager().error(mess);
 
         Writer writer = new StringWriter();
         e.printStackTrace(new PrintWriter(writer));
@@ -369,11 +384,14 @@ public class ODBQueryEngine implements ODataSourceQueryEngine {
 
       try {
         dbConnection = dataSource.getConnection(context);
-      } catch (Exception e) {
+      } catch(Exception e) {
+        String mess = "";
         if(e.getMessage() != null)
-          context.getOutputManager().error(e.getClass().getName() + " - " + e.getMessage());
+          mess += "\n" + e.getClass().getName() + " - " + e.getMessage();
         else
-          context.getOutputManager().error(e.getClass().getName());
+          mess += "\n" + e.getClass().getName();
+
+        context.getOutputManager().error(mess);
 
         Writer writer = new StringWriter();
         e.printStackTrace(new PrintWriter(writer));

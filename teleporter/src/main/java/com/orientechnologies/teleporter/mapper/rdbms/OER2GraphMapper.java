@@ -432,6 +432,11 @@ public class OER2GraphMapper extends OSource2GraphMapper {
 
     List<ODocument> edgesDoc = configuration.field("edges");
 
+    if(edgesDoc == null) {
+      context.getOutputManager().error("Configuration error: 'edges' field not found.");
+      throw new OTeleporterRuntimeException();
+    }
+
     // Upsert relationships
     OEntity currentForeignEntity;
     ORelationship currentRelationship = null;
@@ -446,11 +451,11 @@ public class OER2GraphMapper extends OSource2GraphMapper {
 
     for(ODocument currentEdge: edgesDoc) {
 
-      String[] currentEdgeFields = currentEdge.fieldNames();
-      if(currentEdgeFields.length != 1) {
+      String[] edgeFields = currentEdge.fieldNames();
+      if(edgeFields.length != 1) {
 
       }
-      String edgeName = currentEdgeFields[0];
+      String edgeName = edgeFields[0];
       ODocument currentEdgeInfo = currentEdge.field(edgeName);
       ODocument mappingDoc = currentEdgeInfo.field("mapping");
 
@@ -462,10 +467,30 @@ public class OER2GraphMapper extends OSource2GraphMapper {
         List<String> fromColumns = mappingDoc.field("fromColumns");
         List<String> toColumns = mappingDoc.field("toColumns");
         ODocument joinTableDoc = mappingDoc.field("joinTable");
+
+        // configuration errors managing (draconian approach)
+        if(currentForeignEntityName == null) {
+          context.getOutputManager().error("Configuration error: 'fromTable' field not found in the '%s' edge-type definition.",  edgeName);
+          throw new OTeleporterRuntimeException();
+        }
+        if(currentParentEntityName == null) {
+          context.getOutputManager().error("Configuration error: 'toTable' field not found in the '%s' edge-type definition.",  edgeName);
+          throw new OTeleporterRuntimeException();
+        }
+        if(fromColumns == null) {
+          context.getOutputManager().error("Configuration error: 'fromColumns' field not found in the '%s' edge-type definition.",  edgeName);
+          throw new OTeleporterRuntimeException();
+        }
+        if(toColumns == null) {
+          context.getOutputManager().error("Configuration error: 'toColumns' field not found in the '%s' edge-type definition.",  edgeName);
+          throw new OTeleporterRuntimeException();
+        }
+
         String direction = mappingDoc.field("direction");
 
         if(direction != null && !(direction.equals("direct") || direction.equals("inverse"))) {
           context.getOutputManager().error("Configuration error: direction for the edge %s cannot be '%s'. Allowed values: 'direct' or 'inverse' \n", edgeName, direction);
+          throw new OTeleporterRuntimeException();
         }
 
         boolean foreignEntityIsJoinTableToAggregate = false;
@@ -482,11 +507,26 @@ public class OER2GraphMapper extends OSource2GraphMapper {
         else {
 
           String joinTableName = joinTableDoc.field("tableName");
+
+          if(joinTableName == null) {
+            context.getOutputManager().error("Configuration error: 'tableName' field not found in the join table mapping with the '%s' edge-type.",  edgeName);
+            throw new OTeleporterRuntimeException();
+          }
+
           foreignEntityIsJoinTableToAggregate = true;
 
           if(context.getExecutionStrategy().equals("naive-aggregate")) { // strategy is aggregated
             List<String> joinTableFromColumns = joinTableDoc.field("fromColumns");
             List<String> joinTableToColumns = joinTableDoc.field("toColumns");
+
+            if(joinTableFromColumns == null) {
+              context.getOutputManager().error("Configuration error: 'fromColumns' field not found in the join table mapping with the '%s' edge-type.",  edgeName);
+              throw new OTeleporterRuntimeException();
+            }
+            if(joinTableToColumns == null) {
+              context.getOutputManager().error("Configuration error: 'toColumns' field not found in the join table mapping with the '%s' edge-type.",  edgeName);
+              throw new OTeleporterRuntimeException();
+            }
 
             // building left relationship
             currentRelationship = buildRelationshipFrom(joinTableName, currentForeignEntityName, joinTableFromColumns, fromColumns, direction, context);
@@ -507,9 +547,14 @@ public class OER2GraphMapper extends OSource2GraphMapper {
           else if(context.getExecutionStrategy().equals("naive")) {
             context.getOutputManager().error("Configuration not compliant with the chosen strategy: you cannot perform the aggregation declared in the configuration for the "
                 + "join table %s while executing migration with a not-aggregating strategy. Thus no aggregation will be performed.\n", joinTableName);
+            throw new OTeleporterRuntimeException();
           }
 
         }
+      }
+      else {
+        context.getOutputManager().error("Configuration error: 'mapping' field not found in the '%s' edge-type definition.",  edgeName);
+        throw new OTeleporterRuntimeException();
       }
     }
 
@@ -602,7 +647,7 @@ public class OER2GraphMapper extends OSource2GraphMapper {
         ODocument currentEdgePropertyDoc = edgePropsDoc.field(propertyName);
         String propertyType = currentEdgePropertyDoc.field("type");
         if(propertyType == null) {
-          context.getStatistics().warningMessages.add("The property " + propertyName + " will not added to the Edge-Type " + currentEdgeType.getName() + " because the type is badly defined or not defined at all.");
+          context.getStatistics().warningMessages.add("Configuration ERROR: the property " + propertyName + " will not added to the Edge-Type " + currentEdgeType.getName() + " because the type is badly defined or not defined at all.");
           continue;
         }
         OModelProperty currentProperty = currentEdgeType.getPropertyByName(propertyName);
@@ -668,39 +713,6 @@ public class OER2GraphMapper extends OSource2GraphMapper {
 
     }
 
-
-
-//    if(currentRelationshipDirection != null && currentRelationshipDirection.equals("inverse")) {
-//      currentInVertexType = this.graphModel.getVertexByName(nameResolver.resolveVertexName(currentForeignEntityName));
-//      if(currentInVertexType == null) {
-//        currentInVertexType = new OVertexType(nameResolver.resolveVertexName(currentForeignEntityName));
-//        this.graphModel.getVerticesType().add(currentInVertexType);
-//      }
-//    }
-//    else {
-//      currentInVertexType = this.graphModel.getVertexByName(nameResolver.resolveVertexName(currentParentEntityName));
-//      if(currentInVertexType == null) {
-//        currentInVertexType = new OVertexType(nameResolver.resolveVertexName(currentParentEntityName));
-//        this.graphModel.getVerticesType().add(currentInVertexType);
-//      }
-//    }
-//
-//
-//    if(currentRelationshipDirection != null && currentRelationshipDirection.equals("inverse")) {
-//      currentOutVertexType = this.graphModel.getVertexByName(nameResolver.resolveVertexName(currentParentEntityName));
-//      if(currentOutVertexType == null) {
-//        currentOutVertexType = new OVertexType(nameResolver.resolveVertexName(currentParentEntityName));
-//        this.graphModel.getVerticesType().add(currentOutVertexType);
-//      }
-//    }
-//    else {
-//      currentOutVertexType = this.graphModel.getVertexByName(nameResolver.resolveVertexName(currentForeignEntityName));
-//      if(currentOutVertexType == null) {
-//        currentOutVertexType = new OVertexType(nameResolver.resolveVertexName(currentForeignEntityName));
-//        this.graphModel.getVerticesType().add(currentOutVertexType);
-//      }
-//    }
-
     currentInVertexType.getInEdgesType().add(currentEdgeType);
     currentOutVertexType.getOutEdgesType().add(currentEdgeType);
     currentEdgeType.setInVertexType(currentInVertexType);
@@ -740,10 +752,13 @@ public class OER2GraphMapper extends OSource2GraphMapper {
       if(result != null)
         result.close();
     } catch (SQLException e) {
+      String mess = "";
       if(e.getMessage() != null)
-        context.getOutputManager().error(e.getClass().getName() + " - " + e.getMessage());
+        mess += "\n" + e.getClass().getName() + " - " + e.getMessage();
       else
-        context.getOutputManager().error(e.getClass().getName());
+        mess += "\n" + e.getClass().getName();
+
+      context.getOutputManager().error(mess);
 
       Writer writer = new StringWriter();
       e.printStackTrace(new PrintWriter(writer));

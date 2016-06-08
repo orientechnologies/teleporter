@@ -55,6 +55,7 @@ public class FileManagerTest {
       assertFalse(newFile.exists());
 
     } catch(IOException e) {
+      e.printStackTrace();
       fail(e.getMessage());
     }
 
@@ -75,6 +76,7 @@ public class FileManagerTest {
       OFileManager.deleteFile(dir.getPath());
 
     }catch(IOException e) {
+      e.printStackTrace();
       fail(e.getMessage());
     }
 
@@ -96,6 +98,7 @@ public class FileManagerTest {
       OFileManager.deleteFile(dir.getPath());
 
     }catch(IOException e) {
+      e.printStackTrace();
       fail(e.getMessage());
     }
   }
@@ -103,27 +106,36 @@ public class FileManagerTest {
   @Test
   public void buildJsonFromFileTest() {
 
-    ODocument document = OFileManager.buildJsonFromFile("src/test/resources/file-manager/sample.json");
-    assertNotNull(document);
+    try {
 
-    ODocument person = document.field("Person");
-    assertNotNull(person);
+      ODocument document = OFileManager.buildJsonFromFile("src/test/resources/file-manager/sample.json");
+      assertNotNull(document);
 
-    String firstName = person.field("firstName");
-    String lastName = person.field("lastName");
-    String age = person.field("age");
+      ODocument person = document.field("Person");
+      assertNotNull(person);
 
-    assertNotNull(firstName);
-    assertNotNull(lastName);
-    assertNotNull(age);
+      String firstName = person.field("firstName");
+      String lastName = person.field("lastName");
+      String age = person.field("age");
 
-    assertEquals("Peter", firstName);
-    assertEquals("Brown", lastName);
-    assertEquals("55", age);
+      assertNotNull(firstName);
+      assertNotNull(lastName);
+      assertNotNull(age);
 
-    ODocument document2 = OFileManager.buildJsonFromFile("src/test/resources/file-manager/sample2.json");
-    assertNull(document2);
+      assertEquals("Peter", firstName);
+      assertEquals("Brown", lastName);
+      assertEquals("55", age);
 
+      ODocument document2 = null;
+      try {
+        document2 = OFileManager.buildJsonFromFile("src/test/resources/file-manager/sample2.json");
+      }catch(Exception e) {}
+      assertNull(document2);
+
+    } catch (Exception e) {
+      e.printStackTrace();
+      fail(e.getMessage());
+    }
   }
 
 

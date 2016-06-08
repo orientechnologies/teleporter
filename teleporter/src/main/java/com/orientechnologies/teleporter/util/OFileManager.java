@@ -51,11 +51,7 @@ public class OFileManager {
     //		TODO
 
     // Extracting zip file
-    try {
-      unZipAll(inputArchiveFile, outputFolderPath);
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
+    unZipAll(inputArchiveFile, outputFolderPath);
 
   }
 
@@ -80,7 +76,7 @@ public class OFileManager {
 
         // if the entry is a file, extracts it
         if (!zipEntry.isDirectory()) {
-          fileOutputStream = new FileOutputStream(newFile); 
+          fileOutputStream = new FileOutputStream(newFile);
           int len;
           while ((len = zipInputStream.read(buffer)) > 0) {
             fileOutputStream.write(buffer, 0, len);
@@ -93,7 +89,7 @@ public class OFileManager {
         }
 
         if(fileOutputStream != null)
-          fileOutputStream.close();   
+          fileOutputStream.close();
         zipEntry = zipInputStream.getNextEntry();
 
       }
@@ -102,7 +98,7 @@ public class OFileManager {
       zipInputStream.close();
 
     } catch(IOException ex){
-      ex.printStackTrace(); 
+      ex.printStackTrace();
     }
   }
 
@@ -123,26 +119,20 @@ public class OFileManager {
    * @return ODocument (null if the file does not exist or problem are encountered during the reading)
    */
 
-  public static ODocument buildJsonFromFile(String filePath) {
+  public static ODocument buildJsonFromFile(String filePath) throws IOException {
 
     if(filePath == null) {
       return null;
     }
 
-    try {
-      File jsonFile = new File(filePath);
-      FileInputStream is = new FileInputStream(jsonFile);
-      BufferedReader rd = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF-8")));
-      ODocument json = new ODocument();
-      String jsonText = OFileManager.readAllTextFile(rd);
-      json.fromJSON(jsonText, "noMap");
-      return json;
-    } catch (IOException e) {
-      return null;
-    }
+    File jsonFile = new File(filePath);
+    FileInputStream is = new FileInputStream(jsonFile);
+    BufferedReader rd = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF-8")));
+    ODocument json = new ODocument();
+    String jsonText = OFileManager.readAllTextFile(rd);
+    json.fromJSON(jsonText, "noMap");
+    return json;
 
   }
-
-
 
 }

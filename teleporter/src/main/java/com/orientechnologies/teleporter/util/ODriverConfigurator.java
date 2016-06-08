@@ -152,10 +152,13 @@ public class ODriverConfigurator {
       context.setDriverDependencyPath(driverPath);
 
     } catch (Exception e) {
-      if (e.getMessage() != null)
-        context.getOutputManager().error(e.getClass().getName() + " - " + e.getMessage());
+      String mess = "";
+      if(e.getMessage() != null)
+        mess += "\n" + e.getClass().getName() + " - " + e.getMessage();
       else
-        context.getOutputManager().error(e.getClass().getName());
+        mess += "\n" + e.getClass().getName();
+
+      context.getOutputManager().error(mess);
 
       Writer writer = new StringWriter();
       e.printStackTrace(new PrintWriter(writer));
@@ -207,11 +210,13 @@ public class ODriverConfigurator {
           // read json from the file in the ORIENTDB_HOME/config path
           is = new FileInputStream(new File(this.localJsonPath));
         } catch (IOException e) {
-          context.getOutputManager().error("The jdbc-drivers configuration cannot be found. The connection to orientdb.com did not succeed and the configuration file \"jdbc-drivers.json\" is not present in ORIENTDB_HOME/config.\n");
-          if (e.getMessage() != null)
-            context.getOutputManager().error(e.getClass().getName() + " - " + e.getMessage());
+          String mess = "The jdbc-drivers configuration cannot be found. The connection to orientdb.com did not succeed and the configuration file \"jdbc-drivers.json\" is not present in ORIENTDB_HOME/config.\n";
+          if(e.getMessage() != null)
+            mess += "\n" + e.getClass().getName() + " - " + e.getMessage();
           else
-            context.getOutputManager().error(e.getClass().getName());
+            mess += "\n" + e.getClass().getName();
+
+          context.getOutputManager().error(mess);
 
           Writer writer = new StringWriter();
           e.printStackTrace(new PrintWriter(writer));
@@ -228,10 +233,13 @@ public class ODriverConfigurator {
       json.fromJSON(jsonText, "noMap");
 
     } catch (Exception e) {
-      if (e.getMessage() != null)
-        context.getOutputManager().error(e.getClass().getName() + " - " + e.getMessage());
+      String mess = "";
+      if(e.getMessage() != null)
+        mess += "\n" + e.getClass().getName() + " - " + e.getMessage();
       else
-        context.getOutputManager().error(e.getClass().getName());
+        mess += "\n" + e.getClass().getName();
+
+      context.getOutputManager().error(mess);
 
       Writer writer = new StringWriter();
       e.printStackTrace(new PrintWriter(writer));
@@ -242,10 +250,13 @@ public class ODriverConfigurator {
       try {
         is.close();
       } catch (Exception e) {
-        if (e.getMessage() != null)
-          context.getOutputManager().error(e.getClass().getName() + " - " + e.getMessage());
+        String mess = "";
+        if(e.getMessage() != null)
+          mess += "\n" + e.getClass().getName() + " - " + e.getMessage();
         else
-          context.getOutputManager().error(e.getClass().getName());
+          mess += "\n" + e.getClass().getName();
+
+        context.getOutputManager().error(mess);
 
         Writer writer = new StringWriter();
         e.printStackTrace(new PrintWriter(writer));
