@@ -18,6 +18,7 @@
 
 package com.orientechnologies.teleporter.mapper.rdbms;
 
+import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.teleporter.context.OTeleporterContext;
 import com.orientechnologies.teleporter.context.OTeleporterStatistics;
 import com.orientechnologies.teleporter.exception.OTeleporterRuntimeException;
@@ -26,11 +27,7 @@ import com.orientechnologies.teleporter.model.dbschema.*;
 import com.orientechnologies.teleporter.model.graphmodel.*;
 import com.orientechnologies.teleporter.nameresolver.ONameResolver;
 import com.orientechnologies.teleporter.persistence.util.ODBSourceConnection;
-import com.orientechnologies.orient.core.record.impl.ODocument;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.io.Writer;
 import java.sql.*;
 import java.util.*;
 import java.util.Date;
@@ -376,32 +373,20 @@ public class OER2GraphMapper extends OSource2GraphMapper {
       context.getOutputManager().debug("\nIN relationships built.\n");
 
 
-    }catch(SQLException e) {
-      if(e.getMessage() != null)
-        context.getOutputManager().error(e.getClass().getName() + " - " + e.getMessage());
-      else
-        context.getOutputManager().error(e.getClass().getName());
-
-      Writer writer = new StringWriter();
-      e.printStackTrace(new PrintWriter(writer));
-      String s = writer.toString();
-      context.getOutputManager().error("\n" + s + "\n");
+    } catch (SQLException e) {
+      String mess = "";
+      context.printExceptionMessage(e, mess, "error");
+      context.printExceptionStackTrace(e, "error");
       throw new OTeleporterRuntimeException(e);
     }finally {
       try {
         if(connection != null) {
           connection.close();
         }
-      }catch(SQLException e) {
-        if(e.getMessage() != null)
-          context.getOutputManager().error(e.getClass().getName() + " - " + e.getMessage());
-        else
-          context.getOutputManager().error(e.getClass().getName());
-
-        Writer writer = new StringWriter();
-        e.printStackTrace(new PrintWriter(writer));
-        String s = writer.toString();
-        context.getOutputManager().debug("\n" + s + "\n");
+      } catch (SQLException e) {
+        String mess = "";
+        context.printExceptionMessage(e, mess, "error");
+        context.printExceptionStackTrace(e, "debug");
       }
     }
 
@@ -411,16 +396,10 @@ public class OER2GraphMapper extends OSource2GraphMapper {
       else {
         statistics.warningMessages.add("\nConnection to DB not closed.\n");
       }
-    }catch(SQLException e) {
-      if(e.getMessage() != null)
-        context.getOutputManager().error(e.getClass().getName() + " - " + e.getMessage());
-      else
-        context.getOutputManager().error(e.getClass().getName());
-
-      Writer writer = new StringWriter();
-      e.printStackTrace(new PrintWriter(writer));
-      String s = writer.toString();
-      context.getOutputManager().debug("\n" + s + "\n");
+    } catch (SQLException e) {
+      String mess = "";
+      context.printExceptionMessage(e, mess, "error");
+      context.printExceptionStackTrace(e, "debug");
     }
     statistics.notifyListeners();
     statistics.runningStepNumber = -1;
@@ -753,17 +732,8 @@ public class OER2GraphMapper extends OSource2GraphMapper {
         result.close();
     } catch (SQLException e) {
       String mess = "";
-      if(e.getMessage() != null)
-        mess += "\n" + e.getClass().getName() + " - " + e.getMessage();
-      else
-        mess += "\n" + e.getClass().getName();
-
-      context.getOutputManager().error(mess);
-
-      Writer writer = new StringWriter();
-      e.printStackTrace(new PrintWriter(writer));
-      String s = writer.toString();
-      context.getOutputManager().debug("\n" + s + "\n");
+      context.printExceptionMessage(e, mess, "error");
+      context.printExceptionStackTrace(e, "debug");
     }
 
   }
@@ -793,15 +763,9 @@ public class OER2GraphMapper extends OSource2GraphMapper {
         }
       }
     }catch(SQLException e) {
-      if(e.getMessage() != null)
-        context.getOutputManager().error(e.getClass().getName() + " - " + e.getMessage());
-      else
-        context.getOutputManager().error(e.getClass().getName());
-
-      Writer writer = new StringWriter();
-      e.printStackTrace(new PrintWriter(writer));
-      String s = writer.toString();
-      context.getOutputManager().error("\n" + s + "\n");
+      String mess = "";
+      context.printExceptionMessage(e, mess, "error");
+      context.printExceptionStackTrace(e, "error");
       throw new OTeleporterRuntimeException(e);
     }
     return rows;

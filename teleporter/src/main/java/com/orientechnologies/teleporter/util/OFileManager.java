@@ -59,47 +59,42 @@ public class OFileManager {
 
     byte[] buffer = new byte[1024];
 
-    try{
+    //get the zip file content
+    ZipInputStream zipInputStream = new ZipInputStream(new FileInputStream(inputZipFile));
+    //get the zipped file list entry
+    ZipEntry zipEntry = zipInputStream.getNextEntry();
 
-      //get the zip file content
-      ZipInputStream zipInputStream = new ZipInputStream(new FileInputStream(inputZipFile));
-      //get the zipped file list entry
-      ZipEntry zipEntry = zipInputStream.getNextEntry();
+    while(zipEntry != null){
 
-      while(zipEntry != null){
+      String fileName = zipEntry.getName();
+      String newFilePath = destinationFolderPath + File.separator + fileName;
+      File newFile = new File(newFilePath);
 
-        String fileName = zipEntry.getName();
-        String newFilePath = destinationFolderPath + File.separator + fileName;
-        File newFile = new File(newFilePath);
+      FileOutputStream fileOutputStream = null;
 
-        FileOutputStream fileOutputStream = null;
-
-        // if the entry is a file, extracts it
-        if (!zipEntry.isDirectory()) {
-          fileOutputStream = new FileOutputStream(newFile);
-          int len;
-          while ((len = zipInputStream.read(buffer)) > 0) {
-            fileOutputStream.write(buffer, 0, len);
-          }
-
-        } else {
-          // if the entry is a directory, make the directory
-          File dir = new File(newFilePath);
-          dir.mkdir();
+      // if the entry is a file, extracts it
+      if (!zipEntry.isDirectory()) {
+        fileOutputStream = new FileOutputStream(newFile);
+        int len;
+        while ((len = zipInputStream.read(buffer)) > 0) {
+          fileOutputStream.write(buffer, 0, len);
         }
 
-        if(fileOutputStream != null)
-          fileOutputStream.close();
-        zipEntry = zipInputStream.getNextEntry();
-
+      } else {
+        // if the entry is a directory, make the directory
+        File dir = new File(newFilePath);
+        dir.mkdir();
       }
 
-      zipInputStream.closeEntry();
-      zipInputStream.close();
+      if(fileOutputStream != null)
+        fileOutputStream.close();
+      zipEntry = zipInputStream.getNextEntry();
 
-    } catch(IOException ex){
-      ex.printStackTrace();
     }
+
+    zipInputStream.closeEntry();
+    zipInputStream.close();
+
   }
 
   public static String readAllTextFile(Reader rd) throws IOException {

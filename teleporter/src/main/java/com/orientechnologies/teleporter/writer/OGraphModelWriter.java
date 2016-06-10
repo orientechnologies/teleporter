@@ -18,20 +18,17 @@
 
 package com.orientechnologies.teleporter.writer;
 
+import com.orientechnologies.common.exception.OException;
+import com.orientechnologies.orient.core.metadata.schema.OProperty;
+import com.orientechnologies.orient.core.metadata.schema.OType;
+import com.orientechnologies.orient.core.sql.OCommandSQL;
 import com.orientechnologies.teleporter.context.OTeleporterContext;
 import com.orientechnologies.teleporter.context.OTeleporterStatistics;
 import com.orientechnologies.teleporter.exception.OTeleporterRuntimeException;
 import com.orientechnologies.teleporter.model.graphmodel.*;
 import com.orientechnologies.teleporter.persistence.handler.ODriverDataTypeHandler;
-import com.orientechnologies.common.exception.OException;
-import com.orientechnologies.orient.core.metadata.schema.OProperty;
-import com.orientechnologies.orient.core.metadata.schema.OType;
-import com.orientechnologies.orient.core.sql.OCommandSQL;
 import com.tinkerpop.blueprints.impls.orient.*;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.io.Writer;
 import java.util.*;
 
 /**
@@ -56,16 +53,10 @@ public class OGraphModelWriter {
     OrientGraphFactory factory = new OrientGraphFactory(outOrientGraphUri,"admin","admin");
     try {
       orientGraph = factory.getNoTx();
-    } catch(Exception e) {
-      if(e.getMessage() != null)
-        context.getOutputManager().error(e.getClass().getName() + " - " + e.getMessage());
-      else
-        context.getOutputManager().error(e.getClass().getName());
-
-      Writer writer = new StringWriter();
-      e.printStackTrace(new PrintWriter(writer));
-      String s = writer.toString();
-      context.getOutputManager().error("\n" + s + "\n");
+    } catch (Exception e) {
+      String mess = "";
+      context.printExceptionMessage(e, mess, "error");
+      context.printExceptionStackTrace(e, "error");
       throw new OTeleporterRuntimeException(e);
     }
 
@@ -263,16 +254,10 @@ public class OGraphModelWriter {
           iteration++;
           statistics.wroteIndexes++;
         }
-      } catch(OException e) {
-        if(e.getMessage() != null)
-          context.getOutputManager().error(e.getClass().getName() + " - " + e.getMessage());
-        else
-          context.getOutputManager().error(e.getClass().getName());
-
-        Writer writer = new StringWriter();
-        e.printStackTrace(new PrintWriter(writer));
-        String s = writer.toString();
-        context.getOutputManager().error("\n" + s + "\n");
+      } catch (OException e) {
+        String mess = "";
+        context.printExceptionMessage(e, mess, "error");
+        context.printExceptionStackTrace(e, "error");
         throw new OTeleporterRuntimeException(e);
       }
       statistics.notifyListeners();

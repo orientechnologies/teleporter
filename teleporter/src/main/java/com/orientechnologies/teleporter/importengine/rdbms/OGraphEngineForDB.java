@@ -19,6 +19,7 @@
 package com.orientechnologies.teleporter.importengine.rdbms;
 
 import com.orientechnologies.orient.core.exception.OValidationException;
+import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.teleporter.context.OTeleporterContext;
 import com.orientechnologies.teleporter.context.OTeleporterStatistics;
 import com.orientechnologies.teleporter.exception.OTeleporterRuntimeException;
@@ -31,17 +32,14 @@ import com.orientechnologies.teleporter.model.graphmodel.OEdgeType;
 import com.orientechnologies.teleporter.model.graphmodel.OModelProperty;
 import com.orientechnologies.teleporter.model.graphmodel.OVertexType;
 import com.orientechnologies.teleporter.persistence.handler.ODBMSDataTypeHandler;
-import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.tinkerpop.blueprints.Direction;
 import com.tinkerpop.blueprints.Edge;
 import com.tinkerpop.blueprints.Vertex;
 import com.tinkerpop.blueprints.impls.orient.OrientBaseGraph;
 import com.tinkerpop.blueprints.impls.orient.OrientEdge;
+import com.tinkerpop.blueprints.impls.orient.OrientElement;
 import com.tinkerpop.blueprints.impls.orient.OrientVertex;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.io.Writer;
 import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -121,19 +119,10 @@ public class OGraphEngineForDB {
       if(vertex != null && vertexType.getAllProperties().size() <= vertex.getPropertyKeys().size()) // there aren't properties to add into the vertex (<=)
         return true;
 
-    } catch(Exception e) {
+    } catch (Exception e) {
       String mess =  "Problem encountered during the visit of an inserted vertex. Vertex Type: " + vertexType.getName() + ";\tOriginal Record: " + propsAndValuesOfKey;
-      if(e.getMessage() != null)
-        mess += "\n" + e.getClass().getName() + " - " + e.getMessage();
-      else
-        mess += "\n" + e.getClass().getName();
-
-      context.getOutputManager().error(mess + "\n");
-
-      Writer writer = new StringWriter();
-      e.printStackTrace(new PrintWriter(writer));
-      String s = writer.toString();
-      context.getOutputManager().error("\n" + s + "\n");
+      context.printExceptionMessage(e, mess, "error");
+      context.printExceptionStackTrace(e, "error");
       if(orientGraph != null)
         orientGraph.shutdown();
       throw new OTeleporterRuntimeException(e);
@@ -310,30 +299,17 @@ public class OGraphEngineForDB {
             properties.put(currentProperty.getName(), currentAttributeValue);
           }
 
-        } catch(Exception e) {
+        } catch (Exception e) {
           String mess =  "Problem encountered during the extraction of the values from the records. Vertex Type: " + vertexType.getName() + ";\tProperty: " + currentProperty.getName() + ";\tRecord: " + propsAndValuesOfKey;
-          if(e.getMessage() != null)
-            mess += "\n" + e.getClass().getName() + " - " + e.getMessage();
-          else
-            mess += "\n" + e.getClass().getName();
-
-          context.getOutputManager().error(mess);
-          Writer writer = new StringWriter();
-          e.printStackTrace(new PrintWriter(writer));
-          String s1 = writer.toString();
-          context.getOutputManager().debug(s1);
+          context.printExceptionMessage(e, mess, "error");
+          context.printExceptionStackTrace(e, "debug");
         }
 
       }
 
       if(vertex == null) {
         String classAndClusterName = vertexType.getName();
-
-        try {
-          vertex = orientGraph.addVertex("class:" + classAndClusterName, properties);
-        }catch(OValidationException e) {
-          context.getStatistics().warningMessages.add(e.getMessage());
-        }
+          vertex = this.addVertexToGraph(orientGraph, classAndClusterName, properties, context);
         statistics.orientAddedVertices++;
         context.getOutputManager().debug("\nLoaded properties: %s\n", properties.toString());
         context.getOutputManager().debug("\nNew vertex inserted (all props setted): %s\n", vertex.toString());
@@ -362,11 +338,7 @@ public class OGraphEngineForDB {
         if(justReachedVertex) {
 
           // setting new properties and save
-          try {
-            vertex.setProperties(properties);
-          }catch(OValidationException e) {
-            context.getStatistics().warningMessages.add(e.getMessage());
-          }
+            this.setElementProperties(vertex, properties, context);
           vertex.save();
           context.getOutputManager().debug("\nLoaded properties: %s\n", properties.toString());
           context.getOutputManager().debug("\nNew vertex inserted (all props setted): %s\n", vertex.toString());
@@ -416,11 +388,7 @@ public class OGraphEngineForDB {
 
               // setting new properties and save
               //              long millis = ((Date)properties.get("datanascita")).getTime();
-              try {
-                vertex.setProperties(properties);
-              }catch(OValidationException e) {
-                context.getStatistics().warningMessages.add(e.getMessage());
-              }
+                this.setElementProperties(vertex, properties, context);
               statistics.orientUpdatedVertices++;
               context.getOutputManager().debug("\nLoaded properties: %s\n", properties.toString());
               context.getOutputManager().debug("\nNew vertex inserted (all props setted): %s\n", vertex.toString());
@@ -428,19 +396,10 @@ public class OGraphEngineForDB {
           }
         }
       }
-    } catch(Exception e) {
+    } catch (Exception e) {
       String mess =  "Problem encountered during the migration of the records. Vertex Type: " + vertexType.getName() + ";\tRecord: " + propsAndValuesOfKey;
-      if(e.getMessage() != null)
-        mess += "\n" + e.getClass().getName() + " - " + e.getMessage();
-      else
-        mess += "\n" + e.getClass().getName();
-
-      context.getOutputManager().error(mess);
-
-      Writer writer = new StringWriter();
-      e.printStackTrace(new PrintWriter(writer));
-      String s2 = writer.toString();
-      context.getOutputManager().error(s2);
+      context.printExceptionMessage(e, mess, "error");
+      context.printExceptionStackTrace(e, "error");
       if(orientGraph != null)
         orientGraph.shutdown();
       throw new OTeleporterRuntimeException(e);
@@ -642,7 +601,7 @@ public class OGraphEngineForDB {
          */
         if(currentInVertex == null) {
 
-          Map<String,String> partialProperties = new LinkedHashMap<String,String>();
+          Map<String,Object> partialProperties = new LinkedHashMap<String,Object>();
 
           // for each attribute in the foreign key belonging to the relationship, attribute name and correspondent value are added to a 'properties map'
           for(int i=0; i<propertyOfKey.length; i++) {
@@ -651,11 +610,7 @@ public class OGraphEngineForDB {
 
           context.getOutputManager().debug("\nNEW Reached vertex (id:value) --> %s:%s\n", Arrays.toString(propertyOfKey), Arrays.toString(valueOfKey));
           String classAndClusterName = currentInVertexType.getName();
-          try {
-            currentInVertex = orientGraph.addVertex("class:" + classAndClusterName, partialProperties);
-          }catch(OValidationException e) {
-            context.getStatistics().warningMessages.add(e.getMessage());
-          }
+          currentInVertex = this.addVertexToGraph(orientGraph, classAndClusterName, partialProperties, context);
           statistics.orientAddedVertices++;
           context.getOutputManager().debug("\nNew vertex inserted (only pk props setted): %s\n", currentInVertex.toString());
 
@@ -669,19 +624,10 @@ public class OGraphEngineForDB {
         this.upsertEdge(orientGraph, currentOutVertex, currentInVertex, edgeType, null, direction, context);
       }
 
-    } catch(Exception e) {
+    } catch (Exception e) {
       String mess =  "Problem encountered during the upsert of a reached vertex. Vertex Type: " + currentInVertexType.getName() + ";\tOriginal Record: " + propsAndValuesOfKey;
-      if(e.getMessage() != null)
-        mess += "\n" + e.getClass().getName() + " - " + e.getMessage();
-      else
-        mess += "\n" + e.getClass().getName();
-
-      context.getOutputManager().error(mess);
-
-      Writer writer = new StringWriter();
-      e.printStackTrace(new PrintWriter(writer));
-      String s = writer.toString();
-      context.getOutputManager().error(s);
+      context.printExceptionMessage(e, mess, "error");
+      context.printExceptionStackTrace(e, "error");
       if(orientGraph != null)
         orientGraph.shutdown();
       throw new OTeleporterRuntimeException(e);
@@ -715,13 +661,12 @@ public class OGraphEngineForDB {
         else {
           OrientEdge edge = null;
           if(direction != null && direction.equals("direct")) {
-            edge = orientGraph.addEdge(null, currentOutVertex, currentInVertex, edgeType);
+            edge = this.addEdgeToGraph(orientGraph, null, currentOutVertex, currentInVertex, edgeType, context);
           }
           else if(direction != null && direction.equals("inverse")) {
-            edge = orientGraph.addEdge(null, currentInVertex, currentOutVertex, edgeType);
+            edge = this.addEdgeToGraph(orientGraph, null, currentInVertex, currentOutVertex, edgeType, context);
           }
-          edge.setProperties(properties);
-          edge.save();
+          this.setElementProperties(edge, properties, context);
           statistics.orientAddedEdges++;
           context.getOutputManager().debug("\nNew edge inserted: %s\n", edge.toString());
         }
@@ -729,29 +674,19 @@ public class OGraphEngineForDB {
       else {
         OrientEdge edge = null;
         if(direction != null && direction.equals("direct")) {
-          edge = orientGraph.addEdge(null, currentOutVertex, currentInVertex, edgeType);
+          edge = this.addEdgeToGraph(orientGraph, null, currentOutVertex, currentInVertex, edgeType, context);
         }
         else if(direction != null && direction.equals("inverse")) {
-          edge = orientGraph.addEdge(null, currentInVertex, currentOutVertex, edgeType);
+          edge = this.addEdgeToGraph(orientGraph, null, currentInVertex, currentOutVertex, edgeType, context);
         }
-        edge.setProperties(properties);
-        edge.save();
+        this.setElementProperties(edge, properties, context);
         statistics.orientAddedEdges++;
         context.getOutputManager().debug("\nNew edge inserted: %s\n", edge.toString());
       }
-    } catch(Exception e) {
+    } catch (Exception e) {
       String mess =  "Problem encountered during the upsert of an edge. Vertex-out: " + currentOutVertex + ";\tVertex-in: " + currentInVertex;
-      if(e.getMessage() != null)
-        mess += "\n" + e.getClass().getName() + " - " + e.getMessage();
-      else
-        mess += "\n" + e.getClass().getName();
-
-      context.getOutputManager().error(mess);
-
-      Writer writer = new StringWriter();
-      e.printStackTrace(new PrintWriter(writer));
-      String s = writer.toString();
-      context.getOutputManager().error("\n" + s + "\n");
+      context.printExceptionMessage(e, mess, "error");
+      context.printExceptionStackTrace(e, "error");
       if(orientGraph != null)
         orientGraph.shutdown();
       throw new OTeleporterRuntimeException(e);
@@ -873,40 +808,56 @@ public class OGraphEngineForDB {
             properties.put(currentProperty.getName(), currentAttributeValue);
           }
 
-        } catch(Exception e) {
+        } catch (Exception e) {
           String mess =  "Problem encountered during the extraction of the values from the records. Edge Type: " + edgeType.getName() + ";\tProperty: " + currentProperty.getName() + ";\tOriginal join table: " + joinTable.getName();
-          if(e.getMessage() != null)
-            mess += "\n" + e.getClass().getName() + " - " + e.getMessage();
-          else
-            mess += "\n" + e.getClass().getName();
-
-          context.getOutputManager().error(mess);
-          Writer writer = new StringWriter();
-          e.printStackTrace(new PrintWriter(writer));
-          String s1 = writer.toString();
-          context.getOutputManager().debug(s1);
+          context.printExceptionMessage(e, mess, "error");
+          context.printExceptionStackTrace(e, "debug");
         }
       }
 
       this.upsertEdge(orientGraph, currentOutVertex, currentInVertex, aggregatorEdge.getEdgeType().getName(), properties, direction, context);
 
-    } catch(Exception e) {
+    } catch (Exception e) {
       String mess = "";
-      if(e.getMessage() != null)
-        mess += "\n" + e.getClass().getName() + " - " + e.getMessage();
-      else
-        mess += "\n" + e.getClass().getName();
-
-      context.getOutputManager().error(mess);
-
-      Writer writer = new StringWriter();
-      e.printStackTrace(new PrintWriter(writer));
-      String s = writer.toString();
-      context.getOutputManager().error(s);
+      context.printExceptionMessage(e, mess, "error");
+      context.printExceptionStackTrace(e, "error");
       if(orientGraph != null )
         orientGraph.shutdown();
       throw new OTeleporterRuntimeException(e);
     }
+  }
+
+
+  private OrientVertex addVertexToGraph(OrientBaseGraph orientGraph, String classAndClusterName, Map<String,Object> properties, OTeleporterContext context) {
+
+    try {
+      if(classAndClusterName != null)
+        return orientGraph.addVertex("class:" + classAndClusterName, properties);
+    } catch (OValidationException e) {
+      context.getStatistics().warningMessages.add(e.getMessage());
+    }
+    return null;
+  }
+
+  private OrientEdge addEdgeToGraph(OrientBaseGraph orientGraph, Object id, OrientVertex currentOutVertex, OrientVertex currentInVertex, String edgeType, OTeleporterContext context) {
+
+    try {
+      return orientGraph.addEdge(id, currentOutVertex, currentInVertex, edgeType);
+    } catch (OValidationException e) {
+      context.getStatistics().warningMessages.add(e.getMessage());
+    }
+    return null;
+  }
+
+
+  private void setElementProperties(OrientElement element, Map<String,Object> properties, OTeleporterContext context) {
+
+    try {
+      element.setProperties(properties);
+    } catch(OValidationException e) {
+      context.getStatistics().warningMessages.add(e.getMessage());
+    }
+
   }
 
 }

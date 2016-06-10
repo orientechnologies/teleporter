@@ -20,9 +20,6 @@ package com.orientechnologies.teleporter.persistence.util;
 
 import com.orientechnologies.teleporter.context.OTeleporterContext;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.io.Writer;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -82,15 +79,9 @@ public class OQueryResult {
       if(this.dbConnection != null && !this.dbConnection.isClosed()) 
         this.dbConnection.close();
     } catch(SQLException e) {
-      if(e.getMessage() != null)
-        context.getOutputManager().error(e.getClass().getName() + " - " + e.getMessage());
-      else
-        context.getOutputManager().error(e.getClass().getName());
-
-      Writer writer = new StringWriter();
-      e.printStackTrace(new PrintWriter(writer));
-      String s = writer.toString();
-      context.getOutputManager().debug("\n" + s + "\n");
+      String mess = "";
+      context.printExceptionMessage(e, mess, "error");
+      context.printExceptionStackTrace(e, "debug");
     }
   }
 
@@ -98,16 +89,10 @@ public class OQueryResult {
     try {
       if(this.dbConnection != null)
         return dbConnection.isClosed();
-    }catch(Exception e) {
-      if(e.getMessage() != null)
-        context.getOutputManager().error(e.getClass().getName() + " - " + e.getMessage());
-      else
-        context.getOutputManager().error(e.getClass().getName());
-
-      Writer writer = new StringWriter();
-      e.printStackTrace(new PrintWriter(writer));
-      String s = writer.toString();
-      context.getOutputManager().debug("\n" + s + "\n");
+    } catch (Exception e) {
+      String mess = "";
+      context.printExceptionMessage(e, mess, "error");
+      context.printExceptionStackTrace(e, "debug");
     }
     return false;
   }
@@ -116,16 +101,10 @@ public class OQueryResult {
     try {
       if(this.statement != null)
         return statement.isClosed();
-    }catch(Exception e) {
-      if(e.getMessage() != null)
-        context.getOutputManager().error(e.getClass().getName() + " - " + e.getMessage());
-      else
-        context.getOutputManager().error(e.getClass().getName());
-
-      Writer writer = new StringWriter();
-      e.printStackTrace(new PrintWriter(writer));
-      String s = writer.toString();
-      context.getOutputManager().debug("\n" + s + "\n");
+    } catch (Exception e) {
+      String mess = "";
+      context.printExceptionMessage(e, mess, "error");
+      context.printExceptionStackTrace(e, "debug");
     }
     return false;
   }
@@ -134,16 +113,10 @@ public class OQueryResult {
     try {
       if(this.result != null)
         return result.isClosed();
-    }catch(Exception e) {
-      if(e.getMessage() != null)
-        context.getOutputManager().error(e.getClass().getName() + " - " + e.getMessage());
-      else
-        context.getOutputManager().error(e.getClass().getName());
-
-      Writer writer = new StringWriter();
-      e.printStackTrace(new PrintWriter(writer));
-      String s = writer.toString();
-      context.getOutputManager().debug("\n" + s + "\n");
+    } catch (Exception e) {
+      String mess = "";
+      context.printExceptionMessage(e, mess, "error");
+      context.printExceptionStackTrace(e, "debug");
     }
     return false;
   }

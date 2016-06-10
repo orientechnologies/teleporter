@@ -153,17 +153,8 @@ public class ODriverConfigurator {
 
     } catch (Exception e) {
       String mess = "";
-      if(e.getMessage() != null)
-        mess += "\n" + e.getClass().getName() + " - " + e.getMessage();
-      else
-        mess += "\n" + e.getClass().getName();
-
-      context.getOutputManager().error(mess);
-
-      Writer writer = new StringWriter();
-      e.printStackTrace(new PrintWriter(writer));
-      String s = writer.toString();
-      context.getOutputManager().error("\n" + s + "\n");
+      context.printExceptionMessage(e, mess, "error");
+      context.printExceptionStackTrace(e, "error");
       throw new OTeleporterRuntimeException(e);
     }
 
@@ -204,25 +195,16 @@ public class ODriverConfigurator {
 
       try {
         is = urlConn.getInputStream();
-      } catch (IOException ne) {
+      } catch (IOException e1) {
 
         try {
           // read json from the file in the ORIENTDB_HOME/config path
           is = new FileInputStream(new File(this.localJsonPath));
-        } catch (IOException e) {
+        } catch (IOException e2) {
           String mess = "The jdbc-drivers configuration cannot be found. The connection to orientdb.com did not succeed and the configuration file \"jdbc-drivers.json\" is not present in ORIENTDB_HOME/config.\n";
-          if(e.getMessage() != null)
-            mess += "\n" + e.getClass().getName() + " - " + e.getMessage();
-          else
-            mess += "\n" + e.getClass().getName();
-
-          context.getOutputManager().error(mess);
-
-          Writer writer = new StringWriter();
-          e.printStackTrace(new PrintWriter(writer));
-          String s = writer.toString();
-          context.getOutputManager().error("\n" + s + "\n");
-          throw new OTeleporterRuntimeException(e);
+          context.printExceptionMessage(e2, mess, "error");
+          context.printExceptionStackTrace(e2, "error");
+          throw new OTeleporterRuntimeException(e2);
         }
       }
 
@@ -234,34 +216,16 @@ public class ODriverConfigurator {
 
     } catch (Exception e) {
       String mess = "";
-      if(e.getMessage() != null)
-        mess += "\n" + e.getClass().getName() + " - " + e.getMessage();
-      else
-        mess += "\n" + e.getClass().getName();
-
-      context.getOutputManager().error(mess);
-
-      Writer writer = new StringWriter();
-      e.printStackTrace(new PrintWriter(writer));
-      String s = writer.toString();
-      context.getOutputManager().error("\n" + s + "\n");
+      context.printExceptionMessage(e, mess, "error");
+      context.printExceptionStackTrace(e, "error");
       throw new OTeleporterRuntimeException(e);
     } finally {
       try {
         is.close();
       } catch (Exception e) {
         String mess = "";
-        if(e.getMessage() != null)
-          mess += "\n" + e.getClass().getName() + " - " + e.getMessage();
-        else
-          mess += "\n" + e.getClass().getName();
-
-        context.getOutputManager().error(mess);
-
-        Writer writer = new StringWriter();
-        e.printStackTrace(new PrintWriter(writer));
-        String s = writer.toString();
-        context.getOutputManager().debug("\n" + s + "\n");
+        context.printExceptionMessage(e, mess, "error");
+        context.printExceptionStackTrace(e, "error");
         throw new OTeleporterRuntimeException(e);
       }
     }

@@ -18,12 +18,12 @@
 
 package com.orientechnologies.teleporter.mapper.rdbms;
 
+import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.teleporter.context.OTeleporterContext;
 import com.orientechnologies.teleporter.exception.OTeleporterRuntimeException;
 import com.orientechnologies.teleporter.model.dbschema.OAttribute;
 import com.orientechnologies.teleporter.model.dbschema.OEntity;
 import com.orientechnologies.teleporter.model.dbschema.OHierarchicalBag;
-import com.orientechnologies.orient.core.record.impl.ODocument;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -31,9 +31,6 @@ import org.w3c.dom.NodeList;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.File;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.io.Writer;
 import java.util.*;
 
 /**
@@ -99,17 +96,10 @@ public class OHibernate2GraphMapper extends OER2GraphMapper {
       // sorting tables for inheritance level and then for name
       Collections.sort(super.dataBaseSchema.getEntities());
 
-    }catch(Exception e) {
-      if(e.getMessage() != null)
-        context.getOutputManager().error(e.getClass().getName() + " - " + e.getMessage());
-      else
-        context.getOutputManager().error(e.getClass().getName());
-      System.out.println(e.getMessage());
-      e.printStackTrace();
-      Writer writer = new StringWriter();
-      e.printStackTrace(new PrintWriter(writer));
-      String s = writer.toString();
-      context.getOutputManager().error("\n" + s + "\n");
+    } catch (Exception e) {
+      String mess = "";
+      context.printExceptionMessage(e, mess, "error");
+      context.printExceptionStackTrace(e, "error");
       throw new OTeleporterRuntimeException(e);
     }
 

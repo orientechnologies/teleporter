@@ -44,9 +44,6 @@ import com.orientechnologies.teleporter.util.OTimeFormatHandler;
 import com.tinkerpop.blueprints.impls.orient.OrientBaseGraph;
 import com.tinkerpop.blueprints.impls.orient.OrientVertex;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.io.Writer;
 import java.sql.ResultSet;
 import java.util.*;
 
@@ -217,16 +214,10 @@ public abstract class ODBMSImportStrategy implements OImportStrategy {
       statistics.runningStepNumber = -1;
       context.getOutputManager().info("\n");
 
-    } catch(Exception e) {
-      if(e.getMessage() != null)
-        context.getOutputManager().error(e.getClass().getName() + " - " + e.getMessage());
-      else
-        context.getOutputManager().error(e.getClass().getName());
-
-      Writer writer = new StringWriter();
-      e.printStackTrace(new PrintWriter(writer));
-      String s = writer.toString();
-      context.getOutputManager().error("\n" + s + "\n");
+    } catch (Exception e) {
+      String mess = "";
+      context.printExceptionMessage(e, mess, "error");
+      context.printExceptionStackTrace(e, "error");
       throw new OTeleporterRuntimeException(e);
     }
 
@@ -371,16 +362,10 @@ public abstract class ODBMSImportStrategy implements OImportStrategy {
       statistics.runningStepNumber = -1;
       context.getOutputManager().info("\n");
 
-    } catch(Exception e) {
-      if(e.getMessage() != null)
-        context.getOutputManager().error(e.getClass().getName() + " - " + e.getMessage());
-      else
-        context.getOutputManager().error(e.getClass().getName());
-
-      Writer writer = new StringWriter();
-      e.printStackTrace(new PrintWriter(writer));
-      String s = writer.toString();
-      context.getOutputManager().error("\n" + s + "\n");
+    } catch (Exception e) {
+      String mess = "";
+      context.printExceptionMessage(e, mess, "error");
+      context.printExceptionStackTrace(e, "error");
       throw new OTeleporterRuntimeException(e);
     }
   }
@@ -498,16 +483,10 @@ public abstract class ODBMSImportStrategy implements OImportStrategy {
       statistics.runningStepNumber = -1;
       context.getOutputManager().info("\n");
 
-    } catch(Exception e) {
-      if(e.getMessage() != null)
-        context.getOutputManager().error(e.getClass().getName() + " - " + e.getMessage());
-      else
-        context.getOutputManager().error(e.getClass().getName());
-
-      Writer writer = new StringWriter();
-      e.printStackTrace(new PrintWriter(writer));
-      String s = writer.toString();
-      context.getOutputManager().error("\n" + s + "\n");
+    } catch (Exception e) {
+      String mess = "";
+      context.printExceptionMessage(e, mess, "error");
+      context.printExceptionStackTrace(e, "error");
       throw new OTeleporterRuntimeException(e);
     }
   }
@@ -569,16 +548,10 @@ public abstract class ODBMSImportStrategy implements OImportStrategy {
         }
       }
 
-    } catch(Exception e) {
-      if(e.getMessage() != null)
-        context.getOutputManager().error(e.getClass().getName() + " - " + e.getMessage());
-      else
-        context.getOutputManager().error(e.getClass().getName());
-
-      Writer writer = new StringWriter();
-      e.printStackTrace(new PrintWriter(writer));
-      String s = writer.toString();
-      context.getOutputManager().error("\n" + s + "\n");
+    } catch (Exception e) {
+      String mess = "";
+      context.printExceptionMessage(e, mess, "error");
+      context.printExceptionStackTrace(e, "error");
       throw new OTeleporterRuntimeException(e);
     }
 
@@ -626,16 +599,10 @@ public abstract class ODBMSImportStrategy implements OImportStrategy {
         }
       }
 
-    } catch(Exception e) {
-      if(e.getMessage() != null)
-        context.getOutputManager().error(e.getClass().getName() + " - " + e.getMessage());
-      else
-        context.getOutputManager().error(e.getClass().getName());
-
-      Writer writer = new StringWriter();
-      e.printStackTrace(new PrintWriter(writer));
-      String s = writer.toString();
-      context.getOutputManager().error("\n" + s + "\n");
+    } catch (Exception e) {
+      String mess = "";
+      context.printExceptionMessage(e, mess, "error");
+      context.printExceptionStackTrace(e, "error");
       throw new OTeleporterRuntimeException(e);
     }
 
@@ -683,16 +650,10 @@ public abstract class ODBMSImportStrategy implements OImportStrategy {
         }
       }
 
-    } catch(Exception e) {
-      if(e.getMessage() != null)
-        context.getOutputManager().error(e.getClass().getName() + " - " + e.getMessage());
-      else
-        context.getOutputManager().error(e.getClass().getName());
-
-      Writer writer = new StringWriter();
-      e.printStackTrace(new PrintWriter(writer));
-      String s = writer.toString();
-      context.getOutputManager().error("\n" + s + "\n");
+    } catch (Exception e) {
+      String mess = "";
+      context.printExceptionMessage(e, mess, "error");
+      context.printExceptionStackTrace(e, "error");
       throw new OTeleporterRuntimeException(e);
     }
 
@@ -735,16 +696,10 @@ public abstract class ODBMSImportStrategy implements OImportStrategy {
         }
 
       }
-    } catch(Exception e) {
-      if(e.getMessage() != null)
-        context.getOutputManager().error(e.getClass().getName() + " - " + e.getMessage());
-      else
-        context.getOutputManager().error(e.getClass().getName());
-
-      Writer writer = new StringWriter();
-      e.printStackTrace(new PrintWriter(writer));
-      String s = writer.toString();
-      context.getOutputManager().error("\n" + s + "\n");
+    } catch (Exception e) {
+      String mess = "";
+      context.printExceptionMessage(e, mess, "error");
+      context.printExceptionStackTrace(e, "error");
       throw new OTeleporterRuntimeException(e);
     }
 

@@ -26,9 +26,6 @@ import com.orientechnologies.teleporter.model.dbschema.OHierarchicalBag;
 import com.orientechnologies.teleporter.persistence.util.ODBSourceConnection;
 import com.orientechnologies.teleporter.persistence.util.OQueryResult;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.io.Writer;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -89,31 +86,16 @@ public class ODBQueryEngine implements ODataSourceQueryEngine {
         dbConnection = dataSource.getConnection(context);
       } catch (Exception e) {
         String mess = "";
-        if(e.getMessage() != null)
-          mess += "\n" + e.getClass().getName() + " - " + e.getMessage();
-        else
-          mess += "\n" + e.getClass().getName();
-
-        context.getOutputManager().error(mess);
-
-        Writer writer = new StringWriter();
-        e.printStackTrace(new PrintWriter(writer));
-        String s = writer.toString();
-        context.getOutputManager().debug("\n" + s + "\n");
+        context.printExceptionMessage(e, mess, "error");
+        context.printExceptionStackTrace(e, "debug");
       }
       statement = dbConnection.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
       aggregateTable = statement.executeQuery(query);
 
-    }catch(SQLException e) {
-      if(e.getMessage() != null)
-        context.getOutputManager().error(e.getClass().getName() + " - " + e.getMessage());
-      else
-        context.getOutputManager().error(e.getClass().getName());
-
-      Writer writer = new StringWriter();
-      e.printStackTrace(new PrintWriter(writer));
-      String s = writer.toString();
-      context.getOutputManager().debug("\n" + s + "\n");
+    } catch (SQLException e) {
+      String mess = "";
+      context.printExceptionMessage(e, mess, "error");
+      context.printExceptionStackTrace(e, "debug");
     }
     OQueryResult queryResult = new OQueryResult(dbConnection, statement, aggregateTable);
     return queryResult;
@@ -139,31 +121,16 @@ public class ODBQueryEngine implements ODataSourceQueryEngine {
         dbConnection = dataSource.getConnection(context);
       } catch (Exception e) {
         String mess = "";
-        if(e.getMessage() != null)
-          mess += "\n" + e.getClass().getName() + " - " + e.getMessage();
-        else
-          mess += "\n" + e.getClass().getName();
-
-        context.getOutputManager().error(mess);
-
-        Writer writer = new StringWriter();
-        e.printStackTrace(new PrintWriter(writer));
-        String s = writer.toString();
-        context.getOutputManager().debug("\n" + s + "\n");
+        context.printExceptionMessage(e, mess, "error");
+        context.printExceptionStackTrace(e, "debug");
       }
       statement = dbConnection.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
       result = statement.executeQuery(query);
 
-    }catch(SQLException e) {
-      if(e.getMessage() != null)
-        context.getOutputManager().error(e.getClass().getName() + " - " + e.getMessage());
-      else
-        context.getOutputManager().error(e.getClass().getName());
-
-      Writer writer = new StringWriter();
-      e.printStackTrace(new PrintWriter(writer));
-      String s = writer.toString();
-      context.getOutputManager().debug("\n" + s + "\n");
+    } catch (SQLException e) {
+      String mess = "";
+      context.printExceptionMessage(e, mess, "error");
+      context.printExceptionStackTrace(e, "debug");
     }
     OQueryResult queryResult = new OQueryResult(dbConnection, statement, result);
     return queryResult;
@@ -180,31 +147,16 @@ public class ODBQueryEngine implements ODataSourceQueryEngine {
         dbConnection = dataSource.getConnection(context);
       } catch (Exception e) {
         String mess = "";
-        if(e.getMessage() != null)
-          mess += "\n" + e.getClass().getName() + " - " + e.getMessage();
-        else
-          mess += "\n" + e.getClass().getName();
-
-        context.getOutputManager().error(mess);
-
-        Writer writer = new StringWriter();
-        e.printStackTrace(new PrintWriter(writer));
-        String s = writer.toString();
-        context.getOutputManager().debug("\n" + s + "\n");
+        context.printExceptionMessage(e, mess, "error");
+        context.printExceptionStackTrace(e, "debug");
       }
       statement = dbConnection.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
       result = statement.executeQuery(query);
 
-    }catch(SQLException e) {
-      if(e.getMessage() != null)
-        context.getOutputManager().error(e.getClass().getName() + " - " + e.getMessage());
-      else
-        context.getOutputManager().error(e.getClass().getName());
-
-      Writer writer = new StringWriter();
-      e.printStackTrace(new PrintWriter(writer));
-      String s = writer.toString();
-      context.getOutputManager().debug("\n" + s + "\n");
+    } catch (SQLException e) {
+      String mess = "";
+      context.printExceptionMessage(e, mess, "error");
+      context.printExceptionStackTrace(e, "debug");
     }
     OQueryResult queryResult = new OQueryResult(dbConnection, statement, result);
     return queryResult;
@@ -233,31 +185,16 @@ public class ODBQueryEngine implements ODataSourceQueryEngine {
         dbConnection = dataSource.getConnection(context);
       } catch (Exception e) {
         String mess = "";
-        if(e.getMessage() != null)
-          mess += "\n" + e.getClass().getName() + " - " + e.getMessage();
-        else
-          mess += "\n" + e.getClass().getName();
-
-        context.getOutputManager().error(mess);
-
-        Writer writer = new StringWriter();
-        e.printStackTrace(new PrintWriter(writer));
-        String s = writer.toString();
-        context.getOutputManager().debug("\n" + s + "\n");
+        context.printExceptionMessage(e, mess, "error");
+        context.printExceptionStackTrace(e, "debug");
       }
       statement = dbConnection.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
       result = statement.executeQuery(query);
 
-    }catch(SQLException e) {
-      if(e.getMessage() != null)
-        context.getOutputManager().error(e.getClass().getName() + " - " + e.getMessage());
-      else
-        context.getOutputManager().error(e.getClass().getName());
-
-      Writer writer = new StringWriter();
-      e.printStackTrace(new PrintWriter(writer));
-      String s = writer.toString();
-      context.getOutputManager().debug("\n" + s + "\n");;
+    } catch (SQLException e) {
+      String mess = "";
+      context.printExceptionMessage(e, mess, "error");
+      context.printExceptionStackTrace(e, "debug");
     }
     OQueryResult queryResult = new OQueryResult(dbConnection, statement, result);
     return queryResult;
@@ -289,31 +226,16 @@ public class ODBQueryEngine implements ODataSourceQueryEngine {
         dbConnection = dataSource.getConnection(context);
       } catch (Exception e) {
         String mess = "";
-        if(e.getMessage() != null)
-          mess += "\n" + e.getClass().getName() + " - " + e.getMessage();
-        else
-          mess += "\n" + e.getClass().getName();
-
-        context.getOutputManager().error(mess);
-
-        Writer writer = new StringWriter();
-        e.printStackTrace(new PrintWriter(writer));
-        String s = writer.toString();
-        context.getOutputManager().debug("\n" + s + "\n");
+        context.printExceptionMessage(e, mess, "error");
+        context.printExceptionStackTrace(e, "debug");
       }
       statement = dbConnection.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
       result = statement.executeQuery(query);
 
-    }catch(SQLException e) {
-      if(e.getMessage() != null)
-        context.getOutputManager().error(e.getClass().getName() + " - " + e.getMessage());
-      else
-        context.getOutputManager().error(e.getClass().getName());
-
-      Writer writer = new StringWriter();
-      e.printStackTrace(new PrintWriter(writer));
-      String s = writer.toString();
-      context.getOutputManager().debug("\n" + s + "\n");
+    } catch (SQLException e) {
+      String mess = "";
+      context.printExceptionMessage(e, mess, "error");
+      context.printExceptionStackTrace(e, "debug");
     }
     OQueryResult queryResult = new OQueryResult(dbConnection, statement, result);
     return queryResult;
@@ -384,33 +306,18 @@ public class ODBQueryEngine implements ODataSourceQueryEngine {
 
       try {
         dbConnection = dataSource.getConnection(context);
-      } catch(Exception e) {
+      } catch (Exception e) {
         String mess = "";
-        if(e.getMessage() != null)
-          mess += "\n" + e.getClass().getName() + " - " + e.getMessage();
-        else
-          mess += "\n" + e.getClass().getName();
-
-        context.getOutputManager().error(mess);
-
-        Writer writer = new StringWriter();
-        e.printStackTrace(new PrintWriter(writer));
-        String s = writer.toString();
-        context.getOutputManager().debug("\n" + s + "\n");
+        context.printExceptionMessage(e, mess, "error");
+        context.printExceptionStackTrace(e, "debug");
       }
       statement = dbConnection.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
       result = statement.executeQuery(query);
 
-    }catch(SQLException e) {
-      if(e.getMessage() != null)
-        context.getOutputManager().error(e.getClass().getName() + " - " + e.getMessage());
-      else
-        context.getOutputManager().error(e.getClass().getName());
-
-      Writer writer = new StringWriter();
-      e.printStackTrace(new PrintWriter(writer));
-      String s = writer.toString();
-      context.getOutputManager().debug("\n" + s + "\n");
+    } catch (SQLException e) {
+      String mess = "";
+      context.printExceptionMessage(e, mess, "error");
+      context.printExceptionStackTrace(e, "debug");
     }
     OQueryResult queryResult = new OQueryResult(dbConnection, statement, result);
     return queryResult;

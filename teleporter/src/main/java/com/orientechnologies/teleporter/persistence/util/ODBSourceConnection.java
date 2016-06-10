@@ -21,9 +21,6 @@ package com.orientechnologies.teleporter.persistence.util;
 import com.orientechnologies.teleporter.context.OTeleporterContext;
 import com.orientechnologies.teleporter.exception.OTeleporterRuntimeException;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.io.Writer;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.sql.Connection;
@@ -64,16 +61,10 @@ public class ODBSourceConnection {
       DriverManager.registerDriver(new ODriverShim(d));
       connection = DriverManager.getConnection(uri, username, password);
 
-    } catch(Exception e) {
-      if(e.getMessage() != null)
-        context.getOutputManager().error(e.getClass().getName() + " - " + e.getMessage());
-      else
-        context.getOutputManager().error(e.getClass().getName());
-
-      Writer writer = new StringWriter();
-      e.printStackTrace(new PrintWriter(writer));
-      String s = writer.toString();
-      context.getOutputManager().error("\n" + s + "\n");
+    } catch (Exception e) {
+      String mess = "";
+      context.printExceptionMessage(e, mess, "error");
+      context.printExceptionStackTrace(e, "error");
       throw new OTeleporterRuntimeException(e);
     }
     return connection;

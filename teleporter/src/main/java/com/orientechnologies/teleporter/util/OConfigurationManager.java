@@ -70,19 +70,10 @@ public class OConfigurationManager {
           context.getOutputManager().info("No configuration file was found. Migration will be performed with standard mapping policies.\n");
         }
       }
-    } catch(Exception e) {
+    } catch (Exception e) {
       String mess = "";
-      if(e.getMessage() != null)
-        mess += "\n" + e.getClass().getName() + " - " + e.getMessage();
-      else
-        mess += "\n" + e.getClass().getName();
-
-      context.getOutputManager().error(mess);
-
-      Writer writer = new StringWriter();
-      e.printStackTrace(new PrintWriter(writer));
-      String s = writer.toString();
-      context.getOutputManager().debug("\n" + s + "\n");
+      context.printExceptionMessage(e, mess, "error");
+      context.printExceptionStackTrace(e, "error");
       throw new OTeleporterRuntimeException(e);
     }
 
@@ -98,17 +89,8 @@ public class OConfigurationManager {
           this.copyConfigIntoTargetDB(configurationPath, this.outDBConfigPath);
         } catch (IOException e) {
           String mess = "";
-          if(e.getMessage() != null)
-            mess += "\n" + e.getClass().getName() + " - " + e.getMessage();
-          else
-            mess += "\n" + e.getClass().getName();
-
-          context.getOutputManager().error(mess);
-
-          Writer writer = new StringWriter();
-          e.printStackTrace(new PrintWriter(writer));
-          String s = writer.toString();
-          context.getOutputManager().error("\n" + s + "\n");
+          context.printExceptionMessage(e, mess, "error");
+          context.printExceptionStackTrace(e, "error");
           throw new OTeleporterRuntimeException(e);
         }
       }
