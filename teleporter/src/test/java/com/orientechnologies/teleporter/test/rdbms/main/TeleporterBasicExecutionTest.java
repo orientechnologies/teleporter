@@ -60,6 +60,8 @@ public class TeleporterBasicExecutionTest extends TeleporterInvocationTest {
         else {
           fail("Job failed " + (retry + 1) + " times!\n" + e.getMessage());
         }
+      } finally {
+        shutdownEnvironment();
       }
     }
 

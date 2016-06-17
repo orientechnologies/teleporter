@@ -18,6 +18,8 @@
 
 package com.orientechnologies.teleporter.test.rdbms.main;
 
+import com.tinkerpop.blueprints.impls.orient.OrientGraphNoTx;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.Statement;
@@ -44,6 +46,13 @@ public abstract class TeleporterInvocationTest {
 
   protected void buildEnvironmentForExecution() {
       this.buildHSQLDBDatabaseToImport();
+  }
+
+  protected void shutdownEnvironment() {
+
+    this.purgeAndCloseSourceDatabase();
+    this.purgeAndCloseTargetDatabase();
+
   }
 
   private void buildHSQLDBDatabaseToImport() {
@@ -145,6 +154,40 @@ public abstract class TeleporterInvocationTest {
       args[i] = key;
       args[i+1] = arguments.get(key);
       i = i+2;
+    }
+
+  }
+
+  private void purgeAndCloseSourceDatabase() {
+
+    try {
+
+      // Dropping Source DB Schema and OrientGraph
+      String dbDropping = "drop schema public cascade";
+      Statement st = this.dbConnection.createStatement();
+      st.execute(dbDropping);
+      this.dbConnection.close();
+    }catch(Exception e) {
+      e.printStackTrace();
+      fail();
+    }
+
+  }
+
+  private void purgeAndCloseTargetDatabase() {
+
+    OrientGraphNoTx orientGraph = new OrientGraphNoTx("memory:testOrientDB");
+
+    try {
+
+      if(orientGraph != null) {
+        orientGraph.drop();
+        orientGraph.shutdown();
+      }
+
+    }catch(Exception e) {
+      e.printStackTrace();
+      fail();
     }
 
   }

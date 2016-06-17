@@ -89,7 +89,7 @@ public class AggregationStrategyTest {
           " surname varchar(256) not null, primary key (id))";
       st.execute(actorTableBuilding);
 
-      String film2actorTableBuilding = "create memory table film_actor (film_id varchar(256) not null, actor_id  varchar(256),"+
+      String film2actorTableBuilding = "create memory table film_actor (film_id varchar(256) not null, actor_id  varchar(256), PAYMENT integer, "+
           " primary key (film_id,actor_id), foreign key (film_id) references film(id), foreign key (actor_id) references actor(id))";
       st.execute(film2actorTableBuilding);
 
@@ -113,17 +113,17 @@ public class AggregationStrategyTest {
           + "('A007','Michael','Caine'))";
       st.execute(actorFilling);
 
-      String film2actorFilling = "insert into film_actor (film_id,actor_id) values ("
-          + "('F001','A001'),"
-          + "('F001','A002'),"
-          + "('F002','A001'),"
-          + "('F002','A003'),"
-          + "('F002','A004'),"
-          + "('F003','A001'),"
-          + "('F003','A005'),"
-          + "('F003','A006'),"
-          + "('F004','A001'),"
-          + "('F004','A007'))";
+      String film2actorFilling = "insert into film_actor (film_id,actor_id,payment) values ("
+          + "('F001','A001','32000000'),"
+          + "('F001','A002','20000000'),"
+          + "('F002','A001','28000000'),"
+          + "('F002','A003','18000000'),"
+          + "('F002','A004','6000000'),"
+          + "('F003','A001','25000000'),"
+          + "('F003','A005','27000000'),"
+          + "('F003','A006','14000000'),"
+          + "('F004','A001','30000000'),"
+          + "('F004','A007','12000000'))";
       st.execute(film2actorFilling);
 
 
@@ -190,6 +190,7 @@ public class AggregationStrategyTest {
       String[] values = {"F001"};
 
       Vertex v = null;
+      Edge currentEdge;
       Iterator<Vertex> iterator = orientGraph.getVertices("Film", keys, values).iterator();
       assertTrue(iterator.hasNext());
       if(iterator.hasNext()) {
@@ -197,8 +198,12 @@ public class AggregationStrategyTest {
         assertEquals("F001", v.getProperty("id"));
         assertEquals("The Wolf Of Wall Street", v.getProperty("title"));
         edgesIt = v.getEdges(Direction.IN, "FilmActor").iterator();
-        assertEquals("A001", edgesIt.next().getVertex(Direction.OUT).getProperty("id"));
-        assertEquals("A002", edgesIt.next().getVertex(Direction.OUT).getProperty("id"));
+        currentEdge = edgesIt.next();
+        assertEquals("A001", currentEdge.getVertex(Direction.OUT).getProperty("id"));
+        assertEquals(32000000, currentEdge.getProperty("payment"));
+        currentEdge = edgesIt.next();
+        assertEquals("A002", currentEdge.getVertex(Direction.OUT).getProperty("id"));
+        assertEquals(20000000, currentEdge.getProperty("payment"));
         assertEquals(false, edgesIt.hasNext());
       }
       else {
@@ -213,9 +218,15 @@ public class AggregationStrategyTest {
         assertEquals("F002", v.getProperty("id"));
         assertEquals("Shutter Island", v.getProperty("title"));
         edgesIt = v.getEdges(Direction.IN, "FilmActor").iterator();
-        assertEquals("A001", edgesIt.next().getVertex(Direction.OUT).getProperty("id"));
-        assertEquals("A003", edgesIt.next().getVertex(Direction.OUT).getProperty("id"));
-        assertEquals("A004", edgesIt.next().getVertex(Direction.OUT).getProperty("id"));
+        currentEdge = edgesIt.next();
+        assertEquals("A001", currentEdge.getVertex(Direction.OUT).getProperty("id"));
+        assertEquals(28000000, currentEdge.getProperty("payment"));
+        currentEdge = edgesIt.next();
+        assertEquals("A003", currentEdge.getVertex(Direction.OUT).getProperty("id"));
+        assertEquals(18000000, currentEdge.getProperty("payment"));
+        currentEdge = edgesIt.next();
+        assertEquals("A004", currentEdge.getVertex(Direction.OUT).getProperty("id"));
+        assertEquals(6000000, currentEdge.getProperty("payment"));
         assertEquals(false, edgesIt.hasNext());
       }
       else {
@@ -230,9 +241,15 @@ public class AggregationStrategyTest {
         assertEquals("F003", v.getProperty("id"));
         assertEquals("The Departed", v.getProperty("title"));
         edgesIt = v.getEdges(Direction.IN, "FilmActor").iterator();
-        assertEquals("A001", edgesIt.next().getVertex(Direction.OUT).getProperty("id"));
-        assertEquals("A005", edgesIt.next().getVertex(Direction.OUT).getProperty("id"));
-        assertEquals("A006", edgesIt.next().getVertex(Direction.OUT).getProperty("id"));
+        currentEdge = edgesIt.next();
+        assertEquals("A001", currentEdge.getVertex(Direction.OUT).getProperty("id"));
+        assertEquals(25000000, currentEdge.getProperty("payment"));
+        currentEdge = edgesIt.next();
+        assertEquals("A005", currentEdge.getVertex(Direction.OUT).getProperty("id"));
+        assertEquals(27000000, currentEdge.getProperty("payment"));
+        currentEdge = edgesIt.next();
+        assertEquals("A006", currentEdge.getVertex(Direction.OUT).getProperty("id"));
+        assertEquals(14000000, currentEdge.getProperty("payment"));
         assertEquals(false, edgesIt.hasNext());
       }
       else {
@@ -247,8 +264,12 @@ public class AggregationStrategyTest {
         assertEquals("F004", v.getProperty("id"));
         assertEquals("Inception", v.getProperty("title"));
         edgesIt = v.getEdges(Direction.IN, "FilmActor").iterator();
-        assertEquals("A001", edgesIt.next().getVertex(Direction.OUT).getProperty("id"));
-        assertEquals("A007", edgesIt.next().getVertex(Direction.OUT).getProperty("id"));
+        currentEdge = edgesIt.next();
+        assertEquals("A001", currentEdge.getVertex(Direction.OUT).getProperty("id"));
+        assertEquals(30000000, currentEdge.getProperty("payment"));
+        currentEdge = edgesIt.next();
+        assertEquals("A007", currentEdge.getVertex(Direction.OUT).getProperty("id"));
+        assertEquals(12000000, currentEdge.getProperty("payment"));
         assertEquals(false, edgesIt.hasNext());
       }
       else {
@@ -417,7 +438,7 @@ public class AggregationStrategyTest {
           " primary key (ID))";
       st.execute(departmentTableBuilding);
 
-      String dept2empTableBuilding = "create memory table DEPT_EMP (DEPT_ID varchar(256) not null, EMP_ID  varchar(256),"+
+      String dept2empTableBuilding = "create memory table DEPT_EMP (DEPT_ID varchar(256) not null, EMP_ID  varchar(256), HIRING_YEAR varchar(256),"+
           " primary key (DEPT_ID,EMP_ID), foreign key (EMP_ID) references EMPLOYEE(ID), foreign key (DEPT_ID) references DEPARTMENT(ID))";
       st.execute(dept2empTableBuilding);
 
@@ -520,6 +541,8 @@ public class AggregationStrategyTest {
       assertEquals(1, deptEmpEdgeType.getNumberRelationshipsRepresented());
       assertEquals(1, deptManagerEdgeType.getNumberRelationshipsRepresented());
 
+      assertNotNull(deptEmpEdgeType.getPropertyByName("hiringYear"));
+      assertTrue(deptEmpEdgeType.getPropertyByName("hiringYear").getPropertyType().equals("VARCHAR"));
 
     } catch(Exception e) {
       e.printStackTrace();

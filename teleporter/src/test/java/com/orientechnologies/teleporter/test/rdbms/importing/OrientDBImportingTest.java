@@ -85,7 +85,7 @@ public class OrientDBImportingTest {
       String filmTableBuilding = "create memory table FILM (ID varchar(256) not null,"+
           " TITLE varchar(256) not null, DIRECTOR varchar(256) not null, CATEGORY varchar(256) not null," +
           " primary key (ID), " +
-          " foreign key (DIRECTOR) references DIRECTOR(ID)," + 
+          " foreign key (DIRECTOR) references DIRECTOR(ID)," +
           " foreign key (CATEGORY) references CATEGORY(ID))";
       st.execute(filmTableBuilding);
 
@@ -701,7 +701,7 @@ public class OrientDBImportingTest {
         orientGraph.drop();
         orientGraph.shutdown();
       }
-    }  
+    }
 
   }
 
