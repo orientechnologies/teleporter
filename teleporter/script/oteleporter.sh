@@ -42,4 +42,4 @@ TRUSTSTORE=$ORIENTDB_HOME/config/cert/orientdb-console.ts
 TRUSTSTORE_PASS=password
 SSL_OPTS="-Xmx512m -Dclient.ssl.enabled=false -Djavax.net.ssl.keyStore=$KEYSTORE -Djavax.net.ssl.keyStorePassword=$KEYSTORE_PASS -Djavax.net.ssl.trustStore=$TRUSTSTORE -Djavax.net.ssl.trustStorePassword=$TRUSTSTORE_PASS"
 
-$JAVA -server $JAVA_OPTS $ORIENTDB_SETTINGS -Dfile.encoding=utf-8 -Dorientdb.build.number="@BUILD@" -cp "$ORIENTDB_HOME/lib/*:$ORIENTDB_HOME/plugins/*" com.orientdb.teleporter.main.OTeleporter ${1+"$@"}
+$JAVA -server $JAVA_OPTS $ORIENTDB_SETTINGS -Dfile.encoding=utf-8 -Dorientdb.build.number="@BUILD@" -cp "$ORIENTDB_HOME/lib/*:$ORIENTDB_HOME/plugins/*" com.orientechnologies.teleporter.main.OTeleporter ${1+"$@"}
