@@ -40,7 +40,7 @@ import com.orientechnologies.teleporter.persistence.handler.ODBMSDataTypeHandler
 import com.orientechnologies.teleporter.persistence.util.OQueryResult;
 import com.orientechnologies.teleporter.strategy.OImportStrategy;
 import com.orientechnologies.teleporter.util.OConfigurationManager;
-import com.orientechnologies.teleporter.util.OTimeFormatHandler;
+import com.orientechnologies.teleporter.util.OFunctionsHandler;
 import com.tinkerpop.blueprints.impls.orient.OrientBaseGraph;
 import com.tinkerpop.blueprints.impls.orient.OrientVertex;
 
@@ -93,7 +93,7 @@ public abstract class ODBMSImportStrategy implements OImportStrategy {
 
     Date globalEnd = new Date();
 
-    context.getOutputManager().info("\n\nImporting complete in %s\n", OTimeFormatHandler.getHMSFormat(globalStart, globalEnd));
+    context.getOutputManager().info("\n\nImporting complete in %s\n", OFunctionsHandler.getHMSFormat(globalStart, globalEnd));
     context.getOutputManager().info(context.getStatistics().toString());
 
   }

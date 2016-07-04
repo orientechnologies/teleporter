@@ -37,7 +37,7 @@ public class OMySQLDataTypeHandler extends ODBMSDataTypeHandler {
 
   public OMySQLDataTypeHandler(){
     this.dbmsType2OrientType = this.fillTypesMap();
-    super.jsonImplemented = false;
+    super.jsonImplemented = true;
     super.geospatialImplemented = false;
   }
 
@@ -49,7 +49,7 @@ public class OMySQLDataTypeHandler extends ODBMSDataTypeHandler {
 
     /*
      * Numeric Types
-     * (doc at http://dev.mysql.com/doc/refman/5.6/en/numeric-types.html )
+     * (doc at http://dev.mysql.com/doc/refman/5.7/en/numeric-types.html )
      */
     dbmsType2OrientType.put("tinyint", OType.SHORT);
     dbmsType2OrientType.put("smallint", OType.SHORT);
@@ -69,14 +69,14 @@ public class OMySQLDataTypeHandler extends ODBMSDataTypeHandler {
 
     /*
      * Bit String Types
-     * (doc at http://dev.mysql.com/doc/refman/5.6/en/numeric-types.html )
+     * (doc at http://dev.mysql.com/doc/refman/5.7/en/numeric-types.html )
      */
     dbmsType2OrientType.put("bit", OType.STRING);
 
 
     /*
      * Date/Time Types
-     * (doc at http://dev.mysql.com/doc/refman/5.6/en/date-and-time-types.html )
+     * (doc at http://dev.mysql.com/doc/refman/5.7/en/date-and-time-types.html )
      */    
     dbmsType2OrientType.put("date", OType.DATE);
     dbmsType2OrientType.put("datetime", OType.DATETIME);
@@ -87,7 +87,7 @@ public class OMySQLDataTypeHandler extends ODBMSDataTypeHandler {
 
     /*
      * Character Types
-     * (doc at http://dev.mysql.com/doc/refman/5.6/en/string-types.html )
+     * (doc at http://dev.mysql.com/doc/refman/5.7/en/string-types.html )
      */
     dbmsType2OrientType.put("char", OType.STRING);
     dbmsType2OrientType.put("varchar", OType.STRING);
@@ -101,24 +101,34 @@ public class OMySQLDataTypeHandler extends ODBMSDataTypeHandler {
 
     /*
      * Binary Data Types
-     * (doc at http://www.postgresql.org/docs/9.3/static/datatype-binary.html )
+     * (doc at http://dev.mysql.com/doc/refman/5.7/en/binary-varbinary.html
+     *         http://dev.mysql.com/doc/refman/5.7/en/blob.html )
      */    
+    dbmsType2OrientType.put("binary", OType.BINARY);
+    dbmsType2OrientType.put("varbinary", OType.BINARY);
     dbmsType2OrientType.put("tinyblob", OType.BINARY);
     dbmsType2OrientType.put("blob", OType.BINARY);
     dbmsType2OrientType.put("mediumblob", OType.BINARY);
     dbmsType2OrientType.put("longblob", OType.BINARY);
 
 
+     /*
+     * JSON Type
+     * (doc at http://dev.mysql.com/doc/refman/5.7/en/json.html )
+     */
+    dbmsType2OrientType.put("json", OType.EMBEDDED);
+
+
     /*
      * ENUM Types
-     * (doc at http://dev.mysql.com/doc/refman/5.6/en/enum.html )
+     * (doc at http://dev.mysql.com/doc/refman/5.7/en/enum.html )
      */
     // TODO !!!
 
 
     /*
      * SET Types
-     * (doc at http://dev.mysql.com/doc/refman/5.6/en/set.html )
+     * (doc at http://dev.mysql.com/doc/refman/5.7/en/set.html )
      */
     // TODO !!!
 
@@ -141,7 +151,7 @@ public class OMySQLDataTypeHandler extends ODBMSDataTypeHandler {
 
     /*
      * Using Data Types from Other Database Engines
-     * (doc at http://dev.mysql.com/doc/refman/5.6/en/other-vendor-data-types.html )
+     * (doc at http://dev.mysql.com/doc/refman/5.7/en/other-vendor-data-types.html )
      */
     // TODO
 

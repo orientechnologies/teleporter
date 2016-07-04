@@ -95,6 +95,15 @@ public class OOracleDataTypeHandler extends ODBMSDataTypeHandler {
 
 
     /*
+     * JSON Type
+     * (doc at https://docs.oracle.com/database/121/ADXDB/json.htm#GUID-E6CC0DCF-3D72-41EF-ACA4-B3BF54EE3CA0__CACHFFCE)
+     *
+     * Unlike XML data, which is stored using SQL data type XMLType, JSON data is stored in Oracle Database using SQL data types VARCHAR2, CLOB, and BLOB.
+     * Oracle recommends that you always use an is_json check constraint to ensure that column values are valid JSON instances
+     */
+
+
+    /*
      * ROWID and UROWID Data Types
      * (doc at http://docs.oracle.com/cd/B28359_01/server.111/b28318/datatype.htm#CNCPT713 )
      */

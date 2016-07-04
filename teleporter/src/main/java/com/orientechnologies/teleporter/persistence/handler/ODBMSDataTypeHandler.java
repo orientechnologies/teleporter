@@ -53,6 +53,9 @@ public class ODBMSDataTypeHandler implements ODriverDataTypeHandler {
    */
   public OType resolveType(String type, OTeleporterContext context) {
 
+    // normalization
+    type = type.toLowerCase();
+
     // Defined Types
     if(this.dbmsType2OrientType.keySet().contains(type))
       return this.dbmsType2OrientType.get(type);
@@ -132,9 +135,14 @@ public class ODBMSDataTypeHandler implements ODriverDataTypeHandler {
   }
 
 
-  public ODocument convertJSONToDocument(String currentProperty, byte[] currentBinaryValue) {
-    return null;
+  public ODocument convertJSONToDocument(String currentProperty, String currentAttributeValue) {
+    ODocument document = new ODocument(currentProperty);
+    if(currentAttributeValue != null && currentAttributeValue.length() > 0) {
+      document.fromJSON(currentAttributeValue, "noMap");
+    }
+    return document;
   }
+
 
   /**
    * @param currentOriginalType

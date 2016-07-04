@@ -32,6 +32,7 @@ import com.orientechnologies.teleporter.model.graphmodel.OEdgeType;
 import com.orientechnologies.teleporter.model.graphmodel.OModelProperty;
 import com.orientechnologies.teleporter.model.graphmodel.OVertexType;
 import com.orientechnologies.teleporter.persistence.handler.ODBMSDataTypeHandler;
+import com.orientechnologies.teleporter.util.OFunctionsHandler;
 import com.tinkerpop.blueprints.Direction;
 import com.tinkerpop.blueprints.Edge;
 import com.tinkerpop.blueprints.Vertex;
@@ -281,9 +282,9 @@ public class OGraphEngineForDB {
           }
 
           // JSON
-          else if(handler.jsonImplemented && currentOriginalType.equalsIgnoreCase("JSON")) {
-            currentBinaryValue = record.getBytes(this.mapper.getAttributeByVertexTypeAndProperty(vertexType.getName(), currentPropertyName).getName());
-            currentEmbeddedValue = this.handler.convertJSONToDocument(currentPropertyName, currentBinaryValue);
+          else if(handler.jsonImplemented && currentPropertyType.equals("EMBEDDED")) {
+            currentAttributeValue = record.getString(this.mapper.getAttributeByVertexTypeAndProperty(vertexType.getName(), currentPropertyName).getName());
+            currentEmbeddedValue = this.handler.convertJSONToDocument(currentPropertyName, currentAttributeValue);
             properties.put(currentProperty.getName(), currentEmbeddedValue);
           }
 
@@ -504,20 +505,8 @@ public class OGraphEngineForDB {
       }
 
       else if(handler.jsonImplemented && currentPropertyType.equals("EMBEDDED")) {
-
-        Map<String,Object> oldProperties = ((OrientVertex)oldProperty).getProperties();
-        oldProperties.remove("@type");
-        oldProperties.remove("@version");
-        oldProperties.remove("@class");
-        oldProperties.remove("@rid");
-
-        Map<String,Object> newProperties = ((ODocument)newProperty).toMap();
-        newProperties.remove("@type");
-        newProperties.remove("@version");
-        newProperties.remove("@class");
-        newProperties.remove("@rid");
-
-        return oldProperties.equals(newProperties);
+        boolean areEquals = OFunctionsHandler.haveDocumentsSameContent(((ODocument) oldProperty), ((ODocument) newProperty));
+        return areEquals;
       }
 
       else {
@@ -531,6 +520,7 @@ public class OGraphEngineForDB {
     else
       return false;
   }
+
 
 
   /**
@@ -790,9 +780,9 @@ public class OGraphEngineForDB {
           }
 
           // JSON
-          else if(handler.jsonImplemented && currentOriginalType.equalsIgnoreCase("JSON")) {
-            currentBinaryValue = jointTableRecord.getBytes(this.mapper.getAttributeByAggregatorEdgeTypeAndProperty(edgeType.getName(), currentPropertyName).getName());
-            currentEmbeddedValue = this.handler.convertJSONToDocument(currentPropertyName, currentBinaryValue);
+          else if(handler.jsonImplemented && currentPropertyType.equals("EMBEDDED")) {
+            currentAttributeValue = jointTableRecord.getString(this.mapper.getAttributeByAggregatorEdgeTypeAndProperty(edgeType.getName(), currentPropertyName).getName());
+            currentEmbeddedValue = this.handler.convertJSONToDocument(currentPropertyName, currentAttributeValue);
             properties.put(currentProperty.getName(), currentEmbeddedValue);
           }
 

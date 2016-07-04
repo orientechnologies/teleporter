@@ -18,7 +18,7 @@
 
 package com.orientechnologies.teleporter.test.rdbms.util;
 
-import com.orientechnologies.teleporter.util.OTimeFormatHandler;
+import com.orientechnologies.teleporter.util.OFunctionsHandler;
 import org.junit.Test;
 
 import java.util.Date;
@@ -31,19 +31,19 @@ import static org.junit.Assert.assertEquals;
  *
  */
 
-public class TimeFormatHandlerTest {
+public class FunctionsHandlerTest {
 
   @Test
-  public void test() {
+  public void timeFormatsTest() {
 
     Date start = new Date();
     long endMillis = start.getTime() + 7713000L;
     Date end = new Date(endMillis);
 
-    String timeFormat1 = OTimeFormatHandler.getHMSFormat(start, end);
+    String timeFormat1 = OFunctionsHandler.getHMSFormat(start, end);
     assertEquals("02:08:33", timeFormat1);
 
-    String timeFormat2 = OTimeFormatHandler.getHMSFormat(7713000L);
+    String timeFormat2 = OFunctionsHandler.getHMSFormat(7713000L);
     assertEquals("02:08:33", timeFormat2);
 
   }
