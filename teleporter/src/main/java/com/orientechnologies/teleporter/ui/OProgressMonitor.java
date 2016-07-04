@@ -20,7 +20,7 @@ package com.orientechnologies.teleporter.ui;
 
 import com.orientechnologies.teleporter.context.OTeleporterContext;
 import com.orientechnologies.teleporter.context.OTeleporterStatistics;
-import com.orientechnologies.teleporter.util.OTimeFormatHandler;
+import com.orientechnologies.teleporter.util.OFunctionsHandler;
 
 import java.util.Date;
 
@@ -217,14 +217,14 @@ public class OProgressMonitor implements OStatisticsListener {
 
 
     // Times
-    String elapsedHMSTime = OTimeFormatHandler.getHMSFormat(elapsedTime);
+    String elapsedHMSTime = OFunctionsHandler.getHMSFormat(elapsedTime);
 
     long remainingTime;
     if(workDonePercentage > 0)
       remainingTime = (elapsedTime*(long)(100-workDonePercentage))/(long)workDonePercentage;
     else
       remainingTime = 0;
-    String remainingHMSTime = OTimeFormatHandler.getHMSFormat(remainingTime);
+    String remainingHMSTime = OFunctionsHandler.getHMSFormat(remainingTime);
 
     String message = String.format(format, workTitle, workDonePercentage, progressBarWork, " Elapsed:", elapsedHMSTime, " Remaining:", remainingHMSTime, " Warnings:", occurredWarnings, " Records:", importedRecords + "/" + totalRecords);
     context.getOutputManager().info(message);

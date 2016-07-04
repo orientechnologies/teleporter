@@ -55,7 +55,7 @@ public class OPostgreSQLDataTypeHandler extends ODBMSDataTypeHandler {
 
     /*
      * Numeric Types
-     * (doc at http://www.postgresql.org/docs/9.3/static/datatype-numeric.html )
+     * (doc at http://www.postgresql.org/docs/9.6/static/datatype-numeric.html )
      */
     dbmsType2OrientType.put("smallint", OType.SHORT);
     dbmsType2OrientType.put("int2", OType.SHORT);
@@ -80,14 +80,14 @@ public class OPostgreSQLDataTypeHandler extends ODBMSDataTypeHandler {
 
     /*
      * Monetary Types
-     * (doc at http://www.postgresql.org/docs/9.3/static/datatype-money.html )
+     * (doc at http://www.postgresql.org/docs/9.6/static/datatype-money.html )
      */
     dbmsType2OrientType.put("money", OType.DOUBLE);
 
 
     /*
      * Character Types
-     * (doc at http://www.postgresql.org/docs/9.3/static/datatype-character.html )
+     * (doc at http://www.postgresql.org/docs/9.6/static/datatype-character.html )
      */
     dbmsType2OrientType.put("character varying", OType.STRING);
     dbmsType2OrientType.put("varchar", OType.STRING);
@@ -97,14 +97,14 @@ public class OPostgreSQLDataTypeHandler extends ODBMSDataTypeHandler {
 
     /*
      * Binary Data Types
-     * (doc at http://www.postgresql.org/docs/9.3/static/datatype-binary.html )
+     * (doc at http://www.postgresql.org/docs/9.6/static/datatype-binary.html )
      */
     dbmsType2OrientType.put("bytea", OType.BINARY);
 
 
     /*
      * Date/Time Types
-     * (doc at http://www.postgresql.org/docs/9.3/static/datatype-datetime.html )
+     * (doc at http://www.postgresql.org/docs/9.6/static/datatype-datetime.html )
      */    
     dbmsType2OrientType.put("timestamp", OType.DATETIME);
     dbmsType2OrientType.put("date", OType.DATE);
@@ -113,7 +113,7 @@ public class OPostgreSQLDataTypeHandler extends ODBMSDataTypeHandler {
 
     /*
      * Boolean Type
-     * (doc at http://www.postgresql.org/docs/9.3/static/datatype-boolean.html )
+     * (doc at http://www.postgresql.org/docs/9.6/static/datatype-boolean.html )
      */
     dbmsType2OrientType.put("boolean", OType.BOOLEAN);
     dbmsType2OrientType.put("bool", OType.BOOLEAN);
@@ -121,7 +121,7 @@ public class OPostgreSQLDataTypeHandler extends ODBMSDataTypeHandler {
 
     /*
      *  Enumerated Types
-     * (doc at http://www.postgresql.org/docs/9.3/static/datatype-enum.html )
+     * (doc at http://www.postgresql.org/docs/9.6/static/datatype-enum.html )
      */
     //TODO?!
 
@@ -129,7 +129,7 @@ public class OPostgreSQLDataTypeHandler extends ODBMSDataTypeHandler {
 
     /*
      * Geometric Types
-     * (doc at http://www.postgresql.org/docs/9.3/static/datatype-geometric.html )
+     * (doc at http://www.postgresql.org/docs/9.6/static/datatype-geometric.html )
      */
     dbmsType2OrientType.put("point", OType.STRING);
     dbmsType2OrientType.put("line", OType.STRING);
@@ -149,7 +149,7 @@ public class OPostgreSQLDataTypeHandler extends ODBMSDataTypeHandler {
 
     /*
      * Network Address Types
-     * (doc at http://www.postgresql.org/docs/9.3/static/datatype-net-types.html )
+     * (doc at http://www.postgresql.org/docs/9.6/static/datatype-net-types.html )
      */
     dbmsType2OrientType.put("cidr", OType.STRING);
     dbmsType2OrientType.put("inet", OType.STRING);
@@ -158,7 +158,7 @@ public class OPostgreSQLDataTypeHandler extends ODBMSDataTypeHandler {
 
     /*
      * Bit String Types
-     * (doc at http://www.postgresql.org/docs/9.3/static/datatype-bit.html )
+     * (doc at http://www.postgresql.org/docs/9.6/static/datatype-bit.html )
      */
     dbmsType2OrientType.put("bit", OType.STRING);
     dbmsType2OrientType.put("bit varying", OType.STRING);
@@ -167,42 +167,43 @@ public class OPostgreSQLDataTypeHandler extends ODBMSDataTypeHandler {
 
     /*
      * Text Search Types
-     * (doc at http://www.postgresql.org/docs/9.3/static/datatype-textsearch.html )
+     * (doc at http://www.postgresql.org/docs/9.6/static/datatype-textsearch.html )
      */
     //TODO
 
 
     /*
      * UUID Type
-     * (doc at http://www.postgresql.org/docs/9.3/static/datatype-uuid.html )
+     * (doc at http://www.postgresql.org/docs/9.6/static/datatype-uuid.html )
      */
     dbmsType2OrientType.put("uuid", OType.STRING);
 
 
     /*
      * XML Type
-     * (doc at http://www.postgresql.org/docs/9.3/static/datatype-xml.html )
+     * (doc at http://www.postgresql.org/docs/9.6/static/datatype-xml.html )
      */
     dbmsType2OrientType.put("xml", OType.STRING);
 
 
     /*
      * JSON Type
-     * (doc at http://www.postgresql.org/docs/9.3/static/datatype-json.html )
+     * (doc at http://www.postgresql.org/docs/9.6/static/datatype-json.html )
      */
     dbmsType2OrientType.put("json", OType.EMBEDDED);
+    dbmsType2OrientType.put("jsonb", OType.EMBEDDED);
 
 
     /*
      * Composite Types  
-     * (doc at http://www.postgresql.org/docs/9.3/static/rowtypes.html )
+     * (doc at http://www.postgresql.org/docs/9.6/static/rowtypes.html )
      */
     //    TODO! in EMBEDDED
 
 
     /*
      *  Range Types
-     *  (doc at http://www.postgresql.org/docs/9.3/static/rangetypes.html )
+     *  (doc at http://www.postgresql.org/docs/9.6/static/rangetypes.html )
      */
     dbmsType2OrientType.put("int4range", OType.STRING);
     dbmsType2OrientType.put("int8range", OType.STRING);
@@ -251,16 +252,6 @@ public class OPostgreSQLDataTypeHandler extends ODBMSDataTypeHandler {
       query += " from " + quote + entity.getName() + quote;
 
     return query;
-  }
-
-  @Override
-  public ODocument convertJSONToDocument(String currentProperty, byte[] currentBinaryValue) {
-
-    ODocument document = new ODocument(currentProperty);
-    String currentStringValue = new String(currentBinaryValue);
-    document.fromJSON(currentStringValue);
-
-    return document;
   }
 
   @Override
