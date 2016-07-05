@@ -63,13 +63,13 @@ public class OFunctionsHandler {
      */
 
     // (i) number of properties
-    if(d1.toMap().keySet().size() != d1.toMap().keySet().size()) {
+    if(d1.toMap().keySet().size() != d2.toMap().keySet().size()) {
       return false;
     }
 
     for(String key1: d1.toMap().keySet()) {
 
-      // (ii) name of properties
+      // (ii) name of fields
       if(!d2.toMap().keySet().contains(key1)) {
         return false;
       }
