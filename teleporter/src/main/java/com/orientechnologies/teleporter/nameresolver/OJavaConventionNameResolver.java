@@ -98,7 +98,7 @@ public class OJavaConventionNameResolver implements ONameResolver {
 
 
 
-  protected String toJavaClassConvention(String name) {
+  public String toJavaClassConvention(String name) {
 
     // if all chars are uppercase, then name is transformed in a lowercase version
 
@@ -149,7 +149,7 @@ public class OJavaConventionNameResolver implements ONameResolver {
   }
 
 
-  private String toJavaVariableConvention(String name) {
+  public String toJavaVariableConvention(String name) {
 
     // if all chars are uppercase, then name is transformed in a lowercase version
 
