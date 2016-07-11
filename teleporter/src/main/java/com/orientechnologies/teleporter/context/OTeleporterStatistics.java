@@ -72,8 +72,9 @@ public class OTeleporterStatistics {
   public volatile int orientAddedEdges;
   public volatile Date startWork4Time;
 
-  // Warnings Messages
+  // Warnings and Error Messages
   public volatile Set<String> warningMessages;
+  public volatile Set<String> errorMessages;
 
   // Listeners
   private volatile List<OStatisticsListener> listeners;
@@ -81,6 +82,7 @@ public class OTeleporterStatistics {
   public OTeleporterStatistics() {
     this.init();
     this.warningMessages = new HashSet<String>();
+    this.errorMessages = new HashSet<String>();
     this.listeners = new ArrayList<OStatisticsListener>();
   }
 
@@ -173,6 +175,17 @@ public class OTeleporterStatistics {
     String s = "\n\nSUMMARY\n\n";
     s += this.sourceDbSchemaBuildingProgress() + "\n\n" + this.orientSchemaWritingProgress() + "\n\n" + this.importingProgress() + "\n\n";
 
+    // printing error messages
+    if(this.errorMessages.size() > 0) {
+      s += "Error Messages:\n";
+      for(String message: this.errorMessages) {
+        s += message + "\n";
+      }
+    }
+
+    s += "\n\n";
+
+    // printing warning messages
     if(this.warningMessages.size() > 0) {
       s += "Warning Messages:\n";
       for(String message: this.warningMessages) {

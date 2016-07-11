@@ -55,7 +55,7 @@ public class OER2GraphMapper extends OSource2GraphMapper {
   protected Map<ORelationship,OEdgeType>  relationship2edgeType;
   protected Map<OEdgeType, ORelationship> edgeType2relationship;
   protected Map<String,Integer>           edgeTypeName2count;
-  protected Map<String,OAggregatorEdge>   joinVertex2aggregatorEdges;
+  protected Map<OVertexType,OAggregatorEdge>   joinVertex2aggregatorEdges;
 
   // filters
   protected List<String> includedTables;
@@ -72,7 +72,7 @@ public class OER2GraphMapper extends OSource2GraphMapper {
     this.relationship2edgeType = new LinkedHashMap<ORelationship,OEdgeType>();
     this.edgeType2relationship = new LinkedHashMap<OEdgeType,ORelationship>();
     this.edgeTypeName2count = new TreeMap<String,Integer>();
-    this.joinVertex2aggregatorEdges = new LinkedHashMap<String, OAggregatorEdge>();
+    this.joinVertex2aggregatorEdges = new LinkedHashMap<OVertexType, OAggregatorEdge>();
 
     if(includedTables != null)
       this.includedTables = includedTables;
@@ -254,7 +254,7 @@ public class OER2GraphMapper extends OSource2GraphMapper {
         // if the primary key doesn't involve any attribute, a warning message is generated
         if(pKey.getInvolvedAttributes().size() == 0)
           context.getStatistics().warningMessages.add("It's not declared a primary key for the Entity " + currentEntity.getName() + ", this might lead to issues during the migration or the sync executions "
-              + "(the first importing is quite safe).");
+                  + "(the first importing is quite safe).");
 
         // adding entity to db schema
         this.dataBaseSchema.getEntities().add(currentEntity);
@@ -525,7 +525,7 @@ public class OER2GraphMapper extends OSource2GraphMapper {
           }
           else if(context.getExecutionStrategy().equals("naive")) {
             context.getOutputManager().error("Configuration not compliant with the chosen strategy: you cannot perform the aggregation declared in the configuration for the "
-                + "join table %s while executing migration with a not-aggregating strategy. Thus no aggregation will be performed.\n", joinTableName);
+                    + "join table %s while executing migration with a not-aggregating strategy. Thus no aggregation will be performed.\n", joinTableName);
             throw new OTeleporterRuntimeException();
           }
 
@@ -541,7 +541,7 @@ public class OER2GraphMapper extends OSource2GraphMapper {
 
 
   private ORelationship buildRelationshipFrom(String currentForeignEntityName, String currentParentEntityName, List<String> fromColumns,
-      List<String> toColumns, String direction, OTeleporterContext context) {
+                                              List<String> toColumns, String direction, OTeleporterContext context) {
 
     OTeleporterStatistics statistics = context.getStatistics();
     OEntity currentForeignEntity;
@@ -553,8 +553,8 @@ public class OER2GraphMapper extends OSource2GraphMapper {
     // fetch relationship from current db schema, if not present create a new one
     boolean relationshipAlreadyPresentInDBSchema = true;
     currentRelationship = this.dataBaseSchema
-        .getRelationshipByInvolvedEntitiesAndAttributes(currentForeignEntityName, currentParentEntityName, fromColumns,
-            toColumns);
+            .getRelationshipByInvolvedEntitiesAndAttributes(currentForeignEntityName, currentParentEntityName, fromColumns,
+                    toColumns);
     if (currentRelationship == null) {
       currentRelationship = new ORelationship(currentForeignEntityName, currentParentEntityName);
       relationshipAlreadyPresentInDBSchema = false;
@@ -577,8 +577,8 @@ public class OER2GraphMapper extends OSource2GraphMapper {
         currentRelationship.setDirection(direction);
       } else {
         context.getOutputManager().error(
-            "Wrong value for the direction of the relationship between %s and %s: \"%s\" is not a valid direction. " + "Please choose between \"direct\" or \"inverse\" \n", currentRelationship.getForeignEntityName(),
-            currentRelationship.getParentEntityName(), direction);
+                "Wrong value for the direction of the relationship between %s and %s: \"%s\" is not a valid direction. " + "Please choose between \"direct\" or \"inverse\" \n", currentRelationship.getForeignEntityName(),
+                currentRelationship.getParentEntityName(), direction);
       }
     }
 
@@ -596,7 +596,7 @@ public class OER2GraphMapper extends OSource2GraphMapper {
   }
 
   private void buildEdgeTypeFromRelationship(ORelationship currentRelationship, String currentForeignEntityName, String currentParentEntityName,
-      String edgeName, ODocument currentEdgeInfo, boolean foreignEntityIsJoinTableToAggregate, OTeleporterContext context) {
+                                             String edgeName, ODocument currentEdgeInfo, boolean foreignEntityIsJoinTableToAggregate, OTeleporterContext context) {
 
     OTeleporterStatistics statistics = context.getStatistics();
     ONameResolver nameResolver = context.getNameResolver();
@@ -1054,7 +1054,7 @@ public class OER2GraphMapper extends OSource2GraphMapper {
         }
 
         // adding entry to the map
-        this.joinVertex2aggregatorEdges.put(currentVertexType.getName(), new OAggregatorEdge(outVertexType.getName(), inVertexType.getName(), newAggregatorEdge));
+        this.joinVertex2aggregatorEdges.put(currentVertexType, new OAggregatorEdge(outVertexType.getName(), inVertexType.getName(), newAggregatorEdge));
 
         // removing old vertex
         it.remove();
@@ -1105,52 +1105,87 @@ public class OER2GraphMapper extends OSource2GraphMapper {
   }
 
   // TO UPDATE WITH THE INVERTED MAP vertexType2entity (right?)
-  public OAttribute getAttributeByVertexTypeAndProperty(String vertexType, String propertyName) {
+  public OAttribute getAttributeByVertexTypeAndProperty(OVertexType vertexType, String propertyName) {
+
+//    int position = 0;
+//    OModelProperty currentProperty;
+//
+//    if(vertexType != null) {
+//
+//      OVertexType currentVertexType;
+//
+//      for(OEntity currentEntity: this.entity2vertexType.keySet()) {
+//        currentVertexType = this.entity2vertexType.get(currentEntity);
+//        if(currentVertexType.getName().equals(vertexType)) {
+//          currentProperty = currentVertexType.getPropertyByName(propertyName);
+//
+//          // if the current vertex has not the current property and if it has parents, a recursive lookup is performed (inheritance case)
+//          if(currentProperty == null) {
+//            OVertexType parentType = (OVertexType) currentVertexType.getParentType();
+//            if(parentType != null) {
+//              return this.getAttributeByVertexTypeAndProperty(parentType.getName(), propertyName);
+//            }
+//          }
+//          else {
+//            position = currentProperty.getOrdinalPosition();
+//            return currentEntity.getAttributeByOrdinalPosition(position);
+//          }
+//        }
+//      }
+//    }
 
     int position = 0;
     OModelProperty currentProperty;
 
     if(vertexType != null) {
 
-      OVertexType currentVertexType;
+      OEntity correspondentEntity = this.vertexType2entity.get(vertexType);
 
-      for(OEntity currentEntity: this.entity2vertexType.keySet()) {
-        currentVertexType = this.entity2vertexType.get(currentEntity);
-        if(currentVertexType.getName().equals(vertexType)) {
-          currentProperty = currentVertexType.getPropertyByName(propertyName);
+        if(correspondentEntity != null) {
+
+          currentProperty = vertexType.getPropertyByName(propertyName);
 
           // if the current vertex has not the current property and if it has parents, a recursive lookup is performed (inheritance case)
-          OVertexType parentType = (OVertexType) currentVertexType.getParentType();
-          if(currentProperty == null && parentType != null) {
-            return this.getAttributeByVertexTypeAndProperty(parentType.getName(), propertyName);
+          if(currentProperty == null) {
+            OVertexType parentType = (OVertexType) vertexType.getParentType();
+            if(parentType != null) {
+              return this.getAttributeByVertexTypeAndProperty(parentType, propertyName);
+            }
           }
           else {
-            position = currentVertexType.getPropertyByName(propertyName).getOrdinalPosition();
-            return currentEntity.getAttributeByOrdinalPosition(position);
+            position = currentProperty.getOrdinalPosition();
+            return correspondentEntity.getAttributeByOrdinalPosition(position);
           }
         }
-      }
     }
 
     return null;
   }
 
   /**
-   * It returns the attribute of the join table correspondent to the aggregator edge.
+   * It returns the vertex type mapped with the aggregator edge correspondent to the original join table.
    * @param edgeType
-   * @param propertyName
    * @return
    */
-  // TO UPDATE WITH THE INVERTED MAP (right?)
-  public OAttribute getAttributeByAggregatorEdgeTypeAndProperty(String edgeType, String propertyName) {
+   public OVertexType getJoinVertexTypeByAggregatorEdge(String edgeType) {
 
-    for(Map.Entry<String,OAggregatorEdge> entry: this.joinVertex2aggregatorEdges.entrySet()) {
+    for(Map.Entry<OVertexType,OAggregatorEdge> entry: this.joinVertex2aggregatorEdges.entrySet()) {
       if(entry.getValue().getEdgeType().getName().equals(edgeType)) {
-        String joinVertexTypeName = entry.getKey();
-        return this.getAttributeByVertexTypeAndProperty(joinVertexTypeName, propertyName);
+        OVertexType joinVertexType = entry.getKey();
+        return joinVertexType;
       }
     }
 
+    return null;
+  }
+
+  public OAggregatorEdge getAggregatorEdgeByJoinVertexTypeName(String vertexTypeName) {
+
+    for(OVertexType currentVertexType: this.joinVertex2aggregatorEdges.keySet()) {
+      if(currentVertexType.getName().equals(vertexTypeName)) {
+        return this.joinVertex2aggregatorEdges.get(currentVertexType);
+      }
+    }
     return null;
   }
 
@@ -1187,12 +1222,12 @@ public class OER2GraphMapper extends OSource2GraphMapper {
     this.edgeTypeName2count = edgeTypeName2count;
   }
 
-  public Map<String, OAggregatorEdge> getJoinVertex2aggregatorEdges() {
+  public Map<OVertexType, OAggregatorEdge> getJoinVertex2aggregatorEdges() {
     return joinVertex2aggregatorEdges;
   }
 
 
-  public void setJoinVertex2aggregatorEdges(Map<String, OAggregatorEdge> joinVertex2aggregatorEdges) {
+  public void setJoinVertex2aggregatorEdges(Map<OVertexType, OAggregatorEdge> joinVertex2aggregatorEdges) {
     this.joinVertex2aggregatorEdges = joinVertex2aggregatorEdges;
   }
 

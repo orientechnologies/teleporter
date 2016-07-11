@@ -97,7 +97,7 @@ public class OGraphEngineForDB {
       for(String property: propertiesOfIndex) {
         propertyOfKey[cont] = property;
         if(toResolveNames)
-          valueOfKey[cont] = record.getString(this.mapper.getAttributeByVertexTypeAndProperty(vertexType.getName(), property).getName());
+          valueOfKey[cont] = record.getString(this.mapper.getAttributeByVertexTypeAndProperty(vertexType, property).getName());
         else
           valueOfKey[cont] = record.getString(property);
 
@@ -168,8 +168,6 @@ public class OGraphEngineForDB {
 
     try {
 
-      Map<String,Object> properties = new LinkedHashMap<String,Object>();
-
       OTeleporterStatistics statistics = context.getStatistics();
 
       boolean toResolveNames = false;
@@ -196,7 +194,7 @@ public class OGraphEngineForDB {
       for(String property: propertiesOfIndex) {
         propertyOfKey[cont] = property;
         if(toResolveNames) {
-          OAttribute attribute = this.mapper.getAttributeByVertexTypeAndProperty(vertexType.getName(), property);
+          OAttribute attribute = this.mapper.getAttributeByVertexTypeAndProperty(vertexType, property);
           currentValue = record.getString(attribute.getName());
         }
         else {
@@ -207,11 +205,11 @@ public class OGraphEngineForDB {
         OModelProperty prop = vertexType.getPropertyByNameAmongAll(context.getNameResolver().resolveVertexProperty(property));
         if(prop.getPropertyType().equalsIgnoreCase("boolean")) {
           switch(currentValue) {
-          case "t": currentValue = "true";
-            break;
-          case "f": currentValue = "false";
-            break;
-          default: break;
+            case "t": currentValue = "true";
+              break;
+            case "f": currentValue = "false";
+              break;
+            default: break;
           }
         }
 
@@ -235,82 +233,28 @@ public class OGraphEngineForDB {
         vertex = this.getVertexByIndexedKey(orientGraph, propertyOfKey, valueOfKey, vertexType.getName());
 
       // extraction of inherited and not inherited properties from the record (through "getAllProperties()" method)
+      Map<String,Object> properties = new LinkedHashMap<String,Object>();
       String currentPropertyType;
       String currentPropertyName = null;
+
       for(OModelProperty currentProperty : vertexType.getAllProperties()) {
 
-        String currentAttributeValue;
-        Date currentDateValue;
-        byte[] currentBinaryValue;
-        ODocument currentEmbeddedValue = null;
-
         currentPropertyName = currentProperty.getName();
-
         currentPropertyType = context.getDataTypeHandler().resolveType(currentProperty.getPropertyType().toLowerCase(Locale.ENGLISH),context).toString();
         String currentOriginalType = currentProperty.getPropertyType();
 
         try {
-
-          // disambiguation on OrientDB Schema type
-
-          if(currentPropertyType.equals("DATE")) {
-            currentDateValue = record.getDate(this.mapper.getAttributeByVertexTypeAndProperty(vertexType.getName(), currentPropertyName).getName());
-            properties.put(currentPropertyName, currentDateValue);
-          }
-
-          else if(currentPropertyType.equals("DATETIME")) {
-            currentDateValue = record.getTimestamp(this.mapper.getAttributeByVertexTypeAndProperty(vertexType.getName(), currentPropertyName).getName());
-            properties.put(currentProperty.getName(), currentDateValue);
-          }
-
-          else if(currentPropertyType.equals("BINARY")) {
-            currentBinaryValue = record.getBytes(this.mapper.getAttributeByVertexTypeAndProperty(vertexType.getName(), currentPropertyName).getName());
-            properties.put(currentProperty.getName(), currentBinaryValue);
-          }
-
-          else if(currentPropertyType.equals("BOOLEAN")) {
-            currentAttributeValue = record.getString(this.mapper.getAttributeByVertexTypeAndProperty(vertexType.getName(), currentPropertyName).getName());
-
-            switch(currentAttributeValue) {
-
-            case "t": properties.put(currentProperty.getName(), "true");
-              break;
-            case "f": properties.put(currentProperty.getName(), "false");
-              break;
-            default: break;
-            }
-          }
-
-          // JSON
-          else if(handler.jsonImplemented && currentPropertyType.equals("EMBEDDED")) {
-            currentAttributeValue = record.getString(this.mapper.getAttributeByVertexTypeAndProperty(vertexType.getName(), currentPropertyName).getName());
-            currentEmbeddedValue = this.handler.convertJSONToDocument(currentPropertyName, currentAttributeValue);
-            properties.put(currentProperty.getName(), currentEmbeddedValue);
-          }
-
-          // GEOSPATIAL
-          else if(handler.geospatialImplemented && handler.isGeospatial(currentOriginalType)) {
-            currentAttributeValue = record.getString(this.mapper.getAttributeByVertexTypeAndProperty(vertexType.getName(), currentPropertyName).getName());
-            //						currentEmbeddedValue = OShapeFactory.INSTANCE.toDoc(currentAttributeValue);  // to change with transformation from wkt (currentAttrValue) into embedded
-            properties.put(currentProperty.getName(), currentEmbeddedValue);
-          }
-
-          else {
-            currentAttributeValue = record.getString(this.mapper.getAttributeByVertexTypeAndProperty(vertexType.getName(), currentPropertyName).getName());
-            properties.put(currentProperty.getName(), currentAttributeValue);
-          }
-
+          extractPropertiesFromRecord(record, properties, currentPropertyType, currentPropertyName, currentOriginalType, vertexType);
         } catch (Exception e) {
-          String mess =  "Problem encountered during the extraction of the values from the records. Vertex Type: " + vertexType.getName() + ";\tProperty: " + currentProperty.getName() + ";\tRecord: " + propsAndValuesOfKey;
+          String mess =  "Problem encountered during the extraction of the values from the records. Vertex Type: " + vertexType.getName() + ";\tProperty: " + currentPropertyName + ";\tRecord: " + propsAndValuesOfKey;
           context.printExceptionMessage(e, mess, "error");
           context.printExceptionStackTrace(e, "debug");
         }
-
       }
 
       if(vertex == null) {
         String classAndClusterName = vertexType.getName();
-          vertex = this.addVertexToGraph(orientGraph, classAndClusterName, properties, context);
+        vertex = this.addVertexToGraph(orientGraph, classAndClusterName, properties, context);
         statistics.orientAddedVertices++;
         context.getOutputManager().debug("\nLoaded properties: %s\n", properties.toString());
         context.getOutputManager().debug("\nNew vertex inserted (all props setted): %s\n", vertex.toString());
@@ -339,7 +283,7 @@ public class OGraphEngineForDB {
         if(justReachedVertex) {
 
           // setting new properties and save
-            this.setElementProperties(vertex, properties, context);
+          this.setElementProperties(vertex, properties, context);
           vertex.save();
           context.getOutputManager().debug("\nLoaded properties: %s\n", properties.toString());
           context.getOutputManager().debug("\nNew vertex inserted (all props setted): %s\n", vertex.toString());
@@ -389,7 +333,7 @@ public class OGraphEngineForDB {
 
               // setting new properties and save
               //              long millis = ((Date)properties.get("datanascita")).getTime();
-                this.setElementProperties(vertex, properties, context);
+              this.setElementProperties(vertex, properties, context);
               statistics.orientUpdatedVertices++;
               context.getOutputManager().debug("\nLoaded properties: %s\n", properties.toString());
               context.getOutputManager().debug("\nNew vertex inserted (all props setted): %s\n", vertex.toString());
@@ -409,6 +353,63 @@ public class OGraphEngineForDB {
     return vertex;
   }
 
+  private void extractPropertiesFromRecord(ResultSet record, Map<String, Object> properties, String currentPropertyType, String currentPropertyName, String currentOriginalType, OVertexType vertexType) throws SQLException {
+
+    Date currentDateValue;
+    byte[] currentBinaryValue;
+    String currentAttributeValue;
+
+    // disambiguation on OrientDB Schema type
+
+    if(currentPropertyType.equals("DATE")) {
+      currentDateValue = record.getDate(this.mapper.getAttributeByVertexTypeAndProperty(vertexType, currentPropertyName).getName());
+      properties.put(currentPropertyName, currentDateValue);
+    }
+
+    else if(currentPropertyType.equals("DATETIME")) {
+      currentDateValue = record.getTimestamp(this.mapper.getAttributeByVertexTypeAndProperty(vertexType, currentPropertyName).getName());
+      properties.put(currentPropertyName, currentDateValue);
+    }
+
+    else if(currentPropertyType.equals("BINARY")) {
+      currentBinaryValue = record.getBytes(this.mapper.getAttributeByVertexTypeAndProperty(vertexType, currentPropertyName).getName());
+      properties.put(currentPropertyName, currentBinaryValue);
+    }
+
+    else if(currentPropertyType.equals("BOOLEAN")) {
+      currentAttributeValue = record.getString(this.mapper.getAttributeByVertexTypeAndProperty(vertexType, currentPropertyName).getName());
+
+      switch(currentAttributeValue) {
+
+        case "t": properties.put(currentPropertyName, "true");
+          break;
+        case "f": properties.put(currentPropertyName, "false");
+          break;
+        default: break;
+      }
+    }
+
+    // JSON
+    else if(handler.jsonImplemented && currentPropertyType.equals("EMBEDDED")) {
+      currentAttributeValue = record.getString(this.mapper.getAttributeByVertexTypeAndProperty(vertexType, currentPropertyName).getName());
+      ODocument currentEmbeddedValue = this.handler.convertJSONToDocument(currentPropertyName, currentAttributeValue);
+      properties.put(currentPropertyName, currentEmbeddedValue);
+    }
+
+    // GEOSPATIAL
+    else if(handler.geospatialImplemented && handler.isGeospatial(currentOriginalType)) {
+      currentAttributeValue = record.getString(this.mapper.getAttributeByVertexTypeAndProperty(vertexType, currentPropertyName).getName());
+      //						currentEmbeddedValue = OShapeFactory.INSTANCE.toDoc(currentAttributeValue);  // to change with transformation from wkt (currentAttrValue) into embedded
+      ODocument currentEmbeddedValue = null;
+      properties.put(currentPropertyName, currentEmbeddedValue);
+    }
+
+    else {
+      currentAttributeValue = record.getString(this.mapper.getAttributeByVertexTypeAndProperty(vertexType, currentPropertyName).getName());
+      properties.put(currentPropertyName, currentAttributeValue);
+    }
+
+  }
 
 
   /**
@@ -449,7 +450,7 @@ public class OGraphEngineForDB {
           return true;
 
         else if(oldProperty.toString().equalsIgnoreCase("t") && newProperty.toString().equalsIgnoreCase("true")
-            || oldProperty.toString().equalsIgnoreCase("f") && newProperty.toString().equalsIgnoreCase("false"))
+                || oldProperty.toString().equalsIgnoreCase("f") && newProperty.toString().equalsIgnoreCase("false"))
           return true;
 
         else
@@ -465,9 +466,9 @@ public class OGraphEngineForDB {
         newDate.setTime((Date)newProperty);
 
         if(oldDate.get(Calendar.ERA) == newDate.get(Calendar.ERA) &&
-            oldDate.get(Calendar.YEAR) == newDate.get(Calendar.YEAR) &&
-            oldDate.get(Calendar.MONTH) == newDate.get(Calendar.MONTH) &&
-            oldDate.get(Calendar.DAY_OF_MONTH) == newDate.get(Calendar.DAY_OF_MONTH)) {
+                oldDate.get(Calendar.YEAR) == newDate.get(Calendar.YEAR) &&
+                oldDate.get(Calendar.MONTH) == newDate.get(Calendar.MONTH) &&
+                oldDate.get(Calendar.DAY_OF_MONTH) == newDate.get(Calendar.DAY_OF_MONTH)) {
           return true;
         }
         else {
@@ -537,7 +538,7 @@ public class OGraphEngineForDB {
    */
 
   public OrientVertex upsertReachedVertexWithEdge(OrientBaseGraph orientGraph, ResultSet foreignRecord, ORelationship relation, OrientVertex currentOutVertex, OVertexType currentInVertexType,
-      String edgeType, OTeleporterContext context) throws SQLException {
+                                                  String edgeType, OTeleporterContext context) throws SQLException {
 
     OrientVertex currentInVertex = null;
     String propsAndValuesOfKey = "";
@@ -737,67 +738,13 @@ public class OGraphEngineForDB {
 
       for(OModelProperty currentProperty: edgeType.getAllProperties()) {
 
-        String currentAttributeValue = null;
-        Date currentDateValue = null;
-        byte[] currentBinaryValue = null;
-        ODocument currentEmbeddedValue = null;
-
         String currentPropertyName = currentProperty.getName();
-
         String currentPropertyType = context.getDataTypeHandler().resolveType(currentProperty.getPropertyType().toLowerCase(Locale.ENGLISH),context).toString();
         String currentOriginalType = currentProperty.getPropertyType();
+        OVertexType joinVertexType = this.mapper.getJoinVertexTypeByAggregatorEdge(edgeType.getName());
 
         try {
-
-          // disambiguation on OrientDB Schema type
-
-          if(currentPropertyType.equals("DATE")) {
-            currentDateValue = jointTableRecord.getDate(this.mapper.getAttributeByAggregatorEdgeTypeAndProperty(edgeType.getName(), currentPropertyName).getName());
-            properties.put(currentPropertyName, currentDateValue);
-          }
-
-          else if(currentPropertyType.equals("DATETIME")) {
-            currentDateValue = jointTableRecord.getTimestamp(this.mapper.getAttributeByAggregatorEdgeTypeAndProperty(edgeType.getName(), currentPropertyName).getName());
-            properties.put(currentProperty.getName(), currentDateValue);
-          }
-
-          else if(currentPropertyType.equals("BINARY")) {
-            currentBinaryValue = jointTableRecord.getBytes(this.mapper.getAttributeByAggregatorEdgeTypeAndProperty(edgeType.getName(), currentPropertyName).getName());
-            properties.put(currentProperty.getName(), currentBinaryValue);
-          }
-
-          else if(currentPropertyType.equals("BOOLEAN")) {
-            currentAttributeValue = jointTableRecord.getString(this.mapper.getAttributeByAggregatorEdgeTypeAndProperty(edgeType.getName(), currentPropertyName).getName());
-
-            switch(currentAttributeValue) {
-
-            case "t": properties.put(currentProperty.getName(), "true");
-              break;
-            case "f": properties.put(currentProperty.getName(), "false");
-              break;
-            default: break;
-            }
-          }
-
-          // JSON
-          else if(handler.jsonImplemented && currentPropertyType.equals("EMBEDDED")) {
-            currentAttributeValue = jointTableRecord.getString(this.mapper.getAttributeByAggregatorEdgeTypeAndProperty(edgeType.getName(), currentPropertyName).getName());
-            currentEmbeddedValue = this.handler.convertJSONToDocument(currentPropertyName, currentAttributeValue);
-            properties.put(currentProperty.getName(), currentEmbeddedValue);
-          }
-
-          // GEOSPATIAL
-          else if(handler.geospatialImplemented && handler.isGeospatial(currentOriginalType)) {
-            currentAttributeValue = jointTableRecord.getString(this.mapper.getAttributeByAggregatorEdgeTypeAndProperty(edgeType.getName(), currentPropertyName).getName());
-            //						currentEmbeddedValue = OShapeFactory.INSTANCE.toDoc(currentAttributeValue);  // to change with transformation from wkt (currentAttrValue) into embedded
-            properties.put(currentProperty.getName(), currentEmbeddedValue);
-          }
-
-          else {
-            currentAttributeValue = jointTableRecord.getString(this.mapper.getAttributeByAggregatorEdgeTypeAndProperty(edgeType.getName(), currentPropertyName).getName());
-            properties.put(currentProperty.getName(), currentAttributeValue);
-          }
-
+         extractPropertiesFromRecord(jointTableRecord, properties, currentPropertyType, currentPropertyName, currentOriginalType, joinVertexType);
         } catch (Exception e) {
           String mess =  "Problem encountered during the extraction of the values from the records. Edge Type: " + edgeType.getName() + ";\tProperty: " + currentProperty.getName() + ";\tOriginal join table: " + joinTable.getName();
           context.printExceptionMessage(e, mess, "error");
@@ -824,7 +771,7 @@ public class OGraphEngineForDB {
       if(classAndClusterName != null)
         return orientGraph.addVertex("class:" + classAndClusterName, properties);
     } catch (OValidationException e) {
-      context.getStatistics().warningMessages.add(e.getMessage());
+      context.getStatistics().errorMessages.add(e.getMessage());
     }
     return null;
   }
@@ -834,7 +781,7 @@ public class OGraphEngineForDB {
     try {
       return orientGraph.addEdge(id, currentOutVertex, currentInVertex, edgeType);
     } catch (OValidationException e) {
-      context.getStatistics().warningMessages.add(e.getMessage());
+      context.getStatistics().errorMessages.add(e.getMessage());
     }
     return null;
   }
@@ -845,7 +792,7 @@ public class OGraphEngineForDB {
     try {
       element.setProperties(properties);
     } catch(OValidationException e) {
-      context.getStatistics().warningMessages.add(e.getMessage());
+      context.getStatistics().errorMessages.add(e.getMessage());
     }
 
   }
