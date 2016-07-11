@@ -209,7 +209,7 @@ public class ODBMSNaiveAggregationStrategy extends ODBMSImportStrategy {
           records = queryResult.getResult();
           ResultSet currentRecord = null;
 
-          OAggregatorEdge aggregatorEdge = mapper.getJoinVertex2aggregatorEdges().get(context.getNameResolver().resolveVertexName(entity.getName()));
+          OAggregatorEdge aggregatorEdge = mapper.getAggregatorEdgeByJoinVertexTypeName(context.getNameResolver().resolveVertexName(entity.getName()));
 
           // each record of the join table used to add an edge
           while(records.next()) {
