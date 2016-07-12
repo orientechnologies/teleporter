@@ -103,8 +103,9 @@ public class ConfigurationMappingTest {
       ODocument config = OFileManager.buildJsonFromFile(this.configDirectEdgesPath);
 
       this.mapper = new OER2GraphMapper("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", null, null, config);
-      mapper.buildSourceSchema(this.context);
+      mapper.buildSourceDatabaseSchema(this.context);
       mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
+      mapper.applyImportConfiguration(this.context);
 
 
       /*
@@ -114,12 +115,10 @@ public class ConfigurationMappingTest {
       assertEquals(2, context.getStatistics().totalNumberOfEntities);
       assertEquals(2, context.getStatistics().builtEntities);
       assertEquals(2, context.getStatistics().totalNumberOfRelationships);
-      assertEquals(2, context.getStatistics().analyzedRelationships);
       assertEquals(2, context.getStatistics().detectedRelationships);
 
       assertEquals(2, context.getStatistics().totalNumberOfModelVertices);
       assertEquals(2, context.getStatistics().builtModelVertexTypes);
-      assertEquals(2, context.getStatistics().analyzedRelationships);
       assertEquals(2, context.getStatistics().builtModelEdgeTypes);
 
        /*
@@ -407,8 +406,9 @@ public class ConfigurationMappingTest {
       ODocument config = OFileManager.buildJsonFromFile(this.configInverseEdgesPath);
 
       this.mapper = new OER2GraphMapper("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", null, null, config);
-      mapper.buildSourceSchema(this.context);
+      mapper.buildSourceDatabaseSchema(this.context);
       mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
+      mapper.applyImportConfiguration(this.context);
 
 
       /*
@@ -418,12 +418,10 @@ public class ConfigurationMappingTest {
       assertEquals(2, context.getStatistics().totalNumberOfEntities);
       assertEquals(2, context.getStatistics().builtEntities);
       assertEquals(2, context.getStatistics().totalNumberOfRelationships);
-      assertEquals(2, context.getStatistics().analyzedRelationships);
       assertEquals(2, context.getStatistics().detectedRelationships);
 
       assertEquals(2, context.getStatistics().totalNumberOfModelVertices);
       assertEquals(2, context.getStatistics().builtModelVertexTypes);
-      assertEquals(2, context.getStatistics().analyzedRelationships);
       assertEquals(2, context.getStatistics().builtModelEdgeTypes);
 
       /*
@@ -572,8 +570,8 @@ public class ConfigurationMappingTest {
 
       assertEquals(0, employeeVertexType.getOutEdgesType().size());
       assertEquals(2, employeeVertexType.getInEdgesType().size());
-      assertEquals(hasEmployeeEdgeType, employeeVertexType.getInEdgesType().get(0));
-      assertEquals(hasProjectManagerEdgeType, employeeVertexType.getInEdgesType().get(1));
+      assertEquals(hasEmployeeEdgeType, employeeVertexType.getInEdgesType().get(1));
+      assertEquals(hasProjectManagerEdgeType, employeeVertexType.getInEdgesType().get(0));
 
       assertEquals(3, projectVertexType.getProperties().size());
 
@@ -596,8 +594,8 @@ public class ConfigurationMappingTest {
       assertEquals(false, projectVertexType.getPropertyByName("projectManager").isFromPrimaryKey());
 
       assertEquals(2, projectVertexType.getOutEdgesType().size());
-      assertEquals(hasEmployeeEdgeType, projectVertexType.getOutEdgesType().get(0));
-      assertEquals(hasProjectManagerEdgeType, projectVertexType.getOutEdgesType().get(1));
+      assertEquals(hasEmployeeEdgeType, projectVertexType.getOutEdgesType().get(1));
+      assertEquals(hasProjectManagerEdgeType, projectVertexType.getOutEdgesType().get(0));
       assertEquals(0, projectVertexType.getInEdgesType().size());
 
       // edges check
@@ -692,8 +690,9 @@ public class ConfigurationMappingTest {
       ODocument config = OFileManager.buildJsonFromFile(this.configJoinTableDirectEdgesPath);
 
       this.mapper = new OER2GraphMapper("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", null, null, config);
-      mapper.buildSourceSchema(this.context);
+      mapper.buildSourceDatabaseSchema(this.context);
       mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
+      mapper.applyImportConfiguration(this.context);
 
 
       /*
@@ -703,12 +702,10 @@ public class ConfigurationMappingTest {
       assertEquals(3, context.getStatistics().totalNumberOfEntities);
       assertEquals(3, context.getStatistics().builtEntities);
       assertEquals(2, context.getStatistics().totalNumberOfRelationships);
-      assertEquals(2, context.getStatistics().analyzedRelationships);
       assertEquals(2, context.getStatistics().detectedRelationships);
 
       assertEquals(3, context.getStatistics().totalNumberOfModelVertices);
       assertEquals(3, context.getStatistics().builtModelVertexTypes);
-      assertEquals(2, context.getStatistics().analyzedRelationships);
       assertEquals(2, context.getStatistics().builtModelEdgeTypes);
 
       /*
@@ -958,7 +955,7 @@ public class ConfigurationMappingTest {
       /**
        * performing aggregation
        */
-      mapper.joinTableDim2Aggregation(this.context);
+      mapper.performMany2ManyAggregation(this.context);
 
 
       /*
@@ -967,7 +964,6 @@ public class ConfigurationMappingTest {
 
       assertEquals(2, context.getStatistics().totalNumberOfModelVertices);
       assertEquals(2, context.getStatistics().builtModelVertexTypes);
-      assertEquals(2, context.getStatistics().analyzedRelationships);
       assertEquals(1, context.getStatistics().builtModelEdgeTypes);
 
 
@@ -1137,8 +1133,9 @@ public class ConfigurationMappingTest {
       ODocument config = OFileManager.buildJsonFromFile(this.configJoinTableInverseEdgesPath);
 
       this.mapper = new OER2GraphMapper("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", null, null, config);
-      mapper.buildSourceSchema(this.context);
+      mapper.buildSourceDatabaseSchema(this.context);
       mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
+      mapper.applyImportConfiguration(this.context);
 
 
       /*
@@ -1148,12 +1145,10 @@ public class ConfigurationMappingTest {
       assertEquals(3, context.getStatistics().totalNumberOfEntities);
       assertEquals(3, context.getStatistics().builtEntities);
       assertEquals(2, context.getStatistics().totalNumberOfRelationships);
-      assertEquals(2, context.getStatistics().analyzedRelationships);
       assertEquals(2, context.getStatistics().detectedRelationships);
 
       assertEquals(3, context.getStatistics().totalNumberOfModelVertices);
       assertEquals(3, context.getStatistics().builtModelVertexTypes);
-      assertEquals(2, context.getStatistics().analyzedRelationships);
       assertEquals(2, context.getStatistics().builtModelEdgeTypes);
 
       /*
@@ -1404,7 +1399,7 @@ public class ConfigurationMappingTest {
       /**
        * performing aggregation
        */
-      mapper.joinTableDim2Aggregation(this.context);
+      mapper.performMany2ManyAggregation(this.context);
 
 
       /*
@@ -1413,7 +1408,6 @@ public class ConfigurationMappingTest {
 
       assertEquals(2, context.getStatistics().totalNumberOfModelVertices);
       assertEquals(2, context.getStatistics().builtModelVertexTypes);
-      assertEquals(2, context.getStatistics().analyzedRelationships);
       assertEquals(1, context.getStatistics().builtModelEdgeTypes);
 
 

@@ -80,7 +80,7 @@ public class SourceSchemaBuildingTest {
       st.execute(foreignTableBuilding);
 
       this.mapper = new OER2GraphMapper("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", null, null, null);
-      mapper.buildSourceSchema(this.context);
+      mapper.buildSourceDatabaseSchema(this.context);
 
 
       /*
@@ -211,7 +211,7 @@ public class SourceSchemaBuildingTest {
       st.execute(foreignTableBuilding);
 
       this.mapper = new OER2GraphMapper("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", null, null, null);
-      mapper.buildSourceSchema(this.context);
+      mapper.buildSourceDatabaseSchema(this.context);
 
 
       /*
@@ -348,7 +348,7 @@ public class SourceSchemaBuildingTest {
       st.execute(foreignTableBuilding);
 
       this.mapper = new OER2GraphMapper("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", null, null, null);
-      mapper.buildSourceSchema(this.context);
+      mapper.buildSourceDatabaseSchema(this.context);
 
 
       /*
@@ -493,7 +493,7 @@ public class SourceSchemaBuildingTest {
       st.execute(foreignTableBuilding);
 
       this.mapper = new OER2GraphMapper("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", null, null, null);
-      mapper.buildSourceSchema(this.context);
+      mapper.buildSourceDatabaseSchema(this.context);
 
 
       /*
@@ -655,7 +655,7 @@ public class SourceSchemaBuildingTest {
       st.execute(foreignTableBuilding);
 
       this.mapper = new OER2GraphMapper("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", null, null, null);
-      mapper.buildSourceSchema(this.context);
+      mapper.buildSourceDatabaseSchema(this.context);
 
 
       /*
@@ -815,7 +815,7 @@ public class SourceSchemaBuildingTest {
       connection.commit();
 
       this.mapper = new OER2GraphMapper("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", null, null, null);
-      mapper.buildSourceSchema(this.context);
+      mapper.buildSourceDatabaseSchema(this.context);
 
 
       /*

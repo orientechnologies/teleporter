@@ -82,7 +82,7 @@ public class GraphModelBuildingTest {
       st.execute(foreignTableBuilding);
 
       this.mapper = new OER2GraphMapper("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", null, null, null);
-      mapper.buildSourceSchema(this.context);
+      mapper.buildSourceDatabaseSchema(this.context);
       mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
 
 
@@ -92,7 +92,6 @@ public class GraphModelBuildingTest {
 
       assertEquals(2, context.getStatistics().totalNumberOfModelVertices);
       assertEquals(2, context.getStatistics().builtModelVertexTypes);
-      assertEquals(1, context.getStatistics().analyzedRelationships);
       assertEquals(1, context.getStatistics().builtModelEdgeTypes);
 
 
@@ -207,7 +206,7 @@ public class GraphModelBuildingTest {
       st.execute(itemTableBuilding);
 
       this.mapper = new OER2GraphMapper("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", null, null, null);
-      mapper.buildSourceSchema(this.context);
+      mapper.buildSourceDatabaseSchema(this.context);
       mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
 
 
@@ -217,7 +216,6 @@ public class GraphModelBuildingTest {
 
       assertEquals(3, context.getStatistics().totalNumberOfModelVertices);
       assertEquals(3, context.getStatistics().builtModelVertexTypes); 
-      assertEquals(2, context.getStatistics().analyzedRelationships);
       assertEquals(2, context.getStatistics().builtModelEdgeTypes);
 
 
@@ -361,7 +359,7 @@ public class GraphModelBuildingTest {
       st.execute(articleTableBuilding);
 
       this.mapper = new OER2GraphMapper("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", null, null, null);
-      mapper.buildSourceSchema(this.context);
+      mapper.buildSourceDatabaseSchema(this.context);
       mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
 
 
@@ -371,7 +369,6 @@ public class GraphModelBuildingTest {
 
       assertEquals(3, context.getStatistics().totalNumberOfModelVertices);
       assertEquals(3, context.getStatistics().builtModelVertexTypes);  
-      assertEquals(2, context.getStatistics().analyzedRelationships);
       assertEquals(1, context.getStatistics().builtModelEdgeTypes);
 
 
@@ -511,7 +508,7 @@ public class GraphModelBuildingTest {
       st.execute(bookTableBuilding);
 
       this.mapper = new OER2GraphMapper("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", null, null, null);
-      mapper.buildSourceSchema(this.context);
+      mapper.buildSourceDatabaseSchema(this.context);
       mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
 
 
@@ -521,7 +518,6 @@ public class GraphModelBuildingTest {
 
       assertEquals(2, context.getStatistics().totalNumberOfModelVertices);
       assertEquals(2, context.getStatistics().builtModelVertexTypes);  
-      assertEquals(1, context.getStatistics().analyzedRelationships);
       assertEquals(1, context.getStatistics().builtModelEdgeTypes);
 
 
@@ -643,7 +639,7 @@ public class GraphModelBuildingTest {
       st.execute(film2actorTableBuilding);
 
       this.mapper = new OER2GraphMapper("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", null, null, null);
-      mapper.buildSourceSchema(this.context);
+      mapper.buildSourceDatabaseSchema(this.context);
       mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
 
 
@@ -653,7 +649,6 @@ public class GraphModelBuildingTest {
 
       assertEquals(3, context.getStatistics().totalNumberOfModelVertices);
       assertEquals(3, context.getStatistics().builtModelVertexTypes);  
-      assertEquals(2, context.getStatistics().analyzedRelationships);
       assertEquals(2, context.getStatistics().builtModelEdgeTypes);
 
 
@@ -789,7 +784,7 @@ public class GraphModelBuildingTest {
       st.execute(foreignTableBuilding);
 
       this.mapper = new OER2GraphMapper("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", null, null, null);
-      mapper.buildSourceSchema(this.context);
+      mapper.buildSourceDatabaseSchema(this.context);
       mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
 
 
@@ -799,7 +794,6 @@ public class GraphModelBuildingTest {
 
       assertEquals(2, context.getStatistics().totalNumberOfModelVertices);
       assertEquals(2, context.getStatistics().builtModelVertexTypes);  
-      assertEquals(2, context.getStatistics().analyzedRelationships);
       assertEquals(2, context.getStatistics().builtModelEdgeTypes);
 
 

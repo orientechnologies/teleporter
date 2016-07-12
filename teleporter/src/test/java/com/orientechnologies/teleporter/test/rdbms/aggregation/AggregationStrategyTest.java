@@ -453,7 +453,7 @@ public class AggregationStrategyTest {
 
       OER2GraphMapper mapper = new OER2GraphMapper("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", null, null, null);
       context.setQueryQuoteType("\"");
-      mapper.buildSourceSchema(this.context);
+      mapper.buildSourceDatabaseSchema(this.context);
       mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
 
 
@@ -463,7 +463,6 @@ public class AggregationStrategyTest {
 
       assertEquals(5, context.getStatistics().totalNumberOfModelVertices);
       assertEquals(5, context.getStatistics().builtModelVertexTypes);
-      assertEquals(5, context.getStatistics().analyzedRelationships);
       assertEquals(2, context.getStatistics().builtModelEdgeTypes);
 
 
@@ -497,7 +496,7 @@ public class AggregationStrategyTest {
       /*
        * Aggregation of join tables
        */
-      mapper.joinTableDim2Aggregation(context);
+      mapper.performMany2ManyAggregation(context);
       
       
       /*
@@ -506,7 +505,6 @@ public class AggregationStrategyTest {
 
       assertEquals(3, context.getStatistics().totalNumberOfModelVertices);
       assertEquals(3, context.getStatistics().builtModelVertexTypes);
-      assertEquals(5, context.getStatistics().analyzedRelationships);
       assertEquals(3, context.getStatistics().builtModelEdgeTypes);
 
 

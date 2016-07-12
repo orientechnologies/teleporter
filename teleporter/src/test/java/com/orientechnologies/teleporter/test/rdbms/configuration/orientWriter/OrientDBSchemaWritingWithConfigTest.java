@@ -105,7 +105,7 @@ public class OrientDBSchemaWritingWithConfigTest {
       ODocument config = OFileManager.buildJsonFromFile(this.configDirectEdgesPath);
 
       this.mapper = new OER2GraphMapper("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", null, null, config);
-      mapper.buildSourceSchema(this.context);
+      mapper.buildSourceDatabaseSchema(this.context);
       mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
       modelWriter.writeModelOnOrient(mapper.getGraphModel(), new OHSQLDBDataTypeHandler(), this.outOrientGraphUri, context);
 
@@ -293,7 +293,7 @@ public class OrientDBSchemaWritingWithConfigTest {
       ODocument config = OFileManager.buildJsonFromFile(this.configInverseEdgesPath);
 
       this.mapper = new OER2GraphMapper("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", null, null, config);
-      mapper.buildSourceSchema(this.context);
+      mapper.buildSourceDatabaseSchema(this.context);
       mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
       modelWriter.writeModelOnOrient(mapper.getGraphModel(), new OHSQLDBDataTypeHandler(), this.outOrientGraphUri, context);
 
@@ -466,9 +466,9 @@ public class OrientDBSchemaWritingWithConfigTest {
       ODocument config = OFileManager.buildJsonFromFile(this.configJoinTableDirectEdgesPath);
 
       this.mapper = new OER2GraphMapper("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", null, null, config);
-      mapper.buildSourceSchema(this.context);
+      mapper.buildSourceDatabaseSchema(this.context);
       mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
-      mapper.joinTableDim2Aggregation(this.context);
+      mapper.performMany2ManyAggregation(this.context);
       modelWriter.writeModelOnOrient(mapper.getGraphModel(), new OHSQLDBDataTypeHandler(), this.outOrientGraphUri, context);
 
 
@@ -633,9 +633,9 @@ public class OrientDBSchemaWritingWithConfigTest {
       ODocument config = OFileManager.buildJsonFromFile(this.configJoinTableInverseEdgesPath);
 
       this.mapper = new OER2GraphMapper("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", null, null, config);
-      mapper.buildSourceSchema(this.context);
+      mapper.buildSourceDatabaseSchema(this.context);
       mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
-      mapper.joinTableDim2Aggregation(this.context);
+      mapper.performMany2ManyAggregation(this.context);
       modelWriter.writeModelOnOrient(mapper.getGraphModel(), new OHSQLDBDataTypeHandler(), this.outOrientGraphUri, context);
 
 

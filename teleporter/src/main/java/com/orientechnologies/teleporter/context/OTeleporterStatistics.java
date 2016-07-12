@@ -51,7 +51,6 @@ public class OTeleporterStatistics {
   public volatile int  totalNumberOfModelVertices;
   public volatile int  builtModelVertexTypes;
   public volatile int  totalNumberOfRelationships;
-  public volatile int  analyzedRelationships;
   public volatile int  builtModelEdgeTypes;
   public volatile Date startWork2Time;
 
@@ -99,7 +98,6 @@ public class OTeleporterStatistics {
     this.totalNumberOfModelVertices = 0;
     this.builtModelVertexTypes = 0;
     this.totalNumberOfRelationships = 0;
-    this.analyzedRelationships = 0;
     this.builtModelEdgeTypes = 0;
 
     this.totalNumberOfVertexType = 0;

@@ -88,7 +88,6 @@ public class ProgressMonitorTest {
     statistics.runningStepNumber = 2;
     statistics.builtModelVertexTypes = 5;
     statistics.totalNumberOfModelVertices = 10;
-    statistics.analyzedRelationships = 0;
     statistics.totalNumberOfRelationships = 0;
     statistics.startWork2Time = new Date();
 
@@ -102,7 +101,6 @@ public class ProgressMonitorTest {
     // statistics.totalNumberOfModelVertices > 0 && statistics.totalNumberOfRelationships == 0
     statistics.builtModelVertexTypes = 4;
     statistics.totalNumberOfModelVertices = 16;
-    statistics.analyzedRelationships = 0;
     statistics.totalNumberOfRelationships = 0;
     statistics.startWork2Time = new Date();
 
@@ -116,7 +114,6 @@ public class ProgressMonitorTest {
     // statistics.totalNumberOfModelVertices == 0 && statistics.totalNumberOfRelationships == 0
     statistics.builtModelVertexTypes = 0;
     statistics.totalNumberOfModelVertices = 0;
-    statistics.analyzedRelationships = 0;
     statistics.totalNumberOfRelationships = 0;
     statistics.startWork2Time = new Date();
 
