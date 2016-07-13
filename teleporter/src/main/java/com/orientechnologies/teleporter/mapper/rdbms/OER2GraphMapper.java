@@ -783,7 +783,7 @@ public class OER2GraphMapper extends OSource2GraphMapper {
         if(joinTableDoc == null) {
 
           // building relationship
-          ORelationship currentRelationship = buildRelationshipFrom(currentForeignEntityName, currentParentEntityName, fromColumns, toColumns, direction, context);
+          ORelationship currentRelationship = buildRelationshipFrom(currentForeignEntityName, currentParentEntityName, fromColumns, toColumns, direction, foreignEntityIsJoinTableToAggregate, context);
 
           // building correspondent edgeType (check on inheritance not needed)
           buildEdgeTypeFromRelationship(currentRelationship, currentForeignEntityName, currentParentEntityName, edgeName, currentEdgeInfo, foreignEntityIsJoinTableToAggregate, context);
@@ -814,13 +814,14 @@ public class OER2GraphMapper extends OSource2GraphMapper {
             }
 
             // building left relationship
-            ORelationship currentRelationship = buildRelationshipFrom(joinTableName, currentForeignEntityName, joinTableFromColumns, fromColumns, direction, context);
+            ORelationship currentRelationship = buildRelationshipFrom(joinTableName, currentForeignEntityName, joinTableFromColumns, fromColumns, direction, foreignEntityIsJoinTableToAggregate, context);
 
             // building correspondent edgeType (check on inheritance not needed)
             buildEdgeTypeFromRelationship(currentRelationship, joinTableName, currentForeignEntityName, edgeName + "-left", currentEdgeInfo, foreignEntityIsJoinTableToAggregate, context);
 
             // building right relationship
-            currentRelationship = buildRelationshipFrom(joinTableName, currentParentEntityName, joinTableToColumns, toColumns, direction, context);
+            currentRelationship = buildRelationshipFrom(joinTableName, currentParentEntityName, joinTableToColumns, toColumns, direction, foreignEntityIsJoinTableToAggregate, context);
+
             // building correspondent edgeType (check on inheritance not needed)
             buildEdgeTypeFromRelationship(currentRelationship, joinTableName, currentParentEntityName, edgeName + "-right", currentEdgeInfo, foreignEntityIsJoinTableToAggregate, context);
 
@@ -863,7 +864,7 @@ public class OER2GraphMapper extends OSource2GraphMapper {
    * @return
    */
   private ORelationship buildRelationshipFrom(String currentForeignEntityName, String currentParentEntityName, List<String> fromColumns,
-                                              List<String> toColumns, String direction, OTeleporterContext context) {
+                                              List<String> toColumns, String direction, boolean foreignEntityIsJoinTableToAggregate, OTeleporterContext context) {
 
     OTeleporterStatistics statistics = context.getStatistics();
 
@@ -883,8 +884,9 @@ public class OER2GraphMapper extends OSource2GraphMapper {
       statistics.totalNumberOfRelationships += 1;
     }
 
-    // adding the direction of the relationship if different from null
-    if (direction != null) {
+    // Adding the direction of the relationship if it's different from null and if the foreign entity is not a join table.
+    // In fact when the foreign table is a join table to aggregate, direction is referred to the aggregator edge, so left and right relationships remains direct.
+    if (direction != null && !foreignEntityIsJoinTableToAggregate) {
       if ((direction.equals("direct") || direction.equals("inverse"))) {
         currentRelationship.setDirection(direction);
       } else {
@@ -915,7 +917,6 @@ public class OER2GraphMapper extends OSource2GraphMapper {
       currentForeignEntity.getOutRelationships().add(currentRelationship);
       currentParentEntity.getInRelationships().add(currentRelationship);
     }
-
 
     return currentRelationship;
   }
@@ -948,14 +949,10 @@ public class OER2GraphMapper extends OSource2GraphMapper {
       statistics.builtModelEdgeTypes++;
     }
     currentEdgeType.setName(edgeName);
-//    else {
-//      // edge already present, the counter of relationships represented by the edge is incremented
-//      currentEdgeType.setNumberRelationshipsRepresented(currentEdgeType.getNumberRelationshipsRepresented() +1);
-//    }
 
     // extracting properties info if present and adding them to the current edge-type
-    List<OModelProperty> properties = new LinkedList<OModelProperty>();
     ODocument edgePropsDoc = currentEdgeInfo.field("properties");
+
     // adding properties to the edge
     if(edgePropsDoc != null) {
       String[] propertiesFields = edgePropsDoc.fieldNames();
@@ -997,7 +994,9 @@ public class OER2GraphMapper extends OSource2GraphMapper {
 
     if(edgeTypeAlreadyPresent) {
 
-      // if the edge type was already present and the direction is inverse (as to say if it was modified) the references with in-vertex and out-vertex must to be updated
+      // If the edge type was already present and the direction is inverse (as to say if it was modified) the references with in-vertex and out-vertex must to be updated
+      // If the foreign table is a join table then the direction is referred to the aggregator edge and not to the left or right one. So direction field is always "direct"
+      // as it is inferred from the left or right relationship.
       if(currentRelationshipDirection != null && currentRelationshipDirection.equals("inverse")) {
         currentInVertexType = this.loadOrCreateVertexType(nameResolver.resolveVertexName(currentForeignEntityName));
         currentOutVertexType = this.loadOrCreateVertexType(nameResolver.resolveVertexName(currentParentEntityName));
