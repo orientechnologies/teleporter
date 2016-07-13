@@ -127,6 +127,10 @@ public class OEntity implements Comparable<OEntity> {
     return isJunctionTable;
   }
 
+  public void setIsAggregableJoinTable(boolean isAggregable) {
+    this.isAggregable = isAggregable;
+  }
+
   public String getDirectionOfN2NRepresentedRelationship() {
     return this.directionOfN2NRepresentedRelationship;
   }

@@ -955,7 +955,7 @@ public class ConfigurationMappingTest {
       /**
        * performing aggregation
        */
-      mapper.performMany2ManyAggregation(this.context);
+      mapper.performAggregations(this.context);
 
 
       /*

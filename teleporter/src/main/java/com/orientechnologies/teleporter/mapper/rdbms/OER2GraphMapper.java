@@ -824,9 +824,15 @@ public class OER2GraphMapper extends OSource2GraphMapper {
             // building correspondent edgeType (check on inheritance not needed)
             buildEdgeTypeFromRelationship(currentRelationship, joinTableName, currentParentEntityName, edgeName + "-right", currentEdgeInfo, foreignEntityIsJoinTableToAggregate, context);
 
+            // setting attributes of the join table
             OEntity joinTable = this.dataBaseSchema.getEntityByName(joinTableName);
+            joinTable.setIsAggregableJoinTable(true);
             joinTable.setDirectionOfN2NRepresentedRelationship(direction);
             joinTable.setNameOfN2NRepresentedRelationship(edgeName);
+
+            // setting attributes of the correspondent vertex type
+            OVertexType correspondentVertexType = this.entity2vertexType.get(joinTable);
+            correspondentVertexType.setIsFromJoinTable(true);
 
           }
           else if(context.getExecutionStrategy().equals("naive")) {
@@ -1004,7 +1010,6 @@ public class OER2GraphMapper extends OSource2GraphMapper {
         currentInVertexType.getInEdgesType().add(currentEdgeType);
         currentOutVertexType.getOutEdgesType().add(currentEdgeType);
         currentEdgeType.setInVertexType(currentInVertexType);
-        System.out.println();
       }
     }
 

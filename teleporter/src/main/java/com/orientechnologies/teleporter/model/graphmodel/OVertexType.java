@@ -111,7 +111,6 @@ public class OVertexType extends OElementType {
   public int hashCode() {
     final int prime = 31;
     int result = 1;
-    result = prime * result + (isFromJoinTable ? 1231 : 1237);
     result = prime * result + ((super.name == null) ? 0 : super.name.hashCode());
     return result;
   }
