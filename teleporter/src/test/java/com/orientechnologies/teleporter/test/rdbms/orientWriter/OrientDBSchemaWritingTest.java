@@ -100,9 +100,9 @@ public class OrientDBSchemaWritingTest {
        *  Testing context information
        */
 
-      assertEquals(2, context.getStatistics().totalNumberOfVertexType);
+      assertEquals(2, context.getStatistics().totalNumberOfVertexTypes);
       assertEquals(2, context.getStatistics().wroteVertexType);
-      assertEquals(1, context.getStatistics().totalNumberOfEdgeType);
+      assertEquals(1, context.getStatistics().totalNumberOfModelEdges);
       assertEquals(1, context.getStatistics().wroteEdgeType);
       assertEquals(2, context.getStatistics().totalNumberOfIndices);
       assertEquals(2, context.getStatistics().wroteIndexes);
@@ -219,9 +219,9 @@ public class OrientDBSchemaWritingTest {
        *  Testing context information
        */
 
-      assertEquals(3, context.getStatistics().totalNumberOfVertexType);
+      assertEquals(3, context.getStatistics().totalNumberOfVertexTypes);
       assertEquals(3, context.getStatistics().wroteVertexType);
-      assertEquals(2, context.getStatistics().totalNumberOfEdgeType);
+      assertEquals(2, context.getStatistics().totalNumberOfModelEdges);
       assertEquals(2, context.getStatistics().wroteEdgeType);
       assertEquals(3, context.getStatistics().totalNumberOfIndices);
       assertEquals(3, context.getStatistics().wroteIndexes);
@@ -359,9 +359,9 @@ public class OrientDBSchemaWritingTest {
        *  Testing context information
        */
 
-      assertEquals(3, context.getStatistics().totalNumberOfVertexType);
+      assertEquals(3, context.getStatistics().totalNumberOfVertexTypes);
       assertEquals(3, context.getStatistics().wroteVertexType);
-      assertEquals(1, context.getStatistics().totalNumberOfEdgeType);
+      assertEquals(1, context.getStatistics().totalNumberOfEdgeTypes);
       assertEquals(1, context.getStatistics().wroteEdgeType);
       assertEquals(3, context.getStatistics().totalNumberOfIndices);
       assertEquals(3, context.getStatistics().wroteIndexes);
@@ -497,9 +497,9 @@ public class OrientDBSchemaWritingTest {
        *  Testing context information
        */
 
-      assertEquals(2, context.getStatistics().totalNumberOfVertexType);
+      assertEquals(2, context.getStatistics().totalNumberOfVertexTypes);
       assertEquals(2, context.getStatistics().wroteVertexType);
-      assertEquals(1, context.getStatistics().totalNumberOfEdgeType);
+      assertEquals(1, context.getStatistics().totalNumberOfModelEdges);
       assertEquals(1, context.getStatistics().wroteEdgeType);
       assertEquals(2, context.getStatistics().totalNumberOfIndices);
       assertEquals(2, context.getStatistics().wroteIndexes);
@@ -621,9 +621,9 @@ public class OrientDBSchemaWritingTest {
        *  Testing context information
        */
 
-      assertEquals(3, context.getStatistics().totalNumberOfVertexType);
+      assertEquals(3, context.getStatistics().totalNumberOfVertexTypes);
       assertEquals(3, context.getStatistics().wroteVertexType);
-      assertEquals(2, context.getStatistics().totalNumberOfEdgeType);
+      assertEquals(2, context.getStatistics().totalNumberOfModelEdges);
       assertEquals(2, context.getStatistics().wroteEdgeType);
       assertEquals(3, context.getStatistics().totalNumberOfIndices);
       assertEquals(3, context.getStatistics().wroteIndexes);
@@ -756,9 +756,9 @@ public class OrientDBSchemaWritingTest {
        *  Testing context information
        */
 
-      assertEquals(2, context.getStatistics().totalNumberOfVertexType);
+      assertEquals(2, context.getStatistics().totalNumberOfVertexTypes);
       assertEquals(2, context.getStatistics().wroteVertexType);
-      assertEquals(2, context.getStatistics().totalNumberOfEdgeType);
+      assertEquals(2, context.getStatistics().totalNumberOfModelEdges);
       assertEquals(2, context.getStatistics().wroteEdgeType);
       assertEquals(2, context.getStatistics().totalNumberOfIndices);
       assertEquals(2, context.getStatistics().wroteIndexes);

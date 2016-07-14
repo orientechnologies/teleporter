@@ -104,9 +104,12 @@ public class HibernateMapperTest {
 
       assertEquals(2, context.getStatistics().totalNumberOfEntities);
       assertEquals(2, context.getStatistics().builtEntities);
-      assertEquals(1, context.getStatistics().detectedRelationships);
+      assertEquals(1, context.getStatistics().totalNumberOfRelationships);
+      assertEquals(1, context.getStatistics().builtRelationships);
 
       assertEquals(4, context.getStatistics().totalNumberOfModelVertices);
+      assertEquals(4, context.getStatistics().builtModelVertexTypes);
+      assertEquals(1, context.getStatistics().totalNumberOfModelEdges);
       assertEquals(1, context.getStatistics().builtModelEdgeTypes);
 
       /*
@@ -544,9 +547,12 @@ public class HibernateMapperTest {
 
       assertEquals(4, context.getStatistics().totalNumberOfEntities);
       assertEquals(4, context.getStatistics().builtEntities);
-      assertEquals(3, context.getStatistics().detectedRelationships);
+      assertEquals(3, context.getStatistics().totalNumberOfRelationships);
+      assertEquals(3, context.getStatistics().builtRelationships);
 
       assertEquals(4, context.getStatistics().totalNumberOfModelVertices);
+      assertEquals(4, context.getStatistics().builtModelVertexTypes);
+      assertEquals(1, context.getStatistics().totalNumberOfModelEdges);
       assertEquals(1, context.getStatistics().builtModelEdgeTypes);
 
       /*
@@ -1004,9 +1010,12 @@ public class HibernateMapperTest {
 
       assertEquals(4, context.getStatistics().totalNumberOfEntities);
       assertEquals(4, context.getStatistics().builtEntities);
-      assertEquals(3, context.getStatistics().detectedRelationships);
+      assertEquals(3, context.getStatistics().totalNumberOfRelationships);
+      assertEquals(3, context.getStatistics().builtRelationships);
 
       assertEquals(4, context.getStatistics().totalNumberOfModelVertices);
+      assertEquals(4, context.getStatistics().builtModelVertexTypes);
+      assertEquals(1, context.getStatistics().totalNumberOfModelEdges);
       assertEquals(1, context.getStatistics().builtModelEdgeTypes);
 
       /*
@@ -1460,9 +1469,12 @@ public class HibernateMapperTest {
 
       assertEquals(4, context.getStatistics().totalNumberOfEntities);
       assertEquals(4, context.getStatistics().builtEntities);
-      assertEquals(1, context.getStatistics().detectedRelationships);
+      assertEquals(1, context.getStatistics().totalNumberOfRelationships);
+      assertEquals(1, context.getStatistics().builtRelationships);
 
       assertEquals(4, context.getStatistics().totalNumberOfModelVertices);
+      assertEquals(4, context.getStatistics().builtModelVertexTypes);
+      assertEquals(1, context.getStatistics().totalNumberOfModelEdges);
       assertEquals(1, context.getStatistics().builtModelEdgeTypes);
 
       /*

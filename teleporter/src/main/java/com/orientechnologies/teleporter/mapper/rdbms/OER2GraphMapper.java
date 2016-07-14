@@ -398,15 +398,15 @@ public class OER2GraphMapper extends OSource2GraphMapper {
         // adding relationship to the current entity
         currentForeignEntity.getOutRelationships().add(currentRelationship);
         // updating statistics
-        statistics.detectedRelationships += 1;
+        statistics.builtRelationships += 1;
       }
 
       iteration++;
       context.getOutputManager().debug("\nOUT Relationships from %s built.\n", currentForeignEntityName);
-      statistics.doneEntity4Relationship++;
-      statistics.totalNumberOfRelationships = this.dataBaseSchema.getRelationships().size();
-
+      statistics.entitiesAnalyzedForRelationship++;
     }
+
+    statistics.totalNumberOfRelationships = this.dataBaseSchema.getRelationships().size();
   }
 
 
@@ -611,7 +611,7 @@ public class OER2GraphMapper extends OSource2GraphMapper {
     OTeleporterStatistics statistics = context.getStatistics();
 
     int numberOfEdgeType = this.dataBaseSchema.getRelationships().size();
-    statistics.totalNumberOfEdgeType = numberOfEdgeType;
+    statistics.totalNumberOfModelEdges = numberOfEdgeType;
     String edgeType = null;
     int iteration = 1;
 
@@ -672,6 +672,8 @@ public class OER2GraphMapper extends OSource2GraphMapper {
           iteration++;
         }
 
+        // building edges starting from inherited relationships
+
         for(ORelationship relationship: currentEntity.getInheritedOutRelationships()) {
           OVertexType currentOutVertex = this.graphModel.getVertexByName(nameResolver.resolveVertexName(currentEntity.getName()));
           OVertexType currentInVertex = this.graphModel.getVertexByName(nameResolver.resolveVertexName(relationship.getParentEntityName()));
@@ -691,6 +693,11 @@ public class OER2GraphMapper extends OSource2GraphMapper {
           }
         }
       }
+
+      // Updating the total number of model edges with the actual number of built model edges since it was initialized with the number of relationships in the source db schema.
+      // In fact if there are relationships representing hierarchy then the number of built edges is less than the number of relationships.
+      statistics.totalNumberOfModelEdges = statistics.builtModelEdgeTypes;
+
     }
   }
 
@@ -880,7 +887,7 @@ public class OER2GraphMapper extends OSource2GraphMapper {
       relationshipAlreadyPresentInDBSchema = false;
 
       // updating statistics
-      statistics.detectedRelationships += 1;
+      statistics.builtRelationships += 1;
       statistics.totalNumberOfRelationships += 1;
     }
 
@@ -947,6 +954,7 @@ public class OER2GraphMapper extends OSource2GraphMapper {
       this.graphModel.getEdgesType().add(currentEdgeType);
       context.getOutputManager().debug("\nEdge-type %s built.\n", currentEdgeType.getName());
       statistics.builtModelEdgeTypes++;
+      statistics.totalNumberOfModelEdges++;
     }
     currentEdgeType.setName(edgeName);
 
@@ -1106,7 +1114,6 @@ public class OER2GraphMapper extends OSource2GraphMapper {
       // if vertex is obtained from a join table of dimension 2,
       // then aggregation is performed
       if(currentVertexType.isFromJoinTable() && currentVertexType.getOutEdgesType().size() == 2) {
-        statistics.totalNumberOfModelVertices--;
 
         // building new edge
         OEdgeType currentOutEdge1 = currentVertexType.getOutEdgesType().get(0);
@@ -1187,10 +1194,12 @@ public class OER2GraphMapper extends OSource2GraphMapper {
         if(currentOutEdge1.getNumberRelationshipsRepresented() == 0) {
           this.graphModel.getEdgesType().remove(currentOutEdge1);
           statistics.builtModelEdgeTypes--;
+          statistics.totalNumberOfModelEdges--;
         }
         if(currentOutEdge2.getNumberRelationshipsRepresented() == 0) {
           this.graphModel.getEdgesType().remove(currentOutEdge2);
           statistics.builtModelEdgeTypes--;
+          statistics.totalNumberOfModelEdges--;
         }
         if(direction.equals("direct")) {
           outVertexType.getInEdgesType().remove(currentOutEdge1);
@@ -1207,10 +1216,12 @@ public class OER2GraphMapper extends OSource2GraphMapper {
         // removing old vertex
         it.remove();
         statistics.builtModelVertexTypes--;
+        statistics.totalNumberOfModelVertices--;
 
         // adding new edge to graph model
         this.graphModel.getEdgesType().add(newAggregatorEdge);
         statistics.builtModelEdgeTypes++;
+        statistics.totalNumberOfModelEdges++;
 
         // adding new edge to the vertices' "in/out-edges" collections
         outVertexType.getOutEdgesType().add(newAggregatorEdge);

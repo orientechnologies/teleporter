@@ -125,6 +125,7 @@ public class HibernateImportTest {
       assertEquals(6, context.getStatistics().totalNumberOfRecords);
       assertEquals(6, context.getStatistics().analyzedRecords);
       assertEquals(6, context.getStatistics().orientAddedVertices);
+      assertEquals(4, context.getStatistics().orientAddedEdges);
 
 
       /*
@@ -477,6 +478,7 @@ public class HibernateImportTest {
       assertEquals(9, context.getStatistics().totalNumberOfRecords);
       assertEquals(9, context.getStatistics().analyzedRecords);
       assertEquals(6, context.getStatistics().orientAddedVertices);
+      assertEquals(4, context.getStatistics().orientAddedEdges);
 
 
       /*
@@ -828,6 +830,7 @@ public class HibernateImportTest {
       assertEquals(9, context.getStatistics().totalNumberOfRecords);
       assertEquals(9, context.getStatistics().analyzedRecords);
       assertEquals(6, context.getStatistics().orientAddedVertices);
+      assertEquals(4, context.getStatistics().orientAddedEdges);
 
 
       /*
@@ -1179,6 +1182,7 @@ public class HibernateImportTest {
       assertEquals(9, context.getStatistics().totalNumberOfRecords);
       assertEquals(9, context.getStatistics().analyzedRecords);
       assertEquals(6, context.getStatistics().orientAddedVertices);
+      assertEquals(4, context.getStatistics().orientAddedEdges);
 
 
       /*

@@ -136,9 +136,12 @@ public class FilterTableMappingTest {
 
       assertEquals(3, context.getStatistics().totalNumberOfEntities);
       assertEquals(3, context.getStatistics().builtEntities);
-      assertEquals(1, context.getStatistics().detectedRelationships);
+      assertEquals(1, context.getStatistics().totalNumberOfRelationships);
+      assertEquals(1, context.getStatistics().builtRelationships);
 
       assertEquals(3, context.getStatistics().totalNumberOfModelVertices);
+      assertEquals(3, context.getStatistics().builtModelVertexTypes);
+      assertEquals(1, context.getStatistics().totalNumberOfModelEdges);
       assertEquals(1, context.getStatistics().builtModelEdgeTypes);
 
 
@@ -443,9 +446,12 @@ public class FilterTableMappingTest {
 
       assertEquals(3, context.getStatistics().totalNumberOfEntities);
       assertEquals(3, context.getStatistics().builtEntities);
-      assertEquals(1, context.getStatistics().detectedRelationships);
+      assertEquals(1, context.getStatistics().totalNumberOfRelationships);
+      assertEquals(1, context.getStatistics().builtRelationships);
 
       assertEquals(3, context.getStatistics().totalNumberOfModelVertices);
+      assertEquals(3, context.getStatistics().builtModelVertexTypes);
+      assertEquals(1, context.getStatistics().totalNumberOfModelEdges);
       assertEquals(1, context.getStatistics().builtModelEdgeTypes);
 
 
@@ -750,9 +756,12 @@ public class FilterTableMappingTest {
 
       assertEquals(3, context.getStatistics().totalNumberOfEntities);
       assertEquals(3, context.getStatistics().builtEntities);
-      assertEquals(1, context.getStatistics().detectedRelationships);
+      assertEquals(1, context.getStatistics().totalNumberOfRelationships);
+      assertEquals(1, context.getStatistics().builtRelationships);
 
       assertEquals(6, context.getStatistics().totalNumberOfModelVertices);
+      assertEquals(6, context.getStatistics().builtModelVertexTypes);
+      assertEquals(1, context.getStatistics().totalNumberOfModelEdges);
       assertEquals(1, context.getStatistics().builtModelEdgeTypes);
 
 
@@ -1404,9 +1413,12 @@ public class FilterTableMappingTest {
 
       assertEquals(6, context.getStatistics().totalNumberOfEntities);
       assertEquals(6, context.getStatistics().builtEntities);
-      assertEquals(4, context.getStatistics().detectedRelationships); // 3 of these are hierarchical relationships
+      assertEquals(4, context.getStatistics().totalNumberOfRelationships);
+      assertEquals(4, context.getStatistics().builtRelationships); // 3 of these are hierarchical relationships
 
       assertEquals(6, context.getStatistics().totalNumberOfModelVertices);
+      assertEquals(6, context.getStatistics().builtModelVertexTypes);
+      assertEquals(1, context.getStatistics().totalNumberOfModelEdges);
       assertEquals(1, context.getStatistics().builtModelEdgeTypes);
 
 
@@ -2059,9 +2071,12 @@ public class FilterTableMappingTest {
 
       assertEquals(6, context.getStatistics().totalNumberOfEntities);
       assertEquals(6, context.getStatistics().builtEntities);
-      assertEquals(4, context.getStatistics().detectedRelationships); // 3 of these are hierarchical relationships
+      assertEquals(4, context.getStatistics().totalNumberOfRelationships);
+      assertEquals(4, context.getStatistics().builtRelationships); // 3 of these are hierarchical relationships
 
       assertEquals(6, context.getStatistics().totalNumberOfModelVertices);
+      assertEquals(6, context.getStatistics().builtModelVertexTypes);
+      assertEquals(1, context.getStatistics().totalNumberOfModelEdges);
       assertEquals(1, context.getStatistics().builtModelEdgeTypes);
 
 
@@ -2721,9 +2736,12 @@ public class FilterTableMappingTest {
 
       assertEquals(6, context.getStatistics().totalNumberOfEntities);
       assertEquals(6, context.getStatistics().builtEntities);
-      assertEquals(1, context.getStatistics().detectedRelationships);
+      assertEquals(1, context.getStatistics().totalNumberOfRelationships);
+      assertEquals(1, context.getStatistics().builtRelationships);
 
       assertEquals(6, context.getStatistics().totalNumberOfModelVertices);
+      assertEquals(6, context.getStatistics().builtModelVertexTypes);
+      assertEquals(1, context.getStatistics().totalNumberOfModelEdges);
       assertEquals(1, context.getStatistics().builtModelEdgeTypes);
 
 

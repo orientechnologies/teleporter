@@ -116,10 +116,11 @@ public class ConfigurationMappingTest {
       assertEquals(2, context.getStatistics().totalNumberOfEntities);
       assertEquals(2, context.getStatistics().builtEntities);
       assertEquals(2, context.getStatistics().totalNumberOfRelationships);
-      assertEquals(2, context.getStatistics().detectedRelationships);
+      assertEquals(2, context.getStatistics().builtRelationships);
 
       assertEquals(2, context.getStatistics().totalNumberOfModelVertices);
       assertEquals(2, context.getStatistics().builtModelVertexTypes);
+      assertEquals(2, context.getStatistics().totalNumberOfModelEdges);
       assertEquals(2, context.getStatistics().builtModelEdgeTypes);
 
        /*
@@ -419,10 +420,11 @@ public class ConfigurationMappingTest {
       assertEquals(2, context.getStatistics().totalNumberOfEntities);
       assertEquals(2, context.getStatistics().builtEntities);
       assertEquals(2, context.getStatistics().totalNumberOfRelationships);
-      assertEquals(2, context.getStatistics().detectedRelationships);
+      assertEquals(2, context.getStatistics().builtRelationships);
 
       assertEquals(2, context.getStatistics().totalNumberOfModelVertices);
       assertEquals(2, context.getStatistics().builtModelVertexTypes);
+      assertEquals(2, context.getStatistics().totalNumberOfModelEdges);
       assertEquals(2, context.getStatistics().builtModelEdgeTypes);
 
       /*
@@ -703,10 +705,11 @@ public class ConfigurationMappingTest {
       assertEquals(3, context.getStatistics().totalNumberOfEntities);
       assertEquals(3, context.getStatistics().builtEntities);
       assertEquals(2, context.getStatistics().totalNumberOfRelationships);
-      assertEquals(2, context.getStatistics().detectedRelationships);
+      assertEquals(2, context.getStatistics().builtRelationships);
 
       assertEquals(3, context.getStatistics().totalNumberOfModelVertices);
       assertEquals(3, context.getStatistics().builtModelVertexTypes);
+      assertEquals(2, context.getStatistics().totalNumberOfModelEdges);
       assertEquals(2, context.getStatistics().builtModelEdgeTypes);
 
       /*
@@ -965,6 +968,7 @@ public class ConfigurationMappingTest {
 
       assertEquals(2, context.getStatistics().totalNumberOfModelVertices);
       assertEquals(2, context.getStatistics().builtModelVertexTypes);
+      assertEquals(1, context.getStatistics().totalNumberOfModelEdges);
       assertEquals(1, context.getStatistics().builtModelEdgeTypes);
 
 
@@ -1146,10 +1150,11 @@ public class ConfigurationMappingTest {
       assertEquals(3, context.getStatistics().totalNumberOfEntities);
       assertEquals(3, context.getStatistics().builtEntities);
       assertEquals(2, context.getStatistics().totalNumberOfRelationships);
-      assertEquals(2, context.getStatistics().detectedRelationships);
+      assertEquals(2, context.getStatistics().builtRelationships);
 
       assertEquals(3, context.getStatistics().totalNumberOfModelVertices);
       assertEquals(3, context.getStatistics().builtModelVertexTypes);
+      assertEquals(2, context.getStatistics().totalNumberOfModelEdges);
       assertEquals(2, context.getStatistics().builtModelEdgeTypes);
 
       /*
@@ -1409,6 +1414,7 @@ public class ConfigurationMappingTest {
 
       assertEquals(2, context.getStatistics().totalNumberOfModelVertices);
       assertEquals(2, context.getStatistics().builtModelVertexTypes);
+      assertEquals(1, context.getStatistics().totalNumberOfModelEdges);
       assertEquals(1, context.getStatistics().builtModelEdgeTypes);
 
 
@@ -1589,10 +1595,11 @@ public class ConfigurationMappingTest {
       assertEquals(3, context.getStatistics().totalNumberOfEntities);
       assertEquals(3, context.getStatistics().builtEntities);
       assertEquals(2, context.getStatistics().totalNumberOfRelationships);
-      assertEquals(2, context.getStatistics().detectedRelationships);
+      assertEquals(2, context.getStatistics().builtRelationships);
 
       assertEquals(3, context.getStatistics().totalNumberOfModelVertices);
       assertEquals(3, context.getStatistics().builtModelVertexTypes);
+      assertEquals(2, context.getStatistics().totalNumberOfModelEdges);
       assertEquals(2, context.getStatistics().builtModelEdgeTypes);
 
       /*
@@ -1851,6 +1858,7 @@ public class ConfigurationMappingTest {
 
       assertEquals(2, context.getStatistics().totalNumberOfModelVertices);
       assertEquals(2, context.getStatistics().builtModelVertexTypes);
+      assertEquals(1, context.getStatistics().totalNumberOfModelEdges);
       assertEquals(1, context.getStatistics().builtModelEdgeTypes);
 
 
@@ -2032,10 +2040,11 @@ public class ConfigurationMappingTest {
       assertEquals(3, context.getStatistics().totalNumberOfEntities);
       assertEquals(3, context.getStatistics().builtEntities);
       assertEquals(2, context.getStatistics().totalNumberOfRelationships);
-      assertEquals(2, context.getStatistics().detectedRelationships);
+      assertEquals(2, context.getStatistics().builtRelationships);
 
       assertEquals(3, context.getStatistics().totalNumberOfModelVertices);
       assertEquals(3, context.getStatistics().builtModelVertexTypes);
+      assertEquals(2, context.getStatistics().totalNumberOfModelEdges);
       assertEquals(2, context.getStatistics().builtModelEdgeTypes);
 
       /*
@@ -2295,6 +2304,7 @@ public class ConfigurationMappingTest {
 
       assertEquals(2, context.getStatistics().totalNumberOfModelVertices);
       assertEquals(2, context.getStatistics().builtModelVertexTypes);
+      assertEquals(1, context.getStatistics().totalNumberOfModelEdges);
       assertEquals(1, context.getStatistics().builtModelEdgeTypes);
 
 

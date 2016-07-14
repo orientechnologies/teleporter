@@ -18,6 +18,8 @@
 
 package com.orientechnologies.teleporter.test.rdbms.configuration.orientWriter;
 
+import com.orientechnologies.orient.core.metadata.schema.OType;
+import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.teleporter.context.OOutputStreamManager;
 import com.orientechnologies.teleporter.context.OTeleporterContext;
 import com.orientechnologies.teleporter.mapper.rdbms.OER2GraphMapper;
@@ -25,8 +27,6 @@ import com.orientechnologies.teleporter.nameresolver.OJavaConventionNameResolver
 import com.orientechnologies.teleporter.persistence.handler.OHSQLDBDataTypeHandler;
 import com.orientechnologies.teleporter.util.OFileManager;
 import com.orientechnologies.teleporter.writer.OGraphModelWriter;
-import com.orientechnologies.orient.core.metadata.schema.OType;
-import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.tinkerpop.blueprints.impls.orient.OrientEdgeType;
 import com.tinkerpop.blueprints.impls.orient.OrientGraphNoTx;
 import com.tinkerpop.blueprints.impls.orient.OrientVertexType;
@@ -55,6 +55,7 @@ public class OrientDBSchemaWritingWithConfigTest {
   private final String configInverseEdgesPath = "src/test/resources/configuration-mapping/relationships-mapping-inverted-edges.json";
   private final String configJoinTableDirectEdgesPath = "src/test/resources/configuration-mapping/joint-table-relationships-mapping-direct-edges.json";
   private final String configJoinTableInverseEdgesPath = "src/test/resources/configuration-mapping/joint-table-relationships-mapping-inverted-edges.json";
+  private final String configJoinTableInverseEdgesPath2 = "src/test/resources/configuration-mapping/join-table-relationship-mapping-inverted-edges2.json";
 
   @Before
   public void init() {
@@ -115,9 +116,9 @@ public class OrientDBSchemaWritingWithConfigTest {
        *  Testing context information
        */
 
-      assertEquals(2, context.getStatistics().totalNumberOfVertexType);
+      assertEquals(2, context.getStatistics().totalNumberOfVertexTypes);
       assertEquals(2, context.getStatistics().wroteVertexType);
-      assertEquals(2, context.getStatistics().totalNumberOfEdgeType);
+      assertEquals(2, context.getStatistics().totalNumberOfEdgeTypes);
       assertEquals(2, context.getStatistics().wroteEdgeType);
       assertEquals(2, context.getStatistics().totalNumberOfIndices);
       assertEquals(2, context.getStatistics().wroteIndexes);
@@ -304,9 +305,9 @@ public class OrientDBSchemaWritingWithConfigTest {
        *  Testing context information
        */
 
-      assertEquals(2, context.getStatistics().totalNumberOfVertexType);
+      assertEquals(2, context.getStatistics().totalNumberOfVertexTypes);
       assertEquals(2, context.getStatistics().wroteVertexType);
-      assertEquals(2, context.getStatistics().totalNumberOfEdgeType);
+      assertEquals(2, context.getStatistics().totalNumberOfEdgeTypes);
       assertEquals(2, context.getStatistics().wroteEdgeType);
       assertEquals(2, context.getStatistics().totalNumberOfIndices);
       assertEquals(2, context.getStatistics().wroteIndexes);
@@ -479,9 +480,9 @@ public class OrientDBSchemaWritingWithConfigTest {
        *  Testing context information
        */
 
-      assertEquals(2, context.getStatistics().totalNumberOfVertexType);
+      assertEquals(2, context.getStatistics().totalNumberOfVertexTypes);
       assertEquals(2, context.getStatistics().wroteVertexType);
-      assertEquals(1, context.getStatistics().totalNumberOfEdgeType);
+      assertEquals(1, context.getStatistics().totalNumberOfEdgeTypes);
       assertEquals(1, context.getStatistics().wroteEdgeType);
       assertEquals(2, context.getStatistics().totalNumberOfIndices);
       assertEquals(2, context.getStatistics().wroteIndexes);
@@ -647,9 +648,9 @@ public class OrientDBSchemaWritingWithConfigTest {
        *  Testing context information
        */
 
-      assertEquals(2, context.getStatistics().totalNumberOfVertexType);
+      assertEquals(2, context.getStatistics().totalNumberOfVertexTypes);
       assertEquals(2, context.getStatistics().wroteVertexType);
-      assertEquals(1, context.getStatistics().totalNumberOfEdgeType);
+      assertEquals(1, context.getStatistics().totalNumberOfEdgeTypes);
       assertEquals(1, context.getStatistics().wroteEdgeType);
       assertEquals(2, context.getStatistics().totalNumberOfIndices);
       assertEquals(2, context.getStatistics().wroteIndexes);
@@ -752,5 +753,339 @@ public class OrientDBSchemaWritingWithConfigTest {
     }
   }
 
+
+  @Test
+
+  /*
+   *  Three tables: 1  N-N relationship, foreign keys declared for the join table in the db:
+   *
+   *  ACTOR
+   *  FILM
+   *  ACTOR2FILM: foreign key (ACTOR_ID) references ACTOR(ID)
+   *              foreign key (FILM_ID) references FILM(ID)
+   *
+   *  Through the configuration we want name the relationship "Performs".
+   *  With "direct" direction in the configuration we obtain:
+   *
+   *  ACTOR --[Performs]--> FILM
+   *
+   *  Properties manually configured on edges:
+   *
+   *  Performs:
+   *    - year (type DATE): mandatory=T, readOnly=F, notNull=F.
+   */
+
+  public void test5() {
+
+    this.context.setExecutionStrategy("naive-aggregate");
+    Connection connection = null;
+    Statement st = null;
+    OrientGraphNoTx orientGraph = null;
+
+    try {
+
+      Class.forName("org.hsqldb.jdbc.JDBCDriver");
+      connection = DriverManager.getConnection("jdbc:hsqldb:mem:mydb", "SA", "");
+
+      String parentTableBuilding = "create memory table ACTOR (ID varchar(256) not null,"+
+              " FIRST_NAME varchar(256) not null, LAST_NAME varchar(256) not null, primary key (ID))";
+      st = connection.createStatement();
+      st.execute(parentTableBuilding);
+
+      String foreignTableBuilding = "create memory table FILM (ID varchar(256),"+
+              " TITLE varchar(256) not null, CATEGORY varchar(256), primary key (ID))";
+      st.execute(foreignTableBuilding);
+
+      String actorFilmTableBuilding = "create memory table ACTOR_FILM (ACTOR_ID  varchar(256),"+
+              " FILM_ID varchar(256) not null, PAYMENT integer, primary key (ACTOR_ID, FILM_ID)," +
+              " foreign key (ACTOR_ID) references ACTOR(ID), foreign key (FILM_ID) references FILM(ID))";
+      st.execute(actorFilmTableBuilding);
+
+      ODocument config = OFileManager.buildJsonFromFile(this.configJoinTableDirectEdgesPath);
+
+      this.mapper = new OER2GraphMapper("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", null, null, config);
+      mapper.buildSourceDatabaseSchema(this.context);
+      mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
+      mapper.applyImportConfiguration(this.context);
+      mapper.performAggregations(this.context);
+      modelWriter.writeModelOnOrient(mapper.getGraphModel(), new OHSQLDBDataTypeHandler(), this.outOrientGraphUri, context);
+
+
+      /*
+       *  Testing context information
+       */
+
+      assertEquals(2, context.getStatistics().totalNumberOfVertexTypes);
+      assertEquals(2, context.getStatistics().wroteVertexType);
+      assertEquals(1, context.getStatistics().totalNumberOfEdgeTypes);
+      assertEquals(1, context.getStatistics().wroteEdgeType);
+      assertEquals(2, context.getStatistics().totalNumberOfIndices);
+      assertEquals(2, context.getStatistics().wroteIndexes);
+
+      /*
+       *  Testing built OrientDB schema
+       */
+
+      orientGraph = new OrientGraphNoTx(this.outOrientGraphUri);
+      OrientVertexType actorVertexType =  orientGraph.getVertexType("Actor");
+      OrientVertexType filmVertexType = orientGraph.getVertexType("Film");
+      OrientEdgeType performsEdgeType = orientGraph.getEdgeType("Performs");
+
+      // vertices check
+      assertNotNull(actorVertexType);
+      assertNotNull(filmVertexType);
+
+      // properties check
+      assertNotNull(actorVertexType.getProperty("id"));
+      assertEquals("id", actorVertexType.getProperty("id").getName());
+      assertEquals(OType.STRING, actorVertexType.getProperty("id").getType());
+      assertEquals(false, actorVertexType.getProperty("id").isMandatory());
+      assertEquals(false, actorVertexType.getProperty("id").isReadonly());
+      assertEquals(false, actorVertexType.getProperty("id").isNotNull());
+
+      assertNotNull(actorVertexType.getProperty("firstName"));
+      assertEquals("firstName", actorVertexType.getProperty("firstName").getName());
+      assertEquals(OType.STRING, actorVertexType.getProperty("firstName").getType());
+      assertEquals(false, actorVertexType.getProperty("firstName").isMandatory());
+      assertEquals(false, actorVertexType.getProperty("firstName").isReadonly());
+      assertEquals(false, actorVertexType.getProperty("firstName").isNotNull());
+
+      assertNotNull(actorVertexType.getProperty("lastName"));
+      assertEquals("lastName", actorVertexType.getProperty("lastName").getName());
+      assertEquals(OType.STRING, actorVertexType.getProperty("lastName").getType());
+      assertEquals(false, actorVertexType.getProperty("lastName").isMandatory());
+      assertEquals(false, actorVertexType.getProperty("lastName").isReadonly());
+      assertEquals(false, actorVertexType.getProperty("lastName").isNotNull());
+
+      assertNotNull(filmVertexType.getProperty("id"));
+      assertEquals("id", filmVertexType.getProperty("id").getName());
+      assertEquals(OType.STRING, filmVertexType.getProperty("id").getType());
+      assertEquals(false, filmVertexType.getProperty("id").isMandatory());
+      assertEquals(false, filmVertexType.getProperty("id").isReadonly());
+      assertEquals(false, filmVertexType.getProperty("id").isNotNull());
+
+      assertNotNull(filmVertexType.getProperty("title"));
+      assertEquals("title", filmVertexType.getProperty("title").getName());
+      assertEquals(OType.STRING, filmVertexType.getProperty("title").getType());
+      assertEquals(false, filmVertexType.getProperty("title").isMandatory());
+      assertEquals(false, filmVertexType.getProperty("title").isReadonly());
+      assertEquals(false, filmVertexType.getProperty("title").isNotNull());
+
+      assertNotNull(filmVertexType.getProperty("category"));
+      assertEquals("category", filmVertexType.getProperty("category").getName());
+      assertEquals(OType.STRING, filmVertexType.getProperty("category").getType());
+      assertEquals(false, filmVertexType.getProperty("category").isMandatory());
+      assertEquals(false, filmVertexType.getProperty("category").isReadonly());
+      assertEquals(false, filmVertexType.getProperty("category").isNotNull());
+
+      // edges check
+      assertNotNull(performsEdgeType);
+
+      assertEquals("Performs", performsEdgeType.getName());
+      assertEquals(2, performsEdgeType.propertiesMap().size());
+
+      assertEquals("year", performsEdgeType.getProperty("year").getName());
+      assertEquals(OType.DATE, performsEdgeType.getProperty("year").getType());
+      assertEquals(true, performsEdgeType.getProperty("year").isMandatory());
+      assertEquals(false, performsEdgeType.getProperty("year").isReadonly());
+      assertEquals(false, performsEdgeType.getProperty("year").isNotNull());
+
+      assertEquals("payment", performsEdgeType.getProperty("payment").getName());
+      assertEquals(OType.INTEGER, performsEdgeType.getProperty("payment").getType());
+      assertEquals(false, performsEdgeType.getProperty("payment").isMandatory());
+      assertEquals(false, performsEdgeType.getProperty("payment").isReadonly());
+      assertEquals(false, performsEdgeType.getProperty("payment").isNotNull());
+
+      // Indices check
+      assertEquals(true, orientGraph.getRawGraph().getMetadata().getIndexManager().existsIndex("Actor.pkey"));
+      assertEquals(true, orientGraph.getRawGraph().getMetadata().getIndexManager().areIndexed("Actor", "id"));
+
+      assertEquals(true, orientGraph.getRawGraph().getMetadata().getIndexManager().existsIndex("Film.pkey"));
+      assertEquals(true, orientGraph.getRawGraph().getMetadata().getIndexManager().areIndexed("Film", "id"));
+
+    }catch(Exception e) {
+      e.printStackTrace();
+      fail();
+    }finally {
+      try {
+
+        // Dropping Source DB Schema and OrientGraph
+        String dbDropping = "drop schema public cascade";
+        st.execute(dbDropping);
+        connection.close();
+      }catch(Exception e) {
+        e.printStackTrace();
+        fail();
+      }
+    }
+  }
+
+  @Test
+
+   /*
+   *  Three tables: 1  N-N relationship, foreign keys declared for the join table in the db:
+   *
+   *  ACTOR
+   *  FILM
+   *  ACTOR2FILM: foreign key (ACTOR_ID) references ACTOR(ID)
+   *              foreign key (FILM_ID) references FILM(ID)
+   *
+   *  Through the configuration we want name the relationship "Performs".
+   *  With "direct" direction in the configuration we would obtain:
+   *
+   *  ACTOR --[Features]--> FILM
+   *
+   *  But with the "inverse" direction we obtain:
+   *
+   *  FILM --[Features]--> ACTOR
+   *
+   *  Performs:
+   *    - year (type DATE): mandatory=T, readOnly=F, notNull=F.
+   */
+
+  public void test6() {
+
+    this.context.setExecutionStrategy("naive-aggregate");
+    Connection connection = null;
+    Statement st = null;
+    OrientGraphNoTx orientGraph = null;
+
+    try {
+
+      Class.forName("org.hsqldb.jdbc.JDBCDriver");
+      connection = DriverManager.getConnection("jdbc:hsqldb:mem:mydb", "SA", "");
+
+      String parentTableBuilding = "create memory table ACTOR (ID varchar(256) not null,"+
+              " FIRST_NAME varchar(256) not null, LAST_NAME varchar(256) not null, primary key (ID))";
+      st = connection.createStatement();
+      st.execute(parentTableBuilding);
+
+      String foreignTableBuilding = "create memory table FILM (ID varchar(256),"+
+              " TITLE varchar(256) not null, CATEGORY varchar(256), primary key (ID))";
+      st.execute(foreignTableBuilding);
+
+      String actorFilmTableBuilding = "create memory table FILM_ACTOR (ACTOR_ID  varchar(256),"+
+              " FILM_ID varchar(256) not null, PAYMENT integer, primary key (ACTOR_ID, FILM_ID)," +
+              " foreign key (ACTOR_ID) references ACTOR(ID), foreign key (FILM_ID) references FILM(ID))";
+      st.execute(actorFilmTableBuilding);
+
+      ODocument config = OFileManager.buildJsonFromFile(this.configJoinTableInverseEdgesPath2);
+
+      this.mapper = new OER2GraphMapper("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", null, null, config);
+      mapper.buildSourceDatabaseSchema(this.context);
+      mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
+      mapper.applyImportConfiguration(this.context);
+      mapper.performAggregations(this.context);
+      modelWriter.writeModelOnOrient(mapper.getGraphModel(), new OHSQLDBDataTypeHandler(), this.outOrientGraphUri, context);
+
+
+      /*
+       *  Testing context information
+       */
+
+      assertEquals(2, context.getStatistics().totalNumberOfVertexTypes);
+      assertEquals(2, context.getStatistics().wroteVertexType);
+      assertEquals(1, context.getStatistics().totalNumberOfEdgeTypes);
+      assertEquals(1, context.getStatistics().wroteEdgeType);
+      assertEquals(2, context.getStatistics().totalNumberOfIndices);
+      assertEquals(2, context.getStatistics().wroteIndexes);
+
+      /*
+       *  Testing built OrientDB schema
+       */
+
+      orientGraph = new OrientGraphNoTx(this.outOrientGraphUri);
+      OrientVertexType actorVertexType =  orientGraph.getVertexType("Actor");
+      OrientVertexType filmVertexType = orientGraph.getVertexType("Film");
+      OrientEdgeType featuresEdgeType = orientGraph.getEdgeType("Features");
+
+      // vertices check
+      assertNotNull(actorVertexType);
+      assertNotNull(filmVertexType);
+
+      // properties check
+      assertNotNull(actorVertexType.getProperty("id"));
+      assertEquals("id", actorVertexType.getProperty("id").getName());
+      assertEquals(OType.STRING, actorVertexType.getProperty("id").getType());
+      assertEquals(false, actorVertexType.getProperty("id").isMandatory());
+      assertEquals(false, actorVertexType.getProperty("id").isReadonly());
+      assertEquals(false, actorVertexType.getProperty("id").isNotNull());
+
+      assertNotNull(actorVertexType.getProperty("firstName"));
+      assertEquals("firstName", actorVertexType.getProperty("firstName").getName());
+      assertEquals(OType.STRING, actorVertexType.getProperty("firstName").getType());
+      assertEquals(false, actorVertexType.getProperty("firstName").isMandatory());
+      assertEquals(false, actorVertexType.getProperty("firstName").isReadonly());
+      assertEquals(false, actorVertexType.getProperty("firstName").isNotNull());
+
+      assertNotNull(actorVertexType.getProperty("lastName"));
+      assertEquals("lastName", actorVertexType.getProperty("lastName").getName());
+      assertEquals(OType.STRING, actorVertexType.getProperty("lastName").getType());
+      assertEquals(false, actorVertexType.getProperty("lastName").isMandatory());
+      assertEquals(false, actorVertexType.getProperty("lastName").isReadonly());
+      assertEquals(false, actorVertexType.getProperty("lastName").isNotNull());
+
+      assertNotNull(filmVertexType.getProperty("id"));
+      assertEquals("id", filmVertexType.getProperty("id").getName());
+      assertEquals(OType.STRING, filmVertexType.getProperty("id").getType());
+      assertEquals(false, filmVertexType.getProperty("id").isMandatory());
+      assertEquals(false, filmVertexType.getProperty("id").isReadonly());
+      assertEquals(false, filmVertexType.getProperty("id").isNotNull());
+
+      assertNotNull(filmVertexType.getProperty("title"));
+      assertEquals("title", filmVertexType.getProperty("title").getName());
+      assertEquals(OType.STRING, filmVertexType.getProperty("title").getType());
+      assertEquals(false, filmVertexType.getProperty("title").isMandatory());
+      assertEquals(false, filmVertexType.getProperty("title").isReadonly());
+      assertEquals(false, filmVertexType.getProperty("title").isNotNull());
+
+      assertNotNull(filmVertexType.getProperty("category"));
+      assertEquals("category", filmVertexType.getProperty("category").getName());
+      assertEquals(OType.STRING, filmVertexType.getProperty("category").getType());
+      assertEquals(false, filmVertexType.getProperty("category").isMandatory());
+      assertEquals(false, filmVertexType.getProperty("category").isReadonly());
+      assertEquals(false, filmVertexType.getProperty("category").isNotNull());
+
+      // edges check
+      assertNotNull(featuresEdgeType);
+
+      assertEquals("Features", featuresEdgeType.getName());
+      assertEquals(2, featuresEdgeType.propertiesMap().size());
+
+      assertEquals("year", featuresEdgeType.getProperty("year").getName());
+      assertEquals(OType.DATE, featuresEdgeType.getProperty("year").getType());
+      assertEquals(true, featuresEdgeType.getProperty("year").isMandatory());
+      assertEquals(false, featuresEdgeType.getProperty("year").isReadonly());
+      assertEquals(false, featuresEdgeType.getProperty("year").isNotNull());
+
+      assertEquals("payment", featuresEdgeType.getProperty("payment").getName());
+      assertEquals(OType.INTEGER, featuresEdgeType.getProperty("payment").getType());
+      assertEquals(false, featuresEdgeType.getProperty("payment").isMandatory());
+      assertEquals(false, featuresEdgeType.getProperty("payment").isReadonly());
+      assertEquals(false, featuresEdgeType.getProperty("payment").isNotNull());
+
+      // Indices check
+      assertEquals(true, orientGraph.getRawGraph().getMetadata().getIndexManager().existsIndex("Actor.pkey"));
+      assertEquals(true, orientGraph.getRawGraph().getMetadata().getIndexManager().areIndexed("Actor", "id"));
+
+      assertEquals(true, orientGraph.getRawGraph().getMetadata().getIndexManager().existsIndex("Film.pkey"));
+      assertEquals(true, orientGraph.getRawGraph().getMetadata().getIndexManager().areIndexed("Film", "id"));
+
+    }catch(Exception e) {
+      e.printStackTrace();
+      fail();
+    }finally {
+      try {
+
+        // Dropping Source DB Schema and OrientGraph
+        String dbDropping = "drop schema public cascade";
+        st.execute(dbDropping);
+        connection.close();
+      }catch(Exception e) {
+        e.printStackTrace();
+        fail();
+      }
+    }
+  }
 
 }

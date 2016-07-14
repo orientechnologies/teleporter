@@ -463,6 +463,7 @@ public class AggregationStrategyTest {
 
       assertEquals(5, context.getStatistics().totalNumberOfModelVertices);
       assertEquals(5, context.getStatistics().builtModelVertexTypes);
+      assertEquals(2, context.getStatistics().totalNumberOfModelEdges);
       assertEquals(2, context.getStatistics().builtModelEdgeTypes);
 
 
@@ -505,6 +506,7 @@ public class AggregationStrategyTest {
 
       assertEquals(3, context.getStatistics().totalNumberOfModelVertices);
       assertEquals(3, context.getStatistics().builtModelVertexTypes);
+      assertEquals(3, context.getStatistics().totalNumberOfModelEdges);
       assertEquals(3, context.getStatistics().builtModelEdgeTypes);
 
 

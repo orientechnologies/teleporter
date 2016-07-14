@@ -88,8 +88,9 @@ public class SourceSchemaBuildingTest {
        */
 
       assertEquals(2, context.getStatistics().totalNumberOfEntities);
-      assertEquals(2, context.getStatistics().builtEntities);      
-      assertEquals(1, context.getStatistics().detectedRelationships);
+      assertEquals(2, context.getStatistics().builtEntities);
+      assertEquals(1, context.getStatistics().totalNumberOfRelationships);
+      assertEquals(1, context.getStatistics().builtRelationships);
 
 
       /*
@@ -219,8 +220,9 @@ public class SourceSchemaBuildingTest {
        */
 
       assertEquals(2, context.getStatistics().totalNumberOfEntities);
-      assertEquals(2, context.getStatistics().builtEntities);      
-      assertEquals(1, context.getStatistics().detectedRelationships);
+      assertEquals(2, context.getStatistics().builtEntities);
+      assertEquals(1, context.getStatistics().totalNumberOfRelationships);
+      assertEquals(1, context.getStatistics().builtRelationships);
 
 
       /*
@@ -356,8 +358,9 @@ public class SourceSchemaBuildingTest {
        */
 
       assertEquals(2, context.getStatistics().totalNumberOfEntities);
-      assertEquals(2, context.getStatistics().builtEntities);      
-      assertEquals(2, context.getStatistics().detectedRelationships);
+      assertEquals(2, context.getStatistics().builtEntities);
+      assertEquals(2, context.getStatistics().totalNumberOfRelationships);
+      assertEquals(2, context.getStatistics().builtRelationships);
 
 
       /*
@@ -501,8 +504,9 @@ public class SourceSchemaBuildingTest {
        */
 
       assertEquals(2, context.getStatistics().totalNumberOfEntities);
-      assertEquals(2, context.getStatistics().builtEntities);      
-      assertEquals(2, context.getStatistics().detectedRelationships);
+      assertEquals(2, context.getStatistics().builtEntities);
+      assertEquals(2, context.getStatistics().totalNumberOfRelationships);
+      assertEquals(2, context.getStatistics().builtRelationships);
 
 
       /*
@@ -663,8 +667,9 @@ public class SourceSchemaBuildingTest {
        */
 
       assertEquals(2, context.getStatistics().totalNumberOfEntities);
-      assertEquals(2, context.getStatistics().builtEntities);      
-      assertEquals(2, context.getStatistics().detectedRelationships);
+      assertEquals(2, context.getStatistics().builtEntities);
+      assertEquals(2, context.getStatistics().totalNumberOfRelationships);
+      assertEquals(2, context.getStatistics().builtRelationships);
 
 
       /*
@@ -823,8 +828,9 @@ public class SourceSchemaBuildingTest {
        */
 
       assertEquals(3, context.getStatistics().totalNumberOfEntities);
-      assertEquals(3, context.getStatistics().builtEntities);      
-      assertEquals(2, context.getStatistics().detectedRelationships);
+      assertEquals(3, context.getStatistics().builtEntities);
+      assertEquals(2, context.getStatistics().totalNumberOfRelationships);
+      assertEquals(2, context.getStatistics().builtRelationships);
 
 
       /*
