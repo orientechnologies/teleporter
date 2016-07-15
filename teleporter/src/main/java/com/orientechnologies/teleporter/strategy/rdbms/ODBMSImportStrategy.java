@@ -146,7 +146,9 @@ public abstract class ODBMSImportStrategy implements OImportStrategy {
           records = queryResult.getResult();
           ResultSet currentRecord = null;
 
-          currentOutVertexType = mapper.getEntity2vertexType().get(currentEntity);
+          // TODO: update mapping
+//          currentOutVertexType = mapper.getEntity2vertexType().get(currentEntity);
+          currentOutVertexType = mapper.getVertexTypeByEntity(currentEntity);
 
           // each record is imported as vertex in the orient graph
           while(records.next()) {
@@ -266,7 +268,9 @@ public abstract class ODBMSImportStrategy implements OImportStrategy {
           records = queryResult1.getResult();
           currentRecord = null;
 
-          currentOutVertexType = mapper.getEntity2vertexType().get(currentEntity);
+          // TODO: update mapping
+//          currentOutVertexType = mapper.getEntity2vertexType().get(currentEntity);
+          currentOutVertexType = mapper.getVertexTypeByEntity(currentEntity);
 
           // each record is imported as vertex in the orient graph
           while(records.next()) {
@@ -405,7 +409,9 @@ public abstract class ODBMSImportStrategy implements OImportStrategy {
           records = queryResult.getResult();
           currentRecord = null;
 
-          currentOutVertexType = mapper.getEntity2vertexType().get(currentEntity);
+          // TODO: update mapping
+//          currentOutVertexType = mapper.getEntity2vertexType().get(currentEntity);
+          currentOutVertexType = mapper.getVertexTypeByEntity(currentEntity);
 
           // each record is imported as vertex in the orient graph
           while(records.next()) {

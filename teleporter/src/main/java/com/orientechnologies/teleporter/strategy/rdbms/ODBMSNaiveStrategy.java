@@ -162,18 +162,25 @@ public class ODBMSNaiveStrategy extends ODBMSImportStrategy {
           records = queryResult.getResult();
           ResultSet currentRecord = null;
 
-          currentOutVertexType = mapper.getEntity2vertexType().get(entity);
+          // TODO: update mapping
+//          currentOutVertexType = mapper.getEntity2vertexType().get(entity);
+          currentOutVertexType = mapper.getVertexTypeByEntity(entity);
 
           // each record is imported as vertex in the orient graph
-          while (records.next()) {
+          while(records.next()) {
+
             // upsert of the vertex
             currentRecord = records;
             currentOutVertex = (OrientVertex) graphEngine.upsertVisitedVertex(orientGraph, currentRecord, currentOutVertexType, null, context);
 
             // for each attribute of the entity belonging to the primary key, correspondent relationship is
             // built as edge and for the referenced record a vertex is built (only id)
-            for (ORelationship currentRelationship : entity.getOutRelationships()) {
-              currentInVertexType = mapper.getVertexTypeByName(context.getNameResolver().resolveVertexName(currentRelationship.getParentEntityName()));
+            for(ORelationship currentRelationship: entity.getOutRelationships()) {
+              // TODO: update mapping
+//              currentInVertexType = mapper.getVertexTypeByName(context.getNameResolver().resolveVertexName(currentRelationship.getParentEntityName()));
+              OEntity currentParentEntity = mapper.getDataBaseSchema().getEntityByName(currentRelationship.getParentEntityName());
+              currentInVertexType = mapper.getVertexTypeByEntity(currentParentEntity);
+
               edgeType = mapper.getRelationship2edgeType().get(currentRelationship);
               graphEngine.upsertReachedVertexWithEdge(orientGraph, currentRecord, currentRelationship, currentOutVertex, currentInVertexType, edgeType.getName(), context);
             }

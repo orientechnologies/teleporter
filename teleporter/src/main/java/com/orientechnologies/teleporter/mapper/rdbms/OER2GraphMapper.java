@@ -49,9 +49,13 @@ public class OER2GraphMapper extends OSource2GraphMapper {
   // source model
   protected ODataBaseSchema dataBaseSchema;
 
-  // Rules
+  // Old Rules
   protected Map<OEntity,OVertexType>      entity2vertexType;
   protected Map<OVertexType,OEntity>      vertexType2entity;
+
+  // New Rules
+  protected Map<OEntity,OClassMapper>      entity2classMapper;
+  protected Map<OVertexType,OClassMapper>      vertexType2classMapper;
   protected Map<ORelationship,OEdgeType>  relationship2edgeType;
   protected Map<OEdgeType, ORelationship> edgeType2relationship;
   protected Map<String,Integer>           edgeTypeName2count;
@@ -67,8 +71,15 @@ public class OER2GraphMapper extends OSource2GraphMapper {
 
   public OER2GraphMapper (String driver, String uri, String username, String password, List<String> includedTables, List<String> excludedTables, ODocument configuration) {
     this.dbSourceConnection = new ODBSourceConnection(driver, uri, username, password);
+
+    // old maps
     this.entity2vertexType = new LinkedHashMap<OEntity,OVertexType>();
     this.vertexType2entity = new LinkedHashMap<OVertexType,OEntity>();
+
+    // new maps
+    this.entity2classMapper = new IdentityHashMap<OEntity,OClassMapper>();
+    this.vertexType2classMapper = new IdentityHashMap<OVertexType,OClassMapper>();
+
     this.relationship2edgeType = new LinkedHashMap<ORelationship,OEdgeType>();
     this.edgeType2relationship = new LinkedHashMap<OEdgeType,ORelationship>();
     this.edgeTypeName2count = new TreeMap<String,Integer>();
@@ -97,10 +108,18 @@ public class OER2GraphMapper extends OSource2GraphMapper {
     this.vertexType2entity.put(currentVertexType, currentEntity);
   }
 
+  // old map managing
   public void upsertRelationshipEdgeRules(ORelationship currentRelationship, OEdgeType currentEdgeType) {
     this.relationship2edgeType.put(currentRelationship, currentEdgeType);
     this.edgeType2relationship.put(currentEdgeType, currentRelationship);
   }
+
+  // new map managing
+  public void upsertClassMappingRules(OEntity currentEntity, OVertexType currentVertexType, OClassMapper classMapper) {
+    this.entity2classMapper.put(currentEntity, classMapper);
+    this.vertexType2classMapper.put(currentVertexType, classMapper);
+  }
+
 
   /**
    * MACRO EXECUTION BLOCK: BUILD SOURCE DATABASE SCHEMA
@@ -155,10 +174,6 @@ public class OER2GraphMapper extends OSource2GraphMapper {
 
       buildOutRelationships(databaseMetaData, numberOfTables, context);
 
-      // Adding/updating relationships in the manual configuration
-//      if(this.configuration != null) {
-//        this.applyImportConfiguration(context);
-//      }
 
       /*
        *  Building In-relationships
@@ -562,9 +577,21 @@ public class OER2GraphMapper extends OSource2GraphMapper {
         currentVertexType.setIsFromJoinTable(false);
 
       // adding attributes to vertex-type
-      for(OAttribute attribute: currentEntity.getAttributes()) {
-        OModelProperty currentProperty = new OModelProperty(nameResolver.resolveVertexProperty(attribute.getName()), attribute.getOrdinalPosition(), attribute.getDataType(), currentEntity.getPrimaryKey().getInvolvedAttributes().contains(attribute));
+      Map<String,String> attribute2property = new LinkedHashMap<String,String>();   // map to maintain the mapping between the attributes of the current entity and the properties of the correspondent vertex type
+      Map<String,String> property2attribute = new LinkedHashMap<String,String>();   // map to maintain the mapping between the properties of the current vertex type and the attributes of the correspondent entity
+      for(OAttribute currentAttribute: currentEntity.getAttributes()) {
+        OModelProperty currentProperty = new OModelProperty(nameResolver.resolveVertexProperty(currentAttribute.getName()), currentAttribute.getOrdinalPosition(), currentAttribute.getDataType(), currentEntity.getPrimaryKey().getInvolvedAttributes().contains(currentAttribute));
         currentVertexType.getProperties().add(currentProperty);
+
+        attribute2property.put(currentAttribute.getName(), currentProperty.getName());
+        property2attribute.put(currentProperty.getName(), currentAttribute.getName());
+      }
+
+      // adding inherited attributes to vertex-type
+      for(OAttribute attribute: currentEntity.getInheritedAttributes()) {
+        OModelProperty currentProperty = new OModelProperty(nameResolver.resolveVertexProperty(attribute.getName()), attribute.getOrdinalPosition(), attribute.getDataType(), currentEntity.getPrimaryKey().getInvolvedAttributes().contains(attribute));
+        currentVertexType.getInheritedProperties().add(currentProperty);
+        // TODO: Adding inherited attributes and props to the maps?
       }
 
       // adding parent vertex if the corresponding entity has a parent
@@ -574,12 +601,6 @@ public class OER2GraphMapper extends OSource2GraphMapper {
         currentVertexType.setInheritanceLevel(currentEntity.getInheritanceLevel());
       }
 
-      // adding inherited attributes to vertex-type
-      for(OAttribute attribute: currentEntity.getInheritedAttributes()) {
-        OModelProperty currentProperty = new OModelProperty(nameResolver.resolveVertexProperty(attribute.getName()), attribute.getOrdinalPosition(), attribute.getDataType(), currentEntity.getPrimaryKey().getInvolvedAttributes().contains(attribute));
-        currentVertexType.getInheritedProperties().add(currentProperty);
-      }
-
       // adding vertex to the graph model
       if(!alreadyPresentInGraphModel) {
         this.graphModel.getVerticesType().add(currentVertexType);
@@ -587,6 +608,8 @@ public class OER2GraphMapper extends OSource2GraphMapper {
 
       // rules updating
       this.upsertEntityVertexRules(currentVertexType, currentEntity);
+      OClassMapper classMapper = new OClassMapper(currentEntity, currentVertexType, attribute2property, property2attribute);
+      this.upsertClassMappingRules(currentEntity, currentVertexType, classMapper);
 
       iteration++;
       context.getOutputManager().debug("\nVertex-type %s built.\n", currentVertexTypeName);
@@ -622,6 +645,7 @@ public class OER2GraphMapper extends OSource2GraphMapper {
 
         for(ORelationship relationship: currentEntity.getOutRelationships()) {
 
+          // TODO: update mapping
           OVertexType currentOutVertex = this.graphModel.getVertexByName(nameResolver.resolveVertexName(relationship.getForeignEntityName()));
           OVertexType currentInVertex = this.graphModel.getVertexByName(nameResolver.resolveVertexName(relationship.getParentEntityName()));
           context.getOutputManager().debug("\nBuilding edge-type from '%s' to '%s' (%s/%s)...\n", currentOutVertex.getName(), currentInVertex.getName(), iteration, numberOfEdgeType);
@@ -675,6 +699,7 @@ public class OER2GraphMapper extends OSource2GraphMapper {
         // building edges starting from inherited relationships
 
         for(ORelationship relationship: currentEntity.getInheritedOutRelationships()) {
+          // TODO: update mapping
           OVertexType currentOutVertex = this.graphModel.getVertexByName(nameResolver.resolveVertexName(currentEntity.getName()));
           OVertexType currentInVertex = this.graphModel.getVertexByName(nameResolver.resolveVertexName(relationship.getParentEntityName()));
           context.getOutputManager().debug("\nBuilding edge-type from '%s' to '%s' (%s/%s)...\n", currentOutVertex.getName(), currentInVertex.getName(), iteration, numberOfEdgeType);
@@ -1006,6 +1031,7 @@ public class OER2GraphMapper extends OSource2GraphMapper {
       // If the foreign table is a join table then the direction is referred to the aggregator edge and not to the left or right one. So direction field is always "direct"
       // as it is inferred from the left or right relationship.
       if(currentRelationshipDirection != null && currentRelationshipDirection.equals("inverse")) {
+        // TODO: update mapping
         currentInVertexType = this.loadOrCreateVertexType(nameResolver.resolveVertexName(currentForeignEntityName));
         currentOutVertexType = this.loadOrCreateVertexType(nameResolver.resolveVertexName(currentParentEntityName));
 
@@ -1032,21 +1058,25 @@ public class OER2GraphMapper extends OSource2GraphMapper {
 
       // if direction is null the edge will be direct by default
       if (currentRelationshipDirection == null) {
+        // TODO: update mapping
         currentInVertexType = this.loadOrCreateVertexType(nameResolver.resolveVertexName(currentParentEntityName));
         currentOutVertexType = this.loadOrCreateVertexType(nameResolver.resolveVertexName(currentForeignEntityName));
       } else {
 
         // if the current foreign entity is a join table we will aggregate then the edge will be direct
         if (foreignEntityIsJoinTableToAggregate) {
+          // TODO: update mapping
           currentInVertexType = this.loadOrCreateVertexType(nameResolver.resolveVertexName(currentParentEntityName));
           currentOutVertexType = this.loadOrCreateVertexType(nameResolver.resolveVertexName(currentForeignEntityName));
         } else {
 
           // edge direction chosen according to the value of the parameter direction
           if (currentRelationshipDirection.equals("direct")) {
+            // TODO: update mapping
             currentInVertexType = this.loadOrCreateVertexType(nameResolver.resolveVertexName(currentParentEntityName));
             currentOutVertexType = this.loadOrCreateVertexType(nameResolver.resolveVertexName(currentForeignEntityName));
           } else {
+            // TODO: update mapping
             currentInVertexType = this.loadOrCreateVertexType(nameResolver.resolveVertexName(currentForeignEntityName));
             currentOutVertexType = this.loadOrCreateVertexType(nameResolver.resolveVertexName(currentParentEntityName));
           }
@@ -1243,11 +1273,11 @@ public class OER2GraphMapper extends OSource2GraphMapper {
     this.dataBaseSchema = dataBaseSchema;
   }
 
-  public Map<OEntity, OVertexType> getEntity2vertexType() {
-    return this.entity2vertexType;
-  }
+//  public Map<OEntity, OVertexType> getEntity2vertexType() {
+//    return this.entity2vertexType;
+//  }
 
-
+  // TODO: update mapping (delete method)
   public OEntity getEntityByVertexType(String vertexType) {
 
     if(vertexType != null) {
@@ -1261,7 +1291,16 @@ public class OER2GraphMapper extends OSource2GraphMapper {
     return null;
   }
 
+  public OEntity getEntityByVertexType(OVertexType vertexType) {
+    return this.vertexType2classMapper.get(vertexType).getEntity();
+  }
+
+  public OVertexType getVertexTypeByEntity(OEntity entity) {
+    return this.entity2classMapper.get(entity).getVertexType();
+  }
+
   // TO UPDATE WITH THE INVERTED MAP vertexType2entity (right?)
+  // TODO: update mapping (delete)
   public OAttribute getAttributeByVertexTypeAndProperty(OVertexType vertexType, String propertyName) {
 
     int position = 0;
@@ -1334,6 +1373,7 @@ public class OER2GraphMapper extends OSource2GraphMapper {
     this.relationship2edgeType = relationship2edgeTypeRules;
   }
 
+  // TODO: update mapping
   public OVertexType getVertexTypeByName(String name) {
 
     for(OVertexType currentVertexType: this.entity2vertexType.values()) {
