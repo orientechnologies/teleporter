@@ -43,22 +43,22 @@ public class OTeleporterStatistics {
   // Source DB Schema building statistics
   public volatile int totalNumberOfEntities;
   public volatile int builtEntities;
-  public volatile int doneEntity4Relationship;
-  public volatile int detectedRelationships;
+  public volatile int entitiesAnalyzedForRelationship;  // used only for te progress monitor because we can't know the total number of relationships before all the entities are scanned.
+  public volatile int builtRelationships;
+  public volatile int totalNumberOfRelationships;
   public volatile Date startWork1Time;
 
   // Graph Model building statistics
-  public volatile int  totalNumberOfModelVertices;
-  public volatile int  builtModelVertexTypes;
-  public volatile int  totalNumberOfRelationships;
-  public volatile int  analyzedRelationships;
-  public volatile int  builtModelEdgeTypes;
+  public volatile int totalNumberOfModelVertices;
+  public volatile int builtModelVertexTypes;
+  public volatile int totalNumberOfModelEdges;
+  public volatile int builtModelEdgeTypes;
   public volatile Date startWork2Time;
 
   // OrientDB Schema writing statistics
-  public volatile int totalNumberOfVertexType;
+  public volatile int totalNumberOfVertexTypes;
   public volatile int wroteVertexType;
-  public volatile int totalNumberOfEdgeType;
+  public volatile int totalNumberOfEdgeTypes;
   public volatile int wroteEdgeType;
   public volatile int totalNumberOfIndices;
   public volatile int wroteIndexes;
@@ -93,18 +93,18 @@ public class OTeleporterStatistics {
 
     this.totalNumberOfEntities = 0;
     this.builtEntities = 0;
-    this.doneEntity4Relationship = 0;
-    this.detectedRelationships = 0;
+    this.entitiesAnalyzedForRelationship = 0;
+    this.builtRelationships = 0;
+    this.totalNumberOfRelationships = 0;
 
     this.totalNumberOfModelVertices = 0;
     this.builtModelVertexTypes = 0;
-    this.totalNumberOfRelationships = 0;
-    this.analyzedRelationships = 0;
+    this.totalNumberOfModelEdges = 0;
     this.builtModelEdgeTypes = 0;
 
-    this.totalNumberOfVertexType = 0;
+    this.totalNumberOfVertexTypes = 0;
     this.wroteVertexType = 0;
-    this.totalNumberOfEdgeType = 0;
+    this.totalNumberOfEdgeTypes = 0;
     this.wroteEdgeType = 0;
     this.totalNumberOfIndices = 0;
     this.wroteIndexes = 0;
@@ -142,7 +142,7 @@ public class OTeleporterStatistics {
   public String sourceDbSchemaBuildingProgress() {
     String s ="Source DB Schema\n";
     s += "Entities: " + this.builtEntities;
-    s += "\nRelationships: " + this.detectedRelationships;
+    s += "\nRelationships: " + this.builtRelationships;
     return s;
   }
 

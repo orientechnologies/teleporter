@@ -94,7 +94,7 @@ public class HibernateMapperTest {
       st.execute(employeeTableBuilding);
 
       this.mapper = new OHibernate2GraphMapper("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", HibernateMapperTest.XML_TABLE_PER_CLASS, null, null, null);
-      mapper.buildSourceSchema(this.context);
+      mapper.buildSourceDatabaseSchema(this.context);
       mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
 
 
@@ -104,10 +104,12 @@ public class HibernateMapperTest {
 
       assertEquals(2, context.getStatistics().totalNumberOfEntities);
       assertEquals(2, context.getStatistics().builtEntities);
-      assertEquals(1, context.getStatistics().detectedRelationships);
+      assertEquals(1, context.getStatistics().totalNumberOfRelationships);
+      assertEquals(1, context.getStatistics().builtRelationships);
 
       assertEquals(4, context.getStatistics().totalNumberOfModelVertices);
-      assertEquals(1, context.getStatistics().analyzedRelationships);
+      assertEquals(4, context.getStatistics().builtModelVertexTypes);
+      assertEquals(1, context.getStatistics().totalNumberOfModelEdges);
       assertEquals(1, context.getStatistics().builtModelEdgeTypes);
 
       /*
@@ -535,7 +537,7 @@ public class HibernateMapperTest {
       st.execute(contractEmployeeTableBuilding);
 
       this.mapper = new OHibernate2GraphMapper("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", HibernateMapperTest.XML_TABLE_PER_SUBCLASS1, null, null, null);
-      mapper.buildSourceSchema(this.context);
+      mapper.buildSourceDatabaseSchema(this.context);
       mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
 
 
@@ -545,10 +547,12 @@ public class HibernateMapperTest {
 
       assertEquals(4, context.getStatistics().totalNumberOfEntities);
       assertEquals(4, context.getStatistics().builtEntities);
-      assertEquals(3, context.getStatistics().detectedRelationships);
+      assertEquals(3, context.getStatistics().totalNumberOfRelationships);
+      assertEquals(3, context.getStatistics().builtRelationships);
 
       assertEquals(4, context.getStatistics().totalNumberOfModelVertices);
-      assertEquals(3, context.getStatistics().analyzedRelationships);
+      assertEquals(4, context.getStatistics().builtModelVertexTypes);
+      assertEquals(1, context.getStatistics().totalNumberOfModelEdges);
       assertEquals(1, context.getStatistics().builtModelEdgeTypes);
 
       /*
@@ -996,7 +1000,7 @@ public class HibernateMapperTest {
       st.execute(contractEmployeeTableBuilding);
 
       this.mapper = new OHibernate2GraphMapper("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", HibernateMapperTest.XML_TABLE_PER_SUBCLASS2, null, null, null);
-      mapper.buildSourceSchema(this.context);
+      mapper.buildSourceDatabaseSchema(this.context);
       mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
 
 
@@ -1006,10 +1010,12 @@ public class HibernateMapperTest {
 
       assertEquals(4, context.getStatistics().totalNumberOfEntities);
       assertEquals(4, context.getStatistics().builtEntities);
-      assertEquals(3, context.getStatistics().detectedRelationships);
+      assertEquals(3, context.getStatistics().totalNumberOfRelationships);
+      assertEquals(3, context.getStatistics().builtRelationships);
 
       assertEquals(4, context.getStatistics().totalNumberOfModelVertices);
-      assertEquals(3, context.getStatistics().analyzedRelationships);
+      assertEquals(4, context.getStatistics().builtModelVertexTypes);
+      assertEquals(1, context.getStatistics().totalNumberOfModelEdges);
       assertEquals(1, context.getStatistics().builtModelEdgeTypes);
 
       /*
@@ -1453,7 +1459,7 @@ public class HibernateMapperTest {
       st.execute(contractEmployeeTableBuilding);
 
       this.mapper = new OHibernate2GraphMapper("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", HibernateMapperTest.XML_TABLE_PER_CONCRETE_CLASS, null, null, null);
-      mapper.buildSourceSchema(this.context);
+      mapper.buildSourceDatabaseSchema(this.context);
       mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
 
 
@@ -1463,10 +1469,12 @@ public class HibernateMapperTest {
 
       assertEquals(4, context.getStatistics().totalNumberOfEntities);
       assertEquals(4, context.getStatistics().builtEntities);
-      assertEquals(1, context.getStatistics().detectedRelationships);
+      assertEquals(1, context.getStatistics().totalNumberOfRelationships);
+      assertEquals(1, context.getStatistics().builtRelationships);
 
       assertEquals(4, context.getStatistics().totalNumberOfModelVertices);
-      assertEquals(1, context.getStatistics().analyzedRelationships);
+      assertEquals(4, context.getStatistics().builtModelVertexTypes);
+      assertEquals(1, context.getStatistics().totalNumberOfModelEdges);
       assertEquals(1, context.getStatistics().builtModelEdgeTypes);
 
       /*

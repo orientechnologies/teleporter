@@ -52,7 +52,7 @@ public class OHibernate2GraphMapper extends OER2GraphMapper {
   }
 
   @Override
-  public void buildSourceSchema(OTeleporterContext context) {
+  public void buildSourceDatabaseSchema(OTeleporterContext context) {
 
     try {
 
@@ -60,7 +60,7 @@ public class OHibernate2GraphMapper extends OER2GraphMapper {
        * Building Info from DB Schema
        */
 
-      super.buildSourceSchema(context);
+      super.buildSourceDatabaseSchema(context);
 
 
       /*

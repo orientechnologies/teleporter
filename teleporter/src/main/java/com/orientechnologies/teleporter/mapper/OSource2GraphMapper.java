@@ -48,9 +48,11 @@ public abstract class OSource2GraphMapper {
 
   public abstract ODataSourceSchema getSourceSchema();
 
-  public abstract void buildSourceSchema(OTeleporterContext context);
+  public abstract void buildSourceDatabaseSchema(OTeleporterContext context);
 
   public abstract void buildGraphModel(ONameResolver nameResolver, OTeleporterContext context);
+
+  public abstract void applyImportConfiguration(OTeleporterContext context);
 
   public abstract String toString();
 

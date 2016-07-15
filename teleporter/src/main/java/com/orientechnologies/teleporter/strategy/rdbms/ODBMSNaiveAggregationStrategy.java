@@ -69,24 +69,27 @@ public class ODBMSNaiveAggregationStrategy extends ODBMSImportStrategy {
     OMapperFactory mapperFactory = new OMapperFactory();
     OSource2GraphMapper mapper = mapperFactory.buildMapper(chosenMapper, driver, uri, username, password, xmlPath, includedTables, excludedTables, config, context);
 
-    // DataBase schema building
-    mapper.buildSourceSchema(context);
+    // Step 1: DataBase schema building
+    mapper.buildSourceDatabaseSchema(context);
     context.getStatistics().notifyListeners();
     context.getOutputManager().info("\n");
     context.getOutputManager().debug("\n%s\n", ((OER2GraphMapper)mapper).getDataBaseSchema().toString());
 
-    // Graph model building
+    // Step 2: Graph model building
     mapper.buildGraphModel(nameResolver, context);
     context.getStatistics().notifyListeners();
     context.getOutputManager().info("\n");
     context.getOutputManager().debug("\n%s\n", ((OER2GraphMapper)mapper).getGraphModel().toString());
 
-    // Many-to-Many aggregation
-    ((OER2GraphMapper)mapper).joinTableDim2Aggregation(context);
+    // Step 3: Eventual configuration applying
+    mapper.applyImportConfiguration(context);
+
+    // Step 4: Aggregation
+    ((OER2GraphMapper)mapper).performAggregations(context);
     context.getOutputManager().debug("\n'Junction-Entity' aggregation complete.\n");
     context.getOutputManager().debug("\n%s\n", ((OER2GraphMapper)mapper).getGraphModel().toString());
 
-    // Saving schema on Orient
+    // Step 5: Writing schema on OrientDB
     OGraphModelWriter graphModelWriter = new OGraphModelWriter();
     OGraphModel graphModel = ((OER2GraphMapper)mapper).getGraphModel();
     boolean success = graphModelWriter.writeModelOnOrient(graphModel, handler, outOrientGraphUri, context);

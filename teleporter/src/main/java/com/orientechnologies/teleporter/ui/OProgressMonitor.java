@@ -63,6 +63,14 @@ public class OProgressMonitor implements OStatisticsListener {
     this.firstPrint = true;
   }
 
+
+  /**
+   * Called whenever the progress monitor needs to be updated.
+   * that is whenever progress OTeleporterStatistics publishes an event.
+   *
+   * @param statistics
+   */
+
   public String updateOnEvent(OTeleporterStatistics statistics) {
 
     if(firstPrint) {
@@ -85,22 +93,17 @@ public class OProgressMonitor implements OStatisticsListener {
     return message;
   }
 
-  /**
-   * Called whenever the progress monitor needs to be updated.
-   * that is whenever progress ODrakkarStatistics publishes an event.
-   *
-   * @param statistics
-   */
-  public String updateWork1OnEvent(OTeleporterStatistics statistics) {
 
-    /*
-     * Work1: Source DB schema Building
-     */
+  /*
+   * Work1: Source DB schema Building
+   */
+
+  public String updateWork1OnEvent(OTeleporterStatistics statistics) {
 
     Date currentTime = new Date();
 
     int work1DonePercentage = (int)( (((double)statistics.builtEntities/(double)statistics.totalNumberOfEntities) * 0.25 * 100) +
-        (((double)statistics.doneEntity4Relationship/(double)statistics.totalNumberOfEntities) * 0.75 * 100) );
+        (((double)statistics.entitiesAnalyzedForRelationship /(double)statistics.totalNumberOfEntities) * 0.75 * 100) );
 
     String progressBarWork1 = this.getProgressBar(work1DonePercentage);
 
@@ -110,21 +113,22 @@ public class OProgressMonitor implements OStatisticsListener {
     return this.printProgressBar(this.work1Title, work1DonePercentage, progressBarWork1, elapsedTime, statistics.warningMessages.size(), -1, -1);
   }
 
-  public String updateWork2OnEvent(OTeleporterStatistics statistics) {
 
-    /*
-     * Work2: Graph Model Building
-     */
+  /*
+   * Work2: Graph Model Building
+   */
+
+  public String updateWork2OnEvent(OTeleporterStatistics statistics) {
 
     Date currentTime = new Date();
 
     int work2DonePercentage;
 
-    if(statistics.totalNumberOfModelVertices > 0 && statistics.totalNumberOfRelationships > 0) {
+    if(statistics.totalNumberOfModelVertices > 0 && statistics.totalNumberOfModelEdges > 0) {
       work2DonePercentage = (int) (((double)statistics.builtModelVertexTypes/(double)statistics.totalNumberOfModelVertices) * 100/2);
-      work2DonePercentage += (int) (((double)statistics.analyzedRelationships /(double)statistics.totalNumberOfRelationships) * 100/2);
+      work2DonePercentage += (int) (((double)statistics.builtModelEdgeTypes /(double)statistics.totalNumberOfModelEdges) * 100/2);
     }
-    else if(statistics.totalNumberOfModelVertices > 0 && statistics.totalNumberOfRelationships == 0) {
+    else if(statistics.totalNumberOfModelVertices > 0 && statistics.totalNumberOfModelEdges == 0) {
       work2DonePercentage = (int) (((double)statistics.builtModelVertexTypes/(double)statistics.totalNumberOfModelVertices) * 100);
     }
     else {
@@ -140,31 +144,31 @@ public class OProgressMonitor implements OStatisticsListener {
   }
 
 
-  public String updateWork3OnEvent(OTeleporterStatistics statistics) {
+  /*
+   * Work3: OrientDB Schema Writing
+   */
 
-    /*
-     * Work3: OrientDB Schema Writing
-     */
+  public String updateWork3OnEvent(OTeleporterStatistics statistics) {
 
     Date currentTime = new Date();
 
     int work3DonePercentage;
 
-    if(statistics.totalNumberOfVertexType > 0 && statistics.totalNumberOfEdgeType > 0 && statistics.totalNumberOfIndices > 0) {
-      work3DonePercentage = (int) (((double)statistics.wroteVertexType/(double)statistics.totalNumberOfVertexType) * 0.35 * 100);
-      work3DonePercentage += (int) (((double)statistics.wroteEdgeType/(double)statistics.totalNumberOfEdgeType) * 0.35 * 100);
+    if(statistics.totalNumberOfVertexTypes > 0 && statistics.totalNumberOfEdgeTypes > 0 && statistics.totalNumberOfIndices > 0) {
+      work3DonePercentage = (int) (((double)statistics.wroteVertexType/(double)statistics.totalNumberOfVertexTypes) * 0.35 * 100);
+      work3DonePercentage += (int) (((double)statistics.wroteEdgeType/(double)statistics.totalNumberOfEdgeTypes) * 0.35 * 100);
       work3DonePercentage += (int) (((double)statistics.wroteIndexes/(double)statistics.totalNumberOfIndices) * 0.3  * 100);
     }
-    else if(statistics.totalNumberOfVertexType > 0 && statistics.totalNumberOfEdgeType > 0 && statistics.totalNumberOfIndices == 0) {
-      work3DonePercentage = (int) (((double)statistics.wroteVertexType/(double)statistics.totalNumberOfVertexType) * 100/2);
-      work3DonePercentage += (int) (((double)statistics.wroteEdgeType/(double)statistics.totalNumberOfEdgeType) * 100/2);
+    else if(statistics.totalNumberOfVertexTypes > 0 && statistics.totalNumberOfEdgeTypes > 0 && statistics.totalNumberOfIndices == 0) {
+      work3DonePercentage = (int) (((double)statistics.wroteVertexType/(double)statistics.totalNumberOfVertexTypes) * 100/2);
+      work3DonePercentage += (int) (((double)statistics.wroteEdgeType/(double)statistics.totalNumberOfEdgeTypes) * 100/2);
     }
-    else if(statistics.totalNumberOfVertexType > 0 && statistics.totalNumberOfEdgeType == 0 && statistics.totalNumberOfIndices > 0) {
-      work3DonePercentage = (int) (((double)statistics.wroteVertexType/(double)statistics.totalNumberOfVertexType) * 100/2);
+    else if(statistics.totalNumberOfVertexTypes > 0 && statistics.totalNumberOfEdgeTypes == 0 && statistics.totalNumberOfIndices > 0) {
+      work3DonePercentage = (int) (((double)statistics.wroteVertexType/(double)statistics.totalNumberOfVertexTypes) * 100/2);
       work3DonePercentage += (int) (((double)statistics.wroteIndexes/(double)statistics.totalNumberOfIndices) * 100/2);
     }
-    else if(statistics.totalNumberOfVertexType > 0 && statistics.totalNumberOfEdgeType == 0 && statistics.totalNumberOfIndices == 0) {
-      work3DonePercentage = (int) (((double)statistics.wroteVertexType/(double)statistics.totalNumberOfVertexType) * 100);
+    else if(statistics.totalNumberOfVertexTypes > 0 && statistics.totalNumberOfEdgeTypes == 0 && statistics.totalNumberOfIndices == 0) {
+      work3DonePercentage = (int) (((double)statistics.wroteVertexType/(double)statistics.totalNumberOfVertexTypes) * 100);
     }
     else {
       work3DonePercentage = 0;
@@ -178,11 +182,12 @@ public class OProgressMonitor implements OStatisticsListener {
     return this.printProgressBar(this.work3Title, work3DonePercentage, progressBarWork3, elapsedTime, statistics.warningMessages.size(), -1, -1);
   }
 
-  public String updateWork4OnEvent(OTeleporterStatistics statistics) {
 
-    /*
-     * Work4: OrientDB Importing
-     */
+  /*
+   * Work4: OrientDB Importing
+   */
+
+  public String updateWork4OnEvent(OTeleporterStatistics statistics) {
 
     Date currentTime = new Date();
 

@@ -80,7 +80,7 @@ public class SourceSchemaBuildingTest {
       st.execute(foreignTableBuilding);
 
       this.mapper = new OER2GraphMapper("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", null, null, null);
-      mapper.buildSourceSchema(this.context);
+      mapper.buildSourceDatabaseSchema(this.context);
 
 
       /*
@@ -88,8 +88,9 @@ public class SourceSchemaBuildingTest {
        */
 
       assertEquals(2, context.getStatistics().totalNumberOfEntities);
-      assertEquals(2, context.getStatistics().builtEntities);      
-      assertEquals(1, context.getStatistics().detectedRelationships);
+      assertEquals(2, context.getStatistics().builtEntities);
+      assertEquals(1, context.getStatistics().totalNumberOfRelationships);
+      assertEquals(1, context.getStatistics().builtRelationships);
 
 
       /*
@@ -211,7 +212,7 @@ public class SourceSchemaBuildingTest {
       st.execute(foreignTableBuilding);
 
       this.mapper = new OER2GraphMapper("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", null, null, null);
-      mapper.buildSourceSchema(this.context);
+      mapper.buildSourceDatabaseSchema(this.context);
 
 
       /*
@@ -219,8 +220,9 @@ public class SourceSchemaBuildingTest {
        */
 
       assertEquals(2, context.getStatistics().totalNumberOfEntities);
-      assertEquals(2, context.getStatistics().builtEntities);      
-      assertEquals(1, context.getStatistics().detectedRelationships);
+      assertEquals(2, context.getStatistics().builtEntities);
+      assertEquals(1, context.getStatistics().totalNumberOfRelationships);
+      assertEquals(1, context.getStatistics().builtRelationships);
 
 
       /*
@@ -348,7 +350,7 @@ public class SourceSchemaBuildingTest {
       st.execute(foreignTableBuilding);
 
       this.mapper = new OER2GraphMapper("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", null, null, null);
-      mapper.buildSourceSchema(this.context);
+      mapper.buildSourceDatabaseSchema(this.context);
 
 
       /*
@@ -356,8 +358,9 @@ public class SourceSchemaBuildingTest {
        */
 
       assertEquals(2, context.getStatistics().totalNumberOfEntities);
-      assertEquals(2, context.getStatistics().builtEntities);      
-      assertEquals(2, context.getStatistics().detectedRelationships);
+      assertEquals(2, context.getStatistics().builtEntities);
+      assertEquals(2, context.getStatistics().totalNumberOfRelationships);
+      assertEquals(2, context.getStatistics().builtRelationships);
 
 
       /*
@@ -493,7 +496,7 @@ public class SourceSchemaBuildingTest {
       st.execute(foreignTableBuilding);
 
       this.mapper = new OER2GraphMapper("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", null, null, null);
-      mapper.buildSourceSchema(this.context);
+      mapper.buildSourceDatabaseSchema(this.context);
 
 
       /*
@@ -501,8 +504,9 @@ public class SourceSchemaBuildingTest {
        */
 
       assertEquals(2, context.getStatistics().totalNumberOfEntities);
-      assertEquals(2, context.getStatistics().builtEntities);      
-      assertEquals(2, context.getStatistics().detectedRelationships);
+      assertEquals(2, context.getStatistics().builtEntities);
+      assertEquals(2, context.getStatistics().totalNumberOfRelationships);
+      assertEquals(2, context.getStatistics().builtRelationships);
 
 
       /*
@@ -655,7 +659,7 @@ public class SourceSchemaBuildingTest {
       st.execute(foreignTableBuilding);
 
       this.mapper = new OER2GraphMapper("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", null, null, null);
-      mapper.buildSourceSchema(this.context);
+      mapper.buildSourceDatabaseSchema(this.context);
 
 
       /*
@@ -663,8 +667,9 @@ public class SourceSchemaBuildingTest {
        */
 
       assertEquals(2, context.getStatistics().totalNumberOfEntities);
-      assertEquals(2, context.getStatistics().builtEntities);      
-      assertEquals(2, context.getStatistics().detectedRelationships);
+      assertEquals(2, context.getStatistics().builtEntities);
+      assertEquals(2, context.getStatistics().totalNumberOfRelationships);
+      assertEquals(2, context.getStatistics().builtRelationships);
 
 
       /*
@@ -815,7 +820,7 @@ public class SourceSchemaBuildingTest {
       connection.commit();
 
       this.mapper = new OER2GraphMapper("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", null, null, null);
-      mapper.buildSourceSchema(this.context);
+      mapper.buildSourceDatabaseSchema(this.context);
 
 
       /*
@@ -823,8 +828,9 @@ public class SourceSchemaBuildingTest {
        */
 
       assertEquals(3, context.getStatistics().totalNumberOfEntities);
-      assertEquals(3, context.getStatistics().builtEntities);      
-      assertEquals(2, context.getStatistics().detectedRelationships);
+      assertEquals(3, context.getStatistics().builtEntities);
+      assertEquals(2, context.getStatistics().totalNumberOfRelationships);
+      assertEquals(2, context.getStatistics().builtRelationships);
 
 
       /*
