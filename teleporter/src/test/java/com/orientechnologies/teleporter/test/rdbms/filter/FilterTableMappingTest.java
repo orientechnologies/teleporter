@@ -126,7 +126,7 @@ public class FilterTableMappingTest {
       includedTables.add("EMPLOYEE");
 
       this.mapper = new OER2GraphMapper("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", includedTables, null, null);
-      mapper.buildSourceSchema(this.context);
+      mapper.buildSourceDatabaseSchema(this.context);
       mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
 
 
@@ -136,10 +136,12 @@ public class FilterTableMappingTest {
 
       assertEquals(3, context.getStatistics().totalNumberOfEntities);
       assertEquals(3, context.getStatistics().builtEntities);
-      assertEquals(1, context.getStatistics().detectedRelationships);
+      assertEquals(1, context.getStatistics().totalNumberOfRelationships);
+      assertEquals(1, context.getStatistics().builtRelationships);
 
       assertEquals(3, context.getStatistics().totalNumberOfModelVertices);
-      assertEquals(1, context.getStatistics().analyzedRelationships);
+      assertEquals(3, context.getStatistics().builtModelVertexTypes);
+      assertEquals(1, context.getStatistics().totalNumberOfModelEdges);
       assertEquals(1, context.getStatistics().builtModelEdgeTypes);
 
 
@@ -434,7 +436,7 @@ public class FilterTableMappingTest {
       excludedTables.add("RESIDENCE");
 
       this.mapper = new OER2GraphMapper("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", null, excludedTables, null);
-      mapper.buildSourceSchema(this.context);
+      mapper.buildSourceDatabaseSchema(this.context);
       mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
 
 
@@ -444,10 +446,12 @@ public class FilterTableMappingTest {
 
       assertEquals(3, context.getStatistics().totalNumberOfEntities);
       assertEquals(3, context.getStatistics().builtEntities);
-      assertEquals(1, context.getStatistics().detectedRelationships);
+      assertEquals(1, context.getStatistics().totalNumberOfRelationships);
+      assertEquals(1, context.getStatistics().builtRelationships);
 
       assertEquals(3, context.getStatistics().totalNumberOfModelVertices);
-      assertEquals(1, context.getStatistics().analyzedRelationships);
+      assertEquals(3, context.getStatistics().builtModelVertexTypes);
+      assertEquals(1, context.getStatistics().totalNumberOfModelEdges);
       assertEquals(1, context.getStatistics().builtModelEdgeTypes);
 
 
@@ -742,7 +746,7 @@ public class FilterTableMappingTest {
       includedTables.add("EMPLOYEE");
 
       this.mapper = new OHibernate2GraphMapper("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", FilterTableMappingTest.XML_TABLE_PER_CLASS, includedTables, null, null);
-      mapper.buildSourceSchema(this.context);
+      mapper.buildSourceDatabaseSchema(this.context);
       mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
 
 
@@ -752,10 +756,12 @@ public class FilterTableMappingTest {
 
       assertEquals(3, context.getStatistics().totalNumberOfEntities);
       assertEquals(3, context.getStatistics().builtEntities);
-      assertEquals(1, context.getStatistics().detectedRelationships);
+      assertEquals(1, context.getStatistics().totalNumberOfRelationships);
+      assertEquals(1, context.getStatistics().builtRelationships);
 
       assertEquals(6, context.getStatistics().totalNumberOfModelVertices);
-      assertEquals(1, context.getStatistics().analyzedRelationships);
+      assertEquals(6, context.getStatistics().builtModelVertexTypes);
+      assertEquals(1, context.getStatistics().totalNumberOfModelEdges);
       assertEquals(1, context.getStatistics().builtModelEdgeTypes);
 
 
@@ -1397,7 +1403,7 @@ public class FilterTableMappingTest {
       includedTables.add("CONTRACT_EMPLOYEE");
 
       this.mapper = new OHibernate2GraphMapper("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", FilterTableMappingTest.XML_TABLE_PER_SUBCLASS1, includedTables, null, null);
-      mapper.buildSourceSchema(this.context);
+      mapper.buildSourceDatabaseSchema(this.context);
       mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
 
 
@@ -1407,10 +1413,12 @@ public class FilterTableMappingTest {
 
       assertEquals(6, context.getStatistics().totalNumberOfEntities);
       assertEquals(6, context.getStatistics().builtEntities);
-      assertEquals(4, context.getStatistics().detectedRelationships); // 3 of these are hierarchical relationships
+      assertEquals(4, context.getStatistics().totalNumberOfRelationships);
+      assertEquals(4, context.getStatistics().builtRelationships); // 3 of these are hierarchical relationships
 
       assertEquals(6, context.getStatistics().totalNumberOfModelVertices);
-      assertEquals(4, context.getStatistics().analyzedRelationships); // 3 of these are hierarchical relationships
+      assertEquals(6, context.getStatistics().builtModelVertexTypes);
+      assertEquals(1, context.getStatistics().totalNumberOfModelEdges);
       assertEquals(1, context.getStatistics().builtModelEdgeTypes);
 
 
@@ -2053,7 +2061,7 @@ public class FilterTableMappingTest {
       excludedTables.add("RESIDENCE");
 
       this.mapper = new OHibernate2GraphMapper("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", FilterTableMappingTest.XML_TABLE_PER_SUBCLASS2, null, excludedTables, null);
-      mapper.buildSourceSchema(this.context);
+      mapper.buildSourceDatabaseSchema(this.context);
       mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
 
 
@@ -2063,10 +2071,12 @@ public class FilterTableMappingTest {
 
       assertEquals(6, context.getStatistics().totalNumberOfEntities);
       assertEquals(6, context.getStatistics().builtEntities);
-      assertEquals(4, context.getStatistics().detectedRelationships); // 3 of these are hierarchical relationships
+      assertEquals(4, context.getStatistics().totalNumberOfRelationships);
+      assertEquals(4, context.getStatistics().builtRelationships); // 3 of these are hierarchical relationships
 
       assertEquals(6, context.getStatistics().totalNumberOfModelVertices);
-      assertEquals(4, context.getStatistics().analyzedRelationships); // 3 of these are hierarchical relationships
+      assertEquals(6, context.getStatistics().builtModelVertexTypes);
+      assertEquals(1, context.getStatistics().totalNumberOfModelEdges);
       assertEquals(1, context.getStatistics().builtModelEdgeTypes);
 
 
@@ -2716,7 +2726,7 @@ public class FilterTableMappingTest {
       includedTables.add("CONTRACT_EMPLOYEE");
 
       this.mapper = new OHibernate2GraphMapper("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", FilterTableMappingTest.XML_TABLE_PER_CONCRETE_CLASS, includedTables, null, null);
-      mapper.buildSourceSchema(this.context);
+      mapper.buildSourceDatabaseSchema(this.context);
       mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
 
 
@@ -2726,10 +2736,12 @@ public class FilterTableMappingTest {
 
       assertEquals(6, context.getStatistics().totalNumberOfEntities);
       assertEquals(6, context.getStatistics().builtEntities);
-      assertEquals(1, context.getStatistics().detectedRelationships);
+      assertEquals(1, context.getStatistics().totalNumberOfRelationships);
+      assertEquals(1, context.getStatistics().builtRelationships);
 
       assertEquals(6, context.getStatistics().totalNumberOfModelVertices);
-      assertEquals(1, context.getStatistics().analyzedRelationships);
+      assertEquals(6, context.getStatistics().builtModelVertexTypes);
+      assertEquals(1, context.getStatistics().totalNumberOfModelEdges);
       assertEquals(1, context.getStatistics().builtModelEdgeTypes);
 
 

@@ -64,7 +64,7 @@ public class ProgressMonitorTest {
     statistics.runningStepNumber = 1;
     statistics.builtEntities = 10;
     statistics.totalNumberOfEntities = 10;
-    statistics.doneEntity4Relationship = 5;
+    statistics.entitiesAnalyzedForRelationship = 5;
     statistics.startWork1Time = new Date();
 
     // it must print 62%
@@ -73,6 +73,7 @@ public class ProgressMonitorTest {
     String manuallyBuiltMessage = String.format(format, work1Title, 62, progressBarWork, " Elapsed:", "00:00:00", " Remaining:", "00:00:00", " Warnings:", "0");
 
     assertEquals(messageFromProseeMonitor, manuallyBuiltMessage);
+    System.out.println("\n");
 
   }
 
@@ -88,7 +89,6 @@ public class ProgressMonitorTest {
     statistics.runningStepNumber = 2;
     statistics.builtModelVertexTypes = 5;
     statistics.totalNumberOfModelVertices = 10;
-    statistics.analyzedRelationships = 0;
     statistics.totalNumberOfRelationships = 0;
     statistics.startWork2Time = new Date();
 
@@ -98,11 +98,11 @@ public class ProgressMonitorTest {
     String manuallyBuiltMessage = String.format(format, work2Title, 50, progressBarWork, " Elapsed:", "00:00:00", " Remaining:", "00:00:00", " Warnings:", "0");
 
     assertEquals(messageFromProseeMonitor, manuallyBuiltMessage);
+    System.out.println();
 
     // statistics.totalNumberOfModelVertices > 0 && statistics.totalNumberOfRelationships == 0
     statistics.builtModelVertexTypes = 4;
     statistics.totalNumberOfModelVertices = 16;
-    statistics.analyzedRelationships = 0;
     statistics.totalNumberOfRelationships = 0;
     statistics.startWork2Time = new Date();
 
@@ -112,11 +112,11 @@ public class ProgressMonitorTest {
     manuallyBuiltMessage = String.format(format, work2Title, 25, progressBarWork, " Elapsed:", "00:00:00", " Remaining:", "00:00:00", " Warnings:", "0");
 
     assertEquals(messageFromProseeMonitor, manuallyBuiltMessage);
+    System.out.println();
 
     // statistics.totalNumberOfModelVertices == 0 && statistics.totalNumberOfRelationships == 0
     statistics.builtModelVertexTypes = 0;
     statistics.totalNumberOfModelVertices = 0;
-    statistics.analyzedRelationships = 0;
     statistics.totalNumberOfRelationships = 0;
     statistics.startWork2Time = new Date();
 
@@ -126,6 +126,7 @@ public class ProgressMonitorTest {
     manuallyBuiltMessage = String.format(format, work2Title, 0, progressBarWork, " Elapsed:", "00:00:00", " Remaining:", "00:00:00", " Warnings:", "0");
 
     assertEquals(messageFromProseeMonitor, manuallyBuiltMessage);
+    System.out.println("\n");
 
   }
 
@@ -137,12 +138,12 @@ public class ProgressMonitorTest {
     String format = "\r%s %3d%% %s %s %s %s %s %s %s";
     statistics.warningMessages = new HashSet<String>();
 
-    // statistics.totalNumberOfVertexType > 0 && statistics.totalNumberOfEdgeType > 0 && statistics.totalNumberOfIndices == 0
+    // statistics.totalNumberOfVertexTypes > 0 && statistics.totalNumberOfModelEdges > 0 && statistics.totalNumberOfIndices == 0
     statistics.runningStepNumber = 3;
     statistics.wroteVertexType = 5;
-    statistics.totalNumberOfVertexType = 5;
+    statistics.totalNumberOfVertexTypes = 5;
     statistics.wroteEdgeType = 5;
-    statistics.totalNumberOfEdgeType = 10;
+    statistics.totalNumberOfEdgeTypes = 10;
     statistics.wroteIndexes = 0;
     statistics.totalNumberOfIndices = 0;
     statistics.startWork3Time = new Date();
@@ -153,13 +154,14 @@ public class ProgressMonitorTest {
     String manuallyBuiltMessage = String.format(format, work3Title, 75, progressBarWork, " Elapsed:", "00:00:00", " Remaining:", "00:00:00", " Warnings:", "0");
 
     assertEquals(messageFromProseeMonitor, manuallyBuiltMessage);
+    System.out.println();
 
 
-    // statistics.totalNumberOfVertexType > 0 && statistics.totalNumberOfEdgeType == 0 && statistics.totalNumberOfIndices > 0
+    // statistics.totalNumberOfVertexTypes > 0 && statistics.totalNumberOfModelEdges == 0 && statistics.totalNumberOfIndices > 0
     statistics.wroteVertexType = 5;
-    statistics.totalNumberOfVertexType = 5;
+    statistics.totalNumberOfVertexTypes = 5;
     statistics.wroteEdgeType = 0;
-    statistics.totalNumberOfEdgeType = 0;
+    statistics.totalNumberOfEdgeTypes = 0;
     statistics.wroteIndexes = 2;
     statistics.totalNumberOfIndices = 5;
     statistics.startWork3Time = new Date();
@@ -170,12 +172,13 @@ public class ProgressMonitorTest {
     manuallyBuiltMessage = String.format(format, work3Title, 70, progressBarWork, " Elapsed:", "00:00:00", " Remaining:", "00:00:00", " Warnings:", "0");
 
     assertEquals(messageFromProseeMonitor, manuallyBuiltMessage);
+    System.out.println();
 
-    // statistics.totalNumberOfVertexType > 0 && statistics.totalNumberOfEdgeType > 0 && statistics.totalNumberOfIndices > 0
+    // statistics.totalNumberOfVertexTypes > 0 && statistics.totalNumberOfModelEdges > 0 && statistics.totalNumberOfIndices > 0
     statistics.wroteVertexType = 10;
-    statistics.totalNumberOfVertexType = 10;
+    statistics.totalNumberOfVertexTypes = 10;
     statistics.wroteEdgeType = 8;
-    statistics.totalNumberOfEdgeType = 8;
+    statistics.totalNumberOfEdgeTypes = 8;
     statistics.wroteIndexes = 5;
     statistics.totalNumberOfIndices = 10;
     statistics.startWork3Time = new Date();
@@ -186,12 +189,13 @@ public class ProgressMonitorTest {
     manuallyBuiltMessage = String.format(format, work3Title, 85, progressBarWork, " Elapsed:", "00:00:00", " Remaining:", "00:00:00", " Warnings:", "0");
 
     assertEquals(messageFromProseeMonitor, manuallyBuiltMessage);
+    System.out.println();
 
-    // statistics.totalNumberOfVertexType > 0 && statistics.totalNumberOfEdgeType == 0 && statistics.totalNumberOfIndices == 0
+    // statistics.totalNumberOfVertexTypes > 0 && statistics.totalNumberOfModelEdges == 0 && statistics.totalNumberOfIndices == 0
     statistics.wroteVertexType = 3;
-    statistics.totalNumberOfVertexType = 5;
+    statistics.totalNumberOfVertexTypes = 5;
     statistics.wroteEdgeType = 0;
-    statistics.totalNumberOfEdgeType = 0;
+    statistics.totalNumberOfEdgeTypes = 0;
     statistics.wroteIndexes = 0;
     statistics.totalNumberOfIndices = 0;
     statistics.startWork3Time = new Date();
@@ -202,12 +206,13 @@ public class ProgressMonitorTest {
     manuallyBuiltMessage = String.format(format, work3Title, 60, progressBarWork, " Elapsed:", "00:00:00", " Remaining:", "00:00:00", " Warnings:", "0");
 
     assertEquals(messageFromProseeMonitor, manuallyBuiltMessage);
+    System.out.println();
 
-    // statistics.totalNumberOfVertexType == 0 && statistics.totalNumberOfEdgeType == 0 && statistics.totalNumberOfIndices == 0
+    // statistics.totalNumberOfVertexTypes == 0 && statistics.totalNumberOfModelEdges == 0 && statistics.totalNumberOfIndices == 0
     statistics.wroteVertexType = 0;
-    statistics.totalNumberOfVertexType = 0;
+    statistics.totalNumberOfVertexTypes = 0;
     statistics.wroteEdgeType = 0;
-    statistics.totalNumberOfEdgeType = 0;
+    statistics.totalNumberOfEdgeTypes = 0;
     statistics.wroteIndexes = 0;
     statistics.totalNumberOfIndices = 0;
     statistics.startWork3Time = new Date();
@@ -218,6 +223,7 @@ public class ProgressMonitorTest {
     manuallyBuiltMessage = String.format(format, work3Title, 0, progressBarWork, " Elapsed:", "00:00:00", " Remaining:", "00:00:00", " Warnings:", "0");
 
     assertEquals(messageFromProseeMonitor, manuallyBuiltMessage);
+    System.out.println("\n");
   }
 
 
@@ -241,6 +247,7 @@ public class ProgressMonitorTest {
     String manuallyBuiltMessage = String.format(format, work4Title, 50, progressBarWork, " Elapsed:", "00:00:00", " Remaining:", "00:00:00", " Warnings:", "0", " Records:", statistics.analyzedRecords + "/" + statistics.totalNumberOfRecords);
 
     assertEquals(messageFromProseeMonitor, manuallyBuiltMessage);
+    System.out.println();
 
     // statistics.totalNumberOfEntities == 0
     statistics.runningStepNumber = 4;
@@ -252,6 +259,7 @@ public class ProgressMonitorTest {
     progressBarWork = progressMonitor.getProgressBar(0);
     manuallyBuiltMessage = String.format(format, work4Title, 0, progressBarWork, " Elapsed:", "00:00:00", " Remaining:", "00:00:00", " Warnings:", "0", " Records:", statistics.analyzedRecords + "/" + statistics.totalNumberOfRecords);
     assertEquals(messageFromProseeMonitor, manuallyBuiltMessage);
+    System.out.println("\n");
 
   }
 

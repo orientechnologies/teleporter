@@ -91,7 +91,7 @@ public class OrientDBSchemaWritingTest {
       st.execute(foreignTableBuilding);
 
       this.mapper = new OER2GraphMapper("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", null, null, null);
-      mapper.buildSourceSchema(this.context);
+      mapper.buildSourceDatabaseSchema(this.context);
       mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
       modelWriter.writeModelOnOrient(mapper.getGraphModel(), new OHSQLDBDataTypeHandler(), this.outOrientGraphUri, context);
 
@@ -100,9 +100,9 @@ public class OrientDBSchemaWritingTest {
        *  Testing context information
        */
 
-      assertEquals(2, context.getStatistics().totalNumberOfVertexType);
+      assertEquals(2, context.getStatistics().totalNumberOfVertexTypes);
       assertEquals(2, context.getStatistics().wroteVertexType);
-      assertEquals(1, context.getStatistics().totalNumberOfEdgeType);
+      assertEquals(1, context.getStatistics().totalNumberOfModelEdges);
       assertEquals(1, context.getStatistics().wroteEdgeType);
       assertEquals(2, context.getStatistics().totalNumberOfIndices);
       assertEquals(2, context.getStatistics().wroteIndexes);
@@ -210,7 +210,7 @@ public class OrientDBSchemaWritingTest {
       st.execute(itemTableBuilding);
 
       this.mapper = new OER2GraphMapper("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", null, null, null);
-      mapper.buildSourceSchema(this.context);
+      mapper.buildSourceDatabaseSchema(this.context);
       mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
       modelWriter.writeModelOnOrient(mapper.getGraphModel(), new OHSQLDBDataTypeHandler(), this.outOrientGraphUri, context);
 
@@ -219,9 +219,9 @@ public class OrientDBSchemaWritingTest {
        *  Testing context information
        */
 
-      assertEquals(3, context.getStatistics().totalNumberOfVertexType);
+      assertEquals(3, context.getStatistics().totalNumberOfVertexTypes);
       assertEquals(3, context.getStatistics().wroteVertexType);
-      assertEquals(2, context.getStatistics().totalNumberOfEdgeType);
+      assertEquals(2, context.getStatistics().totalNumberOfModelEdges);
       assertEquals(2, context.getStatistics().wroteEdgeType);
       assertEquals(3, context.getStatistics().totalNumberOfIndices);
       assertEquals(3, context.getStatistics().wroteIndexes);
@@ -350,7 +350,7 @@ public class OrientDBSchemaWritingTest {
       st.execute(articleTableBuilding);
 
       this.mapper = new OER2GraphMapper("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", null, null, null);
-      mapper.buildSourceSchema(this.context);
+      mapper.buildSourceDatabaseSchema(this.context);
       mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
       modelWriter.writeModelOnOrient(mapper.getGraphModel(), new OHSQLDBDataTypeHandler(), this.outOrientGraphUri, context);
 
@@ -359,9 +359,9 @@ public class OrientDBSchemaWritingTest {
        *  Testing context information
        */
 
-      assertEquals(3, context.getStatistics().totalNumberOfVertexType);
+      assertEquals(3, context.getStatistics().totalNumberOfVertexTypes);
       assertEquals(3, context.getStatistics().wroteVertexType);
-      assertEquals(1, context.getStatistics().totalNumberOfEdgeType);
+      assertEquals(1, context.getStatistics().totalNumberOfEdgeTypes);
       assertEquals(1, context.getStatistics().wroteEdgeType);
       assertEquals(3, context.getStatistics().totalNumberOfIndices);
       assertEquals(3, context.getStatistics().wroteIndexes);
@@ -488,7 +488,7 @@ public class OrientDBSchemaWritingTest {
       st.execute(bookTableBuilding);
 
       this.mapper = new OER2GraphMapper("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", null, null, null);
-      mapper.buildSourceSchema(this.context);
+      mapper.buildSourceDatabaseSchema(this.context);
       mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
       modelWriter.writeModelOnOrient(mapper.getGraphModel(), new OHSQLDBDataTypeHandler(), this.outOrientGraphUri, context);
 
@@ -497,9 +497,9 @@ public class OrientDBSchemaWritingTest {
        *  Testing context information
        */
 
-      assertEquals(2, context.getStatistics().totalNumberOfVertexType);
+      assertEquals(2, context.getStatistics().totalNumberOfVertexTypes);
       assertEquals(2, context.getStatistics().wroteVertexType);
-      assertEquals(1, context.getStatistics().totalNumberOfEdgeType);
+      assertEquals(1, context.getStatistics().totalNumberOfModelEdges);
       assertEquals(1, context.getStatistics().wroteEdgeType);
       assertEquals(2, context.getStatistics().totalNumberOfIndices);
       assertEquals(2, context.getStatistics().wroteIndexes);
@@ -612,7 +612,7 @@ public class OrientDBSchemaWritingTest {
       st.execute(film2actorTableBuilding);
 
       this.mapper = new OER2GraphMapper("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", null, null, null);
-      mapper.buildSourceSchema(this.context);
+      mapper.buildSourceDatabaseSchema(this.context);
       mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
       modelWriter.writeModelOnOrient(mapper.getGraphModel(), new OHSQLDBDataTypeHandler(), this.outOrientGraphUri, context);
 
@@ -621,9 +621,9 @@ public class OrientDBSchemaWritingTest {
        *  Testing context information
        */
 
-      assertEquals(3, context.getStatistics().totalNumberOfVertexType);
+      assertEquals(3, context.getStatistics().totalNumberOfVertexTypes);
       assertEquals(3, context.getStatistics().wroteVertexType);
-      assertEquals(2, context.getStatistics().totalNumberOfEdgeType);
+      assertEquals(2, context.getStatistics().totalNumberOfModelEdges);
       assertEquals(2, context.getStatistics().wroteEdgeType);
       assertEquals(3, context.getStatistics().totalNumberOfIndices);
       assertEquals(3, context.getStatistics().wroteIndexes);
@@ -747,7 +747,7 @@ public class OrientDBSchemaWritingTest {
       st.execute(foreignTableBuilding);
 
       this.mapper = new OER2GraphMapper("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", null, null, null);
-      mapper.buildSourceSchema(this.context);
+      mapper.buildSourceDatabaseSchema(this.context);
       mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
       modelWriter.writeModelOnOrient(mapper.getGraphModel(), new OHSQLDBDataTypeHandler(), this.outOrientGraphUri, context);
 
@@ -756,9 +756,9 @@ public class OrientDBSchemaWritingTest {
        *  Testing context information
        */
 
-      assertEquals(2, context.getStatistics().totalNumberOfVertexType);
+      assertEquals(2, context.getStatistics().totalNumberOfVertexTypes);
       assertEquals(2, context.getStatistics().wroteVertexType);
-      assertEquals(2, context.getStatistics().totalNumberOfEdgeType);
+      assertEquals(2, context.getStatistics().totalNumberOfModelEdges);
       assertEquals(2, context.getStatistics().wroteEdgeType);
       assertEquals(2, context.getStatistics().totalNumberOfIndices);
       assertEquals(2, context.getStatistics().wroteIndexes);
@@ -870,7 +870,7 @@ public class OrientDBSchemaWritingTest {
       st.execute(articleTableBuilding);
 
       this.mapper = new OER2GraphMapper("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", null, null, null);
-      mapper.buildSourceSchema(this.context);
+      mapper.buildSourceDatabaseSchema(this.context);
       mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
       modelWriter.writeModelOnOrient(mapper.getGraphModel(), new OHSQLDBDataTypeHandler(), this.outOrientGraphUri, context);
 

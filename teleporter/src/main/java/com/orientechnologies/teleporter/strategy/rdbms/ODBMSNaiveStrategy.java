@@ -68,7 +68,7 @@ public class ODBMSNaiveStrategy extends ODBMSImportStrategy {
     OSource2GraphMapper mapper = mapperFactory.buildMapper(chosenMapper, driver, uri, username, password, xmlPath, includedTables, excludedTables, config, context);
 
     // Step 1: DataBase schema building
-    mapper.buildSourceSchema(context);
+    mapper.buildSourceDatabaseSchema(context);
     context.getStatistics().notifyListeners();
     context.getOutputManager().info("\n");
     context.getOutputManager().debug("\n%s\n", mapper.getSourceSchema().toString());
@@ -79,7 +79,10 @@ public class ODBMSNaiveStrategy extends ODBMSImportStrategy {
     context.getOutputManager().info("\n");
     context.getOutputManager().debug("\n%s\n", mapper.getGraphModel().toString());
 
-    // Step 3: Writing schema on Orient
+    // Step 3: eventual configuration applying
+    mapper.applyImportConfiguration(context);
+
+    // Step 4: Writing schema on OrientDB
     OGraphModelWriter graphModelWriter = new OGraphModelWriter();
     OGraphModel graphModel = ((OER2GraphMapper)mapper).getGraphModel();
     boolean success = graphModelWriter.writeModelOnOrient(graphModel, handler, outOrientGraphUri, context);

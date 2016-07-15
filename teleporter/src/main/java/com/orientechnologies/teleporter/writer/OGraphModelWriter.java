@@ -65,9 +65,9 @@ public class OGraphModelWriter {
     statistics.runningStepNumber = 3;
 
     int numberOfVertices = graphModel.getVerticesType().size();
-    statistics.totalNumberOfVertexType = numberOfVertices;
+    statistics.totalNumberOfVertexTypes = numberOfVertices;
     int numberOfEdges = graphModel.getEdgesType().size();
-    statistics.totalNumberOfEdgeType = numberOfEdges;
+    statistics.totalNumberOfEdgeTypes = numberOfEdges;
     statistics.totalNumberOfIndices = numberOfVertices;
 
     if(!this.inheritanceChangesPresent(graphModel, orientGraph)) {
