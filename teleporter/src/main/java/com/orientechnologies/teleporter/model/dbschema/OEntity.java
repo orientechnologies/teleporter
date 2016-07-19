@@ -509,7 +509,6 @@ public class OEntity implements Comparable<OEntity> {
   public boolean equals(Object obj) {
     OEntity that = (OEntity) obj;
     return this.name.equals(that.getName());
-
   }
 
 

@@ -40,7 +40,7 @@ public class OGraphModel {
     this.edgesType = new ArrayList<OEdgeType>();
   }
 
-  public OVertexType getVertexByName(String name) {
+  public OVertexType getVertexTypeByName(String name) {
     OVertexType vertex = null;
 
     for(OVertexType currentVertex: this.verticesType) {
@@ -52,7 +52,7 @@ public class OGraphModel {
     return vertex;
   }
 
-  public OVertexType getVertexByNameIgnoreCase(String name) {
+  public OVertexType getVertexTypeByNameIgnoreCase(String name) {
     OVertexType vertex = null;
 
     for(OVertexType currentVertex: this.verticesType) {

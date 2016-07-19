@@ -55,6 +55,7 @@ import java.util.*;
 
 public abstract class ODBMSImportStrategy implements OImportStrategy {
 
+  private OSource2GraphMapper mapper;
 
   public ODBMSImportStrategy() {}
 
@@ -81,8 +82,7 @@ public abstract class ODBMSImportStrategy implements OImportStrategy {
     OConfigurationManager confManager = new OConfigurationManager();
     ODocument config = confManager.loadConfiguration(outOrientGraphUri, configurationPath, context);
 
-    OSource2GraphMapper mapper = this
-        .createSchemaMapper(driver, uri, username, password, outOrientGraphUri, chosenMapper, xmlPath, nameResolver, handler,
+    this.mapper = this.createSchemaMapper(driver, uri, username, password, outOrientGraphUri, chosenMapper, xmlPath, nameResolver, handler,
             includedTables, excludedTables, config, context);
 
     // Step 4: Import
@@ -146,8 +146,6 @@ public abstract class ODBMSImportStrategy implements OImportStrategy {
           records = queryResult.getResult();
           ResultSet currentRecord = null;
 
-          // TODO: update mapping
-//          currentOutVertexType = mapper.getEntity2vertexType().get(currentEntity);
           currentOutVertexType = mapper.getVertexTypeByEntity(currentEntity);
 
           // each record is imported as vertex in the orient graph
@@ -164,8 +162,9 @@ public abstract class ODBMSImportStrategy implements OImportStrategy {
               currentParentEntity = mapper.getDataBaseSchema().getEntityByNameIgnoreCase(currentRelation.getParentEntity().getName());
 
               // checking if parent table belongs to a hierarchical bag
-              if(currentParentEntity.getHierarchicalBag() == null)
-                currentInVertexType = mapper.getVertexTypeByName(context.getNameResolver().resolveVertexName(currentRelation.getParentEntity().getName()));
+              if(currentParentEntity.getHierarchicalBag() == null) {
+                currentInVertexType = mapper.getVertexTypeByEntity(currentRelation.getParentEntity());
+              }
 
                 // if the parent entity belongs to hierarchical bag, we need to know which is it the more stringent subclass of the record with a certain id
               else {
@@ -194,7 +193,8 @@ public abstract class ODBMSImportStrategy implements OImportStrategy {
                   String physicalArrivalEntityName = physicalArrivalEntity.getName();
                   String physicalArrivalEntitySchemaName = physicalArrivalEntity.getSchemaName();
                   String currentArrivalEntityName = searchParentEntityType(currentParentEntity, propertyOfKey, valueOfKey, physicalArrivalEntityName, physicalArrivalEntitySchemaName, dbQueryEngine, context);
-                  currentInVertexType = mapper.getVertexTypeByName(context.getNameResolver().resolveVertexName(currentArrivalEntityName));
+                  OEntity currentArrivalEntity = mapper.getDataBaseSchema().getEntityByName(currentArrivalEntityName);
+                  currentInVertexType = mapper.getVertexTypeByEntity(currentArrivalEntity);
                 }
               }
 
@@ -268,8 +268,6 @@ public abstract class ODBMSImportStrategy implements OImportStrategy {
           records = queryResult1.getResult();
           currentRecord = null;
 
-          // TODO: update mapping
-//          currentOutVertexType = mapper.getEntity2vertexType().get(currentEntity);
           currentOutVertexType = mapper.getVertexTypeByEntity(currentEntity);
 
           // each record is imported as vertex in the orient graph
@@ -300,7 +298,8 @@ public abstract class ODBMSImportStrategy implements OImportStrategy {
             fullRecord = this.getFullRecordByAggregateTable(aggregateTableRecords, aggregateTablePropertyOfKey, valueOfKey,context);
 
             // record imported if is not present in OrientDB
-            Set<String> propertiesOfIndex = new LinkedHashSet<String>(Arrays.asList(aggregateTablePropertyOfKey));  // we need the key of the aggregate table, because we are working on it
+            Set<String> propertiesOfIndex = this.transformAggregateTablePropertyOfKey(aggregateTablePropertyOfKey, currentEntity);
+
             if(!graphDBCommandEngine.alreadyFullImportedInOrient(orientGraph, fullRecord, currentOutVertexType, propertiesOfIndex, context)) {
 
               currentOutVertex = (OrientVertex) graphDBCommandEngine.upsertVisitedVertex(orientGraph, fullRecord, currentOutVertexType, propertiesOfIndex, context);
@@ -313,8 +312,9 @@ public abstract class ODBMSImportStrategy implements OImportStrategy {
                 currentInVertexType = null; // reset for the current iteration
 
                 // checking if parent table belongs to a hierarchical bag
-                if(currentParentEntity.getHierarchicalBag() == null)
-                  currentInVertexType = mapper.getVertexTypeByName(context.getNameResolver().resolveVertexName(currentRelation.getParentEntity().getName()));
+                if(currentParentEntity.getHierarchicalBag() == null) {
+                  currentInVertexType = mapper.getVertexTypeByEntity(currentRelation.getParentEntity());
+                }
 
                   // if the parent entity belongs to hierarchical bag, we need to know which is it the more stringent subclass of the record with a certain id
                 else if(!currentEntity.getHierarchicalBag().equals(currentParentEntity.getHierarchicalBag())){
@@ -339,7 +339,8 @@ public abstract class ODBMSImportStrategy implements OImportStrategy {
                   }
                   if(ok) {
                     String currentArrivalEntityName = searchParentEntityType(currentParentEntity, propertyOfKey, valueOfKey, null, null, dbQueryEngine, context);
-                    currentInVertexType = mapper.getVertexTypeByName(context.getNameResolver().resolveVertexName(currentArrivalEntityName));
+                    OEntity currentArrivalEntity = mapper.getDataBaseSchema().getEntityByName(currentArrivalEntityName);
+                    currentInVertexType = mapper.getVertexTypeByEntity(currentArrivalEntity);
                   }
                 }
 
@@ -375,7 +376,6 @@ public abstract class ODBMSImportStrategy implements OImportStrategy {
   }
 
 
-
   /**
    * Performs import of all records of the entities contained in the hierarchical bag passed as parameter.
    * Adopted in case of "Table per Concrete Type" inheritance strategy.
@@ -409,8 +409,6 @@ public abstract class ODBMSImportStrategy implements OImportStrategy {
           records = queryResult.getResult();
           currentRecord = null;
 
-          // TODO: update mapping
-//          currentOutVertexType = mapper.getEntity2vertexType().get(currentEntity);
           currentOutVertexType = mapper.getVertexTypeByEntity(currentEntity);
 
           // each record is imported as vertex in the orient graph
@@ -426,7 +424,7 @@ public abstract class ODBMSImportStrategy implements OImportStrategy {
               propertyOfKey[k] = currentEntity.getPrimaryKey().getInvolvedAttributes().get(k).getName();
             }
 
-            Set<String> propertiesOfIndex = new LinkedHashSet<String>(Arrays.asList(propertyOfKey));  // we need the key of original table, because we are working on it
+            Set<String> propertiesOfIndex = this.transformAggregateTablePropertyOfKey(propertyOfKey, currentEntity);  // we need the key of original table, because we are working on it
 
             if(!graphDBCommandEngine.alreadyFullImportedInOrient(orientGraph, currentRecord, currentOutVertexType, propertiesOfIndex, context)) {
 
@@ -440,8 +438,9 @@ public abstract class ODBMSImportStrategy implements OImportStrategy {
                 currentInVertexType = null; // reset for the current iteration
 
                 // checking if parent table belongs to a hierarchical bag
-                if(currentParentEntity.getHierarchicalBag() == null)
-                  currentInVertexType = mapper.getVertexTypeByName(context.getNameResolver().resolveVertexName(currentRelation.getParentEntity().getName()));
+                if(currentParentEntity.getHierarchicalBag() == null) {
+                  currentInVertexType = mapper.getVertexTypeByEntity(currentRelation.getParentEntity());
+                }
 
                   // if the parent entity belongs to hierarchical bag, we need to know which is it the more stringent subclass of the record with a certain id
                 else if(!currentEntity.getHierarchicalBag().equals(currentParentEntity.getHierarchicalBag())) {
@@ -466,7 +465,8 @@ public abstract class ODBMSImportStrategy implements OImportStrategy {
                   }
                   if(ok) {
                     String currentArrivalEntityName = searchParentEntityType(currentParentEntity, propertyOfKey, valueOfKey, null, null, dbQueryEngine, context);
-                    currentInVertexType = mapper.getVertexTypeByName(context.getNameResolver().resolveVertexName(currentArrivalEntityName));
+                    OEntity currentArrivalEntity = mapper.getDataBaseSchema().getEntityByName(currentArrivalEntityName);
+                    currentInVertexType = mapper.getVertexTypeByEntity(currentArrivalEntity);
                   }
                 }
 
@@ -497,6 +497,16 @@ public abstract class ODBMSImportStrategy implements OImportStrategy {
     }
   }
 
+  private Set<String> transformAggregateTablePropertyOfKey(String[] aggregateTablePropertyOfKey, OEntity currentEntity) {
+    Set<String> propertiesOfKey = new LinkedHashSet<String>();
+
+    for(String tableKey: aggregateTablePropertyOfKey) {
+      String correspondentProperty = ((OER2GraphMapper)this.mapper).getPropertyNameByEntityAndAttribute(currentEntity, tableKey);
+      propertiesOfKey.add(correspondentProperty);
+    }
+
+    return propertiesOfKey;
+  }
 
   /**
    * @param currentParentEntity

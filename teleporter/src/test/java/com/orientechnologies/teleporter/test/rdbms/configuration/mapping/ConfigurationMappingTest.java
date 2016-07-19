@@ -228,8 +228,8 @@ public class ConfigurationMappingTest {
       /*
        *  Testing built graph model
        */
-      OVertexType employeeVertexType = mapper.getGraphModel().getVertexByName("Employee");
-      OVertexType projectVertexType = mapper.getGraphModel().getVertexByName("Project");
+      OVertexType employeeVertexType = mapper.getGraphModel().getVertexTypeByName("Employee");
+      OVertexType projectVertexType = mapper.getGraphModel().getVertexTypeByName("Project");
       OEdgeType worksAtProjectEdgeType = mapper.getGraphModel().getEdgeTypeByName("WorksAtProject");
       OEdgeType hasManagerEdgeType = mapper.getGraphModel().getEdgeTypeByName("HasManager");
 
@@ -533,8 +533,8 @@ public class ConfigurationMappingTest {
        *  Testing built graph model
        */
 
-      OVertexType employeeVertexType = mapper.getGraphModel().getVertexByName("Employee");
-      OVertexType projectVertexType = mapper.getGraphModel().getVertexByName("Project");
+      OVertexType employeeVertexType = mapper.getGraphModel().getVertexTypeByName("Employee");
+      OVertexType projectVertexType = mapper.getGraphModel().getVertexTypeByName("Project");
       OEdgeType hasEmployeeEdgeType = mapper.getGraphModel().getEdgeTypeByName("HasEmployee");
       OEdgeType hasProjectManagerEdgeType = mapper.getGraphModel().getEdgeTypeByName("HasProjectManager");
 
@@ -833,9 +833,9 @@ public class ConfigurationMappingTest {
        *  Testing built graph model
        */
 
-      OVertexType actorVertexType = mapper.getGraphModel().getVertexByName("Actor");
-      OVertexType filmVertexType = mapper.getGraphModel().getVertexByName("Film");
-      OVertexType actorFilmVertexType = mapper.getGraphModel().getVertexByName("ActorFilm");
+      OVertexType actorVertexType = mapper.getGraphModel().getVertexTypeByName("Actor");
+      OVertexType filmVertexType = mapper.getGraphModel().getVertexTypeByName("Film");
+      OVertexType actorFilmVertexType = mapper.getGraphModel().getVertexTypeByName("ActorFilm");
       OEdgeType performsLeftEdgeType = mapper.getGraphModel().getEdgeTypeByName("Performs-left");
       OEdgeType performsRightEdgeType = mapper.getGraphModel().getEdgeTypeByName("Performs-right");
 
@@ -976,9 +976,9 @@ public class ConfigurationMappingTest {
        *  Testing built graph model
        */
 
-      actorVertexType = mapper.getGraphModel().getVertexByName("Actor");
-      filmVertexType = mapper.getGraphModel().getVertexByName("Film");
-      actorFilmVertexType = mapper.getGraphModel().getVertexByName("ActorFilm");
+      actorVertexType = mapper.getGraphModel().getVertexTypeByName("Actor");
+      filmVertexType = mapper.getGraphModel().getVertexTypeByName("Film");
+      actorFilmVertexType = mapper.getGraphModel().getVertexTypeByName("ActorFilm");
       performsLeftEdgeType = mapper.getGraphModel().getEdgeTypeByName("Performs-left");
       performsRightEdgeType = mapper.getGraphModel().getEdgeTypeByName("Performs-right");
       OEdgeType performsEdgeType = mapper.getGraphModel().getEdgeTypeByName("Performs");
@@ -1279,9 +1279,9 @@ public class ConfigurationMappingTest {
        *  Testing built graph model
        */
 
-      OVertexType actorVertexType = mapper.getGraphModel().getVertexByName("Actor");
-      OVertexType filmVertexType = mapper.getGraphModel().getVertexByName("Film");
-      OVertexType filmActorVertexType = mapper.getGraphModel().getVertexByName("FilmActor");
+      OVertexType actorVertexType = mapper.getGraphModel().getVertexTypeByName("Actor");
+      OVertexType filmVertexType = mapper.getGraphModel().getVertexTypeByName("Film");
+      OVertexType filmActorVertexType = mapper.getGraphModel().getVertexTypeByName("FilmActor");
       OEdgeType performsLeftEdgeType = mapper.getGraphModel().getEdgeTypeByName("Performs-left");
       OEdgeType performsRightEdgeType = mapper.getGraphModel().getEdgeTypeByName("Performs-right");
 
@@ -1422,9 +1422,9 @@ public class ConfigurationMappingTest {
        *  Testing built graph model
        */
 
-      actorVertexType = mapper.getGraphModel().getVertexByName("Actor");
-      filmVertexType = mapper.getGraphModel().getVertexByName("Film");
-      filmActorVertexType = mapper.getGraphModel().getVertexByName("FilmActor");
+      actorVertexType = mapper.getGraphModel().getVertexTypeByName("Actor");
+      filmVertexType = mapper.getGraphModel().getVertexTypeByName("Film");
+      filmActorVertexType = mapper.getGraphModel().getVertexTypeByName("FilmActor");
       performsLeftEdgeType = mapper.getGraphModel().getEdgeTypeByName("Performs-left");
       performsRightEdgeType = mapper.getGraphModel().getEdgeTypeByName("Performs-right");
       OEdgeType performsEdgeType = mapper.getGraphModel().getEdgeTypeByName("Performs");
@@ -1723,9 +1723,9 @@ public class ConfigurationMappingTest {
        *  Testing built graph model
        */
 
-      OVertexType actorVertexType = mapper.getGraphModel().getVertexByName("Actor");
-      OVertexType filmVertexType = mapper.getGraphModel().getVertexByName("Film");
-      OVertexType actorFilmVertexType = mapper.getGraphModel().getVertexByName("ActorFilm");
+      OVertexType actorVertexType = mapper.getGraphModel().getVertexTypeByName("Actor");
+      OVertexType filmVertexType = mapper.getGraphModel().getVertexTypeByName("Film");
+      OVertexType actorFilmVertexType = mapper.getGraphModel().getVertexTypeByName("ActorFilm");
       OEdgeType performsLeftEdgeType = mapper.getGraphModel().getEdgeTypeByName("Performs-left");
       OEdgeType performsRightEdgeType = mapper.getGraphModel().getEdgeTypeByName("Performs-right");
 
@@ -1866,9 +1866,9 @@ public class ConfigurationMappingTest {
        *  Testing built graph model
        */
 
-      actorVertexType = mapper.getGraphModel().getVertexByName("Actor");
-      filmVertexType = mapper.getGraphModel().getVertexByName("Film");
-      actorFilmVertexType = mapper.getGraphModel().getVertexByName("ActorFilm");
+      actorVertexType = mapper.getGraphModel().getVertexTypeByName("Actor");
+      filmVertexType = mapper.getGraphModel().getVertexTypeByName("Film");
+      actorFilmVertexType = mapper.getGraphModel().getVertexTypeByName("ActorFilm");
       performsLeftEdgeType = mapper.getGraphModel().getEdgeTypeByName("Performs-left");
       performsRightEdgeType = mapper.getGraphModel().getEdgeTypeByName("Performs-right");
       OEdgeType performsEdgeType = mapper.getGraphModel().getEdgeTypeByName("Performs");
@@ -2169,9 +2169,9 @@ public class ConfigurationMappingTest {
        *  Testing built graph model
        */
 
-      OVertexType actorVertexType = mapper.getGraphModel().getVertexByName("Actor");
-      OVertexType filmVertexType = mapper.getGraphModel().getVertexByName("Film");
-      OVertexType filmActorVertexType = mapper.getGraphModel().getVertexByName("FilmActor");
+      OVertexType actorVertexType = mapper.getGraphModel().getVertexTypeByName("Actor");
+      OVertexType filmVertexType = mapper.getGraphModel().getVertexTypeByName("Film");
+      OVertexType filmActorVertexType = mapper.getGraphModel().getVertexTypeByName("FilmActor");
       OEdgeType featuresLeftEdgeType = mapper.getGraphModel().getEdgeTypeByName("Features-left");
       OEdgeType featuresRightEdgeType = mapper.getGraphModel().getEdgeTypeByName("Features-right");
 
@@ -2312,9 +2312,9 @@ public class ConfigurationMappingTest {
        *  Testing built graph model
        */
 
-      actorVertexType = mapper.getGraphModel().getVertexByName("Actor");
-      filmVertexType = mapper.getGraphModel().getVertexByName("Film");
-      filmActorVertexType = mapper.getGraphModel().getVertexByName("FilmActor");
+      actorVertexType = mapper.getGraphModel().getVertexTypeByName("Actor");
+      filmVertexType = mapper.getGraphModel().getVertexTypeByName("Film");
+      filmActorVertexType = mapper.getGraphModel().getVertexTypeByName("FilmActor");
       featuresLeftEdgeType = mapper.getGraphModel().getEdgeTypeByName("Features-left");
       featuresRightEdgeType = mapper.getGraphModel().getEdgeTypeByName("Features-right");
       OEdgeType featuresEdgeType = mapper.getGraphModel().getEdgeTypeByName("Features");

@@ -470,11 +470,11 @@ public class AggregationStrategyTest {
       /*
        *  Testing built graph model
        */
-      OVertexType employeeVertexType = mapper.getGraphModel().getVertexByName("Employee");
-      OVertexType departmentVertexType = mapper.getGraphModel().getVertexByName("Department");
-      OVertexType deptEmpVertexType = mapper.getGraphModel().getVertexByName("DeptEmp");
-      OVertexType deptManagerVertexType = mapper.getGraphModel().getVertexByName("DeptManager");
-      OVertexType branchVertexType = mapper.getGraphModel().getVertexByName("Branch");
+      OVertexType employeeVertexType = mapper.getGraphModel().getVertexTypeByName("Employee");
+      OVertexType departmentVertexType = mapper.getGraphModel().getVertexTypeByName("Department");
+      OVertexType deptEmpVertexType = mapper.getGraphModel().getVertexTypeByName("DeptEmp");
+      OVertexType deptManagerVertexType = mapper.getGraphModel().getVertexTypeByName("DeptManager");
+      OVertexType branchVertexType = mapper.getGraphModel().getVertexTypeByName("Branch");
       OEdgeType deptEdgeType = mapper.getGraphModel().getEdgeTypeByName("HasDept");
       OEdgeType empEdgeType = mapper.getGraphModel().getEdgeTypeByName("HasEmp");
 
@@ -513,11 +513,11 @@ public class AggregationStrategyTest {
       /*
        *  Testing built graph model
        */
-      employeeVertexType = mapper.getGraphModel().getVertexByName("Employee");
-      departmentVertexType = mapper.getGraphModel().getVertexByName("Department");
-      deptEmpVertexType = mapper.getGraphModel().getVertexByName("DeptEmp");
-      deptManagerVertexType = mapper.getGraphModel().getVertexByName("DeptManager");
-      branchVertexType = mapper.getGraphModel().getVertexByName("Branch");
+      employeeVertexType = mapper.getGraphModel().getVertexTypeByName("Employee");
+      departmentVertexType = mapper.getGraphModel().getVertexTypeByName("Department");
+      deptEmpVertexType = mapper.getGraphModel().getVertexTypeByName("DeptEmp");
+      deptManagerVertexType = mapper.getGraphModel().getVertexTypeByName("DeptManager");
+      branchVertexType = mapper.getGraphModel().getVertexTypeByName("Branch");
       deptEdgeType = mapper.getGraphModel().getEdgeTypeByName("HasDept");
       empEdgeType = mapper.getGraphModel().getEdgeTypeByName("HasEmp");
       OEdgeType deptEmpEdgeType = mapper.getGraphModel().getEdgeTypeByName("DeptEmp");

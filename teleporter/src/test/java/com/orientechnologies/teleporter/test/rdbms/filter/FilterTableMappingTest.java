@@ -264,10 +264,10 @@ public class FilterTableMappingTest {
        *  Testing built graph model
        */
 
-      OVertexType employeeVertexType = mapper.getGraphModel().getVertexByName("Employee");
-      OVertexType countryVertexType = mapper.getGraphModel().getVertexByName("Country");
-      OVertexType managerVertexType = mapper.getGraphModel().getVertexByName("Manager");
-      OVertexType residenceVertexType = mapper.getGraphModel().getVertexByName("Residence");
+      OVertexType employeeVertexType = mapper.getGraphModel().getVertexTypeByName("Employee");
+      OVertexType countryVertexType = mapper.getGraphModel().getVertexTypeByName("Country");
+      OVertexType managerVertexType = mapper.getGraphModel().getVertexTypeByName("Manager");
+      OVertexType residenceVertexType = mapper.getGraphModel().getVertexTypeByName("Residence");
 
 
       // vertices check
@@ -572,10 +572,10 @@ public class FilterTableMappingTest {
        *  Testing built graph model
        */
 
-      OVertexType employeeVertexType = mapper.getGraphModel().getVertexByName("Employee");
-      OVertexType countryVertexType = mapper.getGraphModel().getVertexByName("Country");
-      OVertexType managerVertexType = mapper.getGraphModel().getVertexByName("Manager");
-      OVertexType residenceVertexType = mapper.getGraphModel().getVertexByName("Residence");
+      OVertexType employeeVertexType = mapper.getGraphModel().getVertexTypeByName("Employee");
+      OVertexType countryVertexType = mapper.getGraphModel().getVertexTypeByName("Country");
+      OVertexType managerVertexType = mapper.getGraphModel().getVertexTypeByName("Manager");
+      OVertexType residenceVertexType = mapper.getGraphModel().getVertexTypeByName("Residence");
 
 
       // vertices check
@@ -1097,13 +1097,13 @@ public class FilterTableMappingTest {
        *  Testing built graph model
        */
 
-      OVertexType employeeVertexType = mapper.getGraphModel().getVertexByName("Employee");
-      OVertexType regularEmployeeVertexType = mapper.getGraphModel().getVertexByName("RegularEmployee");
-      OVertexType contractEmployeeVertexType = mapper.getGraphModel().getVertexByName("ContractEmployee");
-      OVertexType countryVertexType = mapper.getGraphModel().getVertexByName("Country");
-      OVertexType managerVertexType = mapper.getGraphModel().getVertexByName("Manager");
-      OVertexType projectManagerVertexType = mapper.getGraphModel().getVertexByName("ProjectManager");
-      OVertexType residenceVertexType = mapper.getGraphModel().getVertexByName("Residence");
+      OVertexType employeeVertexType = mapper.getGraphModel().getVertexTypeByName("Employee");
+      OVertexType regularEmployeeVertexType = mapper.getGraphModel().getVertexTypeByName("RegularEmployee");
+      OVertexType contractEmployeeVertexType = mapper.getGraphModel().getVertexTypeByName("ContractEmployee");
+      OVertexType countryVertexType = mapper.getGraphModel().getVertexTypeByName("Country");
+      OVertexType managerVertexType = mapper.getGraphModel().getVertexTypeByName("Manager");
+      OVertexType projectManagerVertexType = mapper.getGraphModel().getVertexTypeByName("ProjectManager");
+      OVertexType residenceVertexType = mapper.getGraphModel().getVertexTypeByName("Residence");
 
 
       // vertices check
@@ -1759,13 +1759,13 @@ public class FilterTableMappingTest {
        *  Testing built graph model
        */
 
-      OVertexType employeeVertexType = mapper.getGraphModel().getVertexByName("Employee");
-      OVertexType regularEmployeeVertexType = mapper.getGraphModel().getVertexByName("RegularEmployee");
-      OVertexType contractEmployeeVertexType = mapper.getGraphModel().getVertexByName("ContractEmployee");
-      OVertexType countryVertexType = mapper.getGraphModel().getVertexByName("Country");
-      OVertexType managerVertexType = mapper.getGraphModel().getVertexByName("Manager");
-      OVertexType projectManagerVertexType = mapper.getGraphModel().getVertexByName("ProjectManager");
-      OVertexType residenceVertexType = mapper.getGraphModel().getVertexByName("Residence");
+      OVertexType employeeVertexType = mapper.getGraphModel().getVertexTypeByName("Employee");
+      OVertexType regularEmployeeVertexType = mapper.getGraphModel().getVertexTypeByName("RegularEmployee");
+      OVertexType contractEmployeeVertexType = mapper.getGraphModel().getVertexTypeByName("ContractEmployee");
+      OVertexType countryVertexType = mapper.getGraphModel().getVertexTypeByName("Country");
+      OVertexType managerVertexType = mapper.getGraphModel().getVertexTypeByName("Manager");
+      OVertexType projectManagerVertexType = mapper.getGraphModel().getVertexTypeByName("ProjectManager");
+      OVertexType residenceVertexType = mapper.getGraphModel().getVertexTypeByName("Residence");
 
 
       // vertices check
@@ -2416,13 +2416,13 @@ public class FilterTableMappingTest {
        *  Testing built graph model
        */
 
-      OVertexType employeeVertexType = mapper.getGraphModel().getVertexByName("Employee");
-      OVertexType regularEmployeeVertexType = mapper.getGraphModel().getVertexByName("RegularEmployee");
-      OVertexType contractEmployeeVertexType = mapper.getGraphModel().getVertexByName("ContractEmployee");
-      OVertexType countryVertexType = mapper.getGraphModel().getVertexByName("Country");
-      OVertexType managerVertexType = mapper.getGraphModel().getVertexByName("Manager");
-      OVertexType projectManagerVertexType = mapper.getGraphModel().getVertexByName("ProjectManager");
-      OVertexType residenceVertexType = mapper.getGraphModel().getVertexByName("Residence");
+      OVertexType employeeVertexType = mapper.getGraphModel().getVertexTypeByName("Employee");
+      OVertexType regularEmployeeVertexType = mapper.getGraphModel().getVertexTypeByName("RegularEmployee");
+      OVertexType contractEmployeeVertexType = mapper.getGraphModel().getVertexTypeByName("ContractEmployee");
+      OVertexType countryVertexType = mapper.getGraphModel().getVertexTypeByName("Country");
+      OVertexType managerVertexType = mapper.getGraphModel().getVertexTypeByName("Manager");
+      OVertexType projectManagerVertexType = mapper.getGraphModel().getVertexTypeByName("ProjectManager");
+      OVertexType residenceVertexType = mapper.getGraphModel().getVertexTypeByName("Residence");
 
 
       // vertices check
@@ -3070,13 +3070,13 @@ public class FilterTableMappingTest {
        *  Testing built graph model
        */
 
-      OVertexType employeeVertexType = mapper.getGraphModel().getVertexByName("Employee");
-      OVertexType regularEmployeeVertexType = mapper.getGraphModel().getVertexByName("RegularEmployee");
-      OVertexType contractEmployeeVertexType = mapper.getGraphModel().getVertexByName("ContractEmployee");
-      OVertexType countryVertexType = mapper.getGraphModel().getVertexByName("Country");
-      OVertexType managerVertexType = mapper.getGraphModel().getVertexByName("Manager");
-      OVertexType projectManagerVertexType = mapper.getGraphModel().getVertexByName("ProjectManager");
-      OVertexType residenceVertexType = mapper.getGraphModel().getVertexByName("Residence");
+      OVertexType employeeVertexType = mapper.getGraphModel().getVertexTypeByName("Employee");
+      OVertexType regularEmployeeVertexType = mapper.getGraphModel().getVertexTypeByName("RegularEmployee");
+      OVertexType contractEmployeeVertexType = mapper.getGraphModel().getVertexTypeByName("ContractEmployee");
+      OVertexType countryVertexType = mapper.getGraphModel().getVertexTypeByName("Country");
+      OVertexType managerVertexType = mapper.getGraphModel().getVertexTypeByName("Manager");
+      OVertexType projectManagerVertexType = mapper.getGraphModel().getVertexTypeByName("ProjectManager");
+      OVertexType residenceVertexType = mapper.getGraphModel().getVertexTypeByName("Residence");
 
 
       // vertices check

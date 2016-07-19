@@ -71,7 +71,7 @@ public class ODBMSNaiveStrategy extends ODBMSImportStrategy {
     mapper.buildSourceDatabaseSchema(context);
     context.getStatistics().notifyListeners();
     context.getOutputManager().info("\n");
-    context.getOutputManager().debug("\n%s\n", mapper.getSourceSchema().toString());
+    context.getOutputManager().debug("\n%s\n", ((OER2GraphMapper)mapper).getDataBaseSchema().toString());
 
     // Step 2: Graph model building
     mapper.buildGraphModel(nameResolver, context);
@@ -162,8 +162,6 @@ public class ODBMSNaiveStrategy extends ODBMSImportStrategy {
           records = queryResult.getResult();
           ResultSet currentRecord = null;
 
-          // TODO: update mapping
-//          currentOutVertexType = mapper.getEntity2vertexType().get(entity);
           currentOutVertexType = mapper.getVertexTypeByEntity(entity);
 
           // each record is imported as vertex in the orient graph
@@ -176,8 +174,6 @@ public class ODBMSNaiveStrategy extends ODBMSImportStrategy {
             // for each attribute of the entity belonging to the primary key, correspondent relationship is
             // built as edge and for the referenced record a vertex is built (only id)
             for(ORelationship currentRelationship: entity.getOutRelationships()) {
-              // TODO: update mapping
-//              currentInVertexType = mapper.getVertexTypeByName(context.getNameResolver().resolveVertexName(currentRelationship.getParentEntity()));
               OEntity currentParentEntity = mapper.getDataBaseSchema().getEntityByName(currentRelationship.getParentEntity().getName());
               currentInVertexType = mapper.getVertexTypeByEntity(currentParentEntity);
 

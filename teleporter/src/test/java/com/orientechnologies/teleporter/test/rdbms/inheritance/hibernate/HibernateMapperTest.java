@@ -331,10 +331,10 @@ public class HibernateMapperTest {
        *  Testing built graph model
        */
 
-      OVertexType employeeVertexType = mapper.getGraphModel().getVertexByName("Employee");
-      OVertexType regularEmployeeVertexType = mapper.getGraphModel().getVertexByName("RegularEmployee");
-      OVertexType contractEmployeeVertexType = mapper.getGraphModel().getVertexByName("ContractEmployee");
-      OVertexType residenceVertexType = mapper.getGraphModel().getVertexByName("Residence");
+      OVertexType employeeVertexType = mapper.getGraphModel().getVertexTypeByName("Employee");
+      OVertexType regularEmployeeVertexType = mapper.getGraphModel().getVertexTypeByName("RegularEmployee");
+      OVertexType contractEmployeeVertexType = mapper.getGraphModel().getVertexTypeByName("ContractEmployee");
+      OVertexType residenceVertexType = mapper.getGraphModel().getVertexTypeByName("Residence");
 
 
       // vertices check
@@ -793,10 +793,10 @@ public class HibernateMapperTest {
        *  Testing built graph model
        */
 
-      OVertexType employeeVertexType = mapper.getGraphModel().getVertexByName("Employee");
-      OVertexType regularEmployeeVertexType = mapper.getGraphModel().getVertexByName("RegularEmployee");
-      OVertexType contractEmployeeVertexType = mapper.getGraphModel().getVertexByName("ContractEmployee");
-      OVertexType residenceVertexType = mapper.getGraphModel().getVertexByName("Residence");
+      OVertexType employeeVertexType = mapper.getGraphModel().getVertexTypeByName("Employee");
+      OVertexType regularEmployeeVertexType = mapper.getGraphModel().getVertexTypeByName("RegularEmployee");
+      OVertexType contractEmployeeVertexType = mapper.getGraphModel().getVertexTypeByName("ContractEmployee");
+      OVertexType residenceVertexType = mapper.getGraphModel().getVertexTypeByName("Residence");
 
 
       // vertices check
@@ -1253,10 +1253,10 @@ public class HibernateMapperTest {
        *  Testing built graph model
        */
 
-      OVertexType employeeVertexType = mapper.getGraphModel().getVertexByName("Employee");
-      OVertexType regularEmployeeVertexType = mapper.getGraphModel().getVertexByName("RegularEmployee");
-      OVertexType contractEmployeeVertexType = mapper.getGraphModel().getVertexByName("ContractEmployee");
-      OVertexType residenceVertexType = mapper.getGraphModel().getVertexByName("Residence");
+      OVertexType employeeVertexType = mapper.getGraphModel().getVertexTypeByName("Employee");
+      OVertexType regularEmployeeVertexType = mapper.getGraphModel().getVertexTypeByName("RegularEmployee");
+      OVertexType contractEmployeeVertexType = mapper.getGraphModel().getVertexTypeByName("ContractEmployee");
+      OVertexType residenceVertexType = mapper.getGraphModel().getVertexTypeByName("Residence");
 
 
       // vertices check
@@ -1691,10 +1691,10 @@ public class HibernateMapperTest {
        *  Testing built graph model
        */
 
-      OVertexType employeeVertexType = mapper.getGraphModel().getVertexByName("Employee");
-      OVertexType regularEmployeeVertexType = mapper.getGraphModel().getVertexByName("RegularEmployee");
-      OVertexType contractEmployeeVertexType = mapper.getGraphModel().getVertexByName("ContractEmployee");
-      OVertexType residenceVertexType = mapper.getGraphModel().getVertexByName("Residence");
+      OVertexType employeeVertexType = mapper.getGraphModel().getVertexTypeByName("Employee");
+      OVertexType regularEmployeeVertexType = mapper.getGraphModel().getVertexTypeByName("RegularEmployee");
+      OVertexType contractEmployeeVertexType = mapper.getGraphModel().getVertexTypeByName("ContractEmployee");
+      OVertexType residenceVertexType = mapper.getGraphModel().getVertexTypeByName("Residence");
 
 
       // vertices check

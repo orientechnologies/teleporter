@@ -93,7 +93,18 @@ public class OClassMapper {
         if (!vertexType.equals(that.vertexType)) return false;
         if (!attribute2property.equals(that.attribute2property)) return false;
         return property2attribute.equals(that.property2attribute);
-
     }
 
+    @Override
+    public String toString() {
+        String s = "{" + "Entity = " + entity.getName() + ", Vertex-Type = " + vertexType.getName() + ", attributes2properties: ";
+
+        s += "[";
+        for(String attribute: this.attribute2property.keySet()) {
+            s += attribute + " --> " + attribute2property.get(attribute) + ", ";
+        }
+        s = s.substring(0, s.length()-1);
+        s += "]}";
+        return s;
+    }
 }

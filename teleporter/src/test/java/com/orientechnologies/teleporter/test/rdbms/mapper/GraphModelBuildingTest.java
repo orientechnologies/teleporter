@@ -99,8 +99,8 @@ public class GraphModelBuildingTest {
       /*
        *  Testing built graph model
        */
-      OVertexType authorVertexType = mapper.getGraphModel().getVertexByName("BookAuthor");
-      OVertexType bookVertexType = mapper.getGraphModel().getVertexByName("Book");
+      OVertexType authorVertexType = mapper.getGraphModel().getVertexTypeByName("BookAuthor");
+      OVertexType bookVertexType = mapper.getGraphModel().getVertexTypeByName("Book");
       OEdgeType authorEdgeType = mapper.getGraphModel().getEdgeTypeByName("HasAuthor");
 
       // vertices check
@@ -224,9 +224,9 @@ public class GraphModelBuildingTest {
       /*
        *  Testing built graph model
        */
-      OVertexType authorVertexType = mapper.getGraphModel().getVertexByName("Author");
-      OVertexType bookVertexType = mapper.getGraphModel().getVertexByName("Book");
-      OVertexType itemVertexType = mapper.getGraphModel().getVertexByName("Item");
+      OVertexType authorVertexType = mapper.getGraphModel().getVertexTypeByName("Author");
+      OVertexType bookVertexType = mapper.getGraphModel().getVertexTypeByName("Book");
+      OVertexType itemVertexType = mapper.getGraphModel().getVertexTypeByName("Item");
       OEdgeType authorEdgeType = mapper.getGraphModel().getEdgeTypeByName("HasAuthor");
       OEdgeType bookEdgeType = mapper.getGraphModel().getEdgeTypeByName("HasBook");
 
@@ -378,9 +378,9 @@ public class GraphModelBuildingTest {
       /*
        *  Testing built graph model
        */
-      OVertexType authorVertexType = mapper.getGraphModel().getVertexByName("Author");
-      OVertexType bookVertexType = mapper.getGraphModel().getVertexByName("Book");
-      OVertexType articleVertexType = mapper.getGraphModel().getVertexByName("Article");
+      OVertexType authorVertexType = mapper.getGraphModel().getVertexTypeByName("Author");
+      OVertexType bookVertexType = mapper.getGraphModel().getVertexTypeByName("Book");
+      OVertexType articleVertexType = mapper.getGraphModel().getVertexTypeByName("Article");
       OEdgeType authorEdgeType = mapper.getGraphModel().getEdgeTypeByName("HasAuthor");
 
       // vertices check
@@ -528,8 +528,8 @@ public class GraphModelBuildingTest {
       /*
        *  Testing built graph model
        */
-      OVertexType authorVertexType = mapper.getGraphModel().getVertexByName("Author");
-      OVertexType bookVertexType = mapper.getGraphModel().getVertexByName("Book");
+      OVertexType authorVertexType = mapper.getGraphModel().getVertexTypeByName("Author");
+      OVertexType bookVertexType = mapper.getGraphModel().getVertexTypeByName("Book");
       OEdgeType authorEdgeType = mapper.getGraphModel().getEdgeTypeByName("Book2Author");
 
       // vertices check
@@ -660,9 +660,9 @@ public class GraphModelBuildingTest {
       /*
        *  Testing built graph model
        */
-      OVertexType actorVertexType = mapper.getGraphModel().getVertexByName("Actor");
-      OVertexType filmVertexType = mapper.getGraphModel().getVertexByName("Film");
-      OVertexType film2actorVertexType = mapper.getGraphModel().getVertexByName("FilmActor");
+      OVertexType actorVertexType = mapper.getGraphModel().getVertexTypeByName("Actor");
+      OVertexType filmVertexType = mapper.getGraphModel().getVertexTypeByName("Film");
+      OVertexType film2actorVertexType = mapper.getGraphModel().getVertexTypeByName("FilmActor");
       OEdgeType actorEdgeType = mapper.getGraphModel().getEdgeTypeByName("HasActor");
       OEdgeType filmEdgeType = mapper.getGraphModel().getEdgeTypeByName("HasFilm");
 
@@ -806,8 +806,8 @@ public class GraphModelBuildingTest {
       /*
        *  Testing built graph model
        */
-      OVertexType employeeVertexType = mapper.getGraphModel().getVertexByName("Employee");
-      OVertexType projectVertexType = mapper.getGraphModel().getVertexByName("Project");
+      OVertexType employeeVertexType = mapper.getGraphModel().getVertexTypeByName("Employee");
+      OVertexType projectVertexType = mapper.getGraphModel().getVertexTypeByName("Project");
       OEdgeType projectManagerEdgeType = mapper.getGraphModel().getEdgeTypeByName("HasProjectManager");
       OEdgeType mgrEdgeType = mapper.getGraphModel().getEdgeTypeByName("HasMgr");
 
