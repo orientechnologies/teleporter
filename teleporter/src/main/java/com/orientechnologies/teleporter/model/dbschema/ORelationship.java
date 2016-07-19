@@ -29,40 +29,40 @@ package com.orientechnologies.teleporter.model.dbschema;
 
 public class ORelationship {
 
-  private String foreignEntityName;				// Entity importing the key (starting entity)
-  private String parentEntityName;				// Entity exporting the key (arrival entity)
+  private OEntity foreignEntity;				// Entity importing the key (starting entity)
+  private OEntity parentEntity;				// Entity exporting the key (arrival entity)
   private OForeignKey foreignKey;
   private OPrimaryKey primaryKey;
   private String direction;               // represents the direction of the relationship
 
-  public ORelationship(String foreignEntityName, String parentEntityName) {
-    this.foreignEntityName = foreignEntityName;
-    this.parentEntityName = parentEntityName;
+  public ORelationship(OEntity foreignEntity, OEntity parentEntity) {
+    this.foreignEntity = foreignEntity;
+    this.parentEntity = parentEntity;
     this.direction = "direct";
   }
 
-  public ORelationship(String foreignEntityName, String parentEntityName, OForeignKey foreignKey, OPrimaryKey primaryKey) {
-    this.foreignEntityName = foreignEntityName;
-    this.parentEntityName = parentEntityName;
+  public ORelationship(OEntity foreignEntity, OEntity parentEntity, OForeignKey foreignKey, OPrimaryKey primaryKey) {
+    this.foreignEntity = foreignEntity;
+    this.parentEntity = parentEntity;
     this.foreignKey = foreignKey;
     this.primaryKey = primaryKey;
     this.direction = "direct";
   }
 
-  public String getForeignEntityName() {
-    return this.foreignEntityName;
+  public OEntity getForeignEntity() {
+    return this.foreignEntity;
   }
 
-  public void setForeignEntityName(String foreignEntityName) {
-    this.foreignEntityName = foreignEntityName;
+  public void setForeignEntity(OEntity foreignEntity) {
+    this.foreignEntity = foreignEntity;
   }
 
-  public String getParentEntityName() {
-    return this.parentEntityName;
+  public OEntity getParentEntity() {
+    return this.parentEntity;
   }
 
-  public void setParentEntityName(String parentEntityName) {
-    this.parentEntityName = parentEntityName;
+  public void setParentEntity(OEntity parentEntity) {
+    this.parentEntity = parentEntity;
   }
 
   public OForeignKey getForeignKey() {
@@ -93,15 +93,15 @@ public class ORelationship {
   public int hashCode() {
     final int prime = 31;
     int result = 1;
-    result = prime * result + ((foreignEntityName == null) ? 0 : foreignEntityName.hashCode());
-    result = prime * result + ((parentEntityName == null) ? 0 : parentEntityName.hashCode());
+    result = prime * result + ((foreignEntity == null) ? 0 : foreignEntity.hashCode());
+    result = prime * result + ((parentEntity == null) ? 0 : parentEntity.hashCode());
     return result;
   }
 
   @Override
   public boolean equals(Object obj) {
     ORelationship that = (ORelationship) obj;
-    if(this.foreignEntityName.equals(that.getForeignEntityName()) && this.parentEntityName.equals(that.getParentEntityName())) {
+    if(this.foreignEntity.equals(that.getForeignEntity()) && this.parentEntity.equals(that.getParentEntity())) {
       if(this.foreignKey.equals(that.getForeignKey()) && this.primaryKey.equals(that.getPrimaryKey())) {
         return true;
       }
@@ -111,7 +111,7 @@ public class ORelationship {
 
   @Override
   public String toString() {
-    return "ORelationship [foreignEntityName=" + foreignEntityName + ", parentEntityName=" + parentEntityName
+    return "ORelationship [foreignEntity=" + foreignEntity.getName() + ", parentEntity=" + parentEntity.getName()
         + ", Foreign key=" + this.foreignKey.toString() + ", Primary key=" + this.primaryKey.toString() + "]";
   }
 

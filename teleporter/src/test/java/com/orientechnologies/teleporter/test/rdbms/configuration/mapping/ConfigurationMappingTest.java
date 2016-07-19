@@ -194,8 +194,8 @@ public class ConfigurationMappingTest {
 
       Iterator<ORelationship> it = projectEntity.getOutRelationships().iterator();
       ORelationship currentRelationship = it.next();
-      assertEquals("EMPLOYEE", currentRelationship.getParentEntityName());
-      assertEquals("PROJECT", currentRelationship.getForeignEntityName());
+      assertEquals("EMPLOYEE", currentRelationship.getParentEntity().getName());
+      assertEquals("PROJECT", currentRelationship.getForeignEntity().getName());
       assertEquals(employeeEntity.getPrimaryKey(), currentRelationship.getPrimaryKey());
       assertEquals(projectEntity.getForeignKeys().get(0), currentRelationship.getForeignKey());
 
@@ -210,8 +210,8 @@ public class ConfigurationMappingTest {
 
       it = employeeEntity.getOutRelationships().iterator();
       currentRelationship = it.next();
-      assertEquals("PROJECT", currentRelationship.getParentEntityName());
-      assertEquals("EMPLOYEE", currentRelationship.getForeignEntityName());
+      assertEquals("PROJECT", currentRelationship.getParentEntity().getName());
+      assertEquals("EMPLOYEE", currentRelationship.getForeignEntity().getName());
       assertEquals(projectEntity.getPrimaryKey(), currentRelationship.getPrimaryKey());
       assertEquals(employeeEntity.getForeignKeys().get(0), currentRelationship.getForeignKey());
 
@@ -498,8 +498,8 @@ public class ConfigurationMappingTest {
 
       Iterator<ORelationship> it = projectEntity.getOutRelationships().iterator();
       ORelationship currentRelationship = it.next();
-      assertEquals("EMPLOYEE", currentRelationship.getParentEntityName());
-      assertEquals("PROJECT", currentRelationship.getForeignEntityName());
+      assertEquals("EMPLOYEE", currentRelationship.getParentEntity().getName());
+      assertEquals("PROJECT", currentRelationship.getForeignEntity().getName());
       assertEquals(employeeEntity.getPrimaryKey(), currentRelationship.getPrimaryKey());
       assertEquals(projectEntity.getForeignKeys().get(0), currentRelationship.getForeignKey());
 
@@ -514,8 +514,8 @@ public class ConfigurationMappingTest {
 
       it = employeeEntity.getOutRelationships().iterator();
       currentRelationship = it.next();
-      assertEquals("PROJECT", currentRelationship.getParentEntityName());
-      assertEquals("EMPLOYEE", currentRelationship.getForeignEntityName());
+      assertEquals("PROJECT", currentRelationship.getParentEntity().getName());
+      assertEquals("EMPLOYEE", currentRelationship.getForeignEntity().getName());
       assertEquals(projectEntity.getPrimaryKey(), currentRelationship.getPrimaryKey());
       assertEquals(employeeEntity.getForeignKeys().get(0), currentRelationship.getForeignKey());
 
@@ -802,8 +802,8 @@ public class ConfigurationMappingTest {
 
       Iterator<ORelationship> it = actorFilmEntity.getOutRelationships().iterator();
       ORelationship currentRelationship = it.next();
-      assertEquals("ACTOR", currentRelationship.getParentEntityName());
-      assertEquals("ACTOR_FILM", currentRelationship.getForeignEntityName());
+      assertEquals("ACTOR", currentRelationship.getParentEntity().getName());
+      assertEquals("ACTOR_FILM", currentRelationship.getForeignEntity().getName());
       assertEquals(actorEntity.getPrimaryKey(), currentRelationship.getPrimaryKey());
       assertEquals(actorFilmEntity.getForeignKeys().get(0), currentRelationship.getForeignKey());
 
@@ -815,8 +815,8 @@ public class ConfigurationMappingTest {
       assertEquals("ID", actorEntity.getPrimaryKey().getInvolvedAttributes().get(0).getName());
 
       currentRelationship = it.next();
-      assertEquals("FILM", currentRelationship.getParentEntityName());
-      assertEquals("ACTOR_FILM", currentRelationship.getForeignEntityName());
+      assertEquals("FILM", currentRelationship.getParentEntity().getName());
+      assertEquals("ACTOR_FILM", currentRelationship.getForeignEntity().getName());
       assertEquals(filmEntity.getPrimaryKey(), currentRelationship.getPrimaryKey());
       assertEquals(actorFilmEntity.getForeignKeys().get(1), currentRelationship.getForeignKey());
 
@@ -1247,8 +1247,8 @@ public class ConfigurationMappingTest {
 
       Iterator<ORelationship> it = filmActorEntity.getOutRelationships().iterator();
       ORelationship currentRelationship = it.next();
-      assertEquals("FILM", currentRelationship.getParentEntityName());
-      assertEquals("FILM_ACTOR", currentRelationship.getForeignEntityName());
+      assertEquals("FILM", currentRelationship.getParentEntity().getName());
+      assertEquals("FILM_ACTOR", currentRelationship.getForeignEntity().getName());
       assertEquals(filmEntity.getPrimaryKey(), currentRelationship.getPrimaryKey());
       assertEquals(filmActorEntity.getForeignKeys().get(0), currentRelationship.getForeignKey());
 
@@ -1261,8 +1261,8 @@ public class ConfigurationMappingTest {
 
       currentRelationship = it.next();
 
-      assertEquals("ACTOR", currentRelationship.getParentEntityName());
-      assertEquals("FILM_ACTOR", currentRelationship.getForeignEntityName());
+      assertEquals("ACTOR", currentRelationship.getParentEntity().getName());
+      assertEquals("FILM_ACTOR", currentRelationship.getForeignEntity().getName());
       assertEquals(actorEntity.getPrimaryKey(), currentRelationship.getPrimaryKey());
       assertEquals(filmActorEntity.getForeignKeys().get(1), currentRelationship.getForeignKey());
 
@@ -1692,8 +1692,8 @@ public class ConfigurationMappingTest {
 
       Iterator<ORelationship> it = actorFilmEntity.getOutRelationships().iterator();
       ORelationship currentRelationship = it.next();
-      assertEquals("ACTOR", currentRelationship.getParentEntityName());
-      assertEquals("ACTOR_FILM", currentRelationship.getForeignEntityName());
+      assertEquals("ACTOR", currentRelationship.getParentEntity().getName());
+      assertEquals("ACTOR_FILM", currentRelationship.getForeignEntity().getName());
       assertEquals(actorEntity.getPrimaryKey(), currentRelationship.getPrimaryKey());
       assertEquals(actorFilmEntity.getForeignKeys().get(0), currentRelationship.getForeignKey());
 
@@ -1705,8 +1705,8 @@ public class ConfigurationMappingTest {
       assertEquals("ID", actorEntity.getPrimaryKey().getInvolvedAttributes().get(0).getName());
 
       currentRelationship = it.next();
-      assertEquals("FILM", currentRelationship.getParentEntityName());
-      assertEquals("ACTOR_FILM", currentRelationship.getForeignEntityName());
+      assertEquals("FILM", currentRelationship.getParentEntity().getName());
+      assertEquals("ACTOR_FILM", currentRelationship.getForeignEntity().getName());
       assertEquals(filmEntity.getPrimaryKey(), currentRelationship.getPrimaryKey());
       assertEquals(actorFilmEntity.getForeignKeys().get(1), currentRelationship.getForeignKey());
 
@@ -2137,8 +2137,8 @@ public class ConfigurationMappingTest {
 
       Iterator<ORelationship> it = filmActorEntity.getOutRelationships().iterator();
       ORelationship currentRelationship = it.next();
-      assertEquals("ACTOR", currentRelationship.getParentEntityName());
-      assertEquals("FILM_ACTOR", currentRelationship.getForeignEntityName());
+      assertEquals("ACTOR", currentRelationship.getParentEntity().getName());
+      assertEquals("FILM_ACTOR", currentRelationship.getForeignEntity().getName());
       assertEquals(actorEntity.getPrimaryKey(), currentRelationship.getPrimaryKey());
       assertEquals(filmActorEntity.getForeignKeys().get(0), currentRelationship.getForeignKey());
 
@@ -2151,8 +2151,8 @@ public class ConfigurationMappingTest {
 
       currentRelationship = it.next();
 
-      assertEquals("FILM", currentRelationship.getParentEntityName());
-      assertEquals("FILM_ACTOR", currentRelationship.getForeignEntityName());
+      assertEquals("FILM", currentRelationship.getParentEntity().getName());
+      assertEquals("FILM_ACTOR", currentRelationship.getForeignEntity().getName());
       assertEquals(filmEntity.getPrimaryKey(), currentRelationship.getPrimaryKey());
       assertEquals(filmActorEntity.getForeignKeys().get(1), currentRelationship.getForeignKey());
 

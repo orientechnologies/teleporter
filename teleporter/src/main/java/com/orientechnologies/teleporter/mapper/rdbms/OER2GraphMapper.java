@@ -396,7 +396,8 @@ public class OER2GraphMapper extends OSource2GraphMapper {
         int currentKeySeq = Integer.parseInt(currentExternalRow.get("key_seq"));
 
         // building each single relationship from each correspondent foreign key
-        ORelationship currentRelationship = new ORelationship(currentForeignEntityName, currentParentTableName);
+        OEntity currentParentTable = this.dataBaseSchema.getEntityByName(currentParentTableName);
+        ORelationship currentRelationship = new ORelationship(currentForeignEntity, currentParentTable);
         OForeignKey currentFk = new OForeignKey(currentForeignEntity);
         while(it2.hasNext()) {
           LinkedHashMap<String,String> row = it2.next();
@@ -448,7 +449,7 @@ public class OER2GraphMapper extends OSource2GraphMapper {
     context.getOutputManager().debug("\nConnecting IN relationships...\n");
 
     for(ORelationship currentRelationship: this.dataBaseSchema.getRelationships()) {
-      OEntity currentInEntity = this.getDataBaseSchema().getEntityByName(currentRelationship.getParentEntityName());
+      OEntity currentInEntity = this.getDataBaseSchema().getEntityByName(currentRelationship.getParentEntity().getName());
       currentInEntity.getInRelationships().add(currentRelationship);
     }
     context.getOutputManager().debug("\nIN relationships built.\n");
@@ -656,8 +657,10 @@ public class OER2GraphMapper extends OSource2GraphMapper {
         for(ORelationship relationship: currentEntity.getOutRelationships()) {
 
           // TODO: update mapping
-          OVertexType currentOutVertex = this.graphModel.getVertexByName(nameResolver.resolveVertexName(relationship.getForeignEntityName()));
-          OVertexType currentInVertex = this.graphModel.getVertexByName(nameResolver.resolveVertexName(relationship.getParentEntityName()));
+//          OVertexType currentOutVertex = this.graphModel.getVertexByName(nameResolver.resolveVertexName(relationship.getForeignEntity().getName()));
+          OVertexType currentOutVertex = this.getVertexTypeByEntity(relationship.getForeignEntity());
+//          OVertexType currentInVertex = this.graphModel.getVertexByName(nameResolver.resolveVertexName(relationship.getParentEntity().getName()));
+          OVertexType currentInVertex = this.getVertexTypeByEntity(relationship.getParentEntity());
           context.getOutputManager().debug("\nBuilding edge-type from '%s' to '%s' (%s/%s)...\n", currentOutVertex.getName(), currentInVertex.getName(), iteration, numberOfEdgeType);
 
           if(currentOutVertex != null && currentInVertex != null) {
@@ -670,7 +673,7 @@ public class OER2GraphMapper extends OSource2GraphMapper {
               // relationships which represents inheritance between different entities don't generate new edge-types,
               // thus new edge type is created iff the parent-table's name (of the relationship) does not coincide
               // with the name of the parent entity of the current entity.
-              if (currentEntity.getParentEntity() == null || !currentEntity.getParentEntity().getName().equals(relationship.getParentEntityName())) {
+              if (currentEntity.getParentEntity() == null || !currentEntity.getParentEntity().getName().equals(relationship.getParentEntity().getName())) {
 
                 // if the class edge doesn't exists, it will be created
                 edgeType = nameResolver.resolveEdgeName(relationship);
@@ -710,8 +713,11 @@ public class OER2GraphMapper extends OSource2GraphMapper {
 
         for(ORelationship relationship: currentEntity.getInheritedOutRelationships()) {
           // TODO: update mapping
-          OVertexType currentOutVertex = this.graphModel.getVertexByName(nameResolver.resolveVertexName(currentEntity.getName()));
-          OVertexType currentInVertex = this.graphModel.getVertexByName(nameResolver.resolveVertexName(relationship.getParentEntityName()));
+//          OVertexType currentOutVertex = this.graphModel.getVertexByName(nameResolver.resolveVertexName(currentEntity.getName()));
+          OVertexType currentOutVertex = this.getVertexTypeByEntity(currentEntity);
+          //          OVertexType currentInVertex = this.graphModel.getVertexByName(nameResolver.resolveVertexName(relationship.getParentEntity().getName()));
+          OVertexType currentInVertex = this.getVertexTypeByEntity(relationship.getParentEntity());
+
           context.getOutputManager().debug("\nBuilding edge-type from '%s' to '%s' (%s/%s)...\n", currentOutVertex.getName(), currentInVertex.getName(), iteration, numberOfEdgeType);
 
           if(currentOutVertex != null && currentInVertex != null) {
@@ -916,9 +922,9 @@ public class OER2GraphMapper extends OSource2GraphMapper {
 
     // fetch relationship from current db schema, if not present create a new one
     boolean relationshipAlreadyPresentInDBSchema = true;
-    ORelationship currentRelationship = this.dataBaseSchema.getRelationshipByInvolvedEntitiesAndAttributes(currentForeignEntityName, currentParentEntityName, fromColumns, toColumns);
+    ORelationship currentRelationship = this.dataBaseSchema.getRelationshipByInvolvedEntitiesAndAttributes(currentForeignEntity, currentParentEntity, fromColumns, toColumns);
     if (currentRelationship == null) {
-      currentRelationship = new ORelationship(currentForeignEntityName, currentParentEntityName);
+      currentRelationship = new ORelationship(currentForeignEntity, currentParentEntity);
       relationshipAlreadyPresentInDBSchema = false;
 
       // updating statistics
@@ -933,8 +939,8 @@ public class OER2GraphMapper extends OSource2GraphMapper {
         currentRelationship.setDirection(direction);
       } else {
         context.getOutputManager().error(
-                "Wrong value for the direction of the relationship between %s and %s: \"%s\" is not a valid direction. " + "Please choose between \"direct\" or \"inverse\" \n", currentRelationship.getForeignEntityName(),
-                currentRelationship.getParentEntityName(), direction);
+                "Wrong value for the direction of the relationship between %s and %s: \"%s\" is not a valid direction. " + "Please choose between \"direct\" or \"inverse\" \n", currentRelationship.getForeignEntity(),
+                currentRelationship.getParentEntity(), direction);
       }
     }
 
@@ -1487,7 +1493,7 @@ public class OER2GraphMapper extends OSource2GraphMapper {
     }
     s += "\n\n- Relaionship2EdgeType Rules:\n\n";
     for(ORelationship relationship: this.relationship2edgeType.keySet()) {
-      s += relationship.getForeignEntityName() + "2" + relationship.getParentEntityName() + " --> " + this.relationship2edgeType.get(relationship).getName() + "\n";
+      s += relationship.getForeignEntity() + "2" + relationship.getParentEntity() + " --> " + this.relationship2edgeType.get(relationship).getName() + "\n";
     }
     s += "\n\n- EdgeTypeName2Count Rules:\n\n";
     for(String edgeName: this.edgeTypeName2count.keySet()) {

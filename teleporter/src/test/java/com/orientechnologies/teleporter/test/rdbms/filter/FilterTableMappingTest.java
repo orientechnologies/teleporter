@@ -249,8 +249,8 @@ public class FilterTableMappingTest {
 
       Iterator<ORelationship> itEmp = employeeEntity.getOutRelationships().iterator();
       ORelationship currentEmpRel = itEmp.next();
-      assertEquals("MANAGER", currentEmpRel.getParentEntityName());
-      assertEquals("EMPLOYEE", currentEmpRel.getForeignEntityName());
+      assertEquals("MANAGER", currentEmpRel.getParentEntity().getName());
+      assertEquals("EMPLOYEE", currentEmpRel.getForeignEntity().getName());
       assertEquals(managerEntity.getPrimaryKey(), currentEmpRel.getPrimaryKey());
       assertEquals(employeeEntity.getForeignKeys().get(0), currentEmpRel.getForeignKey());
       assertFalse(itEmp.hasNext());
@@ -557,8 +557,8 @@ public class FilterTableMappingTest {
 
       Iterator<ORelationship> itEmp = employeeEntity.getOutRelationships().iterator();
       ORelationship currentEmpRel = itEmp.next();
-      assertEquals("MANAGER", currentEmpRel.getParentEntityName());
-      assertEquals("EMPLOYEE", currentEmpRel.getForeignEntityName());
+      assertEquals("MANAGER", currentEmpRel.getParentEntity().getName());
+      assertEquals("EMPLOYEE", currentEmpRel.getForeignEntity().getName());
       assertEquals(managerEntity.getPrimaryKey(), currentEmpRel.getPrimaryKey());
       assertEquals(employeeEntity.getForeignKeys().get(0), currentEmpRel.getForeignKey());
       assertFalse(itEmp.hasNext());
@@ -996,8 +996,8 @@ public class FilterTableMappingTest {
 
       Iterator<ORelationship> itEmp = employeeEntity.getOutRelationships().iterator();
       ORelationship currentEmpRel = itEmp.next();
-      assertEquals("MANAGER", currentEmpRel.getParentEntityName());
-      assertEquals("EMPLOYEE", currentEmpRel.getForeignEntityName());
+      assertEquals("MANAGER", currentEmpRel.getParentEntity().getName());
+      assertEquals("EMPLOYEE", currentEmpRel.getForeignEntity().getName());
       assertEquals(managerEntity.getPrimaryKey(), currentEmpRel.getPrimaryKey());
       assertEquals(employeeEntity.getForeignKeys().get(0), currentEmpRel.getForeignKey());
       assertFalse(itEmp.hasNext());
@@ -1015,10 +1015,10 @@ public class FilterTableMappingTest {
       Iterator<ORelationship> itContEmp = contractEmployeeEntity.getInheritedOutRelationships().iterator();
       ORelationship currentRegEmpRel = itRegEmp.next();
       ORelationship currentContEmpRel = itContEmp.next();
-      assertEquals("MANAGER", currentRegEmpRel.getParentEntityName());
-      assertEquals("EMPLOYEE", currentRegEmpRel.getForeignEntityName());
-      assertEquals("MANAGER", currentContEmpRel.getParentEntityName());
-      assertEquals("EMPLOYEE", currentContEmpRel.getForeignEntityName());
+      assertEquals("MANAGER", currentRegEmpRel.getParentEntity().getName());
+      assertEquals("EMPLOYEE", currentRegEmpRel.getForeignEntity().getName());
+      assertEquals("MANAGER", currentContEmpRel.getParentEntity().getName());
+      assertEquals("EMPLOYEE", currentContEmpRel.getForeignEntity().getName());
       assertEquals(managerEntity.getPrimaryKey(), currentRegEmpRel.getPrimaryKey());
       assertEquals(1, currentRegEmpRel.getForeignKey().getInvolvedAttributes().size());
       assertEquals("MANAGER", currentRegEmpRel.getForeignKey().getInvolvedAttributes().get(0).getName());
@@ -1657,8 +1657,8 @@ public class FilterTableMappingTest {
 
       Iterator<ORelationship> itEmp = employeeEntity.getOutRelationships().iterator();
       ORelationship currentEmpRel = itEmp.next();
-      assertEquals("MANAGER", currentEmpRel.getParentEntityName());
-      assertEquals("EMPLOYEE", currentEmpRel.getForeignEntityName());
+      assertEquals("MANAGER", currentEmpRel.getParentEntity().getName());
+      assertEquals("EMPLOYEE", currentEmpRel.getForeignEntity().getName());
       assertEquals(managerEntity.getPrimaryKey(), currentEmpRel.getPrimaryKey());
       assertEquals(employeeEntity.getForeignKeys().get(0), currentEmpRel.getForeignKey());
       assertFalse(itEmp.hasNext());
@@ -1688,10 +1688,10 @@ public class FilterTableMappingTest {
       itContEmp = contractEmployeeEntity.getInheritedOutRelationships().iterator();
       currentRegEmpRel = itRegEmp.next();
       currentContEmpRel = itContEmp.next();
-      assertEquals("MANAGER", currentRegEmpRel.getParentEntityName());
-      assertEquals("EMPLOYEE", currentRegEmpRel.getForeignEntityName());
-      assertEquals("MANAGER", currentContEmpRel.getParentEntityName());
-      assertEquals("EMPLOYEE", currentContEmpRel.getForeignEntityName());
+      assertEquals("MANAGER", currentRegEmpRel.getParentEntity().getName());
+      assertEquals("EMPLOYEE", currentRegEmpRel.getForeignEntity().getName());
+      assertEquals("MANAGER", currentContEmpRel.getParentEntity().getName());
+      assertEquals("EMPLOYEE", currentContEmpRel.getForeignEntity().getName());
       assertEquals(managerEntity.getPrimaryKey(), currentRegEmpRel.getPrimaryKey());
       assertEquals(1, currentRegEmpRel.getForeignKey().getInvolvedAttributes().size());
       assertEquals("MANAGER", currentRegEmpRel.getForeignKey().getInvolvedAttributes().get(0).getName());
@@ -2314,8 +2314,8 @@ public class FilterTableMappingTest {
 
       Iterator<ORelationship> itEmp = employeeEntity.getOutRelationships().iterator();
       ORelationship currentEmpRel = itEmp.next();
-      assertEquals("MANAGER", currentEmpRel.getParentEntityName());
-      assertEquals("EMPLOYEE", currentEmpRel.getForeignEntityName());
+      assertEquals("MANAGER", currentEmpRel.getParentEntity().getName());
+      assertEquals("EMPLOYEE", currentEmpRel.getForeignEntity().getName());
       assertEquals(managerEntity.getPrimaryKey(), currentEmpRel.getPrimaryKey());
       assertEquals(employeeEntity.getForeignKeys().get(0), currentEmpRel.getForeignKey());
       assertFalse(itEmp.hasNext());
@@ -2345,10 +2345,10 @@ public class FilterTableMappingTest {
       itContEmp = contractEmployeeEntity.getInheritedOutRelationships().iterator();
       currentRegEmpRel = itRegEmp.next();
       currentContEmpRel = itContEmp.next();
-      assertEquals("MANAGER", currentRegEmpRel.getParentEntityName());
-      assertEquals("EMPLOYEE", currentRegEmpRel.getForeignEntityName());
-      assertEquals("MANAGER", currentContEmpRel.getParentEntityName());
-      assertEquals("EMPLOYEE", currentContEmpRel.getForeignEntityName());
+      assertEquals("MANAGER", currentRegEmpRel.getParentEntity().getName());
+      assertEquals("EMPLOYEE", currentRegEmpRel.getForeignEntity().getName());
+      assertEquals("MANAGER", currentContEmpRel.getParentEntity().getName());
+      assertEquals("EMPLOYEE", currentContEmpRel.getForeignEntity().getName());
       assertEquals(managerEntity.getPrimaryKey(), currentRegEmpRel.getPrimaryKey());
       assertEquals(1, currentRegEmpRel.getForeignKey().getInvolvedAttributes().size());
       assertEquals("MANAGER", currentRegEmpRel.getForeignKey().getInvolvedAttributes().get(0).getName());
@@ -2979,8 +2979,8 @@ public class FilterTableMappingTest {
 
       Iterator<ORelationship> itEmp = employeeEntity.getOutRelationships().iterator();
       ORelationship currentEmpRel = itEmp.next();
-      assertEquals("MANAGER", currentEmpRel.getParentEntityName());
-      assertEquals("EMPLOYEE", currentEmpRel.getForeignEntityName());
+      assertEquals("MANAGER", currentEmpRel.getParentEntity().getName());
+      assertEquals("EMPLOYEE", currentEmpRel.getForeignEntity().getName());
       assertEquals(managerEntity.getPrimaryKey(), currentEmpRel.getPrimaryKey());
       assertEquals(employeeEntity.getForeignKeys().get(0), currentEmpRel.getForeignKey());
       assertFalse(itEmp.hasNext());
@@ -2999,10 +2999,10 @@ public class FilterTableMappingTest {
       Iterator<ORelationship> itContEmp = contractEmployeeEntity.getInheritedOutRelationships().iterator();
       ORelationship currentRegEmpRel = itRegEmp.next();
       ORelationship currentContEmpRel = itContEmp.next();
-      assertEquals("MANAGER", currentRegEmpRel.getParentEntityName());
-      assertEquals("EMPLOYEE", currentRegEmpRel.getForeignEntityName());
-      assertEquals("MANAGER", currentContEmpRel.getParentEntityName());
-      assertEquals("EMPLOYEE", currentContEmpRel.getForeignEntityName());
+      assertEquals("MANAGER", currentRegEmpRel.getParentEntity().getName());
+      assertEquals("EMPLOYEE", currentRegEmpRel.getForeignEntity().getName());
+      assertEquals("MANAGER", currentContEmpRel.getParentEntity().getName());
+      assertEquals("EMPLOYEE", currentContEmpRel.getForeignEntity().getName());
       assertEquals(managerEntity.getPrimaryKey(), currentRegEmpRel.getPrimaryKey());
       assertEquals(1, currentRegEmpRel.getForeignKey().getInvolvedAttributes().size());
       assertEquals("MANAGER", currentRegEmpRel.getForeignKey().getInvolvedAttributes().get(0).getName());

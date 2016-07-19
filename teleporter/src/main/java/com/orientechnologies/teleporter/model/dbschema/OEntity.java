@@ -483,8 +483,8 @@ public class OEntity implements Comparable<OEntity> {
 
       for(ORelationship relationship: this.outRelationships) {
         s += index +".  ";
-        s += "Foreign Entity: " + relationship.getForeignEntityName() + ", Foreign Key: " + relationship.getForeignKey().toString() + "\t||\t"
-            + "Parent Entity: " + relationship.getParentEntityName() + ", Primary Key: " + relationship.getForeignKey().toString() + "\n";
+        s += "Foreign Entity: " + relationship.getForeignEntity().getName() + ", Foreign Key: " + relationship.getForeignKey().toString() + "\t||\t"
+            + "Parent Entity: " + relationship.getParentEntity().getName() + ", Primary Key: " + relationship.getForeignKey().toString() + "\n";
         index++;
       }
 

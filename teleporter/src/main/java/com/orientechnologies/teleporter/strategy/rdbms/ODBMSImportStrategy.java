@@ -161,11 +161,11 @@ public abstract class ODBMSImportStrategy implements OImportStrategy {
             // built as edge and for the referenced record a vertex is built (only id)
             for(ORelationship currentRelation: currentEntity.getAllOutRelationships()) {
 
-              currentParentEntity = mapper.getDataBaseSchema().getEntityByNameIgnoreCase(currentRelation.getParentEntityName());
+              currentParentEntity = mapper.getDataBaseSchema().getEntityByNameIgnoreCase(currentRelation.getParentEntity().getName());
 
               // checking if parent table belongs to a hierarchical bag
               if(currentParentEntity.getHierarchicalBag() == null)
-                currentInVertexType = mapper.getVertexTypeByName(context.getNameResolver().resolveVertexName(currentRelation.getParentEntityName()));
+                currentInVertexType = mapper.getVertexTypeByName(context.getNameResolver().resolveVertexName(currentRelation.getParentEntity().getName()));
 
                 // if the parent entity belongs to hierarchical bag, we need to know which is it the more stringent subclass of the record with a certain id
               else {
@@ -309,12 +309,12 @@ public abstract class ODBMSImportStrategy implements OImportStrategy {
               // built as edge and for the referenced record a vertex is built (only id)
               for(ORelationship currentRelation: currentEntity.getAllOutRelationships()) {
 
-                currentParentEntity = mapper.getDataBaseSchema().getEntityByNameIgnoreCase(currentRelation.getParentEntityName());
+                currentParentEntity = mapper.getDataBaseSchema().getEntityByNameIgnoreCase(currentRelation.getParentEntity().getName());
                 currentInVertexType = null; // reset for the current iteration
 
                 // checking if parent table belongs to a hierarchical bag
                 if(currentParentEntity.getHierarchicalBag() == null)
-                  currentInVertexType = mapper.getVertexTypeByName(context.getNameResolver().resolveVertexName(currentRelation.getParentEntityName()));
+                  currentInVertexType = mapper.getVertexTypeByName(context.getNameResolver().resolveVertexName(currentRelation.getParentEntity().getName()));
 
                   // if the parent entity belongs to hierarchical bag, we need to know which is it the more stringent subclass of the record with a certain id
                 else if(!currentEntity.getHierarchicalBag().equals(currentParentEntity.getHierarchicalBag())){
@@ -436,12 +436,12 @@ public abstract class ODBMSImportStrategy implements OImportStrategy {
               // built as edge and for the referenced record a vertex is built (only id)
               for(ORelationship currentRelation: currentEntity.getAllOutRelationships()) {
 
-                currentParentEntity = mapper.getDataBaseSchema().getEntityByNameIgnoreCase(currentRelation.getParentEntityName());
+                currentParentEntity = mapper.getDataBaseSchema().getEntityByNameIgnoreCase(currentRelation.getParentEntity().getName());
                 currentInVertexType = null; // reset for the current iteration
 
                 // checking if parent table belongs to a hierarchical bag
                 if(currentParentEntity.getHierarchicalBag() == null)
-                  currentInVertexType = mapper.getVertexTypeByName(context.getNameResolver().resolveVertexName(currentRelation.getParentEntityName()));
+                  currentInVertexType = mapper.getVertexTypeByName(context.getNameResolver().resolveVertexName(currentRelation.getParentEntity().getName()));
 
                   // if the parent entity belongs to hierarchical bag, we need to know which is it the more stringent subclass of the record with a certain id
                 else if(!currentEntity.getHierarchicalBag().equals(currentParentEntity.getHierarchicalBag())) {
