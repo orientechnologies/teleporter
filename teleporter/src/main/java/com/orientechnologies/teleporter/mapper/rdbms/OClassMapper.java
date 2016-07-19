@@ -67,6 +67,14 @@ public class OClassMapper {
         this.vertexType = vertexType;
     }
 
+    public String getAttributeByProperty(String property) {
+        return this.property2attribute.get(property);
+    }
+
+    public String getPropertyByAttribute(String attribute) {
+        return this.attribute2property.get(attribute);
+    }
+
     @Override
     public int hashCode() {
         int result = entity.hashCode();

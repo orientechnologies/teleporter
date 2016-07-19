@@ -120,6 +120,16 @@ public class OER2GraphMapper extends OSource2GraphMapper {
     this.vertexType2classMapper.put(currentVertexType, classMapper);
   }
 
+  // new map managing
+  public OClassMapper getClassMappingRulesByVertex(OVertexType vertexType) {
+    return this.vertexType2classMapper.get(vertexType);
+  }
+
+  // new map managing
+  public OClassMapper getClassMappingRulesByEntity(OEntity entity) {
+    return this.entity2classMapper.get(entity);
+  }
+
 
   /**
    * MACRO EXECUTION BLOCK: BUILD SOURCE DATABASE SCHEMA
@@ -1292,42 +1302,68 @@ public class OER2GraphMapper extends OSource2GraphMapper {
   }
 
   public OEntity getEntityByVertexType(OVertexType vertexType) {
-    return this.vertexType2classMapper.get(vertexType).getEntity();
+    return this.getClassMappingRulesByVertex(vertexType).getEntity();
   }
 
   public OVertexType getVertexTypeByEntity(OEntity entity) {
-    return this.entity2classMapper.get(entity).getVertexType();
+    return this.getClassMappingRulesByEntity(entity).getVertexType();
   }
 
-  // TO UPDATE WITH THE INVERTED MAP vertexType2entity (right?)
-  // TODO: update mapping (delete)
-  public OAttribute getAttributeByVertexTypeAndProperty(OVertexType vertexType, String propertyName) {
+  // TODO: update mapping
+  public String getAttributeNameByVertexTypeAndProperty(OVertexType vertexType, String propertyName) {
 
-    int position = 0;
-    OModelProperty currentProperty;
+//    int position = 0;
+//    OModelProperty currentProperty;
+//
+//    if(vertexType != null) {
+//
+//      OEntity correspondentEntity = this.vertexType2entity.get(vertexType);
+//
+//      if(correspondentEntity != null) {
+//
+//        currentProperty = vertexType.getPropertyByName(propertyName);
+//
+//        // if the current vertex has not the current property and if it has parents, a recursive lookup is performed (inheritance case)
+//        if(currentProperty == null) {
+//          OVertexType parentType = (OVertexType) vertexType.getParentType();
+//          if(parentType != null) {
+//            return this.getAttributeNameByVertexTypeAndProperty(parentType, propertyName);
+//          }
+//        }
+//        else {
+//          position = currentProperty.getOrdinalPosition();
+//          return correspondentEntity.getAttributeByOrdinalPosition(position);
+//        }
+//      }
+//    }
+//    return null;
 
-    if(vertexType != null) {
+    String attributeName = this.getClassMappingRulesByVertex(vertexType).getAttributeByProperty(propertyName);
 
-      OEntity correspondentEntity = this.vertexType2entity.get(vertexType);
-
-      if(correspondentEntity != null) {
-
-        currentProperty = vertexType.getPropertyByName(propertyName);
-
-        // if the current vertex has not the current property and if it has parents, a recursive lookup is performed (inheritance case)
-        if(currentProperty == null) {
-          OVertexType parentType = (OVertexType) vertexType.getParentType();
-          if(parentType != null) {
-            return this.getAttributeByVertexTypeAndProperty(parentType, propertyName);
-          }
-        }
-        else {
-          position = currentProperty.getOrdinalPosition();
-          return correspondentEntity.getAttributeByOrdinalPosition(position);
-        }
+    if(attributeName == null) {
+      OVertexType parentType = (OVertexType) vertexType.getParentType();
+      if(parentType != null) {
+        return this.getAttributeNameByVertexTypeAndProperty(parentType, propertyName);
       }
     }
-    return null;
+
+    return attributeName;
+  }
+
+
+  // TODO: update mapping
+  public String getPropertyNameByVertexTypeAndAttribute(OVertexType vertexType, String attributeName) {
+
+    String propertyName = this.getClassMappingRulesByVertex(vertexType).getPropertyByAttribute(attributeName);
+
+    if(propertyName == null) {
+      OVertexType parentType = (OVertexType) vertexType.getParentType();
+      if(parentType != null) {
+        return this.getPropertyNameByVertexTypeAndAttribute(parentType, attributeName);
+      }
+    }
+
+    return propertyName;
   }
 
 
