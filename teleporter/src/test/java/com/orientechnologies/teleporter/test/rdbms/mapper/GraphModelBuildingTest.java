@@ -20,7 +20,9 @@ package com.orientechnologies.teleporter.test.rdbms.mapper;
 
 import com.orientechnologies.teleporter.context.OOutputStreamManager;
 import com.orientechnologies.teleporter.context.OTeleporterContext;
+import com.orientechnologies.teleporter.mapper.rdbms.OClassMapper;
 import com.orientechnologies.teleporter.mapper.rdbms.OER2GraphMapper;
+import com.orientechnologies.teleporter.model.dbschema.OEntity;
 import com.orientechnologies.teleporter.model.graphmodel.OEdgeType;
 import com.orientechnologies.teleporter.model.graphmodel.OVertexType;
 import com.orientechnologies.teleporter.nameresolver.OJavaConventionNameResolver;
@@ -157,6 +159,32 @@ public class GraphModelBuildingTest {
       assertEquals(0, authorEdgeType.getProperties().size());
       assertEquals("BookAuthor", authorEdgeType.getInVertexType().getName());
       assertEquals(1, authorEdgeType.getNumberRelationshipsRepresented());
+
+      /*
+       * Rules check
+       */
+
+      OEntity bookEntity = mapper.getDataBaseSchema().getEntityByName("BOOK");
+      OClassMapper bookClassMapper = mapper.getClassMappingRulesByVertex(bookVertexType);
+      assertEquals(bookClassMapper, mapper.getClassMappingRulesByEntity(bookEntity));
+
+      assertEquals(bookClassMapper.getEntity(), bookEntity);
+      assertEquals(bookClassMapper.getVertexType(), bookVertexType);
+
+      assertEquals(3, bookClassMapper.attribute2property.size());
+      assertEquals(3, bookClassMapper.property2attribute.size());
+
+      OEntity bookAuthorEntity = mapper.getDataBaseSchema().getEntityByName("BOOK_AUTHOR");
+      OClassMapper bookAuthorClassMapper =  mapper.getClassMappingRulesByVertex(authorVertexType);
+      assertEquals(bookAuthorClassMapper, mapper.getClassMappingRulesByEntity(bookAuthorEntity));
+
+      assertEquals(bookAuthorClassMapper.getEntity(), bookAuthorEntity);
+      assertEquals(bookAuthorClassMapper.getVertexType(), authorVertexType);
+
+      assertEquals(3, bookAuthorClassMapper.attribute2property.size());
+      assertEquals(3, bookAuthorClassMapper.property2attribute.size());
+
+
 
 
     }catch(Exception e) {
