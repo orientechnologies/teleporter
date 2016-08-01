@@ -23,6 +23,7 @@ import com.orientechnologies.teleporter.context.OTeleporterContext;
 import com.orientechnologies.teleporter.mapper.rdbms.OClassMapper;
 import com.orientechnologies.teleporter.mapper.rdbms.OER2GraphMapper;
 import com.orientechnologies.teleporter.model.dbschema.OEntity;
+import com.orientechnologies.teleporter.model.dbschema.ORelationship;
 import com.orientechnologies.teleporter.model.graphmodel.OEdgeType;
 import com.orientechnologies.teleporter.model.graphmodel.OVertexType;
 import com.orientechnologies.teleporter.nameresolver.OJavaConventionNameResolver;
@@ -33,10 +34,9 @@ import org.junit.Test;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.Statement;
+import java.util.Iterator;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 /**
  * @author Gabriele Ponzi
@@ -152,7 +152,7 @@ public class GraphModelBuildingTest {
       assertEquals(false, bookVertexType.getPropertyByName("authorId").isFromPrimaryKey());
 
       // edges check
-      Assert.assertEquals(1, mapper.getGraphModel().getEdgesType().size());
+      assertEquals(1, mapper.getGraphModel().getEdgesType().size());
       assertNotNull(authorEdgeType);
 
       assertEquals("HasAuthor", authorEdgeType.getName());
@@ -164,28 +164,57 @@ public class GraphModelBuildingTest {
        * Rules check
        */
 
+      // Classes Mapping
+
+      assertEquals(2, mapper.getVertexType2classMapper().size());
+      assertEquals(2, mapper.getEntity2classMapper().size());
+
       OEntity bookEntity = mapper.getDataBaseSchema().getEntityByName("BOOK");
       OClassMapper bookClassMapper = mapper.getClassMappingRulesByVertex(bookVertexType);
       assertEquals(bookClassMapper, mapper.getClassMappingRulesByEntity(bookEntity));
-
       assertEquals(bookClassMapper.getEntity(), bookEntity);
       assertEquals(bookClassMapper.getVertexType(), bookVertexType);
 
       assertEquals(3, bookClassMapper.attribute2property.size());
       assertEquals(3, bookClassMapper.property2attribute.size());
+      assertEquals("id", bookClassMapper.attribute2property.get("ID"));
+      assertEquals("title", bookClassMapper.attribute2property.get("TITLE"));
+      assertEquals("authorId", bookClassMapper.attribute2property.get("AUTHOR_ID"));
+      assertEquals("ID", bookClassMapper.property2attribute.get("id"));
+      assertEquals("TITLE", bookClassMapper.property2attribute.get("title"));
+      assertEquals("AUTHOR_ID", bookClassMapper.property2attribute.get("authorId"));
 
       OEntity bookAuthorEntity = mapper.getDataBaseSchema().getEntityByName("BOOK_AUTHOR");
       OClassMapper bookAuthorClassMapper =  mapper.getClassMappingRulesByVertex(authorVertexType);
       assertEquals(bookAuthorClassMapper, mapper.getClassMappingRulesByEntity(bookAuthorEntity));
-
       assertEquals(bookAuthorClassMapper.getEntity(), bookAuthorEntity);
       assertEquals(bookAuthorClassMapper.getVertexType(), authorVertexType);
 
       assertEquals(3, bookAuthorClassMapper.attribute2property.size());
       assertEquals(3, bookAuthorClassMapper.property2attribute.size());
+      assertEquals("id", bookAuthorClassMapper.attribute2property.get("ID"));
+      assertEquals("name", bookAuthorClassMapper.attribute2property.get("NAME"));
+      assertEquals("age", bookAuthorClassMapper.attribute2property.get("AGE"));
+      assertEquals("ID", bookAuthorClassMapper.property2attribute.get("id"));
+      assertEquals("NAME", bookAuthorClassMapper.property2attribute.get("name"));
+      assertEquals("AGE", bookAuthorClassMapper.property2attribute.get("age"));
 
+      // Relationships-Edges Mapping
 
+      Iterator<ORelationship> it = bookEntity.getOutRelationships().iterator();
+      ORelationship hasAuthorRelationship = it.next();
+      assertFalse(it.hasNext());
 
+      assertEquals(1, mapper.getRelationship2edgeType().size());
+      assertEquals(authorEdgeType, mapper.getRelationship2edgeType().get(hasAuthorRelationship));
+
+      assertEquals(1, mapper.getEdgeType2relationship().size());
+      assertEquals(1, mapper.getEdgeType2relationship().get(authorEdgeType).size());
+      assertTrue(mapper.getEdgeType2relationship().get(authorEdgeType).contains(hasAuthorRelationship));
+
+      // JoinVertexes-AggregatorEdges Mapping
+
+      assertEquals(0, mapper.getJoinVertex2aggregatorEdges().size());
 
     }catch(Exception e) {
       e.printStackTrace();
@@ -340,6 +369,82 @@ public class GraphModelBuildingTest {
       assertEquals("Book", bookEdgeType.getInVertexType().getName());
       assertEquals(1, bookEdgeType.getNumberRelationshipsRepresented());
 
+      /*
+       * Rules check
+       */
+
+      // Classes Mapping
+
+      assertEquals(3, mapper.getVertexType2classMapper().size());
+      assertEquals(3, mapper.getEntity2classMapper().size());
+
+      OEntity bookEntity = mapper.getDataBaseSchema().getEntityByName("BOOK");
+      OClassMapper bookClassMapper = mapper.getClassMappingRulesByVertex(bookVertexType);
+      assertEquals(bookClassMapper, mapper.getClassMappingRulesByEntity(bookEntity));
+      assertEquals(bookClassMapper.getEntity(), bookEntity);
+      assertEquals(bookClassMapper.getVertexType(), bookVertexType);
+
+      assertEquals(3, bookClassMapper.attribute2property.size());
+      assertEquals(3, bookClassMapper.property2attribute.size());
+      assertEquals("id", bookClassMapper.attribute2property.get("ID"));
+      assertEquals("title", bookClassMapper.attribute2property.get("TITLE"));
+      assertEquals("authorId", bookClassMapper.attribute2property.get("AUTHOR_ID"));
+      assertEquals("ID", bookClassMapper.property2attribute.get("id"));
+      assertEquals("TITLE", bookClassMapper.property2attribute.get("title"));
+      assertEquals("AUTHOR_ID", bookClassMapper.property2attribute.get("authorId"));
+
+      OEntity authorEntity = mapper.getDataBaseSchema().getEntityByName("AUTHOR");
+      OClassMapper authorClassMapper =  mapper.getClassMappingRulesByVertex(authorVertexType);
+      assertEquals(authorClassMapper, mapper.getClassMappingRulesByEntity(authorEntity));
+      assertEquals(authorClassMapper.getEntity(), authorEntity);
+      assertEquals(authorClassMapper.getVertexType(), authorVertexType);
+
+      assertEquals(3, authorClassMapper.attribute2property.size());
+      assertEquals(3, authorClassMapper.property2attribute.size());
+      assertEquals("id", authorClassMapper.attribute2property.get("ID"));
+      assertEquals("name", authorClassMapper.attribute2property.get("NAME"));
+      assertEquals("age", authorClassMapper.attribute2property.get("AGE"));
+      assertEquals("ID", authorClassMapper.property2attribute.get("id"));
+      assertEquals("NAME", authorClassMapper.property2attribute.get("name"));
+      assertEquals("AGE", authorClassMapper.property2attribute.get("age"));
+
+      OEntity itemEntity = mapper.getDataBaseSchema().getEntityByName("ITEM");
+      OClassMapper itemClassMapper =  mapper.getClassMappingRulesByVertex(itemVertexType);
+      assertEquals(itemClassMapper, mapper.getClassMappingRulesByEntity(itemEntity));
+      assertEquals(itemClassMapper.getEntity(), itemEntity);
+      assertEquals(itemClassMapper.getVertexType(), itemVertexType);
+
+      assertEquals(3, itemClassMapper.attribute2property.size());
+      assertEquals(3, itemClassMapper.property2attribute.size());
+      assertEquals("id", itemClassMapper.attribute2property.get("ID"));
+      assertEquals("bookId", itemClassMapper.attribute2property.get("BOOK_ID"));
+      assertEquals("price", itemClassMapper.attribute2property.get("PRICE"));
+      assertEquals("ID", itemClassMapper.property2attribute.get("id"));
+      assertEquals("BOOK_ID", itemClassMapper.property2attribute.get("bookId"));
+      assertEquals("PRICE", itemClassMapper.property2attribute.get("price"));
+
+      // Relationships-Edges Mapping
+
+      Iterator<ORelationship> it = bookEntity.getOutRelationships().iterator();
+      ORelationship hasAuthorRelationship = it.next();
+      assertFalse(it.hasNext());
+      it = itemEntity.getOutRelationships().iterator();
+      ORelationship hasBookRelationship = it.next();
+      assertFalse(it.hasNext());
+
+      assertEquals(2, mapper.getRelationship2edgeType().size());
+      assertEquals(authorEdgeType, mapper.getRelationship2edgeType().get(hasAuthorRelationship));
+      assertEquals(bookEdgeType, mapper.getRelationship2edgeType().get(hasBookRelationship));
+
+      assertEquals(2, mapper.getEdgeType2relationship().size());
+      assertEquals(1, mapper.getEdgeType2relationship().get(authorEdgeType).size());
+      assertTrue(mapper.getEdgeType2relationship().get(authorEdgeType).contains(hasAuthorRelationship));
+      assertEquals(1, mapper.getEdgeType2relationship().get(bookEdgeType).size());
+      assertTrue(mapper.getEdgeType2relationship().get(bookEdgeType).contains(hasBookRelationship));
+
+      // JoinVertexes-AggregatorEdges Mapping
+
+      assertEquals(0, mapper.getJoinVertex2aggregatorEdges().size());
 
     }catch(Exception e) {
       e.printStackTrace();
@@ -492,6 +597,83 @@ public class GraphModelBuildingTest {
       assertEquals("Author", authorEdgeType.getInVertexType().getName());
       assertEquals(2, authorEdgeType.getNumberRelationshipsRepresented());
 
+      /*
+       * Rules check
+       */
+
+      // Classes Mapping
+
+      assertEquals(3, mapper.getVertexType2classMapper().size());
+      assertEquals(3, mapper.getEntity2classMapper().size());
+
+      OEntity bookEntity = mapper.getDataBaseSchema().getEntityByName("BOOK");
+      OClassMapper bookClassMapper = mapper.getClassMappingRulesByVertex(bookVertexType);
+      assertEquals(bookClassMapper, mapper.getClassMappingRulesByEntity(bookEntity));
+      assertEquals(bookClassMapper.getEntity(), bookEntity);
+      assertEquals(bookClassMapper.getVertexType(), bookVertexType);
+
+      assertEquals(3, bookClassMapper.attribute2property.size());
+      assertEquals(3, bookClassMapper.property2attribute.size());
+      assertEquals("id", bookClassMapper.attribute2property.get("ID"));
+      assertEquals("title", bookClassMapper.attribute2property.get("TITLE"));
+      assertEquals("authorId", bookClassMapper.attribute2property.get("AUTHOR_ID"));
+      assertEquals("ID", bookClassMapper.property2attribute.get("id"));
+      assertEquals("TITLE", bookClassMapper.property2attribute.get("title"));
+      assertEquals("AUTHOR_ID", bookClassMapper.property2attribute.get("authorId"));
+
+      OEntity authorEntity = mapper.getDataBaseSchema().getEntityByName("AUTHOR");
+      OClassMapper authorClassMapper =  mapper.getClassMappingRulesByVertex(authorVertexType);
+      assertEquals(authorClassMapper, mapper.getClassMappingRulesByEntity(authorEntity));
+      assertEquals(authorClassMapper.getEntity(), authorEntity);
+      assertEquals(authorClassMapper.getVertexType(), authorVertexType);
+
+      assertEquals(3, authorClassMapper.attribute2property.size());
+      assertEquals(3, authorClassMapper.property2attribute.size());
+      assertEquals("id", authorClassMapper.attribute2property.get("ID"));
+      assertEquals("name", authorClassMapper.attribute2property.get("NAME"));
+      assertEquals("age", authorClassMapper.attribute2property.get("AGE"));
+      assertEquals("ID", authorClassMapper.property2attribute.get("id"));
+      assertEquals("NAME", authorClassMapper.property2attribute.get("name"));
+      assertEquals("AGE", authorClassMapper.property2attribute.get("age"));
+
+      OEntity articleEntity = mapper.getDataBaseSchema().getEntityByName("ARTICLE");
+      OClassMapper articleClassMapper =  mapper.getClassMappingRulesByVertex(articleVertexType);
+      assertEquals(articleClassMapper, mapper.getClassMappingRulesByEntity(articleEntity));
+      assertEquals(articleClassMapper.getEntity(), articleEntity);
+      assertEquals(articleClassMapper.getVertexType(), articleVertexType);
+
+      assertEquals(4, articleClassMapper.attribute2property.size());
+      assertEquals(4, articleClassMapper.property2attribute.size());
+      assertEquals("id", articleClassMapper.attribute2property.get("ID"));
+      assertEquals("title", articleClassMapper.attribute2property.get("TITLE"));
+      assertEquals("date", articleClassMapper.attribute2property.get("DATE"));
+      assertEquals("authorId", articleClassMapper.attribute2property.get("AUTHOR_ID"));
+      assertEquals("ID", articleClassMapper.property2attribute.get("id"));
+      assertEquals("TITLE", articleClassMapper.property2attribute.get("title"));
+      assertEquals("DATE", articleClassMapper.property2attribute.get("date"));
+      assertEquals("AUTHOR_ID", articleClassMapper.property2attribute.get("authorId"));
+
+      // Relationships-Edges Mapping
+
+      Iterator<ORelationship> it = bookEntity.getOutRelationships().iterator();
+      ORelationship hasAuthorRelationship1 = it.next();
+      assertFalse(it.hasNext());
+      it = articleEntity.getOutRelationships().iterator();
+      ORelationship hasAuthorRelationship2 = it.next();
+      assertFalse(it.hasNext());
+
+      assertEquals(2, mapper.getRelationship2edgeType().size());
+      assertEquals(authorEdgeType, mapper.getRelationship2edgeType().get(hasAuthorRelationship1));
+      assertEquals(authorEdgeType, mapper.getRelationship2edgeType().get(hasAuthorRelationship2));
+
+      assertEquals(1, mapper.getEdgeType2relationship().size());
+      assertEquals(2, mapper.getEdgeType2relationship().get(authorEdgeType).size());
+      assertTrue(mapper.getEdgeType2relationship().get(authorEdgeType).contains(hasAuthorRelationship1));
+      assertTrue(mapper.getEdgeType2relationship().get(authorEdgeType).contains(hasAuthorRelationship2));
+
+      // JoinVertexes-AggregatorEdges Mapping
+
+      assertEquals(0, mapper.getJoinVertex2aggregatorEdges().size());
 
     }catch(Exception e) {
       e.printStackTrace();
@@ -621,6 +803,63 @@ public class GraphModelBuildingTest {
       assertEquals("Author", authorEdgeType.getInVertexType().getName());
       assertEquals(1, authorEdgeType.getNumberRelationshipsRepresented());
 
+      /*
+       * Rules check
+       */
+
+      // Classes Mapping
+
+      assertEquals(2, mapper.getVertexType2classMapper().size());
+      assertEquals(2, mapper.getEntity2classMapper().size());
+
+      OEntity bookEntity = mapper.getDataBaseSchema().getEntityByName("BOOK");
+      OClassMapper bookClassMapper = mapper.getClassMappingRulesByVertex(bookVertexType);
+      assertEquals(bookClassMapper, mapper.getClassMappingRulesByEntity(bookEntity));
+      assertEquals(bookClassMapper.getEntity(), bookEntity);
+      assertEquals(bookClassMapper.getVertexType(), bookVertexType);
+
+      assertEquals(4, bookClassMapper.attribute2property.size());
+      assertEquals(4, bookClassMapper.property2attribute.size());
+      assertEquals("id", bookClassMapper.attribute2property.get("ID"));
+      assertEquals("title", bookClassMapper.attribute2property.get("TITLE"));
+      assertEquals("authorName", bookClassMapper.attribute2property.get("AUTHOR_NAME"));
+      assertEquals("authorSurname", bookClassMapper.attribute2property.get("AUTHOR_SURNAME"));
+      assertEquals("ID", bookClassMapper.property2attribute.get("id"));
+      assertEquals("TITLE", bookClassMapper.property2attribute.get("title"));
+      assertEquals("AUTHOR_NAME", bookClassMapper.property2attribute.get("authorName"));
+      assertEquals("AUTHOR_SURNAME", bookClassMapper.property2attribute.get("authorSurname"));
+
+      OEntity authorEntity = mapper.getDataBaseSchema().getEntityByName("AUTHOR");
+      OClassMapper authorClassMapper =  mapper.getClassMappingRulesByVertex(authorVertexType);
+      assertEquals(authorClassMapper, mapper.getClassMappingRulesByEntity(authorEntity));
+      assertEquals(authorClassMapper.getEntity(), authorEntity);
+      assertEquals(authorClassMapper.getVertexType(), authorVertexType);
+
+      assertEquals(3, authorClassMapper.attribute2property.size());
+      assertEquals(3, authorClassMapper.property2attribute.size());
+      assertEquals("name", authorClassMapper.attribute2property.get("NAME"));
+      assertEquals("surname", authorClassMapper.attribute2property.get("SURNAME"));
+      assertEquals("age", authorClassMapper.attribute2property.get("AGE"));
+      assertEquals("NAME", authorClassMapper.property2attribute.get("name"));
+      assertEquals("SURNAME", authorClassMapper.property2attribute.get("surname"));
+      assertEquals("AGE", authorClassMapper.property2attribute.get("age"));
+
+      // Relationships-Edges Mapping
+
+      Iterator<ORelationship> it = bookEntity.getOutRelationships().iterator();
+      ORelationship hasAuthorRelationship = it.next();
+      assertFalse(it.hasNext());
+
+      assertEquals(1, mapper.getRelationship2edgeType().size());
+      assertEquals(authorEdgeType, mapper.getRelationship2edgeType().get(hasAuthorRelationship));
+
+      assertEquals(1, mapper.getEdgeType2relationship().size());
+      assertEquals(1, mapper.getEdgeType2relationship().get(authorEdgeType).size());
+      assertTrue(mapper.getEdgeType2relationship().get(authorEdgeType).contains(hasAuthorRelationship));
+
+      // JoinVertexes-AggregatorEdges Mapping
+
+      assertEquals(0, mapper.getJoinVertex2aggregatorEdges().size());
 
     }catch(Exception e) {
       e.printStackTrace();
@@ -771,6 +1010,79 @@ public class GraphModelBuildingTest {
       assertEquals("Actor", actorEdgeType.getInVertexType().getName());
       assertEquals(1, actorEdgeType.getNumberRelationshipsRepresented());
 
+      /*
+       * Rules check
+       */
+
+      // Classes Mapping
+
+      assertEquals(3, mapper.getVertexType2classMapper().size());
+      assertEquals(3, mapper.getEntity2classMapper().size());
+
+      OEntity filmEntity = mapper.getDataBaseSchema().getEntityByName("FILM");
+      OClassMapper filmClassMapper = mapper.getClassMappingRulesByVertex(filmVertexType);
+      assertEquals(filmClassMapper, mapper.getClassMappingRulesByEntity(filmEntity));
+      assertEquals(filmClassMapper.getEntity(), filmEntity);
+      assertEquals(filmClassMapper.getVertexType(), filmVertexType);
+
+      assertEquals(3, filmClassMapper.attribute2property.size());
+      assertEquals(3, filmClassMapper.property2attribute.size());
+      assertEquals("id", filmClassMapper.attribute2property.get("ID"));
+      assertEquals("title", filmClassMapper.attribute2property.get("TITLE"));
+      assertEquals("year", filmClassMapper.attribute2property.get("YEAR"));
+      assertEquals("ID", filmClassMapper.property2attribute.get("id"));
+      assertEquals("TITLE", filmClassMapper.property2attribute.get("title"));
+      assertEquals("YEAR", filmClassMapper.property2attribute.get("year"));
+
+      OEntity actorEntity = mapper.getDataBaseSchema().getEntityByName("ACTOR");
+      OClassMapper actorClassMapper =  mapper.getClassMappingRulesByVertex(actorVertexType);
+      assertEquals(actorClassMapper, mapper.getClassMappingRulesByEntity(actorEntity));
+      assertEquals(actorClassMapper.getEntity(), actorEntity);
+      assertEquals(actorClassMapper.getVertexType(), actorVertexType);
+
+      assertEquals(3, actorClassMapper.attribute2property.size());
+      assertEquals(3, actorClassMapper.property2attribute.size());
+      assertEquals("id", actorClassMapper.attribute2property.get("ID"));
+      assertEquals("name", actorClassMapper.attribute2property.get("NAME"));
+      assertEquals("surname", actorClassMapper.attribute2property.get("SURNAME"));
+      assertEquals("ID", actorClassMapper.property2attribute.get("id"));
+      assertEquals("NAME", actorClassMapper.property2attribute.get("name"));
+      assertEquals("SURNAME", actorClassMapper.property2attribute.get("surname"));
+
+      OEntity filmActorEntity = mapper.getDataBaseSchema().getEntityByName("FILM_ACTOR");
+      OClassMapper filmActorClassMapper =  mapper.getClassMappingRulesByVertex(film2actorVertexType);
+      assertEquals(filmActorClassMapper, mapper.getClassMappingRulesByEntity(filmActorEntity));
+      assertEquals(filmActorClassMapper.getEntity(), filmActorEntity);
+      assertEquals(filmActorClassMapper.getVertexType(), film2actorVertexType);
+
+      assertEquals(2, filmActorClassMapper.attribute2property.size());
+      assertEquals(2, filmActorClassMapper.property2attribute.size());
+      assertEquals("filmId", filmActorClassMapper.attribute2property.get("FILM_ID"));
+      assertEquals("actorId", filmActorClassMapper.attribute2property.get("ACTOR_ID"));
+      assertEquals("FILM_ID", filmActorClassMapper.property2attribute.get("filmId"));
+      assertEquals("ACTOR_ID", filmActorClassMapper.property2attribute.get("actorId"));
+
+      // Relationships-Edges Mapping
+
+      Iterator<ORelationship> it = filmActorEntity.getOutRelationships().iterator();
+      ORelationship hasActorRelationship = it.next();
+      ORelationship hasFilmRelationship = it.next();
+      assertFalse(it.hasNext());
+
+      assertEquals(2, mapper.getRelationship2edgeType().size());
+      assertEquals(filmEdgeType, mapper.getRelationship2edgeType().get(hasFilmRelationship));
+      assertEquals(actorEdgeType, mapper.getRelationship2edgeType().get(hasActorRelationship));
+
+      assertEquals(2, mapper.getEdgeType2relationship().size());
+      assertEquals(1, mapper.getEdgeType2relationship().get(filmEdgeType).size());
+      assertTrue(mapper.getEdgeType2relationship().get(filmEdgeType).contains(hasFilmRelationship));
+      assertEquals(1, mapper.getEdgeType2relationship().get(actorEdgeType).size());
+      assertTrue(mapper.getEdgeType2relationship().get(actorEdgeType).contains(hasActorRelationship));
+
+      // JoinVertexes-AggregatorEdges Mapping
+
+      assertEquals(0, mapper.getJoinVertex2aggregatorEdges().size());
+
     }catch(Exception e) {
       e.printStackTrace();
       fail();
@@ -900,7 +1212,68 @@ public class GraphModelBuildingTest {
       assertEquals(0, projectManagerEdgeType.getProperties().size());
       assertEquals("Employee", projectManagerEdgeType.getInVertexType().getName());
       assertEquals(1, projectManagerEdgeType.getNumberRelationshipsRepresented());
-      
+
+      /*
+       * Rules check
+       */
+
+      // Classes Mapping
+
+      assertEquals(2, mapper.getVertexType2classMapper().size());
+      assertEquals(2, mapper.getEntity2classMapper().size());
+
+      OEntity employeeEntity = mapper.getDataBaseSchema().getEntityByName("EMPLOYEE");
+      OClassMapper employeeClassMapper = mapper.getClassMappingRulesByVertex(employeeVertexType);
+      assertEquals(employeeClassMapper, mapper.getClassMappingRulesByEntity(employeeEntity));
+      assertEquals(employeeClassMapper.getEntity(), employeeEntity);
+      assertEquals(employeeClassMapper.getVertexType(), employeeVertexType);
+
+      assertEquals(3, employeeClassMapper.attribute2property.size());
+      assertEquals(3, employeeClassMapper.property2attribute.size());
+      assertEquals("empId", employeeClassMapper.attribute2property.get("EMP_ID"));
+      assertEquals("mgrId", employeeClassMapper.attribute2property.get("MGR_ID"));
+      assertEquals("name", employeeClassMapper.attribute2property.get("NAME"));
+      assertEquals("EMP_ID", employeeClassMapper.property2attribute.get("empId"));
+      assertEquals("MGR_ID", employeeClassMapper.property2attribute.get("mgrId"));
+      assertEquals("NAME", employeeClassMapper.property2attribute.get("name"));
+
+      OEntity projectEntity = mapper.getDataBaseSchema().getEntityByName("PROJECT");
+      OClassMapper projectClassMapper =  mapper.getClassMappingRulesByVertex(projectVertexType);
+      assertEquals(projectClassMapper, mapper.getClassMappingRulesByEntity(projectEntity));
+      assertEquals(projectClassMapper.getEntity(), projectEntity);
+      assertEquals(projectClassMapper.getVertexType(), projectVertexType);
+
+      assertEquals(3, projectClassMapper.attribute2property.size());
+      assertEquals(3, projectClassMapper.property2attribute.size());
+      assertEquals("id", projectClassMapper.attribute2property.get("ID"));
+      assertEquals("title", projectClassMapper.attribute2property.get("TITLE"));
+      assertEquals("projectManager", projectClassMapper.attribute2property.get("PROJECT_MANAGER"));
+      assertEquals("ID", projectClassMapper.property2attribute.get("id"));
+      assertEquals("TITLE", projectClassMapper.property2attribute.get("title"));
+      assertEquals("PROJECT_MANAGER", projectClassMapper.property2attribute.get("projectManager"));
+
+      // Relationships-Edges Mapping
+
+      Iterator<ORelationship> it = employeeEntity.getOutRelationships().iterator();
+      ORelationship hasManagerRelationship = it.next();
+      assertFalse(it.hasNext());
+      it = projectEntity.getOutRelationships().iterator();
+      ORelationship hasProjectManagerRelationship = it.next();
+      assertFalse(it.hasNext());
+
+      assertEquals(2, mapper.getRelationship2edgeType().size());
+      assertEquals(mgrEdgeType, mapper.getRelationship2edgeType().get(hasManagerRelationship));
+      assertEquals(projectManagerEdgeType, mapper.getRelationship2edgeType().get(hasProjectManagerRelationship));
+
+      assertEquals(2, mapper.getEdgeType2relationship().size());
+      assertEquals(1, mapper.getEdgeType2relationship().get(mgrEdgeType).size());
+      assertTrue(mapper.getEdgeType2relationship().get(mgrEdgeType).contains(hasManagerRelationship));
+      assertEquals(1, mapper.getEdgeType2relationship().get(projectManagerEdgeType).size());
+      assertTrue(mapper.getEdgeType2relationship().get(projectManagerEdgeType).contains(hasProjectManagerRelationship));
+
+      // JoinVertexes-AggregatorEdges Mapping
+
+      assertEquals(0, mapper.getJoinVertex2aggregatorEdges().size());
 
     }catch(Exception e) {
       e.printStackTrace();
