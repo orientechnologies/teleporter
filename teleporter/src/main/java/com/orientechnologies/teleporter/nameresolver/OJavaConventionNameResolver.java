@@ -89,7 +89,7 @@ public class OJavaConventionNameResolver implements ONameResolver {
 
     // Foreign Key composed of multiple attribute
     else {         
-      finalName = this.toJavaClassConvention(relationship.getForeignEntityName()) + "2" + this.toJavaClassConvention(relationship.getParentEntityName());
+      finalName = this.toJavaClassConvention(relationship.getForeignEntity().getName()) + "2" + this.toJavaClassConvention(relationship.getParentEntity().getName());
     }
 
     return finalName;

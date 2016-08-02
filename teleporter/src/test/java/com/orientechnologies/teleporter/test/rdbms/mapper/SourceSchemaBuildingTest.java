@@ -151,8 +151,8 @@ public class SourceSchemaBuildingTest {
 
       Iterator<ORelationship> it = foreignEntity.getOutRelationships().iterator();
       ORelationship currentRelationship = it.next();
-      assertEquals("PARENT_AUTHOR", currentRelationship.getParentEntityName());
-      assertEquals("FOREIGN_BOOK", currentRelationship.getForeignEntityName());
+      assertEquals("PARENT_AUTHOR", currentRelationship.getParentEntity().getName());
+      assertEquals("FOREIGN_BOOK", currentRelationship.getForeignEntity().getName());
       assertEquals(parentEntity.getPrimaryKey(), currentRelationship.getPrimaryKey());
       assertEquals(foreignEntity.getForeignKeys().get(0), currentRelationship.getForeignKey());
 
@@ -289,8 +289,8 @@ public class SourceSchemaBuildingTest {
 
       Iterator<ORelationship> it = foreignEntity.getOutRelationships().iterator();
       ORelationship currentRelationship = it.next();
-      assertEquals("PARENT_AUTHOR", currentRelationship.getParentEntityName());
-      assertEquals("FOREIGN_BOOK", currentRelationship.getForeignEntityName());
+      assertEquals("PARENT_AUTHOR", currentRelationship.getParentEntity().getName());
+      assertEquals("FOREIGN_BOOK", currentRelationship.getForeignEntity().getName());
       assertEquals(parentEntity.getPrimaryKey(), currentRelationship.getPrimaryKey());
       assertEquals(foreignEntity.getForeignKeys().get(0), currentRelationship.getForeignKey());
 
@@ -422,8 +422,8 @@ public class SourceSchemaBuildingTest {
       // first relationship
       Iterator<ORelationship> it = foreignEntity.getOutRelationships().iterator();
       ORelationship currentRelationship = it.next();
-      assertEquals("PARENT_PERSON", currentRelationship.getParentEntityName());
-      assertEquals("FOREIGN_ARTICLE", currentRelationship.getForeignEntityName());
+      assertEquals("PARENT_PERSON", currentRelationship.getParentEntity().getName());
+      assertEquals("FOREIGN_ARTICLE", currentRelationship.getForeignEntity().getName());
       assertEquals(parentEntity.getPrimaryKey(), currentRelationship.getPrimaryKey());
       assertEquals(foreignEntity.getForeignKeys().get(0), currentRelationship.getForeignKey());
 
@@ -436,8 +436,8 @@ public class SourceSchemaBuildingTest {
 
       // second relationship
       currentRelationship = it.next();
-      assertEquals("PARENT_PERSON", currentRelationship.getParentEntityName());
-      assertEquals("FOREIGN_ARTICLE", currentRelationship.getForeignEntityName());
+      assertEquals("PARENT_PERSON", currentRelationship.getParentEntity().getName());
+      assertEquals("FOREIGN_ARTICLE", currentRelationship.getForeignEntity().getName());
       assertEquals(parentEntity.getPrimaryKey(), currentRelationship.getPrimaryKey());
       assertEquals(foreignEntity.getForeignKeys().get(1), currentRelationship.getForeignKey());
 
@@ -580,8 +580,8 @@ public class SourceSchemaBuildingTest {
       // first relationship
       Iterator<ORelationship> it = foreignEntity.getOutRelationships().iterator();
       ORelationship currentRelationship = it.next();
-      assertEquals("PARENT_PERSON", currentRelationship.getParentEntityName());
-      assertEquals("FOREIGN_ARTICLE", currentRelationship.getForeignEntityName());
+      assertEquals("PARENT_PERSON", currentRelationship.getParentEntity().getName());
+      assertEquals("FOREIGN_ARTICLE", currentRelationship.getForeignEntity().getName());
       assertEquals(parentEntity.getPrimaryKey(), currentRelationship.getPrimaryKey());
       assertEquals(foreignEntity.getForeignKeys().get(0), currentRelationship.getForeignKey());
 
@@ -597,8 +597,8 @@ public class SourceSchemaBuildingTest {
 
       // second relationship
       currentRelationship = it.next();
-      assertEquals("PARENT_PERSON", currentRelationship.getParentEntityName());
-      assertEquals("FOREIGN_ARTICLE", currentRelationship.getForeignEntityName());
+      assertEquals("PARENT_PERSON", currentRelationship.getParentEntity().getName());
+      assertEquals("FOREIGN_ARTICLE", currentRelationship.getForeignEntity().getName());
       assertEquals(parentEntity.getPrimaryKey(), currentRelationship.getPrimaryKey());
       assertEquals(foreignEntity.getForeignKeys().get(1), currentRelationship.getForeignKey());
       assertFalse(it.hasNext());
@@ -737,8 +737,8 @@ public class SourceSchemaBuildingTest {
       // first relationship
       Iterator<ORelationship> it = foreignEntity.getOutRelationships().iterator();
       ORelationship currentRelationship = it.next();
-      assertEquals("PARENT_EMPLOYEE", currentRelationship.getParentEntityName());
-      assertEquals("FOREIGN_PROJECT", currentRelationship.getForeignEntityName());
+      assertEquals("PARENT_EMPLOYEE", currentRelationship.getParentEntity().getName());
+      assertEquals("FOREIGN_PROJECT", currentRelationship.getForeignEntity().getName());
       assertEquals(parentEntity.getPrimaryKey(), currentRelationship.getPrimaryKey());
       assertEquals(foreignEntity.getForeignKeys().get(0), currentRelationship.getForeignKey());
 
@@ -752,8 +752,8 @@ public class SourceSchemaBuildingTest {
       // second relationship
       it = parentEntity.getOutRelationships().iterator();
       currentRelationship = it.next();
-      assertEquals("PARENT_EMPLOYEE", currentRelationship.getParentEntityName());
-      assertEquals("PARENT_EMPLOYEE", currentRelationship.getForeignEntityName());
+      assertEquals("PARENT_EMPLOYEE", currentRelationship.getParentEntity().getName());
+      assertEquals("PARENT_EMPLOYEE", currentRelationship.getForeignEntity().getName());
       assertEquals(parentEntity.getPrimaryKey(), currentRelationship.getPrimaryKey());
       assertEquals(parentEntity.getForeignKeys().get(0), currentRelationship.getForeignKey());
 
@@ -868,8 +868,8 @@ public class SourceSchemaBuildingTest {
       // first relationship
       Iterator<ORelationship> it = film2actor.getOutRelationships().iterator();
       ORelationship currentRelationship = it.next();
-      assertEquals("ACTOR", currentRelationship.getParentEntityName());
-      assertEquals("FILM2ACTOR", currentRelationship.getForeignEntityName());
+      assertEquals("ACTOR", currentRelationship.getParentEntity().getName());
+      assertEquals("FILM2ACTOR", currentRelationship.getForeignEntity().getName());
       assertEquals(actorEntity.getPrimaryKey(), currentRelationship.getPrimaryKey());
       assertEquals(film2actor.getForeignKeys().get(0), currentRelationship.getForeignKey());
 
@@ -883,8 +883,8 @@ public class SourceSchemaBuildingTest {
 
       // second relationship
       currentRelationship = it.next();
-      assertEquals("FILM", currentRelationship.getParentEntityName());
-      assertEquals("FILM2ACTOR", currentRelationship.getForeignEntityName());
+      assertEquals("FILM", currentRelationship.getParentEntity().getName());
+      assertEquals("FILM2ACTOR", currentRelationship.getForeignEntity().getName());
       assertEquals(filmEntity.getPrimaryKey(), currentRelationship.getPrimaryKey());
       assertEquals(film2actor.getForeignKeys().get(1), currentRelationship.getForeignKey());
 

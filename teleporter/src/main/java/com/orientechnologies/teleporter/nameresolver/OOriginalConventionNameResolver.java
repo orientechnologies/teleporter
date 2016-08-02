@@ -68,7 +68,7 @@ public class OOriginalConventionNameResolver implements ONameResolver {
 
     // Foreign Key composed of multiple attribute
     else {         
-      finalName = relationship.getForeignEntityName() + "2" + relationship.getParentEntityName();
+      finalName = relationship.getForeignEntity() + "2" + relationship.getParentEntity();
     }
 
     return finalName;

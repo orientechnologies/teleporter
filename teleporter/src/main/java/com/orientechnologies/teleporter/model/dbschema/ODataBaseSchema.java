@@ -151,11 +151,11 @@ public class ODataBaseSchema implements ODataSourceSchema {
     return null;
   }
 
-  public ORelationship getRelationshipByInvolvedEntitiesAndAttributes(String currentForeignEntityName, String currentParentEntityName,
+  public ORelationship getRelationshipByInvolvedEntitiesAndAttributes(OEntity currentForeignEntity, OEntity currentParentEntity,
       List<String> fromColumns, List<String> toColumns) {
 
     for(ORelationship currentRelationship: this.relationships) {
-      if(currentRelationship.getForeignEntityName().equals(currentForeignEntityName) && currentRelationship.getParentEntityName().equals(currentParentEntityName)) {
+      if(currentRelationship.getForeignEntity().getName().equals(currentForeignEntity.getName()) && currentRelationship.getParentEntity().getName().equals(currentParentEntity.getName())) {
         if(sameAttributesInvolved(currentRelationship.getForeignKey(), fromColumns) && sameAttributesInvolved(currentRelationship.getPrimaryKey(), toColumns)) {
           return currentRelationship;
         }

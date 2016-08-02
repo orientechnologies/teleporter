@@ -97,7 +97,7 @@ public class OGraphEngineForDB {
       for(String property: propertiesOfIndex) {
         propertyOfKey[cont] = property;
         if(toResolveNames)
-          valueOfKey[cont] = record.getString(this.mapper.getAttributeByVertexTypeAndProperty(vertexType, property).getName());
+          valueOfKey[cont] = record.getString(this.mapper.getAttributeNameByVertexTypeAndProperty(vertexType, property));
         else
           valueOfKey[cont] = record.getString(property);
 
@@ -194,15 +194,15 @@ public class OGraphEngineForDB {
       for(String property: propertiesOfIndex) {
         propertyOfKey[cont] = property;
         if(toResolveNames) {
-          OAttribute attribute = this.mapper.getAttributeByVertexTypeAndProperty(vertexType, property);
-          currentValue = record.getString(attribute.getName());
+          String attributeName = this.mapper.getAttributeNameByVertexTypeAndProperty(vertexType, property);
+          currentValue = record.getString(attributeName);
         }
         else {
           currentValue = record.getString(property);
         }
 
         // converting eventual "t" or "f" values in "true" and "false"
-        OModelProperty prop = vertexType.getPropertyByNameAmongAll(context.getNameResolver().resolveVertexProperty(property));
+        OModelProperty prop = vertexType.getPropertyByNameAmongAll(property);
         if(prop.getPropertyType().equalsIgnoreCase("boolean")) {
           switch(currentValue) {
             case "t": currentValue = "true";
@@ -362,22 +362,22 @@ public class OGraphEngineForDB {
     // disambiguation on OrientDB Schema type
 
     if(currentPropertyType.equals("DATE")) {
-      currentDateValue = record.getDate(this.mapper.getAttributeByVertexTypeAndProperty(vertexType, currentPropertyName).getName());
+      currentDateValue = record.getDate(this.mapper.getAttributeNameByVertexTypeAndProperty(vertexType, currentPropertyName));
       properties.put(currentPropertyName, currentDateValue);
     }
 
     else if(currentPropertyType.equals("DATETIME")) {
-      currentDateValue = record.getTimestamp(this.mapper.getAttributeByVertexTypeAndProperty(vertexType, currentPropertyName).getName());
+      currentDateValue = record.getTimestamp(this.mapper.getAttributeNameByVertexTypeAndProperty(vertexType, currentPropertyName));
       properties.put(currentPropertyName, currentDateValue);
     }
 
     else if(currentPropertyType.equals("BINARY")) {
-      currentBinaryValue = record.getBytes(this.mapper.getAttributeByVertexTypeAndProperty(vertexType, currentPropertyName).getName());
+      currentBinaryValue = record.getBytes(this.mapper.getAttributeNameByVertexTypeAndProperty(vertexType, currentPropertyName));
       properties.put(currentPropertyName, currentBinaryValue);
     }
 
     else if(currentPropertyType.equals("BOOLEAN")) {
-      currentAttributeValue = record.getString(this.mapper.getAttributeByVertexTypeAndProperty(vertexType, currentPropertyName).getName());
+      currentAttributeValue = record.getString(this.mapper.getAttributeNameByVertexTypeAndProperty(vertexType, currentPropertyName));
 
       switch(currentAttributeValue) {
 
@@ -391,21 +391,21 @@ public class OGraphEngineForDB {
 
     // JSON
     else if(handler.jsonImplemented && currentPropertyType.equals("EMBEDDED")) {
-      currentAttributeValue = record.getString(this.mapper.getAttributeByVertexTypeAndProperty(vertexType, currentPropertyName).getName());
+      currentAttributeValue = record.getString(this.mapper.getAttributeNameByVertexTypeAndProperty(vertexType, currentPropertyName));
       ODocument currentEmbeddedValue = this.handler.convertJSONToDocument(currentPropertyName, currentAttributeValue);
       properties.put(currentPropertyName, currentEmbeddedValue);
     }
 
     // GEOSPATIAL
     else if(handler.geospatialImplemented && handler.isGeospatial(currentOriginalType)) {
-      currentAttributeValue = record.getString(this.mapper.getAttributeByVertexTypeAndProperty(vertexType, currentPropertyName).getName());
+      currentAttributeValue = record.getString(this.mapper.getAttributeNameByVertexTypeAndProperty(vertexType, currentPropertyName));
       //						currentEmbeddedValue = OShapeFactory.INSTANCE.toDoc(currentAttributeValue);  // to change with transformation from wkt (currentAttrValue) into embedded
       ODocument currentEmbeddedValue = null;
       properties.put(currentPropertyName, currentEmbeddedValue);
     }
 
     else {
-      currentAttributeValue = record.getString(this.mapper.getAttributeByVertexTypeAndProperty(vertexType, currentPropertyName).getName());
+      currentAttributeValue = record.getString(this.mapper.getAttributeNameByVertexTypeAndProperty(vertexType, currentPropertyName));
       properties.put(currentPropertyName, currentAttributeValue);
     }
 
@@ -555,7 +555,8 @@ public class OGraphEngineForDB {
 
       int index = 0;
       for(OAttribute foreignAttribute: relation.getForeignKey().getInvolvedAttributes())  {
-        propertyOfKey[index] = context.getNameResolver().resolveVertexProperty(relation.getPrimaryKey().getInvolvedAttributes().get(index).getName());
+        String attributeName = relation.getPrimaryKey().getInvolvedAttributes().get(index).getName();
+        propertyOfKey[index] =  mapper.getPropertyNameByVertexTypeAndAttribute(currentInVertexType, attributeName);
         valueOfKey[index] = foreignRecord.getString((foreignAttribute.getName()));
         index++;
       }
@@ -700,7 +701,7 @@ public class OGraphEngineForDB {
 
       int index = 0;
       for(OAttribute foreignKeyAttribute: relationship1.getForeignKey().getInvolvedAttributes()) {
-        keysOutVertex[index] = context.getNameResolver().resolveVertexProperty(relationship1.getPrimaryKey().getInvolvedAttributes().get(index).getName());
+        keysOutVertex[index] = this.mapper.getPropertyNameByEntityAndAttribute(relationship1.getParentEntity(), relationship1.getPrimaryKey().getInvolvedAttributes().get(index).getName());
         valuesOutVertex[index] = jointTableRecord.getString(foreignKeyAttribute.getName());
         index++;
       }
@@ -712,7 +713,7 @@ public class OGraphEngineForDB {
 
       index = 0;
       for(OAttribute foreignKeyAttribute: relationship2.getForeignKey().getInvolvedAttributes()) {
-        keysInVertex[index] = context.getNameResolver().resolveVertexProperty(relationship2.getPrimaryKey().getInvolvedAttributes().get(index).getName());
+        keysInVertex[index] = this.mapper.getPropertyNameByEntityAndAttribute(relationship2.getParentEntity(), relationship2.getPrimaryKey().getInvolvedAttributes().get(index).getName());
         valuesInVertex[index] = jointTableRecord.getString(foreignKeyAttribute.getName());
         index++;
       }
