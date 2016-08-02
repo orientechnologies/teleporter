@@ -71,8 +71,8 @@ public class OER2GraphMapper extends OSource2GraphMapper {
     this.entity2classMapper = new IdentityHashMap<OEntity,OClassMapper>();
     this.vertexType2classMapper = new IdentityHashMap<OVertexType,OClassMapper>();
 
-    this.relationship2edgeType = new LinkedHashMap<ORelationship,OEdgeType>();
-    this.edgeType2relationship = new LinkedHashMap<OEdgeType,LinkedList<ORelationship>>();
+    this.relationship2edgeType = new IdentityHashMap<ORelationship,OEdgeType>();
+    this.edgeType2relationship = new IdentityHashMap<OEdgeType,LinkedList<ORelationship>>();
     this.edgeTypeName2count = new TreeMap<String,Integer>();
     this.joinVertex2aggregatorEdges = new LinkedHashMap<OVertexType, OAggregatorEdge>();
 
