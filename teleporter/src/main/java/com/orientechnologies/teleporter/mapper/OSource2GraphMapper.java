@@ -46,8 +46,6 @@ public abstract class OSource2GraphMapper {
     return this.graphModel;
   }
 
-  public abstract ODataSourceSchema getSourceSchema();
-
   public abstract void buildSourceDatabaseSchema(OTeleporterContext context);
 
   public abstract void buildGraphModel(ONameResolver nameResolver, OTeleporterContext context);

@@ -911,11 +911,11 @@ public class OrientDBSchemaWritingTest {
       // dropping property from Graph Model (from Book)
       OrientVertexType articleVertexType = orientGraph.getVertexType("Article");
 
-      mapper.getGraphModel().getVertexByName("Article").removePropertyByName("title");
-      assertEquals(3, mapper.getGraphModel().getVertexByName("Article").getProperties().size());
-      assertEquals("id", mapper.getGraphModel().getVertexByName("Article").getProperties().get(0).getName());
-      assertEquals("date", mapper.getGraphModel().getVertexByName("Article").getProperties().get(1).getName());
-      assertEquals("authorId", mapper.getGraphModel().getVertexByName("Article").getProperties().get(2).getName());
+      mapper.getGraphModel().getVertexTypeByName("Article").removePropertyByName("title");
+      assertEquals(3, mapper.getGraphModel().getVertexTypeByName("Article").getProperties().size());
+      assertEquals("id", mapper.getGraphModel().getVertexTypeByName("Article").getProperties().get(0).getName());
+      assertEquals("date", mapper.getGraphModel().getVertexTypeByName("Article").getProperties().get(1).getName());
+      assertEquals("authorId", mapper.getGraphModel().getVertexTypeByName("Article").getProperties().get(2).getName());
 
       assertEquals(4, articleVertexType.properties().size());
       it = articleVertexType.properties().iterator();

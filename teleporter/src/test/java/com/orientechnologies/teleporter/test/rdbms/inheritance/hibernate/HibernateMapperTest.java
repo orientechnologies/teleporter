@@ -252,8 +252,8 @@ public class HibernateMapperTest {
 
       Iterator<ORelationship> itEmp = employeeEntity.getOutRelationships().iterator();
       ORelationship currentEmpRel = itEmp.next();
-      assertEquals("RESIDENCE", currentEmpRel.getParentEntityName());
-      assertEquals("EMPLOYEE", currentEmpRel.getForeignEntityName());
+      assertEquals("RESIDENCE", currentEmpRel.getParentEntity().getName());
+      assertEquals("EMPLOYEE", currentEmpRel.getForeignEntity().getName());
       assertEquals(residenceEntity.getPrimaryKey(), currentEmpRel.getPrimaryKey());
       assertEquals(employeeEntity.getForeignKeys().get(0), currentEmpRel.getForeignKey());
       assertFalse(itEmp.hasNext());
@@ -272,10 +272,10 @@ public class HibernateMapperTest {
       Iterator<ORelationship> itContEmp = contractEmployeeEntity.getInheritedOutRelationships().iterator();
       ORelationship currentRegEmpRel = itRegEmp.next();
       ORelationship currentContEmpRel = itContEmp.next();
-      assertEquals("RESIDENCE", currentRegEmpRel.getParentEntityName());
-      assertEquals("EMPLOYEE", currentRegEmpRel.getForeignEntityName());
-      assertEquals("RESIDENCE", currentContEmpRel.getParentEntityName());
-      assertEquals("EMPLOYEE", currentContEmpRel.getForeignEntityName());
+      assertEquals("RESIDENCE", currentRegEmpRel.getParentEntity().getName());
+      assertEquals("EMPLOYEE", currentRegEmpRel.getForeignEntity().getName());
+      assertEquals("RESIDENCE", currentContEmpRel.getParentEntity().getName());
+      assertEquals("EMPLOYEE", currentContEmpRel.getForeignEntity().getName());
       assertEquals(residenceEntity.getPrimaryKey(), currentRegEmpRel.getPrimaryKey());
       assertEquals(1, currentRegEmpRel.getForeignKey().getInvolvedAttributes().size());
       assertEquals("RESIDENCE", currentRegEmpRel.getForeignKey().getInvolvedAttributes().get(0).getName());
@@ -331,10 +331,10 @@ public class HibernateMapperTest {
        *  Testing built graph model
        */
 
-      OVertexType employeeVertexType = mapper.getGraphModel().getVertexByName("Employee");
-      OVertexType regularEmployeeVertexType = mapper.getGraphModel().getVertexByName("RegularEmployee");
-      OVertexType contractEmployeeVertexType = mapper.getGraphModel().getVertexByName("ContractEmployee");
-      OVertexType residenceVertexType = mapper.getGraphModel().getVertexByName("Residence");
+      OVertexType employeeVertexType = mapper.getGraphModel().getVertexTypeByName("Employee");
+      OVertexType regularEmployeeVertexType = mapper.getGraphModel().getVertexTypeByName("RegularEmployee");
+      OVertexType contractEmployeeVertexType = mapper.getGraphModel().getVertexTypeByName("ContractEmployee");
+      OVertexType residenceVertexType = mapper.getGraphModel().getVertexTypeByName("Residence");
 
 
       // vertices check
@@ -699,12 +699,12 @@ public class HibernateMapperTest {
       ORelationship currentEmpRel = itEmp.next();
       ORelationship currentRegEmpRel = itRegEmp.next();
       ORelationship currentContEmpRel = itContEmp.next();
-      assertEquals("RESIDENCE", currentEmpRel.getParentEntityName());
-      assertEquals("EMPLOYEE", currentEmpRel.getForeignEntityName());
-      assertEquals("EMPLOYEE", currentRegEmpRel.getParentEntityName());
-      assertEquals("REGULAR_EMPLOYEE", currentRegEmpRel.getForeignEntityName());
-      assertEquals("EMPLOYEE", currentContEmpRel.getParentEntityName());
-      assertEquals("CONTRACT_EMPLOYEE", currentContEmpRel.getForeignEntityName());
+      assertEquals("RESIDENCE", currentEmpRel.getParentEntity().getName());
+      assertEquals("EMPLOYEE", currentEmpRel.getForeignEntity().getName());
+      assertEquals("EMPLOYEE", currentRegEmpRel.getParentEntity().getName());
+      assertEquals("REGULAR_EMPLOYEE", currentRegEmpRel.getForeignEntity().getName());
+      assertEquals("EMPLOYEE", currentContEmpRel.getParentEntity().getName());
+      assertEquals("CONTRACT_EMPLOYEE", currentContEmpRel.getForeignEntity().getName());
       assertEquals(residenceEntity.getPrimaryKey(), currentEmpRel.getPrimaryKey());
       assertEquals(employeeEntity.getForeignKeys().get(0), currentEmpRel.getForeignKey());
       assertEquals(employeeEntity.getPrimaryKey(), currentRegEmpRel.getPrimaryKey());
@@ -737,10 +737,10 @@ public class HibernateMapperTest {
       itContEmp = contractEmployeeEntity.getInheritedOutRelationships().iterator();
       currentRegEmpRel = itRegEmp.next();
       currentContEmpRel = itContEmp.next();
-      assertEquals("RESIDENCE", currentRegEmpRel.getParentEntityName());
-      assertEquals("EMPLOYEE", currentRegEmpRel.getForeignEntityName());
-      assertEquals("RESIDENCE", currentContEmpRel.getParentEntityName());
-      assertEquals("EMPLOYEE", currentContEmpRel.getForeignEntityName());
+      assertEquals("RESIDENCE", currentRegEmpRel.getParentEntity().getName());
+      assertEquals("EMPLOYEE", currentRegEmpRel.getForeignEntity().getName());
+      assertEquals("RESIDENCE", currentContEmpRel.getParentEntity().getName());
+      assertEquals("EMPLOYEE", currentContEmpRel.getForeignEntity().getName());
       assertEquals(residenceEntity.getPrimaryKey(), currentRegEmpRel.getPrimaryKey());
       assertEquals(1, currentRegEmpRel.getForeignKey().getInvolvedAttributes().size());
       assertEquals("RESIDENCE", currentRegEmpRel.getForeignKey().getInvolvedAttributes().get(0).getName());
@@ -793,10 +793,10 @@ public class HibernateMapperTest {
        *  Testing built graph model
        */
 
-      OVertexType employeeVertexType = mapper.getGraphModel().getVertexByName("Employee");
-      OVertexType regularEmployeeVertexType = mapper.getGraphModel().getVertexByName("RegularEmployee");
-      OVertexType contractEmployeeVertexType = mapper.getGraphModel().getVertexByName("ContractEmployee");
-      OVertexType residenceVertexType = mapper.getGraphModel().getVertexByName("Residence");
+      OVertexType employeeVertexType = mapper.getGraphModel().getVertexTypeByName("Employee");
+      OVertexType regularEmployeeVertexType = mapper.getGraphModel().getVertexTypeByName("RegularEmployee");
+      OVertexType contractEmployeeVertexType = mapper.getGraphModel().getVertexTypeByName("ContractEmployee");
+      OVertexType residenceVertexType = mapper.getGraphModel().getVertexTypeByName("Residence");
 
 
       // vertices check
@@ -1161,12 +1161,12 @@ public class HibernateMapperTest {
       ORelationship currentEmpRel = itEmp.next();
       ORelationship currentRegEmpRel = itRegEmp.next();
       ORelationship currentContEmpRel = itContEmp.next();
-      assertEquals("RESIDENCE", currentEmpRel.getParentEntityName());
-      assertEquals("EMPLOYEE", currentEmpRel.getForeignEntityName());
-      assertEquals("EMPLOYEE", currentRegEmpRel.getParentEntityName());
-      assertEquals("REGULAR_EMPLOYEE", currentRegEmpRel.getForeignEntityName());
-      assertEquals("EMPLOYEE", currentContEmpRel.getParentEntityName());
-      assertEquals("CONTRACT_EMPLOYEE", currentContEmpRel.getForeignEntityName());
+      assertEquals("RESIDENCE", currentEmpRel.getParentEntity().getName());
+      assertEquals("EMPLOYEE", currentEmpRel.getForeignEntity().getName());
+      assertEquals("EMPLOYEE", currentRegEmpRel.getParentEntity().getName());
+      assertEquals("REGULAR_EMPLOYEE", currentRegEmpRel.getForeignEntity().getName());
+      assertEquals("EMPLOYEE", currentContEmpRel.getParentEntity().getName());
+      assertEquals("CONTRACT_EMPLOYEE", currentContEmpRel.getForeignEntity().getName());
       assertEquals(residenceEntity.getPrimaryKey(), currentEmpRel.getPrimaryKey());
       assertEquals(employeeEntity.getForeignKeys().get(0), currentEmpRel.getForeignKey());
       assertEquals(employeeEntity.getPrimaryKey(), currentRegEmpRel.getPrimaryKey());
@@ -1199,10 +1199,10 @@ public class HibernateMapperTest {
       itContEmp = contractEmployeeEntity.getInheritedOutRelationships().iterator();
       currentRegEmpRel = itRegEmp.next();
       currentContEmpRel = itContEmp.next();
-      assertEquals("RESIDENCE", currentRegEmpRel.getParentEntityName());
-      assertEquals("EMPLOYEE", currentRegEmpRel.getForeignEntityName());
-      assertEquals("RESIDENCE", currentContEmpRel.getParentEntityName());
-      assertEquals("EMPLOYEE", currentContEmpRel.getForeignEntityName());
+      assertEquals("RESIDENCE", currentRegEmpRel.getParentEntity().getName());
+      assertEquals("EMPLOYEE", currentRegEmpRel.getForeignEntity().getName());
+      assertEquals("RESIDENCE", currentContEmpRel.getParentEntity().getName());
+      assertEquals("EMPLOYEE", currentContEmpRel.getForeignEntity().getName());
       assertEquals(residenceEntity.getPrimaryKey(), currentRegEmpRel.getPrimaryKey());
       assertEquals(1, currentRegEmpRel.getForeignKey().getInvolvedAttributes().size());
       assertEquals("RESIDENCE", currentRegEmpRel.getForeignKey().getInvolvedAttributes().get(0).getName());
@@ -1253,10 +1253,10 @@ public class HibernateMapperTest {
        *  Testing built graph model
        */
 
-      OVertexType employeeVertexType = mapper.getGraphModel().getVertexByName("Employee");
-      OVertexType regularEmployeeVertexType = mapper.getGraphModel().getVertexByName("RegularEmployee");
-      OVertexType contractEmployeeVertexType = mapper.getGraphModel().getVertexByName("ContractEmployee");
-      OVertexType residenceVertexType = mapper.getGraphModel().getVertexByName("Residence");
+      OVertexType employeeVertexType = mapper.getGraphModel().getVertexTypeByName("Employee");
+      OVertexType regularEmployeeVertexType = mapper.getGraphModel().getVertexTypeByName("RegularEmployee");
+      OVertexType contractEmployeeVertexType = mapper.getGraphModel().getVertexTypeByName("ContractEmployee");
+      OVertexType residenceVertexType = mapper.getGraphModel().getVertexTypeByName("Residence");
 
 
       // vertices check
@@ -1617,8 +1617,8 @@ public class HibernateMapperTest {
 
       Iterator<ORelationship> itEmp = employeeEntity.getOutRelationships().iterator();
       ORelationship currentEmpRel = itEmp.next();
-      assertEquals("RESIDENCE", currentEmpRel.getParentEntityName());
-      assertEquals("EMPLOYEE", currentEmpRel.getForeignEntityName());
+      assertEquals("RESIDENCE", currentEmpRel.getParentEntity().getName());
+      assertEquals("EMPLOYEE", currentEmpRel.getForeignEntity().getName());
       assertEquals(residenceEntity.getPrimaryKey(), currentEmpRel.getPrimaryKey());
       assertEquals(employeeEntity.getForeignKeys().get(0), currentEmpRel.getForeignKey());
       assertFalse(itEmp.hasNext());
@@ -1638,10 +1638,10 @@ public class HibernateMapperTest {
       Iterator<ORelationship> itContEmp = contractEmployeeEntity.getInheritedOutRelationships().iterator();
       ORelationship currentRegEmpRel = itRegEmp.next();
       ORelationship currentContEmpRel = itContEmp.next();
-      assertEquals("RESIDENCE", currentRegEmpRel.getParentEntityName());
-      assertEquals("EMPLOYEE", currentRegEmpRel.getForeignEntityName());
-      assertEquals("RESIDENCE", currentContEmpRel.getParentEntityName());
-      assertEquals("EMPLOYEE", currentContEmpRel.getForeignEntityName());
+      assertEquals("RESIDENCE", currentRegEmpRel.getParentEntity().getName());
+      assertEquals("EMPLOYEE", currentRegEmpRel.getForeignEntity().getName());
+      assertEquals("RESIDENCE", currentContEmpRel.getParentEntity().getName());
+      assertEquals("EMPLOYEE", currentContEmpRel.getForeignEntity().getName());
       assertEquals(residenceEntity.getPrimaryKey(), currentRegEmpRel.getPrimaryKey());
       assertEquals(1, currentRegEmpRel.getForeignKey().getInvolvedAttributes().size());
       assertEquals("RESIDENCE", currentRegEmpRel.getForeignKey().getInvolvedAttributes().get(0).getName());
@@ -1691,10 +1691,10 @@ public class HibernateMapperTest {
        *  Testing built graph model
        */
 
-      OVertexType employeeVertexType = mapper.getGraphModel().getVertexByName("Employee");
-      OVertexType regularEmployeeVertexType = mapper.getGraphModel().getVertexByName("RegularEmployee");
-      OVertexType contractEmployeeVertexType = mapper.getGraphModel().getVertexByName("ContractEmployee");
-      OVertexType residenceVertexType = mapper.getGraphModel().getVertexByName("Residence");
+      OVertexType employeeVertexType = mapper.getGraphModel().getVertexTypeByName("Employee");
+      OVertexType regularEmployeeVertexType = mapper.getGraphModel().getVertexTypeByName("RegularEmployee");
+      OVertexType contractEmployeeVertexType = mapper.getGraphModel().getVertexTypeByName("ContractEmployee");
+      OVertexType residenceVertexType = mapper.getGraphModel().getVertexTypeByName("Residence");
 
 
       // vertices check
