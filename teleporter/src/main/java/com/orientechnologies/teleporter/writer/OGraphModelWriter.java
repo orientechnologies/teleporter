@@ -238,7 +238,7 @@ public class OGraphModelWriter {
 
             if(!propertiesList.isEmpty()) {
               context.getOutputManager().debug("\nBuilding index for '%s' on %s  (%s/%s)...\n", currentVertexType.getName(), propertiesList, iteration, numberOfVertices);
-              statement = "create index " + currentType + ".pkey" + " on " + currentType + " (" + propertiesList + ") unique_hash_index";
+              statement = "create index `" + currentType + ".pkey`" + " on `" + currentType + "` (" + propertiesList + ") unique_hash_index";
               sqlCommand = new OCommandSQL(statement);
               orientGraph.getRawGraph().command(sqlCommand).execute();
               context.getOutputManager().debug("\nIndex for %s built.\n", currentVertexType.getName());
