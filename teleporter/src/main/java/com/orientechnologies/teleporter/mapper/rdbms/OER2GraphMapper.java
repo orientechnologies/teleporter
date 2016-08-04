@@ -821,10 +821,10 @@ public class OER2GraphMapper extends OSource2GraphMapper {
         if(joinTableDoc == null) {
 
           // building relationship
-          ORelationship currentRelationship = buildRelationshipFrom(currentForeignEntityName, currentParentEntityName, fromColumns, toColumns, direction, foreignEntityIsJoinTableToAggregate, context);
+          ORelationship currentRelationship = buildRelationshipFromConfig(currentForeignEntityName, currentParentEntityName, fromColumns, toColumns, direction, foreignEntityIsJoinTableToAggregate, context);
 
           // building correspondent edgeType (check on inheritance not needed)
-          buildEdgeTypeFromRelationship(currentRelationship, currentForeignEntityName, currentParentEntityName, edgeName, currentEdgeInfo, foreignEntityIsJoinTableToAggregate, context);
+          buildEdgeTypeFromConfiguredRelationship(currentRelationship, currentForeignEntityName, currentParentEntityName, edgeName, currentEdgeInfo, foreignEntityIsJoinTableToAggregate, context);
 
         }
         else {
@@ -852,16 +852,16 @@ public class OER2GraphMapper extends OSource2GraphMapper {
             }
 
             // building left relationship
-            ORelationship currentRelationship = buildRelationshipFrom(joinTableName, currentForeignEntityName, joinTableFromColumns, fromColumns, direction, foreignEntityIsJoinTableToAggregate, context);
+            ORelationship currentRelationship = buildRelationshipFromConfig(joinTableName, currentForeignEntityName, joinTableFromColumns, fromColumns, direction, foreignEntityIsJoinTableToAggregate, context);
 
             // building correspondent edgeType (check on inheritance not needed)
-            buildEdgeTypeFromRelationship(currentRelationship, joinTableName, currentForeignEntityName, edgeName + "-left", currentEdgeInfo, foreignEntityIsJoinTableToAggregate, context);
+            buildEdgeTypeFromConfiguredRelationship(currentRelationship, joinTableName, currentForeignEntityName, edgeName + "-left", currentEdgeInfo, foreignEntityIsJoinTableToAggregate, context);
 
             // building right relationship
-            currentRelationship = buildRelationshipFrom(joinTableName, currentParentEntityName, joinTableToColumns, toColumns, direction, foreignEntityIsJoinTableToAggregate, context);
+            currentRelationship = buildRelationshipFromConfig(joinTableName, currentParentEntityName, joinTableToColumns, toColumns, direction, foreignEntityIsJoinTableToAggregate, context);
 
             // building correspondent edgeType (check on inheritance not needed)
-            buildEdgeTypeFromRelationship(currentRelationship, joinTableName, currentParentEntityName, edgeName + "-right", currentEdgeInfo, foreignEntityIsJoinTableToAggregate, context);
+            buildEdgeTypeFromConfiguredRelationship(currentRelationship, joinTableName, currentParentEntityName, edgeName + "-right", currentEdgeInfo, foreignEntityIsJoinTableToAggregate, context);
 
             // setting attributes of the join table
             OEntity joinTable = this.dataBaseSchema.getEntityByName(joinTableName);
@@ -901,8 +901,8 @@ public class OER2GraphMapper extends OSource2GraphMapper {
    * @param context
    * @return
    */
-  private ORelationship buildRelationshipFrom(String currentForeignEntityName, String currentParentEntityName, List<String> fromColumns,
-                                              List<String> toColumns, String direction, boolean foreignEntityIsJoinTableToAggregate, OTeleporterContext context) {
+  private ORelationship buildRelationshipFromConfig(String currentForeignEntityName, String currentParentEntityName, List<String> fromColumns,
+                                                    List<String> toColumns, String direction, boolean foreignEntityIsJoinTableToAggregate, OTeleporterContext context) {
 
     OTeleporterStatistics statistics = context.getStatistics();
 
@@ -970,8 +970,8 @@ public class OER2GraphMapper extends OSource2GraphMapper {
    * @param foreignEntityIsJoinTableToAggregate
    * @param context
    */
-  private void buildEdgeTypeFromRelationship(ORelationship currentRelationship, String currentForeignEntityName, String currentParentEntityName,
-                                             String edgeName, ODocument currentEdgeInfo, boolean foreignEntityIsJoinTableToAggregate, OTeleporterContext context) {
+  private void buildEdgeTypeFromConfiguredRelationship(ORelationship currentRelationship, String currentForeignEntityName, String currentParentEntityName,
+                                                       String edgeName, ODocument currentEdgeInfo, boolean foreignEntityIsJoinTableToAggregate, OTeleporterContext context) {
 
     OTeleporterStatistics statistics = context.getStatistics();
 
