@@ -45,7 +45,7 @@ import static org.junit.Assert.*;
  *
  */
 
-public class ImportWithInputConfigurationTest {
+public class ImportWithInputRelationshipConfigurationTest {
 
   private OTeleporterContext            context;
   private ODBMSNaiveStrategy            naiveStrategy;

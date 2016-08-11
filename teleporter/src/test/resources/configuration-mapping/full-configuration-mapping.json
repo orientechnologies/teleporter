@@ -1,0 +1,191 @@
+{
+  "vertices": [
+    {
+      "name": "Person",
+      "mapping": {
+        "sourceTables": [
+          {
+            "name": "sourceTable1",
+            "dataSource": "mysql",
+            "tableName": "person"
+          },
+          {
+            "name": "sourceTable2",
+            "dataSource": "mysql",
+            "tableName": "vat_profile"
+          }
+        ]
+      },
+      "properties": {
+        "extKey1": {
+          "include": true,
+          "type": "string",
+          "mandatory": false,
+          "readOnly": false,
+          "notNull": false,
+          "mapping": {
+            "source": "sourceTable1",
+            "columnName": "id",
+            "type": "VARCHAR"
+          }
+        },
+        "firstName": {
+          "include": true,
+          "type": "string",
+          "mandatory": true,
+          "readOnly": false,
+          "notNull": true,
+          "mapping": {
+            "source": "sourceTable1",
+            "columnName": "name",
+            "type": "VARCHAR"
+          }
+        },
+        "lastName": {
+          "include": true,
+          "type": "string",
+          "mandatory": true,
+          "readOnly": false,
+          "notNull": true,
+          "mapping": {
+            "source": "sourceTable1",
+            "columnName": "surname",
+            "type": "VARCHAR"
+          }
+        },
+        "dep_id": {
+          "include": false,
+          "type": "string",
+          "mandatory": false,
+          "readOnly": false,
+          "notNull": false,
+          "mapping": {
+            "source": "sourceTable1",
+            "columnName": "dep_id",
+            "type": "VARCHAR"
+          }
+        },
+        "extKey2": {
+          "include": true,
+          "type": "string",
+          "mandatory": false,
+          "readOnly": false,
+          "notNull": false,
+          "mapping": {
+            "source": "sourceTable2",
+            "columnName": "id",
+            "type": "VARCHAR"
+          }
+        },
+        "VAT": {
+          "include": true,
+          "type": "string",
+          "mandatory": true,
+          "readOnly": false,
+          "notNull": true,
+          "mapping": {
+            "source": "sourceTable2",
+            "columnName": "vat",
+            "type": "VARCHAR"
+          }
+        },
+        "updatedOn": {
+          "include": false,
+          "type": "date",
+          "mandatory": true,
+          "readOnly": false,
+          "notNull": true,
+          "mapping": {
+            "source": "sourceTable2",
+            "columnName": "updated_on",
+            "type": "DATE"
+          }
+        }
+      }
+    },
+    {
+      "name": "Department",
+      "mapping": {
+        "sourceTables": [
+          {
+            "name": "sourceTable1",
+            "dataSource": "mysql",
+            "tableName": "department"
+          }
+        ]
+      },
+      "properties": {
+        "id": {
+          "include": true,
+          "type": "string",
+          "mandatory": false,
+          "readOnly": false,
+          "notNull": false,
+          "mapping": {
+            "source": "sourceTable1",
+            "columnName": "id",
+            "type": "VARCHAR"
+          }
+        },
+        "departmentName": {
+          "include": true,
+          "type": "string",
+          "mandatory": true,
+          "readOnly": false,
+          "notNull": true,
+          "mapping": {
+            "source": "sourceTable1",
+            "columnName": "name",
+            "type": "VARCHAR"
+          }
+        },
+        "location": {
+          "include": true,
+          "type": "string",
+          "mandatory": true,
+          "readOnly": false,
+          "notNull": true,
+          "mapping": {
+            "source": "sourceTable1",
+            "columnName": "location",
+            "type": "VARCHAR"
+          }
+        },
+        "updatedOn": {
+          "include": false,
+          "type": "date",
+          "mandatory": true,
+          "readOnly": false,
+          "notNull": true,
+          "mapping": {
+            "source": "sourceTable1",
+            "columnName": "updated_on",
+            "type": "DATE"
+          }
+        }
+      }
+    }
+  ],
+  "edges": [
+    {
+      "WorksAt": {
+        "mapping": {
+          "fromTable": "person",
+          "fromColumns": ["dep_id"],
+          "toTable": "department",
+          "toColumns": ["id"],
+          "direction": "direct"
+        },
+        "properties": {
+          "since": {
+            "include": true,
+            "type": "date",
+            "mandatory": true,
+            "readOnly": false,
+            "notNull": false
+          }
+        }
+      }
+    }
+  ]
+}

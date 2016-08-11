@@ -23,6 +23,7 @@ import com.orientechnologies.teleporter.context.OTeleporterContext;
 import com.orientechnologies.teleporter.context.OTeleporterStatistics;
 import com.orientechnologies.teleporter.exception.OTeleporterRuntimeException;
 import com.orientechnologies.teleporter.mapper.OSource2GraphMapper;
+import com.orientechnologies.teleporter.mapper.rdbms.classmapper.OClassMapper;
 import com.orientechnologies.teleporter.model.dbschema.*;
 import com.orientechnologies.teleporter.model.graphmodel.*;
 import com.orientechnologies.teleporter.nameresolver.ONameResolver;
@@ -587,7 +588,8 @@ public class OER2GraphMapper extends OSource2GraphMapper {
       Map<String,String> attribute2property = new LinkedHashMap<String,String>();   // map to maintain the mapping between the attributes of the current entity and the properties of the correspondent vertex type
       Map<String,String> property2attribute = new LinkedHashMap<String,String>();   // map to maintain the mapping between the properties of the current vertex type and the attributes of the correspondent entity
       for(OAttribute currentAttribute: currentEntity.getAttributes()) {
-        OModelProperty currentProperty = new OModelProperty(nameResolver.resolveVertexProperty(currentAttribute.getName()), currentAttribute.getOrdinalPosition(), currentAttribute.getDataType(), currentEntity.getPrimaryKey().getInvolvedAttributes().contains(currentAttribute));
+        OModelProperty currentProperty = new OModelProperty(nameResolver.resolveVertexProperty(currentAttribute.getName()), currentAttribute.getOrdinalPosition(),
+                currentAttribute.getDataType(), currentEntity.getPrimaryKey().getInvolvedAttributes().contains(currentAttribute), currentVertexType);
         currentVertexType.getProperties().add(currentProperty);
 
         attribute2property.put(currentAttribute.getName(), currentProperty.getName());
@@ -596,7 +598,8 @@ public class OER2GraphMapper extends OSource2GraphMapper {
 
       // adding inherited attributes to vertex-type
       for(OAttribute attribute: currentEntity.getInheritedAttributes()) {
-        OModelProperty currentProperty = new OModelProperty(nameResolver.resolveVertexProperty(attribute.getName()), attribute.getOrdinalPosition(), attribute.getDataType(), currentEntity.getPrimaryKey().getInvolvedAttributes().contains(attribute));
+        OModelProperty currentProperty = new OModelProperty(nameResolver.resolveVertexProperty(attribute.getName()), attribute.getOrdinalPosition(),
+                attribute.getDataType(), currentEntity.getPrimaryKey().getInvolvedAttributes().contains(attribute), currentVertexType);
         currentVertexType.getInheritedProperties().add(currentProperty);
         // TODO: Adding inherited attributes and props to the maps?
       }
@@ -742,13 +745,47 @@ public class OER2GraphMapper extends OSource2GraphMapper {
 
   public void applyImportConfiguration(OTeleporterContext context) {
 
+    if(this.configuration != null) {
+
+    /*
+     * Adding/updating classes according to the manual configuration
+     */
+      this.upsertClassesFromConfiguration(context);
+
     /*
      * Adding/updating relationships according to the manual configuration
      */
-
-    if(this.configuration != null) {
       this.upsertRelationshipsFromConfiguration(context);
     }
+  }
+
+
+  /**
+   * MICRO EXECUTION BLOCK: APPLY IMPORT CONFIGURATION - UPSERT CLASSES' MAPPING FROM CONFIGURATION
+   * Builds the Vertex Types starting from the Entities in the source database schema.
+   * Adds and/or updates Vertex Types and Entities in the source database schema according to the manual configuration passed to Teleporter.
+   *
+   * @param context
+   */
+
+  private void upsertClassesFromConfiguration(OTeleporterContext context) {
+
+    List<ODocument> verticesDoc = configuration.field("vertices");
+
+    if(verticesDoc == null) {
+      context.getOutputManager().error("Configuration error: 'vertices' field not found.");
+      throw new OTeleporterRuntimeException();
+    }
+
+    // building the current-in-vertex and the current-out-vertex and adding the edge to them
+    ONameResolver nameResolver = context.getNameResolver();
+
+    for(ODocument currentVertex: verticesDoc) {
+
+
+    }
+
+
   }
 
 
@@ -1008,7 +1045,7 @@ public class OER2GraphMapper extends OSource2GraphMapper {
         }
         OModelProperty currentProperty = currentEdgeType.getPropertyByName(propertyName);
         if(currentProperty == null) {
-          currentProperty = new OModelProperty(propertyName, ordinalPosition, propertyType, false);
+          currentProperty = new OModelProperty(propertyName, ordinalPosition, propertyType, false, currentEdgeType);
           ordinalPosition++;
         }
         currentProperty.setFromPrimaryKey(false);
@@ -1165,9 +1202,9 @@ public class OER2GraphMapper extends OSource2GraphMapper {
         // adding to the edge all properties not belonging to the primary key
         for(OModelProperty currentProperty: currentVertexType.getProperties()) {
 
-          // if property does not belong to the primary key
+          // if property does not belong to the primary key add it to the aggregator edge
           if(!currentProperty.isFromPrimaryKey()) {
-            OModelProperty newProperty = new OModelProperty(currentProperty.getName(), position, currentProperty.getPropertyType(), currentProperty.isFromPrimaryKey());
+            OModelProperty newProperty = new OModelProperty(currentProperty.getName(), position, currentProperty.getPropertyType(), currentProperty.isFromPrimaryKey(), newAggregatorEdge);
             if(currentProperty.isMandatory() != null)
               newProperty.setMandatory(currentProperty.isMandatory());
             if(currentProperty.isReadOnly() != null)
@@ -1182,7 +1219,7 @@ public class OER2GraphMapper extends OSource2GraphMapper {
         // adding to the edge all properties belonging to the old edges
         for(OModelProperty currentProperty: currentOutEdge1.getProperties()) {
           if(newAggregatorEdge.getPropertyByName(currentProperty.getName()) == null) {
-            OModelProperty newProperty = new OModelProperty(currentProperty.getName(), position, currentProperty.getPropertyType(), currentProperty.isFromPrimaryKey());
+            OModelProperty newProperty = new OModelProperty(currentProperty.getName(), position, currentProperty.getPropertyType(), currentProperty.isFromPrimaryKey(), newAggregatorEdge);
             if(currentProperty.isMandatory() != null)
               newProperty.setMandatory(currentProperty.isMandatory());
             if(currentProperty.isReadOnly() != null)
@@ -1195,7 +1232,7 @@ public class OER2GraphMapper extends OSource2GraphMapper {
         }
         for(OModelProperty currentProperty: currentOutEdge2.getProperties()) {
           if(newAggregatorEdge.getPropertyByName(currentProperty.getName()) == null) {
-            OModelProperty newProperty = new OModelProperty(currentProperty.getName(), position, currentProperty.getPropertyType(), currentProperty.isFromPrimaryKey());
+            OModelProperty newProperty = new OModelProperty(currentProperty.getName(), position, currentProperty.getPropertyType(), currentProperty.isFromPrimaryKey(), newAggregatorEdge);
             if(currentProperty.isMandatory() != null)
               newProperty.setMandatory(currentProperty.isMandatory());
             if(currentProperty.isReadOnly() != null)

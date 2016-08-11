@@ -20,8 +20,8 @@ package com.orientechnologies.teleporter.test.rdbms.configuration.mapping;
 
 import com.orientechnologies.teleporter.context.OOutputStreamManager;
 import com.orientechnologies.teleporter.context.OTeleporterContext;
-import com.orientechnologies.teleporter.mapper.rdbms.OClassMapper;
 import com.orientechnologies.teleporter.mapper.rdbms.OER2GraphMapper;
+import com.orientechnologies.teleporter.mapper.rdbms.classmapper.OClassMapper;
 import com.orientechnologies.teleporter.model.dbschema.OEntity;
 import com.orientechnologies.teleporter.model.dbschema.ORelationship;
 import com.orientechnologies.teleporter.model.graphmodel.OEdgeType;
@@ -47,7 +47,7 @@ import static org.junit.Assert.*;
  *
  */
 
-public class ConfigurationMappingTest {
+public class RelationshipConfigurationMappingTest {
 
   private OER2GraphMapper    mapper;
   private  OTeleporterContext context;

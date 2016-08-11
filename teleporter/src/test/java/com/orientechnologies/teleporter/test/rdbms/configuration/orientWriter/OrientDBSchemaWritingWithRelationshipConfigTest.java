@@ -45,7 +45,7 @@ import static org.junit.Assert.*;
  *
  */
 
-public class OrientDBSchemaWritingWithConfigTest {
+public class OrientDBSchemaWritingWithRelationshipConfigTest {
 
   private OER2GraphMapper    mapper;
   private OTeleporterContext context;

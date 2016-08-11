@@ -16,13 +16,11 @@
  * For more information: http://www.orientdb.com
  */
 
-package com.orientechnologies.teleporter.mapper.rdbms;
+package com.orientechnologies.teleporter.mapper.rdbms.classmapper;
 
-import com.orientechnologies.teleporter.model.dbschema.OAttribute;
 import com.orientechnologies.teleporter.model.dbschema.OEntity;
 import com.orientechnologies.teleporter.model.graphmodel.OVertexType;
 
-import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
@@ -39,8 +37,8 @@ import java.util.Map;
 
 public class OClassMapper {
 
-    public OEntity entity;
-    public OVertexType vertexType;
+    private OEntity entity;
+    private OVertexType vertexType;
     public Map<String,String> attribute2property;
     public Map<String,String> property2attribute;
 
@@ -74,6 +72,7 @@ public class OClassMapper {
     public String getPropertyByAttribute(String attribute) {
         return this.attribute2property.get(attribute);
     }
+
 
     @Override
     public int hashCode() {

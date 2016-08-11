@@ -33,23 +33,27 @@ public class OModelProperty {
   private int ordinalPosition;
   private String propertyType;
   private boolean fromPrimaryKey;
+  private OElementType belongingElementType;
+
   // costraints
   private Boolean mandatory;
   private Boolean readOnly;
   private Boolean notNull;
 
-  public OModelProperty(String name, int ordinalPosition, String propertyType, boolean fromPrimaryKey) {
+  public OModelProperty(String name, int ordinalPosition, String propertyType, boolean fromPrimaryKey, OElementType belongingElementType) {
     this.name = name;
     this.ordinalPosition = ordinalPosition;
     this.propertyType = propertyType;
     this.fromPrimaryKey = fromPrimaryKey;
+    this.belongingElementType = belongingElementType;
   }
 
-  public OModelProperty(String name, int ordinalPosition, String propertyType, boolean fromPrimaryKey, boolean mandatory, boolean readOnly, boolean notNull) {
+  public OModelProperty(String name, int ordinalPosition, String propertyType, boolean fromPrimaryKey, OElementType belongingElementType, boolean mandatory, boolean readOnly, boolean notNull) {
     this.name = name;
     this.ordinalPosition = ordinalPosition;
     this.propertyType = propertyType;
     this.fromPrimaryKey = fromPrimaryKey;
+    this.belongingElementType = belongingElementType;
     this.mandatory = mandatory;
     this.readOnly = readOnly;
     this.notNull = notNull;
@@ -85,6 +89,14 @@ public class OModelProperty {
 
   public void setFromPrimaryKey(boolean fromPrimaryKey) {
     this.fromPrimaryKey = fromPrimaryKey;
+  }
+
+  public OElementType getBelongingElementType() {
+    return belongingElementType;
+  }
+
+  public void setBelongingElementType(OElementType belongingElementType) {
+    this.belongingElementType = belongingElementType;
   }
 
   public Boolean isMandatory() {
