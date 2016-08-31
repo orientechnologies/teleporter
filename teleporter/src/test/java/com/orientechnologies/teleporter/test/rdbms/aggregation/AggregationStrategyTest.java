@@ -152,12 +152,14 @@ public class AggregationStrategyTest {
 
       // Classes Mapping
 
-      assertEquals(5, mapper.getVertexType2classMapper().size());
-      assertEquals(5, mapper.getEntity2classMapper().size());
+      assertEquals(5, mapper.getVertexType2classMappers().size());
+      assertEquals(5, mapper.getEntity2classMappers().size());
 
       OEntity employeeEntity = mapper.getDataBaseSchema().getEntityByName("EMPLOYEE");
-      OClassMapper employeeClassMapper = mapper.getClassMappingRulesByVertex(employeeVertexType);
-      assertEquals(employeeClassMapper, mapper.getClassMappingRulesByEntity(employeeEntity));
+      assertEquals(1, mapper.getClassMappingRulesByVertex(employeeVertexType).size());
+      OClassMapper employeeClassMapper = mapper.getClassMappingRulesByVertex(employeeVertexType).get(0);
+      assertEquals(1, mapper.getClassMappingRulesByEntity(employeeEntity).size());
+      assertEquals(employeeClassMapper, mapper.getClassMappingRulesByEntity(employeeEntity).get(0));
       assertEquals(employeeClassMapper.getEntity(), employeeEntity);
       assertEquals(employeeClassMapper.getVertexType(), employeeVertexType);
 
@@ -171,8 +173,10 @@ public class AggregationStrategyTest {
       assertEquals("LAST_NAME", employeeClassMapper.property2attribute.get("lastName"));
 
       OEntity departmentEntity = mapper.getDataBaseSchema().getEntityByName("DEPARTMENT");
-      OClassMapper departmentClassMapper =  mapper.getClassMappingRulesByVertex(departmentVertexType);
-      assertEquals(departmentClassMapper, mapper.getClassMappingRulesByEntity(departmentEntity));
+      assertEquals(1, mapper.getClassMappingRulesByVertex(departmentVertexType).size());
+      OClassMapper departmentClassMapper =  mapper.getClassMappingRulesByVertex(departmentVertexType).get(0);
+      assertEquals(1, mapper.getClassMappingRulesByEntity(departmentEntity).size());
+      assertEquals(departmentClassMapper, mapper.getClassMappingRulesByEntity(departmentEntity).get(0));
       assertEquals(departmentClassMapper.getEntity(), departmentEntity);
       assertEquals(departmentClassMapper.getVertexType(), departmentVertexType);
 
@@ -184,8 +188,10 @@ public class AggregationStrategyTest {
       assertEquals("NAME", departmentClassMapper.property2attribute.get("name"));
 
       OEntity branchEntity = mapper.getDataBaseSchema().getEntityByName("BRANCH");
-      OClassMapper branchClassMapper =  mapper.getClassMappingRulesByVertex(branchVertexType);
-      assertEquals(branchClassMapper, mapper.getClassMappingRulesByEntity(branchEntity));
+      assertEquals(1, mapper.getClassMappingRulesByVertex(branchVertexType).size());
+      OClassMapper branchClassMapper =  mapper.getClassMappingRulesByVertex(branchVertexType).get(0);
+      assertEquals(1, mapper.getClassMappingRulesByEntity(branchEntity).size());
+      assertEquals(branchClassMapper, mapper.getClassMappingRulesByEntity(branchEntity).get(0));
       assertEquals(branchClassMapper.getEntity(), branchEntity);
       assertEquals(branchClassMapper.getVertexType(), branchVertexType);
 
@@ -199,8 +205,10 @@ public class AggregationStrategyTest {
       assertEquals("DEPT", branchClassMapper.property2attribute.get("dept"));
 
       OEntity deptEmpEntity = mapper.getDataBaseSchema().getEntityByName("DEPT_EMP");
-      OClassMapper deptEmpClassMapper =  mapper.getClassMappingRulesByVertex(deptEmpVertexType);
-      assertEquals(deptEmpClassMapper, mapper.getClassMappingRulesByEntity(deptEmpEntity));
+      assertEquals(1, mapper.getClassMappingRulesByVertex(deptEmpVertexType).size());
+      OClassMapper deptEmpClassMapper =  mapper.getClassMappingRulesByVertex(deptEmpVertexType).get(0);
+      assertEquals(1, mapper.getClassMappingRulesByEntity(deptEmpEntity).size());
+      assertEquals(deptEmpClassMapper, mapper.getClassMappingRulesByEntity(deptEmpEntity).get(0));
       assertEquals(deptEmpClassMapper.getEntity(), deptEmpEntity);
       assertEquals(deptEmpClassMapper.getVertexType(), deptEmpVertexType);
 
@@ -214,8 +222,10 @@ public class AggregationStrategyTest {
       assertEquals("HIRING_YEAR", deptEmpClassMapper.property2attribute.get("hiringYear"));
 
       OEntity deptMgrEntity = mapper.getDataBaseSchema().getEntityByName("DEPT_MANAGER");
-      OClassMapper deptManagerClassMapper =  mapper.getClassMappingRulesByVertex(deptManagerVertexType);
-      assertEquals(deptManagerClassMapper, mapper.getClassMappingRulesByEntity(deptMgrEntity));
+      assertEquals(1, mapper.getClassMappingRulesByVertex(deptManagerVertexType).size());
+      OClassMapper deptManagerClassMapper =  mapper.getClassMappingRulesByVertex(deptManagerVertexType).get(0);
+      assertEquals(1, mapper.getClassMappingRulesByEntity(deptMgrEntity).size());
+      assertEquals(deptManagerClassMapper, mapper.getClassMappingRulesByEntity(deptMgrEntity).get(0));
       assertEquals(deptManagerClassMapper.getEntity(), deptMgrEntity);
       assertEquals(deptManagerClassMapper.getVertexType(), deptManagerVertexType);
 
@@ -249,14 +259,14 @@ public class AggregationStrategyTest {
       assertEquals(empEdgeType, mapper.getRelationship2edgeType().get(hasEmployeeRelationship1));
       assertEquals(empEdgeType, mapper.getRelationship2edgeType().get(hasEmployeeRelationship2));
 
-      assertEquals(2, mapper.getEdgeType2relationship().size());
-      assertEquals(3, mapper.getEdgeType2relationship().get(deptEdgeType).size());
-      assertTrue(mapper.getEdgeType2relationship().get(deptEdgeType).contains(hasDepartmentRelationship1));
-      assertTrue(mapper.getEdgeType2relationship().get(deptEdgeType).contains(hasDepartmentRelationship2));
-      assertTrue(mapper.getEdgeType2relationship().get(deptEdgeType).contains(hasDepartmentRelationship3));
-      assertEquals(2, mapper.getEdgeType2relationship().get(empEdgeType).size());
-      assertTrue(mapper.getEdgeType2relationship().get(empEdgeType).contains(hasEmployeeRelationship1));
-      assertTrue(mapper.getEdgeType2relationship().get(empEdgeType).contains(hasEmployeeRelationship2));
+      assertEquals(2, mapper.getEdgeType2relationships().size());
+      assertEquals(3, mapper.getEdgeType2relationships().get(deptEdgeType).size());
+      assertTrue(mapper.getEdgeType2relationships().get(deptEdgeType).contains(hasDepartmentRelationship1));
+      assertTrue(mapper.getEdgeType2relationships().get(deptEdgeType).contains(hasDepartmentRelationship2));
+      assertTrue(mapper.getEdgeType2relationships().get(deptEdgeType).contains(hasDepartmentRelationship3));
+      assertEquals(2, mapper.getEdgeType2relationships().get(empEdgeType).size());
+      assertTrue(mapper.getEdgeType2relationships().get(empEdgeType).contains(hasEmployeeRelationship1));
+      assertTrue(mapper.getEdgeType2relationships().get(empEdgeType).contains(hasEmployeeRelationship2));
 
       assertEquals(0, mapper.getJoinVertex2aggregatorEdges().size());
 
@@ -314,12 +324,14 @@ public class AggregationStrategyTest {
 
       // Classes Mapping
 
-      assertEquals(5, mapper.getVertexType2classMapper().size());
-      assertEquals(5, mapper.getEntity2classMapper().size());
+      assertEquals(5, mapper.getVertexType2classMappers().size());
+      assertEquals(5, mapper.getEntity2classMappers().size());
 
       employeeEntity = mapper.getDataBaseSchema().getEntityByName("EMPLOYEE");
-      employeeClassMapper = mapper.getClassMappingRulesByVertex(employeeVertexType);
-      assertEquals(employeeClassMapper, mapper.getClassMappingRulesByEntity(employeeEntity));
+      assertEquals(1, mapper.getClassMappingRulesByVertex(employeeVertexType).size());
+      employeeClassMapper = mapper.getClassMappingRulesByVertex(employeeVertexType).get(0);
+      assertEquals(1, mapper.getClassMappingRulesByEntity(employeeEntity).size());
+      assertEquals(employeeClassMapper, mapper.getClassMappingRulesByEntity(employeeEntity).get(0));
       assertEquals(employeeClassMapper.getEntity(), employeeEntity);
       assertEquals(employeeClassMapper.getVertexType(), employeeVertexType);
 
@@ -333,8 +345,10 @@ public class AggregationStrategyTest {
       assertEquals("LAST_NAME", employeeClassMapper.property2attribute.get("lastName"));
 
       departmentEntity = mapper.getDataBaseSchema().getEntityByName("DEPARTMENT");
-      departmentClassMapper =  mapper.getClassMappingRulesByVertex(departmentVertexType);
-      assertEquals(departmentClassMapper, mapper.getClassMappingRulesByEntity(departmentEntity));
+      assertEquals(1, mapper.getClassMappingRulesByVertex(departmentVertexType).size());
+      departmentClassMapper =  mapper.getClassMappingRulesByVertex(departmentVertexType).get(0);
+      assertEquals(1, mapper.getClassMappingRulesByEntity(departmentEntity).size());
+      assertEquals(departmentClassMapper, mapper.getClassMappingRulesByEntity(departmentEntity).get(0));
       assertEquals(departmentClassMapper.getEntity(), departmentEntity);
       assertEquals(departmentClassMapper.getVertexType(), departmentVertexType);
 
@@ -346,8 +360,10 @@ public class AggregationStrategyTest {
       assertEquals("NAME", departmentClassMapper.property2attribute.get("name"));
 
       branchEntity = mapper.getDataBaseSchema().getEntityByName("BRANCH");
-      branchClassMapper =  mapper.getClassMappingRulesByVertex(branchVertexType);
-      assertEquals(branchClassMapper, mapper.getClassMappingRulesByEntity(branchEntity));
+      assertEquals(1, mapper.getClassMappingRulesByVertex(branchVertexType).size());
+      branchClassMapper =  mapper.getClassMappingRulesByVertex(branchVertexType).get(0);
+      assertEquals(1, mapper.getClassMappingRulesByEntity(branchEntity).size());
+      assertEquals(branchClassMapper, mapper.getClassMappingRulesByEntity(branchEntity).get(0));
       assertEquals(branchClassMapper.getEntity(), branchEntity);
       assertEquals(branchClassMapper.getVertexType(), branchVertexType);
 
@@ -361,8 +377,10 @@ public class AggregationStrategyTest {
       assertEquals("DEPT", branchClassMapper.property2attribute.get("dept"));
 
       deptEmpEntity = mapper.getDataBaseSchema().getEntityByName("DEPT_EMP");
-      deptEmpClassMapper =  mapper.getClassMappingRulesByVertex(deptEmpVertexType);
-      assertEquals(deptEmpClassMapper, mapper.getClassMappingRulesByEntity(deptEmpEntity));
+      assertEquals(1, mapper.getClassMappingRulesByVertex(deptEmpVertexType).size());
+      deptEmpClassMapper =  mapper.getClassMappingRulesByVertex(deptEmpVertexType).get(0);
+      assertEquals(1, mapper.getClassMappingRulesByEntity(deptEmpEntity).size());
+      assertEquals(deptEmpClassMapper, mapper.getClassMappingRulesByEntity(deptEmpEntity).get(0));
       assertEquals(deptEmpClassMapper.getEntity(), deptEmpEntity);
       assertEquals(deptEmpClassMapper.getVertexType(), deptEmpVertexType);
 
@@ -376,8 +394,10 @@ public class AggregationStrategyTest {
       assertEquals("HIRING_YEAR", deptEmpClassMapper.property2attribute.get("hiringYear"));
 
       deptMgrEntity = mapper.getDataBaseSchema().getEntityByName("DEPT_MANAGER");
-      deptManagerClassMapper =  mapper.getClassMappingRulesByVertex(deptManagerVertexType);
-      assertEquals(deptManagerClassMapper, mapper.getClassMappingRulesByEntity(deptMgrEntity));
+      assertEquals(1, mapper.getClassMappingRulesByVertex(deptManagerVertexType).size());
+      deptManagerClassMapper =  mapper.getClassMappingRulesByVertex(deptManagerVertexType).get(0);
+      assertEquals(1, mapper.getClassMappingRulesByEntity(deptMgrEntity).size());
+      assertEquals(deptManagerClassMapper, mapper.getClassMappingRulesByEntity(deptMgrEntity).get(0));
       assertEquals(deptManagerClassMapper.getEntity(), deptMgrEntity);
       assertEquals(deptManagerClassMapper.getVertexType(), deptManagerVertexType);
 
@@ -416,14 +436,14 @@ public class AggregationStrategyTest {
       assertEquals(empEdgeType, mapper.getRelationship2edgeType().get(hasEmployeeRelationship1));
       assertEquals(empEdgeType, mapper.getRelationship2edgeType().get(hasEmployeeRelationship2));
 
-      assertEquals(2, mapper.getEdgeType2relationship().size());
-      assertEquals(3, mapper.getEdgeType2relationship().get(deptEdgeType).size());
-      assertTrue(mapper.getEdgeType2relationship().get(deptEdgeType).contains(hasDepartmentRelationship1));
-      assertTrue(mapper.getEdgeType2relationship().get(deptEdgeType).contains(hasDepartmentRelationship2));
-      assertTrue(mapper.getEdgeType2relationship().get(deptEdgeType).contains(hasDepartmentRelationship3));
-      assertEquals(2, mapper.getEdgeType2relationship().get(empEdgeType).size());
-      assertTrue(mapper.getEdgeType2relationship().get(empEdgeType).contains(hasEmployeeRelationship1));
-      assertTrue(mapper.getEdgeType2relationship().get(empEdgeType).contains(hasEmployeeRelationship2));
+      assertEquals(2, mapper.getEdgeType2relationships().size());
+      assertEquals(3, mapper.getEdgeType2relationships().get(deptEdgeType).size());
+      assertTrue(mapper.getEdgeType2relationships().get(deptEdgeType).contains(hasDepartmentRelationship1));
+      assertTrue(mapper.getEdgeType2relationships().get(deptEdgeType).contains(hasDepartmentRelationship2));
+      assertTrue(mapper.getEdgeType2relationships().get(deptEdgeType).contains(hasDepartmentRelationship3));
+      assertEquals(2, mapper.getEdgeType2relationships().get(empEdgeType).size());
+      assertTrue(mapper.getEdgeType2relationships().get(empEdgeType).contains(hasEmployeeRelationship1));
+      assertTrue(mapper.getEdgeType2relationships().get(empEdgeType).contains(hasEmployeeRelationship2));
 
       // JoinVertexes-AggregatorEdges Mapping
 

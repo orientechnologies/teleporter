@@ -73,6 +73,14 @@ public class OClassMapper {
         return this.attribute2property.get(attribute);
     }
 
+    public boolean containsAttribute(String attributeName) {
+        return this.attribute2property.containsKey(attributeName);
+    }
+
+    public boolean containsProperty(String propertyName) {
+        return this.property2attribute.containsKey(propertyName);
+    }
+
 
     @Override
     public int hashCode() {

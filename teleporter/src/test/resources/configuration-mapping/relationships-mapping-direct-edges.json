@@ -1,12 +1,13 @@
 {
-  "vertices": {
+  "vertices": [{
     "Employee": {
       "table": "EMPLOYEE"
-    },
+    }
+  }, {
     "Project": {
       "table": "PROJECT"
     }
-  },
+  }],
   "edges": [{
     "WorksAtProject": {
       "mapping": {

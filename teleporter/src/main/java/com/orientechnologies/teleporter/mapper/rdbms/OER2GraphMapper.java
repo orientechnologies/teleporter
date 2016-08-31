@@ -51,10 +51,10 @@ public class OER2GraphMapper extends OSource2GraphMapper {
   protected ODataBaseSchema dataBaseSchema;
 
   // New Rules
-  protected Map<OEntity,OClassMapper> entity2classMapper;
-  protected Map<OVertexType,OClassMapper> vertexType2classMapper;
+  protected Map<OEntity,List<OClassMapper>> entity2classMappers;
+  protected Map<OVertexType,List<OClassMapper>> vertexType2classMappers;
   protected Map<ORelationship,OEdgeType> relationship2edgeType;
-  protected Map<OEdgeType,LinkedList<ORelationship>> edgeType2relationship;
+  protected Map<OEdgeType,LinkedList<ORelationship>> edgeType2relationships;
   protected Map<String,Integer> edgeTypeName2count;
   protected Map<OVertexType,OAggregatorEdge> joinVertex2aggregatorEdges;
 
@@ -65,15 +65,17 @@ public class OER2GraphMapper extends OSource2GraphMapper {
   // supplementary configuration
   protected ODocument configuration;
 
+  public final int DEFAULT_CLASS_MAPPER_INDEX = 0;
+
   public OER2GraphMapper (String driver, String uri, String username, String password, List<String> includedTables, List<String> excludedTables, ODocument configuration) {
     this.dbSourceConnection = new ODBSourceConnection(driver, uri, username, password);
 
     // new maps
-    this.entity2classMapper = new IdentityHashMap<OEntity,OClassMapper>();
-    this.vertexType2classMapper = new IdentityHashMap<OVertexType,OClassMapper>();
+    this.entity2classMappers = new IdentityHashMap<OEntity,List<OClassMapper>>();
+    this.vertexType2classMappers = new IdentityHashMap<OVertexType,List<OClassMapper>>();
 
     this.relationship2edgeType = new IdentityHashMap<ORelationship,OEdgeType>();
-    this.edgeType2relationship = new IdentityHashMap<OEdgeType,LinkedList<ORelationship>>();
+    this.edgeType2relationships = new IdentityHashMap<OEdgeType,LinkedList<ORelationship>>();
     this.edgeTypeName2count = new TreeMap<String,Integer>();
     this.joinVertex2aggregatorEdges = new LinkedHashMap<OVertexType, OAggregatorEdge>();
 
@@ -99,33 +101,45 @@ public class OER2GraphMapper extends OSource2GraphMapper {
   public void upsertRelationshipEdgeRules(ORelationship currentRelationship, OEdgeType currentEdgeType) {
     this.relationship2edgeType.put(currentRelationship, currentEdgeType);
 
-    LinkedList<ORelationship> representedRelationships = this.edgeType2relationship.get(currentEdgeType);
+    LinkedList<ORelationship> representedRelationships = this.edgeType2relationships.get(currentEdgeType);
     if(representedRelationships == null) {
       representedRelationships = new LinkedList<ORelationship>();
     }
     representedRelationships.add(currentRelationship);
-    this.edgeType2relationship.put(currentEdgeType, representedRelationships);
+    this.edgeType2relationships.put(currentEdgeType, representedRelationships);
   }
 
   public void upsertClassMappingRules(OEntity currentEntity, OVertexType currentVertexType, OClassMapper classMapper) {
-    this.entity2classMapper.put(currentEntity, classMapper);
-    this.vertexType2classMapper.put(currentVertexType, classMapper);
+
+    List<OClassMapper> classMappings = this.entity2classMappers.get(currentEntity);
+    if(classMappings == null) {
+      classMappings = new LinkedList<OClassMapper>();
+    }
+    classMappings.add(classMapper);
+    this.entity2classMappers.put(currentEntity, classMappings);
+
+    classMappings = this.vertexType2classMappers.get(currentVertexType);
+    if(classMappings == null) {
+      classMappings = new LinkedList<OClassMapper>();
+    }
+    classMappings.add(classMapper);
+    this.vertexType2classMappers.put(currentVertexType, classMappings);
   }
 
-  public OClassMapper getClassMappingRulesByVertex(OVertexType vertexType) {
-    return this.vertexType2classMapper.get(vertexType);
+  public List<OClassMapper> getClassMappingRulesByVertex(OVertexType vertexType) {
+    return this.vertexType2classMappers.get(vertexType);
   }
 
-  public OClassMapper getClassMappingRulesByEntity(OEntity entity) {
-    return this.entity2classMapper.get(entity);
+  public List<OClassMapper> getClassMappingRulesByEntity(OEntity entity) {
+    return this.entity2classMappers.get(entity);
   }
 
-  public Map<OEntity, OClassMapper> getEntity2classMapper() {
-    return this.entity2classMapper;
+  public Map<OEntity, List<OClassMapper>> getEntity2classMappers() {
+    return this.entity2classMappers;
   }
 
-  public Map<OVertexType, OClassMapper> getVertexType2classMapper() {
-    return this.vertexType2classMapper;
+  public Map<OVertexType, List<OClassMapper>> getVertexType2classMappers() {
+    return this.vertexType2classMappers;
   }
 
   /**
@@ -861,7 +875,7 @@ public class OER2GraphMapper extends OSource2GraphMapper {
           ORelationship currentRelationship = buildRelationshipFromConfig(currentForeignEntityName, currentParentEntityName, fromColumns, toColumns, direction, foreignEntityIsJoinTableToAggregate, context);
 
           // building correspondent edgeType (check on inheritance not needed)
-          buildEdgeTypeFromConfiguredRelationship(currentRelationship, currentForeignEntityName, currentParentEntityName, edgeName, currentEdgeInfo, foreignEntityIsJoinTableToAggregate, context);
+          buildEdgeTypeFromConfiguredRelationship(currentRelationship, edgeName, currentEdgeInfo, foreignEntityIsJoinTableToAggregate, context);
 
         }
         else {
@@ -892,13 +906,13 @@ public class OER2GraphMapper extends OSource2GraphMapper {
             ORelationship currentRelationship = buildRelationshipFromConfig(joinTableName, currentForeignEntityName, joinTableFromColumns, fromColumns, direction, foreignEntityIsJoinTableToAggregate, context);
 
             // building correspondent edgeType (check on inheritance not needed)
-            buildEdgeTypeFromConfiguredRelationship(currentRelationship, joinTableName, currentForeignEntityName, edgeName + "-left", currentEdgeInfo, foreignEntityIsJoinTableToAggregate, context);
+            buildEdgeTypeFromConfiguredRelationship(currentRelationship, edgeName + "-left", currentEdgeInfo, foreignEntityIsJoinTableToAggregate, context);
 
             // building right relationship
             currentRelationship = buildRelationshipFromConfig(joinTableName, currentParentEntityName, joinTableToColumns, toColumns, direction, foreignEntityIsJoinTableToAggregate, context);
 
             // building correspondent edgeType (check on inheritance not needed)
-            buildEdgeTypeFromConfiguredRelationship(currentRelationship, joinTableName, currentParentEntityName, edgeName + "-right", currentEdgeInfo, foreignEntityIsJoinTableToAggregate, context);
+            buildEdgeTypeFromConfiguredRelationship(currentRelationship, edgeName + "-right", currentEdgeInfo, foreignEntityIsJoinTableToAggregate, context);
 
             // setting attributes of the join table
             OEntity joinTable = this.dataBaseSchema.getEntityByName(joinTableName);
@@ -1000,20 +1014,21 @@ public class OER2GraphMapper extends OSource2GraphMapper {
   /**
    *
    * @param currentRelationship
-   * @param currentForeignEntityName
-   * @param currentParentEntityName
    * @param edgeName
    * @param currentEdgeInfo
    * @param foreignEntityIsJoinTableToAggregate
    * @param context
    */
-  private void buildEdgeTypeFromConfiguredRelationship(ORelationship currentRelationship, String currentForeignEntityName, String currentParentEntityName,
-                                                       String edgeName, ODocument currentEdgeInfo, boolean foreignEntityIsJoinTableToAggregate, OTeleporterContext context) {
+  private void buildEdgeTypeFromConfiguredRelationship(ORelationship currentRelationship, String edgeName, ODocument currentEdgeInfo, boolean foreignEntityIsJoinTableToAggregate,
+                                                       OTeleporterContext context) {
 
     OTeleporterStatistics statistics = context.getStatistics();
 
-    OEntity currentParentEntity = this.dataBaseSchema.getEntityByName(currentParentEntityName);
-    OEntity currentForeignEntity = this.dataBaseSchema.getEntityByName(currentForeignEntityName);
+//    OEntity currentParentEntity = this.dataBaseSchema.getEntityByName(currentParentEntityName);
+//    OEntity currentForeignEntity = this.dataBaseSchema.getEntityByName(currentForeignEntityName);
+
+    OEntity currentParentEntity = currentRelationship.getParentEntity();
+    OEntity currentForeignEntity = currentRelationship.getForeignEntity();
 
     // retrieving edge type, if not present is created from scratch
     boolean edgeTypeAlreadyPresent = true;
@@ -1297,16 +1312,24 @@ public class OER2GraphMapper extends OSource2GraphMapper {
   }
 
   public OEntity getEntityByVertexType(OVertexType vertexType) {
-    return this.getClassMappingRulesByVertex(vertexType).getEntity();
+    return this.getEntityByVertexType(vertexType, DEFAULT_CLASS_MAPPER_INDEX);
+  }
+
+  public OEntity getEntityByVertexType(OVertexType vertexType, int classMapperIndex) {
+    return this.getClassMappingRulesByVertex(vertexType).get(classMapperIndex).getEntity();
   }
 
   public OVertexType getVertexTypeByEntity(OEntity entity) {
-    return this.getClassMappingRulesByEntity(entity).getVertexType();
+    return this.getVertexTypeByEntity(entity, DEFAULT_CLASS_MAPPER_INDEX);
+  }
+
+  public OVertexType getVertexTypeByEntity(OEntity entity, int classMapperIndex) {
+    return this.getClassMappingRulesByEntity(entity).get(classMapperIndex).getVertexType();
   }
 
   public String getAttributeNameByVertexTypeAndProperty(OVertexType vertexType, String propertyName) {
 
-    String attributeName = this.getClassMappingRulesByVertex(vertexType).getAttributeByProperty(propertyName);
+    String attributeName = this.getClassMappingRulesByVertex(vertexType).get(DEFAULT_CLASS_MAPPER_INDEX).getAttributeByProperty(propertyName);
 
     if(attributeName == null) {
       OVertexType parentType = (OVertexType) vertexType.getParentType();
@@ -1318,10 +1341,18 @@ public class OER2GraphMapper extends OSource2GraphMapper {
     return attributeName;
   }
 
-
   public String getPropertyNameByVertexTypeAndAttribute(OVertexType vertexType, String attributeName) {
 
-    String propertyName = this.getClassMappingRulesByVertex(vertexType).getPropertyByAttribute(attributeName);
+    List<OClassMapper> classMappers = this.getClassMappingRulesByVertex(vertexType);
+
+    String propertyName = null;
+    for(OClassMapper currentClassMapper: classMappers) {
+      propertyName = currentClassMapper.getPropertyByAttribute(attributeName);
+      if(propertyName != null) {
+        // the right class mapper was found and the right property name with it
+        break;
+      }
+    }
 
     if(propertyName == null) {
       OVertexType parentType = (OVertexType) vertexType.getParentType();
@@ -1333,10 +1364,18 @@ public class OER2GraphMapper extends OSource2GraphMapper {
     return propertyName;
   }
 
-
   public String getPropertyNameByEntityAndAttribute(OEntity entity, String attributeName) {
 
-    String propertyName = this.getClassMappingRulesByEntity(entity).getPropertyByAttribute(attributeName);
+    List<OClassMapper> classMappers = this.getClassMappingRulesByEntity(entity);
+
+    String propertyName = null;
+    for(OClassMapper currentClassMapper: classMappers) {
+      propertyName = currentClassMapper.getPropertyByAttribute(attributeName);
+      if(propertyName != null) {
+        // the right class mapper was found and the right property name with it
+        break;
+      }
+    }
 
     if(propertyName == null) {
       OEntity parentEntity = (OEntity) entity.getParentEntity();
@@ -1385,12 +1424,12 @@ public class OER2GraphMapper extends OSource2GraphMapper {
     this.relationship2edgeType = relationship2edgeTypeRules;
   }
 
-  public Map<OEdgeType, LinkedList<ORelationship>> getEdgeType2relationship() {
-    return this.edgeType2relationship;
+  public Map<OEdgeType, LinkedList<ORelationship>> getEdgeType2relationships() {
+    return this.edgeType2relationships;
   }
 
-  public void setEdgeType2relationship(Map<OEdgeType, LinkedList<ORelationship>> edgeType2relationship) {
-    this.edgeType2relationship = edgeType2relationship;
+  public void setEdgeType2relationships(Map<OEdgeType, LinkedList<ORelationship>> edgeType2relationships) {
+    this.edgeType2relationships = edgeType2relationships;
   }
 
   public Map<String,Integer> getEdgeTypeName2count() {
@@ -1454,8 +1493,10 @@ public class OER2GraphMapper extends OSource2GraphMapper {
     String s = "\n\n\n------------------------------ MAPPER DESCRIPTION ------------------------------\n\n\n";
     s += "RULES\n\n";
     s += "- Class mappings:\n\n";
-    for(OClassMapper classMapper: this.entity2classMapper.values()) {
-      s += classMapper.toString() + "\n";
+    for(List<OClassMapper> classMappers: this.entity2classMappers.values()) {
+      for(OClassMapper classMapper: classMappers) {
+        s += classMapper.toString() + "\n";
+      }
     }
     s += "\n\n- Relaionship2EdgeType Rules:\n\n";
     for(ORelationship relationship: this.relationship2edgeType.keySet()) {

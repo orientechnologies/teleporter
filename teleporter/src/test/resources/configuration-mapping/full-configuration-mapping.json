@@ -7,12 +7,12 @@
           {
             "name": "sourceTable1",
             "dataSource": "mysql",
-            "tableName": "person"
+            "tableName": "PERSON"
           },
           {
             "name": "sourceTable2",
             "dataSource": "mysql",
-            "tableName": "vat_profile"
+            "tableName": "VAT_PROFILE"
           }
         ]
       },
@@ -25,7 +25,7 @@
           "notNull": false,
           "mapping": {
             "source": "sourceTable1",
-            "columnName": "id",
+            "columnName": "ID",
             "type": "VARCHAR"
           }
         },
@@ -37,7 +37,7 @@
           "notNull": true,
           "mapping": {
             "source": "sourceTable1",
-            "columnName": "name",
+            "columnName": "NAME",
             "type": "VARCHAR"
           }
         },
@@ -49,7 +49,7 @@
           "notNull": true,
           "mapping": {
             "source": "sourceTable1",
-            "columnName": "surname",
+            "columnName": "SURNAME",
             "type": "VARCHAR"
           }
         },
@@ -61,7 +61,7 @@
           "notNull": false,
           "mapping": {
             "source": "sourceTable1",
-            "columnName": "dep_id",
+            "columnName": "DEP_ID",
             "type": "VARCHAR"
           }
         },
@@ -73,7 +73,7 @@
           "notNull": false,
           "mapping": {
             "source": "sourceTable2",
-            "columnName": "id",
+            "columnName": "ID",
             "type": "VARCHAR"
           }
         },
@@ -85,7 +85,7 @@
           "notNull": true,
           "mapping": {
             "source": "sourceTable2",
-            "columnName": "vat",
+            "columnName": "VAT",
             "type": "VARCHAR"
           }
         },
@@ -97,7 +97,7 @@
           "notNull": true,
           "mapping": {
             "source": "sourceTable2",
-            "columnName": "updated_on",
+            "columnName": "UPDATED_ON",
             "type": "DATE"
           }
         }
@@ -110,7 +110,7 @@
           {
             "name": "sourceTable1",
             "dataSource": "mysql",
-            "tableName": "department"
+            "tableName": "DEPARTMENT"
           }
         ]
       },
@@ -123,7 +123,7 @@
           "notNull": false,
           "mapping": {
             "source": "sourceTable1",
-            "columnName": "id",
+            "columnName": "ID",
             "type": "VARCHAR"
           }
         },
@@ -135,7 +135,7 @@
           "notNull": true,
           "mapping": {
             "source": "sourceTable1",
-            "columnName": "name",
+            "columnName": "NAME",
             "type": "VARCHAR"
           }
         },
@@ -147,7 +147,7 @@
           "notNull": true,
           "mapping": {
             "source": "sourceTable1",
-            "columnName": "location",
+            "columnName": "LOCATION",
             "type": "VARCHAR"
           }
         },
@@ -159,7 +159,7 @@
           "notNull": true,
           "mapping": {
             "source": "sourceTable1",
-            "columnName": "updated_on",
+            "columnName": "UPDATED_ON",
             "type": "DATE"
           }
         }
@@ -170,10 +170,10 @@
     {
       "WorksAt": {
         "mapping": {
-          "fromTable": "person",
-          "fromColumns": ["dep_id"],
-          "toTable": "department",
-          "toColumns": ["id"],
+          "fromTable": "PERSON",
+          "fromColumns": ["DEP_ID"],
+          "toTable": "DEPARTMENT",
+          "toColumns": ["ID"],
           "direction": "direct"
         },
         "properties": {

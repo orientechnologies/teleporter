@@ -340,11 +340,13 @@ public class RelationshipConfigurationMappingTest {
 
       // Classes Mapping
 
-      assertEquals(2, mapper.getVertexType2classMapper().size());
-      assertEquals(2, mapper.getEntity2classMapper().size());
+      assertEquals(2, mapper.getVertexType2classMappers().size());
+      assertEquals(2, mapper.getEntity2classMappers().size());
 
-      OClassMapper employeeClassMapper = mapper.getClassMappingRulesByVertex(employeeVertexType);
-      assertEquals(employeeClassMapper, mapper.getClassMappingRulesByEntity(employeeEntity));
+      assertEquals(1, mapper.getClassMappingRulesByVertex(employeeVertexType).size());
+      OClassMapper employeeClassMapper = mapper.getClassMappingRulesByVertex(employeeVertexType).get(0);
+      assertEquals(1, mapper.getClassMappingRulesByEntity(employeeEntity).size());
+      assertEquals(employeeClassMapper, mapper.getClassMappingRulesByEntity(employeeEntity).get(0));
       assertEquals(employeeClassMapper.getEntity(), employeeEntity);
       assertEquals(employeeClassMapper.getVertexType(), employeeVertexType);
 
@@ -359,8 +361,10 @@ public class RelationshipConfigurationMappingTest {
       assertEquals("LAST_NAME", employeeClassMapper.property2attribute.get("lastName"));
       assertEquals("PROJECT", employeeClassMapper.property2attribute.get("project"));
 
-      OClassMapper projectEmployeeClassMapper = mapper.getClassMappingRulesByVertex(projectVertexType);
-      assertEquals(projectEmployeeClassMapper, mapper.getClassMappingRulesByEntity(projectEntity));
+      assertEquals(1, mapper.getClassMappingRulesByVertex(projectVertexType).size());
+      OClassMapper projectEmployeeClassMapper = mapper.getClassMappingRulesByVertex(projectVertexType).get(0);
+      assertEquals(1, mapper.getClassMappingRulesByEntity(projectEntity).size());
+      assertEquals(projectEmployeeClassMapper, mapper.getClassMappingRulesByEntity(projectEntity).get(0));
       assertEquals(projectEmployeeClassMapper.getEntity(), projectEntity);
       assertEquals(projectEmployeeClassMapper.getVertexType(), projectVertexType);
 
@@ -387,11 +391,11 @@ public class RelationshipConfigurationMappingTest {
       assertEquals(hasManagerEdgeType, mapper.getRelationship2edgeType().get(hasManagerRelationship));
       assertEquals(worksAtProjectEdgeType, mapper.getRelationship2edgeType().get(worksAtRelationship));
 
-      assertEquals(2, mapper.getEdgeType2relationship().size());
-      assertEquals(1, mapper.getEdgeType2relationship().get(hasManagerEdgeType).size());
-      assertTrue(mapper.getEdgeType2relationship().get(hasManagerEdgeType).contains(hasManagerRelationship));
-      assertEquals(1, mapper.getEdgeType2relationship().get(worksAtProjectEdgeType).size());
-      assertTrue(mapper.getEdgeType2relationship().get(worksAtProjectEdgeType).contains(worksAtRelationship));
+      assertEquals(2, mapper.getEdgeType2relationships().size());
+      assertEquals(1, mapper.getEdgeType2relationships().get(hasManagerEdgeType).size());
+      assertTrue(mapper.getEdgeType2relationships().get(hasManagerEdgeType).contains(hasManagerRelationship));
+      assertEquals(1, mapper.getEdgeType2relationships().get(worksAtProjectEdgeType).size());
+      assertTrue(mapper.getEdgeType2relationships().get(worksAtProjectEdgeType).contains(worksAtRelationship));
 
       // JoinVertexes-AggregatorEdges Mapping
 
@@ -697,11 +701,13 @@ public class RelationshipConfigurationMappingTest {
 
       // Classes Mapping
 
-      assertEquals(2, mapper.getVertexType2classMapper().size());
-      assertEquals(2, mapper.getEntity2classMapper().size());
+      assertEquals(2, mapper.getVertexType2classMappers().size());
+      assertEquals(2, mapper.getEntity2classMappers().size());
 
-      OClassMapper employeeClassMapper = mapper.getClassMappingRulesByVertex(employeeVertexType);
-      assertEquals(employeeClassMapper, mapper.getClassMappingRulesByEntity(employeeEntity));
+      assertEquals(1, mapper.getClassMappingRulesByVertex(employeeVertexType).size());
+      OClassMapper employeeClassMapper = mapper.getClassMappingRulesByVertex(employeeVertexType).get(0);
+      assertEquals(1, mapper.getClassMappingRulesByEntity(employeeEntity).size());
+      assertEquals(employeeClassMapper, mapper.getClassMappingRulesByEntity(employeeEntity).get(0));
       assertEquals(employeeClassMapper.getEntity(), employeeEntity);
       assertEquals(employeeClassMapper.getVertexType(), employeeVertexType);
 
@@ -716,8 +722,10 @@ public class RelationshipConfigurationMappingTest {
       assertEquals("LAST_NAME", employeeClassMapper.property2attribute.get("lastName"));
       assertEquals("PROJECT", employeeClassMapper.property2attribute.get("project"));
 
-      OClassMapper projectEmployeeClassMapper = mapper.getClassMappingRulesByVertex(projectVertexType);
-      assertEquals(projectEmployeeClassMapper, mapper.getClassMappingRulesByEntity(projectEntity));
+      assertEquals(1, mapper.getClassMappingRulesByVertex(projectVertexType).size());
+      OClassMapper projectEmployeeClassMapper = mapper.getClassMappingRulesByVertex(projectVertexType).get(0);
+      assertEquals(1, mapper.getClassMappingRulesByEntity(projectEntity).size());
+      assertEquals(projectEmployeeClassMapper, mapper.getClassMappingRulesByEntity(projectEntity).get(0));
       assertEquals(projectEmployeeClassMapper.getEntity(), projectEntity);
       assertEquals(projectEmployeeClassMapper.getVertexType(), projectVertexType);
 
@@ -744,11 +752,11 @@ public class RelationshipConfigurationMappingTest {
       assertEquals(hasProjectManagerEdgeType, mapper.getRelationship2edgeType().get(hasProjectManagerRelationship));
       assertEquals(hasEmployeeEdgeType, mapper.getRelationship2edgeType().get(projectRelationship));
 
-      assertEquals(2, mapper.getEdgeType2relationship().size());
-      assertEquals(1, mapper.getEdgeType2relationship().get(hasProjectManagerEdgeType).size());
-      assertTrue(mapper.getEdgeType2relationship().get(hasProjectManagerEdgeType).contains(hasProjectManagerRelationship));
-      assertEquals(1, mapper.getEdgeType2relationship().get(hasEmployeeEdgeType).size());
-      assertTrue(mapper.getEdgeType2relationship().get(hasEmployeeEdgeType).contains(projectRelationship));
+      assertEquals(2, mapper.getEdgeType2relationships().size());
+      assertEquals(1, mapper.getEdgeType2relationships().get(hasProjectManagerEdgeType).size());
+      assertTrue(mapper.getEdgeType2relationships().get(hasProjectManagerEdgeType).contains(hasProjectManagerRelationship));
+      assertEquals(1, mapper.getEdgeType2relationships().get(hasEmployeeEdgeType).size());
+      assertTrue(mapper.getEdgeType2relationships().get(hasEmployeeEdgeType).contains(projectRelationship));
 
       // JoinVertexes-AggregatorEdges Mapping
 
@@ -1088,11 +1096,13 @@ public class RelationshipConfigurationMappingTest {
 
       // Classes Mapping
 
-      assertEquals(3, mapper.getVertexType2classMapper().size());
-      assertEquals(3, mapper.getEntity2classMapper().size());
+      assertEquals(3, mapper.getVertexType2classMappers().size());
+      assertEquals(3, mapper.getEntity2classMappers().size());
 
-      OClassMapper actorClassMapper = mapper.getClassMappingRulesByVertex(actorVertexType);
-      assertEquals(actorClassMapper, mapper.getClassMappingRulesByEntity(actorEntity));
+      assertEquals(1, mapper.getClassMappingRulesByVertex(actorVertexType).size());
+      OClassMapper actorClassMapper = mapper.getClassMappingRulesByVertex(actorVertexType).get(0);
+      assertEquals(1, mapper.getClassMappingRulesByEntity(actorEntity).size());
+      assertEquals(actorClassMapper, mapper.getClassMappingRulesByEntity(actorEntity).get(0));
       assertEquals(actorClassMapper.getEntity(), actorEntity);
       assertEquals(actorClassMapper.getVertexType(), actorVertexType);
 
@@ -1105,8 +1115,10 @@ public class RelationshipConfigurationMappingTest {
       assertEquals("FIRST_NAME", actorClassMapper.property2attribute.get("firstName"));
       assertEquals("LAST_NAME", actorClassMapper.property2attribute.get("lastName"));
 
-      OClassMapper filmClassMapper =  mapper.getClassMappingRulesByVertex(filmVertexType);
-      assertEquals(filmClassMapper, mapper.getClassMappingRulesByEntity(filmEntity));
+      assertEquals(1, mapper.getClassMappingRulesByVertex(filmVertexType).size());
+      OClassMapper filmClassMapper =  mapper.getClassMappingRulesByVertex(filmVertexType).get(0);
+      assertEquals(1, mapper.getClassMappingRulesByEntity(filmEntity).size());
+      assertEquals(filmClassMapper, mapper.getClassMappingRulesByEntity(filmEntity).get(0));
       assertEquals(filmClassMapper.getEntity(), filmEntity);
       assertEquals(filmClassMapper.getVertexType(), filmVertexType);
 
@@ -1119,8 +1131,10 @@ public class RelationshipConfigurationMappingTest {
       assertEquals("TITLE", filmClassMapper.property2attribute.get("title"));
       assertEquals("CATEGORY", filmClassMapper.property2attribute.get("category"));
 
-      OClassMapper actorFilmClassMapper =  mapper.getClassMappingRulesByVertex(actorFilmVertexType);
-      assertEquals(actorFilmClassMapper, mapper.getClassMappingRulesByEntity(actorFilmEntity));
+      assertEquals(1, mapper.getClassMappingRulesByVertex(actorFilmVertexType).size());
+      OClassMapper actorFilmClassMapper =  mapper.getClassMappingRulesByVertex(actorFilmVertexType).get(0);
+      assertEquals(1, mapper.getClassMappingRulesByEntity(actorFilmEntity).size());
+      assertEquals(actorFilmClassMapper, mapper.getClassMappingRulesByEntity(actorFilmEntity).get(0));
       assertEquals(actorFilmClassMapper.getEntity(), actorFilmEntity);
       assertEquals(actorFilmClassMapper.getVertexType(), actorFilmVertexType);
 
@@ -1144,11 +1158,11 @@ public class RelationshipConfigurationMappingTest {
       assertEquals(performsLeftEdgeType, mapper.getRelationship2edgeType().get(performsLeftRelationship));
       assertEquals(performsRightEdgeType, mapper.getRelationship2edgeType().get(performsRightRelationship));
 
-      assertEquals(2, mapper.getEdgeType2relationship().size());
-      assertEquals(1, mapper.getEdgeType2relationship().get(performsLeftEdgeType).size());
-      assertTrue(mapper.getEdgeType2relationship().get(performsLeftEdgeType).contains(performsLeftRelationship));
-      assertEquals(1, mapper.getEdgeType2relationship().get(performsRightEdgeType).size());
-      assertTrue(mapper.getEdgeType2relationship().get(performsRightEdgeType).contains(performsRightRelationship));
+      assertEquals(2, mapper.getEdgeType2relationships().size());
+      assertEquals(1, mapper.getEdgeType2relationships().get(performsLeftEdgeType).size());
+      assertTrue(mapper.getEdgeType2relationships().get(performsLeftEdgeType).contains(performsLeftRelationship));
+      assertEquals(1, mapper.getEdgeType2relationships().get(performsRightEdgeType).size());
+      assertTrue(mapper.getEdgeType2relationships().get(performsRightEdgeType).contains(performsRightRelationship));
 
       // JoinVertexes-AggregatorEdges Mapping
 
@@ -1272,11 +1286,13 @@ public class RelationshipConfigurationMappingTest {
 
       // Classes Mapping
 
-      assertEquals(3, mapper.getVertexType2classMapper().size());
-      assertEquals(3, mapper.getEntity2classMapper().size());
+      assertEquals(3, mapper.getVertexType2classMappers().size());
+      assertEquals(3, mapper.getEntity2classMappers().size());
 
-      actorClassMapper = mapper.getClassMappingRulesByVertex(actorVertexType);
-      assertEquals(actorClassMapper, mapper.getClassMappingRulesByEntity(actorEntity));
+      assertEquals(1, mapper.getClassMappingRulesByVertex(actorVertexType).size());
+      actorClassMapper = mapper.getClassMappingRulesByVertex(actorVertexType).get(0);
+      assertEquals(1, mapper.getClassMappingRulesByEntity(actorEntity).size());
+      assertEquals(actorClassMapper, mapper.getClassMappingRulesByEntity(actorEntity).get(0));
       assertEquals(actorClassMapper.getEntity(), actorEntity);
       assertEquals(actorClassMapper.getVertexType(), actorVertexType);
 
@@ -1289,8 +1305,10 @@ public class RelationshipConfigurationMappingTest {
       assertEquals("FIRST_NAME", actorClassMapper.property2attribute.get("firstName"));
       assertEquals("LAST_NAME", actorClassMapper.property2attribute.get("lastName"));
 
-      filmClassMapper =  mapper.getClassMappingRulesByVertex(filmVertexType);
-      assertEquals(filmClassMapper, mapper.getClassMappingRulesByEntity(filmEntity));
+      assertEquals(1, mapper.getClassMappingRulesByVertex(filmVertexType).size());
+      filmClassMapper =  mapper.getClassMappingRulesByVertex(filmVertexType).get(0);
+      assertEquals(1, mapper.getClassMappingRulesByEntity(filmEntity).size());
+      assertEquals(filmClassMapper, mapper.getClassMappingRulesByEntity(filmEntity).get(0));
       assertEquals(filmClassMapper.getEntity(), filmEntity);
       assertEquals(filmClassMapper.getVertexType(), filmVertexType);
 
@@ -1303,8 +1321,10 @@ public class RelationshipConfigurationMappingTest {
       assertEquals("TITLE", filmClassMapper.property2attribute.get("title"));
       assertEquals("CATEGORY", filmClassMapper.property2attribute.get("category"));
 
-      actorFilmClassMapper =  mapper.getClassMappingRulesByVertex(actorFilmVertexType);
-      assertEquals(actorFilmClassMapper, mapper.getClassMappingRulesByEntity(actorFilmEntity));
+      assertEquals(1, mapper.getClassMappingRulesByVertex(actorFilmVertexType).size());
+      actorFilmClassMapper =  mapper.getClassMappingRulesByVertex(actorFilmVertexType).get(0);
+      assertEquals(1, mapper.getClassMappingRulesByEntity(actorFilmEntity).size());
+      assertEquals(actorFilmClassMapper, mapper.getClassMappingRulesByEntity(actorFilmEntity).get(0));
       assertEquals(actorFilmClassMapper.getEntity(), actorFilmEntity);
       assertEquals(actorFilmClassMapper.getVertexType(), actorFilmVertexType);
 
@@ -1328,11 +1348,11 @@ public class RelationshipConfigurationMappingTest {
       assertEquals(performsLeftEdgeType, mapper.getRelationship2edgeType().get(performsLeftRelationship));
       assertEquals(performsRightEdgeType, mapper.getRelationship2edgeType().get(performsRightRelationship));
 
-      assertEquals(2, mapper.getEdgeType2relationship().size());
-      assertEquals(1, mapper.getEdgeType2relationship().get(performsLeftEdgeType).size());
-      assertTrue(mapper.getEdgeType2relationship().get(performsLeftEdgeType).contains(performsLeftRelationship));
-      assertEquals(1, mapper.getEdgeType2relationship().get(performsRightEdgeType).size());
-      assertTrue(mapper.getEdgeType2relationship().get(performsRightEdgeType).contains(performsRightRelationship));
+      assertEquals(2, mapper.getEdgeType2relationships().size());
+      assertEquals(1, mapper.getEdgeType2relationships().get(performsLeftEdgeType).size());
+      assertTrue(mapper.getEdgeType2relationships().get(performsLeftEdgeType).contains(performsLeftRelationship));
+      assertEquals(1, mapper.getEdgeType2relationships().get(performsRightEdgeType).size());
+      assertTrue(mapper.getEdgeType2relationships().get(performsRightEdgeType).contains(performsRightRelationship));
 
       // JoinVertexes-AggregatorEdges Mapping
 
@@ -1680,11 +1700,13 @@ public class RelationshipConfigurationMappingTest {
 
       // Classes Mapping
 
-      assertEquals(3, mapper.getVertexType2classMapper().size());
-      assertEquals(3, mapper.getEntity2classMapper().size());
+      assertEquals(3, mapper.getVertexType2classMappers().size());
+      assertEquals(3, mapper.getEntity2classMappers().size());
 
-      OClassMapper actorClassMapper = mapper.getClassMappingRulesByVertex(actorVertexType);
-      assertEquals(actorClassMapper, mapper.getClassMappingRulesByEntity(actorEntity));
+      assertEquals(1, mapper.getClassMappingRulesByVertex(actorVertexType).size());
+      OClassMapper actorClassMapper = mapper.getClassMappingRulesByVertex(actorVertexType).get(0);
+      assertEquals(1, mapper.getClassMappingRulesByEntity(actorEntity).size());
+      assertEquals(actorClassMapper, mapper.getClassMappingRulesByEntity(actorEntity).get(0));
       assertEquals(actorClassMapper.getEntity(), actorEntity);
       assertEquals(actorClassMapper.getVertexType(), actorVertexType);
 
@@ -1697,8 +1719,10 @@ public class RelationshipConfigurationMappingTest {
       assertEquals("FIRST_NAME", actorClassMapper.property2attribute.get("firstName"));
       assertEquals("LAST_NAME", actorClassMapper.property2attribute.get("lastName"));
 
-      OClassMapper filmClassMapper =  mapper.getClassMappingRulesByVertex(filmVertexType);
-      assertEquals(filmClassMapper, mapper.getClassMappingRulesByEntity(filmEntity));
+      assertEquals(1, mapper.getClassMappingRulesByVertex(filmVertexType).size());
+      OClassMapper filmClassMapper =  mapper.getClassMappingRulesByVertex(filmVertexType).get(0);
+      assertEquals(1, mapper.getClassMappingRulesByEntity(filmEntity).size());
+      assertEquals(filmClassMapper, mapper.getClassMappingRulesByEntity(filmEntity).get(0));
       assertEquals(filmClassMapper.getEntity(), filmEntity);
       assertEquals(filmClassMapper.getVertexType(), filmVertexType);
 
@@ -1711,8 +1735,10 @@ public class RelationshipConfigurationMappingTest {
       assertEquals("TITLE", filmClassMapper.property2attribute.get("title"));
       assertEquals("CATEGORY", filmClassMapper.property2attribute.get("category"));
 
-      OClassMapper filmActorClassMapper =  mapper.getClassMappingRulesByVertex(filmActorVertexType);
-      assertEquals(filmActorClassMapper, mapper.getClassMappingRulesByEntity(filmActorEntity));
+      assertEquals(1, mapper.getClassMappingRulesByVertex(filmActorVertexType).size());
+      OClassMapper filmActorClassMapper =  mapper.getClassMappingRulesByVertex(filmActorVertexType).get(0);
+      assertEquals(1, mapper.getClassMappingRulesByEntity(filmActorEntity).size());
+      assertEquals(filmActorClassMapper, mapper.getClassMappingRulesByEntity(filmActorEntity).get(0));
       assertEquals(filmActorClassMapper.getEntity(), filmActorEntity);
       assertEquals(filmActorClassMapper.getVertexType(), filmActorVertexType);
 
@@ -1736,11 +1762,11 @@ public class RelationshipConfigurationMappingTest {
       assertEquals(performsLeftEdgeType, mapper.getRelationship2edgeType().get(performsLeftRelationship));
       assertEquals(performsRightEdgeType, mapper.getRelationship2edgeType().get(performsRightRelationship));
 
-      assertEquals(2, mapper.getEdgeType2relationship().size());
-      assertEquals(1, mapper.getEdgeType2relationship().get(performsLeftEdgeType).size());
-      assertTrue(mapper.getEdgeType2relationship().get(performsLeftEdgeType).contains(performsLeftRelationship));
-      assertEquals(1, mapper.getEdgeType2relationship().get(performsRightEdgeType).size());
-      assertTrue(mapper.getEdgeType2relationship().get(performsRightEdgeType).contains(performsRightRelationship));
+      assertEquals(2, mapper.getEdgeType2relationships().size());
+      assertEquals(1, mapper.getEdgeType2relationships().get(performsLeftEdgeType).size());
+      assertTrue(mapper.getEdgeType2relationships().get(performsLeftEdgeType).contains(performsLeftRelationship));
+      assertEquals(1, mapper.getEdgeType2relationships().get(performsRightEdgeType).size());
+      assertTrue(mapper.getEdgeType2relationships().get(performsRightEdgeType).contains(performsRightRelationship));
 
       // JoinVertexes-AggregatorEdges Mapping
 
@@ -1864,11 +1890,13 @@ public class RelationshipConfigurationMappingTest {
 
       // Classes Mapping
 
-      assertEquals(3, mapper.getVertexType2classMapper().size());
-      assertEquals(3, mapper.getEntity2classMapper().size());
+      assertEquals(3, mapper.getVertexType2classMappers().size());
+      assertEquals(3, mapper.getEntity2classMappers().size());
 
-      actorClassMapper = mapper.getClassMappingRulesByVertex(actorVertexType);
-      assertEquals(actorClassMapper, mapper.getClassMappingRulesByEntity(actorEntity));
+      assertEquals(1, mapper.getClassMappingRulesByVertex(actorVertexType).size());
+      actorClassMapper = mapper.getClassMappingRulesByVertex(actorVertexType).get(0);
+      assertEquals(1, mapper.getClassMappingRulesByEntity(actorEntity).size());
+      assertEquals(actorClassMapper, mapper.getClassMappingRulesByEntity(actorEntity).get(0));
       assertEquals(actorClassMapper.getEntity(), actorEntity);
       assertEquals(actorClassMapper.getVertexType(), actorVertexType);
 
@@ -1881,8 +1909,10 @@ public class RelationshipConfigurationMappingTest {
       assertEquals("FIRST_NAME", actorClassMapper.property2attribute.get("firstName"));
       assertEquals("LAST_NAME", actorClassMapper.property2attribute.get("lastName"));
 
-      filmClassMapper =  mapper.getClassMappingRulesByVertex(filmVertexType);
-      assertEquals(filmClassMapper, mapper.getClassMappingRulesByEntity(filmEntity));
+      assertEquals(1, mapper.getClassMappingRulesByVertex(filmVertexType).size());
+      filmClassMapper =  mapper.getClassMappingRulesByVertex(filmVertexType).get(0);
+      assertEquals(1, mapper.getClassMappingRulesByEntity(filmEntity).size());
+      assertEquals(filmClassMapper, mapper.getClassMappingRulesByEntity(filmEntity).get(0));
       assertEquals(filmClassMapper.getEntity(), filmEntity);
       assertEquals(filmClassMapper.getVertexType(), filmVertexType);
 
@@ -1895,8 +1925,10 @@ public class RelationshipConfigurationMappingTest {
       assertEquals("TITLE", filmClassMapper.property2attribute.get("title"));
       assertEquals("CATEGORY", filmClassMapper.property2attribute.get("category"));
 
-      filmActorClassMapper =  mapper.getClassMappingRulesByVertex(filmActorVertexType);
-      assertEquals(filmActorClassMapper, mapper.getClassMappingRulesByEntity(filmActorEntity));
+      assertEquals(1, mapper.getClassMappingRulesByVertex(filmActorVertexType).size());
+      filmActorClassMapper =  mapper.getClassMappingRulesByVertex(filmActorVertexType).get(0);
+
+      assertEquals(filmActorClassMapper, mapper.getClassMappingRulesByEntity(filmActorEntity).get(0));
       assertEquals(filmActorClassMapper.getEntity(), filmActorEntity);
       assertEquals(filmActorClassMapper.getVertexType(), filmActorVertexType);
 
@@ -1920,11 +1952,11 @@ public class RelationshipConfigurationMappingTest {
       assertEquals(performsLeftEdgeType, mapper.getRelationship2edgeType().get(performsLeftRelationship));
       assertEquals(performsRightEdgeType, mapper.getRelationship2edgeType().get(performsRightRelationship));
 
-      assertEquals(2, mapper.getEdgeType2relationship().size());
-      assertEquals(1, mapper.getEdgeType2relationship().get(performsLeftEdgeType).size());
-      assertTrue(mapper.getEdgeType2relationship().get(performsLeftEdgeType).contains(performsLeftRelationship));
-      assertEquals(1, mapper.getEdgeType2relationship().get(performsRightEdgeType).size());
-      assertTrue(mapper.getEdgeType2relationship().get(performsRightEdgeType).contains(performsRightRelationship));
+      assertEquals(2, mapper.getEdgeType2relationships().size());
+      assertEquals(1, mapper.getEdgeType2relationships().get(performsLeftEdgeType).size());
+      assertTrue(mapper.getEdgeType2relationships().get(performsLeftEdgeType).contains(performsLeftRelationship));
+      assertEquals(1, mapper.getEdgeType2relationships().get(performsRightEdgeType).size());
+      assertTrue(mapper.getEdgeType2relationships().get(performsRightEdgeType).contains(performsRightRelationship));
 
       // JoinVertexes-AggregatorEdges Mapping
 
@@ -2270,11 +2302,13 @@ public class RelationshipConfigurationMappingTest {
 
       // Classes Mapping
 
-      assertEquals(3, mapper.getVertexType2classMapper().size());
-      assertEquals(3, mapper.getEntity2classMapper().size());
+      assertEquals(3, mapper.getVertexType2classMappers().size());
+      assertEquals(3, mapper.getEntity2classMappers().size());
 
-      OClassMapper actorClassMapper = mapper.getClassMappingRulesByVertex(actorVertexType);
-      assertEquals(actorClassMapper, mapper.getClassMappingRulesByEntity(actorEntity));
+      assertEquals(1, mapper.getClassMappingRulesByVertex(actorVertexType).size());
+      OClassMapper actorClassMapper = mapper.getClassMappingRulesByVertex(actorVertexType).get(0);
+      assertEquals(1, mapper.getClassMappingRulesByEntity(actorEntity).size());
+      assertEquals(actorClassMapper, mapper.getClassMappingRulesByEntity(actorEntity).get(0));
       assertEquals(actorClassMapper.getEntity(), actorEntity);
       assertEquals(actorClassMapper.getVertexType(), actorVertexType);
 
@@ -2287,8 +2321,10 @@ public class RelationshipConfigurationMappingTest {
       assertEquals("FIRST_NAME", actorClassMapper.property2attribute.get("firstName"));
       assertEquals("LAST_NAME", actorClassMapper.property2attribute.get("lastName"));
 
-      OClassMapper filmClassMapper =  mapper.getClassMappingRulesByVertex(filmVertexType);
-      assertEquals(filmClassMapper, mapper.getClassMappingRulesByEntity(filmEntity));
+      assertEquals(1, mapper.getClassMappingRulesByVertex(filmVertexType).size());
+      OClassMapper filmClassMapper =  mapper.getClassMappingRulesByVertex(filmVertexType).get(0);
+      assertEquals(1, mapper.getClassMappingRulesByEntity(filmEntity).size());
+      assertEquals(filmClassMapper, mapper.getClassMappingRulesByEntity(filmEntity).get(0));
       assertEquals(filmClassMapper.getEntity(), filmEntity);
       assertEquals(filmClassMapper.getVertexType(), filmVertexType);
 
@@ -2301,8 +2337,10 @@ public class RelationshipConfigurationMappingTest {
       assertEquals("TITLE", filmClassMapper.property2attribute.get("title"));
       assertEquals("CATEGORY", filmClassMapper.property2attribute.get("category"));
 
-      OClassMapper actorFilmClassMapper =  mapper.getClassMappingRulesByVertex(actorFilmVertexType);
-      assertEquals(actorFilmClassMapper, mapper.getClassMappingRulesByEntity(actorFilmEntity));
+      assertEquals(1, mapper.getClassMappingRulesByVertex(actorFilmVertexType).size());
+      OClassMapper actorFilmClassMapper =  mapper.getClassMappingRulesByVertex(actorFilmVertexType).get(0);
+      assertEquals(1, mapper.getClassMappingRulesByEntity(actorFilmEntity).size());
+      assertEquals(actorFilmClassMapper, mapper.getClassMappingRulesByEntity(actorFilmEntity).get(0));
       assertEquals(actorFilmClassMapper.getEntity(), actorFilmEntity);
       assertEquals(actorFilmClassMapper.getVertexType(), actorFilmVertexType);
 
@@ -2326,11 +2364,11 @@ public class RelationshipConfigurationMappingTest {
       assertEquals(performsLeftEdgeType, mapper.getRelationship2edgeType().get(performsLeftRelationship));
       assertEquals(performsRightEdgeType, mapper.getRelationship2edgeType().get(performsRightRelationship));
 
-      assertEquals(2, mapper.getEdgeType2relationship().size());
-      assertEquals(1, mapper.getEdgeType2relationship().get(performsLeftEdgeType).size());
-      assertTrue(mapper.getEdgeType2relationship().get(performsLeftEdgeType).contains(performsLeftRelationship));
-      assertEquals(1, mapper.getEdgeType2relationship().get(performsRightEdgeType).size());
-      assertTrue(mapper.getEdgeType2relationship().get(performsRightEdgeType).contains(performsRightRelationship));
+      assertEquals(2, mapper.getEdgeType2relationships().size());
+      assertEquals(1, mapper.getEdgeType2relationships().get(performsLeftEdgeType).size());
+      assertTrue(mapper.getEdgeType2relationships().get(performsLeftEdgeType).contains(performsLeftRelationship));
+      assertEquals(1, mapper.getEdgeType2relationships().get(performsRightEdgeType).size());
+      assertTrue(mapper.getEdgeType2relationships().get(performsRightEdgeType).contains(performsRightRelationship));
 
       // JoinVertexes-AggregatorEdges Mapping
 
@@ -2454,11 +2492,13 @@ public class RelationshipConfigurationMappingTest {
 
       // Classes Mapping
 
-      assertEquals(3, mapper.getVertexType2classMapper().size());
-      assertEquals(3, mapper.getEntity2classMapper().size());
+      assertEquals(3, mapper.getVertexType2classMappers().size());
+      assertEquals(3, mapper.getEntity2classMappers().size());
 
-      actorClassMapper = mapper.getClassMappingRulesByVertex(actorVertexType);
-      assertEquals(actorClassMapper, mapper.getClassMappingRulesByEntity(actorEntity));
+      assertEquals(1, mapper.getClassMappingRulesByVertex(actorVertexType).size());
+      actorClassMapper = mapper.getClassMappingRulesByVertex(actorVertexType).get(0);
+      assertEquals(1, mapper.getClassMappingRulesByEntity(actorEntity).size());
+      assertEquals(actorClassMapper, mapper.getClassMappingRulesByEntity(actorEntity).get(0));
       assertEquals(actorClassMapper.getEntity(), actorEntity);
       assertEquals(actorClassMapper.getVertexType(), actorVertexType);
 
@@ -2471,8 +2511,10 @@ public class RelationshipConfigurationMappingTest {
       assertEquals("FIRST_NAME", actorClassMapper.property2attribute.get("firstName"));
       assertEquals("LAST_NAME", actorClassMapper.property2attribute.get("lastName"));
 
-      filmClassMapper =  mapper.getClassMappingRulesByVertex(filmVertexType);
-      assertEquals(filmClassMapper, mapper.getClassMappingRulesByEntity(filmEntity));
+      assertEquals(1, mapper.getClassMappingRulesByVertex(filmVertexType).size());
+      filmClassMapper =  mapper.getClassMappingRulesByVertex(filmVertexType).get(0);
+      assertEquals(1, mapper.getClassMappingRulesByEntity(filmEntity).size());
+      assertEquals(filmClassMapper, mapper.getClassMappingRulesByEntity(filmEntity).get(0));
       assertEquals(filmClassMapper.getEntity(), filmEntity);
       assertEquals(filmClassMapper.getVertexType(), filmVertexType);
 
@@ -2485,8 +2527,10 @@ public class RelationshipConfigurationMappingTest {
       assertEquals("TITLE", filmClassMapper.property2attribute.get("title"));
       assertEquals("CATEGORY", filmClassMapper.property2attribute.get("category"));
 
-      actorFilmClassMapper =  mapper.getClassMappingRulesByVertex(actorFilmVertexType);
-      assertEquals(actorFilmClassMapper, mapper.getClassMappingRulesByEntity(actorFilmEntity));
+      assertEquals(1, mapper.getClassMappingRulesByVertex(actorFilmVertexType).size());
+      actorFilmClassMapper =  mapper.getClassMappingRulesByVertex(actorFilmVertexType).get(0);
+      assertEquals(1, mapper.getClassMappingRulesByEntity(actorFilmEntity).size());
+      assertEquals(actorFilmClassMapper, mapper.getClassMappingRulesByEntity(actorFilmEntity).get(0));
       assertEquals(actorFilmClassMapper.getEntity(), actorFilmEntity);
       assertEquals(actorFilmClassMapper.getVertexType(), actorFilmVertexType);
 
@@ -2510,11 +2554,11 @@ public class RelationshipConfigurationMappingTest {
       assertEquals(performsLeftEdgeType, mapper.getRelationship2edgeType().get(performsLeftRelationship));
       assertEquals(performsRightEdgeType, mapper.getRelationship2edgeType().get(performsRightRelationship));
 
-      assertEquals(2, mapper.getEdgeType2relationship().size());
-      assertEquals(1, mapper.getEdgeType2relationship().get(performsLeftEdgeType).size());
-      assertTrue(mapper.getEdgeType2relationship().get(performsLeftEdgeType).contains(performsLeftRelationship));
-      assertEquals(1, mapper.getEdgeType2relationship().get(performsRightEdgeType).size());
-      assertTrue(mapper.getEdgeType2relationship().get(performsRightEdgeType).contains(performsRightRelationship));
+      assertEquals(2, mapper.getEdgeType2relationships().size());
+      assertEquals(1, mapper.getEdgeType2relationships().get(performsLeftEdgeType).size());
+      assertTrue(mapper.getEdgeType2relationships().get(performsLeftEdgeType).contains(performsLeftRelationship));
+      assertEquals(1, mapper.getEdgeType2relationships().get(performsRightEdgeType).size());
+      assertTrue(mapper.getEdgeType2relationships().get(performsRightEdgeType).contains(performsRightRelationship));
 
       // JoinVertexes-AggregatorEdges Mapping
 
@@ -2861,11 +2905,13 @@ public class RelationshipConfigurationMappingTest {
 
       // Classes Mapping
 
-      assertEquals(3, mapper.getVertexType2classMapper().size());
-      assertEquals(3, mapper.getEntity2classMapper().size());
+      assertEquals(3, mapper.getVertexType2classMappers().size());
+      assertEquals(3, mapper.getEntity2classMappers().size());
 
-      OClassMapper actorClassMapper = mapper.getClassMappingRulesByVertex(actorVertexType);
-      assertEquals(actorClassMapper, mapper.getClassMappingRulesByEntity(actorEntity));
+      assertEquals(1, mapper.getClassMappingRulesByVertex(actorVertexType).size());
+      OClassMapper actorClassMapper = mapper.getClassMappingRulesByVertex(actorVertexType).get(0);
+      assertEquals(1, mapper.getClassMappingRulesByEntity(actorEntity).size());
+      assertEquals(actorClassMapper, mapper.getClassMappingRulesByEntity(actorEntity).get(0));
       assertEquals(actorClassMapper.getEntity(), actorEntity);
       assertEquals(actorClassMapper.getVertexType(), actorVertexType);
 
@@ -2878,8 +2924,10 @@ public class RelationshipConfigurationMappingTest {
       assertEquals("FIRST_NAME", actorClassMapper.property2attribute.get("firstName"));
       assertEquals("LAST_NAME", actorClassMapper.property2attribute.get("lastName"));
 
-      OClassMapper filmClassMapper =  mapper.getClassMappingRulesByVertex(filmVertexType);
-      assertEquals(filmClassMapper, mapper.getClassMappingRulesByEntity(filmEntity));
+      assertEquals(1, mapper.getClassMappingRulesByVertex(filmVertexType).size());
+      OClassMapper filmClassMapper =  mapper.getClassMappingRulesByVertex(filmVertexType).get(0);
+      assertEquals(1, mapper.getClassMappingRulesByEntity(filmEntity).size());
+      assertEquals(filmClassMapper, mapper.getClassMappingRulesByEntity(filmEntity).get(0));
       assertEquals(filmClassMapper.getEntity(), filmEntity);
       assertEquals(filmClassMapper.getVertexType(), filmVertexType);
 
@@ -2892,8 +2940,10 @@ public class RelationshipConfigurationMappingTest {
       assertEquals("TITLE", filmClassMapper.property2attribute.get("title"));
       assertEquals("CATEGORY", filmClassMapper.property2attribute.get("category"));
 
-      OClassMapper actorFilmClassMapper =  mapper.getClassMappingRulesByVertex(filmActorVertexType);
-      assertEquals(actorFilmClassMapper, mapper.getClassMappingRulesByEntity(filmActorEntity));
+      assertEquals(1, mapper.getClassMappingRulesByVertex(filmActorVertexType).size());
+      OClassMapper actorFilmClassMapper =  mapper.getClassMappingRulesByVertex(filmActorVertexType).get(0);
+      assertEquals(1, mapper.getClassMappingRulesByEntity(filmActorEntity).size());
+      assertEquals(actorFilmClassMapper, mapper.getClassMappingRulesByEntity(filmActorEntity).get(0));
       assertEquals(actorFilmClassMapper.getEntity(), filmActorEntity);
       assertEquals(actorFilmClassMapper.getVertexType(), filmActorVertexType);
 
@@ -2917,11 +2967,11 @@ public class RelationshipConfigurationMappingTest {
       assertEquals(featuresLeftEdgeType, mapper.getRelationship2edgeType().get(performsLeftRelationship));
       assertEquals(featuresRightEdgeType, mapper.getRelationship2edgeType().get(performsRightRelationship));
 
-      assertEquals(2, mapper.getEdgeType2relationship().size());
-      assertEquals(1, mapper.getEdgeType2relationship().get(featuresLeftEdgeType).size());
-      assertTrue(mapper.getEdgeType2relationship().get(featuresLeftEdgeType).contains(performsLeftRelationship));
-      assertEquals(1, mapper.getEdgeType2relationship().get(featuresRightEdgeType).size());
-      assertTrue(mapper.getEdgeType2relationship().get(featuresRightEdgeType).contains(performsRightRelationship));
+      assertEquals(2, mapper.getEdgeType2relationships().size());
+      assertEquals(1, mapper.getEdgeType2relationships().get(featuresLeftEdgeType).size());
+      assertTrue(mapper.getEdgeType2relationships().get(featuresLeftEdgeType).contains(performsLeftRelationship));
+      assertEquals(1, mapper.getEdgeType2relationships().get(featuresRightEdgeType).size());
+      assertTrue(mapper.getEdgeType2relationships().get(featuresRightEdgeType).contains(performsRightRelationship));
 
       // JoinVertexes-AggregatorEdges Mapping
 
@@ -3044,11 +3094,13 @@ public class RelationshipConfigurationMappingTest {
 
       // Classes Mapping
 
-      assertEquals(3, mapper.getVertexType2classMapper().size());
-      assertEquals(3, mapper.getEntity2classMapper().size());
+      assertEquals(3, mapper.getVertexType2classMappers().size());
+      assertEquals(3, mapper.getEntity2classMappers().size());
 
-      actorClassMapper = mapper.getClassMappingRulesByVertex(actorVertexType);
-      assertEquals(actorClassMapper, mapper.getClassMappingRulesByEntity(actorEntity));
+      assertEquals(1, mapper.getClassMappingRulesByVertex(actorVertexType).size());
+      actorClassMapper = mapper.getClassMappingRulesByVertex(actorVertexType).get(0);
+      assertEquals(1, mapper.getClassMappingRulesByEntity(actorEntity).size());
+      assertEquals(actorClassMapper, mapper.getClassMappingRulesByEntity(actorEntity).get(0));
       assertEquals(actorClassMapper.getEntity(), actorEntity);
       assertEquals(actorClassMapper.getVertexType(), actorVertexType);
 
@@ -3061,8 +3113,10 @@ public class RelationshipConfigurationMappingTest {
       assertEquals("FIRST_NAME", actorClassMapper.property2attribute.get("firstName"));
       assertEquals("LAST_NAME", actorClassMapper.property2attribute.get("lastName"));
 
-      filmClassMapper =  mapper.getClassMappingRulesByVertex(filmVertexType);
-      assertEquals(filmClassMapper, mapper.getClassMappingRulesByEntity(filmEntity));
+      assertEquals(1, mapper.getClassMappingRulesByVertex(filmVertexType).size());
+      filmClassMapper =  mapper.getClassMappingRulesByVertex(filmVertexType).get(0);
+      assertEquals(1, mapper.getClassMappingRulesByEntity(filmEntity).size());
+      assertEquals(filmClassMapper, mapper.getClassMappingRulesByEntity(filmEntity).get(0));
       assertEquals(filmClassMapper.getEntity(), filmEntity);
       assertEquals(filmClassMapper.getVertexType(), filmVertexType);
 
@@ -3075,8 +3129,10 @@ public class RelationshipConfigurationMappingTest {
       assertEquals("TITLE", filmClassMapper.property2attribute.get("title"));
       assertEquals("CATEGORY", filmClassMapper.property2attribute.get("category"));
 
-      actorFilmClassMapper =  mapper.getClassMappingRulesByVertex(filmActorVertexType);
-      assertEquals(actorFilmClassMapper, mapper.getClassMappingRulesByEntity(filmActorEntity));
+      assertEquals(1, mapper.getClassMappingRulesByVertex(filmActorVertexType).size());
+      actorFilmClassMapper =  mapper.getClassMappingRulesByVertex(filmActorVertexType).get(0);
+      assertEquals(1, mapper.getClassMappingRulesByEntity(filmActorEntity).size());
+      assertEquals(actorFilmClassMapper, mapper.getClassMappingRulesByEntity(filmActorEntity).get(0));
       assertEquals(actorFilmClassMapper.getEntity(), filmActorEntity);
       assertEquals(actorFilmClassMapper.getVertexType(), filmActorVertexType);
 
@@ -3100,11 +3156,11 @@ public class RelationshipConfigurationMappingTest {
       assertEquals(featuresLeftEdgeType, mapper.getRelationship2edgeType().get(performsLeftRelationship));
       assertEquals(featuresRightEdgeType, mapper.getRelationship2edgeType().get(performsRightRelationship));
 
-      assertEquals(2, mapper.getEdgeType2relationship().size());
-      assertEquals(1, mapper.getEdgeType2relationship().get(featuresLeftEdgeType).size());
-      assertTrue(mapper.getEdgeType2relationship().get(featuresLeftEdgeType).contains(performsLeftRelationship));
-      assertEquals(1, mapper.getEdgeType2relationship().get(featuresRightEdgeType).size());
-      assertTrue(mapper.getEdgeType2relationship().get(featuresRightEdgeType).contains(performsRightRelationship));
+      assertEquals(2, mapper.getEdgeType2relationships().size());
+      assertEquals(1, mapper.getEdgeType2relationships().get(featuresLeftEdgeType).size());
+      assertTrue(mapper.getEdgeType2relationships().get(featuresLeftEdgeType).contains(performsLeftRelationship));
+      assertEquals(1, mapper.getEdgeType2relationships().get(featuresRightEdgeType).size());
+      assertTrue(mapper.getEdgeType2relationships().get(featuresRightEdgeType).contains(performsRightRelationship));
 
       // JoinVertexes-AggregatorEdges Mapping
 

@@ -351,8 +351,8 @@ public class FullConfigurationMappingTest {
 
             // Classes Mapping
 
-            assertEquals(2, mapper.getVertexType2classMapper().size());
-            assertEquals(3, mapper.getEntity2classMapper().size());
+            assertEquals(2, mapper.getVertexType2classMappers().size());
+            assertEquals(3, mapper.getEntity2classMappers().size());
 
             assertEquals(2, mapper.getClassMappingRulesByVertex(personVertexType).size());
             OClassMapper personClassMapper = mapper.getClassMappingRulesByVertex(personVertexType).get(0);
@@ -413,9 +413,9 @@ public class FullConfigurationMappingTest {
             assertEquals(1, mapper.getRelationship2edgeType().size());
             assertEquals(worksAtEdgeType, mapper.getRelationship2edgeType().get(worksAtRelationship));
 
-            assertEquals(1, mapper.getEdgeType2relationship().size());
-            assertEquals(1, mapper.getEdgeType2relationship().get(worksAtEdgeType).size());
-            assertTrue(mapper.getEdgeType2relationship().get(worksAtEdgeType).contains(worksAtRelationship));
+            assertEquals(1, mapper.getEdgeType2relationships().size());
+            assertEquals(1, mapper.getEdgeType2relationships().get(worksAtEdgeType).size());
+            assertTrue(mapper.getEdgeType2relationships().get(worksAtEdgeType).contains(worksAtRelationship));
 
             // JoinVertexes-AggregatorEdges Mapping
 
