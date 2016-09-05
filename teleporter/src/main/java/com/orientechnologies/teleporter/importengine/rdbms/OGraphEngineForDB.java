@@ -203,7 +203,7 @@ public class OGraphEngineForDB {
 
         // converting eventual "t" or "f" values in "true" and "false"
         OModelProperty prop = vertexType.getPropertyByNameAmongAll(property);
-        if(prop.getPropertyType().equalsIgnoreCase("boolean")) {
+        if(prop.getOriginalType().equalsIgnoreCase("boolean")) {
           switch(currentValue) {
             case "t": currentValue = "true";
               break;
@@ -239,16 +239,18 @@ public class OGraphEngineForDB {
 
       for(OModelProperty currentProperty : vertexType.getAllProperties()) {
 
-        currentPropertyName = currentProperty.getName();
-        currentPropertyType = context.getDataTypeHandler().resolveType(currentProperty.getPropertyType().toLowerCase(Locale.ENGLISH),context).toString();
-        String currentOriginalType = currentProperty.getPropertyType();
+        if (currentProperty.isIncludedInMigration()) {
+          currentPropertyName = currentProperty.getName();
+          currentPropertyType = context.getDataTypeHandler().resolveType(currentProperty.getOriginalType().toLowerCase(Locale.ENGLISH), context).toString();
+          String currentOriginalType = currentProperty.getOriginalType();
 
-        try {
-          extractPropertiesFromRecord(record, properties, currentPropertyType, currentPropertyName, currentOriginalType, vertexType);
-        } catch (Exception e) {
-          String mess =  "Problem encountered during the extraction of the values from the records. Vertex Type: " + vertexType.getName() + ";\tProperty: " + currentPropertyName + ";\tRecord: " + propsAndValuesOfKey;
-          context.printExceptionMessage(e, mess, "error");
-          context.printExceptionStackTrace(e, "debug");
+          try {
+            extractPropertiesFromRecord(record, properties, currentPropertyType, currentPropertyName, currentOriginalType, vertexType);
+          } catch (Exception e) {
+            String mess = "Problem encountered during the extraction of the values from the records. Vertex Type: " + vertexType.getName() + ";\tProperty: " + currentPropertyName + ";\tRecord: " + propsAndValuesOfKey;
+            context.printExceptionMessage(e, mess, "error");
+            context.printExceptionStackTrace(e, "debug");
+          }
         }
       }
 
@@ -312,7 +314,7 @@ public class OGraphEngineForDB {
               // comparing values of the properties
               for(String propertyName: vertex.getPropertyKeys()) {
                 if(!(vertex.getProperty(propertyName) == null && properties.get(propertyName) == null) ) {
-                  currentPropertyType = context.getDataTypeHandler().resolveType(vertexType.getPropertyByName(propertyName).getPropertyType().toLowerCase(Locale.ENGLISH),context).toString();
+                  currentPropertyType = context.getDataTypeHandler().resolveType(vertexType.getPropertyByName(propertyName).getOriginalType().toLowerCase(Locale.ENGLISH),context).toString();
                   if(!this.areEquals(vertex.getProperty(propertyName), properties.get(propertyName), currentPropertyType, currentPropertyName)) {
                     equalVersions = false;
                     break;
@@ -740,12 +742,12 @@ public class OGraphEngineForDB {
       for(OModelProperty currentProperty: edgeType.getAllProperties()) {
 
         String currentPropertyName = currentProperty.getName();
-        String currentPropertyType = context.getDataTypeHandler().resolveType(currentProperty.getPropertyType().toLowerCase(Locale.ENGLISH),context).toString();
-        String currentOriginalType = currentProperty.getPropertyType();
+        String currentPropertyType = context.getDataTypeHandler().resolveType(currentProperty.getOriginalType().toLowerCase(Locale.ENGLISH),context).toString();
+        String currentOriginalType = currentProperty.getOriginalType();
         OVertexType joinVertexType = this.mapper.getJoinVertexTypeByAggregatorEdge(edgeType.getName());
 
         try {
-         extractPropertiesFromRecord(jointTableRecord, properties, currentPropertyType, currentPropertyName, currentOriginalType, joinVertexType);
+          extractPropertiesFromRecord(jointTableRecord, properties, currentPropertyType, currentPropertyName, currentOriginalType, joinVertexType);
         } catch (Exception e) {
           String mess =  "Problem encountered during the extraction of the values from the records. Edge Type: " + edgeType.getName() + ";\tProperty: " + currentProperty.getName() + ";\tOriginal join table: " + joinTable.getName();
           context.printExceptionMessage(e, mess, "error");

@@ -284,31 +284,31 @@ public class FilterTableMappingTest {
 
       assertNotNull(employeeVertexType.getPropertyByName("id"));
       assertEquals("id", employeeVertexType.getPropertyByName("id").getName());
-      assertEquals("VARCHAR", employeeVertexType.getPropertyByName("id").getPropertyType());
+      assertEquals("VARCHAR", employeeVertexType.getPropertyByName("id").getOriginalType());
       assertEquals(1, employeeVertexType.getPropertyByName("id").getOrdinalPosition());
       assertEquals(true, employeeVertexType.getPropertyByName("id").isFromPrimaryKey());
 
       assertNotNull(employeeVertexType.getPropertyByName("name"));
       assertEquals("name", employeeVertexType.getPropertyByName("name").getName());
-      assertEquals("VARCHAR", employeeVertexType.getPropertyByName("name").getPropertyType());
+      assertEquals("VARCHAR", employeeVertexType.getPropertyByName("name").getOriginalType());
       assertEquals(2, employeeVertexType.getPropertyByName("name").getOrdinalPosition());
       assertEquals(false, employeeVertexType.getPropertyByName("name").isFromPrimaryKey());
 
       assertNotNull(employeeVertexType.getPropertyByName("salary"));
       assertEquals("salary", employeeVertexType.getPropertyByName("salary").getName());
-      assertEquals("DECIMAL", employeeVertexType.getPropertyByName("salary").getPropertyType());
+      assertEquals("DECIMAL", employeeVertexType.getPropertyByName("salary").getOriginalType());
       assertEquals(3, employeeVertexType.getPropertyByName("salary").getOrdinalPosition());
       assertEquals(false, employeeVertexType.getPropertyByName("salary").isFromPrimaryKey());
 
       assertNotNull(employeeVertexType.getPropertyByName("residence"));
       assertEquals("residence", employeeVertexType.getPropertyByName("residence").getName());
-      assertEquals("VARCHAR", employeeVertexType.getPropertyByName("residence").getPropertyType());
+      assertEquals("VARCHAR", employeeVertexType.getPropertyByName("residence").getOriginalType());
       assertEquals(4, employeeVertexType.getPropertyByName("residence").getOrdinalPosition());
       assertEquals(false, employeeVertexType.getPropertyByName("residence").isFromPrimaryKey());
 
       assertNotNull(employeeVertexType.getPropertyByName("manager"));
       assertEquals("manager", employeeVertexType.getPropertyByName("manager").getName());
-      assertEquals("VARCHAR", employeeVertexType.getPropertyByName("manager").getPropertyType());
+      assertEquals("VARCHAR", employeeVertexType.getPropertyByName("manager").getOriginalType());
       assertEquals(5, employeeVertexType.getPropertyByName("manager").getOrdinalPosition());
       assertEquals(false, employeeVertexType.getPropertyByName("manager").isFromPrimaryKey());
 
@@ -316,19 +316,19 @@ public class FilterTableMappingTest {
 
       assertNotNull(countryVertexType.getPropertyByName("id"));
       assertEquals("id", countryVertexType.getPropertyByName("id").getName());
-      assertEquals("VARCHAR", countryVertexType.getPropertyByName("id").getPropertyType());
+      assertEquals("VARCHAR", countryVertexType.getPropertyByName("id").getOriginalType());
       assertEquals(1, countryVertexType.getPropertyByName("id").getOrdinalPosition());
       assertEquals(true, countryVertexType.getPropertyByName("id").isFromPrimaryKey());
 
       assertNotNull(countryVertexType.getPropertyByName("name"));
       assertEquals("name", countryVertexType.getPropertyByName("name").getName());
-      assertEquals("VARCHAR", countryVertexType.getPropertyByName("name").getPropertyType());
+      assertEquals("VARCHAR", countryVertexType.getPropertyByName("name").getOriginalType());
       assertEquals(2, countryVertexType.getPropertyByName("name").getOrdinalPosition());
       assertEquals(false, countryVertexType.getPropertyByName("name").isFromPrimaryKey());
 
       assertNotNull(countryVertexType.getPropertyByName("continent"));
       assertEquals("continent", countryVertexType.getPropertyByName("continent").getName());
-      assertEquals("VARCHAR", countryVertexType.getPropertyByName("continent").getPropertyType());
+      assertEquals("VARCHAR", countryVertexType.getPropertyByName("continent").getOriginalType());
       assertEquals(3, countryVertexType.getPropertyByName("continent").getOrdinalPosition());
       assertEquals(false, countryVertexType.getPropertyByName("continent").isFromPrimaryKey());
 
@@ -336,19 +336,19 @@ public class FilterTableMappingTest {
 
       assertNotNull(managerVertexType.getPropertyByName("id"));
       assertEquals("id", managerVertexType.getPropertyByName("id").getName());
-      assertEquals("VARCHAR", managerVertexType.getPropertyByName("id").getPropertyType());
+      assertEquals("VARCHAR", managerVertexType.getPropertyByName("id").getOriginalType());
       assertEquals(1, managerVertexType.getPropertyByName("id").getOrdinalPosition());
       assertEquals(true, managerVertexType.getPropertyByName("id").isFromPrimaryKey());
 
       assertNotNull(managerVertexType.getPropertyByName("name"));
       assertEquals("name", managerVertexType.getPropertyByName("name").getName());
-      assertEquals("VARCHAR", managerVertexType.getPropertyByName("name").getPropertyType());
+      assertEquals("VARCHAR", managerVertexType.getPropertyByName("name").getOriginalType());
       assertEquals(2, managerVertexType.getPropertyByName("name").getOrdinalPosition());
       assertEquals(false, managerVertexType.getPropertyByName("name").isFromPrimaryKey());
 
       assertNotNull(managerVertexType.getPropertyByName("project"));
       assertEquals("project", managerVertexType.getPropertyByName("project").getName());
-      assertEquals("VARCHAR", managerVertexType.getPropertyByName("project").getPropertyType());
+      assertEquals("VARCHAR", managerVertexType.getPropertyByName("project").getOriginalType());
       assertEquals(3, managerVertexType.getPropertyByName("project").getOrdinalPosition());
       assertEquals(false, managerVertexType.getPropertyByName("project").isFromPrimaryKey());
 
@@ -671,31 +671,31 @@ public class FilterTableMappingTest {
 
       assertNotNull(employeeVertexType.getPropertyByName("id"));
       assertEquals("id", employeeVertexType.getPropertyByName("id").getName());
-      assertEquals("VARCHAR", employeeVertexType.getPropertyByName("id").getPropertyType());
+      assertEquals("VARCHAR", employeeVertexType.getPropertyByName("id").getOriginalType());
       assertEquals(1, employeeVertexType.getPropertyByName("id").getOrdinalPosition());
       assertEquals(true, employeeVertexType.getPropertyByName("id").isFromPrimaryKey());
 
       assertNotNull(employeeVertexType.getPropertyByName("name"));
       assertEquals("name", employeeVertexType.getPropertyByName("name").getName());
-      assertEquals("VARCHAR", employeeVertexType.getPropertyByName("name").getPropertyType());
+      assertEquals("VARCHAR", employeeVertexType.getPropertyByName("name").getOriginalType());
       assertEquals(2, employeeVertexType.getPropertyByName("name").getOrdinalPosition());
       assertEquals(false, employeeVertexType.getPropertyByName("name").isFromPrimaryKey());
 
       assertNotNull(employeeVertexType.getPropertyByName("salary"));
       assertEquals("salary", employeeVertexType.getPropertyByName("salary").getName());
-      assertEquals("DECIMAL", employeeVertexType.getPropertyByName("salary").getPropertyType());
+      assertEquals("DECIMAL", employeeVertexType.getPropertyByName("salary").getOriginalType());
       assertEquals(3, employeeVertexType.getPropertyByName("salary").getOrdinalPosition());
       assertEquals(false, employeeVertexType.getPropertyByName("salary").isFromPrimaryKey());
 
       assertNotNull(employeeVertexType.getPropertyByName("residence"));
       assertEquals("residence", employeeVertexType.getPropertyByName("residence").getName());
-      assertEquals("VARCHAR", employeeVertexType.getPropertyByName("residence").getPropertyType());
+      assertEquals("VARCHAR", employeeVertexType.getPropertyByName("residence").getOriginalType());
       assertEquals(4, employeeVertexType.getPropertyByName("residence").getOrdinalPosition());
       assertEquals(false, employeeVertexType.getPropertyByName("residence").isFromPrimaryKey());
 
       assertNotNull(employeeVertexType.getPropertyByName("manager"));
       assertEquals("manager", employeeVertexType.getPropertyByName("manager").getName());
-      assertEquals("VARCHAR", employeeVertexType.getPropertyByName("manager").getPropertyType());
+      assertEquals("VARCHAR", employeeVertexType.getPropertyByName("manager").getOriginalType());
       assertEquals(5, employeeVertexType.getPropertyByName("manager").getOrdinalPosition());
       assertEquals(false, employeeVertexType.getPropertyByName("manager").isFromPrimaryKey());
 
@@ -703,19 +703,19 @@ public class FilterTableMappingTest {
 
       assertNotNull(countryVertexType.getPropertyByName("id"));
       assertEquals("id", countryVertexType.getPropertyByName("id").getName());
-      assertEquals("VARCHAR", countryVertexType.getPropertyByName("id").getPropertyType());
+      assertEquals("VARCHAR", countryVertexType.getPropertyByName("id").getOriginalType());
       assertEquals(1, countryVertexType.getPropertyByName("id").getOrdinalPosition());
       assertEquals(true, countryVertexType.getPropertyByName("id").isFromPrimaryKey());
 
       assertNotNull(countryVertexType.getPropertyByName("name"));
       assertEquals("name", countryVertexType.getPropertyByName("name").getName());
-      assertEquals("VARCHAR", countryVertexType.getPropertyByName("name").getPropertyType());
+      assertEquals("VARCHAR", countryVertexType.getPropertyByName("name").getOriginalType());
       assertEquals(2, countryVertexType.getPropertyByName("name").getOrdinalPosition());
       assertEquals(false, countryVertexType.getPropertyByName("name").isFromPrimaryKey());
 
       assertNotNull(countryVertexType.getPropertyByName("continent"));
       assertEquals("continent", countryVertexType.getPropertyByName("continent").getName());
-      assertEquals("VARCHAR", countryVertexType.getPropertyByName("continent").getPropertyType());
+      assertEquals("VARCHAR", countryVertexType.getPropertyByName("continent").getOriginalType());
       assertEquals(3, countryVertexType.getPropertyByName("continent").getOrdinalPosition());
       assertEquals(false, countryVertexType.getPropertyByName("continent").isFromPrimaryKey());
 
@@ -723,19 +723,19 @@ public class FilterTableMappingTest {
 
       assertNotNull(managerVertexType.getPropertyByName("id"));
       assertEquals("id", managerVertexType.getPropertyByName("id").getName());
-      assertEquals("VARCHAR", managerVertexType.getPropertyByName("id").getPropertyType());
+      assertEquals("VARCHAR", managerVertexType.getPropertyByName("id").getOriginalType());
       assertEquals(1, managerVertexType.getPropertyByName("id").getOrdinalPosition());
       assertEquals(true, managerVertexType.getPropertyByName("id").isFromPrimaryKey());
 
       assertNotNull(managerVertexType.getPropertyByName("name"));
       assertEquals("name", managerVertexType.getPropertyByName("name").getName());
-      assertEquals("VARCHAR", managerVertexType.getPropertyByName("name").getPropertyType());
+      assertEquals("VARCHAR", managerVertexType.getPropertyByName("name").getOriginalType());
       assertEquals(2, managerVertexType.getPropertyByName("name").getOrdinalPosition());
       assertEquals(false, managerVertexType.getPropertyByName("name").isFromPrimaryKey());
 
       assertNotNull(managerVertexType.getPropertyByName("project"));
       assertEquals("project", managerVertexType.getPropertyByName("project").getName());
-      assertEquals("VARCHAR", managerVertexType.getPropertyByName("project").getPropertyType());
+      assertEquals("VARCHAR", managerVertexType.getPropertyByName("project").getOriginalType());
       assertEquals(3, managerVertexType.getPropertyByName("project").getOrdinalPosition());
       assertEquals(false, managerVertexType.getPropertyByName("project").isFromPrimaryKey());
 
@@ -1283,25 +1283,25 @@ public class FilterTableMappingTest {
 
       assertNotNull(employeeVertexType.getPropertyByName("id"));
       assertEquals("id", employeeVertexType.getPropertyByName("id").getName());
-      assertEquals("VARCHAR", employeeVertexType.getPropertyByName("id").getPropertyType());
+      assertEquals("VARCHAR", employeeVertexType.getPropertyByName("id").getOriginalType());
       assertEquals(1, employeeVertexType.getPropertyByName("id").getOrdinalPosition());
       assertEquals(true, employeeVertexType.getPropertyByName("id").isFromPrimaryKey());
 
       assertNotNull(employeeVertexType.getPropertyByName("name"));
       assertEquals("name", employeeVertexType.getPropertyByName("name").getName());
-      assertEquals("VARCHAR", employeeVertexType.getPropertyByName("name").getPropertyType());
+      assertEquals("VARCHAR", employeeVertexType.getPropertyByName("name").getOriginalType());
       assertEquals(2, employeeVertexType.getPropertyByName("name").getOrdinalPosition());
       assertEquals(false, employeeVertexType.getPropertyByName("name").isFromPrimaryKey());
 
       assertNotNull(employeeVertexType.getPropertyByName("residence"));
       assertEquals("residence", employeeVertexType.getPropertyByName("residence").getName());
-      assertEquals("VARCHAR", employeeVertexType.getPropertyByName("residence").getPropertyType());
+      assertEquals("VARCHAR", employeeVertexType.getPropertyByName("residence").getOriginalType());
       assertEquals(3, employeeVertexType.getPropertyByName("residence").getOrdinalPosition());
       assertEquals(false, employeeVertexType.getPropertyByName("residence").isFromPrimaryKey());
 
       assertNotNull(employeeVertexType.getPropertyByName("manager"));
       assertEquals("manager", employeeVertexType.getPropertyByName("manager").getName());
-      assertEquals("VARCHAR", employeeVertexType.getPropertyByName("manager").getPropertyType());
+      assertEquals("VARCHAR", employeeVertexType.getPropertyByName("manager").getOriginalType());
       assertEquals(4, employeeVertexType.getPropertyByName("manager").getOrdinalPosition());
       assertEquals(false, employeeVertexType.getPropertyByName("manager").isFromPrimaryKey());
 
@@ -1309,13 +1309,13 @@ public class FilterTableMappingTest {
 
       assertNotNull(regularEmployeeVertexType.getPropertyByName("salary"));
       assertEquals("salary", regularEmployeeVertexType.getPropertyByName("salary").getName());
-      assertEquals("DECIMAL", regularEmployeeVertexType.getPropertyByName("salary").getPropertyType());
+      assertEquals("DECIMAL", regularEmployeeVertexType.getPropertyByName("salary").getOriginalType());
       assertEquals(1, regularEmployeeVertexType.getPropertyByName("salary").getOrdinalPosition());
       assertEquals(false, regularEmployeeVertexType.getPropertyByName("salary").isFromPrimaryKey());
 
       assertNotNull(regularEmployeeVertexType.getPropertyByName("bonus"));
       assertEquals("bonus", regularEmployeeVertexType.getPropertyByName("bonus").getName());
-      assertEquals("DECIMAL", regularEmployeeVertexType.getPropertyByName("bonus").getPropertyType());
+      assertEquals("DECIMAL", regularEmployeeVertexType.getPropertyByName("bonus").getOriginalType());
       assertEquals(2, regularEmployeeVertexType.getPropertyByName("bonus").getOrdinalPosition());
       assertEquals(false, regularEmployeeVertexType.getPropertyByName("bonus").isFromPrimaryKey());
 
@@ -1323,13 +1323,13 @@ public class FilterTableMappingTest {
 
       assertNotNull(contractEmployeeVertexType.getPropertyByName("payPerHour"));
       assertEquals("payPerHour", contractEmployeeVertexType.getPropertyByName("payPerHour").getName());
-      assertEquals("DECIMAL", contractEmployeeVertexType.getPropertyByName("payPerHour").getPropertyType());
+      assertEquals("DECIMAL", contractEmployeeVertexType.getPropertyByName("payPerHour").getOriginalType());
       assertEquals(1, contractEmployeeVertexType.getPropertyByName("payPerHour").getOrdinalPosition());
       assertEquals(false, contractEmployeeVertexType.getPropertyByName("payPerHour").isFromPrimaryKey());
 
       assertNotNull(contractEmployeeVertexType.getPropertyByName("contractDuration"));
       assertEquals("contractDuration", contractEmployeeVertexType.getPropertyByName("contractDuration").getName());
-      assertEquals("VARCHAR", contractEmployeeVertexType.getPropertyByName("contractDuration").getPropertyType());
+      assertEquals("VARCHAR", contractEmployeeVertexType.getPropertyByName("contractDuration").getOriginalType());
       assertEquals(2, contractEmployeeVertexType.getPropertyByName("contractDuration").getOrdinalPosition());
       assertEquals(false, contractEmployeeVertexType.getPropertyByName("contractDuration").isFromPrimaryKey());
 
@@ -1337,19 +1337,19 @@ public class FilterTableMappingTest {
 
       assertNotNull(countryVertexType.getPropertyByName("id"));
       assertEquals("id", countryVertexType.getPropertyByName("id").getName());
-      assertEquals("VARCHAR", countryVertexType.getPropertyByName("id").getPropertyType());
+      assertEquals("VARCHAR", countryVertexType.getPropertyByName("id").getOriginalType());
       assertEquals(1, countryVertexType.getPropertyByName("id").getOrdinalPosition());
       assertEquals(true, countryVertexType.getPropertyByName("id").isFromPrimaryKey());
 
       assertNotNull(countryVertexType.getPropertyByName("name"));
       assertEquals("name", countryVertexType.getPropertyByName("name").getName());
-      assertEquals("VARCHAR", countryVertexType.getPropertyByName("name").getPropertyType());
+      assertEquals("VARCHAR", countryVertexType.getPropertyByName("name").getOriginalType());
       assertEquals(2, countryVertexType.getPropertyByName("name").getOrdinalPosition());
       assertEquals(false, countryVertexType.getPropertyByName("name").isFromPrimaryKey());
 
       assertNotNull(countryVertexType.getPropertyByName("continent"));
       assertEquals("continent", countryVertexType.getPropertyByName("continent").getName());
-      assertEquals("VARCHAR", countryVertexType.getPropertyByName("continent").getPropertyType());
+      assertEquals("VARCHAR", countryVertexType.getPropertyByName("continent").getOriginalType());
       assertEquals(3, countryVertexType.getPropertyByName("continent").getOrdinalPosition());
       assertEquals(false, countryVertexType.getPropertyByName("continent").isFromPrimaryKey());
 
@@ -1357,13 +1357,13 @@ public class FilterTableMappingTest {
 
       assertNotNull(managerVertexType.getPropertyByName("id"));
       assertEquals("id", managerVertexType.getPropertyByName("id").getName());
-      assertEquals("VARCHAR", managerVertexType.getPropertyByName("id").getPropertyType());
+      assertEquals("VARCHAR", managerVertexType.getPropertyByName("id").getOriginalType());
       assertEquals(1, managerVertexType.getPropertyByName("id").getOrdinalPosition());
       assertEquals(true, managerVertexType.getPropertyByName("id").isFromPrimaryKey());
 
       assertNotNull(managerVertexType.getPropertyByName("name"));
       assertEquals("name", managerVertexType.getPropertyByName("name").getName());
-      assertEquals("VARCHAR", managerVertexType.getPropertyByName("name").getPropertyType());
+      assertEquals("VARCHAR", managerVertexType.getPropertyByName("name").getOriginalType());
       assertEquals(2, managerVertexType.getPropertyByName("name").getOrdinalPosition());
       assertEquals(false, managerVertexType.getPropertyByName("name").isFromPrimaryKey());
 
@@ -1371,7 +1371,7 @@ public class FilterTableMappingTest {
 
       assertNotNull(projectManagerVertexType.getPropertyByName("project"));
       assertEquals("project", projectManagerVertexType.getPropertyByName("project").getName());
-      assertEquals("VARCHAR", projectManagerVertexType.getPropertyByName("project").getPropertyType());
+      assertEquals("VARCHAR", projectManagerVertexType.getPropertyByName("project").getOriginalType());
       assertEquals(1, projectManagerVertexType.getPropertyByName("project").getOrdinalPosition());
       assertEquals(false, projectManagerVertexType.getPropertyByName("project").isFromPrimaryKey());
 
@@ -1382,25 +1382,25 @@ public class FilterTableMappingTest {
 
       assertNotNull(regularEmployeeVertexType.getInheritedPropertyByName("id"));
       assertEquals("id", regularEmployeeVertexType.getInheritedPropertyByName("id").getName());
-      assertEquals("VARCHAR", regularEmployeeVertexType.getInheritedPropertyByName("id").getPropertyType());
+      assertEquals("VARCHAR", regularEmployeeVertexType.getInheritedPropertyByName("id").getOriginalType());
       assertEquals(1, regularEmployeeVertexType.getInheritedPropertyByName("id").getOrdinalPosition());
       assertEquals(true, regularEmployeeVertexType.getInheritedPropertyByName("id").isFromPrimaryKey());
 
       assertNotNull(regularEmployeeVertexType.getInheritedPropertyByName("name"));
       assertEquals("name", regularEmployeeVertexType.getInheritedPropertyByName("name").getName());
-      assertEquals("VARCHAR", regularEmployeeVertexType.getInheritedPropertyByName("name").getPropertyType());
+      assertEquals("VARCHAR", regularEmployeeVertexType.getInheritedPropertyByName("name").getOriginalType());
       assertEquals(2, regularEmployeeVertexType.getInheritedPropertyByName("name").getOrdinalPosition());
       assertEquals(false, regularEmployeeVertexType.getInheritedPropertyByName("name").isFromPrimaryKey());
 
       assertNotNull(regularEmployeeVertexType.getInheritedPropertyByName("residence"));
       assertEquals("residence", regularEmployeeVertexType.getInheritedPropertyByName("residence").getName());
-      assertEquals("VARCHAR", regularEmployeeVertexType.getInheritedPropertyByName("residence").getPropertyType());
+      assertEquals("VARCHAR", regularEmployeeVertexType.getInheritedPropertyByName("residence").getOriginalType());
       assertEquals(3, regularEmployeeVertexType.getInheritedPropertyByName("residence").getOrdinalPosition());
       assertEquals(false, regularEmployeeVertexType.getInheritedPropertyByName("residence").isFromPrimaryKey());
 
       assertNotNull(regularEmployeeVertexType.getInheritedPropertyByName("manager"));
       assertEquals("manager", regularEmployeeVertexType.getInheritedPropertyByName("manager").getName());
-      assertEquals("VARCHAR", regularEmployeeVertexType.getInheritedPropertyByName("manager").getPropertyType());
+      assertEquals("VARCHAR", regularEmployeeVertexType.getInheritedPropertyByName("manager").getOriginalType());
       assertEquals(4, regularEmployeeVertexType.getInheritedPropertyByName("manager").getOrdinalPosition());
       assertEquals(false, regularEmployeeVertexType.getInheritedPropertyByName("manager").isFromPrimaryKey());
 
@@ -1408,25 +1408,25 @@ public class FilterTableMappingTest {
 
       assertNotNull(contractEmployeeVertexType.getInheritedPropertyByName("id"));
       assertEquals("id", contractEmployeeVertexType.getInheritedPropertyByName("id").getName());
-      assertEquals("VARCHAR", contractEmployeeVertexType.getInheritedPropertyByName("id").getPropertyType());
+      assertEquals("VARCHAR", contractEmployeeVertexType.getInheritedPropertyByName("id").getOriginalType());
       assertEquals(1, contractEmployeeVertexType.getInheritedPropertyByName("id").getOrdinalPosition());
       assertEquals(true, contractEmployeeVertexType.getInheritedPropertyByName("id").isFromPrimaryKey());
 
       assertNotNull(contractEmployeeVertexType.getInheritedPropertyByName("name"));
       assertEquals("name", contractEmployeeVertexType.getInheritedPropertyByName("name").getName());
-      assertEquals("VARCHAR", contractEmployeeVertexType.getInheritedPropertyByName("name").getPropertyType());
+      assertEquals("VARCHAR", contractEmployeeVertexType.getInheritedPropertyByName("name").getOriginalType());
       assertEquals(2, contractEmployeeVertexType.getInheritedPropertyByName("name").getOrdinalPosition());
       assertEquals(false, contractEmployeeVertexType.getInheritedPropertyByName("name").isFromPrimaryKey());
 
       assertNotNull(contractEmployeeVertexType.getInheritedPropertyByName("residence"));
       assertEquals("residence", contractEmployeeVertexType.getInheritedPropertyByName("residence").getName());
-      assertEquals("VARCHAR", contractEmployeeVertexType.getInheritedPropertyByName("residence").getPropertyType());
+      assertEquals("VARCHAR", contractEmployeeVertexType.getInheritedPropertyByName("residence").getOriginalType());
       assertEquals(3, contractEmployeeVertexType.getInheritedPropertyByName("residence").getOrdinalPosition());
       assertEquals(false, contractEmployeeVertexType.getInheritedPropertyByName("residence").isFromPrimaryKey());
 
       assertNotNull(contractEmployeeVertexType.getInheritedPropertyByName("manager"));
       assertEquals("manager", contractEmployeeVertexType.getInheritedPropertyByName("manager").getName());
-      assertEquals("VARCHAR", contractEmployeeVertexType.getInheritedPropertyByName("manager").getPropertyType());
+      assertEquals("VARCHAR", contractEmployeeVertexType.getInheritedPropertyByName("manager").getOriginalType());
       assertEquals(4, contractEmployeeVertexType.getInheritedPropertyByName("manager").getOrdinalPosition());
       assertEquals(false, contractEmployeeVertexType.getInheritedPropertyByName("manager").isFromPrimaryKey());
 
@@ -1434,13 +1434,13 @@ public class FilterTableMappingTest {
 
       assertNotNull(projectManagerVertexType.getInheritedPropertyByName("id"));
       assertEquals("id", projectManagerVertexType.getInheritedPropertyByName("id").getName());
-      assertEquals("VARCHAR", projectManagerVertexType.getInheritedPropertyByName("id").getPropertyType());
+      assertEquals("VARCHAR", projectManagerVertexType.getInheritedPropertyByName("id").getOriginalType());
       assertEquals(1, projectManagerVertexType.getInheritedPropertyByName("id").getOrdinalPosition());
       assertEquals(true, projectManagerVertexType.getInheritedPropertyByName("id").isFromPrimaryKey());
 
       assertNotNull(projectManagerVertexType.getInheritedPropertyByName("name"));
       assertEquals("name", projectManagerVertexType.getInheritedPropertyByName("name").getName());
-      assertEquals("VARCHAR", projectManagerVertexType.getInheritedPropertyByName("name").getPropertyType());
+      assertEquals("VARCHAR", projectManagerVertexType.getInheritedPropertyByName("name").getOriginalType());
       assertEquals(2, projectManagerVertexType.getInheritedPropertyByName("name").getOrdinalPosition());
       assertEquals(false, projectManagerVertexType.getInheritedPropertyByName("name").isFromPrimaryKey());
 
@@ -2061,25 +2061,25 @@ public class FilterTableMappingTest {
 
       assertNotNull(employeeVertexType.getPropertyByName("id"));
       assertEquals("id", employeeVertexType.getPropertyByName("id").getName());
-      assertEquals("VARCHAR", employeeVertexType.getPropertyByName("id").getPropertyType());
+      assertEquals("VARCHAR", employeeVertexType.getPropertyByName("id").getOriginalType());
       assertEquals(1, employeeVertexType.getPropertyByName("id").getOrdinalPosition());
       assertEquals(true, employeeVertexType.getPropertyByName("id").isFromPrimaryKey());
 
       assertNotNull(employeeVertexType.getPropertyByName("name"));
       assertEquals("name", employeeVertexType.getPropertyByName("name").getName());
-      assertEquals("VARCHAR", employeeVertexType.getPropertyByName("name").getPropertyType());
+      assertEquals("VARCHAR", employeeVertexType.getPropertyByName("name").getOriginalType());
       assertEquals(2, employeeVertexType.getPropertyByName("name").getOrdinalPosition());
       assertEquals(false, employeeVertexType.getPropertyByName("name").isFromPrimaryKey());
 
       assertNotNull(employeeVertexType.getPropertyByName("residence"));
       assertEquals("residence", employeeVertexType.getPropertyByName("residence").getName());
-      assertEquals("VARCHAR", employeeVertexType.getPropertyByName("residence").getPropertyType());
+      assertEquals("VARCHAR", employeeVertexType.getPropertyByName("residence").getOriginalType());
       assertEquals(3, employeeVertexType.getPropertyByName("residence").getOrdinalPosition());
       assertEquals(false, employeeVertexType.getPropertyByName("residence").isFromPrimaryKey());
 
       assertNotNull(employeeVertexType.getPropertyByName("manager"));
       assertEquals("manager", employeeVertexType.getPropertyByName("manager").getName());
-      assertEquals("VARCHAR", employeeVertexType.getPropertyByName("manager").getPropertyType());
+      assertEquals("VARCHAR", employeeVertexType.getPropertyByName("manager").getOriginalType());
       assertEquals(4, employeeVertexType.getPropertyByName("manager").getOrdinalPosition());
       assertEquals(false, employeeVertexType.getPropertyByName("manager").isFromPrimaryKey());
 
@@ -2087,13 +2087,13 @@ public class FilterTableMappingTest {
 
       assertNotNull(regularEmployeeVertexType.getPropertyByName("salary"));
       assertEquals("salary", regularEmployeeVertexType.getPropertyByName("salary").getName());
-      assertEquals("DECIMAL", regularEmployeeVertexType.getPropertyByName("salary").getPropertyType());
+      assertEquals("DECIMAL", regularEmployeeVertexType.getPropertyByName("salary").getOriginalType());
       assertEquals(1, regularEmployeeVertexType.getPropertyByName("salary").getOrdinalPosition());
       assertEquals(false, regularEmployeeVertexType.getPropertyByName("salary").isFromPrimaryKey());
 
       assertNotNull(regularEmployeeVertexType.getPropertyByName("bonus"));
       assertEquals("bonus", regularEmployeeVertexType.getPropertyByName("bonus").getName());
-      assertEquals("DECIMAL", regularEmployeeVertexType.getPropertyByName("bonus").getPropertyType());
+      assertEquals("DECIMAL", regularEmployeeVertexType.getPropertyByName("bonus").getOriginalType());
       assertEquals(2, regularEmployeeVertexType.getPropertyByName("bonus").getOrdinalPosition());
       assertEquals(false, regularEmployeeVertexType.getPropertyByName("bonus").isFromPrimaryKey());
 
@@ -2101,13 +2101,13 @@ public class FilterTableMappingTest {
 
       assertNotNull(contractEmployeeVertexType.getPropertyByName("payPerHour"));
       assertEquals("payPerHour", contractEmployeeVertexType.getPropertyByName("payPerHour").getName());
-      assertEquals("DECIMAL", contractEmployeeVertexType.getPropertyByName("payPerHour").getPropertyType());
+      assertEquals("DECIMAL", contractEmployeeVertexType.getPropertyByName("payPerHour").getOriginalType());
       assertEquals(1, contractEmployeeVertexType.getPropertyByName("payPerHour").getOrdinalPosition());
       assertEquals(false, contractEmployeeVertexType.getPropertyByName("payPerHour").isFromPrimaryKey());
 
       assertNotNull(contractEmployeeVertexType.getPropertyByName("contractDuration"));
       assertEquals("contractDuration", contractEmployeeVertexType.getPropertyByName("contractDuration").getName());
-      assertEquals("VARCHAR", contractEmployeeVertexType.getPropertyByName("contractDuration").getPropertyType());
+      assertEquals("VARCHAR", contractEmployeeVertexType.getPropertyByName("contractDuration").getOriginalType());
       assertEquals(2, contractEmployeeVertexType.getPropertyByName("contractDuration").getOrdinalPosition());
       assertEquals(false, contractEmployeeVertexType.getPropertyByName("contractDuration").isFromPrimaryKey());
 
@@ -2115,19 +2115,19 @@ public class FilterTableMappingTest {
 
       assertNotNull(countryVertexType.getPropertyByName("id"));
       assertEquals("id", countryVertexType.getPropertyByName("id").getName());
-      assertEquals("VARCHAR", countryVertexType.getPropertyByName("id").getPropertyType());
+      assertEquals("VARCHAR", countryVertexType.getPropertyByName("id").getOriginalType());
       assertEquals(1, countryVertexType.getPropertyByName("id").getOrdinalPosition());
       assertEquals(true, countryVertexType.getPropertyByName("id").isFromPrimaryKey());
 
       assertNotNull(countryVertexType.getPropertyByName("name"));
       assertEquals("name", countryVertexType.getPropertyByName("name").getName());
-      assertEquals("VARCHAR", countryVertexType.getPropertyByName("name").getPropertyType());
+      assertEquals("VARCHAR", countryVertexType.getPropertyByName("name").getOriginalType());
       assertEquals(2, countryVertexType.getPropertyByName("name").getOrdinalPosition());
       assertEquals(false, countryVertexType.getPropertyByName("name").isFromPrimaryKey());
 
       assertNotNull(countryVertexType.getPropertyByName("continent"));
       assertEquals("continent", countryVertexType.getPropertyByName("continent").getName());
-      assertEquals("VARCHAR", countryVertexType.getPropertyByName("continent").getPropertyType());
+      assertEquals("VARCHAR", countryVertexType.getPropertyByName("continent").getOriginalType());
       assertEquals(3, countryVertexType.getPropertyByName("continent").getOrdinalPosition());
       assertEquals(false, countryVertexType.getPropertyByName("continent").isFromPrimaryKey());
 
@@ -2135,13 +2135,13 @@ public class FilterTableMappingTest {
 
       assertNotNull(managerVertexType.getPropertyByName("id"));
       assertEquals("id", managerVertexType.getPropertyByName("id").getName());
-      assertEquals("VARCHAR", managerVertexType.getPropertyByName("id").getPropertyType());
+      assertEquals("VARCHAR", managerVertexType.getPropertyByName("id").getOriginalType());
       assertEquals(1, managerVertexType.getPropertyByName("id").getOrdinalPosition());
       assertEquals(true, managerVertexType.getPropertyByName("id").isFromPrimaryKey());
 
       assertNotNull(managerVertexType.getPropertyByName("name"));
       assertEquals("name", managerVertexType.getPropertyByName("name").getName());
-      assertEquals("VARCHAR", managerVertexType.getPropertyByName("name").getPropertyType());
+      assertEquals("VARCHAR", managerVertexType.getPropertyByName("name").getOriginalType());
       assertEquals(2, managerVertexType.getPropertyByName("name").getOrdinalPosition());
       assertEquals(false, managerVertexType.getPropertyByName("name").isFromPrimaryKey());
 
@@ -2149,7 +2149,7 @@ public class FilterTableMappingTest {
 
       assertNotNull(projectManagerVertexType.getPropertyByName("project"));
       assertEquals("project", projectManagerVertexType.getPropertyByName("project").getName());
-      assertEquals("VARCHAR", projectManagerVertexType.getPropertyByName("project").getPropertyType());
+      assertEquals("VARCHAR", projectManagerVertexType.getPropertyByName("project").getOriginalType());
       assertEquals(1, projectManagerVertexType.getPropertyByName("project").getOrdinalPosition());
       assertEquals(false, projectManagerVertexType.getPropertyByName("project").isFromPrimaryKey());
 
@@ -2160,25 +2160,25 @@ public class FilterTableMappingTest {
 
       assertNotNull(regularEmployeeVertexType.getInheritedPropertyByName("id"));
       assertEquals("id", regularEmployeeVertexType.getInheritedPropertyByName("id").getName());
-      assertEquals("VARCHAR", regularEmployeeVertexType.getInheritedPropertyByName("id").getPropertyType());
+      assertEquals("VARCHAR", regularEmployeeVertexType.getInheritedPropertyByName("id").getOriginalType());
       assertEquals(1, regularEmployeeVertexType.getInheritedPropertyByName("id").getOrdinalPosition());
       assertEquals(false, regularEmployeeVertexType.getInheritedPropertyByName("id").isFromPrimaryKey());
 
       assertNotNull(regularEmployeeVertexType.getInheritedPropertyByName("name"));
       assertEquals("name", regularEmployeeVertexType.getInheritedPropertyByName("name").getName());
-      assertEquals("VARCHAR", regularEmployeeVertexType.getInheritedPropertyByName("name").getPropertyType());
+      assertEquals("VARCHAR", regularEmployeeVertexType.getInheritedPropertyByName("name").getOriginalType());
       assertEquals(2, regularEmployeeVertexType.getInheritedPropertyByName("name").getOrdinalPosition());
       assertEquals(false, regularEmployeeVertexType.getInheritedPropertyByName("name").isFromPrimaryKey());
 
       assertNotNull(regularEmployeeVertexType.getInheritedPropertyByName("residence"));
       assertEquals("residence", regularEmployeeVertexType.getInheritedPropertyByName("residence").getName());
-      assertEquals("VARCHAR", regularEmployeeVertexType.getInheritedPropertyByName("residence").getPropertyType());
+      assertEquals("VARCHAR", regularEmployeeVertexType.getInheritedPropertyByName("residence").getOriginalType());
       assertEquals(3, regularEmployeeVertexType.getInheritedPropertyByName("residence").getOrdinalPosition());
       assertEquals(false, regularEmployeeVertexType.getInheritedPropertyByName("residence").isFromPrimaryKey());
 
       assertNotNull(regularEmployeeVertexType.getInheritedPropertyByName("manager"));
       assertEquals("manager", regularEmployeeVertexType.getInheritedPropertyByName("manager").getName());
-      assertEquals("VARCHAR", regularEmployeeVertexType.getInheritedPropertyByName("manager").getPropertyType());
+      assertEquals("VARCHAR", regularEmployeeVertexType.getInheritedPropertyByName("manager").getOriginalType());
       assertEquals(4, regularEmployeeVertexType.getInheritedPropertyByName("manager").getOrdinalPosition());
       assertEquals(false, regularEmployeeVertexType.getInheritedPropertyByName("manager").isFromPrimaryKey());
 
@@ -2186,25 +2186,25 @@ public class FilterTableMappingTest {
 
       assertNotNull(contractEmployeeVertexType.getInheritedPropertyByName("id"));
       assertEquals("id", contractEmployeeVertexType.getInheritedPropertyByName("id").getName());
-      assertEquals("VARCHAR", contractEmployeeVertexType.getInheritedPropertyByName("id").getPropertyType());
+      assertEquals("VARCHAR", contractEmployeeVertexType.getInheritedPropertyByName("id").getOriginalType());
       assertEquals(1, contractEmployeeVertexType.getInheritedPropertyByName("id").getOrdinalPosition());
       assertEquals(false, contractEmployeeVertexType.getInheritedPropertyByName("id").isFromPrimaryKey());
 
       assertNotNull(contractEmployeeVertexType.getInheritedPropertyByName("name"));
       assertEquals("name", contractEmployeeVertexType.getInheritedPropertyByName("name").getName());
-      assertEquals("VARCHAR", contractEmployeeVertexType.getInheritedPropertyByName("name").getPropertyType());
+      assertEquals("VARCHAR", contractEmployeeVertexType.getInheritedPropertyByName("name").getOriginalType());
       assertEquals(2, contractEmployeeVertexType.getInheritedPropertyByName("name").getOrdinalPosition());
       assertEquals(false, contractEmployeeVertexType.getInheritedPropertyByName("name").isFromPrimaryKey());
 
       assertNotNull(contractEmployeeVertexType.getInheritedPropertyByName("residence"));
       assertEquals("residence", contractEmployeeVertexType.getInheritedPropertyByName("residence").getName());
-      assertEquals("VARCHAR", contractEmployeeVertexType.getInheritedPropertyByName("residence").getPropertyType());
+      assertEquals("VARCHAR", contractEmployeeVertexType.getInheritedPropertyByName("residence").getOriginalType());
       assertEquals(3, contractEmployeeVertexType.getInheritedPropertyByName("residence").getOrdinalPosition());
       assertEquals(false, contractEmployeeVertexType.getInheritedPropertyByName("residence").isFromPrimaryKey());
 
       assertNotNull(contractEmployeeVertexType.getInheritedPropertyByName("manager"));
       assertEquals("manager", contractEmployeeVertexType.getInheritedPropertyByName("manager").getName());
-      assertEquals("VARCHAR", contractEmployeeVertexType.getInheritedPropertyByName("manager").getPropertyType());
+      assertEquals("VARCHAR", contractEmployeeVertexType.getInheritedPropertyByName("manager").getOriginalType());
       assertEquals(4, contractEmployeeVertexType.getInheritedPropertyByName("manager").getOrdinalPosition());
       assertEquals(false, contractEmployeeVertexType.getInheritedPropertyByName("manager").isFromPrimaryKey());
 
@@ -2212,13 +2212,13 @@ public class FilterTableMappingTest {
 
       assertNotNull(projectManagerVertexType.getInheritedPropertyByName("id"));
       assertEquals("id", projectManagerVertexType.getInheritedPropertyByName("id").getName());
-      assertEquals("VARCHAR", projectManagerVertexType.getInheritedPropertyByName("id").getPropertyType());
+      assertEquals("VARCHAR", projectManagerVertexType.getInheritedPropertyByName("id").getOriginalType());
       assertEquals(1, projectManagerVertexType.getInheritedPropertyByName("id").getOrdinalPosition());
       assertEquals(false, projectManagerVertexType.getInheritedPropertyByName("id").isFromPrimaryKey());
 
       assertNotNull(projectManagerVertexType.getInheritedPropertyByName("name"));
       assertEquals("name", projectManagerVertexType.getInheritedPropertyByName("name").getName());
-      assertEquals("VARCHAR", projectManagerVertexType.getInheritedPropertyByName("name").getPropertyType());
+      assertEquals("VARCHAR", projectManagerVertexType.getInheritedPropertyByName("name").getOriginalType());
       assertEquals(2, projectManagerVertexType.getInheritedPropertyByName("name").getOrdinalPosition());
       assertEquals(false, projectManagerVertexType.getInheritedPropertyByName("name").isFromPrimaryKey());
 
@@ -2834,25 +2834,25 @@ public class FilterTableMappingTest {
 
       assertNotNull(employeeVertexType.getPropertyByName("id"));
       assertEquals("id", employeeVertexType.getPropertyByName("id").getName());
-      assertEquals("VARCHAR", employeeVertexType.getPropertyByName("id").getPropertyType());
+      assertEquals("VARCHAR", employeeVertexType.getPropertyByName("id").getOriginalType());
       assertEquals(1, employeeVertexType.getPropertyByName("id").getOrdinalPosition());
       assertEquals(true, employeeVertexType.getPropertyByName("id").isFromPrimaryKey());
 
       assertNotNull(employeeVertexType.getPropertyByName("name"));
       assertEquals("name", employeeVertexType.getPropertyByName("name").getName());
-      assertEquals("VARCHAR", employeeVertexType.getPropertyByName("name").getPropertyType());
+      assertEquals("VARCHAR", employeeVertexType.getPropertyByName("name").getOriginalType());
       assertEquals(2, employeeVertexType.getPropertyByName("name").getOrdinalPosition());
       assertEquals(false, employeeVertexType.getPropertyByName("name").isFromPrimaryKey());
 
       assertNotNull(employeeVertexType.getPropertyByName("residence"));
       assertEquals("residence", employeeVertexType.getPropertyByName("residence").getName());
-      assertEquals("VARCHAR", employeeVertexType.getPropertyByName("residence").getPropertyType());
+      assertEquals("VARCHAR", employeeVertexType.getPropertyByName("residence").getOriginalType());
       assertEquals(3, employeeVertexType.getPropertyByName("residence").getOrdinalPosition());
       assertEquals(false, employeeVertexType.getPropertyByName("residence").isFromPrimaryKey());
 
       assertNotNull(employeeVertexType.getPropertyByName("manager"));
       assertEquals("manager", employeeVertexType.getPropertyByName("manager").getName());
-      assertEquals("VARCHAR", employeeVertexType.getPropertyByName("manager").getPropertyType());
+      assertEquals("VARCHAR", employeeVertexType.getPropertyByName("manager").getOriginalType());
       assertEquals(4, employeeVertexType.getPropertyByName("manager").getOrdinalPosition());
       assertEquals(false, employeeVertexType.getPropertyByName("manager").isFromPrimaryKey());
 
@@ -2860,13 +2860,13 @@ public class FilterTableMappingTest {
 
       assertNotNull(regularEmployeeVertexType.getPropertyByName("salary"));
       assertEquals("salary", regularEmployeeVertexType.getPropertyByName("salary").getName());
-      assertEquals("DECIMAL", regularEmployeeVertexType.getPropertyByName("salary").getPropertyType());
+      assertEquals("DECIMAL", regularEmployeeVertexType.getPropertyByName("salary").getOriginalType());
       assertEquals(1, regularEmployeeVertexType.getPropertyByName("salary").getOrdinalPosition());
       assertEquals(false, regularEmployeeVertexType.getPropertyByName("salary").isFromPrimaryKey());
 
       assertNotNull(regularEmployeeVertexType.getPropertyByName("bonus"));
       assertEquals("bonus", regularEmployeeVertexType.getPropertyByName("bonus").getName());
-      assertEquals("DECIMAL", regularEmployeeVertexType.getPropertyByName("bonus").getPropertyType());
+      assertEquals("DECIMAL", regularEmployeeVertexType.getPropertyByName("bonus").getOriginalType());
       assertEquals(2, regularEmployeeVertexType.getPropertyByName("bonus").getOrdinalPosition());
       assertEquals(false, regularEmployeeVertexType.getPropertyByName("bonus").isFromPrimaryKey());
 
@@ -2874,13 +2874,13 @@ public class FilterTableMappingTest {
 
       assertNotNull(contractEmployeeVertexType.getPropertyByName("payPerHour"));
       assertEquals("payPerHour", contractEmployeeVertexType.getPropertyByName("payPerHour").getName());
-      assertEquals("DECIMAL", contractEmployeeVertexType.getPropertyByName("payPerHour").getPropertyType());
+      assertEquals("DECIMAL", contractEmployeeVertexType.getPropertyByName("payPerHour").getOriginalType());
       assertEquals(1, contractEmployeeVertexType.getPropertyByName("payPerHour").getOrdinalPosition());
       assertEquals(false, contractEmployeeVertexType.getPropertyByName("payPerHour").isFromPrimaryKey());
 
       assertNotNull(contractEmployeeVertexType.getPropertyByName("contractDuration"));
       assertEquals("contractDuration", contractEmployeeVertexType.getPropertyByName("contractDuration").getName());
-      assertEquals("VARCHAR", contractEmployeeVertexType.getPropertyByName("contractDuration").getPropertyType());
+      assertEquals("VARCHAR", contractEmployeeVertexType.getPropertyByName("contractDuration").getOriginalType());
       assertEquals(2, contractEmployeeVertexType.getPropertyByName("contractDuration").getOrdinalPosition());
       assertEquals(false, contractEmployeeVertexType.getPropertyByName("contractDuration").isFromPrimaryKey());
 
@@ -2888,19 +2888,19 @@ public class FilterTableMappingTest {
 
       assertNotNull(countryVertexType.getPropertyByName("id"));
       assertEquals("id", countryVertexType.getPropertyByName("id").getName());
-      assertEquals("VARCHAR", countryVertexType.getPropertyByName("id").getPropertyType());
+      assertEquals("VARCHAR", countryVertexType.getPropertyByName("id").getOriginalType());
       assertEquals(1, countryVertexType.getPropertyByName("id").getOrdinalPosition());
       assertEquals(true, countryVertexType.getPropertyByName("id").isFromPrimaryKey());
 
       assertNotNull(countryVertexType.getPropertyByName("name"));
       assertEquals("name", countryVertexType.getPropertyByName("name").getName());
-      assertEquals("VARCHAR", countryVertexType.getPropertyByName("name").getPropertyType());
+      assertEquals("VARCHAR", countryVertexType.getPropertyByName("name").getOriginalType());
       assertEquals(2, countryVertexType.getPropertyByName("name").getOrdinalPosition());
       assertEquals(false, countryVertexType.getPropertyByName("name").isFromPrimaryKey());
 
       assertNotNull(countryVertexType.getPropertyByName("continent"));
       assertEquals("continent", countryVertexType.getPropertyByName("continent").getName());
-      assertEquals("VARCHAR", countryVertexType.getPropertyByName("continent").getPropertyType());
+      assertEquals("VARCHAR", countryVertexType.getPropertyByName("continent").getOriginalType());
       assertEquals(3, countryVertexType.getPropertyByName("continent").getOrdinalPosition());
       assertEquals(false, countryVertexType.getPropertyByName("continent").isFromPrimaryKey());
 
@@ -2908,13 +2908,13 @@ public class FilterTableMappingTest {
 
       assertNotNull(managerVertexType.getPropertyByName("id"));
       assertEquals("id", managerVertexType.getPropertyByName("id").getName());
-      assertEquals("VARCHAR", managerVertexType.getPropertyByName("id").getPropertyType());
+      assertEquals("VARCHAR", managerVertexType.getPropertyByName("id").getOriginalType());
       assertEquals(1, managerVertexType.getPropertyByName("id").getOrdinalPosition());
       assertEquals(true, managerVertexType.getPropertyByName("id").isFromPrimaryKey());
 
       assertNotNull(managerVertexType.getPropertyByName("name"));
       assertEquals("name", managerVertexType.getPropertyByName("name").getName());
-      assertEquals("VARCHAR", managerVertexType.getPropertyByName("name").getPropertyType());
+      assertEquals("VARCHAR", managerVertexType.getPropertyByName("name").getOriginalType());
       assertEquals(2, managerVertexType.getPropertyByName("name").getOrdinalPosition());
       assertEquals(false, managerVertexType.getPropertyByName("name").isFromPrimaryKey());
 
@@ -2922,7 +2922,7 @@ public class FilterTableMappingTest {
 
       assertNotNull(projectManagerVertexType.getPropertyByName("project"));
       assertEquals("project", projectManagerVertexType.getPropertyByName("project").getName());
-      assertEquals("VARCHAR", projectManagerVertexType.getPropertyByName("project").getPropertyType());
+      assertEquals("VARCHAR", projectManagerVertexType.getPropertyByName("project").getOriginalType());
       assertEquals(1, projectManagerVertexType.getPropertyByName("project").getOrdinalPosition());
       assertEquals(false, projectManagerVertexType.getPropertyByName("project").isFromPrimaryKey());
 
@@ -2933,25 +2933,25 @@ public class FilterTableMappingTest {
 
       assertNotNull(regularEmployeeVertexType.getInheritedPropertyByName("id"));
       assertEquals("id", regularEmployeeVertexType.getInheritedPropertyByName("id").getName());
-      assertEquals("VARCHAR", regularEmployeeVertexType.getInheritedPropertyByName("id").getPropertyType());
+      assertEquals("VARCHAR", regularEmployeeVertexType.getInheritedPropertyByName("id").getOriginalType());
       assertEquals(1, regularEmployeeVertexType.getInheritedPropertyByName("id").getOrdinalPosition());
       assertEquals(false, regularEmployeeVertexType.getInheritedPropertyByName("id").isFromPrimaryKey());
 
       assertNotNull(regularEmployeeVertexType.getInheritedPropertyByName("name"));
       assertEquals("name", regularEmployeeVertexType.getInheritedPropertyByName("name").getName());
-      assertEquals("VARCHAR", regularEmployeeVertexType.getInheritedPropertyByName("name").getPropertyType());
+      assertEquals("VARCHAR", regularEmployeeVertexType.getInheritedPropertyByName("name").getOriginalType());
       assertEquals(2, regularEmployeeVertexType.getInheritedPropertyByName("name").getOrdinalPosition());
       assertEquals(false, regularEmployeeVertexType.getInheritedPropertyByName("name").isFromPrimaryKey());
 
       assertNotNull(regularEmployeeVertexType.getInheritedPropertyByName("residence"));
       assertEquals("residence", regularEmployeeVertexType.getInheritedPropertyByName("residence").getName());
-      assertEquals("VARCHAR", regularEmployeeVertexType.getInheritedPropertyByName("residence").getPropertyType());
+      assertEquals("VARCHAR", regularEmployeeVertexType.getInheritedPropertyByName("residence").getOriginalType());
       assertEquals(3, regularEmployeeVertexType.getInheritedPropertyByName("residence").getOrdinalPosition());
       assertEquals(false, regularEmployeeVertexType.getInheritedPropertyByName("residence").isFromPrimaryKey());
 
       assertNotNull(regularEmployeeVertexType.getInheritedPropertyByName("manager"));
       assertEquals("manager", regularEmployeeVertexType.getInheritedPropertyByName("manager").getName());
-      assertEquals("VARCHAR", regularEmployeeVertexType.getInheritedPropertyByName("manager").getPropertyType());
+      assertEquals("VARCHAR", regularEmployeeVertexType.getInheritedPropertyByName("manager").getOriginalType());
       assertEquals(4, regularEmployeeVertexType.getInheritedPropertyByName("manager").getOrdinalPosition());
       assertEquals(false, regularEmployeeVertexType.getInheritedPropertyByName("manager").isFromPrimaryKey());
 
@@ -2959,25 +2959,25 @@ public class FilterTableMappingTest {
 
       assertNotNull(contractEmployeeVertexType.getInheritedPropertyByName("id"));
       assertEquals("id", contractEmployeeVertexType.getInheritedPropertyByName("id").getName());
-      assertEquals("VARCHAR", contractEmployeeVertexType.getInheritedPropertyByName("id").getPropertyType());
+      assertEquals("VARCHAR", contractEmployeeVertexType.getInheritedPropertyByName("id").getOriginalType());
       assertEquals(1, contractEmployeeVertexType.getInheritedPropertyByName("id").getOrdinalPosition());
       assertEquals(false, contractEmployeeVertexType.getInheritedPropertyByName("id").isFromPrimaryKey());
 
       assertNotNull(contractEmployeeVertexType.getInheritedPropertyByName("name"));
       assertEquals("name", contractEmployeeVertexType.getInheritedPropertyByName("name").getName());
-      assertEquals("VARCHAR", contractEmployeeVertexType.getInheritedPropertyByName("name").getPropertyType());
+      assertEquals("VARCHAR", contractEmployeeVertexType.getInheritedPropertyByName("name").getOriginalType());
       assertEquals(2, contractEmployeeVertexType.getInheritedPropertyByName("name").getOrdinalPosition());
       assertEquals(false, contractEmployeeVertexType.getInheritedPropertyByName("name").isFromPrimaryKey());
 
       assertNotNull(contractEmployeeVertexType.getInheritedPropertyByName("residence"));
       assertEquals("residence", contractEmployeeVertexType.getInheritedPropertyByName("residence").getName());
-      assertEquals("VARCHAR", contractEmployeeVertexType.getInheritedPropertyByName("residence").getPropertyType());
+      assertEquals("VARCHAR", contractEmployeeVertexType.getInheritedPropertyByName("residence").getOriginalType());
       assertEquals(3, contractEmployeeVertexType.getInheritedPropertyByName("residence").getOrdinalPosition());
       assertEquals(false, contractEmployeeVertexType.getInheritedPropertyByName("residence").isFromPrimaryKey());
 
       assertNotNull(contractEmployeeVertexType.getInheritedPropertyByName("manager"));
       assertEquals("manager", contractEmployeeVertexType.getInheritedPropertyByName("manager").getName());
-      assertEquals("VARCHAR", contractEmployeeVertexType.getInheritedPropertyByName("manager").getPropertyType());
+      assertEquals("VARCHAR", contractEmployeeVertexType.getInheritedPropertyByName("manager").getOriginalType());
       assertEquals(4, contractEmployeeVertexType.getInheritedPropertyByName("manager").getOrdinalPosition());
       assertEquals(false, contractEmployeeVertexType.getInheritedPropertyByName("manager").isFromPrimaryKey());
 
@@ -2985,13 +2985,13 @@ public class FilterTableMappingTest {
 
       assertNotNull(projectManagerVertexType.getInheritedPropertyByName("id"));
       assertEquals("id", projectManagerVertexType.getInheritedPropertyByName("id").getName());
-      assertEquals("VARCHAR", projectManagerVertexType.getInheritedPropertyByName("id").getPropertyType());
+      assertEquals("VARCHAR", projectManagerVertexType.getInheritedPropertyByName("id").getOriginalType());
       assertEquals(1, projectManagerVertexType.getInheritedPropertyByName("id").getOrdinalPosition());
       assertEquals(false, projectManagerVertexType.getInheritedPropertyByName("id").isFromPrimaryKey());
 
       assertNotNull(projectManagerVertexType.getInheritedPropertyByName("name"));
       assertEquals("name", projectManagerVertexType.getInheritedPropertyByName("name").getName());
-      assertEquals("VARCHAR", projectManagerVertexType.getInheritedPropertyByName("name").getPropertyType());
+      assertEquals("VARCHAR", projectManagerVertexType.getInheritedPropertyByName("name").getOriginalType());
       assertEquals(2, projectManagerVertexType.getInheritedPropertyByName("name").getOrdinalPosition());
       assertEquals(false, projectManagerVertexType.getInheritedPropertyByName("name").isFromPrimaryKey());
 
@@ -3604,25 +3604,25 @@ public class FilterTableMappingTest {
 
       assertNotNull(employeeVertexType.getPropertyByName("id"));
       assertEquals("id", employeeVertexType.getPropertyByName("id").getName());
-      assertEquals("VARCHAR", employeeVertexType.getPropertyByName("id").getPropertyType());
+      assertEquals("VARCHAR", employeeVertexType.getPropertyByName("id").getOriginalType());
       assertEquals(1, employeeVertexType.getPropertyByName("id").getOrdinalPosition());
       assertEquals(true, employeeVertexType.getPropertyByName("id").isFromPrimaryKey());
 
       assertNotNull(employeeVertexType.getPropertyByName("name"));
       assertEquals("name", employeeVertexType.getPropertyByName("name").getName());
-      assertEquals("VARCHAR", employeeVertexType.getPropertyByName("name").getPropertyType());
+      assertEquals("VARCHAR", employeeVertexType.getPropertyByName("name").getOriginalType());
       assertEquals(2, employeeVertexType.getPropertyByName("name").getOrdinalPosition());
       assertEquals(false, employeeVertexType.getPropertyByName("name").isFromPrimaryKey());
 
       assertNotNull(employeeVertexType.getPropertyByName("residence"));
       assertEquals("residence", employeeVertexType.getPropertyByName("residence").getName());
-      assertEquals("VARCHAR", employeeVertexType.getPropertyByName("residence").getPropertyType());
+      assertEquals("VARCHAR", employeeVertexType.getPropertyByName("residence").getOriginalType());
       assertEquals(3, employeeVertexType.getPropertyByName("residence").getOrdinalPosition());
       assertEquals(false, employeeVertexType.getPropertyByName("residence").isFromPrimaryKey());
 
       assertNotNull(employeeVertexType.getPropertyByName("manager"));
       assertEquals("manager", employeeVertexType.getPropertyByName("manager").getName());
-      assertEquals("VARCHAR", employeeVertexType.getPropertyByName("manager").getPropertyType());
+      assertEquals("VARCHAR", employeeVertexType.getPropertyByName("manager").getOriginalType());
       assertEquals(4, employeeVertexType.getPropertyByName("manager").getOrdinalPosition());
       assertEquals(false, employeeVertexType.getPropertyByName("manager").isFromPrimaryKey());
 
@@ -3630,13 +3630,13 @@ public class FilterTableMappingTest {
 
       assertNotNull(regularEmployeeVertexType.getPropertyByName("salary"));
       assertEquals("salary", regularEmployeeVertexType.getPropertyByName("salary").getName());
-      assertEquals("DECIMAL", regularEmployeeVertexType.getPropertyByName("salary").getPropertyType());
+      assertEquals("DECIMAL", regularEmployeeVertexType.getPropertyByName("salary").getOriginalType());
       assertEquals(1, regularEmployeeVertexType.getPropertyByName("salary").getOrdinalPosition());
       assertEquals(false, regularEmployeeVertexType.getPropertyByName("salary").isFromPrimaryKey());
 
       assertNotNull(regularEmployeeVertexType.getPropertyByName("bonus"));
       assertEquals("bonus", regularEmployeeVertexType.getPropertyByName("bonus").getName());
-      assertEquals("DECIMAL", regularEmployeeVertexType.getPropertyByName("bonus").getPropertyType());
+      assertEquals("DECIMAL", regularEmployeeVertexType.getPropertyByName("bonus").getOriginalType());
       assertEquals(2, regularEmployeeVertexType.getPropertyByName("bonus").getOrdinalPosition());
       assertEquals(false, regularEmployeeVertexType.getPropertyByName("bonus").isFromPrimaryKey());
 
@@ -3644,13 +3644,13 @@ public class FilterTableMappingTest {
 
       assertNotNull(contractEmployeeVertexType.getPropertyByName("payPerHour"));
       assertEquals("payPerHour", contractEmployeeVertexType.getPropertyByName("payPerHour").getName());
-      assertEquals("DECIMAL", contractEmployeeVertexType.getPropertyByName("payPerHour").getPropertyType());
+      assertEquals("DECIMAL", contractEmployeeVertexType.getPropertyByName("payPerHour").getOriginalType());
       assertEquals(1, contractEmployeeVertexType.getPropertyByName("payPerHour").getOrdinalPosition());
       assertEquals(false, contractEmployeeVertexType.getPropertyByName("payPerHour").isFromPrimaryKey());
 
       assertNotNull(contractEmployeeVertexType.getPropertyByName("contractDuration"));
       assertEquals("contractDuration", contractEmployeeVertexType.getPropertyByName("contractDuration").getName());
-      assertEquals("VARCHAR", contractEmployeeVertexType.getPropertyByName("contractDuration").getPropertyType());
+      assertEquals("VARCHAR", contractEmployeeVertexType.getPropertyByName("contractDuration").getOriginalType());
       assertEquals(2, contractEmployeeVertexType.getPropertyByName("contractDuration").getOrdinalPosition());
       assertEquals(false, contractEmployeeVertexType.getPropertyByName("contractDuration").isFromPrimaryKey());
 
@@ -3658,19 +3658,19 @@ public class FilterTableMappingTest {
 
       assertNotNull(countryVertexType.getPropertyByName("id"));
       assertEquals("id", countryVertexType.getPropertyByName("id").getName());
-      assertEquals("VARCHAR", countryVertexType.getPropertyByName("id").getPropertyType());
+      assertEquals("VARCHAR", countryVertexType.getPropertyByName("id").getOriginalType());
       assertEquals(1, countryVertexType.getPropertyByName("id").getOrdinalPosition());
       assertEquals(true, countryVertexType.getPropertyByName("id").isFromPrimaryKey());
 
       assertNotNull(countryVertexType.getPropertyByName("name"));
       assertEquals("name", countryVertexType.getPropertyByName("name").getName());
-      assertEquals("VARCHAR", countryVertexType.getPropertyByName("name").getPropertyType());
+      assertEquals("VARCHAR", countryVertexType.getPropertyByName("name").getOriginalType());
       assertEquals(2, countryVertexType.getPropertyByName("name").getOrdinalPosition());
       assertEquals(false, countryVertexType.getPropertyByName("name").isFromPrimaryKey());
 
       assertNotNull(countryVertexType.getPropertyByName("continent"));
       assertEquals("continent", countryVertexType.getPropertyByName("continent").getName());
-      assertEquals("VARCHAR", countryVertexType.getPropertyByName("continent").getPropertyType());
+      assertEquals("VARCHAR", countryVertexType.getPropertyByName("continent").getOriginalType());
       assertEquals(3, countryVertexType.getPropertyByName("continent").getOrdinalPosition());
       assertEquals(false, countryVertexType.getPropertyByName("continent").isFromPrimaryKey());
 
@@ -3678,13 +3678,13 @@ public class FilterTableMappingTest {
 
       assertNotNull(managerVertexType.getPropertyByName("id"));
       assertEquals("id", managerVertexType.getPropertyByName("id").getName());
-      assertEquals("VARCHAR", managerVertexType.getPropertyByName("id").getPropertyType());
+      assertEquals("VARCHAR", managerVertexType.getPropertyByName("id").getOriginalType());
       assertEquals(1, managerVertexType.getPropertyByName("id").getOrdinalPosition());
       assertEquals(true, managerVertexType.getPropertyByName("id").isFromPrimaryKey());
 
       assertNotNull(managerVertexType.getPropertyByName("name"));
       assertEquals("name", managerVertexType.getPropertyByName("name").getName());
-      assertEquals("VARCHAR", managerVertexType.getPropertyByName("name").getPropertyType());
+      assertEquals("VARCHAR", managerVertexType.getPropertyByName("name").getOriginalType());
       assertEquals(2, managerVertexType.getPropertyByName("name").getOrdinalPosition());
       assertEquals(false, managerVertexType.getPropertyByName("name").isFromPrimaryKey());
 
@@ -3692,7 +3692,7 @@ public class FilterTableMappingTest {
 
       assertNotNull(projectManagerVertexType.getPropertyByName("project"));
       assertEquals("project", projectManagerVertexType.getPropertyByName("project").getName());
-      assertEquals("VARCHAR", projectManagerVertexType.getPropertyByName("project").getPropertyType());
+      assertEquals("VARCHAR", projectManagerVertexType.getPropertyByName("project").getOriginalType());
       assertEquals(1, projectManagerVertexType.getPropertyByName("project").getOrdinalPosition());
       assertEquals(false, projectManagerVertexType.getPropertyByName("project").isFromPrimaryKey());
 
@@ -3703,25 +3703,25 @@ public class FilterTableMappingTest {
 
       assertNotNull(regularEmployeeVertexType.getInheritedPropertyByName("id"));
       assertEquals("id", regularEmployeeVertexType.getInheritedPropertyByName("id").getName());
-      assertEquals("VARCHAR", regularEmployeeVertexType.getInheritedPropertyByName("id").getPropertyType());
+      assertEquals("VARCHAR", regularEmployeeVertexType.getInheritedPropertyByName("id").getOriginalType());
       assertEquals(1, regularEmployeeVertexType.getInheritedPropertyByName("id").getOrdinalPosition());
       assertEquals(true, regularEmployeeVertexType.getInheritedPropertyByName("id").isFromPrimaryKey());
 
       assertNotNull(regularEmployeeVertexType.getInheritedPropertyByName("name"));
       assertEquals("name", regularEmployeeVertexType.getInheritedPropertyByName("name").getName());
-      assertEquals("VARCHAR", regularEmployeeVertexType.getInheritedPropertyByName("name").getPropertyType());
+      assertEquals("VARCHAR", regularEmployeeVertexType.getInheritedPropertyByName("name").getOriginalType());
       assertEquals(2, regularEmployeeVertexType.getInheritedPropertyByName("name").getOrdinalPosition());
       assertEquals(false, regularEmployeeVertexType.getInheritedPropertyByName("name").isFromPrimaryKey());
 
       assertNotNull(regularEmployeeVertexType.getInheritedPropertyByName("residence"));
       assertEquals("residence", regularEmployeeVertexType.getInheritedPropertyByName("residence").getName());
-      assertEquals("VARCHAR", regularEmployeeVertexType.getInheritedPropertyByName("residence").getPropertyType());
+      assertEquals("VARCHAR", regularEmployeeVertexType.getInheritedPropertyByName("residence").getOriginalType());
       assertEquals(3, regularEmployeeVertexType.getInheritedPropertyByName("residence").getOrdinalPosition());
       assertEquals(false, regularEmployeeVertexType.getInheritedPropertyByName("residence").isFromPrimaryKey());
 
       assertNotNull(regularEmployeeVertexType.getInheritedPropertyByName("manager"));
       assertEquals("manager", regularEmployeeVertexType.getInheritedPropertyByName("manager").getName());
-      assertEquals("VARCHAR", regularEmployeeVertexType.getInheritedPropertyByName("manager").getPropertyType());
+      assertEquals("VARCHAR", regularEmployeeVertexType.getInheritedPropertyByName("manager").getOriginalType());
       assertEquals(4, regularEmployeeVertexType.getInheritedPropertyByName("manager").getOrdinalPosition());
       assertEquals(false, regularEmployeeVertexType.getInheritedPropertyByName("manager").isFromPrimaryKey());
 
@@ -3729,25 +3729,25 @@ public class FilterTableMappingTest {
 
       assertNotNull(contractEmployeeVertexType.getInheritedPropertyByName("id"));
       assertEquals("id", contractEmployeeVertexType.getInheritedPropertyByName("id").getName());
-      assertEquals("VARCHAR", contractEmployeeVertexType.getInheritedPropertyByName("id").getPropertyType());
+      assertEquals("VARCHAR", contractEmployeeVertexType.getInheritedPropertyByName("id").getOriginalType());
       assertEquals(1, contractEmployeeVertexType.getInheritedPropertyByName("id").getOrdinalPosition());
       assertEquals(true, contractEmployeeVertexType.getInheritedPropertyByName("id").isFromPrimaryKey());
 
       assertNotNull(contractEmployeeVertexType.getInheritedPropertyByName("name"));
       assertEquals("name", contractEmployeeVertexType.getInheritedPropertyByName("name").getName());
-      assertEquals("VARCHAR", contractEmployeeVertexType.getInheritedPropertyByName("name").getPropertyType());
+      assertEquals("VARCHAR", contractEmployeeVertexType.getInheritedPropertyByName("name").getOriginalType());
       assertEquals(2, contractEmployeeVertexType.getInheritedPropertyByName("name").getOrdinalPosition());
       assertEquals(false, contractEmployeeVertexType.getInheritedPropertyByName("name").isFromPrimaryKey());
 
       assertNotNull(contractEmployeeVertexType.getInheritedPropertyByName("residence"));
       assertEquals("residence", contractEmployeeVertexType.getInheritedPropertyByName("residence").getName());
-      assertEquals("VARCHAR", contractEmployeeVertexType.getInheritedPropertyByName("residence").getPropertyType());
+      assertEquals("VARCHAR", contractEmployeeVertexType.getInheritedPropertyByName("residence").getOriginalType());
       assertEquals(3, contractEmployeeVertexType.getInheritedPropertyByName("residence").getOrdinalPosition());
       assertEquals(false, contractEmployeeVertexType.getInheritedPropertyByName("residence").isFromPrimaryKey());
 
       assertNotNull(contractEmployeeVertexType.getInheritedPropertyByName("manager"));
       assertEquals("manager", contractEmployeeVertexType.getInheritedPropertyByName("manager").getName());
-      assertEquals("VARCHAR", contractEmployeeVertexType.getInheritedPropertyByName("manager").getPropertyType());
+      assertEquals("VARCHAR", contractEmployeeVertexType.getInheritedPropertyByName("manager").getOriginalType());
       assertEquals(4, contractEmployeeVertexType.getInheritedPropertyByName("manager").getOrdinalPosition());
       assertEquals(false, contractEmployeeVertexType.getInheritedPropertyByName("manager").isFromPrimaryKey());
 
@@ -3755,13 +3755,13 @@ public class FilterTableMappingTest {
 
       assertNotNull(projectManagerVertexType.getInheritedPropertyByName("id"));
       assertEquals("id", projectManagerVertexType.getInheritedPropertyByName("id").getName());
-      assertEquals("VARCHAR", projectManagerVertexType.getInheritedPropertyByName("id").getPropertyType());
+      assertEquals("VARCHAR", projectManagerVertexType.getInheritedPropertyByName("id").getOriginalType());
       assertEquals(1, projectManagerVertexType.getInheritedPropertyByName("id").getOrdinalPosition());
       assertEquals(true, projectManagerVertexType.getInheritedPropertyByName("id").isFromPrimaryKey());
 
       assertNotNull(projectManagerVertexType.getInheritedPropertyByName("name"));
       assertEquals("name", projectManagerVertexType.getInheritedPropertyByName("name").getName());
-      assertEquals("VARCHAR", projectManagerVertexType.getInheritedPropertyByName("name").getPropertyType());
+      assertEquals("VARCHAR", projectManagerVertexType.getInheritedPropertyByName("name").getOriginalType());
       assertEquals(2, projectManagerVertexType.getInheritedPropertyByName("name").getOrdinalPosition());
       assertEquals(false, projectManagerVertexType.getInheritedPropertyByName("name").isFromPrimaryKey());
 

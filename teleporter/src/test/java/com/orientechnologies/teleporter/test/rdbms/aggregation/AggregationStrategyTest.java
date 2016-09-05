@@ -316,7 +316,7 @@ public class AggregationStrategyTest {
       assertEquals(1, deptManagerEdgeType.getNumberRelationshipsRepresented());
 
       assertNotNull(deptEmpEdgeType.getPropertyByName("hiringYear"));
-      assertTrue(deptEmpEdgeType.getPropertyByName("hiringYear").getPropertyType().equals("VARCHAR"));
+      assertTrue(deptEmpEdgeType.getPropertyByName("hiringYear").getOriginalType().equals("VARCHAR"));
 
       /*
        * Rules check

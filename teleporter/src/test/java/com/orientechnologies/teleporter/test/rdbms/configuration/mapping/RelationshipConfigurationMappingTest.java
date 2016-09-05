@@ -245,25 +245,25 @@ public class RelationshipConfigurationMappingTest {
 
       assertNotNull(employeeVertexType.getPropertyByName("empId"));
       assertEquals("empId", employeeVertexType.getPropertyByName("empId").getName());
-      assertEquals("VARCHAR", employeeVertexType.getPropertyByName("empId").getPropertyType());
+      assertEquals("VARCHAR", employeeVertexType.getPropertyByName("empId").getOriginalType());
       assertEquals(1, employeeVertexType.getPropertyByName("empId").getOrdinalPosition());
       assertEquals(true, employeeVertexType.getPropertyByName("empId").isFromPrimaryKey());
 
       assertNotNull(employeeVertexType.getPropertyByName("firstName"));
       assertEquals("firstName", employeeVertexType.getPropertyByName("firstName").getName());
-      assertEquals("VARCHAR", employeeVertexType.getPropertyByName("firstName").getPropertyType());
+      assertEquals("VARCHAR", employeeVertexType.getPropertyByName("firstName").getOriginalType());
       assertEquals(2, employeeVertexType.getPropertyByName("firstName").getOrdinalPosition());
       assertEquals(false, employeeVertexType.getPropertyByName("firstName").isFromPrimaryKey());
 
       assertNotNull(employeeVertexType.getPropertyByName("lastName"));
       assertEquals("lastName", employeeVertexType.getPropertyByName("lastName").getName());
-      assertEquals("VARCHAR", employeeVertexType.getPropertyByName("lastName").getPropertyType());
+      assertEquals("VARCHAR", employeeVertexType.getPropertyByName("lastName").getOriginalType());
       assertEquals(3, employeeVertexType.getPropertyByName("lastName").getOrdinalPosition());
       assertEquals(false, employeeVertexType.getPropertyByName("lastName").isFromPrimaryKey());
 
       assertNotNull(employeeVertexType.getPropertyByName("project"));
       assertEquals("project", employeeVertexType.getPropertyByName("project").getName());
-      assertEquals("VARCHAR", employeeVertexType.getPropertyByName("project").getPropertyType());
+      assertEquals("VARCHAR", employeeVertexType.getPropertyByName("project").getOriginalType());
       assertEquals(4, employeeVertexType.getPropertyByName("project").getOrdinalPosition());
       assertEquals(false, employeeVertexType.getPropertyByName("project").isFromPrimaryKey());
 
@@ -276,19 +276,19 @@ public class RelationshipConfigurationMappingTest {
 
       assertNotNull(projectVertexType.getPropertyByName("id"));
       assertEquals("id", projectVertexType.getPropertyByName("id").getName());
-      assertEquals("VARCHAR", projectVertexType.getPropertyByName("id").getPropertyType());
+      assertEquals("VARCHAR", projectVertexType.getPropertyByName("id").getOriginalType());
       assertEquals(1, projectVertexType.getPropertyByName("id").getOrdinalPosition());
       assertEquals(true, projectVertexType.getPropertyByName("id").isFromPrimaryKey());
 
       assertNotNull(projectVertexType.getPropertyByName("title"));
       assertEquals("title", projectVertexType.getPropertyByName("title").getName());
-      assertEquals("VARCHAR", projectVertexType.getPropertyByName("title").getPropertyType());
+      assertEquals("VARCHAR", projectVertexType.getPropertyByName("title").getOriginalType());
       assertEquals(2, projectVertexType.getPropertyByName("title").getOrdinalPosition());
       assertEquals(false, projectVertexType.getPropertyByName("title").isFromPrimaryKey());
 
       assertNotNull(projectVertexType.getPropertyByName("projectManager"));
       assertEquals("projectManager", projectVertexType.getPropertyByName("projectManager").getName());
-      assertEquals("VARCHAR", projectVertexType.getPropertyByName("projectManager").getPropertyType());
+      assertEquals("VARCHAR", projectVertexType.getPropertyByName("projectManager").getOriginalType());
       assertEquals(3, projectVertexType.getPropertyByName("projectManager").getOrdinalPosition());
       assertEquals(false, projectVertexType.getPropertyByName("projectManager").isFromPrimaryKey());
 
@@ -313,7 +313,7 @@ public class RelationshipConfigurationMappingTest {
       assertEquals("updatedOn", updatedOnProperty.getName());
       assertEquals(1, updatedOnProperty.getOrdinalPosition());
       assertEquals(false, updatedOnProperty.isFromPrimaryKey());
-      assertEquals("DATE", updatedOnProperty.getPropertyType());
+      assertEquals("DATE", updatedOnProperty.getOriginalType());
       assertEquals(true, updatedOnProperty.isMandatory());
       assertEquals(false, updatedOnProperty.isReadOnly());
       assertEquals(false, updatedOnProperty.isNotNull());
@@ -329,7 +329,7 @@ public class RelationshipConfigurationMappingTest {
       assertEquals("updatedOn", updatedOnProperty.getName());
       assertEquals(1, updatedOnProperty.getOrdinalPosition());
       assertEquals(false, updatedOnProperty.isFromPrimaryKey());
-      assertEquals("DATE", updatedOnProperty.getPropertyType());
+      assertEquals("DATE", updatedOnProperty.getOriginalType());
       assertEquals(false, updatedOnProperty.isMandatory());
       assertNull(updatedOnProperty.isReadOnly());
       assertNull(updatedOnProperty.isNotNull());
@@ -617,25 +617,25 @@ public class RelationshipConfigurationMappingTest {
 
       assertNotNull(employeeVertexType.getPropertyByName("empId"));
       assertEquals("empId", employeeVertexType.getPropertyByName("empId").getName());
-      assertEquals("VARCHAR", employeeVertexType.getPropertyByName("empId").getPropertyType());
+      assertEquals("VARCHAR", employeeVertexType.getPropertyByName("empId").getOriginalType());
       assertEquals(1, employeeVertexType.getPropertyByName("empId").getOrdinalPosition());
       assertEquals(true, employeeVertexType.getPropertyByName("empId").isFromPrimaryKey());
 
       assertNotNull(employeeVertexType.getPropertyByName("firstName"));
       assertEquals("firstName", employeeVertexType.getPropertyByName("firstName").getName());
-      assertEquals("VARCHAR", employeeVertexType.getPropertyByName("firstName").getPropertyType());
+      assertEquals("VARCHAR", employeeVertexType.getPropertyByName("firstName").getOriginalType());
       assertEquals(2, employeeVertexType.getPropertyByName("firstName").getOrdinalPosition());
       assertEquals(false, employeeVertexType.getPropertyByName("firstName").isFromPrimaryKey());
 
       assertNotNull(employeeVertexType.getPropertyByName("lastName"));
       assertEquals("lastName", employeeVertexType.getPropertyByName("lastName").getName());
-      assertEquals("VARCHAR", employeeVertexType.getPropertyByName("lastName").getPropertyType());
+      assertEquals("VARCHAR", employeeVertexType.getPropertyByName("lastName").getOriginalType());
       assertEquals(3, employeeVertexType.getPropertyByName("lastName").getOrdinalPosition());
       assertEquals(false, employeeVertexType.getPropertyByName("lastName").isFromPrimaryKey());
 
       assertNotNull(employeeVertexType.getPropertyByName("project"));
       assertEquals("project", employeeVertexType.getPropertyByName("project").getName());
-      assertEquals("VARCHAR", employeeVertexType.getPropertyByName("project").getPropertyType());
+      assertEquals("VARCHAR", employeeVertexType.getPropertyByName("project").getOriginalType());
       assertEquals(4, employeeVertexType.getPropertyByName("project").getOrdinalPosition());
       assertEquals(false, employeeVertexType.getPropertyByName("project").isFromPrimaryKey());
 
@@ -648,19 +648,19 @@ public class RelationshipConfigurationMappingTest {
 
       assertNotNull(projectVertexType.getPropertyByName("id"));
       assertEquals("id", projectVertexType.getPropertyByName("id").getName());
-      assertEquals("VARCHAR", projectVertexType.getPropertyByName("id").getPropertyType());
+      assertEquals("VARCHAR", projectVertexType.getPropertyByName("id").getOriginalType());
       assertEquals(1, projectVertexType.getPropertyByName("id").getOrdinalPosition());
       assertEquals(true, projectVertexType.getPropertyByName("id").isFromPrimaryKey());
 
       assertNotNull(projectVertexType.getPropertyByName("title"));
       assertEquals("title", projectVertexType.getPropertyByName("title").getName());
-      assertEquals("VARCHAR", projectVertexType.getPropertyByName("title").getPropertyType());
+      assertEquals("VARCHAR", projectVertexType.getPropertyByName("title").getOriginalType());
       assertEquals(2, projectVertexType.getPropertyByName("title").getOrdinalPosition());
       assertEquals(false, projectVertexType.getPropertyByName("title").isFromPrimaryKey());
 
       assertNotNull(projectVertexType.getPropertyByName("projectManager"));
       assertEquals("projectManager", projectVertexType.getPropertyByName("projectManager").getName());
-      assertEquals("VARCHAR", projectVertexType.getPropertyByName("projectManager").getPropertyType());
+      assertEquals("VARCHAR", projectVertexType.getPropertyByName("projectManager").getOriginalType());
       assertEquals(3, projectVertexType.getPropertyByName("projectManager").getOrdinalPosition());
       assertEquals(false, projectVertexType.getPropertyByName("projectManager").isFromPrimaryKey());
 
@@ -685,7 +685,7 @@ public class RelationshipConfigurationMappingTest {
       assertEquals("updatedOn", updatedOnProperty.getName());
       assertEquals(1, updatedOnProperty.getOrdinalPosition());
       assertEquals(false, updatedOnProperty.isFromPrimaryKey());
-      assertEquals("DATE", updatedOnProperty.getPropertyType());
+      assertEquals("DATE", updatedOnProperty.getOriginalType());
       assertEquals(true, updatedOnProperty.isMandatory());
       assertEquals(false, updatedOnProperty.isReadOnly());
       assertEquals(false, updatedOnProperty.isNotNull());
@@ -986,19 +986,19 @@ public class RelationshipConfigurationMappingTest {
 
       assertNotNull(actorVertexType.getPropertyByName("id"));
       assertEquals("id", actorVertexType.getPropertyByName("id").getName());
-      assertEquals("VARCHAR", actorVertexType.getPropertyByName("id").getPropertyType());
+      assertEquals("VARCHAR", actorVertexType.getPropertyByName("id").getOriginalType());
       assertEquals(1, actorVertexType.getPropertyByName("id").getOrdinalPosition());
       assertEquals(true, actorVertexType.getPropertyByName("id").isFromPrimaryKey());
 
       assertNotNull(actorVertexType.getPropertyByName("firstName"));
       assertEquals("firstName", actorVertexType.getPropertyByName("firstName").getName());
-      assertEquals("VARCHAR", actorVertexType.getPropertyByName("firstName").getPropertyType());
+      assertEquals("VARCHAR", actorVertexType.getPropertyByName("firstName").getOriginalType());
       assertEquals(2, actorVertexType.getPropertyByName("firstName").getOrdinalPosition());
       assertEquals(false, actorVertexType.getPropertyByName("firstName").isFromPrimaryKey());
 
       assertNotNull(actorVertexType.getPropertyByName("lastName"));
       assertEquals("lastName", actorVertexType.getPropertyByName("lastName").getName());
-      assertEquals("VARCHAR", actorVertexType.getPropertyByName("lastName").getPropertyType());
+      assertEquals("VARCHAR", actorVertexType.getPropertyByName("lastName").getOriginalType());
       assertEquals(3, actorVertexType.getPropertyByName("lastName").getOrdinalPosition());
       assertEquals(false, actorVertexType.getPropertyByName("lastName").isFromPrimaryKey());
 
@@ -1010,19 +1010,19 @@ public class RelationshipConfigurationMappingTest {
 
       assertNotNull(filmVertexType.getPropertyByName("id"));
       assertEquals("id", filmVertexType.getPropertyByName("id").getName());
-      assertEquals("VARCHAR", filmVertexType.getPropertyByName("id").getPropertyType());
+      assertEquals("VARCHAR", filmVertexType.getPropertyByName("id").getOriginalType());
       assertEquals(1, filmVertexType.getPropertyByName("id").getOrdinalPosition());
       assertEquals(true, filmVertexType.getPropertyByName("id").isFromPrimaryKey());
 
       assertNotNull(filmVertexType.getPropertyByName("title"));
       assertEquals("title", filmVertexType.getPropertyByName("title").getName());
-      assertEquals("VARCHAR", filmVertexType.getPropertyByName("title").getPropertyType());
+      assertEquals("VARCHAR", filmVertexType.getPropertyByName("title").getOriginalType());
       assertEquals(2, filmVertexType.getPropertyByName("title").getOrdinalPosition());
       assertEquals(false, filmVertexType.getPropertyByName("title").isFromPrimaryKey());
 
       assertNotNull(filmVertexType.getPropertyByName("category"));
       assertEquals("category", filmVertexType.getPropertyByName("category").getName());
-      assertEquals("VARCHAR", filmVertexType.getPropertyByName("category").getPropertyType());
+      assertEquals("VARCHAR", filmVertexType.getPropertyByName("category").getOriginalType());
       assertEquals(3, filmVertexType.getPropertyByName("category").getOrdinalPosition());
       assertEquals(false, filmVertexType.getPropertyByName("category").isFromPrimaryKey());
 
@@ -1034,19 +1034,19 @@ public class RelationshipConfigurationMappingTest {
 
       assertNotNull(actorFilmVertexType.getPropertyByName("actorId"));
       assertEquals("actorId", actorFilmVertexType.getPropertyByName("actorId").getName());
-      assertEquals("VARCHAR", actorFilmVertexType.getPropertyByName("actorId").getPropertyType());
+      assertEquals("VARCHAR", actorFilmVertexType.getPropertyByName("actorId").getOriginalType());
       assertEquals(1, actorFilmVertexType.getPropertyByName("actorId").getOrdinalPosition());
       assertEquals(true, actorFilmVertexType.getPropertyByName("actorId").isFromPrimaryKey());
 
       assertNotNull(actorFilmVertexType.getPropertyByName("filmId"));
       assertEquals("filmId", actorFilmVertexType.getPropertyByName("filmId").getName());
-      assertEquals("VARCHAR", actorFilmVertexType.getPropertyByName("filmId").getPropertyType());
+      assertEquals("VARCHAR", actorFilmVertexType.getPropertyByName("filmId").getOriginalType());
       assertEquals(2, actorFilmVertexType.getPropertyByName("filmId").getOrdinalPosition());
       assertEquals(true, actorFilmVertexType.getPropertyByName("filmId").isFromPrimaryKey());
 
       assertNotNull(actorFilmVertexType.getPropertyByName("payment"));
       assertEquals("payment", actorFilmVertexType.getPropertyByName("payment").getName());
-      assertEquals("INTEGER", actorFilmVertexType.getPropertyByName("payment").getPropertyType());
+      assertEquals("INTEGER", actorFilmVertexType.getPropertyByName("payment").getOriginalType());
       assertEquals(3, actorFilmVertexType.getPropertyByName("payment").getOrdinalPosition());
       assertEquals(false, actorFilmVertexType.getPropertyByName("payment").isFromPrimaryKey());
 
@@ -1070,7 +1070,7 @@ public class RelationshipConfigurationMappingTest {
       assertEquals("year", yearProperty.getName());
       assertEquals(1, yearProperty.getOrdinalPosition());
       assertEquals(false, yearProperty.isFromPrimaryKey());
-      assertEquals("DATE", yearProperty.getPropertyType());
+      assertEquals("DATE", yearProperty.getOriginalType());
       assertEquals(true, yearProperty.isMandatory());
       assertEquals(false, yearProperty.isReadOnly());
       assertEquals(false, yearProperty.isNotNull());
@@ -1085,7 +1085,7 @@ public class RelationshipConfigurationMappingTest {
       assertEquals("year", yearProperty.getName());
       assertEquals(1, yearProperty.getOrdinalPosition());
       assertEquals(false, yearProperty.isFromPrimaryKey());
-      assertEquals("DATE", yearProperty.getPropertyType());
+      assertEquals("DATE", yearProperty.getOriginalType());
       assertEquals(true, yearProperty.isMandatory());
       assertEquals(false, yearProperty.isReadOnly());
       assertEquals(false, yearProperty.isNotNull());
@@ -1206,19 +1206,19 @@ public class RelationshipConfigurationMappingTest {
 
       assertNotNull(actorVertexType.getPropertyByName("id"));
       assertEquals("id", actorVertexType.getPropertyByName("id").getName());
-      assertEquals("VARCHAR", actorVertexType.getPropertyByName("id").getPropertyType());
+      assertEquals("VARCHAR", actorVertexType.getPropertyByName("id").getOriginalType());
       assertEquals(1, actorVertexType.getPropertyByName("id").getOrdinalPosition());
       assertEquals(true, actorVertexType.getPropertyByName("id").isFromPrimaryKey());
 
       assertNotNull(actorVertexType.getPropertyByName("firstName"));
       assertEquals("firstName", actorVertexType.getPropertyByName("firstName").getName());
-      assertEquals("VARCHAR", actorVertexType.getPropertyByName("firstName").getPropertyType());
+      assertEquals("VARCHAR", actorVertexType.getPropertyByName("firstName").getOriginalType());
       assertEquals(2, actorVertexType.getPropertyByName("firstName").getOrdinalPosition());
       assertEquals(false, actorVertexType.getPropertyByName("firstName").isFromPrimaryKey());
 
       assertNotNull(actorVertexType.getPropertyByName("lastName"));
       assertEquals("lastName", actorVertexType.getPropertyByName("lastName").getName());
-      assertEquals("VARCHAR", actorVertexType.getPropertyByName("lastName").getPropertyType());
+      assertEquals("VARCHAR", actorVertexType.getPropertyByName("lastName").getOriginalType());
       assertEquals(3, actorVertexType.getPropertyByName("lastName").getOrdinalPosition());
       assertEquals(false, actorVertexType.getPropertyByName("lastName").isFromPrimaryKey());
 
@@ -1230,19 +1230,19 @@ public class RelationshipConfigurationMappingTest {
 
       assertNotNull(filmVertexType.getPropertyByName("id"));
       assertEquals("id", filmVertexType.getPropertyByName("id").getName());
-      assertEquals("VARCHAR", filmVertexType.getPropertyByName("id").getPropertyType());
+      assertEquals("VARCHAR", filmVertexType.getPropertyByName("id").getOriginalType());
       assertEquals(1, filmVertexType.getPropertyByName("id").getOrdinalPosition());
       assertEquals(true, filmVertexType.getPropertyByName("id").isFromPrimaryKey());
 
       assertNotNull(filmVertexType.getPropertyByName("title"));
       assertEquals("title", filmVertexType.getPropertyByName("title").getName());
-      assertEquals("VARCHAR", filmVertexType.getPropertyByName("title").getPropertyType());
+      assertEquals("VARCHAR", filmVertexType.getPropertyByName("title").getOriginalType());
       assertEquals(2, filmVertexType.getPropertyByName("title").getOrdinalPosition());
       assertEquals(false, filmVertexType.getPropertyByName("title").isFromPrimaryKey());
 
       assertNotNull(filmVertexType.getPropertyByName("category"));
       assertEquals("category", filmVertexType.getPropertyByName("category").getName());
-      assertEquals("VARCHAR", filmVertexType.getPropertyByName("category").getPropertyType());
+      assertEquals("VARCHAR", filmVertexType.getPropertyByName("category").getOriginalType());
       assertEquals(3, filmVertexType.getPropertyByName("category").getOrdinalPosition());
       assertEquals(false, filmVertexType.getPropertyByName("category").isFromPrimaryKey());
 
@@ -1265,7 +1265,7 @@ public class RelationshipConfigurationMappingTest {
       assertEquals("payment", paymentProperty.getName());
       assertEquals(1, paymentProperty.getOrdinalPosition());
       assertEquals(false, paymentProperty.isFromPrimaryKey());
-      assertEquals("INTEGER", paymentProperty.getPropertyType());
+      assertEquals("INTEGER", paymentProperty.getOriginalType());
       assertNull(paymentProperty.isMandatory());
       assertNull(paymentProperty.isReadOnly());
       assertNull(paymentProperty.isNotNull());
@@ -1275,7 +1275,7 @@ public class RelationshipConfigurationMappingTest {
       assertEquals("year", yearProperty.getName());
       assertEquals(2, yearProperty.getOrdinalPosition());
       assertEquals(false, yearProperty.isFromPrimaryKey());
-      assertEquals("DATE", yearProperty.getPropertyType());
+      assertEquals("DATE", yearProperty.getOriginalType());
       assertEquals(true, yearProperty.isMandatory());
       assertEquals(false, yearProperty.isReadOnly());
       assertEquals(false, yearProperty.isNotNull());
@@ -1590,19 +1590,19 @@ public class RelationshipConfigurationMappingTest {
 
       assertNotNull(actorVertexType.getPropertyByName("id"));
       assertEquals("id", actorVertexType.getPropertyByName("id").getName());
-      assertEquals("VARCHAR", actorVertexType.getPropertyByName("id").getPropertyType());
+      assertEquals("VARCHAR", actorVertexType.getPropertyByName("id").getOriginalType());
       assertEquals(1, actorVertexType.getPropertyByName("id").getOrdinalPosition());
       assertEquals(true, actorVertexType.getPropertyByName("id").isFromPrimaryKey());
 
       assertNotNull(actorVertexType.getPropertyByName("firstName"));
       assertEquals("firstName", actorVertexType.getPropertyByName("firstName").getName());
-      assertEquals("VARCHAR", actorVertexType.getPropertyByName("firstName").getPropertyType());
+      assertEquals("VARCHAR", actorVertexType.getPropertyByName("firstName").getOriginalType());
       assertEquals(2, actorVertexType.getPropertyByName("firstName").getOrdinalPosition());
       assertEquals(false, actorVertexType.getPropertyByName("firstName").isFromPrimaryKey());
 
       assertNotNull(actorVertexType.getPropertyByName("lastName"));
       assertEquals("lastName", actorVertexType.getPropertyByName("lastName").getName());
-      assertEquals("VARCHAR", actorVertexType.getPropertyByName("lastName").getPropertyType());
+      assertEquals("VARCHAR", actorVertexType.getPropertyByName("lastName").getOriginalType());
       assertEquals(3, actorVertexType.getPropertyByName("lastName").getOrdinalPosition());
       assertEquals(false, actorVertexType.getPropertyByName("lastName").isFromPrimaryKey());
 
@@ -1614,19 +1614,19 @@ public class RelationshipConfigurationMappingTest {
 
       assertNotNull(filmVertexType.getPropertyByName("id"));
       assertEquals("id", filmVertexType.getPropertyByName("id").getName());
-      assertEquals("VARCHAR", filmVertexType.getPropertyByName("id").getPropertyType());
+      assertEquals("VARCHAR", filmVertexType.getPropertyByName("id").getOriginalType());
       assertEquals(1, filmVertexType.getPropertyByName("id").getOrdinalPosition());
       assertEquals(true, filmVertexType.getPropertyByName("id").isFromPrimaryKey());
 
       assertNotNull(filmVertexType.getPropertyByName("title"));
       assertEquals("title", filmVertexType.getPropertyByName("title").getName());
-      assertEquals("VARCHAR", filmVertexType.getPropertyByName("title").getPropertyType());
+      assertEquals("VARCHAR", filmVertexType.getPropertyByName("title").getOriginalType());
       assertEquals(2, filmVertexType.getPropertyByName("title").getOrdinalPosition());
       assertEquals(false, filmVertexType.getPropertyByName("title").isFromPrimaryKey());
 
       assertNotNull(filmVertexType.getPropertyByName("category"));
       assertEquals("category", filmVertexType.getPropertyByName("category").getName());
-      assertEquals("VARCHAR", filmVertexType.getPropertyByName("category").getPropertyType());
+      assertEquals("VARCHAR", filmVertexType.getPropertyByName("category").getOriginalType());
       assertEquals(3, filmVertexType.getPropertyByName("category").getOrdinalPosition());
       assertEquals(false, filmVertexType.getPropertyByName("category").isFromPrimaryKey());
 
@@ -1638,19 +1638,19 @@ public class RelationshipConfigurationMappingTest {
 
       assertNotNull(filmActorVertexType.getPropertyByName("actorId"));
       assertEquals("actorId", filmActorVertexType.getPropertyByName("actorId").getName());
-      assertEquals("VARCHAR", filmActorVertexType.getPropertyByName("actorId").getPropertyType());
+      assertEquals("VARCHAR", filmActorVertexType.getPropertyByName("actorId").getOriginalType());
       assertEquals(1, filmActorVertexType.getPropertyByName("actorId").getOrdinalPosition());
       assertEquals(true, filmActorVertexType.getPropertyByName("actorId").isFromPrimaryKey());
 
       assertNotNull(filmActorVertexType.getPropertyByName("filmId"));
       assertEquals("filmId", filmActorVertexType.getPropertyByName("filmId").getName());
-      assertEquals("VARCHAR", filmActorVertexType.getPropertyByName("filmId").getPropertyType());
+      assertEquals("VARCHAR", filmActorVertexType.getPropertyByName("filmId").getOriginalType());
       assertEquals(2, filmActorVertexType.getPropertyByName("filmId").getOrdinalPosition());
       assertEquals(true, filmActorVertexType.getPropertyByName("filmId").isFromPrimaryKey());
 
       assertNotNull(filmActorVertexType.getPropertyByName("payment"));
       assertEquals("payment", filmActorVertexType.getPropertyByName("payment").getName());
-      assertEquals("INTEGER", filmActorVertexType.getPropertyByName("payment").getPropertyType());
+      assertEquals("INTEGER", filmActorVertexType.getPropertyByName("payment").getOriginalType());
       assertEquals(3, filmActorVertexType.getPropertyByName("payment").getOrdinalPosition());
       assertEquals(false, filmActorVertexType.getPropertyByName("payment").isFromPrimaryKey());
 
@@ -1674,7 +1674,7 @@ public class RelationshipConfigurationMappingTest {
       assertEquals("year", yearProperty.getName());
       assertEquals(1, yearProperty.getOrdinalPosition());
       assertEquals(false, yearProperty.isFromPrimaryKey());
-      assertEquals("DATE", yearProperty.getPropertyType());
+      assertEquals("DATE", yearProperty.getOriginalType());
       assertEquals(true, yearProperty.isMandatory());
       assertEquals(false, yearProperty.isReadOnly());
       assertEquals(false, yearProperty.isNotNull());
@@ -1689,7 +1689,7 @@ public class RelationshipConfigurationMappingTest {
       assertEquals("year", yearProperty.getName());
       assertEquals(1, yearProperty.getOrdinalPosition());
       assertEquals(false, yearProperty.isFromPrimaryKey());
-      assertEquals("DATE", yearProperty.getPropertyType());
+      assertEquals("DATE", yearProperty.getOriginalType());
       assertEquals(true, yearProperty.isMandatory());
       assertEquals(false, yearProperty.isReadOnly());
       assertEquals(false, yearProperty.isNotNull());
@@ -1810,19 +1810,19 @@ public class RelationshipConfigurationMappingTest {
 
       assertNotNull(actorVertexType.getPropertyByName("id"));
       assertEquals("id", actorVertexType.getPropertyByName("id").getName());
-      assertEquals("VARCHAR", actorVertexType.getPropertyByName("id").getPropertyType());
+      assertEquals("VARCHAR", actorVertexType.getPropertyByName("id").getOriginalType());
       assertEquals(1, actorVertexType.getPropertyByName("id").getOrdinalPosition());
       assertEquals(true, actorVertexType.getPropertyByName("id").isFromPrimaryKey());
 
       assertNotNull(actorVertexType.getPropertyByName("firstName"));
       assertEquals("firstName", actorVertexType.getPropertyByName("firstName").getName());
-      assertEquals("VARCHAR", actorVertexType.getPropertyByName("firstName").getPropertyType());
+      assertEquals("VARCHAR", actorVertexType.getPropertyByName("firstName").getOriginalType());
       assertEquals(2, actorVertexType.getPropertyByName("firstName").getOrdinalPosition());
       assertEquals(false, actorVertexType.getPropertyByName("firstName").isFromPrimaryKey());
 
       assertNotNull(actorVertexType.getPropertyByName("lastName"));
       assertEquals("lastName", actorVertexType.getPropertyByName("lastName").getName());
-      assertEquals("VARCHAR", actorVertexType.getPropertyByName("lastName").getPropertyType());
+      assertEquals("VARCHAR", actorVertexType.getPropertyByName("lastName").getOriginalType());
       assertEquals(3, actorVertexType.getPropertyByName("lastName").getOrdinalPosition());
       assertEquals(false, actorVertexType.getPropertyByName("lastName").isFromPrimaryKey());
 
@@ -1834,19 +1834,19 @@ public class RelationshipConfigurationMappingTest {
 
       assertNotNull(filmVertexType.getPropertyByName("id"));
       assertEquals("id", filmVertexType.getPropertyByName("id").getName());
-      assertEquals("VARCHAR", filmVertexType.getPropertyByName("id").getPropertyType());
+      assertEquals("VARCHAR", filmVertexType.getPropertyByName("id").getOriginalType());
       assertEquals(1, filmVertexType.getPropertyByName("id").getOrdinalPosition());
       assertEquals(true, filmVertexType.getPropertyByName("id").isFromPrimaryKey());
 
       assertNotNull(filmVertexType.getPropertyByName("title"));
       assertEquals("title", filmVertexType.getPropertyByName("title").getName());
-      assertEquals("VARCHAR", filmVertexType.getPropertyByName("title").getPropertyType());
+      assertEquals("VARCHAR", filmVertexType.getPropertyByName("title").getOriginalType());
       assertEquals(2, filmVertexType.getPropertyByName("title").getOrdinalPosition());
       assertEquals(false, filmVertexType.getPropertyByName("title").isFromPrimaryKey());
 
       assertNotNull(filmVertexType.getPropertyByName("category"));
       assertEquals("category", filmVertexType.getPropertyByName("category").getName());
-      assertEquals("VARCHAR", filmVertexType.getPropertyByName("category").getPropertyType());
+      assertEquals("VARCHAR", filmVertexType.getPropertyByName("category").getOriginalType());
       assertEquals(3, filmVertexType.getPropertyByName("category").getOrdinalPosition());
       assertEquals(false, filmVertexType.getPropertyByName("category").isFromPrimaryKey());
 
@@ -1869,7 +1869,7 @@ public class RelationshipConfigurationMappingTest {
       assertEquals("payment", paymentProperty.getName());
       assertEquals(1, paymentProperty.getOrdinalPosition());
       assertEquals(false, paymentProperty.isFromPrimaryKey());
-      assertEquals("INTEGER", paymentProperty.getPropertyType());
+      assertEquals("INTEGER", paymentProperty.getOriginalType());
       assertNull(paymentProperty.isMandatory());
       assertNull(paymentProperty.isReadOnly());
       assertNull(paymentProperty.isNotNull());
@@ -1879,7 +1879,7 @@ public class RelationshipConfigurationMappingTest {
       assertEquals("year", yearProperty.getName());
       assertEquals(2, yearProperty.getOrdinalPosition());
       assertEquals(false, yearProperty.isFromPrimaryKey());
-      assertEquals("DATE", yearProperty.getPropertyType());
+      assertEquals("DATE", yearProperty.getOriginalType());
       assertEquals(true, yearProperty.isMandatory());
       assertEquals(false, yearProperty.isReadOnly());
       assertEquals(false, yearProperty.isNotNull());
@@ -2192,19 +2192,19 @@ public class RelationshipConfigurationMappingTest {
 
       assertNotNull(actorVertexType.getPropertyByName("id"));
       assertEquals("id", actorVertexType.getPropertyByName("id").getName());
-      assertEquals("VARCHAR", actorVertexType.getPropertyByName("id").getPropertyType());
+      assertEquals("VARCHAR", actorVertexType.getPropertyByName("id").getOriginalType());
       assertEquals(1, actorVertexType.getPropertyByName("id").getOrdinalPosition());
       assertEquals(true, actorVertexType.getPropertyByName("id").isFromPrimaryKey());
 
       assertNotNull(actorVertexType.getPropertyByName("firstName"));
       assertEquals("firstName", actorVertexType.getPropertyByName("firstName").getName());
-      assertEquals("VARCHAR", actorVertexType.getPropertyByName("firstName").getPropertyType());
+      assertEquals("VARCHAR", actorVertexType.getPropertyByName("firstName").getOriginalType());
       assertEquals(2, actorVertexType.getPropertyByName("firstName").getOrdinalPosition());
       assertEquals(false, actorVertexType.getPropertyByName("firstName").isFromPrimaryKey());
 
       assertNotNull(actorVertexType.getPropertyByName("lastName"));
       assertEquals("lastName", actorVertexType.getPropertyByName("lastName").getName());
-      assertEquals("VARCHAR", actorVertexType.getPropertyByName("lastName").getPropertyType());
+      assertEquals("VARCHAR", actorVertexType.getPropertyByName("lastName").getOriginalType());
       assertEquals(3, actorVertexType.getPropertyByName("lastName").getOrdinalPosition());
       assertEquals(false, actorVertexType.getPropertyByName("lastName").isFromPrimaryKey());
 
@@ -2216,19 +2216,19 @@ public class RelationshipConfigurationMappingTest {
 
       assertNotNull(filmVertexType.getPropertyByName("id"));
       assertEquals("id", filmVertexType.getPropertyByName("id").getName());
-      assertEquals("VARCHAR", filmVertexType.getPropertyByName("id").getPropertyType());
+      assertEquals("VARCHAR", filmVertexType.getPropertyByName("id").getOriginalType());
       assertEquals(1, filmVertexType.getPropertyByName("id").getOrdinalPosition());
       assertEquals(true, filmVertexType.getPropertyByName("id").isFromPrimaryKey());
 
       assertNotNull(filmVertexType.getPropertyByName("title"));
       assertEquals("title", filmVertexType.getPropertyByName("title").getName());
-      assertEquals("VARCHAR", filmVertexType.getPropertyByName("title").getPropertyType());
+      assertEquals("VARCHAR", filmVertexType.getPropertyByName("title").getOriginalType());
       assertEquals(2, filmVertexType.getPropertyByName("title").getOrdinalPosition());
       assertEquals(false, filmVertexType.getPropertyByName("title").isFromPrimaryKey());
 
       assertNotNull(filmVertexType.getPropertyByName("category"));
       assertEquals("category", filmVertexType.getPropertyByName("category").getName());
-      assertEquals("VARCHAR", filmVertexType.getPropertyByName("category").getPropertyType());
+      assertEquals("VARCHAR", filmVertexType.getPropertyByName("category").getOriginalType());
       assertEquals(3, filmVertexType.getPropertyByName("category").getOrdinalPosition());
       assertEquals(false, filmVertexType.getPropertyByName("category").isFromPrimaryKey());
 
@@ -2240,19 +2240,19 @@ public class RelationshipConfigurationMappingTest {
 
       assertNotNull(actorFilmVertexType.getPropertyByName("actorId"));
       assertEquals("actorId", actorFilmVertexType.getPropertyByName("actorId").getName());
-      assertEquals("VARCHAR", actorFilmVertexType.getPropertyByName("actorId").getPropertyType());
+      assertEquals("VARCHAR", actorFilmVertexType.getPropertyByName("actorId").getOriginalType());
       assertEquals(1, actorFilmVertexType.getPropertyByName("actorId").getOrdinalPosition());
       assertEquals(true, actorFilmVertexType.getPropertyByName("actorId").isFromPrimaryKey());
 
       assertNotNull(actorFilmVertexType.getPropertyByName("filmId"));
       assertEquals("filmId", actorFilmVertexType.getPropertyByName("filmId").getName());
-      assertEquals("VARCHAR", actorFilmVertexType.getPropertyByName("filmId").getPropertyType());
+      assertEquals("VARCHAR", actorFilmVertexType.getPropertyByName("filmId").getOriginalType());
       assertEquals(2, actorFilmVertexType.getPropertyByName("filmId").getOrdinalPosition());
       assertEquals(true, actorFilmVertexType.getPropertyByName("filmId").isFromPrimaryKey());
 
       assertNotNull(actorFilmVertexType.getPropertyByName("payment"));
       assertEquals("payment", actorFilmVertexType.getPropertyByName("payment").getName());
-      assertEquals("INTEGER", actorFilmVertexType.getPropertyByName("payment").getPropertyType());
+      assertEquals("INTEGER", actorFilmVertexType.getPropertyByName("payment").getOriginalType());
       assertEquals(3, actorFilmVertexType.getPropertyByName("payment").getOrdinalPosition());
       assertEquals(false, actorFilmVertexType.getPropertyByName("payment").isFromPrimaryKey());
 
@@ -2276,7 +2276,7 @@ public class RelationshipConfigurationMappingTest {
       assertEquals("year", yearProperty.getName());
       assertEquals(1, yearProperty.getOrdinalPosition());
       assertEquals(false, yearProperty.isFromPrimaryKey());
-      assertEquals("DATE", yearProperty.getPropertyType());
+      assertEquals("DATE", yearProperty.getOriginalType());
       assertEquals(true, yearProperty.isMandatory());
       assertEquals(false, yearProperty.isReadOnly());
       assertEquals(false, yearProperty.isNotNull());
@@ -2291,7 +2291,7 @@ public class RelationshipConfigurationMappingTest {
       assertEquals("year", yearProperty.getName());
       assertEquals(1, yearProperty.getOrdinalPosition());
       assertEquals(false, yearProperty.isFromPrimaryKey());
-      assertEquals("DATE", yearProperty.getPropertyType());
+      assertEquals("DATE", yearProperty.getOriginalType());
       assertEquals(true, yearProperty.isMandatory());
       assertEquals(false, yearProperty.isReadOnly());
       assertEquals(false, yearProperty.isNotNull());
@@ -2412,19 +2412,19 @@ public class RelationshipConfigurationMappingTest {
 
       assertNotNull(actorVertexType.getPropertyByName("id"));
       assertEquals("id", actorVertexType.getPropertyByName("id").getName());
-      assertEquals("VARCHAR", actorVertexType.getPropertyByName("id").getPropertyType());
+      assertEquals("VARCHAR", actorVertexType.getPropertyByName("id").getOriginalType());
       assertEquals(1, actorVertexType.getPropertyByName("id").getOrdinalPosition());
       assertEquals(true, actorVertexType.getPropertyByName("id").isFromPrimaryKey());
 
       assertNotNull(actorVertexType.getPropertyByName("firstName"));
       assertEquals("firstName", actorVertexType.getPropertyByName("firstName").getName());
-      assertEquals("VARCHAR", actorVertexType.getPropertyByName("firstName").getPropertyType());
+      assertEquals("VARCHAR", actorVertexType.getPropertyByName("firstName").getOriginalType());
       assertEquals(2, actorVertexType.getPropertyByName("firstName").getOrdinalPosition());
       assertEquals(false, actorVertexType.getPropertyByName("firstName").isFromPrimaryKey());
 
       assertNotNull(actorVertexType.getPropertyByName("lastName"));
       assertEquals("lastName", actorVertexType.getPropertyByName("lastName").getName());
-      assertEquals("VARCHAR", actorVertexType.getPropertyByName("lastName").getPropertyType());
+      assertEquals("VARCHAR", actorVertexType.getPropertyByName("lastName").getOriginalType());
       assertEquals(3, actorVertexType.getPropertyByName("lastName").getOrdinalPosition());
       assertEquals(false, actorVertexType.getPropertyByName("lastName").isFromPrimaryKey());
 
@@ -2436,19 +2436,19 @@ public class RelationshipConfigurationMappingTest {
 
       assertNotNull(filmVertexType.getPropertyByName("id"));
       assertEquals("id", filmVertexType.getPropertyByName("id").getName());
-      assertEquals("VARCHAR", filmVertexType.getPropertyByName("id").getPropertyType());
+      assertEquals("VARCHAR", filmVertexType.getPropertyByName("id").getOriginalType());
       assertEquals(1, filmVertexType.getPropertyByName("id").getOrdinalPosition());
       assertEquals(true, filmVertexType.getPropertyByName("id").isFromPrimaryKey());
 
       assertNotNull(filmVertexType.getPropertyByName("title"));
       assertEquals("title", filmVertexType.getPropertyByName("title").getName());
-      assertEquals("VARCHAR", filmVertexType.getPropertyByName("title").getPropertyType());
+      assertEquals("VARCHAR", filmVertexType.getPropertyByName("title").getOriginalType());
       assertEquals(2, filmVertexType.getPropertyByName("title").getOrdinalPosition());
       assertEquals(false, filmVertexType.getPropertyByName("title").isFromPrimaryKey());
 
       assertNotNull(filmVertexType.getPropertyByName("category"));
       assertEquals("category", filmVertexType.getPropertyByName("category").getName());
-      assertEquals("VARCHAR", filmVertexType.getPropertyByName("category").getPropertyType());
+      assertEquals("VARCHAR", filmVertexType.getPropertyByName("category").getOriginalType());
       assertEquals(3, filmVertexType.getPropertyByName("category").getOrdinalPosition());
       assertEquals(false, filmVertexType.getPropertyByName("category").isFromPrimaryKey());
 
@@ -2471,7 +2471,7 @@ public class RelationshipConfigurationMappingTest {
       assertEquals("payment", paymentProperty.getName());
       assertEquals(1, paymentProperty.getOrdinalPosition());
       assertEquals(false, paymentProperty.isFromPrimaryKey());
-      assertEquals("INTEGER", paymentProperty.getPropertyType());
+      assertEquals("INTEGER", paymentProperty.getOriginalType());
       assertNull(paymentProperty.isMandatory());
       assertNull(paymentProperty.isReadOnly());
       assertNull(paymentProperty.isNotNull());
@@ -2481,7 +2481,7 @@ public class RelationshipConfigurationMappingTest {
       assertEquals("year", yearProperty.getName());
       assertEquals(2, yearProperty.getOrdinalPosition());
       assertEquals(false, yearProperty.isFromPrimaryKey());
-      assertEquals("DATE", yearProperty.getPropertyType());
+      assertEquals("DATE", yearProperty.getOriginalType());
       assertEquals(true, yearProperty.isMandatory());
       assertEquals(false, yearProperty.isReadOnly());
       assertEquals(false, yearProperty.isNotNull());
@@ -2795,19 +2795,19 @@ public class RelationshipConfigurationMappingTest {
 
       assertNotNull(actorVertexType.getPropertyByName("id"));
       assertEquals("id", actorVertexType.getPropertyByName("id").getName());
-      assertEquals("VARCHAR", actorVertexType.getPropertyByName("id").getPropertyType());
+      assertEquals("VARCHAR", actorVertexType.getPropertyByName("id").getOriginalType());
       assertEquals(1, actorVertexType.getPropertyByName("id").getOrdinalPosition());
       assertEquals(true, actorVertexType.getPropertyByName("id").isFromPrimaryKey());
 
       assertNotNull(actorVertexType.getPropertyByName("firstName"));
       assertEquals("firstName", actorVertexType.getPropertyByName("firstName").getName());
-      assertEquals("VARCHAR", actorVertexType.getPropertyByName("firstName").getPropertyType());
+      assertEquals("VARCHAR", actorVertexType.getPropertyByName("firstName").getOriginalType());
       assertEquals(2, actorVertexType.getPropertyByName("firstName").getOrdinalPosition());
       assertEquals(false, actorVertexType.getPropertyByName("firstName").isFromPrimaryKey());
 
       assertNotNull(actorVertexType.getPropertyByName("lastName"));
       assertEquals("lastName", actorVertexType.getPropertyByName("lastName").getName());
-      assertEquals("VARCHAR", actorVertexType.getPropertyByName("lastName").getPropertyType());
+      assertEquals("VARCHAR", actorVertexType.getPropertyByName("lastName").getOriginalType());
       assertEquals(3, actorVertexType.getPropertyByName("lastName").getOrdinalPosition());
       assertEquals(false, actorVertexType.getPropertyByName("lastName").isFromPrimaryKey());
 
@@ -2819,19 +2819,19 @@ public class RelationshipConfigurationMappingTest {
 
       assertNotNull(filmVertexType.getPropertyByName("id"));
       assertEquals("id", filmVertexType.getPropertyByName("id").getName());
-      assertEquals("VARCHAR", filmVertexType.getPropertyByName("id").getPropertyType());
+      assertEquals("VARCHAR", filmVertexType.getPropertyByName("id").getOriginalType());
       assertEquals(1, filmVertexType.getPropertyByName("id").getOrdinalPosition());
       assertEquals(true, filmVertexType.getPropertyByName("id").isFromPrimaryKey());
 
       assertNotNull(filmVertexType.getPropertyByName("title"));
       assertEquals("title", filmVertexType.getPropertyByName("title").getName());
-      assertEquals("VARCHAR", filmVertexType.getPropertyByName("title").getPropertyType());
+      assertEquals("VARCHAR", filmVertexType.getPropertyByName("title").getOriginalType());
       assertEquals(2, filmVertexType.getPropertyByName("title").getOrdinalPosition());
       assertEquals(false, filmVertexType.getPropertyByName("title").isFromPrimaryKey());
 
       assertNotNull(filmVertexType.getPropertyByName("category"));
       assertEquals("category", filmVertexType.getPropertyByName("category").getName());
-      assertEquals("VARCHAR", filmVertexType.getPropertyByName("category").getPropertyType());
+      assertEquals("VARCHAR", filmVertexType.getPropertyByName("category").getOriginalType());
       assertEquals(3, filmVertexType.getPropertyByName("category").getOrdinalPosition());
       assertEquals(false, filmVertexType.getPropertyByName("category").isFromPrimaryKey());
 
@@ -2843,19 +2843,19 @@ public class RelationshipConfigurationMappingTest {
 
       assertNotNull(filmActorVertexType.getPropertyByName("actorId"));
       assertEquals("actorId", filmActorVertexType.getPropertyByName("actorId").getName());
-      assertEquals("VARCHAR", filmActorVertexType.getPropertyByName("actorId").getPropertyType());
+      assertEquals("VARCHAR", filmActorVertexType.getPropertyByName("actorId").getOriginalType());
       assertEquals(1, filmActorVertexType.getPropertyByName("actorId").getOrdinalPosition());
       assertEquals(true, filmActorVertexType.getPropertyByName("actorId").isFromPrimaryKey());
 
       assertNotNull(filmActorVertexType.getPropertyByName("filmId"));
       assertEquals("filmId", filmActorVertexType.getPropertyByName("filmId").getName());
-      assertEquals("VARCHAR", filmActorVertexType.getPropertyByName("filmId").getPropertyType());
+      assertEquals("VARCHAR", filmActorVertexType.getPropertyByName("filmId").getOriginalType());
       assertEquals(2, filmActorVertexType.getPropertyByName("filmId").getOrdinalPosition());
       assertEquals(true, filmActorVertexType.getPropertyByName("filmId").isFromPrimaryKey());
 
       assertNotNull(filmActorVertexType.getPropertyByName("payment"));
       assertEquals("payment", filmActorVertexType.getPropertyByName("payment").getName());
-      assertEquals("INTEGER", filmActorVertexType.getPropertyByName("payment").getPropertyType());
+      assertEquals("INTEGER", filmActorVertexType.getPropertyByName("payment").getOriginalType());
       assertEquals(3, filmActorVertexType.getPropertyByName("payment").getOrdinalPosition());
       assertEquals(false, filmActorVertexType.getPropertyByName("payment").isFromPrimaryKey());
 
@@ -2879,7 +2879,7 @@ public class RelationshipConfigurationMappingTest {
       assertEquals("year", yearProperty.getName());
       assertEquals(1, yearProperty.getOrdinalPosition());
       assertEquals(false, yearProperty.isFromPrimaryKey());
-      assertEquals("DATE", yearProperty.getPropertyType());
+      assertEquals("DATE", yearProperty.getOriginalType());
       assertEquals(true, yearProperty.isMandatory());
       assertEquals(false, yearProperty.isReadOnly());
       assertEquals(false, yearProperty.isNotNull());
@@ -2894,7 +2894,7 @@ public class RelationshipConfigurationMappingTest {
       assertEquals("year", yearProperty.getName());
       assertEquals(1, yearProperty.getOrdinalPosition());
       assertEquals(false, yearProperty.isFromPrimaryKey());
-      assertEquals("DATE", yearProperty.getPropertyType());
+      assertEquals("DATE", yearProperty.getOriginalType());
       assertEquals(true, yearProperty.isMandatory());
       assertEquals(false, yearProperty.isReadOnly());
       assertEquals(false, yearProperty.isNotNull());
@@ -3014,19 +3014,19 @@ public class RelationshipConfigurationMappingTest {
 
       assertNotNull(actorVertexType.getPropertyByName("id"));
       assertEquals("id", actorVertexType.getPropertyByName("id").getName());
-      assertEquals("VARCHAR", actorVertexType.getPropertyByName("id").getPropertyType());
+      assertEquals("VARCHAR", actorVertexType.getPropertyByName("id").getOriginalType());
       assertEquals(1, actorVertexType.getPropertyByName("id").getOrdinalPosition());
       assertEquals(true, actorVertexType.getPropertyByName("id").isFromPrimaryKey());
 
       assertNotNull(actorVertexType.getPropertyByName("firstName"));
       assertEquals("firstName", actorVertexType.getPropertyByName("firstName").getName());
-      assertEquals("VARCHAR", actorVertexType.getPropertyByName("firstName").getPropertyType());
+      assertEquals("VARCHAR", actorVertexType.getPropertyByName("firstName").getOriginalType());
       assertEquals(2, actorVertexType.getPropertyByName("firstName").getOrdinalPosition());
       assertEquals(false, actorVertexType.getPropertyByName("firstName").isFromPrimaryKey());
 
       assertNotNull(actorVertexType.getPropertyByName("lastName"));
       assertEquals("lastName", actorVertexType.getPropertyByName("lastName").getName());
-      assertEquals("VARCHAR", actorVertexType.getPropertyByName("lastName").getPropertyType());
+      assertEquals("VARCHAR", actorVertexType.getPropertyByName("lastName").getOriginalType());
       assertEquals(3, actorVertexType.getPropertyByName("lastName").getOrdinalPosition());
       assertEquals(false, actorVertexType.getPropertyByName("lastName").isFromPrimaryKey());
 
@@ -3038,19 +3038,19 @@ public class RelationshipConfigurationMappingTest {
 
       assertNotNull(filmVertexType.getPropertyByName("id"));
       assertEquals("id", filmVertexType.getPropertyByName("id").getName());
-      assertEquals("VARCHAR", filmVertexType.getPropertyByName("id").getPropertyType());
+      assertEquals("VARCHAR", filmVertexType.getPropertyByName("id").getOriginalType());
       assertEquals(1, filmVertexType.getPropertyByName("id").getOrdinalPosition());
       assertEquals(true, filmVertexType.getPropertyByName("id").isFromPrimaryKey());
 
       assertNotNull(filmVertexType.getPropertyByName("title"));
       assertEquals("title", filmVertexType.getPropertyByName("title").getName());
-      assertEquals("VARCHAR", filmVertexType.getPropertyByName("title").getPropertyType());
+      assertEquals("VARCHAR", filmVertexType.getPropertyByName("title").getOriginalType());
       assertEquals(2, filmVertexType.getPropertyByName("title").getOrdinalPosition());
       assertEquals(false, filmVertexType.getPropertyByName("title").isFromPrimaryKey());
 
       assertNotNull(filmVertexType.getPropertyByName("category"));
       assertEquals("category", filmVertexType.getPropertyByName("category").getName());
-      assertEquals("VARCHAR", filmVertexType.getPropertyByName("category").getPropertyType());
+      assertEquals("VARCHAR", filmVertexType.getPropertyByName("category").getOriginalType());
       assertEquals(3, filmVertexType.getPropertyByName("category").getOrdinalPosition());
       assertEquals(false, filmVertexType.getPropertyByName("category").isFromPrimaryKey());
 
@@ -3073,7 +3073,7 @@ public class RelationshipConfigurationMappingTest {
       assertEquals("payment", paymentProperty.getName());
       assertEquals(1, paymentProperty.getOrdinalPosition());
       assertEquals(false, paymentProperty.isFromPrimaryKey());
-      assertEquals("INTEGER", paymentProperty.getPropertyType());
+      assertEquals("INTEGER", paymentProperty.getOriginalType());
       assertNull(paymentProperty.isMandatory());
       assertNull(paymentProperty.isReadOnly());
       assertNull(paymentProperty.isNotNull());
@@ -3083,7 +3083,7 @@ public class RelationshipConfigurationMappingTest {
       assertEquals("year", yearProperty.getName());
       assertEquals(2, yearProperty.getOrdinalPosition());
       assertEquals(false, yearProperty.isFromPrimaryKey());
-      assertEquals("DATE", yearProperty.getPropertyType());
+      assertEquals("DATE", yearProperty.getOriginalType());
       assertEquals(true, yearProperty.isMandatory());
       assertEquals(false, yearProperty.isReadOnly());
       assertEquals(false, yearProperty.isNotNull());

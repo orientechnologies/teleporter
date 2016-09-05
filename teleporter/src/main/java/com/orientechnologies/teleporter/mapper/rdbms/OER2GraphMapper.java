@@ -29,6 +29,7 @@ import com.orientechnologies.teleporter.model.graphmodel.*;
 import com.orientechnologies.teleporter.nameresolver.ONameResolver;
 import com.orientechnologies.teleporter.persistence.util.ODBSourceConnection;
 
+import java.lang.annotation.ElementType;
 import java.sql.*;
 import java.util.*;
 import java.util.Date;
@@ -784,6 +785,7 @@ public class OER2GraphMapper extends OSource2GraphMapper {
 
   private void upsertClassesFromConfiguration(OTeleporterContext context) {
 
+    OTeleporterStatistics statistics = context.getStatistics();
     List<ODocument> verticesDoc = configuration.field("vertices");
 
     if(verticesDoc == null) {
@@ -795,12 +797,246 @@ public class OER2GraphMapper extends OSource2GraphMapper {
     ONameResolver nameResolver = context.getNameResolver();
 
     for(ODocument currentVertex: verticesDoc) {
+      String configuredVertexTypeName = currentVertex.field("name");
+      List<ODocument> sourceTables = ((ODocument)currentVertex.field("mapping")).field("sourceTables");
 
+      Map<String,String> sourceId2tableName = new HashMap<String,String>();
 
+      for(ODocument sourceTable: sourceTables) {
+        String sourceTableId = sourceTable.field("name");
+        String sourceTableName = sourceTable.field("tableName");
+        sourceId2tableName.put(sourceTableId, sourceTableName);
+      }
+
+      if(sourceId2tableName.size() == 1) {
+        String sourceTableName = sourceId2tableName.entrySet().iterator().next().getValue();
+        OClassMapper currentClassMapper = this.entity2classMappers.get(this.dataBaseSchema.getEntityByName(sourceTableName)).get(0);
+
+        // updating vertex and table mapping according to the configuration
+        OVertexType currentVertexType = currentClassMapper.getVertexType();
+        currentVertexType.setName(configuredVertexTypeName);
+
+        ODocument propertiesDoc = currentVertex.field("properties");
+        String[] propertiesNames = propertiesDoc.fieldNames();
+
+        for(String propertyName: propertiesNames) {
+          ODocument propertyDoc = propertiesDoc.field(propertyName);
+          boolean include = propertyDoc.field("include").equals(true) ? true : false;
+          String orientdbType = propertyDoc.field("type");
+          boolean isMandatory = propertyDoc.field("mandatory").equals(true) ? true : false;
+          boolean isReadOnly = propertyDoc.field("readOnly").equals(true) ? true : false;
+          boolean isNotNull = propertyDoc.field("notNull").equals(true) ? true : false;
+
+          ODocument propertyMapping = propertyDoc.field("mapping");
+          String source = propertyMapping.field("source");
+          String columnName = propertyMapping.field("columnName");
+          String originalType = propertyMapping.field("type");
+
+          String originalPropertyName = currentClassMapper.getPropertyByAttribute(columnName);
+          OModelProperty propertyToUpdate = currentVertexType.getPropertyByNameAmongAll(originalPropertyName);
+          if(!originalPropertyName.equals(propertyName)) {
+            propertyToUpdate.setName(propertyName);
+            // updating properties mapping
+            currentClassMapper.getAttribute2property().put(columnName,propertyName);
+            currentClassMapper.getProperty2attribute().remove(originalPropertyName);
+            currentClassMapper.getProperty2attribute().put(propertyName,columnName);
+          }
+          propertyToUpdate.setIncludedInMigration(include);
+          propertyToUpdate.setOrientdbType(orientdbType);
+          propertyToUpdate.setMandatory(isMandatory);
+          propertyToUpdate.setReadOnly(isReadOnly);
+          propertyToUpdate.setNotNull(isNotNull);
+          propertyToUpdate.setOriginalType(originalType);
+
+          /**
+           * Updating rules
+           */
+
+          // updating properties mapping
+          if(!include) {
+            currentClassMapper.getAttribute2property().put(columnName,null);
+            currentClassMapper.getProperty2attribute().remove(propertyName);
+          }
+
+        }
+
+      }
+
+      // aggregation case
+      else if(sourceId2tableName.size() > 1) {
+
+        List<OVertexType> verticesToMerge = new LinkedList<OVertexType>();
+        OVertexType newAggregatedVertexType = new OVertexType(configuredVertexTypeName);
+
+        // merging vertices correspondent
+        for(String sourceTableName: sourceId2tableName.values()) {
+          List<OClassMapper> currentClassMappers = this.entity2classMappers.get(this.dataBaseSchema.getEntityByName(sourceTableName));
+          for(OClassMapper currentClassMapper: currentClassMappers) {
+            verticesToMerge.add(currentClassMapper.getVertexType());
+          }
+        }
+
+        /**
+         * checking the vertex types are aggregable:
+         * (i)  not coming from join tables
+         * (ii) if they belong tho hierarchical bag, merge is allowed iff vertices are all siblings (they all have the same parentType)
+         */
+
+        boolean aggregable = true;
+        OVertexType currentParentType = null;
+        String errorMesg = null;
+
+        // (i)
+        for(OVertexType v: verticesToMerge) {
+          if(v.isFromJoinTable()) {
+            aggregable = false;
+            errorMesg = "'" + v.getName() + "' comes from a join table, thus the requested aggregation will be skipped.";
+            break;
+          }
+        }
+
+        if(aggregable) {
+
+          // (ii)
+          OVertexType firstParentVertexType = (OVertexType) verticesToMerge.get(0).getParentType();
+          for(OVertexType v: verticesToMerge) {
+            OVertexType currentParentVertexType = firstParentVertexType;
+            if(firstParentVertexType == null) {
+              if(currentParentVertexType != null) {
+                aggregable = false;
+                break;
+              }
+            }
+            else if(!v.getParentType().equals(firstParentVertexType)) {
+              aggregable = false;
+              break;
+            }
+          }
+        }
+
+        if(aggregable) {
+
+          ODocument propertiesDoc = currentVertex.field("properties");
+          String[] propertiesNames = propertiesDoc.fieldNames();
+
+          /**
+           *  removing old vertices' rules
+           */
+          for(OVertexType v: verticesToMerge) {
+            this.vertexType2classMappers.remove(v);
+          }
+
+          // clustering configured properties by original table they are coming from
+          Map<String, List<String>> originalTable2propertyNames = new LinkedHashMap<String, List<String>>();
+          for(String propertyName: propertiesNames) {
+            ODocument currentPropertyDoc = propertiesDoc.field(propertyName);
+            ODocument propertyMapping = currentPropertyDoc.field("mapping");
+            String source = propertyMapping.field("source");
+            String tableName = sourceId2tableName.get(source);
+
+            List<String> propertyNames = originalTable2propertyNames.get(tableName);
+            if(propertyNames == null) {
+              propertyNames = new LinkedList<String>();
+            }
+            propertyNames.add(propertyName);
+            originalTable2propertyNames.put(tableName, propertyNames);
+          }
+
+          /**
+           *  merging in and out edges
+           */
+
+          for(OVertexType currentVertexType: verticesToMerge) {
+
+            // updating in edges
+            for(OEdgeType currentInEdgeType: currentVertexType.getInEdgesType()) {
+              currentInEdgeType.setInVertexType(newAggregatedVertexType);
+              newAggregatedVertexType.getInEdgesType().add(currentInEdgeType);
+            }
+
+            // updating out edges
+            for(OEdgeType currentOutEdgeType: currentVertexType.getOutEdgesType()) {
+              currentOutEdgeType.setOutVertexType(newAggregatedVertexType);
+              newAggregatedVertexType.getOutEdgesType().add(currentOutEdgeType);
+            }
+          }
+
+          /**
+           *  merging properties
+           */
+          int ordinalPosition = 1;
+          for(String tableName: originalTable2propertyNames.keySet()) {
+            OEntity currentEntity = this.getDataBaseSchema().getEntityByName(tableName);
+            Map<String,String> attribute2property = new HashMap<String,String>();
+            Map<String,String> property2attribute = new HashMap<String,String>();
+
+            for(String propertyName: originalTable2propertyNames.get(tableName)) {
+
+              ODocument propertyDoc = propertiesDoc.field(propertyName);
+              boolean include = propertyDoc.field("include").equals(true) ? true : false;
+              String orientdbType = propertyDoc.field("type");
+              boolean isMandatory = propertyDoc.field("mandatory").equals(true) ? true : false;
+              boolean isReadOnly = propertyDoc.field("readOnly").equals(true) ? true : false;
+              boolean isNotNull = propertyDoc.field("notNull").equals(true) ? true : false;
+
+              ODocument propertyMapping = propertyDoc.field("mapping");
+              String source = propertyMapping.field("source");
+              String columnName = propertyMapping.field("columnName");
+              String originalType = propertyMapping.field("type");
+
+              boolean fromPrimaryKey = false;
+              if(currentEntity.getPrimaryKey().getAttributeByName(columnName) != null) {
+                fromPrimaryKey = true;
+              }
+
+              OModelProperty property = new OModelProperty(propertyName, ordinalPosition, originalType, orientdbType, fromPrimaryKey, newAggregatedVertexType, isMandatory, isReadOnly, isNotNull);
+              property.setIncludedInMigration(include);
+
+              // adding the property to the new aggregated vertex type
+              newAggregatedVertexType.getProperties().add(property);
+
+              if(include) {
+                attribute2property.put(columnName, propertyName);
+                property2attribute.put(propertyName, columnName);
+              }
+              else {
+                attribute2property.put(columnName, null);
+              }
+              ordinalPosition++;
+            }
+
+            /**
+             *  updating rules
+             */
+
+             // removing old entities' rules
+            this.entity2classMappers.remove(this.getDataBaseSchema().getEntityByName(tableName));
+
+            OClassMapper currentNewCM = new OClassMapper(currentEntity, newAggregatedVertexType, attribute2property, property2attribute);
+
+            // adding new rules
+            this.upsertClassMappingRules(currentEntity, newAggregatedVertexType, currentNewCM);
+
+          }
+
+          // deleting old vertices just aggregated into the new vertex type
+          for(OVertexType v: verticesToMerge) {
+            this.getGraphModel().getVerticesType().remove(v);
+            statistics.totalNumberOfModelVertices--;
+            statistics.builtModelVertexTypes--;
+          }
+          // adding the new aggregated vertex type
+          this.getGraphModel().getVerticesType().add(newAggregatedVertexType);
+          statistics.totalNumberOfModelVertices++;
+          statistics.builtModelVertexTypes++;
+
+        }
+
+      }
     }
 
-
   }
+
 
 
   /**
@@ -1219,7 +1455,7 @@ public class OER2GraphMapper extends OSource2GraphMapper {
 
           // if property does not belong to the primary key add it to the aggregator edge
           if(!currentProperty.isFromPrimaryKey()) {
-            OModelProperty newProperty = new OModelProperty(currentProperty.getName(), position, currentProperty.getPropertyType(), currentProperty.isFromPrimaryKey(), newAggregatorEdge);
+            OModelProperty newProperty = new OModelProperty(currentProperty.getName(), position, currentProperty.getOriginalType(), currentProperty.isFromPrimaryKey(), newAggregatorEdge);
             if(currentProperty.isMandatory() != null)
               newProperty.setMandatory(currentProperty.isMandatory());
             if(currentProperty.isReadOnly() != null)
@@ -1234,7 +1470,7 @@ public class OER2GraphMapper extends OSource2GraphMapper {
         // adding to the edge all properties belonging to the old edges
         for(OModelProperty currentProperty: currentOutEdge1.getProperties()) {
           if(newAggregatorEdge.getPropertyByName(currentProperty.getName()) == null) {
-            OModelProperty newProperty = new OModelProperty(currentProperty.getName(), position, currentProperty.getPropertyType(), currentProperty.isFromPrimaryKey(), newAggregatorEdge);
+            OModelProperty newProperty = new OModelProperty(currentProperty.getName(), position, currentProperty.getOriginalType(), currentProperty.isFromPrimaryKey(), newAggregatorEdge);
             if(currentProperty.isMandatory() != null)
               newProperty.setMandatory(currentProperty.isMandatory());
             if(currentProperty.isReadOnly() != null)
@@ -1247,7 +1483,7 @@ public class OER2GraphMapper extends OSource2GraphMapper {
         }
         for(OModelProperty currentProperty: currentOutEdge2.getProperties()) {
           if(newAggregatorEdge.getPropertyByName(currentProperty.getName()) == null) {
-            OModelProperty newProperty = new OModelProperty(currentProperty.getName(), position, currentProperty.getPropertyType(), currentProperty.isFromPrimaryKey(), newAggregatorEdge);
+            OModelProperty newProperty = new OModelProperty(currentProperty.getName(), position, currentProperty.getOriginalType(), currentProperty.isFromPrimaryKey(), newAggregatorEdge);
             if(currentProperty.isMandatory() != null)
               newProperty.setMandatory(currentProperty.isMandatory());
             if(currentProperty.isReadOnly() != null)

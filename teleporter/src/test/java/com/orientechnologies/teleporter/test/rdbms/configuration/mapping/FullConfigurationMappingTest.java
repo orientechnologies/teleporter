@@ -228,8 +228,9 @@ public class FullConfigurationMappingTest {
             assertEquals(0, vatProfileEntity.getInRelationships().size());
             assertEquals(0, personEntity.getInRelationships().size());
             assertEquals(1, departmentEntity.getInRelationships().size());
+            assertEquals(0, vatProfileEntity.getForeignKeys().size());
             assertEquals(1, personEntity.getForeignKeys().size());
-            assertEquals(1, vatProfileEntity.getForeignKeys().size());
+            assertEquals(0, departmentEntity.getForeignKeys().size());
 
             Iterator<ORelationship> it = personEntity.getOutRelationships().iterator();
             ORelationship currentRelationship = it.next();
@@ -242,8 +243,8 @@ public class FullConfigurationMappingTest {
             ORelationship currentRelationship2 = it2.next();
             assertEquals(currentRelationship, currentRelationship2);
 
-            assertEquals("PROJECT_MANAGER", personEntity.getForeignKeys().get(0).getInvolvedAttributes().get(0).getName());
-            assertEquals("EMP_ID", departmentEntity.getPrimaryKey().getInvolvedAttributes().get(0).getName());
+            assertEquals("DEP_ID", personEntity.getForeignKeys().get(0).getInvolvedAttributes().get(0).getName());
+            assertEquals("ID", departmentEntity.getPrimaryKey().getInvolvedAttributes().get(0).getName());
 
             assertFalse(it.hasNext());
             assertFalse(it2.hasNext());
@@ -264,61 +265,101 @@ public class FullConfigurationMappingTest {
             assertNotNull(departmentVertexType);
 
             // properties check
-            assertEquals(5, personVertexType.getProperties().size());
+            assertEquals(7, personVertexType.getProperties().size());
 
             assertNotNull(personVertexType.getPropertyByName("extKey1"));
             assertEquals("extKey1", personVertexType.getPropertyByName("extKey1").getName());
-            assertEquals("VARCHAR", personVertexType.getPropertyByName("extKey1").getPropertyType());
+            assertEquals("VARCHAR", personVertexType.getPropertyByName("extKey1").getOriginalType());
+            assertEquals("string", personVertexType.getPropertyByName("extKey1").getOrientdbType());
             assertEquals(1, personVertexType.getPropertyByName("extKey1").getOrdinalPosition());
             assertEquals(true, personVertexType.getPropertyByName("extKey1").isFromPrimaryKey());
-
-            assertNotNull(personVertexType.getPropertyByName("extKey2"));
-            assertEquals("extKey2", personVertexType.getPropertyByName("extKey2").getName());
-            assertEquals("VARCHAR", personVertexType.getPropertyByName("extKey2").getPropertyType());
-            assertEquals(2, personVertexType.getPropertyByName("extKey2").getOrdinalPosition());
-            assertEquals(true, personVertexType.getPropertyByName("extKey2").isFromPrimaryKey());
+            assertEquals(true, personVertexType.getPropertyByName("extKey1").isIncludedInMigration());
 
             assertNotNull(personVertexType.getPropertyByName("firstName"));
             assertEquals("firstName", personVertexType.getPropertyByName("firstName").getName());
-            assertEquals("VARCHAR", personVertexType.getPropertyByName("firstName").getPropertyType());
-            assertEquals(3, personVertexType.getPropertyByName("firstName").getOrdinalPosition());
+            assertEquals("VARCHAR", personVertexType.getPropertyByName("firstName").getOriginalType());
+            assertEquals("string", personVertexType.getPropertyByName("firstName").getOrientdbType());
+            assertEquals(2, personVertexType.getPropertyByName("firstName").getOrdinalPosition());
             assertEquals(false, personVertexType.getPropertyByName("firstName").isFromPrimaryKey());
+            assertEquals(true, personVertexType.getPropertyByName("firstName").isIncludedInMigration());
 
             assertNotNull(personVertexType.getPropertyByName("lastName"));
             assertEquals("lastName", personVertexType.getPropertyByName("lastName").getName());
-            assertEquals("VARCHAR", personVertexType.getPropertyByName("lastName").getPropertyType());
-            assertEquals(4, personVertexType.getPropertyByName("lastName").getOrdinalPosition());
+            assertEquals("VARCHAR", personVertexType.getPropertyByName("lastName").getOriginalType());
+            assertEquals("string", personVertexType.getPropertyByName("lastName").getOrientdbType());
+            assertEquals(3, personVertexType.getPropertyByName("lastName").getOrdinalPosition());
             assertEquals(false, personVertexType.getPropertyByName("lastName").isFromPrimaryKey());
+            assertEquals(true, personVertexType.getPropertyByName("lastName").isIncludedInMigration());
 
-            assertNotNull(personVertexType.getPropertyByName("vat"));
-            assertEquals("vat", personVertexType.getPropertyByName("vat").getName());
-            assertEquals("VARCHAR", personVertexType.getPropertyByName("vat").getPropertyType());
-            assertEquals(5, personVertexType.getPropertyByName("vat").getOrdinalPosition());
-            assertEquals(false, personVertexType.getPropertyByName("vat").isFromPrimaryKey());
+            assertNotNull(personVertexType.getPropertyByName("depId"));
+            assertEquals("depId", personVertexType.getPropertyByName("depId").getName());
+            assertEquals("VARCHAR", personVertexType.getPropertyByName("depId").getOriginalType());
+            assertEquals("string", personVertexType.getPropertyByName("depId").getOrientdbType());
+            assertEquals(4, personVertexType.getPropertyByName("depId").getOrdinalPosition());
+            assertEquals(false, personVertexType.getPropertyByName("depId").isFromPrimaryKey());
+            assertEquals(false, personVertexType.getPropertyByName("depId").isIncludedInMigration());
+
+            assertNotNull(personVertexType.getPropertyByName("extKey2"));
+            assertEquals("extKey2", personVertexType.getPropertyByName("extKey2").getName());
+            assertEquals("VARCHAR", personVertexType.getPropertyByName("extKey2").getOriginalType());
+            assertEquals("string", personVertexType.getPropertyByName("extKey2").getOrientdbType());
+            assertEquals(5, personVertexType.getPropertyByName("extKey2").getOrdinalPosition());
+            assertEquals(true, personVertexType.getPropertyByName("extKey2").isFromPrimaryKey());
+            assertEquals(true, personVertexType.getPropertyByName("extKey2").isIncludedInMigration());
+
+            assertNotNull(personVertexType.getPropertyByName("VAT"));
+            assertEquals("VAT", personVertexType.getPropertyByName("VAT").getName());
+            assertEquals("VARCHAR", personVertexType.getPropertyByName("VAT").getOriginalType());
+            assertEquals("string", personVertexType.getPropertyByName("VAT").getOrientdbType());
+            assertEquals(6, personVertexType.getPropertyByName("VAT").getOrdinalPosition());
+            assertEquals(false, personVertexType.getPropertyByName("VAT").isFromPrimaryKey());
+            assertEquals(true, personVertexType.getPropertyByName("VAT").isIncludedInMigration());
+
+            assertNotNull(personVertexType.getPropertyByName("updatedOn"));
+            assertEquals("updatedOn", personVertexType.getPropertyByName("updatedOn").getName());
+            assertEquals("DATE", personVertexType.getPropertyByName("updatedOn").getOriginalType());
+            assertEquals("date", personVertexType.getPropertyByName("updatedOn").getOrientdbType());
+            assertEquals(7, personVertexType.getPropertyByName("updatedOn").getOrdinalPosition());
+            assertEquals(false, personVertexType.getPropertyByName("updatedOn").isFromPrimaryKey());
+            assertEquals(false, personVertexType.getPropertyByName("updatedOn").isIncludedInMigration());
 
             assertEquals(1, personVertexType.getOutEdgesType().size());
             assertEquals(worksAtEdgeType, personVertexType.getOutEdgesType().get(0));
             assertEquals(0, personVertexType.getInEdgesType().size());
 
-            assertEquals(3, departmentVertexType.getProperties().size());
+            assertEquals(4, departmentVertexType.getProperties().size());
 
             assertNotNull(departmentVertexType.getPropertyByName("id"));
             assertEquals("id", departmentVertexType.getPropertyByName("id").getName());
-            assertEquals("VARCHAR", departmentVertexType.getPropertyByName("id").getPropertyType());
+            assertEquals("VARCHAR", departmentVertexType.getPropertyByName("id").getOriginalType());
+            assertEquals("string", departmentVertexType.getPropertyByName("id").getOrientdbType());
             assertEquals(1, departmentVertexType.getPropertyByName("id").getOrdinalPosition());
             assertEquals(true, departmentVertexType.getPropertyByName("id").isFromPrimaryKey());
+            assertEquals(true, departmentVertexType.getPropertyByName("id").isIncludedInMigration());
 
             assertNotNull(departmentVertexType.getPropertyByName("departmentName"));
             assertEquals("departmentName", departmentVertexType.getPropertyByName("departmentName").getName());
-            assertEquals("VARCHAR", departmentVertexType.getPropertyByName("departmentName").getPropertyType());
+            assertEquals("VARCHAR", departmentVertexType.getPropertyByName("departmentName").getOriginalType());
+            assertEquals("string", departmentVertexType.getPropertyByName("departmentName").getOrientdbType());
             assertEquals(2, departmentVertexType.getPropertyByName("departmentName").getOrdinalPosition());
             assertEquals(false, departmentVertexType.getPropertyByName("departmentName").isFromPrimaryKey());
+            assertEquals(true, departmentVertexType.getPropertyByName("departmentName").isIncludedInMigration());
 
             assertNotNull(departmentVertexType.getPropertyByName("location"));
             assertEquals("location", departmentVertexType.getPropertyByName("location").getName());
-            assertEquals("VARCHAR", departmentVertexType.getPropertyByName("location").getPropertyType());
+            assertEquals("VARCHAR", departmentVertexType.getPropertyByName("location").getOriginalType());
+            assertEquals("string", departmentVertexType.getPropertyByName("location").getOrientdbType());
             assertEquals(3, departmentVertexType.getPropertyByName("location").getOrdinalPosition());
             assertEquals(false, departmentVertexType.getPropertyByName("location").isFromPrimaryKey());
+            assertEquals(true, departmentVertexType.getPropertyByName("location").isIncludedInMigration());
+
+            assertNotNull(departmentVertexType.getPropertyByName("updatedOn"));
+            assertEquals("updatedOn", departmentVertexType.getPropertyByName("updatedOn").getName());
+            assertEquals("DATE", departmentVertexType.getPropertyByName("updatedOn").getOriginalType());
+            assertEquals("date", departmentVertexType.getPropertyByName("updatedOn").getOrientdbType());
+            assertEquals(4, departmentVertexType.getPropertyByName("updatedOn").getOrdinalPosition());
+            assertEquals(false, departmentVertexType.getPropertyByName("updatedOn").isFromPrimaryKey());
+            assertEquals(false, departmentVertexType.getPropertyByName("updatedOn").isIncludedInMigration());
 
             assertEquals(0, departmentVertexType.getOutEdgesType().size());
             assertEquals(1, departmentVertexType.getInEdgesType().size());
@@ -328,7 +369,7 @@ public class FullConfigurationMappingTest {
             assertEquals(1, mapper.getGraphModel().getEdgesType().size());
             assertNotNull(worksAtEdgeType);
 
-            assertEquals("WorksAtProject", worksAtEdgeType.getName());
+            assertEquals("WorksAt", worksAtEdgeType.getName());
             assertEquals(1, worksAtEdgeType.getProperties().size());
             assertEquals("Department", worksAtEdgeType.getInVertexType().getName());
             assertEquals(1, worksAtEdgeType.getNumberRelationshipsRepresented());
@@ -339,7 +380,7 @@ public class FullConfigurationMappingTest {
             assertEquals("since", sinceProperty.getName());
             assertEquals(1, sinceProperty.getOrdinalPosition());
             assertEquals(false, sinceProperty.isFromPrimaryKey());
-            assertEquals("DATE", sinceProperty.getPropertyType());
+            assertEquals("date", sinceProperty.getOriginalType());
             assertEquals(true, sinceProperty.isMandatory());
             assertEquals(false, sinceProperty.isReadOnly());
             assertEquals(false, sinceProperty.isNotNull());
@@ -362,15 +403,14 @@ public class FullConfigurationMappingTest {
             assertEquals(personClassMapper.getVertexType(), personVertexType);
 
             assertEquals(4, personClassMapper.attribute2property.size());
-            assertEquals(4, personClassMapper.property2attribute.size());
+            assertEquals(3, personClassMapper.property2attribute.size());
             assertEquals("extKey1", personClassMapper.attribute2property.get("ID"));
             assertEquals("firstName", personClassMapper.attribute2property.get("NAME"));
             assertEquals("lastName", personClassMapper.attribute2property.get("SURNAME"));
-            assertEquals("depId", personClassMapper.attribute2property.get("DEP_ID"));
+            assertNull(personClassMapper.attribute2property.get("DEP_ID"));
             assertEquals("ID", personClassMapper.property2attribute.get("extKey1"));
             assertEquals("NAME", personClassMapper.property2attribute.get("firstName"));
             assertEquals("SURNAME", personClassMapper.property2attribute.get("lastName"));
-            assertEquals("DEP_ID", personClassMapper.property2attribute.get("depId"));
 
             assertEquals(2, mapper.getClassMappingRulesByVertex(personVertexType).size());
             OClassMapper vatProfileClassMapper = mapper.getClassMappingRulesByVertex(personVertexType).get(1);
@@ -382,10 +422,10 @@ public class FullConfigurationMappingTest {
             assertEquals(3, vatProfileClassMapper.attribute2property.size());
             assertEquals(2, vatProfileClassMapper.property2attribute.size());
             assertEquals("extKey2", vatProfileClassMapper.attribute2property.get("ID"));
-            assertEquals("vat", vatProfileClassMapper.attribute2property.get("VAT"));
+            assertEquals("VAT", vatProfileClassMapper.attribute2property.get("VAT"));
             assertNull(vatProfileClassMapper.attribute2property.get("UPDATED_ON"));
             assertEquals("ID", vatProfileClassMapper.property2attribute.get("extKey2"));
-            assertEquals("VAT", vatProfileClassMapper.property2attribute.get("vat"));
+            assertEquals("VAT", vatProfileClassMapper.property2attribute.get("VAT"));
 
             assertEquals(1, mapper.getClassMappingRulesByVertex(departmentVertexType).size());
             OClassMapper departmentClassMapper = mapper.getClassMappingRulesByVertex(departmentVertexType).get(0);

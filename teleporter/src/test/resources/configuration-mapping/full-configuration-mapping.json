@@ -53,7 +53,7 @@
             "type": "VARCHAR"
           }
         },
-        "dep_id": {
+        "depId": {
           "include": false,
           "type": "string",
           "mandatory": false,

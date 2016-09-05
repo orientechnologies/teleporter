@@ -115,19 +115,19 @@ public class GraphModelBuildingTest {
 
       assertNotNull(authorVertexType.getPropertyByName("id"));
       assertEquals("id", authorVertexType.getPropertyByName("id").getName());
-      assertEquals("VARCHAR", authorVertexType.getPropertyByName("id").getPropertyType());
+      assertEquals("VARCHAR", authorVertexType.getPropertyByName("id").getOriginalType());
       assertEquals(1, authorVertexType.getPropertyByName("id").getOrdinalPosition());
       assertEquals(true, authorVertexType.getPropertyByName("id").isFromPrimaryKey());
 
       assertNotNull(authorVertexType.getPropertyByName("name"));
       assertEquals("name", authorVertexType.getPropertyByName("name").getName());
-      assertEquals("VARCHAR", authorVertexType.getPropertyByName("name").getPropertyType());
+      assertEquals("VARCHAR", authorVertexType.getPropertyByName("name").getOriginalType());
       assertEquals(2, authorVertexType.getPropertyByName("name").getOrdinalPosition());
       assertEquals(false, authorVertexType.getPropertyByName("name").isFromPrimaryKey());
 
       assertNotNull(authorVertexType.getPropertyByName("age"));
       assertEquals("age", authorVertexType.getPropertyByName("age").getName());
-      assertEquals("INTEGER", authorVertexType.getPropertyByName("age").getPropertyType());
+      assertEquals("INTEGER", authorVertexType.getPropertyByName("age").getOriginalType());
       assertEquals(3, authorVertexType.getPropertyByName("age").getOrdinalPosition());
       assertEquals(false, authorVertexType.getPropertyByName("age").isFromPrimaryKey());
 
@@ -135,19 +135,19 @@ public class GraphModelBuildingTest {
 
       assertNotNull(bookVertexType.getPropertyByName("id"));
       assertEquals("id", bookVertexType.getPropertyByName("id").getName());
-      assertEquals("VARCHAR", bookVertexType.getPropertyByName("id").getPropertyType());
+      assertEquals("VARCHAR", bookVertexType.getPropertyByName("id").getOriginalType());
       assertEquals(1, bookVertexType.getPropertyByName("id").getOrdinalPosition());
       assertEquals(true, bookVertexType.getPropertyByName("id").isFromPrimaryKey());
 
       assertNotNull(bookVertexType.getPropertyByName("title"));
       assertEquals("title", bookVertexType.getPropertyByName("title").getName());
-      assertEquals("VARCHAR", bookVertexType.getPropertyByName("title").getPropertyType());
+      assertEquals("VARCHAR", bookVertexType.getPropertyByName("title").getOriginalType());
       assertEquals(2, bookVertexType.getPropertyByName("title").getOrdinalPosition());
       assertEquals(false, bookVertexType.getPropertyByName("title").isFromPrimaryKey());
 
       assertNotNull(bookVertexType.getPropertyByName("authorId"));
       assertEquals("authorId", bookVertexType.getPropertyByName("authorId").getName());
-      assertEquals("VARCHAR", bookVertexType.getPropertyByName("authorId").getPropertyType());
+      assertEquals("VARCHAR", bookVertexType.getPropertyByName("authorId").getOriginalType());
       assertEquals(3, bookVertexType.getPropertyByName("authorId").getOrdinalPosition());
       assertEquals(false, bookVertexType.getPropertyByName("authorId").isFromPrimaryKey());
 
@@ -301,19 +301,19 @@ public class GraphModelBuildingTest {
 
       assertNotNull(authorVertexType.getPropertyByName("id"));
       assertEquals("id", authorVertexType.getPropertyByName("id").getName());
-      assertEquals("VARCHAR", authorVertexType.getPropertyByName("id").getPropertyType());
+      assertEquals("VARCHAR", authorVertexType.getPropertyByName("id").getOriginalType());
       assertEquals(1, authorVertexType.getPropertyByName("id").getOrdinalPosition());
       assertEquals(true, authorVertexType.getPropertyByName("id").isFromPrimaryKey());
 
       assertNotNull(authorVertexType.getPropertyByName("name"));
       assertEquals("name", authorVertexType.getPropertyByName("name").getName());
-      assertEquals("VARCHAR", authorVertexType.getPropertyByName("name").getPropertyType());
+      assertEquals("VARCHAR", authorVertexType.getPropertyByName("name").getOriginalType());
       assertEquals(2, authorVertexType.getPropertyByName("name").getOrdinalPosition());
       assertEquals(false, authorVertexType.getPropertyByName("name").isFromPrimaryKey());
 
       assertNotNull(authorVertexType.getPropertyByName("age"));
       assertEquals("age", authorVertexType.getPropertyByName("age").getName());
-      assertEquals("INTEGER", authorVertexType.getPropertyByName("age").getPropertyType());
+      assertEquals("INTEGER", authorVertexType.getPropertyByName("age").getOriginalType());
       assertEquals(3, authorVertexType.getPropertyByName("age").getOrdinalPosition());
       assertEquals(false, authorVertexType.getPropertyByName("age").isFromPrimaryKey());
 
@@ -321,19 +321,19 @@ public class GraphModelBuildingTest {
 
       assertNotNull(bookVertexType.getPropertyByName("id"));
       assertEquals("id", bookVertexType.getPropertyByName("id").getName());
-      assertEquals("VARCHAR", bookVertexType.getPropertyByName("id").getPropertyType());
+      assertEquals("VARCHAR", bookVertexType.getPropertyByName("id").getOriginalType());
       assertEquals(1, bookVertexType.getPropertyByName("id").getOrdinalPosition());
       assertEquals(true, bookVertexType.getPropertyByName("id").isFromPrimaryKey());
 
       assertNotNull(bookVertexType.getPropertyByName("title"));
       assertEquals("title", bookVertexType.getPropertyByName("title").getName());
-      assertEquals("VARCHAR", bookVertexType.getPropertyByName("title").getPropertyType());
+      assertEquals("VARCHAR", bookVertexType.getPropertyByName("title").getOriginalType());
       assertEquals(2, bookVertexType.getPropertyByName("title").getOrdinalPosition());
       assertEquals(false, bookVertexType.getPropertyByName("title").isFromPrimaryKey());
 
       assertNotNull(bookVertexType.getPropertyByName("authorId"));
       assertEquals("authorId", bookVertexType.getPropertyByName("authorId").getName());
-      assertEquals("VARCHAR", bookVertexType.getPropertyByName("authorId").getPropertyType());
+      assertEquals("VARCHAR", bookVertexType.getPropertyByName("authorId").getOriginalType());
       assertEquals(3, bookVertexType.getPropertyByName("authorId").getOrdinalPosition());
       assertEquals(false, bookVertexType.getPropertyByName("authorId").isFromPrimaryKey());
 
@@ -341,19 +341,19 @@ public class GraphModelBuildingTest {
 
       assertNotNull(itemVertexType.getPropertyByName("id"));
       assertEquals("id", itemVertexType.getPropertyByName("id").getName());
-      assertEquals("VARCHAR", itemVertexType.getPropertyByName("id").getPropertyType());
+      assertEquals("VARCHAR", itemVertexType.getPropertyByName("id").getOriginalType());
       assertEquals(1, itemVertexType.getPropertyByName("id").getOrdinalPosition());
       assertEquals(true, itemVertexType.getPropertyByName("id").isFromPrimaryKey());
 
       assertNotNull(itemVertexType.getPropertyByName("bookId"));
       assertEquals("bookId", itemVertexType.getPropertyByName("bookId").getName());
-      assertEquals("VARCHAR", itemVertexType.getPropertyByName("bookId").getPropertyType());
+      assertEquals("VARCHAR", itemVertexType.getPropertyByName("bookId").getOriginalType());
       assertEquals(2, itemVertexType.getPropertyByName("bookId").getOrdinalPosition());
       assertEquals(false, itemVertexType.getPropertyByName("bookId").isFromPrimaryKey());
 
       assertNotNull(itemVertexType.getPropertyByName("price"));
       assertEquals("price", itemVertexType.getPropertyByName("price").getName());
-      assertEquals("VARCHAR", itemVertexType.getPropertyByName("price").getPropertyType());
+      assertEquals("VARCHAR", itemVertexType.getPropertyByName("price").getOriginalType());
       assertEquals(3, itemVertexType.getPropertyByName("price").getOrdinalPosition());
       assertEquals(false, itemVertexType.getPropertyByName("price").isFromPrimaryKey());
 
@@ -536,19 +536,19 @@ public class GraphModelBuildingTest {
 
       assertNotNull(authorVertexType.getPropertyByName("id"));
       assertEquals("id", authorVertexType.getPropertyByName("id").getName());
-      assertEquals("VARCHAR", authorVertexType.getPropertyByName("id").getPropertyType());
+      assertEquals("VARCHAR", authorVertexType.getPropertyByName("id").getOriginalType());
       assertEquals(1, authorVertexType.getPropertyByName("id").getOrdinalPosition());
       assertEquals(true, authorVertexType.getPropertyByName("id").isFromPrimaryKey());
 
       assertNotNull(authorVertexType.getPropertyByName("name"));
       assertEquals("name", authorVertexType.getPropertyByName("name").getName());
-      assertEquals("VARCHAR", authorVertexType.getPropertyByName("name").getPropertyType());
+      assertEquals("VARCHAR", authorVertexType.getPropertyByName("name").getOriginalType());
       assertEquals(2, authorVertexType.getPropertyByName("name").getOrdinalPosition());
       assertEquals(false, authorVertexType.getPropertyByName("name").isFromPrimaryKey());
 
       assertNotNull(authorVertexType.getPropertyByName("age"));
       assertEquals("age", authorVertexType.getPropertyByName("age").getName());
-      assertEquals("INTEGER", authorVertexType.getPropertyByName("age").getPropertyType());
+      assertEquals("INTEGER", authorVertexType.getPropertyByName("age").getOriginalType());
       assertEquals(3, authorVertexType.getPropertyByName("age").getOrdinalPosition());
       assertEquals(false, authorVertexType.getPropertyByName("age").isFromPrimaryKey());
 
@@ -556,19 +556,19 @@ public class GraphModelBuildingTest {
 
       assertNotNull(bookVertexType.getPropertyByName("id"));
       assertEquals("id", bookVertexType.getPropertyByName("id").getName());
-      assertEquals("VARCHAR", bookVertexType.getPropertyByName("id").getPropertyType());
+      assertEquals("VARCHAR", bookVertexType.getPropertyByName("id").getOriginalType());
       assertEquals(1, bookVertexType.getPropertyByName("id").getOrdinalPosition());
       assertEquals(true, bookVertexType.getPropertyByName("id").isFromPrimaryKey());
 
       assertNotNull(bookVertexType.getPropertyByName("title"));
       assertEquals("title", bookVertexType.getPropertyByName("title").getName());
-      assertEquals("VARCHAR", bookVertexType.getPropertyByName("title").getPropertyType());
+      assertEquals("VARCHAR", bookVertexType.getPropertyByName("title").getOriginalType());
       assertEquals(2, bookVertexType.getPropertyByName("title").getOrdinalPosition());
       assertEquals(false, bookVertexType.getPropertyByName("title").isFromPrimaryKey());
 
       assertNotNull(bookVertexType.getPropertyByName("authorId"));
       assertEquals("authorId", bookVertexType.getPropertyByName("authorId").getName());
-      assertEquals("VARCHAR", bookVertexType.getPropertyByName("authorId").getPropertyType());
+      assertEquals("VARCHAR", bookVertexType.getPropertyByName("authorId").getOriginalType());
       assertEquals(3, bookVertexType.getPropertyByName("authorId").getOrdinalPosition());
       assertEquals(false, bookVertexType.getPropertyByName("authorId").isFromPrimaryKey());
 
@@ -576,25 +576,25 @@ public class GraphModelBuildingTest {
 
       assertNotNull(articleVertexType.getPropertyByName("id"));
       assertEquals("id", articleVertexType.getPropertyByName("id").getName());
-      assertEquals("VARCHAR", articleVertexType.getPropertyByName("id").getPropertyType());
+      assertEquals("VARCHAR", articleVertexType.getPropertyByName("id").getOriginalType());
       assertEquals(1, articleVertexType.getPropertyByName("id").getOrdinalPosition());
       assertEquals(true, articleVertexType.getPropertyByName("id").isFromPrimaryKey());
 
       assertNotNull(articleVertexType.getPropertyByName("title"));
       assertEquals("title", articleVertexType.getPropertyByName("title").getName());
-      assertEquals("VARCHAR", articleVertexType.getPropertyByName("title").getPropertyType());
+      assertEquals("VARCHAR", articleVertexType.getPropertyByName("title").getOriginalType());
       assertEquals(2, articleVertexType.getPropertyByName("title").getOrdinalPosition());
       assertEquals(false, articleVertexType.getPropertyByName("title").isFromPrimaryKey());
 
       assertNotNull(articleVertexType.getPropertyByName("date"));
       assertEquals("date", articleVertexType.getPropertyByName("date").getName());
-      assertEquals("DATE", articleVertexType.getPropertyByName("date").getPropertyType());
+      assertEquals("DATE", articleVertexType.getPropertyByName("date").getOriginalType());
       assertEquals(3, articleVertexType.getPropertyByName("date").getOrdinalPosition());
       assertEquals(false, articleVertexType.getPropertyByName("date").isFromPrimaryKey());
 
       assertNotNull(articleVertexType.getPropertyByName("authorId"));
       assertEquals("authorId", articleVertexType.getPropertyByName("authorId").getName());
-      assertEquals("VARCHAR", articleVertexType.getPropertyByName("authorId").getPropertyType());
+      assertEquals("VARCHAR", articleVertexType.getPropertyByName("authorId").getOriginalType());
       assertEquals(4, articleVertexType.getPropertyByName("authorId").getOrdinalPosition());
       assertEquals(false, articleVertexType.getPropertyByName("authorId").isFromPrimaryKey());
 
@@ -768,19 +768,19 @@ public class GraphModelBuildingTest {
 
       assertNotNull(authorVertexType.getPropertyByName("name"));
       assertEquals("name", authorVertexType.getPropertyByName("name").getName());
-      assertEquals("VARCHAR", authorVertexType.getPropertyByName("name").getPropertyType());
+      assertEquals("VARCHAR", authorVertexType.getPropertyByName("name").getOriginalType());
       assertEquals(1, authorVertexType.getPropertyByName("name").getOrdinalPosition());
       assertEquals(true, authorVertexType.getPropertyByName("name").isFromPrimaryKey());
 
       assertNotNull(authorVertexType.getPropertyByName("surname"));
       assertEquals("surname", authorVertexType.getPropertyByName("surname").getName());
-      assertEquals("VARCHAR", authorVertexType.getPropertyByName("surname").getPropertyType());
+      assertEquals("VARCHAR", authorVertexType.getPropertyByName("surname").getOriginalType());
       assertEquals(2, authorVertexType.getPropertyByName("surname").getOrdinalPosition());
       assertEquals(true, authorVertexType.getPropertyByName("surname").isFromPrimaryKey());
 
       assertNotNull(authorVertexType.getPropertyByName("age"));
       assertEquals("age", authorVertexType.getPropertyByName("age").getName());
-      assertEquals("INTEGER", authorVertexType.getPropertyByName("age").getPropertyType());
+      assertEquals("INTEGER", authorVertexType.getPropertyByName("age").getOriginalType());
       assertEquals(3, authorVertexType.getPropertyByName("age").getOrdinalPosition());
       assertEquals(false, authorVertexType.getPropertyByName("age").isFromPrimaryKey());
 
@@ -788,25 +788,25 @@ public class GraphModelBuildingTest {
 
       assertNotNull(bookVertexType.getPropertyByName("id"));
       assertEquals("id", bookVertexType.getPropertyByName("id").getName());
-      assertEquals("VARCHAR", bookVertexType.getPropertyByName("id").getPropertyType());
+      assertEquals("VARCHAR", bookVertexType.getPropertyByName("id").getOriginalType());
       assertEquals(1, bookVertexType.getPropertyByName("id").getOrdinalPosition());
       assertEquals(true, bookVertexType.getPropertyByName("id").isFromPrimaryKey());
 
       assertNotNull(bookVertexType.getPropertyByName("title"));
       assertEquals("title", bookVertexType.getPropertyByName("title").getName());
-      assertEquals("VARCHAR", bookVertexType.getPropertyByName("title").getPropertyType());
+      assertEquals("VARCHAR", bookVertexType.getPropertyByName("title").getOriginalType());
       assertEquals(2, bookVertexType.getPropertyByName("title").getOrdinalPosition());
       assertEquals(false, bookVertexType.getPropertyByName("title").isFromPrimaryKey());
 
       assertNotNull(bookVertexType.getPropertyByName("authorName"));
       assertEquals("authorName", bookVertexType.getPropertyByName("authorName").getName());
-      assertEquals("VARCHAR", bookVertexType.getPropertyByName("authorName").getPropertyType());
+      assertEquals("VARCHAR", bookVertexType.getPropertyByName("authorName").getOriginalType());
       assertEquals(3, bookVertexType.getPropertyByName("authorName").getOrdinalPosition());
       assertEquals(false, bookVertexType.getPropertyByName("authorName").isFromPrimaryKey());
 
       assertNotNull(bookVertexType.getPropertyByName("authorSurname"));
       assertEquals("authorSurname", bookVertexType.getPropertyByName("authorSurname").getName());
-      assertEquals("VARCHAR", bookVertexType.getPropertyByName("authorSurname").getPropertyType());
+      assertEquals("VARCHAR", bookVertexType.getPropertyByName("authorSurname").getOriginalType());
       assertEquals(4, bookVertexType.getPropertyByName("authorSurname").getOrdinalPosition());
       assertEquals(false, bookVertexType.getPropertyByName("authorSurname").isFromPrimaryKey());
 
@@ -965,19 +965,19 @@ public class GraphModelBuildingTest {
 
       assertNotNull(actorVertexType.getPropertyByName("id"));
       assertEquals("id", actorVertexType.getPropertyByName("id").getName());
-      assertEquals("VARCHAR", actorVertexType.getPropertyByName("id").getPropertyType());
+      assertEquals("VARCHAR", actorVertexType.getPropertyByName("id").getOriginalType());
       assertEquals(1, actorVertexType.getPropertyByName("id").getOrdinalPosition());
       assertEquals(true, actorVertexType.getPropertyByName("id").isFromPrimaryKey());
 
       assertNotNull(actorVertexType.getPropertyByName("name"));
       assertEquals("name", actorVertexType.getPropertyByName("name").getName());
-      assertEquals("VARCHAR", actorVertexType.getPropertyByName("name").getPropertyType());
+      assertEquals("VARCHAR", actorVertexType.getPropertyByName("name").getOriginalType());
       assertEquals(2, actorVertexType.getPropertyByName("name").getOrdinalPosition());
       assertEquals(false, actorVertexType.getPropertyByName("name").isFromPrimaryKey());
 
       assertNotNull(actorVertexType.getPropertyByName("surname"));
       assertEquals("surname", actorVertexType.getPropertyByName("surname").getName());
-      assertEquals("VARCHAR", actorVertexType.getPropertyByName("surname").getPropertyType());
+      assertEquals("VARCHAR", actorVertexType.getPropertyByName("surname").getOriginalType());
       assertEquals(3, actorVertexType.getPropertyByName("surname").getOrdinalPosition());
       assertEquals(false, actorVertexType.getPropertyByName("surname").isFromPrimaryKey());
 
@@ -985,19 +985,19 @@ public class GraphModelBuildingTest {
 
       assertNotNull(filmVertexType.getPropertyByName("id"));
       assertEquals("id", filmVertexType.getPropertyByName("id").getName());
-      assertEquals("VARCHAR", filmVertexType.getPropertyByName("id").getPropertyType());
+      assertEquals("VARCHAR", filmVertexType.getPropertyByName("id").getOriginalType());
       assertEquals(1, filmVertexType.getPropertyByName("id").getOrdinalPosition());
       assertEquals(true, filmVertexType.getPropertyByName("id").isFromPrimaryKey());
 
       assertNotNull(filmVertexType.getPropertyByName("title"));
       assertEquals("title", filmVertexType.getPropertyByName("title").getName());
-      assertEquals("VARCHAR", filmVertexType.getPropertyByName("title").getPropertyType());
+      assertEquals("VARCHAR", filmVertexType.getPropertyByName("title").getOriginalType());
       assertEquals(2, filmVertexType.getPropertyByName("title").getOrdinalPosition());
       assertEquals(false, filmVertexType.getPropertyByName("title").isFromPrimaryKey());
 
       assertNotNull(filmVertexType.getPropertyByName("year"));
       assertEquals("year", filmVertexType.getPropertyByName("year").getName());
-      assertEquals("DATE", filmVertexType.getPropertyByName("year").getPropertyType());
+      assertEquals("DATE", filmVertexType.getPropertyByName("year").getOriginalType());
       assertEquals(3, filmVertexType.getPropertyByName("year").getOrdinalPosition());
       assertEquals(false, filmVertexType.getPropertyByName("year").isFromPrimaryKey());
 
@@ -1005,13 +1005,13 @@ public class GraphModelBuildingTest {
 
       assertNotNull(film2actorVertexType.getPropertyByName("filmId"));
       assertEquals("filmId", film2actorVertexType.getPropertyByName("filmId").getName());
-      assertEquals("VARCHAR", film2actorVertexType.getPropertyByName("filmId").getPropertyType());
+      assertEquals("VARCHAR", film2actorVertexType.getPropertyByName("filmId").getOriginalType());
       assertEquals(1, film2actorVertexType.getPropertyByName("filmId").getOrdinalPosition());
       assertEquals(true, film2actorVertexType.getPropertyByName("filmId").isFromPrimaryKey());
 
       assertNotNull(film2actorVertexType.getPropertyByName("actorId"));
       assertEquals("actorId", film2actorVertexType.getPropertyByName("actorId").getName());
-      assertEquals("VARCHAR", film2actorVertexType.getPropertyByName("actorId").getPropertyType());
+      assertEquals("VARCHAR", film2actorVertexType.getPropertyByName("actorId").getOriginalType());
       assertEquals(2, film2actorVertexType.getPropertyByName("actorId").getOrdinalPosition());
       assertEquals(true, film2actorVertexType.getPropertyByName("actorId").isFromPrimaryKey());
 
@@ -1188,19 +1188,19 @@ public class GraphModelBuildingTest {
 
       assertNotNull(employeeVertexType.getPropertyByName("empId"));
       assertEquals("empId", employeeVertexType.getPropertyByName("empId").getName());
-      assertEquals("VARCHAR", employeeVertexType.getPropertyByName("empId").getPropertyType());
+      assertEquals("VARCHAR", employeeVertexType.getPropertyByName("empId").getOriginalType());
       assertEquals(1, employeeVertexType.getPropertyByName("empId").getOrdinalPosition());
       assertEquals(true, employeeVertexType.getPropertyByName("empId").isFromPrimaryKey());
 
       assertNotNull(employeeVertexType.getPropertyByName("mgrId"));
       assertEquals("mgrId", employeeVertexType.getPropertyByName("mgrId").getName());
-      assertEquals("VARCHAR", employeeVertexType.getPropertyByName("mgrId").getPropertyType());
+      assertEquals("VARCHAR", employeeVertexType.getPropertyByName("mgrId").getOriginalType());
       assertEquals(2, employeeVertexType.getPropertyByName("mgrId").getOrdinalPosition());
       assertEquals(false, employeeVertexType.getPropertyByName("mgrId").isFromPrimaryKey());
 
       assertNotNull(employeeVertexType.getPropertyByName("name"));
       assertEquals("name", employeeVertexType.getPropertyByName("name").getName());
-      assertEquals("VARCHAR", employeeVertexType.getPropertyByName("name").getPropertyType());
+      assertEquals("VARCHAR", employeeVertexType.getPropertyByName("name").getOriginalType());
       assertEquals(3, employeeVertexType.getPropertyByName("name").getOrdinalPosition());
       assertEquals(false, employeeVertexType.getPropertyByName("name").isFromPrimaryKey());
 
@@ -1208,19 +1208,19 @@ public class GraphModelBuildingTest {
 
       assertNotNull(projectVertexType.getPropertyByName("id"));
       assertEquals("id", projectVertexType.getPropertyByName("id").getName());
-      assertEquals("VARCHAR", projectVertexType.getPropertyByName("id").getPropertyType());
+      assertEquals("VARCHAR", projectVertexType.getPropertyByName("id").getOriginalType());
       assertEquals(1, projectVertexType.getPropertyByName("id").getOrdinalPosition());
       assertEquals(true, projectVertexType.getPropertyByName("id").isFromPrimaryKey());
 
       assertNotNull(projectVertexType.getPropertyByName("title"));
       assertEquals("title", projectVertexType.getPropertyByName("title").getName());
-      assertEquals("VARCHAR", projectVertexType.getPropertyByName("title").getPropertyType());
+      assertEquals("VARCHAR", projectVertexType.getPropertyByName("title").getOriginalType());
       assertEquals(2, projectVertexType.getPropertyByName("title").getOrdinalPosition());
       assertEquals(false, projectVertexType.getPropertyByName("title").isFromPrimaryKey());
 
       assertNotNull(projectVertexType.getPropertyByName("projectManager"));
       assertEquals("projectManager", projectVertexType.getPropertyByName("projectManager").getName());
-      assertEquals("VARCHAR", projectVertexType.getPropertyByName("projectManager").getPropertyType());
+      assertEquals("VARCHAR", projectVertexType.getPropertyByName("projectManager").getOriginalType());
       assertEquals(3, projectVertexType.getPropertyByName("projectManager").getOrdinalPosition());
       assertEquals(false, projectVertexType.getPropertyByName("projectManager").isFromPrimaryKey());
 

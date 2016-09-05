@@ -31,32 +31,38 @@ public class OModelProperty {
 
   private String name;
   private int ordinalPosition;
-  private String propertyType;
+  private String originalType;
+  private String orientdbType;
   private boolean fromPrimaryKey;
   private OElementType belongingElementType;
+  private boolean includedInMigration;
 
   // costraints
   private Boolean mandatory;
   private Boolean readOnly;
   private Boolean notNull;
 
-  public OModelProperty(String name, int ordinalPosition, String propertyType, boolean fromPrimaryKey, OElementType belongingElementType) {
+  public OModelProperty(String name, int ordinalPosition, String originalType, boolean fromPrimaryKey, OElementType belongingElementType) {
     this.name = name;
     this.ordinalPosition = ordinalPosition;
-    this.propertyType = propertyType;
+    this.originalType = originalType;
+    this.orientdbType = null;
     this.fromPrimaryKey = fromPrimaryKey;
     this.belongingElementType = belongingElementType;
+    this.includedInMigration = true;
   }
 
-  public OModelProperty(String name, int ordinalPosition, String propertyType, boolean fromPrimaryKey, OElementType belongingElementType, boolean mandatory, boolean readOnly, boolean notNull) {
+  public OModelProperty(String name, int ordinalPosition, String originalType, String orientdbType, boolean fromPrimaryKey, OElementType belongingElementType, boolean mandatory, boolean readOnly, boolean notNull) {
     this.name = name;
     this.ordinalPosition = ordinalPosition;
-    this.propertyType = propertyType;
+    this.originalType = originalType;
+    this.orientdbType = orientdbType;
     this.fromPrimaryKey = fromPrimaryKey;
     this.belongingElementType = belongingElementType;
     this.mandatory = mandatory;
     this.readOnly = readOnly;
     this.notNull = notNull;
+    this.includedInMigration = true;
   }
 
   public String getName() {
@@ -75,12 +81,20 @@ public class OModelProperty {
     this.ordinalPosition = ordinalPosition;
   }
 
-  public String getPropertyType() {
-    return this.propertyType;
+  public String getOriginalType() {
+    return this.originalType;
   }
 
-  public void setPropertyType(String attributeType) {
-    this.propertyType = attributeType;
+  public void setOriginalType(String attributeType) {
+    this.originalType = attributeType;
+  }
+
+  public String getOrientdbType() {
+    return orientdbType;
+  }
+
+  public void setOrientdbType(String orientdbType) {
+    this.orientdbType = orientdbType;
   }
 
   public boolean isFromPrimaryKey() {
@@ -123,11 +137,19 @@ public class OModelProperty {
     this.notNull = notNull;
   }
 
+  public boolean isIncludedInMigration() {
+    return includedInMigration;
+  }
+
+  public void setIncludedInMigration(boolean includedInMigration) {
+    this.includedInMigration = includedInMigration;
+  }
+
   @Override
   public int hashCode() {
     final int prime = 31;
     int result = 1;
-    result = prime * result + ((propertyType == null) ? 0 : propertyType.hashCode());
+    result = prime * result + ((originalType == null) ? 0 : originalType.hashCode());
     result = prime * result + (fromPrimaryKey ? 1231 : 1237);
     result = prime * result + ((name == null) ? 0 : name.hashCode());
     result = prime * result + ordinalPosition;
@@ -138,14 +160,14 @@ public class OModelProperty {
   public boolean equals(Object obj) {
     OModelProperty that = (OModelProperty) obj;
     if(this.name.equals(that.getName()) && this.ordinalPosition == that.getOrdinalPosition() && 
-        this.propertyType.equals(that.getPropertyType()) && this.isFromPrimaryKey() == that.isFromPrimaryKey())
+        this.originalType.equals(that.getOriginalType()) && this.isFromPrimaryKey() == that.isFromPrimaryKey())
       return true;
     return false;
   }
 
   public String toString() {
     String s = "";
-    s += this.ordinalPosition + ": " + this.name + " ( " + this.propertyType + " )";
+    s += this.ordinalPosition + ": " + this.name + " ( " + this.originalType + " )";
     return s;
   }
 

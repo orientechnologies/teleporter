@@ -349,19 +349,19 @@ public class HibernateMapperTest {
 
       assertNotNull(employeeVertexType.getPropertyByName("id"));
       assertEquals("id", employeeVertexType.getPropertyByName("id").getName());
-      assertEquals("VARCHAR", employeeVertexType.getPropertyByName("id").getPropertyType());
+      assertEquals("VARCHAR", employeeVertexType.getPropertyByName("id").getOriginalType());
       assertEquals(1, employeeVertexType.getPropertyByName("id").getOrdinalPosition());
       assertEquals(true, employeeVertexType.getPropertyByName("id").isFromPrimaryKey());
 
       assertNotNull(employeeVertexType.getPropertyByName("name"));
       assertEquals("name", employeeVertexType.getPropertyByName("name").getName());
-      assertEquals("VARCHAR", employeeVertexType.getPropertyByName("name").getPropertyType());
+      assertEquals("VARCHAR", employeeVertexType.getPropertyByName("name").getOriginalType());
       assertEquals(2, employeeVertexType.getPropertyByName("name").getOrdinalPosition());
       assertEquals(false, employeeVertexType.getPropertyByName("name").isFromPrimaryKey());
 
       assertNotNull(employeeVertexType.getPropertyByName("residence"));
       assertEquals("residence", employeeVertexType.getPropertyByName("residence").getName());
-      assertEquals("VARCHAR", employeeVertexType.getPropertyByName("residence").getPropertyType());
+      assertEquals("VARCHAR", employeeVertexType.getPropertyByName("residence").getOriginalType());
       assertEquals(3, employeeVertexType.getPropertyByName("residence").getOrdinalPosition());
       assertEquals(false, employeeVertexType.getPropertyByName("residence").isFromPrimaryKey());
 
@@ -369,13 +369,13 @@ public class HibernateMapperTest {
 
       assertNotNull(regularEmployeeVertexType.getPropertyByName("salary"));
       assertEquals("salary", regularEmployeeVertexType.getPropertyByName("salary").getName());
-      assertEquals("DECIMAL", regularEmployeeVertexType.getPropertyByName("salary").getPropertyType());
+      assertEquals("DECIMAL", regularEmployeeVertexType.getPropertyByName("salary").getOriginalType());
       assertEquals(1, regularEmployeeVertexType.getPropertyByName("salary").getOrdinalPosition());
       assertEquals(false, regularEmployeeVertexType.getPropertyByName("salary").isFromPrimaryKey());
 
       assertNotNull(regularEmployeeVertexType.getPropertyByName("bonus"));
       assertEquals("bonus", regularEmployeeVertexType.getPropertyByName("bonus").getName());
-      assertEquals("DECIMAL", regularEmployeeVertexType.getPropertyByName("bonus").getPropertyType());
+      assertEquals("DECIMAL", regularEmployeeVertexType.getPropertyByName("bonus").getOriginalType());
       assertEquals(2, regularEmployeeVertexType.getPropertyByName("bonus").getOrdinalPosition());
       assertEquals(false, regularEmployeeVertexType.getPropertyByName("bonus").isFromPrimaryKey());
 
@@ -383,13 +383,13 @@ public class HibernateMapperTest {
 
       assertNotNull(contractEmployeeVertexType.getPropertyByName("payPerHour"));
       assertEquals("payPerHour", contractEmployeeVertexType.getPropertyByName("payPerHour").getName());
-      assertEquals("DECIMAL", contractEmployeeVertexType.getPropertyByName("payPerHour").getPropertyType());
+      assertEquals("DECIMAL", contractEmployeeVertexType.getPropertyByName("payPerHour").getOriginalType());
       assertEquals(1, contractEmployeeVertexType.getPropertyByName("payPerHour").getOrdinalPosition());
       assertEquals(false, contractEmployeeVertexType.getPropertyByName("payPerHour").isFromPrimaryKey());
 
       assertNotNull(contractEmployeeVertexType.getPropertyByName("contractDuration"));
       assertEquals("contractDuration", contractEmployeeVertexType.getPropertyByName("contractDuration").getName());
-      assertEquals("VARCHAR", contractEmployeeVertexType.getPropertyByName("contractDuration").getPropertyType());
+      assertEquals("VARCHAR", contractEmployeeVertexType.getPropertyByName("contractDuration").getOriginalType());
       assertEquals(2, contractEmployeeVertexType.getPropertyByName("contractDuration").getOrdinalPosition());
       assertEquals(false, contractEmployeeVertexType.getPropertyByName("contractDuration").isFromPrimaryKey());
 
@@ -397,19 +397,19 @@ public class HibernateMapperTest {
 
       assertNotNull(residenceVertexType.getPropertyByName("id"));
       assertEquals("id", residenceVertexType.getPropertyByName("id").getName());
-      assertEquals("VARCHAR", residenceVertexType.getPropertyByName("id").getPropertyType());
+      assertEquals("VARCHAR", residenceVertexType.getPropertyByName("id").getOriginalType());
       assertEquals(1, residenceVertexType.getPropertyByName("id").getOrdinalPosition());
       assertEquals(true, residenceVertexType.getPropertyByName("id").isFromPrimaryKey());
 
       assertNotNull(residenceVertexType.getPropertyByName("city"));
       assertEquals("city", residenceVertexType.getPropertyByName("city").getName());
-      assertEquals("VARCHAR", residenceVertexType.getPropertyByName("city").getPropertyType());
+      assertEquals("VARCHAR", residenceVertexType.getPropertyByName("city").getOriginalType());
       assertEquals(2, residenceVertexType.getPropertyByName("city").getOrdinalPosition());
       assertEquals(false, residenceVertexType.getPropertyByName("city").isFromPrimaryKey());
 
       assertNotNull(residenceVertexType.getPropertyByName("country"));
       assertEquals("country", residenceVertexType.getPropertyByName("country").getName());
-      assertEquals("VARCHAR", residenceVertexType.getPropertyByName("country").getPropertyType());
+      assertEquals("VARCHAR", residenceVertexType.getPropertyByName("country").getOriginalType());
       assertEquals(3, residenceVertexType.getPropertyByName("country").getOrdinalPosition());
       assertEquals(false, residenceVertexType.getPropertyByName("country").isFromPrimaryKey());
 
@@ -420,19 +420,19 @@ public class HibernateMapperTest {
 
       assertNotNull(regularEmployeeVertexType.getInheritedPropertyByName("id"));
       assertEquals("id", regularEmployeeVertexType.getInheritedPropertyByName("id").getName());
-      assertEquals("VARCHAR", regularEmployeeVertexType.getInheritedPropertyByName("id").getPropertyType());
+      assertEquals("VARCHAR", regularEmployeeVertexType.getInheritedPropertyByName("id").getOriginalType());
       assertEquals(1, regularEmployeeVertexType.getInheritedPropertyByName("id").getOrdinalPosition());
       assertEquals(true, regularEmployeeVertexType.getInheritedPropertyByName("id").isFromPrimaryKey());
 
       assertNotNull(regularEmployeeVertexType.getInheritedPropertyByName("name"));
       assertEquals("name", regularEmployeeVertexType.getInheritedPropertyByName("name").getName());
-      assertEquals("VARCHAR", regularEmployeeVertexType.getInheritedPropertyByName("name").getPropertyType());
+      assertEquals("VARCHAR", regularEmployeeVertexType.getInheritedPropertyByName("name").getOriginalType());
       assertEquals(2, regularEmployeeVertexType.getInheritedPropertyByName("name").getOrdinalPosition());
       assertEquals(false, regularEmployeeVertexType.getInheritedPropertyByName("name").isFromPrimaryKey());
 
       assertNotNull(regularEmployeeVertexType.getInheritedPropertyByName("residence"));
       assertEquals("residence", regularEmployeeVertexType.getInheritedPropertyByName("residence").getName());
-      assertEquals("VARCHAR", regularEmployeeVertexType.getInheritedPropertyByName("residence").getPropertyType());
+      assertEquals("VARCHAR", regularEmployeeVertexType.getInheritedPropertyByName("residence").getOriginalType());
       assertEquals(3, regularEmployeeVertexType.getInheritedPropertyByName("residence").getOrdinalPosition());
       assertEquals(false, regularEmployeeVertexType.getInheritedPropertyByName("residence").isFromPrimaryKey());
 
@@ -440,19 +440,19 @@ public class HibernateMapperTest {
 
       assertNotNull(contractEmployeeVertexType.getInheritedPropertyByName("id"));
       assertEquals("id", contractEmployeeVertexType.getInheritedPropertyByName("id").getName());
-      assertEquals("VARCHAR", contractEmployeeVertexType.getInheritedPropertyByName("id").getPropertyType());
+      assertEquals("VARCHAR", contractEmployeeVertexType.getInheritedPropertyByName("id").getOriginalType());
       assertEquals(1, contractEmployeeVertexType.getInheritedPropertyByName("id").getOrdinalPosition());
       assertEquals(true, contractEmployeeVertexType.getInheritedPropertyByName("id").isFromPrimaryKey());
 
       assertNotNull(contractEmployeeVertexType.getInheritedPropertyByName("name"));
       assertEquals("name", contractEmployeeVertexType.getInheritedPropertyByName("name").getName());
-      assertEquals("VARCHAR", contractEmployeeVertexType.getInheritedPropertyByName("name").getPropertyType());
+      assertEquals("VARCHAR", contractEmployeeVertexType.getInheritedPropertyByName("name").getOriginalType());
       assertEquals(2, contractEmployeeVertexType.getInheritedPropertyByName("name").getOrdinalPosition());
       assertEquals(false, contractEmployeeVertexType.getInheritedPropertyByName("name").isFromPrimaryKey());
 
       assertNotNull(contractEmployeeVertexType.getInheritedPropertyByName("residence"));
       assertEquals("residence", contractEmployeeVertexType.getInheritedPropertyByName("residence").getName());
-      assertEquals("VARCHAR", contractEmployeeVertexType.getInheritedPropertyByName("residence").getPropertyType());
+      assertEquals("VARCHAR", contractEmployeeVertexType.getInheritedPropertyByName("residence").getOriginalType());
       assertEquals(3, contractEmployeeVertexType.getInheritedPropertyByName("residence").getOrdinalPosition());
       assertEquals(false, contractEmployeeVertexType.getInheritedPropertyByName("residence").isFromPrimaryKey());
 
@@ -812,19 +812,19 @@ public class HibernateMapperTest {
 
       assertNotNull(employeeVertexType.getPropertyByName("id"));
       assertEquals("id", employeeVertexType.getPropertyByName("id").getName());
-      assertEquals("VARCHAR", employeeVertexType.getPropertyByName("id").getPropertyType());
+      assertEquals("VARCHAR", employeeVertexType.getPropertyByName("id").getOriginalType());
       assertEquals(1, employeeVertexType.getPropertyByName("id").getOrdinalPosition());
       assertEquals(true, employeeVertexType.getPropertyByName("id").isFromPrimaryKey());
 
       assertNotNull(employeeVertexType.getPropertyByName("name"));
       assertEquals("name", employeeVertexType.getPropertyByName("name").getName());
-      assertEquals("VARCHAR", employeeVertexType.getPropertyByName("name").getPropertyType());
+      assertEquals("VARCHAR", employeeVertexType.getPropertyByName("name").getOriginalType());
       assertEquals(2, employeeVertexType.getPropertyByName("name").getOrdinalPosition());
       assertEquals(false, employeeVertexType.getPropertyByName("name").isFromPrimaryKey());
 
       assertNotNull(employeeVertexType.getPropertyByName("residence"));
       assertEquals("residence", employeeVertexType.getPropertyByName("residence").getName());
-      assertEquals("VARCHAR", employeeVertexType.getPropertyByName("residence").getPropertyType());
+      assertEquals("VARCHAR", employeeVertexType.getPropertyByName("residence").getOriginalType());
       assertEquals(3, employeeVertexType.getPropertyByName("residence").getOrdinalPosition());
       assertEquals(false, employeeVertexType.getPropertyByName("residence").isFromPrimaryKey());
 
@@ -832,13 +832,13 @@ public class HibernateMapperTest {
 
       assertNotNull(regularEmployeeVertexType.getPropertyByName("salary"));
       assertEquals("salary", regularEmployeeVertexType.getPropertyByName("salary").getName());
-      assertEquals("DECIMAL", regularEmployeeVertexType.getPropertyByName("salary").getPropertyType());
+      assertEquals("DECIMAL", regularEmployeeVertexType.getPropertyByName("salary").getOriginalType());
       assertEquals(1, regularEmployeeVertexType.getPropertyByName("salary").getOrdinalPosition());
       assertEquals(false, regularEmployeeVertexType.getPropertyByName("salary").isFromPrimaryKey());
 
       assertNotNull(regularEmployeeVertexType.getPropertyByName("bonus"));
       assertEquals("bonus", regularEmployeeVertexType.getPropertyByName("bonus").getName());
-      assertEquals("DECIMAL", regularEmployeeVertexType.getPropertyByName("bonus").getPropertyType());
+      assertEquals("DECIMAL", regularEmployeeVertexType.getPropertyByName("bonus").getOriginalType());
       assertEquals(2, regularEmployeeVertexType.getPropertyByName("bonus").getOrdinalPosition());
       assertEquals(false, regularEmployeeVertexType.getPropertyByName("bonus").isFromPrimaryKey());
 
@@ -846,13 +846,13 @@ public class HibernateMapperTest {
 
       assertNotNull(contractEmployeeVertexType.getPropertyByName("payPerHour"));
       assertEquals("payPerHour", contractEmployeeVertexType.getPropertyByName("payPerHour").getName());
-      assertEquals("DECIMAL", contractEmployeeVertexType.getPropertyByName("payPerHour").getPropertyType());
+      assertEquals("DECIMAL", contractEmployeeVertexType.getPropertyByName("payPerHour").getOriginalType());
       assertEquals(1, contractEmployeeVertexType.getPropertyByName("payPerHour").getOrdinalPosition());
       assertEquals(false, contractEmployeeVertexType.getPropertyByName("payPerHour").isFromPrimaryKey());
 
       assertNotNull(contractEmployeeVertexType.getPropertyByName("contractDuration"));
       assertEquals("contractDuration", contractEmployeeVertexType.getPropertyByName("contractDuration").getName());
-      assertEquals("VARCHAR", contractEmployeeVertexType.getPropertyByName("contractDuration").getPropertyType());
+      assertEquals("VARCHAR", contractEmployeeVertexType.getPropertyByName("contractDuration").getOriginalType());
       assertEquals(2, contractEmployeeVertexType.getPropertyByName("contractDuration").getOrdinalPosition());
       assertEquals(false, contractEmployeeVertexType.getPropertyByName("contractDuration").isFromPrimaryKey());
 
@@ -860,19 +860,19 @@ public class HibernateMapperTest {
 
       assertNotNull(residenceVertexType.getPropertyByName("id"));
       assertEquals("id", residenceVertexType.getPropertyByName("id").getName());
-      assertEquals("VARCHAR", residenceVertexType.getPropertyByName("id").getPropertyType());
+      assertEquals("VARCHAR", residenceVertexType.getPropertyByName("id").getOriginalType());
       assertEquals(1, residenceVertexType.getPropertyByName("id").getOrdinalPosition());
       assertEquals(true, residenceVertexType.getPropertyByName("id").isFromPrimaryKey());
 
       assertNotNull(residenceVertexType.getPropertyByName("city"));
       assertEquals("city", residenceVertexType.getPropertyByName("city").getName());
-      assertEquals("VARCHAR", residenceVertexType.getPropertyByName("city").getPropertyType());
+      assertEquals("VARCHAR", residenceVertexType.getPropertyByName("city").getOriginalType());
       assertEquals(2, residenceVertexType.getPropertyByName("city").getOrdinalPosition());
       assertEquals(false, residenceVertexType.getPropertyByName("city").isFromPrimaryKey());
 
       assertNotNull(residenceVertexType.getPropertyByName("country"));
       assertEquals("country", residenceVertexType.getPropertyByName("country").getName());
-      assertEquals("VARCHAR", residenceVertexType.getPropertyByName("country").getPropertyType());
+      assertEquals("VARCHAR", residenceVertexType.getPropertyByName("country").getOriginalType());
       assertEquals(3, residenceVertexType.getPropertyByName("country").getOrdinalPosition());
       assertEquals(false, residenceVertexType.getPropertyByName("country").isFromPrimaryKey());
 
@@ -883,19 +883,19 @@ public class HibernateMapperTest {
 
       assertNotNull(regularEmployeeVertexType.getInheritedPropertyByName("id"));
       assertEquals("id", regularEmployeeVertexType.getInheritedPropertyByName("id").getName());
-      assertEquals("VARCHAR", regularEmployeeVertexType.getInheritedPropertyByName("id").getPropertyType());
+      assertEquals("VARCHAR", regularEmployeeVertexType.getInheritedPropertyByName("id").getOriginalType());
       assertEquals(1, regularEmployeeVertexType.getInheritedPropertyByName("id").getOrdinalPosition());
       assertEquals(false, regularEmployeeVertexType.getInheritedPropertyByName("id").isFromPrimaryKey()); 
 
       assertNotNull(regularEmployeeVertexType.getInheritedPropertyByName("name"));
       assertEquals("name", regularEmployeeVertexType.getInheritedPropertyByName("name").getName());
-      assertEquals("VARCHAR", regularEmployeeVertexType.getInheritedPropertyByName("name").getPropertyType());
+      assertEquals("VARCHAR", regularEmployeeVertexType.getInheritedPropertyByName("name").getOriginalType());
       assertEquals(2, regularEmployeeVertexType.getInheritedPropertyByName("name").getOrdinalPosition());
       assertEquals(false, regularEmployeeVertexType.getInheritedPropertyByName("name").isFromPrimaryKey());
 
       assertNotNull(regularEmployeeVertexType.getInheritedPropertyByName("residence"));
       assertEquals("residence", regularEmployeeVertexType.getInheritedPropertyByName("residence").getName());
-      assertEquals("VARCHAR", regularEmployeeVertexType.getInheritedPropertyByName("residence").getPropertyType());
+      assertEquals("VARCHAR", regularEmployeeVertexType.getInheritedPropertyByName("residence").getOriginalType());
       assertEquals(3, regularEmployeeVertexType.getInheritedPropertyByName("residence").getOrdinalPosition());
       assertEquals(false, regularEmployeeVertexType.getInheritedPropertyByName("residence").isFromPrimaryKey());
 
@@ -903,19 +903,19 @@ public class HibernateMapperTest {
 
       assertNotNull(contractEmployeeVertexType.getInheritedPropertyByName("id"));
       assertEquals("id", contractEmployeeVertexType.getInheritedPropertyByName("id").getName());
-      assertEquals("VARCHAR", contractEmployeeVertexType.getInheritedPropertyByName("id").getPropertyType());
+      assertEquals("VARCHAR", contractEmployeeVertexType.getInheritedPropertyByName("id").getOriginalType());
       assertEquals(1, contractEmployeeVertexType.getInheritedPropertyByName("id").getOrdinalPosition());
       assertEquals(false, contractEmployeeVertexType.getInheritedPropertyByName("id").isFromPrimaryKey());
 
       assertNotNull(contractEmployeeVertexType.getInheritedPropertyByName("name"));
       assertEquals("name", contractEmployeeVertexType.getInheritedPropertyByName("name").getName());
-      assertEquals("VARCHAR", contractEmployeeVertexType.getInheritedPropertyByName("name").getPropertyType());
+      assertEquals("VARCHAR", contractEmployeeVertexType.getInheritedPropertyByName("name").getOriginalType());
       assertEquals(2, contractEmployeeVertexType.getInheritedPropertyByName("name").getOrdinalPosition());
       assertEquals(false, contractEmployeeVertexType.getInheritedPropertyByName("name").isFromPrimaryKey());
 
       assertNotNull(contractEmployeeVertexType.getInheritedPropertyByName("residence"));
       assertEquals("residence", contractEmployeeVertexType.getInheritedPropertyByName("residence").getName());
-      assertEquals("VARCHAR", contractEmployeeVertexType.getInheritedPropertyByName("residence").getPropertyType());
+      assertEquals("VARCHAR", contractEmployeeVertexType.getInheritedPropertyByName("residence").getOriginalType());
       assertEquals(3, contractEmployeeVertexType.getInheritedPropertyByName("residence").getOrdinalPosition());
       assertEquals(false, contractEmployeeVertexType.getInheritedPropertyByName("residence").isFromPrimaryKey());
 
@@ -1271,19 +1271,19 @@ public class HibernateMapperTest {
 
       assertNotNull(employeeVertexType.getPropertyByName("id"));
       assertEquals("id", employeeVertexType.getPropertyByName("id").getName());
-      assertEquals("VARCHAR", employeeVertexType.getPropertyByName("id").getPropertyType());
+      assertEquals("VARCHAR", employeeVertexType.getPropertyByName("id").getOriginalType());
       assertEquals(1, employeeVertexType.getPropertyByName("id").getOrdinalPosition());
       assertEquals(true, employeeVertexType.getPropertyByName("id").isFromPrimaryKey());
 
       assertNotNull(employeeVertexType.getPropertyByName("name"));
       assertEquals("name", employeeVertexType.getPropertyByName("name").getName());
-      assertEquals("VARCHAR", employeeVertexType.getPropertyByName("name").getPropertyType());
+      assertEquals("VARCHAR", employeeVertexType.getPropertyByName("name").getOriginalType());
       assertEquals(2, employeeVertexType.getPropertyByName("name").getOrdinalPosition());
       assertEquals(false, employeeVertexType.getPropertyByName("name").isFromPrimaryKey());
 
       assertNotNull(employeeVertexType.getPropertyByName("residence"));
       assertEquals("residence", employeeVertexType.getPropertyByName("residence").getName());
-      assertEquals("VARCHAR", employeeVertexType.getPropertyByName("residence").getPropertyType());
+      assertEquals("VARCHAR", employeeVertexType.getPropertyByName("residence").getOriginalType());
       assertEquals(3, employeeVertexType.getPropertyByName("residence").getOrdinalPosition());
       assertEquals(false, employeeVertexType.getPropertyByName("residence").isFromPrimaryKey());
 
@@ -1291,13 +1291,13 @@ public class HibernateMapperTest {
 
       assertNotNull(regularEmployeeVertexType.getPropertyByName("salary"));
       assertEquals("salary", regularEmployeeVertexType.getPropertyByName("salary").getName());
-      assertEquals("DECIMAL", regularEmployeeVertexType.getPropertyByName("salary").getPropertyType());
+      assertEquals("DECIMAL", regularEmployeeVertexType.getPropertyByName("salary").getOriginalType());
       assertEquals(1, regularEmployeeVertexType.getPropertyByName("salary").getOrdinalPosition());
       assertEquals(false, regularEmployeeVertexType.getPropertyByName("salary").isFromPrimaryKey());
 
       assertNotNull(regularEmployeeVertexType.getPropertyByName("bonus"));
       assertEquals("bonus", regularEmployeeVertexType.getPropertyByName("bonus").getName());
-      assertEquals("DECIMAL", regularEmployeeVertexType.getPropertyByName("bonus").getPropertyType());
+      assertEquals("DECIMAL", regularEmployeeVertexType.getPropertyByName("bonus").getOriginalType());
       assertEquals(2, regularEmployeeVertexType.getPropertyByName("bonus").getOrdinalPosition());
       assertEquals(false, regularEmployeeVertexType.getPropertyByName("bonus").isFromPrimaryKey());
 
@@ -1305,13 +1305,13 @@ public class HibernateMapperTest {
 
       assertNotNull(contractEmployeeVertexType.getPropertyByName("payPerHour"));
       assertEquals("payPerHour", contractEmployeeVertexType.getPropertyByName("payPerHour").getName());
-      assertEquals("DECIMAL", contractEmployeeVertexType.getPropertyByName("payPerHour").getPropertyType());
+      assertEquals("DECIMAL", contractEmployeeVertexType.getPropertyByName("payPerHour").getOriginalType());
       assertEquals(1, contractEmployeeVertexType.getPropertyByName("payPerHour").getOrdinalPosition());
       assertEquals(false, contractEmployeeVertexType.getPropertyByName("payPerHour").isFromPrimaryKey());
 
       assertNotNull(contractEmployeeVertexType.getPropertyByName("contractDuration"));
       assertEquals("contractDuration", contractEmployeeVertexType.getPropertyByName("contractDuration").getName());
-      assertEquals("VARCHAR", contractEmployeeVertexType.getPropertyByName("contractDuration").getPropertyType());
+      assertEquals("VARCHAR", contractEmployeeVertexType.getPropertyByName("contractDuration").getOriginalType());
       assertEquals(2, contractEmployeeVertexType.getPropertyByName("contractDuration").getOrdinalPosition());
       assertEquals(false, contractEmployeeVertexType.getPropertyByName("contractDuration").isFromPrimaryKey());
 
@@ -1319,19 +1319,19 @@ public class HibernateMapperTest {
 
       assertNotNull(residenceVertexType.getPropertyByName("id"));
       assertEquals("id", residenceVertexType.getPropertyByName("id").getName());
-      assertEquals("VARCHAR", residenceVertexType.getPropertyByName("id").getPropertyType());
+      assertEquals("VARCHAR", residenceVertexType.getPropertyByName("id").getOriginalType());
       assertEquals(1, residenceVertexType.getPropertyByName("id").getOrdinalPosition());
       assertEquals(true, residenceVertexType.getPropertyByName("id").isFromPrimaryKey());
 
       assertNotNull(residenceVertexType.getPropertyByName("city"));
       assertEquals("city", residenceVertexType.getPropertyByName("city").getName());
-      assertEquals("VARCHAR", residenceVertexType.getPropertyByName("city").getPropertyType());
+      assertEquals("VARCHAR", residenceVertexType.getPropertyByName("city").getOriginalType());
       assertEquals(2, residenceVertexType.getPropertyByName("city").getOrdinalPosition());
       assertEquals(false, residenceVertexType.getPropertyByName("city").isFromPrimaryKey());
 
       assertNotNull(residenceVertexType.getPropertyByName("country"));
       assertEquals("country", residenceVertexType.getPropertyByName("country").getName());
-      assertEquals("VARCHAR", residenceVertexType.getPropertyByName("country").getPropertyType());
+      assertEquals("VARCHAR", residenceVertexType.getPropertyByName("country").getOriginalType());
       assertEquals(3, residenceVertexType.getPropertyByName("country").getOrdinalPosition());
       assertEquals(false, residenceVertexType.getPropertyByName("country").isFromPrimaryKey());
 
@@ -1342,19 +1342,19 @@ public class HibernateMapperTest {
 
       assertNotNull(regularEmployeeVertexType.getInheritedPropertyByName("id"));
       assertEquals("id", regularEmployeeVertexType.getInheritedPropertyByName("id").getName());
-      assertEquals("VARCHAR", regularEmployeeVertexType.getInheritedPropertyByName("id").getPropertyType());
+      assertEquals("VARCHAR", regularEmployeeVertexType.getInheritedPropertyByName("id").getOriginalType());
       assertEquals(1, regularEmployeeVertexType.getInheritedPropertyByName("id").getOrdinalPosition());
       assertEquals(false, regularEmployeeVertexType.getInheritedPropertyByName("id").isFromPrimaryKey());
 
       assertNotNull(regularEmployeeVertexType.getInheritedPropertyByName("name"));
       assertEquals("name", regularEmployeeVertexType.getInheritedPropertyByName("name").getName());
-      assertEquals("VARCHAR", regularEmployeeVertexType.getInheritedPropertyByName("name").getPropertyType());
+      assertEquals("VARCHAR", regularEmployeeVertexType.getInheritedPropertyByName("name").getOriginalType());
       assertEquals(2, regularEmployeeVertexType.getInheritedPropertyByName("name").getOrdinalPosition());
       assertEquals(false, regularEmployeeVertexType.getInheritedPropertyByName("name").isFromPrimaryKey());
 
       assertNotNull(regularEmployeeVertexType.getInheritedPropertyByName("residence"));
       assertEquals("residence", regularEmployeeVertexType.getInheritedPropertyByName("residence").getName());
-      assertEquals("VARCHAR", regularEmployeeVertexType.getInheritedPropertyByName("residence").getPropertyType());
+      assertEquals("VARCHAR", regularEmployeeVertexType.getInheritedPropertyByName("residence").getOriginalType());
       assertEquals(3, regularEmployeeVertexType.getInheritedPropertyByName("residence").getOrdinalPosition());
       assertEquals(false, regularEmployeeVertexType.getInheritedPropertyByName("residence").isFromPrimaryKey());
 
@@ -1362,19 +1362,19 @@ public class HibernateMapperTest {
 
       assertNotNull(contractEmployeeVertexType.getInheritedPropertyByName("id"));
       assertEquals("id", contractEmployeeVertexType.getInheritedPropertyByName("id").getName());
-      assertEquals("VARCHAR", contractEmployeeVertexType.getInheritedPropertyByName("id").getPropertyType());
+      assertEquals("VARCHAR", contractEmployeeVertexType.getInheritedPropertyByName("id").getOriginalType());
       assertEquals(1, contractEmployeeVertexType.getInheritedPropertyByName("id").getOrdinalPosition());
       assertEquals(false, contractEmployeeVertexType.getInheritedPropertyByName("id").isFromPrimaryKey());
 
       assertNotNull(contractEmployeeVertexType.getInheritedPropertyByName("name"));
       assertEquals("name", contractEmployeeVertexType.getInheritedPropertyByName("name").getName());
-      assertEquals("VARCHAR", contractEmployeeVertexType.getInheritedPropertyByName("name").getPropertyType());
+      assertEquals("VARCHAR", contractEmployeeVertexType.getInheritedPropertyByName("name").getOriginalType());
       assertEquals(2, contractEmployeeVertexType.getInheritedPropertyByName("name").getOrdinalPosition());
       assertEquals(false, contractEmployeeVertexType.getInheritedPropertyByName("name").isFromPrimaryKey());
 
       assertNotNull(contractEmployeeVertexType.getInheritedPropertyByName("residence"));
       assertEquals("residence", contractEmployeeVertexType.getInheritedPropertyByName("residence").getName());
-      assertEquals("VARCHAR", contractEmployeeVertexType.getInheritedPropertyByName("residence").getPropertyType());
+      assertEquals("VARCHAR", contractEmployeeVertexType.getInheritedPropertyByName("residence").getOriginalType());
       assertEquals(3, contractEmployeeVertexType.getInheritedPropertyByName("residence").getOrdinalPosition());
       assertEquals(false, contractEmployeeVertexType.getInheritedPropertyByName("residence").isFromPrimaryKey());
 
@@ -1709,19 +1709,19 @@ public class HibernateMapperTest {
 
       assertNotNull(employeeVertexType.getPropertyByName("id"));
       assertEquals("id", employeeVertexType.getPropertyByName("id").getName());
-      assertEquals("VARCHAR", employeeVertexType.getPropertyByName("id").getPropertyType());
+      assertEquals("VARCHAR", employeeVertexType.getPropertyByName("id").getOriginalType());
       assertEquals(1, employeeVertexType.getPropertyByName("id").getOrdinalPosition());
       assertEquals(true, employeeVertexType.getPropertyByName("id").isFromPrimaryKey());
 
       assertNotNull(employeeVertexType.getPropertyByName("name"));
       assertEquals("name", employeeVertexType.getPropertyByName("name").getName());
-      assertEquals("VARCHAR", employeeVertexType.getPropertyByName("name").getPropertyType());
+      assertEquals("VARCHAR", employeeVertexType.getPropertyByName("name").getOriginalType());
       assertEquals(2, employeeVertexType.getPropertyByName("name").getOrdinalPosition());
       assertEquals(false, employeeVertexType.getPropertyByName("name").isFromPrimaryKey());
 
       assertNotNull(employeeVertexType.getPropertyByName("residence"));
       assertEquals("residence", employeeVertexType.getPropertyByName("residence").getName());
-      assertEquals("VARCHAR", employeeVertexType.getPropertyByName("residence").getPropertyType());
+      assertEquals("VARCHAR", employeeVertexType.getPropertyByName("residence").getOriginalType());
       assertEquals(3, employeeVertexType.getPropertyByName("residence").getOrdinalPosition());
       assertEquals(false, employeeVertexType.getPropertyByName("residence").isFromPrimaryKey());
 
@@ -1729,13 +1729,13 @@ public class HibernateMapperTest {
 
       assertNotNull(regularEmployeeVertexType.getPropertyByName("salary"));
       assertEquals("salary", regularEmployeeVertexType.getPropertyByName("salary").getName());
-      assertEquals("DECIMAL", regularEmployeeVertexType.getPropertyByName("salary").getPropertyType());
+      assertEquals("DECIMAL", regularEmployeeVertexType.getPropertyByName("salary").getOriginalType());
       assertEquals(1, regularEmployeeVertexType.getPropertyByName("salary").getOrdinalPosition());
       assertEquals(false, regularEmployeeVertexType.getPropertyByName("salary").isFromPrimaryKey());
 
       assertNotNull(regularEmployeeVertexType.getPropertyByName("bonus"));
       assertEquals("bonus", regularEmployeeVertexType.getPropertyByName("bonus").getName());
-      assertEquals("DECIMAL", regularEmployeeVertexType.getPropertyByName("bonus").getPropertyType());
+      assertEquals("DECIMAL", regularEmployeeVertexType.getPropertyByName("bonus").getOriginalType());
       assertEquals(2, regularEmployeeVertexType.getPropertyByName("bonus").getOrdinalPosition());
       assertEquals(false, regularEmployeeVertexType.getPropertyByName("bonus").isFromPrimaryKey());
 
@@ -1743,13 +1743,13 @@ public class HibernateMapperTest {
 
       assertNotNull(contractEmployeeVertexType.getPropertyByName("payPerHour"));
       assertEquals("payPerHour", contractEmployeeVertexType.getPropertyByName("payPerHour").getName());
-      assertEquals("DECIMAL", contractEmployeeVertexType.getPropertyByName("payPerHour").getPropertyType());
+      assertEquals("DECIMAL", contractEmployeeVertexType.getPropertyByName("payPerHour").getOriginalType());
       assertEquals(1, contractEmployeeVertexType.getPropertyByName("payPerHour").getOrdinalPosition());
       assertEquals(false, contractEmployeeVertexType.getPropertyByName("payPerHour").isFromPrimaryKey());
 
       assertNotNull(contractEmployeeVertexType.getPropertyByName("contractDuration"));
       assertEquals("contractDuration", contractEmployeeVertexType.getPropertyByName("contractDuration").getName());
-      assertEquals("VARCHAR", contractEmployeeVertexType.getPropertyByName("contractDuration").getPropertyType());
+      assertEquals("VARCHAR", contractEmployeeVertexType.getPropertyByName("contractDuration").getOriginalType());
       assertEquals(2, contractEmployeeVertexType.getPropertyByName("contractDuration").getOrdinalPosition());
       assertEquals(false, contractEmployeeVertexType.getPropertyByName("contractDuration").isFromPrimaryKey());
 
@@ -1757,19 +1757,19 @@ public class HibernateMapperTest {
 
       assertNotNull(residenceVertexType.getPropertyByName("id"));
       assertEquals("id", residenceVertexType.getPropertyByName("id").getName());
-      assertEquals("VARCHAR", residenceVertexType.getPropertyByName("id").getPropertyType());
+      assertEquals("VARCHAR", residenceVertexType.getPropertyByName("id").getOriginalType());
       assertEquals(1, residenceVertexType.getPropertyByName("id").getOrdinalPosition());
       assertEquals(true, residenceVertexType.getPropertyByName("id").isFromPrimaryKey());
 
       assertNotNull(residenceVertexType.getPropertyByName("city"));
       assertEquals("city", residenceVertexType.getPropertyByName("city").getName());
-      assertEquals("VARCHAR", residenceVertexType.getPropertyByName("city").getPropertyType());
+      assertEquals("VARCHAR", residenceVertexType.getPropertyByName("city").getOriginalType());
       assertEquals(2, residenceVertexType.getPropertyByName("city").getOrdinalPosition());
       assertEquals(false, residenceVertexType.getPropertyByName("city").isFromPrimaryKey());
 
       assertNotNull(residenceVertexType.getPropertyByName("country"));
       assertEquals("country", residenceVertexType.getPropertyByName("country").getName());
-      assertEquals("VARCHAR", residenceVertexType.getPropertyByName("country").getPropertyType());
+      assertEquals("VARCHAR", residenceVertexType.getPropertyByName("country").getOriginalType());
       assertEquals(3, residenceVertexType.getPropertyByName("country").getOrdinalPosition());
       assertEquals(false, residenceVertexType.getPropertyByName("country").isFromPrimaryKey());
 
@@ -1780,19 +1780,19 @@ public class HibernateMapperTest {
 
       assertNotNull(regularEmployeeVertexType.getInheritedPropertyByName("id"));
       assertEquals("id", regularEmployeeVertexType.getInheritedPropertyByName("id").getName());
-      assertEquals("VARCHAR", regularEmployeeVertexType.getInheritedPropertyByName("id").getPropertyType());
+      assertEquals("VARCHAR", regularEmployeeVertexType.getInheritedPropertyByName("id").getOriginalType());
       assertEquals(1, regularEmployeeVertexType.getInheritedPropertyByName("id").getOrdinalPosition());
       assertEquals(true, regularEmployeeVertexType.getInheritedPropertyByName("id").isFromPrimaryKey());
 
       assertNotNull(regularEmployeeVertexType.getInheritedPropertyByName("name"));
       assertEquals("name", regularEmployeeVertexType.getInheritedPropertyByName("name").getName());
-      assertEquals("VARCHAR", regularEmployeeVertexType.getInheritedPropertyByName("name").getPropertyType());
+      assertEquals("VARCHAR", regularEmployeeVertexType.getInheritedPropertyByName("name").getOriginalType());
       assertEquals(2, regularEmployeeVertexType.getInheritedPropertyByName("name").getOrdinalPosition());
       assertEquals(false, regularEmployeeVertexType.getInheritedPropertyByName("name").isFromPrimaryKey());
 
       assertNotNull(regularEmployeeVertexType.getInheritedPropertyByName("residence"));
       assertEquals("residence", regularEmployeeVertexType.getInheritedPropertyByName("residence").getName());
-      assertEquals("VARCHAR", regularEmployeeVertexType.getInheritedPropertyByName("residence").getPropertyType());
+      assertEquals("VARCHAR", regularEmployeeVertexType.getInheritedPropertyByName("residence").getOriginalType());
       assertEquals(3, regularEmployeeVertexType.getInheritedPropertyByName("residence").getOrdinalPosition());
       assertEquals(false, regularEmployeeVertexType.getInheritedPropertyByName("residence").isFromPrimaryKey());
 
@@ -1800,19 +1800,19 @@ public class HibernateMapperTest {
 
       assertNotNull(contractEmployeeVertexType.getInheritedPropertyByName("id"));
       assertEquals("id", contractEmployeeVertexType.getInheritedPropertyByName("id").getName());
-      assertEquals("VARCHAR", contractEmployeeVertexType.getInheritedPropertyByName("id").getPropertyType());
+      assertEquals("VARCHAR", contractEmployeeVertexType.getInheritedPropertyByName("id").getOriginalType());
       assertEquals(1, contractEmployeeVertexType.getInheritedPropertyByName("id").getOrdinalPosition());
       assertEquals(true, contractEmployeeVertexType.getInheritedPropertyByName("id").isFromPrimaryKey());
 
       assertNotNull(contractEmployeeVertexType.getInheritedPropertyByName("name"));
       assertEquals("name", contractEmployeeVertexType.getInheritedPropertyByName("name").getName());
-      assertEquals("VARCHAR", contractEmployeeVertexType.getInheritedPropertyByName("name").getPropertyType());
+      assertEquals("VARCHAR", contractEmployeeVertexType.getInheritedPropertyByName("name").getOriginalType());
       assertEquals(2, contractEmployeeVertexType.getInheritedPropertyByName("name").getOrdinalPosition());
       assertEquals(false, contractEmployeeVertexType.getInheritedPropertyByName("name").isFromPrimaryKey());
 
       assertNotNull(contractEmployeeVertexType.getInheritedPropertyByName("residence"));
       assertEquals("residence", contractEmployeeVertexType.getInheritedPropertyByName("residence").getName());
-      assertEquals("VARCHAR", contractEmployeeVertexType.getInheritedPropertyByName("residence").getPropertyType());
+      assertEquals("VARCHAR", contractEmployeeVertexType.getInheritedPropertyByName("residence").getOriginalType());
       assertEquals(3, contractEmployeeVertexType.getInheritedPropertyByName("residence").getOrdinalPosition());
       assertEquals(false, contractEmployeeVertexType.getInheritedPropertyByName("residence").isFromPrimaryKey());
 

@@ -105,7 +105,7 @@ public class OGraphModelWriter {
             it = currentVertexType.getProperties().iterator();
             while(it.hasNext()) {
               currentProperty = it.next();
-              type = handler.resolveType(currentProperty.getPropertyType().toLowerCase(Locale.ENGLISH), context);
+              type = handler.resolveType(currentProperty.getOriginalType().toLowerCase(Locale.ENGLISH), context);
               if(type != null) {
                 String propertyName = currentProperty.getName();
                 OProperty orientdbProperty = newVertexType.createProperty(propertyName, type);
@@ -123,7 +123,7 @@ public class OGraphModelWriter {
               }
               else {
                 it.remove();
-                statistics.warningMessages.add(currentProperty.getPropertyType() + " type is not supported, the correspondent property will be dropped.");
+                statistics.warningMessages.add(currentProperty.getOriginalType() + " type is not supported, the correspondent property will be dropped.");
               }
             }
             context.getOutputManager().debug("\nVertex-type '%s' wrote.\n", currentVertexType.getName());
@@ -164,7 +164,7 @@ public class OGraphModelWriter {
             it = currentEdgeType.getProperties().iterator();
             while(it.hasNext()) {
               currentProperty = it.next();
-              type = handler.resolveType(currentProperty.getPropertyType().toLowerCase(Locale.ENGLISH), context);
+              type = handler.resolveType(currentProperty.getOriginalType().toLowerCase(Locale.ENGLISH), context);
 
               if(type != null) {
                 OProperty orientdbProperty = newEdgeType.createProperty(currentProperty.getName(), type);
@@ -182,7 +182,7 @@ public class OGraphModelWriter {
               }
               else {
                 it.remove();
-                statistics.warningMessages.add(currentProperty.getPropertyType() + " type is not supported, the correspondent property will be dropped.");
+                statistics.warningMessages.add(currentProperty.getOriginalType() + " type is not supported, the correspondent property will be dropped.");
               }
             }
             context.getOutputManager().debug("\nEdge-type '%s' wrote.\n", currentEdgeType.getName());
@@ -312,7 +312,7 @@ public class OGraphModelWriter {
     while(it1.hasNext()) {
       currentProperty = it1.next();
       orientSchemaProperty = orientElementType.getProperty(currentProperty.getName());
-      newResolvedType = handler.resolveType(currentProperty.getPropertyType().toLowerCase(Locale.ENGLISH), context);
+      newResolvedType = handler.resolveType(currentProperty.getOriginalType().toLowerCase(Locale.ENGLISH), context);
 
       if(orientSchemaProperty != null) {
         // property present in orientdb schema, check if is it equal (type check), in case it's modified
