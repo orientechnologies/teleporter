@@ -1,9 +1,5 @@
 {
-	"vertices": [{
-		"Employee": {
-			"table": "EMPLOYEE"
-		}
-	}],
+	"vertices": [],
 	"edges": [{
 		"HasEmployee": {
 			"mapping": {

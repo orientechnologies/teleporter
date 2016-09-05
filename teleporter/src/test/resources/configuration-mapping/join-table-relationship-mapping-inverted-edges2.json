@@ -1,13 +1,5 @@
 {
-  "vertices": [{
-    "Film": {
-      "table": "FILM"
-    }
-  }, {
-    "Actor": {
-      "table": "ACTOR"
-    }
-  }],
+  "vertices": [],
   "edges": [{
     "Features": {
       "mapping": {
