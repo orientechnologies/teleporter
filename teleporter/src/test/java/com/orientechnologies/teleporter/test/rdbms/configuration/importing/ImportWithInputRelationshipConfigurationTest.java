@@ -249,6 +249,7 @@ public class ImportWithInputRelationshipConfigurationTest {
         assertEquals("P001", v.getProperty("project"));
         edgesIt = v.getEdges(Direction.OUT, "WorksAtProject").iterator();
         assertEquals("P001", edgesIt.next().getVertex(Direction.IN).getProperty("id"));
+        assertEquals(false, edgesIt.hasNext());
         edgesIt = v.getEdges(Direction.IN, "HasManager").iterator();
         assertEquals("P001", edgesIt.next().getVertex(Direction.OUT).getProperty("id"));
         assertEquals(false, edgesIt.hasNext());
@@ -268,6 +269,7 @@ public class ImportWithInputRelationshipConfigurationTest {
         assertEquals("P002", v.getProperty("project"));
         edgesIt = v.getEdges(Direction.OUT, "WorksAtProject").iterator();
         assertEquals("P002", edgesIt.next().getVertex(Direction.IN).getProperty("id"));
+        assertEquals(false, edgesIt.hasNext());
         edgesIt = v.getEdges(Direction.IN, "HasManager").iterator();
         assertEquals(false, edgesIt.hasNext());
       }
@@ -286,6 +288,7 @@ public class ImportWithInputRelationshipConfigurationTest {
         assertEquals("P001", v.getProperty("project"));
         edgesIt = v.getEdges(Direction.OUT, "WorksAtProject").iterator();
         assertEquals("P001", edgesIt.next().getVertex(Direction.IN).getProperty("id"));
+        assertEquals(false, edgesIt.hasNext());
         edgesIt = v.getEdges(Direction.IN, "HasManager").iterator();
         assertEquals(false, edgesIt.hasNext());
       }
@@ -304,6 +307,7 @@ public class ImportWithInputRelationshipConfigurationTest {
         assertEquals("P001", v.getProperty("project"));
         edgesIt = v.getEdges(Direction.OUT, "WorksAtProject").iterator();
         assertEquals("P001", edgesIt.next().getVertex(Direction.IN).getProperty("id"));
+        assertEquals(false, edgesIt.hasNext());
         edgesIt = v.getEdges(Direction.IN, "HasManager").iterator();
         assertEquals(false, edgesIt.hasNext());
       }
@@ -322,6 +326,7 @@ public class ImportWithInputRelationshipConfigurationTest {
         assertEquals("P002", v.getProperty("project"));
         edgesIt = v.getEdges(Direction.OUT, "WorksAtProject").iterator();
         assertEquals("P002", edgesIt.next().getVertex(Direction.IN).getProperty("id"));
+        assertEquals(false, edgesIt.hasNext());
         edgesIt = v.getEdges(Direction.IN, "HasManager").iterator();
         assertEquals("P002", edgesIt.next().getVertex(Direction.OUT).getProperty("id"));
         assertEquals(false, edgesIt.hasNext());
@@ -341,6 +346,7 @@ public class ImportWithInputRelationshipConfigurationTest {
         assertEquals("P002", v.getProperty("project"));
         edgesIt = v.getEdges(Direction.OUT, "WorksAtProject").iterator();
         assertEquals("P002", edgesIt.next().getVertex(Direction.IN).getProperty("id"));
+        assertEquals(false, edgesIt.hasNext());
         edgesIt = v.getEdges(Direction.IN, "HasManager").iterator();
         assertEquals(false, edgesIt.hasNext());
       }
@@ -565,6 +571,7 @@ public class ImportWithInputRelationshipConfigurationTest {
         assertEquals("P001", v.getProperty("project"));
         edgesIt = v.getEdges(Direction.IN, "HasEmployee").iterator();
         assertEquals("P001", edgesIt.next().getVertex(Direction.OUT).getProperty("id"));
+        assertEquals(false, edgesIt.hasNext());
         edgesIt = v.getEdges(Direction.IN, "HasProjectManager").iterator();
         assertEquals("P001", edgesIt.next().getVertex(Direction.OUT).getProperty("id"));
         assertEquals(false, edgesIt.hasNext());
@@ -584,6 +591,7 @@ public class ImportWithInputRelationshipConfigurationTest {
         assertEquals("P002", v.getProperty("project"));
         edgesIt = v.getEdges(Direction.IN, "HasEmployee").iterator();
         assertEquals("P002", edgesIt.next().getVertex(Direction.OUT).getProperty("id"));
+        assertEquals(false, edgesIt.hasNext());
         edgesIt = v.getEdges(Direction.IN, "HasProjectManager").iterator();
         assertEquals(false, edgesIt.hasNext());
       }
@@ -602,6 +610,7 @@ public class ImportWithInputRelationshipConfigurationTest {
         assertEquals("P001", v.getProperty("project"));
         edgesIt = v.getEdges(Direction.IN, "HasEmployee").iterator();
         assertEquals("P001", edgesIt.next().getVertex(Direction.OUT).getProperty("id"));
+        assertEquals(false, edgesIt.hasNext());
         edgesIt = v.getEdges(Direction.IN, "HasProjectManager").iterator();
         assertEquals(false, edgesIt.hasNext());
       }
@@ -620,6 +629,7 @@ public class ImportWithInputRelationshipConfigurationTest {
         assertEquals("P001", v.getProperty("project"));
         edgesIt = v.getEdges(Direction.IN, "HasEmployee").iterator();
         assertEquals("P001", edgesIt.next().getVertex(Direction.OUT).getProperty("id"));
+        assertEquals(false, edgesIt.hasNext());
         edgesIt = v.getEdges(Direction.IN, "HasProjectManager").iterator();
         assertEquals(false, edgesIt.hasNext());
       }
@@ -638,6 +648,7 @@ public class ImportWithInputRelationshipConfigurationTest {
         assertEquals("P002", v.getProperty("project"));
         edgesIt = v.getEdges(Direction.IN, "HasEmployee").iterator();
         assertEquals("P002", edgesIt.next().getVertex(Direction.OUT).getProperty("id"));
+        assertEquals(false, edgesIt.hasNext());
         edgesIt = v.getEdges(Direction.IN, "HasProjectManager").iterator();
         assertEquals("P002", edgesIt.next().getVertex(Direction.OUT).getProperty("id"));
         assertEquals(false, edgesIt.hasNext());
@@ -657,6 +668,7 @@ public class ImportWithInputRelationshipConfigurationTest {
         assertEquals("P002", v.getProperty("project"));
         edgesIt = v.getEdges(Direction.IN, "HasEmployee").iterator();
         assertEquals("P002", edgesIt.next().getVertex(Direction.OUT).getProperty("id"));
+        assertEquals(false, edgesIt.hasNext());
         edgesIt = v.getEdges(Direction.IN, "HasProjectManager").iterator();
         assertEquals(false, edgesIt.hasNext());
       }

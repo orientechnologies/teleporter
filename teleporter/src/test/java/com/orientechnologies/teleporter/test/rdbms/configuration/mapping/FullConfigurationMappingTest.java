@@ -105,7 +105,7 @@ public class FullConfigurationMappingTest {
                     " VAT varchar(256) not null, UPDATED_ON date not null, primary key (ID))";
             st.execute(vatProfileTableBuilding);
 
-            String departmentTableBuilding = "create memory table DEPARTMENT (ID  varchar(256),"+
+            String departmentTableBuilding = "create memory table DEPARTMENT (ID varchar(256),"+
                     " NAME varchar(256) not null, LOCATION varchar(256) not null, UPDATED_ON date not null, primary key (ID))";
             st.execute(departmentTableBuilding);
 
@@ -412,7 +412,6 @@ public class FullConfigurationMappingTest {
             assertEquals("NAME", personClassMapper.property2attribute.get("firstName"));
             assertEquals("SURNAME", personClassMapper.property2attribute.get("lastName"));
 
-            assertEquals(2, mapper.getClassMappingRulesByVertex(personVertexType).size());
             OClassMapper vatProfileClassMapper = mapper.getClassMappingRulesByVertex(personVertexType).get(1);
             assertEquals(1, mapper.getClassMappingRulesByEntity(vatProfileEntity).size());
             assertEquals(vatProfileClassMapper, mapper.getClassMappingRulesByEntity(vatProfileEntity).get(0));
