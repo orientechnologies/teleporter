@@ -28,6 +28,7 @@ import com.orientechnologies.teleporter.importengine.rdbms.ODBQueryEngine;
 import com.orientechnologies.teleporter.importengine.rdbms.OGraphEngineForDB;
 import com.orientechnologies.teleporter.mapper.OSource2GraphMapper;
 import com.orientechnologies.teleporter.mapper.rdbms.OER2GraphMapper;
+import com.orientechnologies.teleporter.mapper.rdbms.classmapper.OClassMapper;
 import com.orientechnologies.teleporter.model.dbschema.OEntity;
 import com.orientechnologies.teleporter.model.dbschema.OHierarchicalBag;
 import com.orientechnologies.teleporter.model.dbschema.ORelationship;
@@ -156,6 +157,7 @@ public class ODBMSNaiveStrategy extends ODBMSImportStrategy {
             String query = handler.buildGeospatialQuery(entity, context);
             queryResult = dbQueryEngine.getRecordsByQuery(query, context);
           } else {
+            //List<OClassMapper> classMappers = ((OER2GraphMapper)super.mapper).getClassMappersByVertex();
             queryResult = dbQueryEngine.getRecordsByEntity(entity.getName(), entity.getSchemaName(), context);
           }
 

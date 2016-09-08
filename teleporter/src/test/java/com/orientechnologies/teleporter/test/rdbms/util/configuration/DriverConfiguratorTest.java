@@ -16,7 +16,7 @@
  * For more information: http://www.orientdb.com
  */
 
-package com.orientechnologies.teleporter.test.rdbms.util;
+package com.orientechnologies.teleporter.test.rdbms.util.configuration;
 
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.teleporter.context.OOutputStreamManager;

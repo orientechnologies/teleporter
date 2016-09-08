@@ -29,7 +29,6 @@ import com.orientechnologies.teleporter.model.graphmodel.*;
 import com.orientechnologies.teleporter.nameresolver.ONameResolver;
 import com.orientechnologies.teleporter.persistence.util.ODBSourceConnection;
 
-import java.lang.annotation.ElementType;
 import java.sql.*;
 import java.util.*;
 import java.util.Date;
@@ -127,11 +126,11 @@ public class OER2GraphMapper extends OSource2GraphMapper {
     this.vertexType2classMappers.put(currentVertexType, classMappings);
   }
 
-  public List<OClassMapper> getClassMappingRulesByVertex(OVertexType vertexType) {
+  public List<OClassMapper> getClassMappersByVertex(OVertexType vertexType) {
     return this.vertexType2classMappers.get(vertexType);
   }
 
-  public List<OClassMapper> getClassMappingRulesByEntity(OEntity entity) {
+  public List<OClassMapper> getClassMappersByEntity(OEntity entity) {
     return this.entity2classMappers.get(entity);
   }
 
@@ -1552,7 +1551,7 @@ public class OER2GraphMapper extends OSource2GraphMapper {
   }
 
   public OEntity getEntityByVertexType(OVertexType vertexType, int classMapperIndex) {
-    return this.getClassMappingRulesByVertex(vertexType).get(classMapperIndex).getEntity();
+    return this.getClassMappersByVertex(vertexType).get(classMapperIndex).getEntity();
   }
 
   public OVertexType getVertexTypeByEntity(OEntity entity) {
@@ -1560,12 +1559,12 @@ public class OER2GraphMapper extends OSource2GraphMapper {
   }
 
   public OVertexType getVertexTypeByEntity(OEntity entity, int classMapperIndex) {
-    return this.getClassMappingRulesByEntity(entity).get(classMapperIndex).getVertexType();
+    return this.getClassMappersByEntity(entity).get(classMapperIndex).getVertexType();
   }
 
   public String getAttributeNameByVertexTypeAndProperty(OVertexType vertexType, String propertyName) {
 
-    String attributeName = this.getClassMappingRulesByVertex(vertexType).get(DEFAULT_CLASS_MAPPER_INDEX).getAttributeByProperty(propertyName);
+    String attributeName = this.getClassMappersByVertex(vertexType).get(DEFAULT_CLASS_MAPPER_INDEX).getAttributeByProperty(propertyName);
 
     if(attributeName == null) {
       OVertexType parentType = (OVertexType) vertexType.getParentType();
@@ -1579,7 +1578,7 @@ public class OER2GraphMapper extends OSource2GraphMapper {
 
   public String getPropertyNameByVertexTypeAndAttribute(OVertexType vertexType, String attributeName) {
 
-    List<OClassMapper> classMappers = this.getClassMappingRulesByVertex(vertexType);
+    List<OClassMapper> classMappers = this.getClassMappersByVertex(vertexType);
 
     String propertyName = null;
     for(OClassMapper currentClassMapper: classMappers) {
@@ -1602,7 +1601,7 @@ public class OER2GraphMapper extends OSource2GraphMapper {
 
   public String getPropertyNameByEntityAndAttribute(OEntity entity, String attributeName) {
 
-    List<OClassMapper> classMappers = this.getClassMappingRulesByEntity(entity);
+    List<OClassMapper> classMappers = this.getClassMappersByEntity(entity);
 
     String propertyName = null;
     for(OClassMapper currentClassMapper: classMappers) {

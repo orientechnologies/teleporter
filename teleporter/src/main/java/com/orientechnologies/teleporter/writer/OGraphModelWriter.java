@@ -42,8 +42,28 @@ import java.util.*;
 
 public class OGraphModelWriter {
 
+  private Map<String,OType> orientdbTypeName2orientdbType;
 
-  public OGraphModelWriter() {}
+  public OGraphModelWriter() {
+    this.init();
+  }
+
+  private void init() {
+    this.orientdbTypeName2orientdbType = new HashMap<String,OType>();
+
+    this.orientdbTypeName2orientdbType.put("boolean",OType.BOOLEAN);
+    this.orientdbTypeName2orientdbType.put("integer",OType.INTEGER);
+    this.orientdbTypeName2orientdbType.put("integer",OType.DECIMAL);
+    this.orientdbTypeName2orientdbType.put("short",OType.SHORT);
+    this.orientdbTypeName2orientdbType.put("long",OType.LONG);
+    this.orientdbTypeName2orientdbType.put("float",OType.FLOAT);
+    this.orientdbTypeName2orientdbType.put("double",OType.DOUBLE);
+    this.orientdbTypeName2orientdbType.put("datetime",OType.DATETIME);
+    this.orientdbTypeName2orientdbType.put("date",OType.DATE);
+    this.orientdbTypeName2orientdbType.put("string",OType.STRING);
+    this.orientdbTypeName2orientdbType.put("binary",OType.BINARY);
+    this.orientdbTypeName2orientdbType.put("byte",OType.BYTE);
+  }
 
 
   public boolean writeModelOnOrient(OGraphModel graphModel, ODriverDataTypeHandler handler, String outOrientGraphUri, OTeleporterContext context) {
@@ -103,27 +123,34 @@ public class OGraphModelWriter {
 
             OModelProperty currentProperty = null;
             it = currentVertexType.getProperties().iterator();
+
             while(it.hasNext()) {
               currentProperty = it.next();
-              type = handler.resolveType(currentProperty.getOriginalType().toLowerCase(Locale.ENGLISH), context);
-              if(type != null) {
-                String propertyName = currentProperty.getName();
-                OProperty orientdbProperty = newVertexType.createProperty(propertyName, type);
+              if(currentProperty.isIncludedInMigration()) {
+                if(currentProperty.getOrientdbType() == null) {
+                  type = handler.resolveType(currentProperty.getOriginalType().toLowerCase(Locale.ENGLISH), context);
+                }
+                else {
+                  type = this.resolveOrientDBType(currentProperty.getOrientdbType());
+                }
+                if (type != null) {
+                  String propertyName = currentProperty.getName();
+                  OProperty orientdbProperty = newVertexType.createProperty(propertyName, type);
 
-                // setting constraints if present
-                if(currentProperty.isMandatory() != null) {
-                  orientdbProperty.setMandatory(currentProperty.isMandatory());
+                  // setting constraints if present
+                  if (currentProperty.isMandatory() != null) {
+                    orientdbProperty.setMandatory(currentProperty.isMandatory());
+                  }
+                  if (currentProperty.isReadOnly() != null) {
+                    orientdbProperty.setReadonly(currentProperty.isReadOnly());
+                  }
+                  if (currentProperty.isNotNull() != null) {
+                    orientdbProperty.setNotNull(currentProperty.isNotNull());
+                  }
+                } else {
+                  it.remove();
+                  statistics.warningMessages.add(currentProperty.getOriginalType() + " type is not supported, the correspondent property will be dropped.");
                 }
-                if(currentProperty.isReadOnly() != null) {
-                  orientdbProperty.setReadonly(currentProperty.isReadOnly());
-                }
-                if(currentProperty.isNotNull() != null) {
-                  orientdbProperty.setNotNull(currentProperty.isNotNull());
-                }
-              }
-              else {
-                it.remove();
-                statistics.warningMessages.add(currentProperty.getOriginalType() + " type is not supported, the correspondent property will be dropped.");
               }
             }
             context.getOutputManager().debug("\nVertex-type '%s' wrote.\n", currentVertexType.getName());
@@ -162,27 +189,33 @@ public class OGraphModelWriter {
             newEdgeType = orientGraph.createEdgeType(currentEdgeType.getName());
             OModelProperty currentProperty = null;
             it = currentEdgeType.getProperties().iterator();
+
             while(it.hasNext()) {
               currentProperty = it.next();
-              type = handler.resolveType(currentProperty.getOriginalType().toLowerCase(Locale.ENGLISH), context);
+              if (currentProperty.isIncludedInMigration()) {
+                if(currentProperty.getOrientdbType() == null) {
+                  type = handler.resolveType(currentProperty.getOriginalType().toLowerCase(Locale.ENGLISH), context);
+                }
+                else {
+                  type = this.resolveOrientDBType(currentProperty.getOrientdbType());
+                }
+                if (type != null) {
+                  OProperty orientdbProperty = newEdgeType.createProperty(currentProperty.getName(), type);
 
-              if(type != null) {
-                OProperty orientdbProperty = newEdgeType.createProperty(currentProperty.getName(), type);
-
-                // setting constraints if present
-                if(currentProperty.isMandatory() != null) {
-                  orientdbProperty.setMandatory(currentProperty.isMandatory());
+                  // setting constraints if present
+                  if (currentProperty.isMandatory() != null) {
+                    orientdbProperty.setMandatory(currentProperty.isMandatory());
+                  }
+                  if (currentProperty.isReadOnly() != null) {
+                    orientdbProperty.setReadonly(currentProperty.isReadOnly());
+                  }
+                  if (currentProperty.isNotNull() != null) {
+                    orientdbProperty.setNotNull(currentProperty.isNotNull());
+                  }
+                } else {
+                  it.remove();
+                  statistics.warningMessages.add(currentProperty.getOriginalType() + " type is not supported, the correspondent property will be dropped.");
                 }
-                if(currentProperty.isReadOnly() != null) {
-                  orientdbProperty.setReadonly(currentProperty.isReadOnly());
-                }
-                if(currentProperty.isNotNull() != null) {
-                  orientdbProperty.setNotNull(currentProperty.isNotNull());
-                }
-              }
-              else {
-                it.remove();
-                statistics.warningMessages.add(currentProperty.getOriginalType() + " type is not supported, the correspondent property will be dropped.");
               }
             }
             context.getOutputManager().debug("\nEdge-type '%s' wrote.\n", currentEdgeType.getName());
@@ -245,7 +278,7 @@ public class OGraphModelWriter {
             }
             else {
               context.getStatistics().warningMessages.add("The table '" + currentVertexType.getName() + "' has not primary key constraints defined in the db schema,"
-                  + " thus the correspondent Class Vertex in Orient will not have a default index on the property deriving from the original primary key.");
+                      + " thus the correspondent Class Vertex in Orient will not have a default index on the property deriving from the original primary key.");
             }
           }
           else {
@@ -269,7 +302,7 @@ public class OGraphModelWriter {
     }
     else {
       context.getOutputManager().error("Changes on entities involved in hierarchical trees detected: Teleporter cannot support these variation and neither"
-          + "grant coherence between the two databases. Rebuild the schema from scratch.\n");
+              + "grant coherence between the two databases. Rebuild the schema from scratch.\n");
       throw new OTeleporterRuntimeException();
     }
 
@@ -364,7 +397,7 @@ public class OGraphModelWriter {
       if(currentVertexType != null && orientCorrespondentVertexType != null) {
 
         if( (currentVertexType.getParentType() == null && !orientCorrespondentVertexType.getSuperClass().getName().equals("V"))
-            || (currentVertexType.getParentType() != null && orientCorrespondentVertexType.getSuperClass().getName().equals("V")) )
+                || (currentVertexType.getParentType() != null && orientCorrespondentVertexType.getSuperClass().getName().equals("V")) )
           return true;
 
         else if(currentVertexType.getParentType() != null && !orientCorrespondentVertexType.getSuperClass().getName().equals("V")) {
@@ -377,6 +410,11 @@ public class OGraphModelWriter {
 
     return false;
 
+  }
+
+  public OType resolveOrientDBType(String orientdbTypeName) {
+    orientdbTypeName = orientdbTypeName.toLowerCase();
+    return this.orientdbTypeName2orientdbType.get(orientdbTypeName);
   }
 
 }

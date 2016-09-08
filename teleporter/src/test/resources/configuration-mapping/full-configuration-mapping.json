@@ -14,7 +14,9 @@
             "dataSource": "mysql",
             "tableName": "VAT_PROFILE"
           }
-        ]
+        ],
+        "aggregationFunction": "equality",
+        "columns": ["ID","ID"]
       },
       "properties": {
         "extKey1": {

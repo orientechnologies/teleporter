@@ -55,7 +55,7 @@ import java.util.*;
 
 public abstract class ODBMSImportStrategy implements OImportStrategy {
 
-  private OSource2GraphMapper mapper;
+  protected OSource2GraphMapper mapper;
 
   public ODBMSImportStrategy() {}
 

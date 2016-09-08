@@ -395,10 +395,10 @@ public class FullConfigurationMappingTest {
             assertEquals(2, mapper.getVertexType2classMappers().size());
             assertEquals(3, mapper.getEntity2classMappers().size());
 
-            assertEquals(2, mapper.getClassMappingRulesByVertex(personVertexType).size());
-            OClassMapper personClassMapper = mapper.getClassMappingRulesByVertex(personVertexType).get(0);
-            assertEquals(1, mapper.getClassMappingRulesByEntity(personEntity).size());
-            assertEquals(personClassMapper, mapper.getClassMappingRulesByEntity(personEntity).get(0));
+            assertEquals(2, mapper.getClassMappersByVertex(personVertexType).size());
+            OClassMapper personClassMapper = mapper.getClassMappersByVertex(personVertexType).get(0);
+            assertEquals(1, mapper.getClassMappersByEntity(personEntity).size());
+            assertEquals(personClassMapper, mapper.getClassMappersByEntity(personEntity).get(0));
             assertEquals(personClassMapper.getEntity(), personEntity);
             assertEquals(personClassMapper.getVertexType(), personVertexType);
 
@@ -412,9 +412,9 @@ public class FullConfigurationMappingTest {
             assertEquals("NAME", personClassMapper.property2attribute.get("firstName"));
             assertEquals("SURNAME", personClassMapper.property2attribute.get("lastName"));
 
-            OClassMapper vatProfileClassMapper = mapper.getClassMappingRulesByVertex(personVertexType).get(1);
-            assertEquals(1, mapper.getClassMappingRulesByEntity(vatProfileEntity).size());
-            assertEquals(vatProfileClassMapper, mapper.getClassMappingRulesByEntity(vatProfileEntity).get(0));
+            OClassMapper vatProfileClassMapper = mapper.getClassMappersByVertex(personVertexType).get(1);
+            assertEquals(1, mapper.getClassMappersByEntity(vatProfileEntity).size());
+            assertEquals(vatProfileClassMapper, mapper.getClassMappersByEntity(vatProfileEntity).get(0));
             assertEquals(vatProfileClassMapper.getEntity(), vatProfileEntity);
             assertEquals(vatProfileClassMapper.getVertexType(), personVertexType);
 
@@ -426,10 +426,10 @@ public class FullConfigurationMappingTest {
             assertEquals("ID", vatProfileClassMapper.property2attribute.get("extKey2"));
             assertEquals("VAT", vatProfileClassMapper.property2attribute.get("VAT"));
 
-            assertEquals(1, mapper.getClassMappingRulesByVertex(departmentVertexType).size());
-            OClassMapper departmentClassMapper = mapper.getClassMappingRulesByVertex(departmentVertexType).get(0);
-            assertEquals(1, mapper.getClassMappingRulesByEntity(departmentEntity).size());
-            assertEquals(departmentClassMapper, mapper.getClassMappingRulesByEntity(departmentEntity).get(0));
+            assertEquals(1, mapper.getClassMappersByVertex(departmentVertexType).size());
+            OClassMapper departmentClassMapper = mapper.getClassMappersByVertex(departmentVertexType).get(0);
+            assertEquals(1, mapper.getClassMappersByEntity(departmentEntity).size());
+            assertEquals(departmentClassMapper, mapper.getClassMappersByEntity(departmentEntity).get(0));
             assertEquals(departmentClassMapper.getEntity(), departmentEntity);
             assertEquals(departmentClassMapper.getVertexType(), departmentVertexType);
 

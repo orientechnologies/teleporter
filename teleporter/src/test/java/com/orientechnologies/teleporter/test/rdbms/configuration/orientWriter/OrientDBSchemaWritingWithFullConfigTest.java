@@ -38,9 +38,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.Statement;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 /**
  * @author Gabriele Ponzi
@@ -87,7 +85,7 @@ public class OrientDBSchemaWritingWithFullConfigTest {
    *  Person(extKey1, extKey2, firstName, lastName, VAT)
    *  Department(id, departmentName, location)
    */
-    @Ignore
+
     public void test1() {
 
         Connection connection = null;
@@ -121,109 +119,112 @@ public class OrientDBSchemaWritingWithFullConfigTest {
             modelWriter.writeModelOnOrient(mapper.getGraphModel(), new OHSQLDBDataTypeHandler(), this.outOrientGraphUri, context);
 
 
-      /*
-       *  Testing context information
-       */
+            /**
+             *  Testing context information
+             */
 
             assertEquals(2, context.getStatistics().totalNumberOfVertexTypes);
             assertEquals(2, context.getStatistics().wroteVertexType);
-            assertEquals(2, context.getStatistics().totalNumberOfEdgeTypes);
-            assertEquals(2, context.getStatistics().wroteEdgeType);
+            assertEquals(1, context.getStatistics().totalNumberOfEdgeTypes);
+            assertEquals(1, context.getStatistics().wroteEdgeType);
             assertEquals(2, context.getStatistics().totalNumberOfIndices);
             assertEquals(2, context.getStatistics().wroteIndexes);
 
-      /*
-       *  Testing built OrientDB schema     TODO!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-       */
+            /**
+             *  Testing built OrientDB schema
+             */
 
             orientGraph = new OrientGraphNoTx(this.outOrientGraphUri);
-            OrientVertexType employeeVertexType =  orientGraph.getVertexType("Employee");
-            OrientVertexType projectVertexType = orientGraph.getVertexType("Project");
-            OrientEdgeType worksAtProjectEdgeType = orientGraph.getEdgeType("WorksAtProject");
-            OrientEdgeType hasManagerEdgeType = orientGraph.getEdgeType("HasManager");
+            OrientVertexType personVertexType =  orientGraph.getVertexType("Person");
+            OrientVertexType departmentVertexType = orientGraph.getVertexType("Department");
+            OrientEdgeType worksAtEdgeType = orientGraph.getEdgeType("WorksAt");
 
             // vertices check
-            assertNotNull(employeeVertexType);
-            assertNotNull(projectVertexType);
+            assertNotNull(personVertexType);
+            assertNotNull(departmentVertexType);
 
             // properties check
-            assertNotNull(employeeVertexType.getProperty("empId"));
-            assertEquals("empId", employeeVertexType.getProperty("empId").getName());
-            assertEquals(OType.STRING, employeeVertexType.getProperty("empId").getType());
-            assertEquals(false, employeeVertexType.getProperty("empId").isMandatory());
-            assertEquals(false, employeeVertexType.getProperty("empId").isReadonly());
-            assertEquals(false, employeeVertexType.getProperty("empId").isNotNull());
 
-            assertNotNull(employeeVertexType.getProperty("firstName"));
-            assertEquals("firstName", employeeVertexType.getProperty("firstName").getName());
-            assertEquals(OType.STRING, employeeVertexType.getProperty("firstName").getType());
-            assertEquals(false, employeeVertexType.getProperty("firstName").isMandatory());
-            assertEquals(false, employeeVertexType.getProperty("firstName").isReadonly());
-            assertEquals(false, employeeVertexType.getProperty("firstName").isNotNull());
+            assertNotNull(personVertexType.getProperty("extKey1"));
+            assertEquals("extKey1", personVertexType.getProperty("extKey1").getName());
+            assertEquals(OType.STRING, personVertexType.getProperty("extKey1").getType());
+            assertEquals(false, personVertexType.getProperty("extKey1").isMandatory());
+            assertEquals(false, personVertexType.getProperty("extKey1").isReadonly());
+            assertEquals(false, personVertexType.getProperty("extKey1").isNotNull());
 
-            assertNotNull(employeeVertexType.getProperty("lastName"));
-            assertEquals("lastName", employeeVertexType.getProperty("lastName").getName());
-            assertEquals(OType.STRING, employeeVertexType.getProperty("lastName").getType());
-            assertEquals(false, employeeVertexType.getProperty("lastName").isMandatory());
-            assertEquals(false, employeeVertexType.getProperty("lastName").isReadonly());
-            assertEquals(false, employeeVertexType.getProperty("lastName").isNotNull());
+            assertNotNull(personVertexType.getProperty("firstName"));
+            assertEquals("firstName", personVertexType.getProperty("firstName").getName());
+            assertEquals(OType.STRING, personVertexType.getProperty("firstName").getType());
+            assertEquals(true, personVertexType.getProperty("firstName").isMandatory());
+            assertEquals(false, personVertexType.getProperty("firstName").isReadonly());
+            assertEquals(true, personVertexType.getProperty("firstName").isNotNull());
 
-            assertNotNull(employeeVertexType.getProperty("project"));
-            assertEquals("project", employeeVertexType.getProperty("project").getName());
-            assertEquals(OType.STRING, employeeVertexType.getProperty("project").getType());
-            assertEquals(false, employeeVertexType.getProperty("project").isMandatory());
-            assertEquals(false, employeeVertexType.getProperty("project").isReadonly());
-            assertEquals(false, employeeVertexType.getProperty("project").isNotNull());
+            assertNotNull(personVertexType.getProperty("lastName"));
+            assertEquals("lastName", personVertexType.getProperty("lastName").getName());
+            assertEquals(OType.STRING, personVertexType.getProperty("lastName").getType());
+            assertEquals(true, personVertexType.getProperty("lastName").isMandatory());
+            assertEquals(false, personVertexType.getProperty("lastName").isReadonly());
+            assertEquals(true, personVertexType.getProperty("lastName").isNotNull());
 
-            assertNotNull(projectVertexType.getProperty("id"));
-            assertEquals("id", projectVertexType.getProperty("id").getName());
-            assertEquals(OType.STRING, projectVertexType.getProperty("id").getType());
-            assertEquals(false, projectVertexType.getProperty("id").isMandatory());
-            assertEquals(false, projectVertexType.getProperty("id").isReadonly());
-            assertEquals(false, projectVertexType.getProperty("id").isNotNull());
+            assertNull(personVertexType.getProperty("depId"));
 
-            assertNotNull(projectVertexType.getProperty("title"));
-            assertEquals("title", projectVertexType.getProperty("title").getName());
-            assertEquals(OType.STRING, projectVertexType.getProperty("title").getType());
-            assertEquals(false, projectVertexType.getProperty("title").isMandatory());
-            assertEquals(false, projectVertexType.getProperty("title").isReadonly());
-            assertEquals(false, projectVertexType.getProperty("title").isNotNull());
+            assertNotNull(personVertexType.getProperty("extKey2"));
+            assertEquals("extKey2", personVertexType.getProperty("extKey2").getName());
+            assertEquals(OType.STRING, personVertexType.getProperty("extKey2").getType());
+            assertEquals(false, personVertexType.getProperty("extKey2").isMandatory());
+            assertEquals(false, personVertexType.getProperty("extKey2").isReadonly());
+            assertEquals(false, personVertexType.getProperty("extKey2").isNotNull());
 
-            assertNotNull(projectVertexType.getProperty("projectManager"));
-            assertEquals("projectManager", projectVertexType.getProperty("projectManager").getName());
-            assertEquals(OType.STRING, projectVertexType.getProperty("projectManager").getType());
-            assertEquals(false, projectVertexType.getProperty("projectManager").isMandatory());
-            assertEquals(false, projectVertexType.getProperty("projectManager").isReadonly());
-            assertEquals(false, projectVertexType.getProperty("projectManager").isNotNull());
+            assertNotNull(personVertexType.getProperty("VAT"));
+            assertEquals("VAT", personVertexType.getProperty("VAT").getName());
+            assertEquals(OType.STRING, personVertexType.getProperty("VAT").getType());
+            assertEquals(true, personVertexType.getProperty("VAT").isMandatory());
+            assertEquals(false, personVertexType.getProperty("VAT").isReadonly());
+            assertEquals(true, personVertexType.getProperty("VAT").isNotNull());
+
+            assertNull(personVertexType.getProperty("updatedOn"));
+
+            assertNotNull(departmentVertexType.getProperty("id"));
+            assertEquals("id", departmentVertexType.getProperty("id").getName());
+            assertEquals(OType.STRING, departmentVertexType.getProperty("id").getType());
+            assertEquals(false, departmentVertexType.getProperty("id").isMandatory());
+            assertEquals(false, departmentVertexType.getProperty("id").isReadonly());
+            assertEquals(false, departmentVertexType.getProperty("id").isNotNull());
+
+            assertNotNull(departmentVertexType.getProperty("departmentName"));
+            assertEquals("departmentName", departmentVertexType.getProperty("departmentName").getName());
+            assertEquals(OType.STRING, departmentVertexType.getProperty("departmentName").getType());
+            assertEquals(true, departmentVertexType.getProperty("departmentName").isMandatory());
+            assertEquals(false, departmentVertexType.getProperty("departmentName").isReadonly());
+            assertEquals(true, departmentVertexType.getProperty("departmentName").isNotNull());
+
+            assertNotNull(departmentVertexType.getProperty("location"));
+            assertEquals("location", departmentVertexType.getProperty("location").getName());
+            assertEquals(OType.STRING, departmentVertexType.getProperty("location").getType());
+            assertEquals(true, departmentVertexType.getProperty("location").isMandatory());
+            assertEquals(false, departmentVertexType.getProperty("location").isReadonly());
+            assertEquals(true, departmentVertexType.getProperty("location").isNotNull());
+
+            assertNull(departmentVertexType.getProperty("updatedOn"));
 
             // edges check
-            assertNotNull(worksAtProjectEdgeType);
-            assertNotNull(hasManagerEdgeType);
+            assertNotNull(worksAtEdgeType);
 
-            assertEquals("WorksAtProject", worksAtProjectEdgeType.getName());
-            assertEquals(1, worksAtProjectEdgeType.propertiesMap().size());
+            assertEquals("WorksAt", worksAtEdgeType.getName());
+            assertEquals(1, worksAtEdgeType.propertiesMap().size());
 
-            assertEquals("updatedOn", worksAtProjectEdgeType.getProperty("updatedOn").getName());
-            assertEquals(OType.DATE, worksAtProjectEdgeType.getProperty("updatedOn").getType());
-            assertEquals(true, worksAtProjectEdgeType.getProperty("updatedOn").isMandatory());
-            assertEquals(false, worksAtProjectEdgeType.getProperty("updatedOn").isReadonly());
-            assertEquals(false, worksAtProjectEdgeType.getProperty("updatedOn").isNotNull());
-
-            assertEquals("HasManager", hasManagerEdgeType.getName());
-            assertEquals(1, hasManagerEdgeType.propertiesMap().size());
-
-            assertEquals("updatedOn", hasManagerEdgeType.getProperty("updatedOn").getName());
-            assertEquals(OType.DATE, hasManagerEdgeType.getProperty("updatedOn").getType());
-            assertEquals(false, hasManagerEdgeType.getProperty("updatedOn").isMandatory());
-            assertEquals(false, hasManagerEdgeType.getProperty("updatedOn").isReadonly());
-            assertEquals(false, hasManagerEdgeType.getProperty("updatedOn").isNotNull());
+            assertEquals("since", worksAtEdgeType.getProperty("since").getName());
+            assertEquals(OType.DATE, worksAtEdgeType.getProperty("since").getType());
+            assertEquals(true, worksAtEdgeType.getProperty("since").isMandatory());
+            assertEquals(false, worksAtEdgeType.getProperty("since").isReadonly());
+            assertEquals(false, worksAtEdgeType.getProperty("since").isNotNull());
 
             // Indices check
-            assertEquals(true, orientGraph.getRawGraph().getMetadata().getIndexManager().existsIndex("Employee.pkey"));
-            assertEquals(true, orientGraph.getRawGraph().getMetadata().getIndexManager().areIndexed("Employee", "empId"));
+            assertEquals(true, orientGraph.getRawGraph().getMetadata().getIndexManager().existsIndex("Person.pkey"));
+            assertEquals(true, orientGraph.getRawGraph().getMetadata().getIndexManager().areIndexed("Person", "extKey1", "extKey2"));
 
-            assertEquals(true, orientGraph.getRawGraph().getMetadata().getIndexManager().existsIndex("Project.pkey"));
-            assertEquals(true, orientGraph.getRawGraph().getMetadata().getIndexManager().areIndexed("Project", "id"));
+            assertEquals(true, orientGraph.getRawGraph().getMetadata().getIndexManager().existsIndex("Department.pkey"));
+            assertEquals(true, orientGraph.getRawGraph().getMetadata().getIndexManager().areIndexed("Department", "id"));
 
         }catch(Exception e) {
             e.printStackTrace();
