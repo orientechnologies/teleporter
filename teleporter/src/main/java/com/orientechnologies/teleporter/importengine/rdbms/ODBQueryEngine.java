@@ -31,10 +31,11 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Iterator;
+import java.util.List;
 
 /**
  * Implementation of ODataSourceQueryEngine. It executes the necessary queries for the source DB records fetching.
- * 
+ *
  * @author Gabriele Ponzi
  * @email  <gabriele.ponzi--at--gmail.com>
  *
@@ -66,7 +67,7 @@ public class ODBQueryEngine implements ODataSourceQueryEngine {
     Statement statement = null;
     String query;
 
-    if(entitySchema != null) 
+    if(entitySchema != null)
       query = "select * from " + entitySchema + "." + this.quote + entityName + this.quote + " where ";
     else
       query = "select * from " + this.quote + entityName + this.quote + " where ";
@@ -103,7 +104,10 @@ public class ODBQueryEngine implements ODataSourceQueryEngine {
 
 
 
-  public OQueryResult getRecordsByEntity(String entityName, String entitySchema, OTeleporterContext context) {
+  public OQueryResult getRecordsByEntity(OEntity entity, OTeleporterContext context) {
+
+    String entityName = entity.getName();
+    String entitySchema = entity.getSchemaName();
 
     ResultSet result = null;
     Connection dbConnection = null;
@@ -132,6 +136,52 @@ public class ODBQueryEngine implements ODataSourceQueryEngine {
       context.printExceptionMessage(e, mess, "error");
       context.printExceptionStackTrace(e, "debug");
     }
+    OQueryResult queryResult = new OQueryResult(dbConnection, statement, result);
+    return queryResult;
+  }
+
+  public OQueryResult getRecordsFromMultipleEntities(List<OEntity> mappedEntities, String[][] columns, OTeleporterContext context) {
+
+    ResultSet result = null;
+    Connection dbConnection = null;
+    Statement statement = null;
+    String query;
+
+    OEntity first = mappedEntities.get(0);
+    if(first.getSchemaName() != null)
+      query = "select * from " + first.getSchemaName() + "." + this.quote + first.getName() + this.quote + " as t0\n";
+    else
+      query = "select * from " + this.quote + first.getName() + this.quote + " as t0\n";
+
+    for(int i = 1; i<mappedEntities.size(); i++) {
+      OEntity currentEntity = mappedEntities.get(i);
+      query += " full outer join " + currentEntity.getSchemaName() + "." + this.quote + currentEntity.getName() + this.quote + " as t" + i;
+      query += " on t" + (i-1) + "." + this.quote + columns[i-1][0] + this.quote + " = t" + i + "." + this.quote + columns[i][0] + this.quote;
+
+      for(int k=1; k<columns[i].length; k++) {
+        query += " and t" + (i-1) + "." + this.quote + columns[i-1][k] + this.quote + " = t" + i + "." + this.quote + columns[i][k] + this.quote;
+      }
+
+      query += "\n";
+    }
+
+    try {
+      try {
+        dbConnection = dataSource.getConnection(context);
+      } catch (Exception e) {
+        String mess = "";
+        context.printExceptionMessage(e, mess, "error");
+        context.printExceptionStackTrace(e, "debug");
+      }
+      statement = dbConnection.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+      result = statement.executeQuery(query);
+
+    } catch (SQLException e) {
+      String mess = "";
+      context.printExceptionMessage(e, mess, "error");
+      context.printExceptionStackTrace(e, "debug");
+    }
+
     OQueryResult queryResult = new OQueryResult(dbConnection, statement, result);
     return queryResult;
   }
@@ -285,13 +335,13 @@ public class ODBQueryEngine implements ODataSourceQueryEngine {
           index++;
         }
 
-        if(currentEntity.getSchemaName() != null) 
+        if(currentEntity.getSchemaName() != null)
           query += "left join " + currentEntity.getSchemaName() + "." + this.quote + currentEntity.getName() + this.quote;
         else
-          query += "left join " + this.quote + currentEntity.getName() + this.quote; 
+          query += "left join " + this.quote + currentEntity.getName() + this.quote;
 
-        query += " as t" + thTable + 
-            " on t0." + this.quote + rootEntityPropertyOfKey[0] + this.quote + " = t" + thTable + "." + this.quote + currentEntityPropertyOfKey[0] + this.quote;
+        query += " as t" + thTable +
+                " on t0." + this.quote + rootEntityPropertyOfKey[0] + this.quote + " = t" + thTable + "." + this.quote + currentEntityPropertyOfKey[0] + this.quote;
 
         for(int k=1; k<currentEntityPropertyOfKey.length; k++) {
           query += " and " + this.quote + rootEntityPropertyOfKey[k] + this.quote + " = t" + thTable + "." + this.quote + currentEntityPropertyOfKey[0] + this.quote;

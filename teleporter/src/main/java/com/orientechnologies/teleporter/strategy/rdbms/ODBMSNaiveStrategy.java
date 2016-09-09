@@ -44,7 +44,9 @@ import com.tinkerpop.blueprints.impls.orient.OrientGraphFactory;
 import com.tinkerpop.blueprints.impls.orient.OrientVertex;
 
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -62,11 +64,11 @@ public class ODBMSNaiveStrategy extends ODBMSImportStrategy {
   public ODBMSNaiveStrategy() {}
 
 
-  public OSource2GraphMapper createSchemaMapper(String driver, String uri, String username, String password, String outOrientGraphUri, String chosenMapper, String xmlPath, ONameResolver nameResolver,
-      ODBMSDataTypeHandler handler, List<String> includedTables, List<String> excludedTables, ODocument config, OTeleporterContext context) {
+  public OER2GraphMapper createSchemaMapper(String driver, String uri, String username, String password, String outOrientGraphUri, String chosenMapper, String xmlPath, ONameResolver nameResolver,
+                                                ODBMSDataTypeHandler handler, List<String> includedTables, List<String> excludedTables, ODocument config, OTeleporterContext context) {
 
     OMapperFactory mapperFactory = new OMapperFactory();
-    OSource2GraphMapper mapper = mapperFactory.buildMapper(chosenMapper, driver, uri, username, password, xmlPath, includedTables, excludedTables, config, context);
+    OER2GraphMapper mapper = (OER2GraphMapper) mapperFactory.buildMapper(chosenMapper, driver, uri, username, password, xmlPath, includedTables, excludedTables, config, context);
 
     // Step 1: DataBase schema building
     mapper.buildSourceDatabaseSchema(context);
@@ -118,78 +120,30 @@ public class ODBMSNaiveStrategy extends ODBMSImportStrategy {
       orientGraph.getRawGraph().declareIntent(new OIntentMassiveInsert());
       orientGraph.setStandardElementConstraints(false);
 
-      OVertexType currentOutVertexType = null;
-      OVertexType currentInVertexType = null;
-      OrientVertex currentOutVertex = null;
-      OEdgeType edgeType = null;
-
       // Importing from Entities belonging to hierarchical bags
-      for (OHierarchicalBag bag : mapper.getDataBaseSchema().getHierarchicalBags()) {
-
-        switch (bag.getInheritancePattern()) {
-
-        case "table-per-hierarchy":
-          super.tablePerHierarchyImport(bag, mapper, dbQueryEngine, graphEngine, orientGraph, context);
-          break;
-
-        case "table-per-type":
-          super.tablePerTypeImport(bag, mapper, dbQueryEngine, graphEngine, orientGraph, context);
-          break;
-
-        case "table-per-concrete-type":
-          super.tablePerConcreteTypeImport(bag, mapper, dbQueryEngine, graphEngine, orientGraph, context);
-          break;
-
-        }
-      }
-
-      OQueryResult queryResult = null;
-      ResultSet records = null;
+      super.importEntitiesBelongingToHierarchies(dbQueryEngine, graphEngine, orientGraph, context);
 
       // Importing from Entities NOT belonging to hierarchical bags
-      for (OEntity entity : mapper.getDataBaseSchema().getEntities()) {
+      for (OVertexType currentOutVertexType : mapper.getVertexType2classMappers().keySet()) {
 
-        if (entity.getHierarchicalBag() == null) {
+        List<OClassMapper> classMappers = ((OER2GraphMapper)super.mapper).getClassMappersByVertex(currentOutVertexType);
+        List<OEntity> mappedEntities = new LinkedList<OEntity>();
 
-          // for each entity in dbSchema all records are retrieved
-
-          if (handler.geospatialImplemented && super.hasGeospatialAttributes(entity, handler)) {
-            String query = handler.buildGeospatialQuery(entity, context);
-            queryResult = dbQueryEngine.getRecordsByQuery(query, context);
-          } else {
-            //List<OClassMapper> classMappers = ((OER2GraphMapper)super.mapper).getClassMappersByVertex();
-            queryResult = dbQueryEngine.getRecordsByEntity(entity.getName(), entity.getSchemaName(), context);
+        // checking condition
+        boolean allEntitiesNotBelongingToHierarchies = true;
+        for(OClassMapper classMapper: classMappers) {
+          OEntity currentEntity = classMapper.getEntity();
+          if(currentEntity.getHierarchicalBag() != null) {
+            allEntitiesNotBelongingToHierarchies = false;
+            break;
           }
-
-          records = queryResult.getResult();
-          ResultSet currentRecord = null;
-
-          currentOutVertexType = mapper.getVertexTypeByEntity(entity);
-
-          // each record is imported as vertex in the orient graph
-          while(records.next()) {
-
-            // upsert of the vertex
-            currentRecord = records;
-            currentOutVertex = (OrientVertex) graphEngine.upsertVisitedVertex(orientGraph, currentRecord, currentOutVertexType, null, context);
-
-            // for each attribute of the entity belonging to the primary key, correspondent relationship is
-            // built as edge and for the referenced record a vertex is built (only id)
-            for(ORelationship currentRelationship: entity.getOutRelationships()) {
-              OEntity currentParentEntity = mapper.getDataBaseSchema().getEntityByName(currentRelationship.getParentEntity().getName());
-              currentInVertexType = mapper.getVertexTypeByEntity(currentParentEntity);
-
-              edgeType = mapper.getRelationship2edgeType().get(currentRelationship);
-              graphEngine.upsertReachedVertexWithEdge(orientGraph, currentRecord, currentRelationship, currentOutVertex, currentInVertexType, edgeType.getName(), context);
-            }
-
-            // Statistics updated
-            statistics.analyzedRecords++;
-
+          else {
+            mappedEntities.add(currentEntity);
           }
+        }
 
-          // closing resultset, connection and statement
-          queryResult.closeAll(context);
+        if (allEntitiesNotBelongingToHierarchies) {
+          super.importRecordsIntoVertexClass(mappedEntities, currentOutVertexType, dbQueryEngine, graphEngine, orientGraph, context);
         }
       }
 
@@ -206,5 +160,7 @@ public class ODBMSNaiveStrategy extends ODBMSImportStrategy {
       context.printExceptionStackTrace(e, "debug");
     }
   }
+
+
 
 }

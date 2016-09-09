@@ -43,6 +43,26 @@ public class OTeleporterContext {
   private String                 driverDependencyPath;
   private String                 executionStrategy;
 
+  // TO DELETE !!!!
+  private String aggregationFunction;
+  private String[][] columns;
+
+  public String getAggregationFunction() {
+    return aggregationFunction;
+  }
+
+  public void setAggregationFunction(String aggregationFunction) {
+    this.aggregationFunction = aggregationFunction;
+  }
+
+  public String[][] getColumns() {
+    return columns;
+  }
+
+  public void setColumns(String[][] columns) {
+    this.columns = columns;
+  }
+  // TO DELETE !!!!
 
   public OTeleporterContext() {
     this.statistics = new OTeleporterStatistics();

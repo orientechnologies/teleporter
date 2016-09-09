@@ -797,15 +797,34 @@ public class OER2GraphMapper extends OSource2GraphMapper {
 
     for(ODocument currentVertex: verticesDoc) {
       String configuredVertexTypeName = currentVertex.field("name");
-      List<ODocument> sourceTables = ((ODocument)currentVertex.field("mapping")).field("sourceTables");
+      ODocument mappingDoc = currentVertex.field("mapping");
+      List<ODocument> sourceTables = mappingDoc.field("sourceTables");
+      String aggregationFunction = mappingDoc.field("aggregationFunction");
+
+      String[][] columns = new String[2][1];
 
       Map<String,String> sourceId2tableName = new HashMap<String,String>();
 
+      int i = 0;
       for(ODocument sourceTable: sourceTables) {
         String sourceTableId = sourceTable.field("name");
         String sourceTableName = sourceTable.field("tableName");
         sourceId2tableName.put(sourceTableId, sourceTableName);
+        List<String> attributes = sourceTable.field("aggregationColumns");
+
+        if(attributes != null) {
+          int k = 0;
+          for(String attribute: attributes) {
+            columns[i][k] = attribute;
+            k++;
+          }
+        }
+        i++;
       }
+
+      context.setAggregationFunction(aggregationFunction);
+      if(columns[0][0] != null)
+        context.setColumns(columns);
 
       if(sourceId2tableName.size() == 1) {
         String sourceTableName = sourceId2tableName.entrySet().iterator().next().getValue();
@@ -1008,7 +1027,7 @@ public class OER2GraphMapper extends OSource2GraphMapper {
              *  updating rules
              */
 
-             // removing old entities' rules
+            // removing old entities' rules
             this.entity2classMappers.remove(this.getDataBaseSchema().getEntityByName(tableName));
 
             OClassMapper currentNewCM = new OClassMapper(currentEntity, newAggregatedVertexType, attribute2property, property2attribute);
@@ -1564,7 +1583,14 @@ public class OER2GraphMapper extends OSource2GraphMapper {
 
   public String getAttributeNameByVertexTypeAndProperty(OVertexType vertexType, String propertyName) {
 
-    String attributeName = this.getClassMappersByVertex(vertexType).get(DEFAULT_CLASS_MAPPER_INDEX).getAttributeByProperty(propertyName);
+    String attributeName = null;
+
+    for(OClassMapper cm: this.getClassMappersByVertex(vertexType)) {
+      attributeName = cm.getAttributeByProperty(propertyName);
+      if(attributeName != null) {
+        break;
+      }
+    }
 
     if(attributeName == null) {
       OVertexType parentType = (OVertexType) vertexType.getParentType();

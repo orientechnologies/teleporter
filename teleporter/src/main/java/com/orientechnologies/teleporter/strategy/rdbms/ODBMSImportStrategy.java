@@ -45,6 +45,7 @@ import com.tinkerpop.blueprints.impls.orient.OrientBaseGraph;
 import com.tinkerpop.blueprints.impls.orient.OrientVertex;
 
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.*;
 
 /**
@@ -55,7 +56,7 @@ import java.util.*;
 
 public abstract class ODBMSImportStrategy implements OImportStrategy {
 
-  protected OSource2GraphMapper mapper;
+  protected OER2GraphMapper mapper;
 
   public ODBMSImportStrategy() {}
 
@@ -98,14 +99,87 @@ public abstract class ODBMSImportStrategy implements OImportStrategy {
 
   }
 
-  public abstract OSource2GraphMapper createSchemaMapper(String driver, String uri, String username, String password, String outOrientGraphUri, String chosenMapper,
+  public abstract OER2GraphMapper createSchemaMapper(String driver, String uri, String username, String password, String outOrientGraphUri, String chosenMapper,
       String xmlPath, ONameResolver nameResolver, ODBMSDataTypeHandler handler, List<String> includedTables, List<String> excludedTables,
       ODocument config, OTeleporterContext context);
 
 
   public abstract void executeImport(String driver, String uri, String username, String password, String outOrientGraphUri, OSource2GraphMapper mapper, ODBMSDataTypeHandler handler, OTeleporterContext context);
 
+  protected void importRecordsIntoVertexClass(List<OEntity> mappedEntities, OVertexType currentOutVertexType, ODBQueryEngine dbQueryEngine, OGraphEngineForDB graphEngine, OrientBaseGraph orientGraph, OTeleporterContext context) throws SQLException {
 
+    OTeleporterStatistics statistics = context.getStatistics();
+    OQueryResult queryResult;
+    ResultSet records;
+    OrientVertex currentOutVertex;
+    OVertexType currentInVertexType;
+    OEdgeType edgeType;// for each entity in dbSchema all records are retrieved
+    if(mappedEntities.size() == 1) {
+      queryResult = dbQueryEngine.getRecordsByEntity(mappedEntities.get(0), context);
+    }
+    else {
+      String[][] columns = context.getColumns();
+      queryResult = dbQueryEngine.getRecordsFromMultipleEntities(mappedEntities, columns, context);
+    }
+
+    //if (handler.geospatialImplemented && super.hasGeospatialAttributes(entity, handler)) {
+    //  String query = handler.buildGeospatialQuery(entity, context);
+    //  queryResult = dbQueryEngine.getRecordsByQuery(query, context);
+    //}
+
+    records = queryResult.getResult();
+    ResultSet currentRecord = null;
+
+    // each record is imported as vertex in the orient graph
+    while(records.next()) {
+
+      // upsert of the vertex
+      currentRecord = records;
+      currentOutVertex = (OrientVertex) graphEngine.upsertVisitedVertex(orientGraph, currentRecord, currentOutVertexType, null, context);
+
+      // for each attribute of the entity belonging to the primary key, correspondent relationship is
+      // built as edge and for the referenced record a vertex is built (only id)
+      for(OEntity entity: mappedEntities) {
+        for (ORelationship currentRelationship : entity.getOutRelationships()) {
+          OEntity currentParentEntity = mapper.getDataBaseSchema().getEntityByName(currentRelationship.getParentEntity().getName());
+          currentInVertexType = mapper.getVertexTypeByEntity(currentParentEntity);
+
+          edgeType = mapper.getRelationship2edgeType().get(currentRelationship);
+          graphEngine.upsertReachedVertexWithEdge(orientGraph, currentRecord, currentRelationship, currentOutVertex, currentInVertexType, edgeType.getName(), context);
+        }
+      }
+
+      // Statistics updated
+      statistics.analyzedRecords++;
+
+    }
+
+    // closing resultset, connection and statement
+    queryResult.closeAll(context);
+  }
+
+
+  protected void importEntitiesBelongingToHierarchies(ODBQueryEngine dbQueryEngine, OGraphEngineForDB graphEngine, OrientBaseGraph orientGraph, OTeleporterContext context) {
+
+    for (OHierarchicalBag bag : this.mapper.getDataBaseSchema().getHierarchicalBags()) {
+
+      switch (bag.getInheritancePattern()) {
+
+        case "table-per-hierarchy":
+          this.tablePerHierarchyImport(bag, this.mapper, dbQueryEngine, graphEngine, orientGraph, context);
+          break;
+
+        case "table-per-type":
+          this.tablePerTypeImport(bag, this.mapper, dbQueryEngine, graphEngine, orientGraph, context);
+          break;
+
+        case "table-per-concrete-type":
+          this.tablePerConcreteTypeImport(bag, this.mapper, dbQueryEngine, graphEngine, orientGraph, context);
+          break;
+
+      }
+    }
+  }
 
   /**
    * Performs import of all records of the entities contained in the hierarchical bag passed as parameter.
@@ -264,7 +338,7 @@ public abstract class ODBMSImportStrategy implements OImportStrategy {
         for(OEntity currentEntity: bag.getDepth2entities().get(i)) {
 
           // for each entity in dbSchema all records are retrieved
-          queryResult1 = dbQueryEngine.getRecordsByEntity(currentEntity.getName(), currentEntity.getSchemaName(), context);
+          queryResult1 = dbQueryEngine.getRecordsByEntity(currentEntity, context);
           records = queryResult1.getResult();
           currentRecord = null;
 
@@ -405,7 +479,7 @@ public abstract class ODBMSImportStrategy implements OImportStrategy {
         for(OEntity currentEntity: bag.getDepth2entities().get(i)) {
 
           // for each entity in dbSchema all records are retrieved
-          queryResult = dbQueryEngine.getRecordsByEntity(currentEntity.getName(), currentEntity.getSchemaName(), context);
+          queryResult = dbQueryEngine.getRecordsByEntity(currentEntity, context);
           records = queryResult.getResult();
           currentRecord = null;
 

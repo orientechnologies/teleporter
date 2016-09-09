@@ -7,16 +7,17 @@
           {
             "name": "sourceTable1",
             "dataSource": "mysql",
-            "tableName": "PERSON"
+            "tableName": "PERSON",
+            "aggregationColumns" : ["ID"]
           },
           {
             "name": "sourceTable2",
             "dataSource": "mysql",
-            "tableName": "VAT_PROFILE"
+            "tableName": "VAT_PROFILE",
+            "aggregationColumns" : ["ID"]
           }
         ],
-        "aggregationFunction": "equality",
-        "columns": ["ID","ID"]
+        "aggregationFunction": "equality"
       },
       "properties": {
         "extKey1": {

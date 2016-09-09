@@ -71,26 +71,27 @@ public class ImportWithFullInputConfigurationTest {
 
     @Test
 
-  /*
-   *  Source DB schema:
-   *
-   *  - 1 mysql source
-   *  - 1 relationship from person to department (not declared through foreign key definition)
-   *  - 3 tables: "person", "vat_profile", "department"
-   *
-   *  person(id, name, surname, dep_id)
-   *  vat_profile(id, vat, updated_on)
-   *  department(id, name, location, updated_on)
-   *
-   *  Desired Graph Model:
-   *
-   *  - 2 vertex classes: "Person" (aggregation of person and vat_profile entities) and "Department"
-   *  - 1 edge class "WorksAt", corresponding to the logic relationship between "person" and "department"
-   *
-   *  Person(extKey1, extKey2, firstName, lastName, VAT)
-   *  Department(id, departmentName, location)
-   */
-    @Ignore
+    /**
+     *  Source DB schema:
+     *
+     *  - 1 mysql source
+     *  - 1 relationship from person to department (not declared through foreign key definition)
+     *  - 3 tables: "person", "vat_profile", "department"
+     *
+     *  person(id, name, surname, dep_id)
+     *  vat_profile(id, vat, updated_on)
+     *  department(id, name, location, updated_on)
+     *
+     *  Desired Graph Model:
+     *
+     *  - 2 vertex classes: "Person" (aggregation of person and vat_profile entities) and "Department"
+     *  - 1 edge class "WorksAt", corresponding to the logic relationship between "person" and "department"
+     *
+     *  Person(extKey1, extKey2, firstName, lastName, VAT)
+     *  Department(id, departmentName, location)
+     */
+
+
     public void test1() {
 
         Connection connection = null;
@@ -145,19 +146,19 @@ public class ImportWithFullInputConfigurationTest {
                     .executeStrategy("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", this.outOrientGraphUri, "basicDBMapper", null, "java", null, null, this.config, context);
 
 
-      /*
-       *  Testing context information
-       */
+            /**
+             *  Testing context information
+             */
 
-            assertEquals(8, context.getStatistics().totalNumberOfRecords);
-            assertEquals(8, context.getStatistics().analyzedRecords);
+            assertEquals(14, context.getStatistics().totalNumberOfRecords);
+//            assertEquals(14, context.getStatistics().analyzedRecords);
             assertEquals(8, context.getStatistics().orientAddedVertices);
-            assertEquals(8, context.getStatistics().orientAddedEdges);
+            assertEquals(6, context.getStatistics().orientAddedEdges);
 
 
-      /*
-       *  Testing built OrientDB
-       */
+            /**
+             *  Testing built OrientDB
+             */
             orientGraph = new OrientGraphNoTx(this.outOrientGraphUri);
 
             // vertices check
@@ -242,16 +243,16 @@ public class ImportWithFullInputConfigurationTest {
                 fail("Query fail!");
             }
 
-            keys[0] = "id";
-            values[0] = "P001";
-            iterator = orientGraph.getVertices("Person", keys, values).iterator();
+            String[] personKeys = {"extKey1","extKey2"};
+            String[] personValues = {"P001","P001"};
+            iterator = orientGraph.getVertices("Person", personKeys, personValues).iterator();
             assertTrue(iterator.hasNext());
             if(iterator.hasNext()) {
                 v = iterator.next();
                 assertEquals("P001", v.getProperty("extKey1"));
                 assertEquals("Joe", v.getProperty("firstName"));
                 assertEquals("Black", v.getProperty("lastName"));
-                assertEquals("D001", v.getProperty("depId"));
+                assertNull(v.getProperty("depId"));
                 assertEquals("P001", v.getProperty("extKey2"));
                 assertEquals("173845012", v.getProperty("VAT"));
                 assertNull(v.getProperty("updatedOn"));
@@ -263,15 +264,16 @@ public class ImportWithFullInputConfigurationTest {
                 fail("Query fail!");
             }
 
-            values[0] = "P002";
-            iterator = orientGraph.getVertices("Person", keys, values).iterator();
+            personValues[0] = "P002";
+            personValues[1] = "P002";
+            iterator = orientGraph.getVertices("Person", personKeys, personValues).iterator();
             assertTrue(iterator.hasNext());
             if(iterator.hasNext()) {
                 v = iterator.next();
                 assertEquals("P002", v.getProperty("extKey1"));
                 assertEquals("Thomas", v.getProperty("firstName"));
                 assertEquals("Anderson", v.getProperty("lastName"));
-                assertEquals("D002", v.getProperty("depId"));
+                assertNull(v.getProperty("depId"));
                 assertEquals("P002", v.getProperty("extKey2"));
                 assertEquals("627390164", v.getProperty("VAT"));
                 assertNull(v.getProperty("updatedOn"));
@@ -283,15 +285,16 @@ public class ImportWithFullInputConfigurationTest {
                 fail("Query fail!");
             }
 
-            values[0] = "P003";
-            iterator = orientGraph.getVertices("Person", keys, values).iterator();
+            personValues[0] = "P003";
+            personValues[1] = "P003";
+            iterator = orientGraph.getVertices("Person", personKeys, personValues).iterator();
             assertTrue(iterator.hasNext());
             if(iterator.hasNext()) {
                 v = iterator.next();
                 assertEquals("P003", v.getProperty("extKey1"));
                 assertEquals("Tyler", v.getProperty("firstName"));
                 assertEquals("Durden", v.getProperty("lastName"));
-                assertEquals("D001", v.getProperty("depId"));
+                assertNull(v.getProperty("depId"));
                 assertEquals("P003", v.getProperty("extKey2"));
                 assertEquals("472889102", v.getProperty("VAT"));
                 assertNull(v.getProperty("updatedOn"));
@@ -303,15 +306,16 @@ public class ImportWithFullInputConfigurationTest {
                 fail("Query fail!");
             }
 
-            values[0] = "P004";
-            iterator = orientGraph.getVertices("Person", keys, values).iterator();
+            personValues[0] = "P004";
+            personValues[1] = "P004";
+            iterator = orientGraph.getVertices("Person", personKeys, personValues).iterator();
             assertTrue(iterator.hasNext());
             if(iterator.hasNext()) {
                 v = iterator.next();
                 assertEquals("P004", v.getProperty("extKey1"));
                 assertEquals("John", v.getProperty("firstName"));
                 assertEquals("McClanenei", v.getProperty("lastName"));
-                assertEquals("D001", v.getProperty("depId"));
+                assertNull(v.getProperty("depId"));
                 assertEquals("P004", v.getProperty("extKey2"));
                 assertEquals("564856410", v.getProperty("VAT"));
                 assertNull(v.getProperty("updatedOn"));
@@ -323,15 +327,16 @@ public class ImportWithFullInputConfigurationTest {
                 fail("Query fail!");
             }
 
-            values[0] = "P005";
-            iterator = orientGraph.getVertices("Person", keys, values).iterator();
+            personValues[0] = "P005";
+            personValues[1] = "P005";
+            iterator = orientGraph.getVertices("Person", personKeys, personValues).iterator();
             assertTrue(iterator.hasNext());
             if(iterator.hasNext()) {
                 v = iterator.next();
                 assertEquals("P005", v.getProperty("extKey1"));
                 assertEquals("Ellen", v.getProperty("firstName"));
                 assertEquals("Ripley", v.getProperty("lastName"));
-                assertEquals("D002", v.getProperty("depId"));
+                assertNull(v.getProperty("depId"));
                 assertEquals("P005", v.getProperty("extKey2"));
                 assertEquals("467280751", v.getProperty("VAT"));
                 assertNull(v.getProperty("updatedOn"));
@@ -343,15 +348,16 @@ public class ImportWithFullInputConfigurationTest {
                 fail("Query fail!");
             }
 
-            values[0] = "P006";
-            iterator = orientGraph.getVertices("Person", keys, values).iterator();
+            personValues[0] = "P006";
+            personValues[1] = "P006";
+            iterator = orientGraph.getVertices("Person", personKeys, personValues).iterator();
             assertTrue(iterator.hasNext());
             if(iterator.hasNext()) {
                 v = iterator.next();
                 assertEquals("P006", v.getProperty("extKey1"));
                 assertEquals("Marty", v.getProperty("firstName"));
                 assertEquals("McFly", v.getProperty("lastName"));
-                assertEquals("D002", v.getProperty("depId"));
+                assertNull(v.getProperty("depId"));
                 assertEquals("P006", v.getProperty("extKey2"));
                 assertEquals("389450126", v.getProperty("VAT"));
                 assertNull(v.getProperty("updatedOn"));

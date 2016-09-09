@@ -29,6 +29,7 @@ import com.orientechnologies.teleporter.importengine.rdbms.OGraphEngineForDB;
 import com.orientechnologies.teleporter.mapper.OSource2GraphMapper;
 import com.orientechnologies.teleporter.mapper.rdbms.OAggregatorEdge;
 import com.orientechnologies.teleporter.mapper.rdbms.OER2GraphMapper;
+import com.orientechnologies.teleporter.mapper.rdbms.classmapper.OClassMapper;
 import com.orientechnologies.teleporter.model.dbschema.OEntity;
 import com.orientechnologies.teleporter.model.dbschema.OHierarchicalBag;
 import com.orientechnologies.teleporter.model.dbschema.ORelationship;
@@ -44,30 +45,32 @@ import com.tinkerpop.blueprints.impls.orient.OrientGraphFactory;
 import com.tinkerpop.blueprints.impls.orient.OrientVertex;
 
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
  * A strategy that performs a "naive" import of the data source. The data source schema is
  * translated semi-directly in a correspondent and coherent graph model using an aggregation 
  * policy on the junction tables of dimension equals to 2.
- * 
+ *
  * @author Gabriele Ponzi
  * @email  <gabriele.ponzi--at--gmail.com>
- * 
+ *
  */
 
-public class ODBMSNaiveAggregationStrategy extends ODBMSImportStrategy {	
+public class ODBMSNaiveAggregationStrategy extends ODBMSImportStrategy {
 
   public ODBMSNaiveAggregationStrategy() {}
 
 
   @Override
-  public OSource2GraphMapper createSchemaMapper(String driver, String uri, String username, String password, String outOrientGraphUri, String chosenMapper, String xmlPath, ONameResolver nameResolver,
+  public OER2GraphMapper createSchemaMapper(String driver, String uri, String username, String password, String outOrientGraphUri, String chosenMapper, String xmlPath, ONameResolver nameResolver,
       ODBMSDataTypeHandler handler, List<String> includedTables, List<String> excludedTables, ODocument config, OTeleporterContext context) {
 
     OMapperFactory mapperFactory = new OMapperFactory();
-    OSource2GraphMapper mapper = mapperFactory.buildMapper(chosenMapper, driver, uri, username, password, xmlPath, includedTables, excludedTables, config, context);
+    OER2GraphMapper mapper = (OER2GraphMapper) mapperFactory.buildMapper(chosenMapper, driver, uri, username, password, xmlPath, includedTables, excludedTables, config, context);
 
     // Step 1: DataBase schema building
     mapper.buildSourceDatabaseSchema(context);
@@ -115,7 +118,7 @@ public class ODBMSNaiveAggregationStrategy extends ODBMSImportStrategy {
       statistics.runningStepNumber = 4;
 
       OER2GraphMapper mapper = (OER2GraphMapper) genericMapper;
-      ODBQueryEngine dbQueryEngine = new ODBQueryEngine(driver, uri, username, password, context);    
+      ODBQueryEngine dbQueryEngine = new ODBQueryEngine(driver, uri, username, password, context);
       OGraphEngineForDB graphEngine = new OGraphEngineForDB((OER2GraphMapper)mapper, handler);
 
       // OrientDB graph initialization/connection
@@ -125,109 +128,60 @@ public class ODBMSNaiveAggregationStrategy extends ODBMSImportStrategy {
       orientGraph.getRawGraph().declareIntent(new OIntentMassiveInsert());
       orientGraph.setStandardElementConstraints(false);
 
-      OVertexType currentOutVertexType = null;
-      OVertexType currentInVertexType = null;  
-      OrientVertex currentOutVertex = null;
-      OEdgeType edgeType = null;
-
       // Importing from Entities belonging to hierarchical bags
-      for(OHierarchicalBag bag: mapper.getDataBaseSchema().getHierarchicalBags()) {
-
-        switch(bag.getInheritancePattern()) {
-
-        case "table-per-hierarchy": super.tablePerHierarchyImport(bag, mapper, dbQueryEngine, graphEngine, orientGraph, context);
-        break;
-
-        case "table-per-type": super.tablePerTypeImport(bag, mapper, dbQueryEngine, graphEngine, orientGraph, context);
-        break;
-
-        case "table-per-concrete-type": super.tablePerConcreteTypeImport(bag, mapper, dbQueryEngine, graphEngine, orientGraph, context);
-        break;
-
-        }
-      }
-
-      OQueryResult queryResult = null;
-      ResultSet records = null;
+      super.importEntitiesBelongingToHierarchies(dbQueryEngine, graphEngine, orientGraph, context);
 
       // Importing from Entities NOT belonging to hierarchical bags NOR corresponding to join tables
-      for(OEntity entity: mapper.getDataBaseSchema().getEntities()) {
+      for (OVertexType currentOutVertexType : mapper.getVertexType2classMappers().keySet()) {
 
-        if(!entity.isAggregableJoinTable() && entity.getHierarchicalBag() == null) {
+        List<OClassMapper> classMappers = ((OER2GraphMapper)super.mapper).getClassMappersByVertex(currentOutVertexType);
+        List<OEntity> mappedEntities = new LinkedList<OEntity>();
 
-          // for each entity in dbSchema all records are retrieved
-
-          if(handler.geospatialImplemented && super.hasGeospatialAttributes(entity, handler)) {
-            String query = handler.buildGeospatialQuery(entity, context);
-            queryResult = dbQueryEngine.getRecordsByQuery(query, context);
+        // checking condition
+        boolean allEntitiesNotAggregableAndNotBelongingToHierarchies = true;
+        for(OClassMapper classMapper: classMappers) {
+          OEntity currentEntity = classMapper.getEntity();
+          if(currentEntity.getHierarchicalBag() != null || currentEntity.isAggregableJoinTable()) {
+            allEntitiesNotAggregableAndNotBelongingToHierarchies = false;
+            break;
           }
           else {
-            queryResult = dbQueryEngine.getRecordsByEntity(entity.getName(), entity.getSchemaName(), context);
+            mappedEntities.add(currentEntity);
           }
+        }
 
-          records = queryResult.getResult();
-          ResultSet currentRecord = null;
-
-          currentOutVertexType = mapper.getVertexTypeByEntity(entity);
-
-          // each record is imported as vertex in the orient graph
-          while(records.next()) {
-
-            // upsert of the vertex
-            currentRecord = records;
-            currentOutVertex = (OrientVertex) graphEngine.upsertVisitedVertex(orientGraph, currentRecord, currentOutVertexType, null, context);
-
-            // for each attribute of the entity belonging to the primary key, correspondent relationship is
-            // built as edge and for the referenced record a vertex is built (only id)
-            for(ORelationship currentRelationship: entity.getOutRelationships()) {
-              OEntity currentParentEntity = mapper.getDataBaseSchema().getEntityByName(currentRelationship.getParentEntity().getName());
-              currentInVertexType = mapper.getVertexTypeByEntity(currentParentEntity);
-
-              edgeType = mapper.getRelationship2edgeType().get(currentRelationship);
-              graphEngine.upsertReachedVertexWithEdge(orientGraph, currentRecord, currentRelationship, currentOutVertex, currentInVertexType, edgeType.getName(), context);
-            }   
-
-            // Statistics updated
-            statistics.analyzedRecords++;
-
-          }
-
-          // closing resultset, connection and statement
-          queryResult.closeAll(context);
+        if (allEntitiesNotAggregableAndNotBelongingToHierarchies) {
+          super.importRecordsIntoVertexClass(mappedEntities, currentOutVertexType, dbQueryEngine, graphEngine, orientGraph, context);
         }
       }
 
       // Importing from Entities NOT belonging to hierarchical bags and corresponding to join tables
-      for(OEntity entity: mapper.getDataBaseSchema().getEntities()) {
+      for (OVertexType currentOutVertexType : mapper.getVertexType2classMappers().keySet()) {
 
-        if(entity.isAggregableJoinTable() && entity.getHierarchicalBag() == null) {
+        List<OClassMapper> classMappers = ((OER2GraphMapper)super.mapper).getClassMappersByVertex(currentOutVertexType);
+        List<OEntity> mappedEntities = new LinkedList<OEntity>();
 
-          // for each entity in dbSchema all records are retrieved
-
-          if(handler.geospatialImplemented && super.hasGeospatialAttributes(entity, handler)) {
-            String query = handler.buildGeospatialQuery(entity, context);
-            queryResult = dbQueryEngine.getRecordsByQuery(query, context);
+        // checking condition
+        boolean allEntitiesAggregableAndNotBelongingToHierarchies = true;
+        for(OClassMapper classMapper: classMappers) {
+          OEntity currentEntity = classMapper.getEntity();
+          if(currentEntity.getHierarchicalBag() != null || !currentEntity.isAggregableJoinTable()) {
+            allEntitiesAggregableAndNotBelongingToHierarchies = false;
+            break;
           }
           else {
-            queryResult = dbQueryEngine.getRecordsByEntity(entity.getName(), entity.getSchemaName(), context);
+            mappedEntities.add(currentEntity);
           }
+        }
 
-          records = queryResult.getResult();
-          ResultSet currentRecord = null;
+        // join tables are not aggregable with other join tables, so for each vertex type we can have just one join table
+        if(mappedEntities.size() > 1) {
+          context.getOutputManager().error("The '%s' vertex type is mapped with several join tables: you cannot aggregate multiple join tables.");
+          break;
+        }
 
-          OAggregatorEdge aggregatorEdge = mapper.getAggregatorEdgeByJoinVertexTypeName(mapper.getVertexTypeByEntity(entity).getName());
-
-          // each record of the join table used to add an edge
-          while(records.next()) {
-            currentRecord = records;
-            graphEngine.upsertAggregatorEdge(orientGraph, currentRecord, entity, aggregatorEdge, context);
-
-            // Statistics updated
-            statistics.analyzedRecords++;
-
-          }
-          // closing resultset, connection and statement
-          queryResult.closeAll(context);
+        if (allEntitiesAggregableAndNotBelongingToHierarchies) {
+          this.importJoinTableRecordIntoEdgeClass(mappedEntities, dbQueryEngine, graphEngine, orientGraph, context);
         }
       }
 
@@ -244,5 +198,41 @@ public class ODBMSNaiveAggregationStrategy extends ODBMSImportStrategy {
       context.printExceptionStackTrace(e, "debug");
     }
   }
+
+  protected void importJoinTableRecordIntoEdgeClass(List<OEntity> mappedEntities, ODBQueryEngine dbQueryEngine, OGraphEngineForDB graphEngine, OrientBaseGraph orientGraph, OTeleporterContext context) throws SQLException {
+
+    OTeleporterStatistics statistics = context.getStatistics();
+    OQueryResult queryResult;
+    ResultSet records;
+
+    // for each entity in dbSchema all records are retrieved
+
+    //if(handler.geospatialImplemented && super.hasGeospatialAttributes(entity, handler)) {
+    //  String query = handler.buildGeospatialQuery(entity, context);
+    //  queryResult = dbQueryEngine.getRecordsByQuery(query, context);
+    //}
+
+    OEntity joinTable = mappedEntities.get(0);
+
+    queryResult = dbQueryEngine.getRecordsByEntity(joinTable, context);
+
+    records = queryResult.getResult();
+    ResultSet currentRecord = null;
+
+    OAggregatorEdge aggregatorEdge = this.mapper.getAggregatorEdgeByJoinVertexTypeName(this.mapper.getVertexTypeByEntity(joinTable).getName());
+
+    // each record of the join table used to add an edge
+    while(records.next()) {
+      currentRecord = records;
+      graphEngine.upsertAggregatorEdge(orientGraph, currentRecord, joinTable, aggregatorEdge, context);
+
+      // Statistics updated
+      statistics.analyzedRecords++;
+
+    }
+    // closing resultset, connection and statement
+    queryResult.closeAll(context);
+  }
+
 
 }
