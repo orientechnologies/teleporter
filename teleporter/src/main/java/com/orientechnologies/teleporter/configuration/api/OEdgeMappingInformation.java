@@ -29,12 +29,72 @@ import java.util.List;
 
 public class OEdgeMappingInformation {
 
-    private String fromTableName;
-    private String toTableName;
-    private List<String> fromColumns;
-    private List<String> toColumns;
-    private String direction;
+    private OConfiguredEdge belongingEdge;                             // mandatory
+    private String fromTableName;                                      // mandatory
+    private String toTableName;                                        // mandatory
+    private List<String> fromColumns;                                  // mandatory
+    private List<String> toColumns;                                    // mandatory
+    private String direction;                                          // mandatory
+    private OAggregatedJoinTableMapping representedJoinTableMapping;   // may be null if the edge does not represent a join table
 
-    // may be null if the edge does not represent a join table
-    private OAggregatedJoinTable representedJoinTable;
+    public OEdgeMappingInformation(OConfiguredEdge belongingEdge) {
+        this.belongingEdge = belongingEdge;
+    }
+
+    public OConfiguredEdge getBelongingEdge() {
+        return this.belongingEdge;
+    }
+
+    public void setBelongingEdge(OConfiguredEdge belongingEdge) {
+        this.belongingEdge = belongingEdge;
+    }
+
+    public String getFromTableName() {
+        return this.fromTableName;
+    }
+
+    public void setFromTableName(String fromTableName) {
+        this.fromTableName = fromTableName;
+    }
+
+    public String getToTableName() {
+        return this.toTableName;
+    }
+
+    public void setToTableName(String toTableName) {
+        this.toTableName = toTableName;
+    }
+
+    public List<String> getFromColumns() {
+        return this.fromColumns;
+    }
+
+    public void setFromColumns(List<String> fromColumns) {
+        this.fromColumns = fromColumns;
+    }
+
+    public List<String> getToColumns() {
+        return this.toColumns;
+    }
+
+    public void setToColumns(List<String> toColumns) {
+        this.toColumns = toColumns;
+    }
+
+    public String getDirection() {
+        return this.direction;
+    }
+
+    public void setDirection(String direction) {
+        this.direction = direction;
+    }
+
+    public OAggregatedJoinTableMapping getRepresentedJoinTableMapping() {
+        return this.representedJoinTableMapping;
+    }
+
+    public void setRepresentedJoinTableMapping(OAggregatedJoinTableMapping representedJoinTableMapping) {
+        this.representedJoinTableMapping = representedJoinTableMapping;
+    }
+
 }

@@ -18,6 +18,8 @@
 
 package com.orientechnologies.teleporter.configuration.api;
 
+import java.util.List;
+
 /**
  *
  * @author Gabriele Ponzi
@@ -27,7 +29,44 @@ package com.orientechnologies.teleporter.configuration.api;
 
 public class OSourceTable {
 
-    private String sourceName;
-    private String tableName;
-    private String dataSource;
+    private String sourceName;                      // mandatory
+    private String dataSource;                      // mandatory
+    private String tableName;                       // mandatory
+    private List<String> aggregationColumns;        // optional (not present when there is not any aggregation)
+
+    public OSourceTable(String sourceName) {
+        this.sourceName = sourceName;
+    }
+
+    public String getSourceName() {
+        return this.sourceName;
+    }
+
+    public void setSourceName(String sourceName) {
+        this.sourceName = sourceName;
+    }
+
+    public String getDataSource() {
+        return this.dataSource;
+    }
+
+    public void setDataSource(String dataSource) {
+        this.dataSource = dataSource;
+    }
+
+    public String getTableName() {
+        return this.tableName;
+    }
+
+    public void setTableName(String tableName) {
+        this.tableName = tableName;
+    }
+
+    public List<String> getAggregationColumns() {
+        return this.aggregationColumns;
+    }
+
+    public void setAggregationColumns(List<String> aggregationColumns) {
+        this.aggregationColumns = aggregationColumns;
+    }
 }

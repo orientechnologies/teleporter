@@ -29,7 +29,35 @@ import java.util.List;
 
 public class OVertexMappingInformation {
 
-    private List<OSourceTable> sourceTables;
-    private String aggregationFunction;
-    private List<String> columns;
+    private OConfiguredVertex belongingVertex;  // mandatory
+    private List<OSourceTable> sourceTables;    // must be not empty!
+    private String aggregationFunction;         // optional (not present when there is not any aggregation)
+
+    public OVertexMappingInformation(OConfiguredVertex belongingVertex) {
+        this.belongingVertex = belongingVertex;
+    }
+
+    public OConfiguredVertex getBelongingVertex() {
+        return this.belongingVertex;
+    }
+
+    public void setBelongingVertex(OConfiguredVertex belongingVertex) {
+        this.belongingVertex = belongingVertex;
+    }
+
+    public List<OSourceTable> getSourceTables() {
+        return this.sourceTables;
+    }
+
+    public void setSourceTables(List<OSourceTable> sourceTables) {
+        this.sourceTables = sourceTables;
+    }
+
+    public String getAggregationFunction() {
+        return this.aggregationFunction;
+    }
+
+    public void setAggregationFunction(String aggregationFunction) {
+        this.aggregationFunction = aggregationFunction;
+    }
 }

@@ -27,9 +27,37 @@ import java.util.List;
  *
  */
 
-public class OAggregatedJoinTable {
+public class OAggregatedJoinTableMapping {
 
-    private String tableName;
-    private List<String> fromColumns;
-    private List<String> toColumns;
+    private String tableName;           // mandatory
+    private List<String> fromColumns;   // mandatory
+    private List<String> toColumns;     // mandatory
+
+    public OAggregatedJoinTableMapping(String tableName) {
+        this.tableName = tableName;
+    }
+
+    public String getTableName() {
+        return this.tableName;
+    }
+
+    public void setTableName(String tableName) {
+        this.tableName = tableName;
+    }
+
+    public List<String> getFromColumns() {
+        return this.fromColumns;
+    }
+
+    public void setFromColumns(List<String> fromColumns) {
+        this.fromColumns = fromColumns;
+    }
+
+    public List<String> getToColumns() {
+        return this.toColumns;
+    }
+
+    public void setToColumns(List<String> toColumns) {
+        this.toColumns = toColumns;
+    }
 }

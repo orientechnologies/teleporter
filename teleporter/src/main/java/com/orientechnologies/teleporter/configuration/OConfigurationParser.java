@@ -18,6 +18,7 @@
 
 package com.orientechnologies.teleporter.configuration;
 
+import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.teleporter.configuration.api.OConfiguration;
 
 /**
@@ -31,11 +32,23 @@ import com.orientechnologies.teleporter.configuration.api.OConfiguration;
 
 public class OConfigurationParser {
 
-    public OConfiguration buildConfigurationFromJSON() {
+    public OConfiguration buildConfigurationFromJSON(ODocument jsonConfiguration) {
+
         OConfiguration configuration = new OConfiguration();
 
-        // TODO
+        // parsing vertices' configuration
+        this.buildConfiguredVertices(configuration);
+
+        // parsing edges' configuration
+        this.buildConfiguredEdges(configuration);
 
         return configuration;
+    }
+
+
+    private void buildConfiguredVertices(OConfiguration configuration) {
+    }
+
+    private void buildConfiguredEdges(OConfiguration configuration) {
     }
 }

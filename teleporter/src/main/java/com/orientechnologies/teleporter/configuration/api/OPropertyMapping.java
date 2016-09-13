@@ -18,8 +18,6 @@
 
 package com.orientechnologies.teleporter.configuration.api;
 
-import java.util.List;
-
 /**
  *
  * @author Gabriele Ponzi
@@ -27,10 +25,37 @@ import java.util.List;
  *
  */
 
-public class OConfiguredVertex extends OConfiguredElement {
+public class OPropertyMapping {
 
-    public OConfiguredVertex(String vertexName) {
-        super(vertexName);
+    private String sourceName;      // mandatory
+    private String columnName;      // mandatory
+    private String type;            // mandatory
+
+    public OPropertyMapping(String sourceName) {
+        this.sourceName = sourceName;
     }
 
+    public String getSourceName() {
+        return this.sourceName;
+    }
+
+    public void setSourceName(String sourceName) {
+        this.sourceName = sourceName;
+    }
+
+    public String getColumnName() {
+        return this.columnName;
+    }
+
+    public void setColumnName(String columnName) {
+        this.columnName = columnName;
+    }
+
+    public String getType() {
+        return this.type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
 }

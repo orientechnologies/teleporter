@@ -29,16 +29,71 @@ import com.orientechnologies.orient.core.metadata.schema.OType;
 
 public class OConfiguredProperty {
 
-    private String propertyName;
-    private boolean isIncludedInMigration;
-    private OType propertyType;
-    private boolean isMandatory;
-    private boolean isReadOnly;
-    private boolean isNotNull;
+    private String propertyName;                // mandatory
+    private boolean isIncludedInMigration;      // mandatory
+    private OType propertyType;                 // mandatory
+    private boolean isMandatory;                // mandatory
+    private boolean isReadOnly;                 // mandatory
+    private boolean isNotNull;                  // mandatory
+    private OPropertyMapping propertyMapping;   // may be null if the property is defined from scratch (only schema definition)
 
-    // may be null if the property is defined from scratch
-    private OSourceTable sourceTable;
-    private String originalColumnName;
-    private String originalType;
+    public OConfiguredProperty(String propertyName) {
+        this.propertyName = propertyName;
+    }
 
+    public String getPropertyName() {
+        return this.propertyName;
+    }
+
+    public void setPropertyName(String propertyName) {
+        this.propertyName = propertyName;
+    }
+
+    public boolean isIncludedInMigration() {
+        return this.isIncludedInMigration;
+    }
+
+    public void setIncludedInMigration(boolean includedInMigration) {
+        this.isIncludedInMigration = includedInMigration;
+    }
+
+    public OType getPropertyType() {
+        return this.propertyType;
+    }
+
+    public void setPropertyType(OType propertyType) {
+        this.propertyType = propertyType;
+    }
+
+    public boolean isMandatory() {
+        return this.isMandatory;
+    }
+
+    public void setMandatory(boolean mandatory) {
+        this.isMandatory = mandatory;
+    }
+
+    public boolean isReadOnly() {
+        return this.isReadOnly;
+    }
+
+    public void setReadOnly(boolean readOnly) {
+        this.isReadOnly = readOnly;
+    }
+
+    public boolean isNotNull() {
+        return this.isNotNull;
+    }
+
+    public void setNotNull(boolean notNull) {
+        this.isNotNull = notNull;
+    }
+
+    public OPropertyMapping getPropertyMapping() {
+        return this.propertyMapping;
+    }
+
+    public void setPropertyMapping(OPropertyMapping propertyMapping) {
+        this.propertyMapping = propertyMapping;
+    }
 }

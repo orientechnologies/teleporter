@@ -27,10 +27,10 @@ import java.util.List;
  *
  */
 
-public class OConfiguredEdge {
+public class OConfiguredEdge extends OConfiguredElement {
 
-    private OEdgeMappingInformation mapping;
-    private List<OConfiguredProperty> configuredProperties;
-
+    public OConfiguredEdge(String edgeName) {
+        super(edgeName);
+    }
 
 }
