@@ -23,6 +23,7 @@ import com.orientechnologies.teleporter.context.OTeleporterContext;
 import com.orientechnologies.teleporter.exception.OTeleporterIOException;
 import com.orientechnologies.teleporter.factory.OStrategyFactory;
 import com.orientechnologies.teleporter.http.OServerCommandTeleporter;
+import com.orientechnologies.teleporter.importengine.rdbms.dbengine.ODBQueryEngine;
 import com.orientechnologies.teleporter.strategy.OImportStrategy;
 import com.orientechnologies.teleporter.ui.OProgressMonitor;
 import com.orientechnologies.teleporter.util.ODriverConfigurator;
@@ -207,6 +208,7 @@ public class OTeleporter extends OServerPluginAbstract {
         outputLevel, includedTables, excludedTables, configurationPath, outputManager);
   }
 
+
   /**
    * Executes the import of the source DB in a OrientDB Graph through different parameters.
    *
@@ -254,6 +256,10 @@ public class OTeleporter extends OServerPluginAbstract {
     // JDBC Driver configuration and driver class name fetching
     ODriverConfigurator driverConfig = new ODriverConfigurator();
     String driverClassName = driverConfig.checkConfiguration(driver, context);
+
+    // DB Query engine building
+    ODBQueryEngine dbQueryEngine = new ODBQueryEngine(driverClassName, jurl, username, password, context);
+    context.setDbQueryEngine(dbQueryEngine);
 
     OImportStrategy strategy = FACTORY.buildStrategy(driver, chosenStrategy, context);
 

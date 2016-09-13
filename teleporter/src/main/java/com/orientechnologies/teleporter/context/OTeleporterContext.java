@@ -18,6 +18,7 @@
 
 package com.orientechnologies.teleporter.context;
 
+import com.orientechnologies.teleporter.importengine.rdbms.dbengine.ODBQueryEngine;
 import com.orientechnologies.teleporter.nameresolver.ONameResolver;
 import com.orientechnologies.teleporter.persistence.handler.ODriverDataTypeHandler;
 
@@ -38,12 +39,12 @@ public class OTeleporterContext {
   private OTeleporterStatistics  statistics;
   private OOutputStreamManager   outputManager;
   private ODriverDataTypeHandler dataTypeHandler;
-  private String                 queryQuote;
   private ONameResolver          nameResolver;
   private String                 driverDependencyPath;
   private String                 executionStrategy;
+  private ODBQueryEngine         dbQueryEngine;
 
-  // TO DELETE !!!!
+  // TO DELETE !!!! -----------------------------------
   private String aggregationFunction;
   private String[][] columns;
 
@@ -62,11 +63,12 @@ public class OTeleporterContext {
   public void setColumns(String[][] columns) {
     this.columns = columns;
   }
-  // TO DELETE !!!!
+  // TO DELETE !!!! -----------------------------------
 
   public OTeleporterContext() {
     this.statistics = new OTeleporterStatistics();
   }
+
 
   public OTeleporterStatistics getStatistics() {
     return this.statistics;
@@ -92,14 +94,6 @@ public class OTeleporterContext {
     this.dataTypeHandler = dataTypeHandler;
   }
 
-  public String getQueryQuote() {
-    return this.queryQuote;
-  }
-
-  public void setQueryQuoteType(String queryQuoteType) {
-    this.queryQuote = queryQuoteType;
-  }
-
   public ONameResolver getNameResolver() {
     return this.nameResolver;
   }
@@ -122,6 +116,14 @@ public class OTeleporterContext {
 
   public void setExecutionStrategy(String executionStrategy) {
     this.executionStrategy = executionStrategy;
+  }
+
+  public ODBQueryEngine getDbQueryEngine() {
+    return dbQueryEngine;
+  }
+
+  public void setDbQueryEngine(ODBQueryEngine dbQueryEngine) {
+    this.dbQueryEngine = dbQueryEngine;
   }
 
   /**

@@ -20,6 +20,7 @@ package com.orientechnologies.teleporter.test.rdbms.inheritance.hibernate;
 
 import com.orientechnologies.teleporter.context.OOutputStreamManager;
 import com.orientechnologies.teleporter.context.OTeleporterContext;
+import com.orientechnologies.teleporter.importengine.rdbms.dbengine.ODBQueryEngine;
 import com.orientechnologies.teleporter.mapper.rdbms.OER2GraphMapper;
 import com.orientechnologies.teleporter.mapper.rdbms.OHibernate2GraphMapper;
 import com.orientechnologies.teleporter.model.dbschema.OEntity;
@@ -49,6 +50,12 @@ public class HibernateMapperTest {
 
   private OER2GraphMapper    mapper;
   private OTeleporterContext context;
+  private ODBQueryEngine dbQueryEngine;
+  private String driver = "org.hsqldb.jdbc.JDBCDriver";
+  private String jurl = "jdbc:hsqldb:mem:mydb";
+  private String username = "SA";
+  private String password = "";
+
 
   private final static String XML_TABLE_PER_CLASS = "src/test/resources/inheritance/hibernate/tablePerClassHierarchyInheritanceTest.xml";
   private final static String XML_TABLE_PER_SUBCLASS1 = "src/test/resources/inheritance/hibernate/tablePerSubclassInheritanceTest1.xml";
@@ -59,10 +66,11 @@ public class HibernateMapperTest {
   @Before
   public void init() {
     this.context = new OTeleporterContext();
+    this.dbQueryEngine = new ODBQueryEngine(this.driver, this.jurl, this.username, this.password, this.context);
+    this.context.setDbQueryEngine(this.dbQueryEngine);
     this.context.setOutputManager(new OOutputStreamManager(0));
     this.context.setNameResolver(new OJavaConventionNameResolver());
     this.context.setDataTypeHandler(new OHSQLDBDataTypeHandler());
-    this.context.setQueryQuoteType("\"");
   }
 
 
@@ -80,8 +88,8 @@ public class HibernateMapperTest {
 
     try {
 
-      Class.forName("org.hsqldb.jdbc.JDBCDriver");
-      connection = DriverManager.getConnection("jdbc:hsqldb:mem:mydb", "SA", "");
+      Class.forName(this.driver);
+      connection = DriverManager.getConnection(this.jurl, this.username, this.password);
 
       String residence = "create memory table RESIDENCE(ID varchar(256) not null, CITY varchar(256), COUNTRY varchar(256), primary key (ID))";
       st = connection.createStatement();
@@ -93,7 +101,7 @@ public class HibernateMapperTest {
           + "primary key (id), foreign key (RESIDENCE) references RESIDENCE(ID))";
       st.execute(employeeTableBuilding);
 
-      this.mapper = new OHibernate2GraphMapper("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", HibernateMapperTest.XML_TABLE_PER_CLASS, null, null, null);
+      this.mapper = new OHibernate2GraphMapper("org.hsqldb.jdbc.JDBCDriver", this.jurl, this.username, this.password, HibernateMapperTest.XML_TABLE_PER_CLASS, null, null, null);
       mapper.buildSourceDatabaseSchema(this.context);
       mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
 
@@ -518,7 +526,7 @@ public class HibernateMapperTest {
     try {
 
       Class.forName("org.hsqldb.jdbc.JDBCDriver");
-      connection = DriverManager.getConnection("jdbc:hsqldb:mem:mydb", "SA", "");
+      connection = DriverManager.getConnection(this.jurl, this.username, this.password);
 
       String residence = "create memory table RESIDENCE(ID varchar(256) not null, CITY varchar(256), COUNTRY varchar(256), primary key (ID))";
       st = connection.createStatement();
@@ -536,7 +544,7 @@ public class HibernateMapperTest {
           + "PAY_PER_HOUR decimal(10,2), CONTRACT_DURATION varchar(256), primary key (EID), foreign key (EID) references EMPLOYEE(ID))";
       st.execute(contractEmployeeTableBuilding);
 
-      this.mapper = new OHibernate2GraphMapper("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", HibernateMapperTest.XML_TABLE_PER_SUBCLASS1, null, null, null);
+      this.mapper = new OHibernate2GraphMapper("org.hsqldb.jdbc.JDBCDriver", this.jurl, this.username, this.password, HibernateMapperTest.XML_TABLE_PER_SUBCLASS1, null, null, null);
       mapper.buildSourceDatabaseSchema(this.context);
       mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
 
@@ -980,7 +988,7 @@ public class HibernateMapperTest {
     try {
 
       Class.forName("org.hsqldb.jdbc.JDBCDriver");
-      connection = DriverManager.getConnection("jdbc:hsqldb:mem:mydb", "SA", "");
+      connection = DriverManager.getConnection(this.jurl, this.username, this.password);
 
       String residence = "create memory table RESIDENCE(ID varchar(256) not null, CITY varchar(256), COUNTRY varchar(256), primary key (ID))";
       st = connection.createStatement();
@@ -999,7 +1007,7 @@ public class HibernateMapperTest {
           + "PAY_PER_HOUR decimal(10,2), CONTRACT_DURATION varchar(256), primary key (EID), foreign key (EID) references EMPLOYEE(ID))";
       st.execute(contractEmployeeTableBuilding);
 
-      this.mapper = new OHibernate2GraphMapper("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", HibernateMapperTest.XML_TABLE_PER_SUBCLASS2, null, null, null);
+      this.mapper = new OHibernate2GraphMapper("org.hsqldb.jdbc.JDBCDriver", this.jurl, this.username, this.password, HibernateMapperTest.XML_TABLE_PER_SUBCLASS2, null, null, null);
       mapper.buildSourceDatabaseSchema(this.context);
       mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
 
@@ -1440,7 +1448,7 @@ public class HibernateMapperTest {
     try {
 
       Class.forName("org.hsqldb.jdbc.JDBCDriver");
-      connection = DriverManager.getConnection("jdbc:hsqldb:mem:mydb", "SA", "");
+      connection = DriverManager.getConnection(this.jurl, this.username, this.password);
 
       String residence = "create memory table RESIDENCE(ID varchar(256) not null, CITY varchar(256), COUNTRY varchar(256), primary key (ID))";
       st = connection.createStatement();
@@ -1458,7 +1466,7 @@ public class HibernateMapperTest {
           + "NAME varchar(256), RESIDENCE varchar(256), PAY_PER_HOUR decimal(10,2), CONTRACT_DURATION varchar(256), primary key (ID))";
       st.execute(contractEmployeeTableBuilding);
 
-      this.mapper = new OHibernate2GraphMapper("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", HibernateMapperTest.XML_TABLE_PER_CONCRETE_CLASS, null, null, null);
+      this.mapper = new OHibernate2GraphMapper("org.hsqldb.jdbc.JDBCDriver", this.jurl, this.username, this.password, HibernateMapperTest.XML_TABLE_PER_CONCRETE_CLASS, null, null, null);
       mapper.buildSourceDatabaseSchema(this.context);
       mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
 

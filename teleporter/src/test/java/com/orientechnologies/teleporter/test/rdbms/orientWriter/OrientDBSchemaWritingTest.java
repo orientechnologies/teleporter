@@ -20,6 +20,7 @@ package com.orientechnologies.teleporter.test.rdbms.orientWriter;
 
 import com.orientechnologies.teleporter.context.OOutputStreamManager;
 import com.orientechnologies.teleporter.context.OTeleporterContext;
+import com.orientechnologies.teleporter.importengine.rdbms.dbengine.ODBQueryEngine;
 import com.orientechnologies.teleporter.mapper.rdbms.OER2GraphMapper;
 import com.orientechnologies.teleporter.nameresolver.OJavaConventionNameResolver;
 import com.orientechnologies.teleporter.persistence.handler.OHSQLDBDataTypeHandler;
@@ -52,13 +53,19 @@ public class OrientDBSchemaWritingTest {
   private OER2GraphMapper    mapper;
   private OTeleporterContext context;
   private OGraphModelWriter  modelWriter;
-  private String             outOrientGraphUri;
+  private ODBQueryEngine dbQueryEngine;
+  private String driver = "org.hsqldb.jdbc.JDBCDriver";
+  private String jurl = "jdbc:hsqldb:mem:mydb";
+  private String username = "SA";
+  private String password = "";
+  private String outOrientGraphUri = "memory:testOrientDB";
 
   @Before
   public void init() {
     this.context = new OTeleporterContext();
+    this.dbQueryEngine = new ODBQueryEngine(this.driver, this.jurl, this.username, this.password, this.context);
+    this.context.setDbQueryEngine(this.dbQueryEngine);
     this.context.setOutputManager(new OOutputStreamManager(0));
-    this.context.setQueryQuoteType("\"");
     this.modelWriter = new OGraphModelWriter();
     this.outOrientGraphUri = "memory:testOrientDB";
   }
@@ -78,8 +85,8 @@ public class OrientDBSchemaWritingTest {
 
     try {
 
-      Class.forName("org.hsqldb.jdbc.JDBCDriver");
-      connection = DriverManager.getConnection("jdbc:hsqldb:mem:mydb", "SA", "");
+      Class.forName(this.driver);
+      connection = DriverManager.getConnection(this.jurl, this.username, this.password);
 
       String parentTableBuilding = "create memory table BOOK_AUTHOR (ID varchar(256) not null,"+
           " NAME varchar(256) not null, AGE integer not null, primary key (ID))";
@@ -90,7 +97,7 @@ public class OrientDBSchemaWritingTest {
           " AUTHOR_ID varchar(256) not null, primary key (ID), foreign key (AUTHOR_ID) references BOOK_AUTHOR(ID))";
       st.execute(foreignTableBuilding);
 
-      this.mapper = new OER2GraphMapper("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", null, null, null);
+      this.mapper = new OER2GraphMapper(this.driver, this.jurl, this.username, this.password, null, null, null);
       mapper.buildSourceDatabaseSchema(this.context);
       mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
       modelWriter.writeModelOnOrient(mapper.getGraphModel(), new OHSQLDBDataTypeHandler(), this.outOrientGraphUri, context);
@@ -193,8 +200,8 @@ public class OrientDBSchemaWritingTest {
 
     try {
 
-      Class.forName("org.hsqldb.jdbc.JDBCDriver");
-      connection = DriverManager.getConnection("jdbc:hsqldb:mem:mydb", "SA", "");
+      Class.forName(this.driver);
+      connection = DriverManager.getConnection(this.jurl, this.username, this.password);
 
       String authorTableBuilding = "create memory table AUTHOR (ID varchar(256) not null,"+
           " NAME varchar(256) not null, AGE integer not null, primary key (ID))";
@@ -209,7 +216,7 @@ public class OrientDBSchemaWritingTest {
           " PRICE varchar(256) not null, primary key (ID), foreign key (BOOK_ID) references BOOK(ID))";
       st.execute(itemTableBuilding);
 
-      this.mapper = new OER2GraphMapper("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", null, null, null);
+      this.mapper = new OER2GraphMapper(this.driver, this.jurl, this.username, this.password, null, null, null);
       mapper.buildSourceDatabaseSchema(this.context);
       mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
       modelWriter.writeModelOnOrient(mapper.getGraphModel(), new OHSQLDBDataTypeHandler(), this.outOrientGraphUri, context);
@@ -333,8 +340,8 @@ public class OrientDBSchemaWritingTest {
 
     try {
 
-      Class.forName("org.hsqldb.jdbc.JDBCDriver");
-      connection = DriverManager.getConnection("jdbc:hsqldb:mem:mydb", "SA", "");
+      Class.forName(this.driver);
+      connection = DriverManager.getConnection(this.jurl, this.username, this.password);
 
       String authorTableBuilding = "create memory table AUTHOR (ID varchar(256) not null,"+
           " NAME varchar(256) not null, AGE integer not null, primary key (ID))";
@@ -349,7 +356,7 @@ public class OrientDBSchemaWritingTest {
           " DATE  date, AUTHOR_ID varchar(256) not null, primary key (ID), foreign key (AUTHOR_ID) references AUTHOR(ID))";
       st.execute(articleTableBuilding);
 
-      this.mapper = new OER2GraphMapper("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", null, null, null);
+      this.mapper = new OER2GraphMapper(this.driver, this.jurl, this.username, this.password, null, null, null);
       mapper.buildSourceDatabaseSchema(this.context);
       mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
       modelWriter.writeModelOnOrient(mapper.getGraphModel(), new OHSQLDBDataTypeHandler(), this.outOrientGraphUri, context);
@@ -474,8 +481,8 @@ public class OrientDBSchemaWritingTest {
 
     try {
 
-      Class.forName("org.hsqldb.jdbc.JDBCDriver");
-      connection = DriverManager.getConnection("jdbc:hsqldb:mem:mydb", "SA", "");
+      Class.forName(this.driver);
+      connection = DriverManager.getConnection(this.jurl, this.username, this.password);
 
       String authorTableBuilding = "create memory table AUTHOR (NAME varchar(256) not null," + 
           " SURNAME varchar(256) not null, AGE integer, primary key (NAME,SURNAME))";
@@ -487,7 +494,7 @@ public class OrientDBSchemaWritingTest {
           " foreign key (AUTHOR_NAME,AUTHOR_SURNAME) references AUTHOR(NAME,SURNAME))";
       st.execute(bookTableBuilding);
 
-      this.mapper = new OER2GraphMapper("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", null, null, null);
+      this.mapper = new OER2GraphMapper(this.driver, this.jurl, this.username, this.password, null, null, null);
       mapper.buildSourceDatabaseSchema(this.context);
       mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
       modelWriter.writeModelOnOrient(mapper.getGraphModel(), new OHSQLDBDataTypeHandler(), this.outOrientGraphUri, context);
@@ -593,8 +600,8 @@ public class OrientDBSchemaWritingTest {
 
     try {
 
-      Class.forName("org.hsqldb.jdbc.JDBCDriver");
-      connection = DriverManager.getConnection("jdbc:hsqldb:mem:mydb", "SA", "");
+      Class.forName(this.driver);
+      connection = DriverManager.getConnection(this.jurl, this.username, this.password);
 
       String filmTableBuilding = "create memory table FILM (ID varchar(256) not null," + 
           " TITLE varchar(256) not null, YEAR date, primary key (ID))";
@@ -611,7 +618,7 @@ public class OrientDBSchemaWritingTest {
           " foreign key (ACTOR_ID) references ACTOR(ID))";
       st.execute(film2actorTableBuilding);
 
-      this.mapper = new OER2GraphMapper("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", null, null, null);
+      this.mapper = new OER2GraphMapper(this.driver, this.jurl, this.username, this.password, null, null, null);
       mapper.buildSourceDatabaseSchema(this.context);
       mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
       modelWriter.writeModelOnOrient(mapper.getGraphModel(), new OHSQLDBDataTypeHandler(), this.outOrientGraphUri, context);
@@ -732,8 +739,8 @@ public class OrientDBSchemaWritingTest {
 
     try {
 
-      Class.forName("org.hsqldb.jdbc.JDBCDriver");
-      connection = DriverManager.getConnection("jdbc:hsqldb:mem:mydb", "SA", "");
+      Class.forName(this.driver);
+      connection = DriverManager.getConnection(this.jurl, this.username, this.password);
 
       String parentTableBuilding = "create memory table EMPLOYEE (EMP_ID varchar(256) not null,"+
           " MGR_ID varchar(256) not null, NAME varchar(256) not null, primary key (EMP_ID), " + 
@@ -746,7 +753,7 @@ public class OrientDBSchemaWritingTest {
           " foreign key (PROJECT_MANAGER) references EMPLOYEE(EMP_ID))";
       st.execute(foreignTableBuilding);
 
-      this.mapper = new OER2GraphMapper("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", null, null, null);
+      this.mapper = new OER2GraphMapper(this.driver, this.jurl, this.username, this.password, null, null, null);
       mapper.buildSourceDatabaseSchema(this.context);
       mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
       modelWriter.writeModelOnOrient(mapper.getGraphModel(), new OHSQLDBDataTypeHandler(), this.outOrientGraphUri, context);
@@ -853,8 +860,8 @@ public class OrientDBSchemaWritingTest {
 
     try {
 
-      Class.forName("org.hsqldb.jdbc.JDBCDriver");
-      connection = DriverManager.getConnection("jdbc:hsqldb:mem:mydb", "SA", "");
+      Class.forName(this.driver);
+      connection = DriverManager.getConnection(this.jurl, this.username, this.password);
 
       String authorTableBuilding = "create memory table AUTHOR (ID varchar(256) not null,"+
           " NAME varchar(256) not null, AGE integer not null, primary key (ID))";
@@ -869,7 +876,7 @@ public class OrientDBSchemaWritingTest {
           " DATE  date, AUTHOR_ID varchar(256) not null, primary key (ID), foreign key (AUTHOR_ID) references AUTHOR(ID))";
       st.execute(articleTableBuilding);
 
-      this.mapper = new OER2GraphMapper("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", null, null, null);
+      this.mapper = new OER2GraphMapper(this.driver, this.jurl, this.username, this.password, null, null, null);
       mapper.buildSourceDatabaseSchema(this.context);
       mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
       modelWriter.writeModelOnOrient(mapper.getGraphModel(), new OHSQLDBDataTypeHandler(), this.outOrientGraphUri, context);

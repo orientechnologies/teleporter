@@ -20,6 +20,7 @@ package com.orientechnologies.teleporter.test.rdbms.inheritance.hibernate;
 
 import com.orientechnologies.teleporter.context.OOutputStreamManager;
 import com.orientechnologies.teleporter.context.OTeleporterContext;
+import com.orientechnologies.teleporter.importengine.rdbms.dbengine.ODBQueryEngine;
 import com.orientechnologies.teleporter.nameresolver.OJavaConventionNameResolver;
 import com.orientechnologies.teleporter.persistence.handler.OHSQLDBDataTypeHandler;
 import com.orientechnologies.teleporter.strategy.rdbms.ODBMSNaiveStrategy;
@@ -49,7 +50,13 @@ public class HibernateImportTest {
 
   private OTeleporterContext context;
   private ODBMSNaiveStrategy importStrategy;
-  private String outOrientGraphUri;
+  private ODBQueryEngine dbQueryEngine;
+  private String driver = "org.hsqldb.jdbc.JDBCDriver";
+  private String jurl = "jdbc:hsqldb:mem:mydb";
+  private String username = "SA";
+  private String password = "";
+  private String outOrientGraphUri = "memory:testOrientDB";
+
 
   private final static String XML_TABLE_PER_CLASS = "src/test/resources/inheritance/hibernate/tablePerClassHierarchyImportTest.xml";
   private final static String XML_TABLE_PER_SUBCLASS1 = "src/test/resources/inheritance/hibernate/tablePerSubclassImportTest1.xml";
@@ -60,12 +67,12 @@ public class HibernateImportTest {
   @Before
   public void init() {
     this.context = new OTeleporterContext();
+    this.dbQueryEngine = new ODBQueryEngine(this.driver, this.jurl, this.username, this.password, this.context);
+    this.context.setDbQueryEngine(this.dbQueryEngine);
     this.context.setOutputManager(new OOutputStreamManager(0));
     this.context.setNameResolver(new OJavaConventionNameResolver());
     this.context.setDataTypeHandler(new OHSQLDBDataTypeHandler());
-    this.context.setQueryQuoteType("\"");
     this.importStrategy = new ODBMSNaiveStrategy();
-    this.outOrientGraphUri = "memory:testOrientDB";
   }
 
   @Test
@@ -82,8 +89,8 @@ public class HibernateImportTest {
 
     try {
 
-      Class.forName("org.hsqldb.jdbc.JDBCDriver");
-      connection = DriverManager.getConnection("jdbc:hsqldb:mem:mydb", "SA", "");
+      Class.forName(this.driver);
+      connection = DriverManager.getConnection(this.jurl, this.username, this.password);
 
       String residenceTableBuilding = "create memory table RESIDENCE(ID varchar(256) not null, CITY varchar(256), COUNTRY varchar(256), primary key (ID))";
       st = connection.createStatement();
@@ -116,7 +123,7 @@ public class HibernateImportTest {
           + "('E003','cont_emp','Jack Johnson',NULL,NULL,'50.00','6','R002',NULL))";
       st.execute(employeeFilling);
 
-      this.importStrategy.executeStrategy("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", this.outOrientGraphUri, "hibernate", HibernateImportTest.XML_TABLE_PER_CLASS, "java", null, null, null, context);
+      this.importStrategy.executeStrategy(this.driver, this.jurl, this.username, this.password, this.outOrientGraphUri, "hibernate", HibernateImportTest.XML_TABLE_PER_CLASS, "java", null, null, null, context);
 
       /*
        *  Testing context information
@@ -411,8 +418,8 @@ public class HibernateImportTest {
 
     try {
 
-      Class.forName("org.hsqldb.jdbc.JDBCDriver");
-      connection = DriverManager.getConnection("jdbc:hsqldb:mem:mydb", "SA", "");
+      Class.forName(this.driver);
+      connection = DriverManager.getConnection(this.jurl, this.username, this.password);
 
 
 
@@ -469,7 +476,7 @@ public class HibernateImportTest {
           + "('E003','50.00','6'))";
       st.execute(contractEmployeeFilling);
 
-      this.importStrategy.executeStrategy("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", this.outOrientGraphUri, "hibernate", HibernateImportTest.XML_TABLE_PER_SUBCLASS1, "java", null, null, null, context);
+      this.importStrategy.executeStrategy(this.driver, this.jurl, this.username, this.password, this.outOrientGraphUri, "hibernate", HibernateImportTest.XML_TABLE_PER_SUBCLASS1, "java", null, null, null, context);
 
       /*
        *  Testing context information
@@ -763,8 +770,8 @@ public class HibernateImportTest {
 
     try {
 
-      Class.forName("org.hsqldb.jdbc.JDBCDriver");
-      connection = DriverManager.getConnection("jdbc:hsqldb:mem:mydb", "SA", "");
+      Class.forName(this.driver);
+      connection = DriverManager.getConnection(this.jurl, this.username, this.password);
 
 
 
@@ -821,7 +828,7 @@ public class HibernateImportTest {
           + "('E003','50.00','6'))";
       st.execute(contractEmployeeFilling);
 
-      this.importStrategy.executeStrategy("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", this.outOrientGraphUri, "hibernate", HibernateImportTest.XML_TABLE_PER_SUBCLASS2, "java", null, null, null, context);
+      this.importStrategy.executeStrategy(this.driver, this.jurl, this.username, this.password, this.outOrientGraphUri, "hibernate", HibernateImportTest.XML_TABLE_PER_SUBCLASS2, "java", null, null, null, context);
 
       /*
        *  Testing context information
@@ -1115,8 +1122,8 @@ public class HibernateImportTest {
 
     try {
 
-      Class.forName("org.hsqldb.jdbc.JDBCDriver");
-      connection = DriverManager.getConnection("jdbc:hsqldb:mem:mydb", "SA", "");
+      Class.forName(this.driver);
+      connection = DriverManager.getConnection(this.jurl, this.username, this.password);
 
       String residenceTableBuilding = "create memory table RESIDENCE(ID varchar(256) not null, CITY varchar(256), COUNTRY varchar(256), primary key (ID))";
       st = connection.createStatement();
@@ -1173,7 +1180,7 @@ public class HibernateImportTest {
           + "('E003','Jack Johnson','R002',NULL,'50.00','6'))";
       st.execute(contractEmployeeFilling);
 
-      this.importStrategy.executeStrategy("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", this.outOrientGraphUri, "hibernate", HibernateImportTest.XML_TABLE_PER_CONCRETE_CLASS, "java", null, null, null, context);
+      this.importStrategy.executeStrategy(this.driver, this.jurl, this.username, this.password, this.outOrientGraphUri, "hibernate", HibernateImportTest.XML_TABLE_PER_CONCRETE_CLASS, "java", null, null, null, context);
 
       /*
        *  Testing context information

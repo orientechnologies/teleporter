@@ -20,6 +20,7 @@ package com.orientechnologies.teleporter.test.rdbms.filter;
 
 import com.orientechnologies.teleporter.context.OOutputStreamManager;
 import com.orientechnologies.teleporter.context.OTeleporterContext;
+import com.orientechnologies.teleporter.importengine.rdbms.dbengine.ODBQueryEngine;
 import com.orientechnologies.teleporter.mapper.rdbms.OER2GraphMapper;
 import com.orientechnologies.teleporter.mapper.rdbms.OHibernate2GraphMapper;
 import com.orientechnologies.teleporter.mapper.rdbms.classmapper.OClassMapper;
@@ -53,6 +54,11 @@ public class FilterTableMappingTest {
 
   private OER2GraphMapper    mapper;
   private OTeleporterContext context;
+  private ODBQueryEngine dbQueryEngine;
+  private String driver = "org.hsqldb.jdbc.JDBCDriver";
+  private String jurl = "jdbc:hsqldb:mem:mydb";
+  private String username = "SA";
+  private String password = "";
 
   private final static String XML_TABLE_PER_CLASS = "src/test/resources/inheritance/hibernate/tablePerClassHierarchyImportTest.xml";
   private final static String XML_TABLE_PER_SUBCLASS1 = "src/test/resources/inheritance/hibernate/tablePerSubclassImportTest1.xml";
@@ -60,14 +66,14 @@ public class FilterTableMappingTest {
   private final static String XML_TABLE_PER_CONCRETE_CLASS = "src/test/resources/inheritance/hibernate/tablePerConcreteClassImportTest.xml";
 
 
-
   @Before
   public void init() {
     this.context = new OTeleporterContext();
+    this.dbQueryEngine = new ODBQueryEngine(this.driver, this.jurl, this.username, this.password, this.context);
+    this.context.setDbQueryEngine(this.dbQueryEngine);
     this.context.setOutputManager(new OOutputStreamManager(0));
     this.context.setNameResolver(new OJavaConventionNameResolver());
     this.context.setDataTypeHandler(new OHSQLDBDataTypeHandler());
-    this.context.setQueryQuoteType("\"");
   }
 
   @Test
@@ -81,8 +87,8 @@ public class FilterTableMappingTest {
 
     try {
 
-      Class.forName("org.hsqldb.jdbc.JDBCDriver");
-      connection = DriverManager.getConnection("jdbc:hsqldb:mem:mydb", "SA", "");
+      Class.forName(this.driver);
+      connection = DriverManager.getConnection(this.jurl, this.username, this.password);
 
       String countryTableBuilding = "create memory table COUNTRY(ID varchar(256) not null, NAME varchar(256), CONTINENT varchar(256), primary key (ID))";
       st = connection.createStatement();
@@ -127,7 +133,7 @@ public class FilterTableMappingTest {
       includedTables.add("MANAGER");
       includedTables.add("EMPLOYEE");
 
-      this.mapper = new OER2GraphMapper("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", includedTables, null, null);
+      this.mapper = new OER2GraphMapper(this.driver, this.jurl, this.username, this.password, includedTables, null, null);
       mapper.buildSourceDatabaseSchema(this.context);
       mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
 
@@ -472,8 +478,8 @@ public class FilterTableMappingTest {
 
     try {
 
-      Class.forName("org.hsqldb.jdbc.JDBCDriver");
-      connection = DriverManager.getConnection("jdbc:hsqldb:mem:mydb", "SA", "");
+      Class.forName(this.driver);
+      connection = DriverManager.getConnection(this.jurl, this.username, this.password);
 
       String countryTableBuilding = "create memory table COUNTRY(ID varchar(256) not null, NAME varchar(256), CONTINENT varchar(256), primary key (ID))";
       st = connection.createStatement();
@@ -516,7 +522,7 @@ public class FilterTableMappingTest {
       List<String> excludedTables = new ArrayList<String>();
       excludedTables.add("RESIDENCE");
 
-      this.mapper = new OER2GraphMapper("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", null, excludedTables, null);
+      this.mapper = new OER2GraphMapper(this.driver, this.jurl, this.username, this.password, null, excludedTables, null);
       mapper.buildSourceDatabaseSchema(this.context);
       mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
 
@@ -860,8 +866,8 @@ public class FilterTableMappingTest {
 
     try {
 
-      Class.forName("org.hsqldb.jdbc.JDBCDriver");
-      connection = DriverManager.getConnection("jdbc:hsqldb:mem:mydb", "SA", "");
+      Class.forName(this.driver);
+      connection = DriverManager.getConnection(this.jurl, this.username, this.password);
 
       String countryTableBuilding = "create memory table COUNTRY(ID varchar(256) not null, NAME varchar(256), CONTINENT varchar(256), primary key (ID))";
       st = connection.createStatement();
@@ -907,7 +913,7 @@ public class FilterTableMappingTest {
       includedTables.add("MANAGER");
       includedTables.add("EMPLOYEE");
 
-      this.mapper = new OHibernate2GraphMapper("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", FilterTableMappingTest.XML_TABLE_PER_CLASS, includedTables, null, null);
+      this.mapper = new OHibernate2GraphMapper(this.driver, this.jurl, this.username, this.password, FilterTableMappingTest.XML_TABLE_PER_CLASS, includedTables, null, null);
       mapper.buildSourceDatabaseSchema(this.context);
       mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
 
@@ -1608,8 +1614,8 @@ public class FilterTableMappingTest {
 
     try {
 
-      Class.forName("org.hsqldb.jdbc.JDBCDriver");
-      connection = DriverManager.getConnection("jdbc:hsqldb:mem:mydb", "SA", "");
+      Class.forName(this.driver);
+      connection = DriverManager.getConnection(this.jurl, this.username, this.password);
 
       String countryTableBuilding = "create memory table COUNTRY(ID varchar(256) not null, NAME varchar(256), CONTINENT varchar(256), primary key (ID))";
       st = connection.createStatement();
@@ -1680,7 +1686,7 @@ public class FilterTableMappingTest {
       includedTables.add("REGULAR_EMPLOYEE");
       includedTables.add("CONTRACT_EMPLOYEE");
 
-      this.mapper = new OHibernate2GraphMapper("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", FilterTableMappingTest.XML_TABLE_PER_SUBCLASS1, includedTables, null, null);
+      this.mapper = new OHibernate2GraphMapper(this.driver, this.jurl, this.username, this.password, FilterTableMappingTest.XML_TABLE_PER_SUBCLASS1, includedTables, null, null);
       mapper.buildSourceDatabaseSchema(this.context);
       mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
 
@@ -2387,8 +2393,8 @@ public class FilterTableMappingTest {
 
     try {
 
-      Class.forName("org.hsqldb.jdbc.JDBCDriver");
-      connection = DriverManager.getConnection("jdbc:hsqldb:mem:mydb", "SA", "");
+      Class.forName(this.driver);
+      connection = DriverManager.getConnection(this.jurl, this.username, this.password);
 
       String countryTableBuilding = "create memory table COUNTRY(ID varchar(256) not null, NAME varchar(256), CONTINENT varchar(256), primary key (ID))";
       st = connection.createStatement();
@@ -2454,7 +2460,7 @@ public class FilterTableMappingTest {
       List<String> excludedTables = new ArrayList<String>();
       excludedTables.add("RESIDENCE");
 
-      this.mapper = new OHibernate2GraphMapper("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", FilterTableMappingTest.XML_TABLE_PER_SUBCLASS2, null, excludedTables, null);
+      this.mapper = new OHibernate2GraphMapper(this.driver, this.jurl, this.username, this.password, FilterTableMappingTest.XML_TABLE_PER_SUBCLASS2, null, excludedTables, null);
       mapper.buildSourceDatabaseSchema(this.context);
       mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
 
@@ -3161,8 +3167,8 @@ public class FilterTableMappingTest {
 
     try {
 
-      Class.forName("org.hsqldb.jdbc.JDBCDriver");
-      connection = DriverManager.getConnection("jdbc:hsqldb:mem:mydb", "SA", "");
+      Class.forName(this.driver);
+      connection = DriverManager.getConnection(this.jurl, this.username, this.password);
 
       String countryTableBuilding = "create memory table COUNTRY(ID varchar(256) not null, NAME varchar(256), CONTINENT varchar(256), primary key (ID))";
       st = connection.createStatement();
@@ -3235,7 +3241,7 @@ public class FilterTableMappingTest {
       includedTables.add("REGULAR_EMPLOYEE");
       includedTables.add("CONTRACT_EMPLOYEE");
 
-      this.mapper = new OHibernate2GraphMapper("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", FilterTableMappingTest.XML_TABLE_PER_CONCRETE_CLASS, includedTables, null, null);
+      this.mapper = new OHibernate2GraphMapper(this.driver, this.jurl, this.username, this.password, FilterTableMappingTest.XML_TABLE_PER_CONCRETE_CLASS, includedTables, null, null);
       mapper.buildSourceDatabaseSchema(this.context);
       mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
 

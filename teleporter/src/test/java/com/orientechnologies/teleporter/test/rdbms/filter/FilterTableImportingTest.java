@@ -20,6 +20,7 @@ package com.orientechnologies.teleporter.test.rdbms.filter;
 
 import com.orientechnologies.teleporter.context.OOutputStreamManager;
 import com.orientechnologies.teleporter.context.OTeleporterContext;
+import com.orientechnologies.teleporter.importengine.rdbms.dbengine.ODBQueryEngine;
 import com.orientechnologies.teleporter.nameresolver.OJavaConventionNameResolver;
 import com.orientechnologies.teleporter.persistence.handler.OHSQLDBDataTypeHandler;
 import com.orientechnologies.teleporter.strategy.rdbms.ODBMSNaiveStrategy;
@@ -51,7 +52,12 @@ public class FilterTableImportingTest {
 
   private OTeleporterContext context;
   private ODBMSNaiveStrategy importStrategy;
-  private String             outOrientGraphUri;
+  private ODBQueryEngine dbQueryEngine;
+  private String driver = "org.hsqldb.jdbc.JDBCDriver";
+  private String jurl = "jdbc:hsqldb:mem:mydb";
+  private String username = "SA";
+  private String password = "";
+  private String outOrientGraphUri = "memory:testOrientDB";
 
   private final static String XML_TABLE_PER_CLASS = "src/test/resources/inheritance/hibernate/tablePerClassHierarchyImportTest.xml";
   private final static String XML_TABLE_PER_SUBCLASS1 = "src/test/resources/inheritance/hibernate/tablePerSubclassImportTest1.xml";
@@ -62,12 +68,12 @@ public class FilterTableImportingTest {
   @Before
   public void init() {
     this.context = new OTeleporterContext();
+    this.dbQueryEngine = new ODBQueryEngine(this.driver, this.jurl, this.username, this.password, this.context);
+    this.context.setDbQueryEngine(this.dbQueryEngine);
     this.context.setOutputManager(new OOutputStreamManager(0));
     this.context.setNameResolver(new OJavaConventionNameResolver());
     this.context.setDataTypeHandler(new OHSQLDBDataTypeHandler());
-    this.context.setQueryQuoteType("\"");
     this.importStrategy = new ODBMSNaiveStrategy();
-    this.outOrientGraphUri = "memory:testOrientDB";
   }
 
   @Test
@@ -82,8 +88,8 @@ public class FilterTableImportingTest {
 
     try {
 
-      Class.forName("org.hsqldb.jdbc.JDBCDriver");
-      connection = DriverManager.getConnection("jdbc:hsqldb:mem:mydb", "SA", "");
+      Class.forName(this.driver);
+      connection = DriverManager.getConnection(this.jurl, this.username, this.password);
 
       String countryTableBuilding = "create memory table COUNTRY(ID varchar(256) not null, NAME varchar(256), CONTINENT varchar(256), primary key (ID))";
       st = connection.createStatement();
@@ -128,7 +134,7 @@ public class FilterTableImportingTest {
       includedTables.add("MANAGER");
       includedTables.add("EMPLOYEE");
 
-      this.importStrategy.executeStrategy("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", this.outOrientGraphUri, "basicDBMapper", null, "java", includedTables, null, null, context);
+      this.importStrategy.executeStrategy(this.driver, this.jurl, this.username, this.password, this.outOrientGraphUri, "basicDBMapper", null, "java", includedTables, null, null, context);
 
 
       /*
@@ -348,8 +354,8 @@ public class FilterTableImportingTest {
 
     try {
 
-      Class.forName("org.hsqldb.jdbc.JDBCDriver");
-      connection = DriverManager.getConnection("jdbc:hsqldb:mem:mydb", "SA", "");
+      Class.forName(this.driver);
+      connection = DriverManager.getConnection(this.jurl, this.username, this.password);
 
       String countryTableBuilding = "create memory table COUNTRY(ID varchar(256) not null, NAME varchar(256), CONTINENT varchar(256), primary key (ID))";
       st = connection.createStatement();
@@ -392,7 +398,7 @@ public class FilterTableImportingTest {
       List<String> excludedTables = new ArrayList<String>();
       excludedTables.add("RESIDENCE");
 
-      this.importStrategy.executeStrategy("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", this.outOrientGraphUri, "basicDBMapper", null, "java", null, excludedTables, null, context);
+      this.importStrategy.executeStrategy(this.driver, this.jurl, this.username, this.password, this.outOrientGraphUri, "basicDBMapper", null, "java", null, excludedTables, null, context);
 
 
       /*
@@ -612,8 +618,8 @@ public class FilterTableImportingTest {
 
     try {
 
-      Class.forName("org.hsqldb.jdbc.JDBCDriver");
-      connection = DriverManager.getConnection("jdbc:hsqldb:mem:mydb", "SA", "");
+      Class.forName(this.driver);
+      connection = DriverManager.getConnection(this.jurl, this.username, this.password);
 
       String countryTableBuilding = "create memory table COUNTRY(ID varchar(256) not null, NAME varchar(256), CONTINENT varchar(256), primary key (ID))";
       st = connection.createStatement();
@@ -659,7 +665,7 @@ public class FilterTableImportingTest {
       includedTables.add("MANAGER");
       includedTables.add("EMPLOYEE");
 
-      this.importStrategy.executeStrategy("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", this.outOrientGraphUri, "hibernate", FilterTableImportingTest.XML_TABLE_PER_CLASS, "java", includedTables, null, null, context);
+      this.importStrategy.executeStrategy(this.driver, this.jurl, this.username, this.password, this.outOrientGraphUri, "hibernate", FilterTableImportingTest.XML_TABLE_PER_CLASS, "java", includedTables, null, null, context);
 
       /*
        *  Testing context information
@@ -913,8 +919,8 @@ public class FilterTableImportingTest {
 
     try {
 
-      Class.forName("org.hsqldb.jdbc.JDBCDriver");
-      connection = DriverManager.getConnection("jdbc:hsqldb:mem:mydb", "SA", "");
+      Class.forName(this.driver);
+      connection = DriverManager.getConnection(this.jurl, this.username, this.password);
 
       String countryTableBuilding = "create memory table COUNTRY(ID varchar(256) not null, NAME varchar(256), CONTINENT varchar(256), primary key (ID))";
       st = connection.createStatement();
@@ -985,7 +991,7 @@ public class FilterTableImportingTest {
       includedTables.add("REGULAR_EMPLOYEE");
       includedTables.add("CONTRACT_EMPLOYEE");
 
-      this.importStrategy.executeStrategy("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", this.outOrientGraphUri, "hibernate", FilterTableImportingTest.XML_TABLE_PER_SUBCLASS1, "java", includedTables, null, null, context);
+      this.importStrategy.executeStrategy(this.driver, this.jurl, this.username, this.password, this.outOrientGraphUri, "hibernate", FilterTableImportingTest.XML_TABLE_PER_SUBCLASS1, "java", includedTables, null, null, context);
 
       /*
        *  Testing context information
@@ -1239,8 +1245,8 @@ public class FilterTableImportingTest {
 
     try {
 
-      Class.forName("org.hsqldb.jdbc.JDBCDriver");
-      connection = DriverManager.getConnection("jdbc:hsqldb:mem:mydb", "SA", "");
+      Class.forName(this.driver);
+      connection = DriverManager.getConnection(this.jurl, this.username, this.password);
 
       String countryTableBuilding = "create memory table COUNTRY(ID varchar(256) not null, NAME varchar(256), CONTINENT varchar(256), primary key (ID))";
       st = connection.createStatement();
@@ -1306,7 +1312,7 @@ public class FilterTableImportingTest {
       List<String> excludedTables = new ArrayList<String>();
       excludedTables.add("RESIDENCE");
 
-      this.importStrategy.executeStrategy("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", this.outOrientGraphUri, "hibernate", FilterTableImportingTest.XML_TABLE_PER_SUBCLASS2, "java", null, excludedTables, null, context);
+      this.importStrategy.executeStrategy(this.driver, this.jurl, this.username, this.password, this.outOrientGraphUri, "hibernate", FilterTableImportingTest.XML_TABLE_PER_SUBCLASS2, "java", null, excludedTables, null, context);
 
 
       /*
@@ -1563,8 +1569,8 @@ public class FilterTableImportingTest {
 
     try {
 
-      Class.forName("org.hsqldb.jdbc.JDBCDriver");
-      connection = DriverManager.getConnection("jdbc:hsqldb:mem:mydb", "SA", "");
+      Class.forName(this.driver);
+      connection = DriverManager.getConnection(this.jurl, this.username, this.password);
 
       String countryTableBuilding = "create memory table COUNTRY(ID varchar(256) not null, NAME varchar(256), CONTINENT varchar(256), primary key (ID))";
       st = connection.createStatement();
@@ -1637,7 +1643,7 @@ public class FilterTableImportingTest {
       includedTables.add("REGULAR_EMPLOYEE");
       includedTables.add("CONTRACT_EMPLOYEE");
 
-      this.importStrategy.executeStrategy("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", this.outOrientGraphUri, "hibernate", FilterTableImportingTest.XML_TABLE_PER_CONCRETE_CLASS, "java", includedTables, null, null, context);
+      this.importStrategy.executeStrategy(this.driver, this.jurl, this.username, this.password, this.outOrientGraphUri, "hibernate", FilterTableImportingTest.XML_TABLE_PER_CONCRETE_CLASS, "java", includedTables, null, null, context);
 
       /*
        *  Testing context information

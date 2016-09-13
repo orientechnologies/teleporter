@@ -23,11 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.orientechnologies.teleporter.context.OTeleporterContext;
-import com.orientechnologies.teleporter.model.dbschema.OAttribute;
-import com.orientechnologies.teleporter.model.dbschema.OEntity;
 import com.orientechnologies.orient.core.metadata.schema.OType;
-import com.orientechnologies.orient.core.record.impl.ODocument;
 
 /**
  * Handler that executes type conversions from PostgreSQL DBMS to the OrientDB types.
@@ -226,37 +222,6 @@ public class OPostgreSQLDataTypeHandler extends ODBMSDataTypeHandler {
     geospatialTypes.add("geography");
 
     return geospatialTypes;
-  }
-
-
-  public String buildGeospatialQuery(OEntity entity, OTeleporterContext context) {
-
-    String quote = context.getQueryQuote();
-
-    String query = "select ";
-
-    for(OAttribute currentAttribute: entity.getAllAttributes()) {
-      if(this.isGeospatial(currentAttribute.getDataType()))
-        query += "ST_AsText(" + quote + currentAttribute.getName()  + quote +   ") as " + currentAttribute.getName() + ",";
-      else
-        query += quote + currentAttribute.getName() + quote + ",";
-    }
-
-    query = query.substring(0,query.length()-1);
-
-    String entitySchema = entity.getSchemaName();
-
-    if(entitySchema != null)
-      query += " from " + entitySchema + "." + quote + entity.getName() + quote;
-    else
-      query += " from " + quote + entity.getName() + quote;
-
-    return query;
-  }
-
-  @Override
-  public boolean isGeospatial(String type) {
-    return this.geospatialTypes.contains(type);
   }
 
 }

@@ -20,6 +20,7 @@ package com.orientechnologies.teleporter.test.rdbms.types;
 
 import com.orientechnologies.teleporter.context.OOutputStreamManager;
 import com.orientechnologies.teleporter.context.OTeleporterContext;
+import com.orientechnologies.teleporter.importengine.rdbms.dbengine.ODBQueryEngine;
 import com.orientechnologies.teleporter.nameresolver.OJavaConventionNameResolver;
 import com.orientechnologies.teleporter.persistence.handler.OHSQLDBDataTypeHandler;
 import com.orientechnologies.teleporter.strategy.rdbms.ODBMSNaiveStrategy;
@@ -45,11 +46,19 @@ public class DateTypeTest {
 
   private OTeleporterContext context;
   private ODBMSNaiveStrategy importStrategy;
-  private String outOrientGraphUri;
+  private ODBQueryEngine dbQueryEngine;
+  private String driver = "org.hsqldb.jdbc.JDBCDriver";
+  private String jurl = "jdbc:hsqldb:mem:mydb";
+  private String username = "SA";
+  private String password = "";
+  private String outOrientGraphUri = "memory:testOrientDB";
+
 
   @Before
   public void init() {
     this.context = new OTeleporterContext();
+    this.dbQueryEngine = new ODBQueryEngine(this.driver, this.jurl, this.username, this.password, this.context);
+    this.context.setDbQueryEngine(this.dbQueryEngine);
     this.context.setOutputManager(new OOutputStreamManager(0));
     this.context.setNameResolver(new OJavaConventionNameResolver());
     this.context.setDataTypeHandler(new OHSQLDBDataTypeHandler());
@@ -61,6 +70,7 @@ public class DateTypeTest {
    * Custom year type test.
    * Conversion to OType.STRING.
    */
+
   @Test
   public void test1() {
 
@@ -70,8 +80,8 @@ public class DateTypeTest {
 
     try {
 
-      Class.forName("org.hsqldb.jdbc.JDBCDriver");
-      connection = DriverManager.getConnection("jdbc:hsqldb:mem:mydb", "SA", "");
+      Class.forName(this.driver);
+      connection = DriverManager.getConnection(this.jurl, this.username, this.password);
 
       // Tables Building
 
@@ -89,7 +99,7 @@ public class DateTypeTest {
           + "('F003','The Departed','2006'))";
       st.execute(filmFilling);
 
-      this.importStrategy.executeStrategy("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", this.outOrientGraphUri, "basicDBMapper", null, "java", null, null, null, context);
+      this.importStrategy.executeStrategy(this.driver, "jdbc:hsqldb:mem:mydb", this.username, this.password, this.outOrientGraphUri, "basicDBMapper", null, "java", null, null, null, context);
 
 
       /*
@@ -133,8 +143,8 @@ public class DateTypeTest {
 
     try {
 
-      Class.forName("org.hsqldb.jdbc.JDBCDriver");
-      connection = DriverManager.getConnection("jdbc:hsqldb:mem:mydb", "SA", "");
+      Class.forName(this.driver);
+      connection = DriverManager.getConnection("jdbc:hsqldb:mem:mydb", this.username, this.password);
 
       // Tables Building
 
@@ -152,7 +162,7 @@ public class DateTypeTest {
           + "('F003','The Departed','2006-09-26'))";
       st.execute(filmFilling);
 
-      this.importStrategy.executeStrategy("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", this.outOrientGraphUri, "basicDBMapper", null, "java", null, null, null, context);
+      this.importStrategy.executeStrategy(this.driver, "jdbc:hsqldb:mem:mydb", this.username, this.password, this.outOrientGraphUri, "basicDBMapper", null, "java", null, null, null, context);
 
 
       /*
@@ -197,8 +207,8 @@ public class DateTypeTest {
 
     try {
 
-      Class.forName("org.hsqldb.jdbc.JDBCDriver");
-      connection = DriverManager.getConnection("jdbc:hsqldb:mem:mydb", "SA", "");
+      Class.forName(this.driver);
+      connection = DriverManager.getConnection("jdbc:hsqldb:mem:mydb", this.username, this.password);
 
       // Tables Building
 
@@ -216,7 +226,7 @@ public class DateTypeTest {
           + "('F003','The Departed','2006-09-26','2012-08-08 20:08:08'))";
       st.execute(filmFilling);
 
-      this.importStrategy.executeStrategy("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", this.outOrientGraphUri, "basicDBMapper", null, "java", null, null, null, context);
+      this.importStrategy.executeStrategy(this.driver, "jdbc:hsqldb:mem:mydb", this.username, this.password, this.outOrientGraphUri, "basicDBMapper", null, "java", null, null, null, context);
 
 
       /*
@@ -262,8 +272,8 @@ public class DateTypeTest {
 
     try {
 
-      Class.forName("org.hsqldb.jdbc.JDBCDriver");
-      connection = DriverManager.getConnection("jdbc:hsqldb:mem:mydb", "SA", "");
+      Class.forName(this.driver);
+      connection = DriverManager.getConnection("jdbc:hsqldb:mem:mydb", this.username, this.password);
 
       // Tables Building
 
@@ -281,7 +291,7 @@ public class DateTypeTest {
           + "('F003','The Departed','2006-09-26','2012-08-08 20:08:08+8:00'))";
       st.execute(filmFilling);
 
-      this.importStrategy.executeStrategy("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", this.outOrientGraphUri, "basicDBMapper", null, "java", null, null, null, context);
+      this.importStrategy.executeStrategy(this.driver, "jdbc:hsqldb:mem:mydb", this.username, this.password, this.outOrientGraphUri, "basicDBMapper", null, "java", null, null, null, context);
 
 
       /*
@@ -327,8 +337,8 @@ public class DateTypeTest {
 
     try {
 
-      Class.forName("org.hsqldb.jdbc.JDBCDriver");
-      connection = DriverManager.getConnection("jdbc:hsqldb:mem:mydb", "SA", "");
+      Class.forName(this.driver);
+      connection = DriverManager.getConnection("jdbc:hsqldb:mem:mydb", this.username, this.password);
 
       // Tables Building
 
@@ -346,7 +356,7 @@ public class DateTypeTest {
           + "('F003','The Departed','2006-09-26','20:08:08.034900'))";
       st.execute(filmFilling);
 
-      this.importStrategy.executeStrategy("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", this.outOrientGraphUri, "basicDBMapper", null, "java", null, null, null, context);
+      this.importStrategy.executeStrategy(this.driver, "jdbc:hsqldb:mem:mydb", this.username, this.password, this.outOrientGraphUri, "basicDBMapper", null, "java", null, null, null, context);
 
 
       /*
@@ -391,8 +401,8 @@ public class DateTypeTest {
 
     try {
 
-      Class.forName("org.hsqldb.jdbc.JDBCDriver");
-      connection = DriverManager.getConnection("jdbc:hsqldb:mem:mydb", "SA", "");
+      Class.forName(this.driver);
+      connection = DriverManager.getConnection("jdbc:hsqldb:mem:mydb", this.username, this.password);
 
       // Tables Building
 
@@ -410,7 +420,7 @@ public class DateTypeTest {
           + "('F003','The Departed','2006-09-26','20:08:08.034900-8:00'))";
       st.execute(filmFilling);
 
-      this.importStrategy.executeStrategy("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", this.outOrientGraphUri, "basicDBMapper", null, "java", null, null, null, context);
+      this.importStrategy.executeStrategy(this.driver, "jdbc:hsqldb:mem:mydb", this.username, this.password, this.outOrientGraphUri, "basicDBMapper", null, "java", null, null, null, context);
 
 
       /*

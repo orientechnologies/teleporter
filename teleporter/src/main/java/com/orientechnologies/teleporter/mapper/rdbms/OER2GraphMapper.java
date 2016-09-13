@@ -22,12 +22,14 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.teleporter.context.OTeleporterContext;
 import com.orientechnologies.teleporter.context.OTeleporterStatistics;
 import com.orientechnologies.teleporter.exception.OTeleporterRuntimeException;
+import com.orientechnologies.teleporter.importengine.rdbms.dbengine.ODBQueryEngine;
 import com.orientechnologies.teleporter.mapper.OSource2GraphMapper;
 import com.orientechnologies.teleporter.mapper.rdbms.classmapper.OClassMapper;
 import com.orientechnologies.teleporter.model.dbschema.*;
 import com.orientechnologies.teleporter.model.graphmodel.*;
 import com.orientechnologies.teleporter.nameresolver.ONameResolver;
 import com.orientechnologies.teleporter.persistence.util.ODBSourceConnection;
+import com.orientechnologies.teleporter.persistence.util.OQueryResult;
 
 import java.sql.*;
 import java.util.*;
@@ -250,7 +252,6 @@ public class OER2GraphMapper extends OSource2GraphMapper {
   private int buildEntities(DatabaseMetaData databaseMetaData, Connection sourceDBConnection, OTeleporterContext context) throws SQLException {
 
     OTeleporterStatistics statistics = context.getStatistics();
-    String quote = context.getQueryQuote();
     Map<String,String> tablesName2schema = new LinkedHashMap<String,String>();
 
     String tableCatalog = null;
@@ -286,6 +287,7 @@ public class OER2GraphMapper extends OSource2GraphMapper {
 
     // Variables for records counting
     Statement statement = sourceDBConnection.createStatement();
+    ODBQueryEngine dbQueryEngine = context.getDbQueryEngine();
     int totalNumberOfRecord = 0;
 
     int iteration = 1;
@@ -296,12 +298,10 @@ public class OER2GraphMapper extends OSource2GraphMapper {
       // Counting current-table's record
       String currentTableSchema = tablesName2schema.get(currentTableName);
       String sql;
-      if(currentTableSchema != null)
-        sql = "select count(*) from " + currentTableSchema + "." + quote + currentTableName + quote;
-      else
-        sql = "select count(*) from " + quote + currentTableName + quote;
 
-      ResultSet currentTableRecordAmount = statement.executeQuery(sql);
+      OQueryResult result = dbQueryEngine.countTableRecords(currentTableName, currentTableSchema, context);
+
+      ResultSet currentTableRecordAmount = result.getResult();
       if (currentTableRecordAmount.next()) {
         totalNumberOfRecord += currentTableRecordAmount.getInt(1);
       }

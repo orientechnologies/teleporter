@@ -16,7 +16,7 @@
  * For more information: http://www.orientdb.com
  */
 
-package com.orientechnologies.teleporter.importengine.rdbms;
+package com.orientechnologies.teleporter.importengine.rdbms.graphengine;
 
 import com.orientechnologies.orient.core.exception.OValidationException;
 import com.orientechnologies.orient.core.record.impl.ODocument;

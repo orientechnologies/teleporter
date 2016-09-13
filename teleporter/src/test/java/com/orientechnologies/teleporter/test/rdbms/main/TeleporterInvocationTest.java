@@ -38,10 +38,12 @@ public abstract class TeleporterInvocationTest {
 
   // arguments
   protected Map<String,String> arguments = new HashMap<String,String>();
-
   protected String[] args;
-
   protected Connection dbConnection;
+  private String driver = "org.hsqldb.jdbc.JDBCDriver";
+  private String jurl = "jdbc:hsqldb:mem:mydb";
+  private String username = "SA";
+  private String password = "";
 
 
   protected void buildEnvironmentForExecution() {
@@ -57,8 +59,8 @@ public abstract class TeleporterInvocationTest {
 
   private void buildHSQLDBDatabaseToImport() {
     try {
-      Class.forName("org.hsqldb.jdbc.JDBCDriver");
-      this.dbConnection = DriverManager.getConnection("jdbc:hsqldb:mem:mydb", "SA", "");
+      Class.forName(this.driver);
+      this.dbConnection = DriverManager.getConnection(this.jurl, this.username, this.password);
 
       // Tables Building
 
@@ -139,10 +141,10 @@ public abstract class TeleporterInvocationTest {
 
     public void prepareArguments() {
       this.arguments.put("-jdriver", "hypersql");
-      this.arguments.put("-jurl", "jdbc:hsqldb:mem:mydb");
+      this.arguments.put("-jurl", this.jurl);
       this.arguments.put("-ourl", "memory:testOrientDB");
-      this.arguments.put("-juser", "SA");
-      this.arguments.put("-jpasswd", "");
+      this.arguments.put("-juser", this.username);
+      this.arguments.put("-jpasswd", this.password);
     }
 
   public void prepareArrayArgs() {

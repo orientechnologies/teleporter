@@ -20,6 +20,7 @@ package com.orientechnologies.teleporter.test.rdbms.mapper;
 
 import com.orientechnologies.teleporter.context.OOutputStreamManager;
 import com.orientechnologies.teleporter.context.OTeleporterContext;
+import com.orientechnologies.teleporter.importengine.rdbms.dbengine.ODBQueryEngine;
 import com.orientechnologies.teleporter.mapper.rdbms.OER2GraphMapper;
 import com.orientechnologies.teleporter.model.dbschema.OEntity;
 import com.orientechnologies.teleporter.model.dbschema.ORelationship;
@@ -44,12 +45,19 @@ public class SourceSchemaBuildingTest {
 
   private OER2GraphMapper    mapper;
   private OTeleporterContext context;
+  private ODBQueryEngine dbQueryEngine;
+  private String driver = "org.hsqldb.jdbc.JDBCDriver";
+  private String jurl = "jdbc:hsqldb:mem:mydb";
+  private String username = "SA";
+  private String password = "";
+
 
   @Before
   public void init() {
     this.context = new OTeleporterContext();
+    this.dbQueryEngine = new ODBQueryEngine(this.driver, this.jurl, this.username, this.password, this.context);
+    this.context.setDbQueryEngine(this.dbQueryEngine);
     context.setOutputManager(new OOutputStreamManager(0));
-    this.context.setQueryQuoteType("\"");
   }
 
 
@@ -66,8 +74,8 @@ public class SourceSchemaBuildingTest {
 
     try {
 
-      Class.forName("org.hsqldb.jdbc.JDBCDriver");
-      connection = DriverManager.getConnection("jdbc:hsqldb:mem:mydb", "SA", "");
+      Class.forName(this.driver);
+      connection = DriverManager.getConnection(this.jurl, this.username, this.password);
 
       String parentTableBuilding = "create memory table PARENT_AUTHOR (AUTHOR_ID varchar(256) not null,"+
           " AUTHOR_NAME varchar(256) not null, primary key (AUTHOR_ID))";
@@ -79,7 +87,7 @@ public class SourceSchemaBuildingTest {
           " AUTHOR varchar(256) not null, primary key (BOOK_ID), foreign key (AUTHOR) references PARENT_AUTHOR(AUTHOR_ID))";
       st.execute(foreignTableBuilding);
 
-      this.mapper = new OER2GraphMapper("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", null, null, null);
+      this.mapper = new OER2GraphMapper(this.driver, this.jurl, this.username, this.password, null, null, null);
       mapper.buildSourceDatabaseSchema(this.context);
 
 
@@ -197,8 +205,8 @@ public class SourceSchemaBuildingTest {
 
     try {
 
-      Class.forName("org.hsqldb.jdbc.JDBCDriver");
-      connection = DriverManager.getConnection("jdbc:hsqldb:mem:mydb", "SA", "");
+      Class.forName(this.driver);
+      connection = DriverManager.getConnection(this.jurl, this.username, this.password);
 
       String parentTableBuilding = "create memory table PARENT_AUTHOR (AUTHOR_NAME varchar(256) not null,"+
           " AUTHOR_SURNAME varchar(256) not null, AGE INTEGER, primary key (AUTHOR_NAME,AUTHOR_SURNAME))";
@@ -211,7 +219,7 @@ public class SourceSchemaBuildingTest {
           " foreign key (AUTHOR_NAME,AUTHOR_SURNAME) references PARENT_AUTHOR(AUTHOR_NAME,AUTHOR_SURNAME))";
       st.execute(foreignTableBuilding);
 
-      this.mapper = new OER2GraphMapper("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", null, null, null);
+      this.mapper = new OER2GraphMapper(this.driver, this.jurl, this.username, this.password, null, null, null);
       mapper.buildSourceDatabaseSchema(this.context);
 
 
@@ -335,8 +343,8 @@ public class SourceSchemaBuildingTest {
 
     try {
 
-      Class.forName("org.hsqldb.jdbc.JDBCDriver");
-      connection = DriverManager.getConnection("jdbc:hsqldb:mem:mydb", "SA", "");
+      Class.forName(this.driver);
+      connection = DriverManager.getConnection(this.jurl, this.username, this.password);
 
       String parentTableBuilding = "create memory table PARENT_PERSON (PERSON_ID varchar(256) not null,"+
           " NAME varchar(256) not null, primary key (PERSON_ID))";
@@ -349,7 +357,7 @@ public class SourceSchemaBuildingTest {
           " foreign key (TRANSLATOR) references PARENT_PERSON(PERSON_ID))";
       st.execute(foreignTableBuilding);
 
-      this.mapper = new OER2GraphMapper("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", null, null, null);
+      this.mapper = new OER2GraphMapper(this.driver, this.jurl, this.username, this.password, null, null, null);
       mapper.buildSourceDatabaseSchema(this.context);
 
 
@@ -479,8 +487,8 @@ public class SourceSchemaBuildingTest {
 
     try {
 
-      Class.forName("org.hsqldb.jdbc.JDBCDriver");
-      connection = DriverManager.getConnection("jdbc:hsqldb:mem:mydb", "SA", "");
+      Class.forName(this.driver);
+      connection = DriverManager.getConnection(this.jurl, this.username, this.password);
 
       String parentTableBuilding = "create memory table PARENT_PERSON (NAME varchar(256) not null,"+
           " SURNAME varchar(256) not null, primary key (NAME,SURNAME))";
@@ -495,7 +503,7 @@ public class SourceSchemaBuildingTest {
           " foreign key (TRANSLATOR_NAME,TRANSLATOR_SURNAME) references PARENT_PERSON(NAME,SURNAME))";
       st.execute(foreignTableBuilding);
 
-      this.mapper = new OER2GraphMapper("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", null, null, null);
+      this.mapper = new OER2GraphMapper(this.driver, this.jurl, this.username, this.password, null, null, null);
       mapper.buildSourceDatabaseSchema(this.context);
 
 
@@ -644,8 +652,8 @@ public class SourceSchemaBuildingTest {
 
     try {
 
-      Class.forName("org.hsqldb.jdbc.JDBCDriver");
-      connection = DriverManager.getConnection("jdbc:hsqldb:mem:mydb", "SA", "");
+      Class.forName(this.driver);
+      connection = DriverManager.getConnection(this.jurl, this.username, this.password);
 
       String parentTableBuilding = "create memory table PARENT_EMPLOYEE (EMP_ID varchar(256) not null,"+
           " MGR_ID varchar(256) not null, NAME varchar(256) not null, primary key (EMP_ID), " + 
@@ -658,7 +666,7 @@ public class SourceSchemaBuildingTest {
           " foreign key (PROJECT_MANAGER) references PARENT_EMPLOYEE(EMP_ID))";
       st.execute(foreignTableBuilding);
 
-      this.mapper = new OER2GraphMapper("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", null, null, null);
+      this.mapper = new OER2GraphMapper(this.driver, this.jurl, this.username, this.password, null, null, null);
       mapper.buildSourceDatabaseSchema(this.context);
 
 
@@ -797,8 +805,8 @@ public class SourceSchemaBuildingTest {
 
     try {
 
-      Class.forName("org.hsqldb.jdbc.JDBCDriver");
-      connection = DriverManager.getConnection("jdbc:hsqldb:mem:mydb", "SA", "");
+      Class.forName(this.driver);
+      connection = DriverManager.getConnection(this.jurl, this.username, this.password);
 
       String filmTableBuilding = "create memory table FILM (ID varchar(256) not null, TITLE varchar(256) not null,"+
           " YEAR varchar(256) not null, DIRECTOR varchar(256) not null, primary key (ID))";
@@ -819,7 +827,7 @@ public class SourceSchemaBuildingTest {
 
       connection.commit();
 
-      this.mapper = new OER2GraphMapper("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", null, null, null);
+      this.mapper = new OER2GraphMapper(this.driver, this.jurl, this.username, this.password, null, null, null);
       mapper.buildSourceDatabaseSchema(this.context);
 
 

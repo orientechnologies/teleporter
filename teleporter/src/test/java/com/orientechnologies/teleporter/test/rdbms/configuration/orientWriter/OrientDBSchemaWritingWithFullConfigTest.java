@@ -22,6 +22,7 @@ import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.teleporter.context.OOutputStreamManager;
 import com.orientechnologies.teleporter.context.OTeleporterContext;
+import com.orientechnologies.teleporter.importengine.rdbms.dbengine.ODBQueryEngine;
 import com.orientechnologies.teleporter.mapper.rdbms.OER2GraphMapper;
 import com.orientechnologies.teleporter.nameresolver.OJavaConventionNameResolver;
 import com.orientechnologies.teleporter.persistence.handler.OHSQLDBDataTypeHandler;
@@ -53,13 +54,19 @@ public class OrientDBSchemaWritingWithFullConfigTest {
     private OGraphModelWriter modelWriter;
     private String             outOrientGraphUri;
     private final String config = "src/test/resources/configuration-mapping/full-configuration-mapping.json";
+    private ODBQueryEngine dbQueryEngine;
+    private String driver = "org.hsqldb.jdbc.JDBCDriver";
+    private String jurl = "jdbc:hsqldb:mem:mydb";
+    private String username = "SA";
+    private String password = "";
 
     @Before
     public void init() {
         this.context = new OTeleporterContext();
+        this.dbQueryEngine = new ODBQueryEngine(this.driver, this.jurl, this.username, this.password, this.context);
+        this.context.setDbQueryEngine(this.dbQueryEngine);
         this.context.setOutputManager(new OOutputStreamManager(0));
         this.context.setNameResolver(new OJavaConventionNameResolver());
-        this.context.setQueryQuoteType("\"");
         this.modelWriter = new OGraphModelWriter();
         this.outOrientGraphUri = "memory:testOrientDB";
     }
@@ -94,8 +101,8 @@ public class OrientDBSchemaWritingWithFullConfigTest {
 
         try {
 
-            Class.forName("org.hsqldb.jdbc.JDBCDriver");
-            connection = DriverManager.getConnection("jdbc:hsqldb:mem:mydb", "SA", "");
+            Class.forName(this.driver);
+            connection = DriverManager.getConnection(this.jurl, this.username, this.password);
 
             String personTableBuilding = "create memory table PERSON (ID varchar(256) not null,"+
                     " NAME varchar(256) not null, SURNAME varchar(256) not null, DEP_ID varchar(256) not null, primary key (ID))";
@@ -112,7 +119,7 @@ public class OrientDBSchemaWritingWithFullConfigTest {
 
             ODocument config = OFileManager.buildJsonFromFile(this.config);
 
-            this.mapper = new OER2GraphMapper("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", null, null, config);
+            this.mapper = new OER2GraphMapper(this.driver, this.jurl, this.username, this.password, null, null, config);
             mapper.buildSourceDatabaseSchema(this.context);
             mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
             mapper.applyImportConfiguration(this.context);

@@ -24,9 +24,8 @@ import com.orientechnologies.teleporter.context.OTeleporterStatistics;
 import com.orientechnologies.teleporter.exception.OTeleporterRuntimeException;
 import com.orientechnologies.teleporter.factory.ODataTypeHandlerFactory;
 import com.orientechnologies.teleporter.factory.ONameResolverFactory;
-import com.orientechnologies.teleporter.factory.OQueryQuoteTypeFactory;
-import com.orientechnologies.teleporter.importengine.rdbms.ODBQueryEngine;
-import com.orientechnologies.teleporter.importengine.rdbms.OGraphEngineForDB;
+import com.orientechnologies.teleporter.importengine.rdbms.dbengine.ODBQueryEngine;
+import com.orientechnologies.teleporter.importengine.rdbms.graphengine.OGraphEngineForDB;
 import com.orientechnologies.teleporter.mapper.OSource2GraphMapper;
 import com.orientechnologies.teleporter.mapper.rdbms.OER2GraphMapper;
 import com.orientechnologies.teleporter.model.dbschema.OAttribute;
@@ -65,9 +64,6 @@ public abstract class ODBMSImportStrategy implements OImportStrategy {
       List<String> includedTables, List<String> excludedTables, String configurationPath, OTeleporterContext context) {
 
     Date globalStart = new Date();
-
-    OQueryQuoteTypeFactory quoteFactory = new OQueryQuoteTypeFactory();
-    quoteFactory.buildQueryQuoteType(driver, context);
 
     ODataTypeHandlerFactory factory = new ODataTypeHandlerFactory();
     ODBMSDataTypeHandler handler = (ODBMSDataTypeHandler) factory.buildDataTypeHandler(driver, context);
@@ -114,7 +110,8 @@ public abstract class ODBMSImportStrategy implements OImportStrategy {
     OrientVertex currentOutVertex;
     OVertexType currentInVertexType;
     OEdgeType edgeType;// for each entity in dbSchema all records are retrieved
-    if(mappedEntities.size() == 1) {
+    int numberOfAggregatedClasses = mappedEntities.size();
+    if(numberOfAggregatedClasses == 1) {
       queryResult = dbQueryEngine.getRecordsByEntity(mappedEntities.get(0), context);
     }
     else {
@@ -124,7 +121,7 @@ public abstract class ODBMSImportStrategy implements OImportStrategy {
 
     //if (handler.geospatialImplemented && super.hasGeospatialAttributes(entity, handler)) {
     //  String query = handler.buildGeospatialQuery(entity, context);
-    //  queryResult = dbQueryEngine.getRecordsByQuery(query, context);
+    //  queryResult = dbQueryEngine.executeQuery(query, context);
     //}
 
     records = queryResult.getResult();
@@ -150,7 +147,7 @@ public abstract class ODBMSImportStrategy implements OImportStrategy {
       }
 
       // Statistics updated
-      statistics.analyzedRecords++;
+      statistics.analyzedRecords += 1 * numberOfAggregatedClasses;
 
     }
 
@@ -205,8 +202,6 @@ public abstract class ODBMSImportStrategy implements OImportStrategy {
       String currentDiscriminatorValue;
       Iterator<OEntity> it = bag.getDepth2entities().get(0).iterator();
       OEntity physicalCurrentEntity = it.next();
-      String physicalCurrentEntityName = physicalCurrentEntity.getName();
-      String physicalCurrentEntitySchemaName = physicalCurrentEntity.getSchemaName();
 
       OQueryResult queryResult = null;
       ResultSet records = null;
@@ -216,7 +211,7 @@ public abstract class ODBMSImportStrategy implements OImportStrategy {
           currentDiscriminatorValue = bag.getEntityName2discriminatorValue().get(currentEntity.getName());
 
           // for each entity in dbSchema all records are retrieved
-          queryResult = dbQueryEngine.getRecordsFromSingleTableByDiscriminatorValue(bag.getDiscriminatorColumn(), currentDiscriminatorValue, physicalCurrentEntityName, physicalCurrentEntitySchemaName, context);
+          queryResult = dbQueryEngine.getRecordsFromSingleTableByDiscriminatorValue(bag.getDiscriminatorColumn(), currentDiscriminatorValue, physicalCurrentEntity, context);
           records = queryResult.getResult();
           ResultSet currentRecord = null;
 
@@ -264,9 +259,7 @@ public abstract class ODBMSImportStrategy implements OImportStrategy {
                 if(ok) {
                   it = currentParentEntity.getHierarchicalBag().getDepth2entities().get(0).iterator();
                   OEntity physicalArrivalEntity = it.next();
-                  String physicalArrivalEntityName = physicalArrivalEntity.getName();
-                  String physicalArrivalEntitySchemaName = physicalArrivalEntity.getSchemaName();
-                  String currentArrivalEntityName = searchParentEntityType(currentParentEntity, propertyOfKey, valueOfKey, physicalArrivalEntityName, physicalArrivalEntitySchemaName, dbQueryEngine, context);
+                  String currentArrivalEntityName = searchParentEntityType(currentParentEntity, propertyOfKey, valueOfKey, physicalArrivalEntity, dbQueryEngine, context);
                   OEntity currentArrivalEntity = mapper.getDataBaseSchema().getEntityByName(currentArrivalEntityName);
                   currentInVertexType = mapper.getVertexTypeByEntity(currentArrivalEntity);
                 }
@@ -412,7 +405,7 @@ public abstract class ODBMSImportStrategy implements OImportStrategy {
                     }
                   }
                   if(ok) {
-                    String currentArrivalEntityName = searchParentEntityType(currentParentEntity, propertyOfKey, valueOfKey, null, null, dbQueryEngine, context);
+                    String currentArrivalEntityName = searchParentEntityType(currentParentEntity, propertyOfKey, valueOfKey, null, dbQueryEngine, context);
                     OEntity currentArrivalEntity = mapper.getDataBaseSchema().getEntityByName(currentArrivalEntityName);
                     currentInVertexType = mapper.getVertexTypeByEntity(currentArrivalEntity);
                   }
@@ -538,7 +531,7 @@ public abstract class ODBMSImportStrategy implements OImportStrategy {
                     }
                   }
                   if(ok) {
-                    String currentArrivalEntityName = searchParentEntityType(currentParentEntity, propertyOfKey, valueOfKey, null, null, dbQueryEngine, context);
+                    String currentArrivalEntityName = searchParentEntityType(currentParentEntity, propertyOfKey, valueOfKey, null, dbQueryEngine, context);
                     OEntity currentArrivalEntity = mapper.getDataBaseSchema().getEntityByName(currentArrivalEntityName);
                     currentInVertexType = mapper.getVertexTypeByEntity(currentArrivalEntity);
                   }
@@ -586,17 +579,16 @@ public abstract class ODBMSImportStrategy implements OImportStrategy {
    * @param currentParentEntity
    * @param propertyOfKey
    * @param valueOfKey
-   * @param physicalArrivalEntityName
-   * @param physicalArrivalEntitySchemaName
+   * @param physicalArrivalEntity
    * @param dbQueryEngine
    * @param context
    * @return
    */
-  private String searchParentEntityType(OEntity currentParentEntity, String[] propertyOfKey, String[] valueOfKey, String physicalArrivalEntityName, String physicalArrivalEntitySchemaName, ODBQueryEngine dbQueryEngine, OTeleporterContext context) {
+  private String searchParentEntityType(OEntity currentParentEntity, String[] propertyOfKey, String[] valueOfKey, OEntity physicalArrivalEntity, ODBQueryEngine dbQueryEngine, OTeleporterContext context) {
 
     switch(currentParentEntity.getHierarchicalBag().getInheritancePattern()) {
 
-    case "table-per-hierarchy": return searchParentEntityTypeFromSingleTable(currentParentEntity, propertyOfKey, valueOfKey, physicalArrivalEntityName, physicalArrivalEntitySchemaName, dbQueryEngine, context);
+    case "table-per-hierarchy": return searchParentEntityTypeFromSingleTable(currentParentEntity, propertyOfKey, valueOfKey, physicalArrivalEntity, dbQueryEngine, context);
 
     case "table-per-type": return searchParentEntityTypeFromSubclassTable(currentParentEntity, propertyOfKey, valueOfKey, dbQueryEngine, context);
 
@@ -613,12 +605,12 @@ public abstract class ODBMSImportStrategy implements OImportStrategy {
    * @param currentParentEntity
    * @param valueOfKey
    * @param propertyOfKey
-   * @param physicalEntityName
+   * @param physicalEntity
    * @param dbQueryEngine
    * @param context
    * @return
    */
-  private String searchParentEntityTypeFromSingleTable(OEntity currentParentEntity, String[] propertyOfKey, String[] valueOfKey, String physicalEntityName, String physicalEntitySchemaName, ODBQueryEngine dbQueryEngine, OTeleporterContext context) {
+  private String searchParentEntityTypeFromSingleTable(OEntity currentParentEntity, String[] propertyOfKey, String[] valueOfKey, OEntity physicalEntity, ODBQueryEngine dbQueryEngine, OTeleporterContext context) {
 
     OHierarchicalBag hierarchicalBag = currentParentEntity.getHierarchicalBag();
     String discriminatorColumn = hierarchicalBag.getDiscriminatorColumn();
@@ -626,7 +618,7 @@ public abstract class ODBMSImportStrategy implements OImportStrategy {
 
     try {
 
-      OQueryResult queryResult = dbQueryEngine.getEntityTypeFromSingleTable(discriminatorColumn, physicalEntityName, physicalEntitySchemaName, propertyOfKey, valueOfKey, context);
+      OQueryResult queryResult = dbQueryEngine.getEntityTypeFromSingleTable(discriminatorColumn, physicalEntity, propertyOfKey, valueOfKey, context);
       ResultSet result = queryResult.getResult();
       result.next();
       String discriminatorValue = result.getString(discriminatorColumn);
@@ -675,7 +667,7 @@ public abstract class ODBMSImportStrategy implements OImportStrategy {
             propertyOfKey[j] = currentEntity.getPrimaryKey().getInvolvedAttributes().get(j).getName();
           }
 
-          queryResult = dbQueryEngine.getRecordById(currentEntity.getName(), currentEntity.getSchemaName(), propertyOfKey, valueOfKey, context);
+          queryResult = dbQueryEngine.getRecordById(currentEntity, propertyOfKey, valueOfKey, context);
           result = queryResult.getResult();
 
           if(result != null) {
@@ -726,7 +718,7 @@ public abstract class ODBMSImportStrategy implements OImportStrategy {
             propertyOfKey[j] = currentEntity.getPrimaryKey().getInvolvedAttributes().get(j).getName();
           }
 
-          queryResult = dbQueryEngine.getRecordById(currentEntity.getName(), currentEntity.getSchemaName(), propertyOfKey, valueOfKey, context);
+          queryResult = dbQueryEngine.getRecordById(currentEntity, propertyOfKey, valueOfKey, context);
           result = queryResult.getResult();
 
           if(result != null) {

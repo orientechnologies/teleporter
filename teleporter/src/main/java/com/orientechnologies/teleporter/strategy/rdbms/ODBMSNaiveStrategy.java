@@ -24,27 +24,20 @@ import com.orientechnologies.teleporter.context.OTeleporterContext;
 import com.orientechnologies.teleporter.context.OTeleporterStatistics;
 import com.orientechnologies.teleporter.exception.OTeleporterRuntimeException;
 import com.orientechnologies.teleporter.factory.OMapperFactory;
-import com.orientechnologies.teleporter.importengine.rdbms.ODBQueryEngine;
-import com.orientechnologies.teleporter.importengine.rdbms.OGraphEngineForDB;
+import com.orientechnologies.teleporter.importengine.rdbms.dbengine.ODBQueryEngine;
+import com.orientechnologies.teleporter.importengine.rdbms.graphengine.OGraphEngineForDB;
 import com.orientechnologies.teleporter.mapper.OSource2GraphMapper;
 import com.orientechnologies.teleporter.mapper.rdbms.OER2GraphMapper;
 import com.orientechnologies.teleporter.mapper.rdbms.classmapper.OClassMapper;
 import com.orientechnologies.teleporter.model.dbschema.OEntity;
-import com.orientechnologies.teleporter.model.dbschema.OHierarchicalBag;
-import com.orientechnologies.teleporter.model.dbschema.ORelationship;
-import com.orientechnologies.teleporter.model.graphmodel.OEdgeType;
 import com.orientechnologies.teleporter.model.graphmodel.OGraphModel;
 import com.orientechnologies.teleporter.model.graphmodel.OVertexType;
 import com.orientechnologies.teleporter.nameresolver.ONameResolver;
 import com.orientechnologies.teleporter.persistence.handler.ODBMSDataTypeHandler;
-import com.orientechnologies.teleporter.persistence.util.OQueryResult;
 import com.orientechnologies.teleporter.writer.OGraphModelWriter;
 import com.tinkerpop.blueprints.impls.orient.OrientBaseGraph;
 import com.tinkerpop.blueprints.impls.orient.OrientGraphFactory;
-import com.tinkerpop.blueprints.impls.orient.OrientVertex;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -110,7 +103,7 @@ public class ODBMSNaiveStrategy extends ODBMSImportStrategy {
       statistics.runningStepNumber = 4;
 
       OER2GraphMapper mapper = (OER2GraphMapper) genericMapper;
-      ODBQueryEngine dbQueryEngine = new ODBQueryEngine(driver, uri, username, password, context);
+      ODBQueryEngine dbQueryEngine = context.getDbQueryEngine();
       OGraphEngineForDB graphEngine = new OGraphEngineForDB((OER2GraphMapper) mapper, handler);
 
       // OrientDB graph initialization/connection

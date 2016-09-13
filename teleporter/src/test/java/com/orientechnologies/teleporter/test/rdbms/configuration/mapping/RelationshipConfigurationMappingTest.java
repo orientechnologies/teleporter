@@ -20,6 +20,7 @@ package com.orientechnologies.teleporter.test.rdbms.configuration.mapping;
 
 import com.orientechnologies.teleporter.context.OOutputStreamManager;
 import com.orientechnologies.teleporter.context.OTeleporterContext;
+import com.orientechnologies.teleporter.importengine.rdbms.dbengine.ODBQueryEngine;
 import com.orientechnologies.teleporter.mapper.rdbms.OER2GraphMapper;
 import com.orientechnologies.teleporter.mapper.rdbms.classmapper.OClassMapper;
 import com.orientechnologies.teleporter.model.dbschema.OEntity;
@@ -56,15 +57,22 @@ public class RelationshipConfigurationMappingTest {
   private final String configJoinTableDirectEdgesPath = "src/test/resources/configuration-mapping/joint-table-relationships-mapping-direct-edges.json";
   private final String configJoinTableInverseEdgesPath = "src/test/resources/configuration-mapping/joint-table-relationships-mapping-inverted-edges.json";
   private final String configJoinTableInverseEdgesPath2 = "src/test/resources/configuration-mapping/join-table-relationship-mapping-inverted-edges2.json";
+  private ODBQueryEngine dbQueryEngine;
+  private String driver = "org.hsqldb.jdbc.JDBCDriver";
+  private String jurl = "jdbc:hsqldb:mem:mydb";
+  private String username = "SA";
+  private String password = "";
+
 
   @Before
   public void init() {
     this.context = new OTeleporterContext();
+    this.dbQueryEngine = new ODBQueryEngine(this.driver, this.jurl, this.username, this.password, this.context);
+    this.context.setDbQueryEngine(this.dbQueryEngine);
     this.context.setOutputManager(new OOutputStreamManager(0));
     this.context.setNameResolver(new OJavaConventionNameResolver());
     this.context.setDataTypeHandler(new OHSQLDBDataTypeHandler());
     context.setOutputManager(new OOutputStreamManager(0));
-    this.context.setQueryQuoteType("\"");
   }
 
   @Test
@@ -90,8 +98,8 @@ public class RelationshipConfigurationMappingTest {
 
     try {
 
-      Class.forName("org.hsqldb.jdbc.JDBCDriver");
-      connection = DriverManager.getConnection("jdbc:hsqldb:mem:mydb", "SA", "");
+      Class.forName(this.driver);
+      connection = DriverManager.getConnection(this.jurl, this.username, this.password);
 
       String parentTableBuilding = "create memory table EMPLOYEE (EMP_ID varchar(256) not null,"+
           " FIRST_NAME varchar(256) not null, LAST_NAME varchar(256) not null, PROJECT varchar(256) not null, primary key (EMP_ID))";
@@ -104,7 +112,7 @@ public class RelationshipConfigurationMappingTest {
 
       ODocument config = OFileManager.buildJsonFromFile(this.configDirectEdgesPath);
 
-      this.mapper = new OER2GraphMapper("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", null, null, config);
+      this.mapper = new OER2GraphMapper(this.driver, this.jurl, this.username, this.password, null, null, config);
       mapper.buildSourceDatabaseSchema(this.context);
       mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
       mapper.applyImportConfiguration(this.context);
@@ -456,8 +464,8 @@ public class RelationshipConfigurationMappingTest {
 
     try {
 
-      Class.forName("org.hsqldb.jdbc.JDBCDriver");
-      connection = DriverManager.getConnection("jdbc:hsqldb:mem:mydb", "SA", "");
+      Class.forName(this.driver);
+      connection = DriverManager.getConnection(this.jurl, this.username, this.password);
 
       String parentTableBuilding = "create memory table EMPLOYEE (EMP_ID varchar(256) not null,"+
           " FIRST_NAME varchar(256) not null, LAST_NAME varchar(256) not null, PROJECT varchar(256) not null, primary key (EMP_ID))";
@@ -475,7 +483,7 @@ public class RelationshipConfigurationMappingTest {
 
       ODocument config = OFileManager.buildJsonFromFile(this.configInverseEdgesPath);
 
-      this.mapper = new OER2GraphMapper("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", null, null, config);
+      this.mapper = new OER2GraphMapper(this.driver, this.jurl, this.username, this.password, null, null, config);
       mapper.buildSourceDatabaseSchema(this.context);
       mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
       mapper.applyImportConfiguration(this.context);
@@ -809,8 +817,8 @@ public class RelationshipConfigurationMappingTest {
 
     try {
 
-      Class.forName("org.hsqldb.jdbc.JDBCDriver");
-      connection = DriverManager.getConnection("jdbc:hsqldb:mem:mydb", "SA", "");
+      Class.forName(this.driver);
+      connection = DriverManager.getConnection(this.jurl, this.username, this.password);
 
       String parentTableBuilding = "create memory table ACTOR (ID varchar(256) not null,"+
           " FIRST_NAME varchar(256) not null, LAST_NAME varchar(256) not null, primary key (ID))";
@@ -827,7 +835,7 @@ public class RelationshipConfigurationMappingTest {
 
       ODocument config = OFileManager.buildJsonFromFile(this.configJoinTableDirectEdgesPath);
 
-      this.mapper = new OER2GraphMapper("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", null, null, config);
+      this.mapper = new OER2GraphMapper(this.driver, this.jurl, this.username, this.password, null, null, config);
       mapper.buildSourceDatabaseSchema(this.context);
       mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
       mapper.applyImportConfiguration(this.context);
@@ -1412,8 +1420,8 @@ public class RelationshipConfigurationMappingTest {
 
     try {
 
-      Class.forName("org.hsqldb.jdbc.JDBCDriver");
-      connection = DriverManager.getConnection("jdbc:hsqldb:mem:mydb", "SA", "");
+      Class.forName(this.driver);
+      connection = DriverManager.getConnection(this.jurl, this.username, this.password);
 
       String parentTableBuilding = "create memory table ACTOR (ID varchar(256) not null,"+
           " FIRST_NAME varchar(256) not null, LAST_NAME varchar(256) not null, primary key (ID))";
@@ -1430,7 +1438,7 @@ public class RelationshipConfigurationMappingTest {
 
       ODocument config = OFileManager.buildJsonFromFile(this.configJoinTableInverseEdgesPath);
 
-      this.mapper = new OER2GraphMapper("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", null, null, config);
+      this.mapper = new OER2GraphMapper(this.driver, this.jurl, this.username, this.password, null, null, config);
       mapper.buildSourceDatabaseSchema(this.context);
       mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
       mapper.applyImportConfiguration(this.context);
@@ -2014,8 +2022,8 @@ public class RelationshipConfigurationMappingTest {
 
     try {
 
-      Class.forName("org.hsqldb.jdbc.JDBCDriver");
-      connection = DriverManager.getConnection("jdbc:hsqldb:mem:mydb", "SA", "");
+      Class.forName(this.driver);
+      connection = DriverManager.getConnection(this.jurl, this.username, this.password);
 
       String parentTableBuilding = "create memory table ACTOR (ID varchar(256) not null,"+
               " FIRST_NAME varchar(256) not null, LAST_NAME varchar(256) not null, primary key (ID))";
@@ -2033,7 +2041,7 @@ public class RelationshipConfigurationMappingTest {
 
       ODocument config = OFileManager.buildJsonFromFile(this.configJoinTableDirectEdgesPath);
 
-      this.mapper = new OER2GraphMapper("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", null, null, config);
+      this.mapper = new OER2GraphMapper(this.driver, this.jurl, this.username, this.password, null, null, config);
       mapper.buildSourceDatabaseSchema(this.context);
       mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
       mapper.applyImportConfiguration(this.context);
@@ -2616,8 +2624,8 @@ public class RelationshipConfigurationMappingTest {
 
     try {
 
-      Class.forName("org.hsqldb.jdbc.JDBCDriver");
-      connection = DriverManager.getConnection("jdbc:hsqldb:mem:mydb", "SA", "");
+      Class.forName(this.driver);
+      connection = DriverManager.getConnection(this.jurl, this.username, this.password);
 
       String parentTableBuilding = "create memory table ACTOR (ID varchar(256) not null,"+
               " FIRST_NAME varchar(256) not null, LAST_NAME varchar(256) not null, primary key (ID))";
@@ -2635,7 +2643,7 @@ public class RelationshipConfigurationMappingTest {
 
       ODocument config = OFileManager.buildJsonFromFile(this.configJoinTableInverseEdgesPath2);
 
-      this.mapper = new OER2GraphMapper("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", null, null, config);
+      this.mapper = new OER2GraphMapper(this.driver, this.jurl, this.username, this.password, null, null, config);
       mapper.buildSourceDatabaseSchema(this.context);
       mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
       mapper.applyImportConfiguration(this.context);

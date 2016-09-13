@@ -20,6 +20,7 @@ package com.orientechnologies.teleporter.test.rdbms.configuration.importing;
 
 import com.orientechnologies.teleporter.context.OOutputStreamManager;
 import com.orientechnologies.teleporter.context.OTeleporterContext;
+import com.orientechnologies.teleporter.importengine.rdbms.dbengine.ODBQueryEngine;
 import com.orientechnologies.teleporter.nameresolver.OJavaConventionNameResolver;
 import com.orientechnologies.teleporter.persistence.handler.OHSQLDBDataTypeHandler;
 import com.orientechnologies.teleporter.strategy.rdbms.ODBMSNaiveAggregationStrategy;
@@ -50,17 +51,25 @@ public class ImportWithInputRelationshipConfigurationTest {
   private OTeleporterContext            context;
   private ODBMSNaiveStrategy            naiveStrategy;
   private ODBMSNaiveAggregationStrategy naiveAggregationStrategy;
-  private String                        outOrientGraphUri;
   private String                        dbParentDirectoryPath;
   private final String configDirectEdgesPath = "src/test/resources/configuration-mapping/relationships-mapping-direct-edges.json";
   private final String configInverseEdgesPath = "src/test/resources/configuration-mapping/relationships-mapping-inverted-edges.json";
   private final String configJoinTableDirectEdgesPath = "src/test/resources/configuration-mapping/joint-table-relationships-mapping-direct-edges.json";
   private final String configJoinTableInverseEdgesPath = "src/test/resources/configuration-mapping/joint-table-relationships-mapping-inverted-edges.json";
   private final String configJoinTableInverseEdgesPath2 = "src/test/resources/configuration-mapping/join-table-relationship-mapping-inverted-edges2.json";
+  private ODBQueryEngine dbQueryEngine;
+  private String driver = "org.hsqldb.jdbc.JDBCDriver";
+  private String jurl = "jdbc:hsqldb:mem:mydb";
+  private String username = "SA";
+  private String password = "";
+  private String outOrientGraphUri = "memory:testOrientDB";
+
 
   @Before
   public void init() {
     this.context = new OTeleporterContext();
+    this.dbQueryEngine = new ODBQueryEngine(this.driver, this.jurl, this.username, this.password, this.context);
+    this.context.setDbQueryEngine(this.dbQueryEngine);
     this.context.setOutputManager(new OOutputStreamManager(0));
     this.context.setNameResolver(new OJavaConventionNameResolver());
     this.context.setDataTypeHandler(new OHSQLDBDataTypeHandler());
@@ -95,8 +104,8 @@ public class ImportWithInputRelationshipConfigurationTest {
 
     try {
 
-      Class.forName("org.hsqldb.jdbc.JDBCDriver");
-      connection = DriverManager.getConnection("jdbc:hsqldb:mem:mydb", "SA", "");
+      Class.forName(this.driver);
+      connection = DriverManager.getConnection(this.jurl, this.username, this.password);
 
       String parentTableBuilding = "create memory table EMPLOYEE (EMP_ID varchar(256) not null,"+
               " FIRST_NAME varchar(256) not null, LAST_NAME varchar(256) not null, PROJECT varchar(256) not null, primary key (EMP_ID))";
@@ -125,7 +134,7 @@ public class ImportWithInputRelationshipConfigurationTest {
       st.execute(projectFilling);
 
       this.naiveStrategy
-              .executeStrategy("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", this.outOrientGraphUri, "basicDBMapper", null, "java", null, null, this.configDirectEdgesPath, context);
+              .executeStrategy(this.driver, this.jurl, this.username, this.password, this.outOrientGraphUri, "basicDBMapper", null, "java", null, null, this.configDirectEdgesPath, context);
 
 
       /*
@@ -413,8 +422,8 @@ public class ImportWithInputRelationshipConfigurationTest {
 
     try {
 
-      Class.forName("org.hsqldb.jdbc.JDBCDriver");
-      connection = DriverManager.getConnection("jdbc:hsqldb:mem:mydb", "SA", "");
+      Class.forName(this.driver);
+      connection = DriverManager.getConnection(this.jurl, this.username, this.password);
 
       String parentTableBuilding = "create memory table EMPLOYEE (EMP_ID varchar(256) not null,"+
               " FIRST_NAME varchar(256) not null, LAST_NAME varchar(256) not null, PROJECT varchar(256) not null, primary key (EMP_ID))";
@@ -447,7 +456,7 @@ public class ImportWithInputRelationshipConfigurationTest {
       st.execute(parentTableBuilding);
 
       this.naiveStrategy
-              .executeStrategy("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", this.outOrientGraphUri, "basicDBMapper", null, "java", null, null, this.configInverseEdgesPath, context);
+              .executeStrategy(this.driver, this.jurl, this.username, this.password, this.outOrientGraphUri, "basicDBMapper", null, "java", null, null, this.configInverseEdgesPath, context);
 
 
       /*
@@ -729,8 +738,8 @@ public class ImportWithInputRelationshipConfigurationTest {
 
     try {
 
-      Class.forName("org.hsqldb.jdbc.JDBCDriver");
-      connection = DriverManager.getConnection("jdbc:hsqldb:mem:mydb", "SA", "");
+      Class.forName(this.driver);
+      connection = DriverManager.getConnection(this.jurl, this.username, this.password);
 
       String parentTableBuilding = "create memory table ACTOR (ID varchar(256) not null,"+
               " FIRST_NAME varchar(256) not null, LAST_NAME varchar(256) not null, primary key (ID))";
@@ -778,7 +787,7 @@ public class ImportWithInputRelationshipConfigurationTest {
       st.execute(film2actorFilling);
 
       this.naiveAggregationStrategy
-              .executeStrategy("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", this.outOrientGraphUri, "basicDBMapper", null, "java", null, null, this.configJoinTableDirectEdgesPath, context);
+              .executeStrategy(this.driver, this.jurl, this.username, this.password, this.outOrientGraphUri, "basicDBMapper", null, "java", null, null, this.configJoinTableDirectEdgesPath, context);
 
       /*
        *  Testing context information
@@ -1135,8 +1144,8 @@ public class ImportWithInputRelationshipConfigurationTest {
 
     try {
 
-      Class.forName("org.hsqldb.jdbc.JDBCDriver");
-      connection = DriverManager.getConnection("jdbc:hsqldb:mem:mydb", "SA", "");
+      Class.forName(this.driver);
+      connection = DriverManager.getConnection(this.jurl, this.username, this.password);
 
       String parentTableBuilding = "create memory table ACTOR (ID varchar(256) not null,"+
               " FIRST_NAME varchar(256) not null, LAST_NAME varchar(256) not null, primary key (ID))";
@@ -1184,7 +1193,7 @@ public class ImportWithInputRelationshipConfigurationTest {
       st.execute(film2actorFilling);
 
       this.naiveAggregationStrategy
-              .executeStrategy("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", this.outOrientGraphUri, "basicDBMapper", null, "java", null, null, this.configJoinTableInverseEdgesPath, context);
+              .executeStrategy(this.driver, this.jurl, this.username, this.password, this.outOrientGraphUri, "basicDBMapper", null, "java", null, null, this.configJoinTableInverseEdgesPath, context);
 
       /*
        *  Testing context information
@@ -1538,8 +1547,8 @@ public class ImportWithInputRelationshipConfigurationTest {
 
     try {
 
-      Class.forName("org.hsqldb.jdbc.JDBCDriver");
-      connection = DriverManager.getConnection("jdbc:hsqldb:mem:mydb", "SA", "");
+      Class.forName(this.driver);
+      connection = DriverManager.getConnection(this.jurl, this.username, this.password);
 
       String parentTableBuilding = "create memory table ACTOR (ID varchar(256) not null,"+
               " FIRST_NAME varchar(256) not null, LAST_NAME varchar(256) not null, primary key (ID))";
@@ -1587,7 +1596,7 @@ public class ImportWithInputRelationshipConfigurationTest {
               + "('A008','F003','15000000'))";
       st.execute(film2actorFilling);
 
-      this.naiveAggregationStrategy.executeStrategy("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", this.outOrientGraphUri, "basicDBMapper", null, "java", null, null, this.configJoinTableDirectEdgesPath, context);
+      this.naiveAggregationStrategy.executeStrategy(this.driver, this.jurl, this.username, this.password, this.outOrientGraphUri, "basicDBMapper", null, "java", null, null, this.configJoinTableDirectEdgesPath, context);
 
       /*
        *  Testing context information
@@ -1943,8 +1952,8 @@ public class ImportWithInputRelationshipConfigurationTest {
 
     try {
 
-      Class.forName("org.hsqldb.jdbc.JDBCDriver");
-      connection = DriverManager.getConnection("jdbc:hsqldb:mem:mydb", "SA", "");
+      Class.forName(this.driver);
+      connection = DriverManager.getConnection(this.jurl, this.username, this.password);
 
       String parentTableBuilding = "create memory table ACTOR (ID varchar(256) not null,"+
               " FIRST_NAME varchar(256) not null, LAST_NAME varchar(256) not null, primary key (ID))";
@@ -1992,7 +2001,7 @@ public class ImportWithInputRelationshipConfigurationTest {
               + "('F003','A008','15000000'))";
       st.execute(film2actorFilling);
 
-      this.naiveAggregationStrategy.executeStrategy("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", this.outOrientGraphUri, "basicDBMapper", null, "java", null, null, this.configJoinTableInverseEdgesPath2, context);
+      this.naiveAggregationStrategy.executeStrategy(this.driver, this.jurl, this.username, this.password, this.outOrientGraphUri, "basicDBMapper", null, "java", null, null, this.configJoinTableInverseEdgesPath2, context);
 
       /*
        *  Testing context information

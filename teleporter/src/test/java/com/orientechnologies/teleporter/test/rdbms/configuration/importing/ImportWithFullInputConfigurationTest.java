@@ -20,6 +20,7 @@ package com.orientechnologies.teleporter.test.rdbms.configuration.importing;
 
 import com.orientechnologies.teleporter.context.OOutputStreamManager;
 import com.orientechnologies.teleporter.context.OTeleporterContext;
+import com.orientechnologies.teleporter.importengine.rdbms.dbengine.ODBQueryEngine;
 import com.orientechnologies.teleporter.nameresolver.OJavaConventionNameResolver;
 import com.orientechnologies.teleporter.persistence.handler.OHSQLDBDataTypeHandler;
 import com.orientechnologies.teleporter.strategy.rdbms.ODBMSNaiveAggregationStrategy;
@@ -51,19 +52,25 @@ public class ImportWithFullInputConfigurationTest {
 
     private OTeleporterContext context;
     private ODBMSNaiveStrategy naiveStrategy;
-    private ODBMSNaiveAggregationStrategy naiveAggregationStrategy;
-    private String                        outOrientGraphUri;
-    private String                        dbParentDirectoryPath;
+    private String dbParentDirectoryPath;
     private final String config = "src/test/resources/configuration-mapping/full-configuration-mapping.json";
+    private ODBQueryEngine dbQueryEngine;
+    private String driver = "org.hsqldb.jdbc.JDBCDriver";
+    private String jurl = "jdbc:hsqldb:mem:mydb";
+    private String username = "SA";
+    private String password = "";
+    private String outOrientGraphUri = "memory:testOrientDB";
+
 
     @Before
     public void init() {
         this.context = new OTeleporterContext();
+        this.dbQueryEngine = new ODBQueryEngine(this.driver, this.jurl, this.username, this.password, this.context);
+        this.context.setDbQueryEngine(this.dbQueryEngine);
         this.context.setOutputManager(new OOutputStreamManager(0));
         this.context.setNameResolver(new OJavaConventionNameResolver());
         this.context.setDataTypeHandler(new OHSQLDBDataTypeHandler());
         this.naiveStrategy = new ODBMSNaiveStrategy();
-        this.naiveAggregationStrategy = new ODBMSNaiveAggregationStrategy();
         this.outOrientGraphUri = "plocal:target/testOrientDB";
         this.dbParentDirectoryPath = this.outOrientGraphUri.replace("plocal:","");
     }
@@ -100,8 +107,8 @@ public class ImportWithFullInputConfigurationTest {
 
         try {
 
-            Class.forName("org.hsqldb.jdbc.JDBCDriver");
-            connection = DriverManager.getConnection("jdbc:hsqldb:mem:mydb", "SA", "");
+            Class.forName(this.driver);
+            connection = DriverManager.getConnection(this.jurl, this.username, this.password);
 
             String personTableBuilding = "create memory table PERSON (ID varchar(256) not null,"+
                     " NAME varchar(256) not null, SURNAME varchar(256) not null, DEP_ID varchar(256) not null, primary key (ID))";
@@ -143,7 +150,7 @@ public class ImportWithFullInputConfigurationTest {
             st.execute(departmentFilling);
 
             this.naiveStrategy
-                    .executeStrategy("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", this.outOrientGraphUri, "basicDBMapper", null, "java", null, null, this.config, context);
+                    .executeStrategy(this.driver, this.jurl, this.username, this.password, this.outOrientGraphUri, "basicDBMapper", null, "java", null, null, this.config, context);
 
 
             /**
@@ -151,7 +158,7 @@ public class ImportWithFullInputConfigurationTest {
              */
 
             assertEquals(14, context.getStatistics().totalNumberOfRecords);
-//            assertEquals(14, context.getStatistics().analyzedRecords);
+            assertEquals(14, context.getStatistics().analyzedRecords);
             assertEquals(8, context.getStatistics().orientAddedVertices);
             assertEquals(6, context.getStatistics().orientAddedEdges);
 
