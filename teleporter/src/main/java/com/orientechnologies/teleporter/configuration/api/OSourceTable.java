@@ -29,21 +29,21 @@ import java.util.List;
 
 public class OSourceTable {
 
-    private String sourceName;                      // mandatory
+    private String sourceIdName;                    // mandatory
     private String dataSource;                      // mandatory
     private String tableName;                       // mandatory
     private List<String> aggregationColumns;        // optional (not present when there is not any aggregation)
 
     public OSourceTable(String sourceName) {
-        this.sourceName = sourceName;
+        this.sourceIdName = sourceName;
     }
 
-    public String getSourceName() {
-        return this.sourceName;
+    public String getSourceIdName() {
+        return this.sourceIdName;
     }
 
-    public void setSourceName(String sourceName) {
-        this.sourceName = sourceName;
+    public void setSourceIdName(String sourceIdName) {
+        this.sourceIdName = sourceIdName;
     }
 
     public String getDataSource() {

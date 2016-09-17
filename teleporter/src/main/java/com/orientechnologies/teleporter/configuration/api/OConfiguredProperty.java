@@ -31,7 +31,7 @@ public class OConfiguredProperty {
 
     private String propertyName;                // mandatory
     private boolean isIncludedInMigration;      // mandatory
-    private OType propertyType;                 // mandatory
+    private String propertyType;                // mandatory
     private boolean isMandatory;                // mandatory
     private boolean isReadOnly;                 // mandatory
     private boolean isNotNull;                  // mandatory
@@ -57,11 +57,11 @@ public class OConfiguredProperty {
         this.isIncludedInMigration = includedInMigration;
     }
 
-    public OType getPropertyType() {
+    public String getPropertyType() {
         return this.propertyType;
     }
 
-    public void setPropertyType(OType propertyType) {
+    public void setPropertyType(String propertyType) {
         this.propertyType = propertyType;
     }
 

@@ -27,13 +27,12 @@ import java.util.List;
  *
  */
 
-public class OConfiguredElement {
+public class OConfiguredClass {
 
     private String name;                                        // mandatory
-    private OVertexMappingInformation mapping;                  // mandatory
     private List<OConfiguredProperty> configuredProperties;     // mandatory
 
-    public OConfiguredElement(String elementName) {
+    public OConfiguredClass(String elementName) {
         this.name = elementName;
     }
 
@@ -43,14 +42,6 @@ public class OConfiguredElement {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public OVertexMappingInformation getMapping() {
-        return this.mapping;
-    }
-
-    public void setMapping(OVertexMappingInformation mapping) {
-        this.mapping = mapping;
     }
 
     public List<OConfiguredProperty> getConfiguredProperties() {

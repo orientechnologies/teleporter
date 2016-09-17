@@ -31,27 +31,27 @@ import java.util.List;
 
 public class OConfiguration {
 
-    private List<OConfiguredVertex> configuredVertices;  // may be empty but not null
-    private List<OConfiguredEdge> configuredEdges;       // may be empty but not null
+    private List<OConfiguredVertexClass> configuredVertices;  // may be empty but not null
+    private List<OConfiguredEdgeClass> configuredEdges;       // may be empty but not null
 
     public OConfiguration() {
-        this.configuredVertices = new LinkedList<OConfiguredVertex>();
-        this.configuredEdges = new LinkedList<OConfiguredEdge>();
+        this.configuredVertices = new LinkedList<OConfiguredVertexClass>();
+        this.configuredEdges = new LinkedList<OConfiguredEdgeClass>();
     }
 
-    public List<OConfiguredVertex> getConfiguredVertices() {
+    public List<OConfiguredVertexClass> getConfiguredVertices() {
         return this.configuredVertices;
     }
 
-    public void setConfiguredVertices(List<OConfiguredVertex> configuredVertices) {
+    public void setConfiguredVertices(List<OConfiguredVertexClass> configuredVertices) {
         this.configuredVertices = configuredVertices;
     }
 
-    public List<OConfiguredEdge> getConfiguredEdges() {
+    public List<OConfiguredEdgeClass> getConfiguredEdges() {
         return this.configuredEdges;
     }
 
-    public void setConfiguredEdges(List<OConfiguredEdge> configuredEdges) {
+    public void setConfiguredEdges(List<OConfiguredEdgeClass> configuredEdges) {
         this.configuredEdges = configuredEdges;
     }
 }

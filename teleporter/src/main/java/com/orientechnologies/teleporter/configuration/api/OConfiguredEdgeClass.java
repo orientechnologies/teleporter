@@ -18,8 +18,6 @@
 
 package com.orientechnologies.teleporter.configuration.api;
 
-import java.util.List;
-
 /**
  *
  * @author Gabriele Ponzi
@@ -27,10 +25,20 @@ import java.util.List;
  *
  */
 
-public class OConfiguredVertex extends OConfiguredElement {
+public class OConfiguredEdgeClass extends OConfiguredClass {
 
-    public OConfiguredVertex(String vertexName) {
-        super(vertexName);
+    private OEdgeMappingInformation mapping;                  // mandatory
+
+    public OConfiguredEdgeClass(String edgeName) {
+        super(edgeName);
+    }
+
+    public OEdgeMappingInformation getMapping() {
+        return this.mapping;
+    }
+
+    public void setMapping(OEdgeMappingInformation mapping) {
+        this.mapping = mapping;
     }
 
 }

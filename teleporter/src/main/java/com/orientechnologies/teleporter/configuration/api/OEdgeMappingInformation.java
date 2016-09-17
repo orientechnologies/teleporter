@@ -29,7 +29,7 @@ import java.util.List;
 
 public class OEdgeMappingInformation {
 
-    private OConfiguredEdge belongingEdge;                             // mandatory
+    private OConfiguredEdgeClass belongingEdge;                             // mandatory
     private String fromTableName;                                      // mandatory
     private String toTableName;                                        // mandatory
     private List<String> fromColumns;                                  // mandatory
@@ -37,15 +37,15 @@ public class OEdgeMappingInformation {
     private String direction;                                          // mandatory
     private OAggregatedJoinTableMapping representedJoinTableMapping;   // may be null if the edge does not represent a join table
 
-    public OEdgeMappingInformation(OConfiguredEdge belongingEdge) {
+    public OEdgeMappingInformation(OConfiguredEdgeClass belongingEdge) {
         this.belongingEdge = belongingEdge;
     }
 
-    public OConfiguredEdge getBelongingEdge() {
+    public OConfiguredEdgeClass getBelongingEdge() {
         return this.belongingEdge;
     }
 
-    public void setBelongingEdge(OConfiguredEdge belongingEdge) {
+    public void setBelongingEdge(OConfiguredEdgeClass belongingEdge) {
         this.belongingEdge = belongingEdge;
     }
 

@@ -29,19 +29,19 @@ import java.util.List;
 
 public class OVertexMappingInformation {
 
-    private OConfiguredVertex belongingVertex;  // mandatory
+    private OConfiguredVertexClass belongingVertex;  // mandatory
     private List<OSourceTable> sourceTables;    // must be not empty!
     private String aggregationFunction;         // optional (not present when there is not any aggregation)
 
-    public OVertexMappingInformation(OConfiguredVertex belongingVertex) {
+    public OVertexMappingInformation(OConfiguredVertexClass belongingVertex) {
         this.belongingVertex = belongingVertex;
     }
 
-    public OConfiguredVertex getBelongingVertex() {
+    public OConfiguredVertexClass getBelongingVertex() {
         return this.belongingVertex;
     }
 
-    public void setBelongingVertex(OConfiguredVertex belongingVertex) {
+    public void setBelongingVertex(OConfiguredVertexClass belongingVertex) {
         this.belongingVertex = belongingVertex;
     }
 
