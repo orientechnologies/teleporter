@@ -18,8 +18,6 @@
 
 package com.orientechnologies.teleporter.configuration.api;
 
-import com.orientechnologies.orient.core.metadata.schema.OType;
-
 /**
  *
  * @author Gabriele Ponzi
@@ -35,7 +33,7 @@ public class OConfiguredProperty {
     private boolean isMandatory;                // mandatory
     private boolean isReadOnly;                 // mandatory
     private boolean isNotNull;                  // mandatory
-    private OPropertyMapping propertyMapping;   // may be null if the property is defined from scratch (only schema definition)
+    private OConfiguredPropertyMapping propertyMapping;   // may be null if the property is defined from scratch (only schema definition)
 
     public OConfiguredProperty(String propertyName) {
         this.propertyName = propertyName;
@@ -89,11 +87,11 @@ public class OConfiguredProperty {
         this.isNotNull = notNull;
     }
 
-    public OPropertyMapping getPropertyMapping() {
+    public OConfiguredPropertyMapping getPropertyMapping() {
         return this.propertyMapping;
     }
 
-    public void setPropertyMapping(OPropertyMapping propertyMapping) {
+    public void setPropertyMapping(OConfiguredPropertyMapping propertyMapping) {
         this.propertyMapping = propertyMapping;
     }
 }

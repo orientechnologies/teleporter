@@ -25,13 +25,13 @@ package com.orientechnologies.teleporter.configuration.api;
  *
  */
 
-public class OPropertyMapping {
+public class OConfiguredPropertyMapping {
 
     private String sourceName;      // mandatory
     private String columnName;      // mandatory
     private String type;            // mandatory
 
-    public OPropertyMapping(String sourceName) {
+    public OConfiguredPropertyMapping(String sourceName) {
         this.sourceName = sourceName;
     }
 

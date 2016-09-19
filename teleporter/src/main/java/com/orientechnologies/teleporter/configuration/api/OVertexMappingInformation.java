@@ -30,8 +30,8 @@ import java.util.List;
 public class OVertexMappingInformation {
 
     private OConfiguredVertexClass belongingVertex;  // mandatory
-    private List<OSourceTable> sourceTables;    // must be not empty!
-    private String aggregationFunction;         // optional (not present when there is not any aggregation)
+    private List<OSourceTable> sourceTables;         // must be not empty!
+    private String aggregationFunction;              // optional (not present when there is not any aggregation)
 
     public OVertexMappingInformation(OConfiguredVertexClass belongingVertex) {
         this.belongingVertex = belongingVertex;

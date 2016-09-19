@@ -74,7 +74,7 @@ public class OConfigurationParser {
             }
 
             /**
-             * Mapping buiding
+             * Mapping building
              */
 
             // Aggregation function (optional)
@@ -91,6 +91,7 @@ public class OConfigurationParser {
             for (ODocument sourceTable : sourceTableDocs) {
                 String sourceIdName = sourceTable.field("name");
                 String sourceTableName = sourceTable.field("tableName");
+                String dataSource = sourceTable.field("dataSource");
                 if(sourceIdName == null) {
                     context.getOutputManager().error("Configuration error: 'name' field not found in the '%s' vertex-class mapping with the source table.",  configuredVertexClassName);
                     throw new OTeleporterRuntimeException();
@@ -104,6 +105,7 @@ public class OConfigurationParser {
                 List<String> aggregationColumns = sourceTable.field("aggregationColumns");
 
                 OSourceTable currentSourceTable = new OSourceTable(sourceIdName);
+                currentSourceTable.setDataSource(dataSource);
                 currentSourceTable.setTableName(sourceTableName);
                 currentSourceTable.setAggregationColumns(aggregationColumns);
                 sourceTables.add(currentSourceTable);
@@ -111,6 +113,7 @@ public class OConfigurationParser {
                 i++;
             }
             currentMapping.setSourceTables(sourceTables);
+            currentConfiguredVertex.setMapping(currentMapping);
 
             /**
              *  extract and set configured properties
@@ -119,6 +122,8 @@ public class OConfigurationParser {
             currentConfiguredVertex.setConfiguredProperties(configuredProperties);
             configuredVertices.add(currentConfiguredVertex);
         }
+
+        configuration.setConfiguredVertices(configuredVertices);
     }
 
     private void buildConfiguredEdges(ODocument jsonConfiguration, OConfiguration configuration, OTeleporterContext context) {
@@ -236,6 +241,7 @@ public class OConfigurationParser {
             currentConfiguredEdge.setConfiguredProperties(configuredProperties);
             configuredEdges.add(currentConfiguredEdge);
         }
+        configuration.setConfiguredEdges(configuredEdges);
     }
 
     private List<OConfiguredProperty> extractProperties(ODocument currentElementInfo, OTeleporterContext context) {
@@ -251,7 +257,7 @@ public class OConfigurationParser {
 
             for(String propertyName: propertiesFields) {
                 ODocument currentElementPropertyDoc = elementPropsDoc.field(propertyName);
-                boolean isIncludedInMigration = currentElementPropertyDoc.field("include");
+                Boolean isIncludedInMigration = currentElementPropertyDoc.field("include");
                 String propertyType = currentElementPropertyDoc.field("type");
                 if(propertyType == null) {
                     context.getStatistics().warningMessages.add("Configuration ERROR: the property " + propertyName + " will not added to the correspondent Edge-Type because the type is badly defined or not defined at all.");
@@ -264,12 +270,12 @@ public class OConfigurationParser {
 
                 // extracting mapping info (optional: may be null if the property is defined from scratch (only schema definition))
                 ODocument propertyMappingInfo = currentElementPropertyDoc.field("mapping");
-                OPropertyMapping propertyMapping = null;
+                OConfiguredPropertyMapping propertyMapping = null;
                 if(propertyMappingInfo != null) {
                     String source = propertyMappingInfo.field("source");
                     String columnName = propertyMappingInfo.field("columnName");
                     String type = propertyMappingInfo.field("type");
-                    propertyMapping = new OPropertyMapping(source);
+                    propertyMapping = new OConfiguredPropertyMapping(source);
                     propertyMapping.setColumnName(columnName);
                     propertyMapping.setType(type);
                 }
