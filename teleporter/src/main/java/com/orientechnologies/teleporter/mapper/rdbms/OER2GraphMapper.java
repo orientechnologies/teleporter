@@ -19,7 +19,7 @@
 package com.orientechnologies.teleporter.mapper.rdbms;
 
 import com.orientechnologies.orient.core.record.impl.ODocument;
-import com.orientechnologies.teleporter.configuration.OConfigurationParser;
+import com.orientechnologies.teleporter.configuration.OConfigurationHandler;
 import com.orientechnologies.teleporter.configuration.api.*;
 import com.orientechnologies.teleporter.context.OTeleporterContext;
 import com.orientechnologies.teleporter.context.OTeleporterStatistics;
@@ -68,7 +68,7 @@ public class OER2GraphMapper extends OSource2GraphMapper {
 
   // supplementary jsonConfiguration
   protected ODocument jsonConfiguration;
-  protected OConfigurationParser parser;
+  protected OConfigurationHandler parser;
 
   public final int DEFAULT_CLASS_MAPPER_INDEX = 0;
 
@@ -100,7 +100,7 @@ public class OER2GraphMapper extends OSource2GraphMapper {
     this.dataBaseSchema = new ODataBaseSchema();
     this.graphModel = new OGraphModel();
 
-    this.parser = new OConfigurationParser();
+    this.parser = new OConfigurationHandler();
 
   }
 

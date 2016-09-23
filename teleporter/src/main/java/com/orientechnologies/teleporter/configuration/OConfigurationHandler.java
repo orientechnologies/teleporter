@@ -34,7 +34,15 @@ import java.util.*;
  *
  */
 
-public class OConfigurationParser {
+public class OConfigurationHandler {
+
+    /**
+     * Parsing method. It returns a OConfiguration object starting from a JSON configuration.
+     *
+     * @param jsonConfiguration
+     * @param context
+     * @return
+     */
 
     public OConfiguration buildConfigurationFromJSON(ODocument jsonConfiguration, OTeleporterContext context) {
 
@@ -118,7 +126,7 @@ public class OConfigurationParser {
             /**
              *  extract and set configured properties
              */
-            List<OConfiguredProperty> configuredProperties = this.extractProperties(currentVertexDoc, context);
+            List<OConfiguredProperty> configuredProperties = this.extractProperties(currentVertexDoc, configuredVertexClassName, context);
             currentConfiguredVertex.setConfiguredProperties(configuredProperties);
             configuredVertices.add(currentConfiguredVertex);
         }
@@ -237,14 +245,14 @@ public class OConfigurationParser {
             ((OConfiguredEdgeClass)currentConfiguredEdge).setMapping(currentMapping);
 
             // extract and set configured properties
-            List<OConfiguredProperty> configuredProperties = this.extractProperties(currentEdgeInfo, context);
+            List<OConfiguredProperty> configuredProperties = this.extractProperties(currentEdgeInfo, configuredEdgeClassName, context);
             currentConfiguredEdge.setConfiguredProperties(configuredProperties);
             configuredEdges.add(currentConfiguredEdge);
         }
         configuration.setConfiguredEdges(configuredEdges);
     }
 
-    private List<OConfiguredProperty> extractProperties(ODocument currentElementInfo, OTeleporterContext context) {
+    private List<OConfiguredProperty> extractProperties(ODocument currentElementInfo, String className, OTeleporterContext context) {
 
         // extracting properties info if present and adding them to the current edge-type
         ODocument elementPropsDoc = currentElementInfo.field("properties");
@@ -267,6 +275,19 @@ public class OConfigurationParser {
                 Boolean mandatory = currentElementPropertyDoc.field("mandatory");
                 Boolean readOnly = currentElementPropertyDoc.field("readOnly");
                 Boolean notNull = currentElementPropertyDoc.field("notNull");
+
+                if(mandatory == null) {
+                    context.getOutputManager().error("Configuration error: 'mandatory' field not found in the '%s' property definition ('%s' Class).",  propertyName, className);
+                    throw new OTeleporterRuntimeException();
+                }
+                if(readOnly == null) {
+                    context.getOutputManager().error("Configuration error: 'readOnly' field not found in the '%s' property definition ('%s' Class).",  propertyName, className);
+                    throw new OTeleporterRuntimeException();
+                }
+                if(notNull == null) {
+                    context.getOutputManager().error("Configuration error: 'notNull' field not found in the '%s' property definition ('%s' Class).",  propertyName, className);
+                    throw new OTeleporterRuntimeException();
+                }
 
                 // extracting mapping info (optional: may be null if the property is defined from scratch (only schema definition))
                 ODocument propertyMappingInfo = currentElementPropertyDoc.field("mapping");
@@ -292,8 +313,36 @@ public class OConfigurationParser {
 
                 configuredProperties.add(currentConfiguredProperty);
             }
-
         }
         return configuredProperties;
+    }
+
+    /**
+     * It returns a ODocument object containing the configuration (JSON format) starting from a OConfiguration object.
+     *
+     * @param configuration
+     * @param context
+     * @return
+     */
+    public ODocument buildJSONFromConfiguration(OConfiguration configuration, OTeleporterContext context) {
+
+        ODocument jsonConfiguration = new ODocument();
+
+        // writing configured vertices
+        this.writeConfiguredVerticesOnJsonDocument(configuration, jsonConfiguration, context);
+
+        // writing configured edges
+        this.writeConfiguredEdgesOnJsonDocument(configuration, jsonConfiguration, context);
+
+        return jsonConfiguration;
+    }
+
+
+    private void writeConfiguredVerticesOnJsonDocument(OConfiguration configuration, ODocument jsonConfiguration, OTeleporterContext context) {
+        //TODO
+    }
+
+    private void writeConfiguredEdgesOnJsonDocument(OConfiguration configuration, ODocument jsonConfiguration, OTeleporterContext context) {
+        //TODO
     }
 }

@@ -16,10 +16,10 @@
  * For more information: http://www.orientdb.com
  */
 
-package com.orientechnologies.teleporter.test.rdbms.configuration.parser;
+package com.orientechnologies.teleporter.test.rdbms.configuration.handler;
 
 import com.orientechnologies.orient.core.record.impl.ODocument;
-import com.orientechnologies.teleporter.configuration.OConfigurationParser;
+import com.orientechnologies.teleporter.configuration.OConfigurationHandler;
 import com.orientechnologies.teleporter.configuration.api.*;
 import com.orientechnologies.teleporter.context.OOutputStreamManager;
 import com.orientechnologies.teleporter.context.OTeleporterContext;
@@ -38,33 +38,33 @@ import static org.junit.Assert.*;
  *
  */
 
-public class OConfigurationParserTest {
+public class OConfigurationHandlerTest {
 
     private final String config1 = "src/test/resources/configuration-mapping/full-configuration-mapping.json";
     private final String config2 = "src/test/resources/configuration-mapping/joint-table-relationships-mapping-direct-edges.json";
     private OTeleporterContext context;
-    OConfigurationParser parser;
+    OConfigurationHandler configurationHandler;
 
     @Before
     public void init() {
         this.context = new OTeleporterContext();
         this.context.setOutputManager(new OOutputStreamManager(0));
         this.context.setExecutionStrategy("naive-aggregate");
-        this.parser = new OConfigurationParser();
+        this.configurationHandler = new OConfigurationHandler();
     }
 
     @Test
     public void test1() {
 
-        ODocument configurationDoc = null;
+        ODocument inputConfigurationDoc = null;
         try {
-            configurationDoc = OFileManager.buildJsonFromFile(this.config1);
+            inputConfigurationDoc = OFileManager.buildJsonFromFile(this.config1);
         }catch(IOException e) {
             e.printStackTrace();
             fail();
         }
 
-        OConfiguration configuration = this.parser.buildConfigurationFromJSON(configurationDoc, this.context);
+        OConfiguration configuration = this.configurationHandler.buildConfigurationFromJSON(inputConfigurationDoc, this.context);
 
 
         /**
@@ -323,21 +323,28 @@ public class OConfigurationParserTest {
         assertEquals(false, currentConfiguredProperty.isReadOnly());
         assertEquals(false, currentConfiguredProperty.isNotNull());
 
+
+        /**
+         * 1. Writing the configuration on a second JSON document through the configurationHandler.
+         * 2. Checking that the original JSON configuration and the final just written configuration are equal.
+         */
+        ODocument writtenJsonConfiguration = this.configurationHandler.buildJSONFromConfiguration(configuration, context);
+        assertEquals(inputConfigurationDoc, writtenJsonConfiguration);
     }
 
 
     @Test
     public void test2() {
 
-        ODocument configurationDoc = null;
+        ODocument inputConfigurationDoc = null;
         try {
-            configurationDoc = OFileManager.buildJsonFromFile(this.config2);
+            inputConfigurationDoc = OFileManager.buildJsonFromFile(this.config2);
         }catch(IOException e) {
             e.printStackTrace();
             fail();
         }
 
-        OConfiguration configuration = this.parser.buildConfigurationFromJSON(configurationDoc, this.context);
+        OConfiguration configuration = this.configurationHandler.buildConfigurationFromJSON(inputConfigurationDoc, this.context);
 
 
         /**
@@ -389,6 +396,12 @@ public class OConfigurationParserTest {
         assertEquals(false, currentConfiguredProperty.isReadOnly());
         assertEquals(false, currentConfiguredProperty.isNotNull());
 
+        /**
+         * 1. Writing the configuration on a second JSON document through the configurationHandler.
+         * 2. Checking that the original JSON configuration and the final just written configuration are equal.
+         */
+        ODocument writtenJsonConfiguration = this.configurationHandler.buildJSONFromConfiguration(configuration, context);
+        assertEquals(inputConfigurationDoc, writtenJsonConfiguration);
     }
 
 }
