@@ -38,7 +38,9 @@
         "updatedOn": {
           "type": "DATE",
           "value": "$from.date",
-          "mandatory": false
+          "mandatory": false,
+          "readOnly": false,
+          "notNull": false
         }
       }
     }

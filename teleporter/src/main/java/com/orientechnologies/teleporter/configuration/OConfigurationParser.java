@@ -26,7 +26,7 @@ import com.orientechnologies.teleporter.exception.OTeleporterRuntimeException;
 import java.util.*;
 
 /**
- * It parses the configuration JSON and builds a OConfiguration object to handle all the information
+ * It parses the jsonConfiguration JSON and builds a OConfiguration object to handle all the information
  * in a easy way.
  *
  * @author Gabriele Ponzi
@@ -40,10 +40,10 @@ public class OConfigurationParser {
 
         OConfiguration configuration = new OConfiguration();
 
-        // parsing vertices' configuration
+        // parsing vertices' jsonConfiguration
         this.buildConfiguredVertices(jsonConfiguration, configuration, context);
 
-        // parsing edges' configuration
+        // parsing edges' jsonConfiguration
         this.buildConfiguredEdges(jsonConfiguration, configuration, context);
 
         return configuration;
@@ -141,7 +141,7 @@ public class OConfigurationParser {
 
             String[] edgeFields = currentEdgeDoc.fieldNames();
             if(edgeFields.length != 1) {
-
+                context.getOutputManager().error("Configuration error: wrong edge definition.");
             }
             String configuredEdgeClassName = edgeFields[0];
             OConfiguredEdgeClass currentConfiguredEdge = new OConfiguredEdgeClass(configuredEdgeClassName);
@@ -164,7 +164,7 @@ public class OConfigurationParser {
 
             ODocument joinTableDoc = mappingDoc.field("joinTable");
 
-            // configuration errors managing (draconian approach)
+            // jsonConfiguration errors managing (draconian approach)
             if(currentForeignEntityName == null) {
                 context.getOutputManager().error("Configuration error: 'fromTable' field not found in the '%s' edge-type definition.",  configuredEdgeClassName);
                 throw new OTeleporterRuntimeException();
@@ -221,13 +221,13 @@ public class OConfigurationParser {
                     joinTableMapping.setToColumns(joinTableToColumns);
                 }
                 else if(context.getExecutionStrategy().equals("naive")) {
-                    context.getOutputManager().error("Configuration not compliant with the chosen strategy: you cannot perform the aggregation declared in the configuration for the "
+                    context.getOutputManager().error("Configuration not compliant with the chosen strategy: you cannot perform the aggregation declared in the jsonConfiguration for the "
                             + "join table %s while executing migration with a not-aggregating strategy. Thus no aggregation will be performed.\n", joinTableName);
                     throw new OTeleporterRuntimeException();
                 }
             }
 
-            // Updating edge's configuration
+            // Updating edge's jsonConfiguration
             currentMapping.setFromTableName(currentForeignEntityName);
             currentMapping.setToTableName(currentParentEntityName);
             currentMapping.setFromColumns(fromColumns);
@@ -260,7 +260,7 @@ public class OConfigurationParser {
                 Boolean isIncludedInMigration = currentElementPropertyDoc.field("include");
                 String propertyType = currentElementPropertyDoc.field("type");
                 if(propertyType == null) {
-                    context.getStatistics().warningMessages.add("Configuration ERROR: the property " + propertyName + " will not added to the correspondent Edge-Type because the type is badly defined or not defined at all.");
+                    context.getStatistics().warningMessages.add("Configuration ERROR: the property " + propertyName + " will not added to the correspondent Class because the type is badly defined or not defined at all.");
                     continue;
                 }
 
@@ -281,7 +281,9 @@ public class OConfigurationParser {
                 }
 
                 OConfiguredProperty currentConfiguredProperty = new OConfiguredProperty(propertyName);
-                currentConfiguredProperty.setIncludedInMigration(isIncludedInMigration);
+                if(isIncludedInMigration != null) {
+                    currentConfiguredProperty.setIncludedInMigration(isIncludedInMigration);
+                }
                 currentConfiguredProperty.setPropertyType(propertyType);
                 currentConfiguredProperty.setMandatory(mandatory);
                 currentConfiguredProperty.setReadOnly(readOnly);

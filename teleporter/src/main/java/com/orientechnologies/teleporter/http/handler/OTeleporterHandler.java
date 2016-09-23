@@ -37,7 +37,7 @@ public class OTeleporterHandler {
   OTeleporterJob          currentJob = null;
 
   /**
-   * Execute import with configuration;
+   * Execute import with jsonConfiguration;
    * 
    * @param cfg
    */

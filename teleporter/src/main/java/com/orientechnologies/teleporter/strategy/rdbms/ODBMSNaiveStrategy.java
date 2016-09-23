@@ -75,7 +75,7 @@ public class ODBMSNaiveStrategy extends ODBMSImportStrategy {
     context.getOutputManager().info("\n");
     context.getOutputManager().debug("\n%s\n", mapper.getGraphModel().toString());
 
-    // Step 3: eventual configuration applying
+    // Step 3: eventual jsonConfiguration applying
     mapper.applyImportConfiguration(context);
 
     // Step 4: Writing schema on OrientDB

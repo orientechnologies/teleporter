@@ -80,7 +80,7 @@ public class ODBMSNaiveAggregationStrategy extends ODBMSImportStrategy {
     context.getOutputManager().info("\n");
     context.getOutputManager().debug("\n%s\n", ((OER2GraphMapper)mapper).getGraphModel().toString());
 
-    // Step 3: Eventual configuration applying
+    // Step 3: Eventual jsonConfiguration applying
     mapper.applyImportConfiguration(context);
 
     // Step 4: Aggregation

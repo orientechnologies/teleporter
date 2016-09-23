@@ -253,7 +253,7 @@ public class OTeleporter extends OServerPluginAbstract {
     OProgressMonitor progressMonitor = new OProgressMonitor(context);
     progressMonitor.initialize();
 
-    // JDBC Driver configuration and driver class name fetching
+    // JDBC Driver jsonConfiguration and driver class name fetching
     ODriverConfigurator driverConfig = new ODriverConfigurator();
     String driverClassName = driverConfig.checkConfiguration(driver, context);
 

@@ -339,8 +339,8 @@ public class RelationshipConfigurationMappingTest {
       assertEquals(false, updatedOnProperty.isFromPrimaryKey());
       assertEquals("DATE", updatedOnProperty.getOriginalType());
       assertEquals(false, updatedOnProperty.isMandatory());
-      assertNull(updatedOnProperty.isReadOnly());
-      assertNull(updatedOnProperty.isNotNull());
+      assertEquals(false, updatedOnProperty.isReadOnly());
+      assertEquals(false, updatedOnProperty.isNotNull());
 
       /*
        * Rules check
@@ -431,7 +431,7 @@ public class RelationshipConfigurationMappingTest {
   @Test
 
   /*
-   *  Two tables: 2 relationships declared through foreign keys but the first one is overridden through a configuration.
+   *  Two tables: 2 relationships declared through foreign keys but the first one is overridden through a jsonConfiguration.
    *  Changes on the final edge:
    *  - name
    *  - direction inverted
@@ -445,7 +445,7 @@ public class RelationshipConfigurationMappingTest {
    *  EMPLOYEE --[HasProject]--> PROJECT
    *  PROJECT --[HasProjectManager]--> EMPLOYEE
    *
-   *  But through configuration we obtain:
+   *  But through jsonConfiguration we obtain:
    *
    *  PROJECT --[HasEmployee]--> EMPLOYEE
    *  PROJECT --[HasProjectManager]--> EMPLOYEE
@@ -792,14 +792,14 @@ public class RelationshipConfigurationMappingTest {
 
   /*
    *  Three tables: 1  N-N relationship, no foreign keys declared for the join table in the db.
-   *  Through the configuration we obtain the following schema:
+   *  Through the jsonConfiguration we obtain the following schema:
    *
    *  ACTOR
    *  FILM
    *  ACTOR2FILM: foreign key (ACTOR_ID) references ACTOR(ID)
    *              foreign key (FILM_ID) references FILM(ID)
    *
-   *  With "direct" direction in the configuration we obtain:
+   *  With "direct" direction in the jsonConfiguration we obtain:
    *
    *  ACTOR --[Performs]--> FILM
    *
@@ -1393,14 +1393,14 @@ public class RelationshipConfigurationMappingTest {
 
   /*
    *  Three tables: 1  N-N relationship, no foreign keys declared for the join table in the db.
-   *  Through the configuration we obtain the following schema:
+   *  Through the jsonConfiguration we obtain the following schema:
    *
    *  ACTOR
    *  FILM
    *  ACTOR2FILM: foreign key (ACTOR_ID) references ACTOR(ID)
    *              foreign key (FILM_ID) references FILM(ID)
    *
-   *  With "direct" direction in the configuration we would obtain:
+   *  With "direct" direction in the jsonConfiguration we would obtain:
    *
    *  FILM --[Performs]--> ACTOR
    *
@@ -2003,8 +2003,8 @@ public class RelationshipConfigurationMappingTest {
    *  ACTOR2FILM: foreign key (ACTOR_ID) references ACTOR(ID)
    *              foreign key (FILM_ID) references FILM(ID)
    *
-   *  Through the configuration we want name the relationship "Performs".
-   *  With "direct" direction in the configuration we obtain:
+   *  Through the jsonConfiguration we want name the relationship "Performs".
+   *  With "direct" direction in the jsonConfiguration we obtain:
    *
    *  ACTOR --[Performs]--> FILM
    *
@@ -2603,8 +2603,8 @@ public class RelationshipConfigurationMappingTest {
    *  ACTOR2FILM: foreign key (ACTOR_ID) references ACTOR(ID)
    *              foreign key (FILM_ID) references FILM(ID)
    *
-   *  Through the configuration we want name the relationship "Performs".
-   *  With "direct" direction in the configuration we would obtain:
+   *  Through the jsonConfiguration we want name the relationship "Performs".
+   *  With "direct" direction in the jsonConfiguration we would obtain:
    *
    *  ACTOR --[Features]--> FILM
    *

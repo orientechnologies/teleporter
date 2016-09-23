@@ -119,9 +119,9 @@ public class FullConfigurationMappingTest {
             ODocument config = OFileManager.buildJsonFromFile(this.config);
 
             this.mapper = new OER2GraphMapper(this.driver, this.jurl, this.username, this.password, null, null, config);
-            mapper.buildSourceDatabaseSchema(this.context);
-            mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
-            mapper.applyImportConfiguration(this.context);
+            this.mapper.buildSourceDatabaseSchema(this.context);
+            this.mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
+            this.mapper.applyImportConfiguration(this.context);
 
 
             /*

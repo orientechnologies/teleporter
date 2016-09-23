@@ -23,13 +23,13 @@ public class OConfigurationManager {
 
 
   /**
-   * Loading eventual configuration.
+   * Loading eventual jsonConfiguration.
    * Look for the config in the <db-path>/teleporter-config/ path:
-   *  (i) - if db and configuration are present use the default config
+   *  (i) - if db and jsonConfiguration are present use the default config
    *      - else
    *       (ii)  - if an external config path was passed as argument then load the config, use it for the steps 1,2,3 and then copy it
-   *               in the <db-path>/teleporter-config/ path (configuration.json)
-   *       (iii) - else execute strategy without configuration
+   *               in the <db-path>/teleporter-config/ path (jsonConfiguration.json)
+   *       (iii) - else execute strategy without jsonConfiguration
    **/
   public ODocument loadConfiguration(String outOrientGraphUri, String configurationPath, OTeleporterContext context) {
 
@@ -37,7 +37,7 @@ public class OConfigurationManager {
       outOrientGraphUri = outOrientGraphUri.replace("\\","/");
     }
 
-    // checking the presence of the configuration in the target db
+    // checking the presence of the jsonConfiguration in the target db
     if (!(outOrientGraphUri.charAt(outOrientGraphUri.length() - 1) == '/')) {
       outOrientGraphUri += "/";
     }
@@ -67,7 +67,7 @@ public class OConfigurationManager {
         }
         // (iii)
         else {
-          context.getOutputManager().info("No configuration file was found. Migration will be performed with standard mapping policies.\n");
+          context.getOutputManager().info("No jsonConfiguration file was found. Migration will be performed with standard mapping policies.\n");
         }
       }
     } catch (Exception e) {

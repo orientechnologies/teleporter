@@ -22,7 +22,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * It collects all the information contained in the configuration submitted by the user.
+ * It collects all the information contained in the jsonConfiguration submitted by the user.
  *
  * @author Gabriele Ponzi
  * @email <gabriele.ponzi--at--gmail.com>
