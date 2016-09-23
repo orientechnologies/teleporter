@@ -63,7 +63,7 @@
     </distributionManagement>
 
     <properties>
-        <jdk.version>1.7</jdk.version>
+        <maven.compiler.source>1.7</maven.compiler.source>
         <orientdb.version>${project.version}</orientdb.version>
         <hsqldb.version>2.3.3</hsqldb.version>
     </properties>
@@ -97,11 +97,12 @@
                 </dependencies>
             </plugin>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.1</version>
                 <configuration>
-                    <source>${jdk.version}</source>
-                    <target>${jdk.version}</target>
+                    <source>${maven.compiler.source}</source>
+                    <target>${maven.compiler.source}</target>
                 </configuration>
             </plugin>
             <plugin>
@@ -155,14 +156,6 @@
                     <pushChanges>false</pushChanges>
                     <allowTimestampedSnapshots>true</allowTimestampedSnapshots>
                     <arguments>-Prelease</arguments>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <source>1.7</source>
-                    <target>1.7</target>
                 </configuration>
             </plugin>
         </plugins>
