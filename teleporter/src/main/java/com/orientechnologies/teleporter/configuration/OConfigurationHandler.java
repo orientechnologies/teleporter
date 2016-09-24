@@ -328,21 +328,142 @@ public class OConfigurationHandler {
 
         ODocument jsonConfiguration = new ODocument();
 
+        String s = jsonConfiguration.toJSON("");
+
         // writing configured vertices
         this.writeConfiguredVerticesOnJsonDocument(configuration, jsonConfiguration, context);
 
         // writing configured edges
         this.writeConfiguredEdgesOnJsonDocument(configuration, jsonConfiguration, context);
 
+        s = jsonConfiguration.toJSON("");
+
         return jsonConfiguration;
     }
 
 
     private void writeConfiguredVerticesOnJsonDocument(OConfiguration configuration, ODocument jsonConfiguration, OTeleporterContext context) {
-        //TODO
+        List<ODocument> vertices = new LinkedList<ODocument>();
+
+        for(OConfiguredVertexClass currConfiguredVertex: configuration.getConfiguredVertices()) {
+            ODocument currVertexDoc = new ODocument();
+            currVertexDoc.field("name", currConfiguredVertex.getName());
+
+            /*
+             * Setting vertex mapping
+             */
+
+            OVertexMappingInformation currVertexMapping = currConfiguredVertex.getMapping();
+            ODocument currVertexMappingDoc = new ODocument();
+
+            // source tables
+            List<OSourceTable> sourceTables = currVertexMapping.getSourceTables();
+            List<ODocument> sourceTablesDoc = new LinkedList<ODocument>();
+            for(OSourceTable currSourceTable: sourceTables) {
+                ODocument currSourceTableDoc = new ODocument();
+                currSourceTableDoc.field("name", currSourceTable.getSourceIdName());
+                currSourceTableDoc.field("dataSource", currSourceTable.getDataSource());
+                currSourceTableDoc.field("tableName", currSourceTable.getTableName());
+                List<String> aggregationColumns = currSourceTable.getAggregationColumns();
+                if(aggregationColumns != null) {
+                    currSourceTableDoc.field("aggregationColumns", aggregationColumns);
+                }
+                sourceTablesDoc.add(currSourceTableDoc);
+            }
+            currVertexMappingDoc.field("sourceTables", sourceTablesDoc);
+
+            // aggregation function
+            String aggregationFunction = currVertexMapping.getAggregationFunction();
+            if(aggregationFunction != null) {
+                currVertexMappingDoc.field("aggregationFunction", aggregationFunction);
+            }
+            currVertexDoc.field("mapping", currVertexMappingDoc);
+
+
+            /*
+             * Setting properties
+             */
+
+            ODocument propertiesDoc = this.writeConfiguredProperties(currConfiguredVertex.getConfiguredProperties());
+            currVertexDoc.field("properties", propertiesDoc);
+
+            vertices.add(currVertexDoc);
+        }
+
+        // collecting configured vertices
+        jsonConfiguration.field("vertices", vertices);
     }
 
+
     private void writeConfiguredEdgesOnJsonDocument(OConfiguration configuration, ODocument jsonConfiguration, OTeleporterContext context) {
-        //TODO
+        List<ODocument> edges = new LinkedList<ODocument>();
+
+        for(OConfiguredEdgeClass currConfiguredEdge: configuration.getConfiguredEdges()) {
+            ODocument currEdgeDoc = new ODocument();
+            ODocument currEdgeInfoDoc = new ODocument();
+            String edgeClassName = currConfiguredEdge.getName();
+
+            /*
+             * Setting edge mapping
+             */
+
+            OEdgeMappingInformation currEdgeMapping = currConfiguredEdge.getMapping();
+            ODocument currEdgeMappingDoc = new ODocument();
+            currEdgeMappingDoc.field("fromTable", currEdgeMapping.getFromTableName());
+            currEdgeMappingDoc.field("fromColumns", currEdgeMapping.getFromColumns());
+            currEdgeMappingDoc.field("toTable", currEdgeMapping.getToTableName());
+            currEdgeMappingDoc.field("toColumns", currEdgeMapping.getToColumns());
+            OAggregatedJoinTableMapping representedJoinTableMapping = currEdgeMapping.getRepresentedJoinTableMapping();
+            if(representedJoinTableMapping != null) {
+                ODocument joinTableMapping = new ODocument();
+                joinTableMapping.field("tableName", representedJoinTableMapping.getTableName());
+                joinTableMapping.field("fromColumns", representedJoinTableMapping.getFromColumns());
+                joinTableMapping.field("toColumns", representedJoinTableMapping.getToColumns());
+                currEdgeMappingDoc.field("joinTable", joinTableMapping);
+            }
+            currEdgeMappingDoc.field("direction", currEdgeMapping.getDirection());
+            currEdgeInfoDoc.field("mapping", currEdgeMappingDoc);
+
+            /*
+             * Setting properties
+             */
+
+            ODocument propertiesDoc = this.writeConfiguredProperties(currConfiguredEdge.getConfiguredProperties());
+            currEdgeInfoDoc.field("properties", propertiesDoc);
+
+            currEdgeDoc.field(edgeClassName, currEdgeInfoDoc);
+            edges.add(currEdgeDoc);
+        }
+
+        // collecting configured edges
+        jsonConfiguration.field("edges", edges);
+    }
+
+
+    private ODocument writeConfiguredProperties(List<OConfiguredProperty> configuredProperties) {
+        ODocument propertiesDoc = new ODocument();
+
+        for(OConfiguredProperty currConfiguredProperty: configuredProperties) {
+            ODocument currConfiguredPropertyInfoDoc = new ODocument();
+            String propertyName = currConfiguredProperty.getPropertyName();
+            currConfiguredPropertyInfoDoc.field("include", currConfiguredProperty.isIncludedInMigration());
+            currConfiguredPropertyInfoDoc.field("type", currConfiguredProperty.getPropertyType());
+            currConfiguredPropertyInfoDoc.field("mandatory", currConfiguredProperty.isMandatory());
+            currConfiguredPropertyInfoDoc.field("readOnly", currConfiguredProperty.isReadOnly());
+            currConfiguredPropertyInfoDoc.field("notNull", currConfiguredProperty.isNotNull());
+
+            OConfiguredPropertyMapping propertyMapping = currConfiguredProperty.getPropertyMapping();
+            if(propertyMapping != null) {
+                ODocument propertyMappingDoc = new ODocument();
+                propertyMappingDoc.field("source", propertyMapping.getSourceName());
+                propertyMappingDoc.field("columnName", propertyMapping.getColumnName());
+                propertyMappingDoc.field("type", propertyMapping.getType());
+                currConfiguredPropertyInfoDoc.field("mapping", propertyMappingDoc);
+            }
+
+            propertiesDoc.field(propertyName, currConfiguredPropertyInfoDoc);
+        }
+
+        return propertiesDoc;
     }
 }

@@ -329,7 +329,7 @@ public class OConfigurationHandlerTest {
          * 2. Checking that the original JSON configuration and the final just written configuration are equal.
          */
         ODocument writtenJsonConfiguration = this.configurationHandler.buildJSONFromConfiguration(configuration, context);
-        assertEquals(inputConfigurationDoc, writtenJsonConfiguration);
+        assertEquals(inputConfigurationDoc.toJSON(""), writtenJsonConfiguration.toJSON(""));
     }
 
 
@@ -401,7 +401,7 @@ public class OConfigurationHandlerTest {
          * 2. Checking that the original JSON configuration and the final just written configuration are equal.
          */
         ODocument writtenJsonConfiguration = this.configurationHandler.buildJSONFromConfiguration(configuration, context);
-        assertEquals(inputConfigurationDoc, writtenJsonConfiguration);
+        assertEquals(inputConfigurationDoc.toJSON(""), writtenJsonConfiguration.toJSON(""));
     }
 
 }
