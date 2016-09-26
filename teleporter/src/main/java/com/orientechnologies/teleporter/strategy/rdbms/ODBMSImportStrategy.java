@@ -35,7 +35,7 @@ import com.orientechnologies.teleporter.model.graphmodel.OVertexType;
 import com.orientechnologies.teleporter.nameresolver.ONameResolver;
 import com.orientechnologies.teleporter.persistence.handler.ODBMSDataTypeHandler;
 import com.orientechnologies.teleporter.persistence.util.OQueryResult;
-import com.orientechnologies.teleporter.strategy.OImportStrategy;
+import com.orientechnologies.teleporter.strategy.OWorkflowStrategy;
 import com.orientechnologies.teleporter.util.OConfigurationManager;
 import com.orientechnologies.teleporter.util.OFunctionsHandler;
 import com.tinkerpop.blueprints.impls.orient.OrientBaseGraph;
@@ -51,7 +51,7 @@ import java.util.*;
  *
  */
 
-public abstract class ODBMSImportStrategy implements OImportStrategy {
+public abstract class ODBMSImportStrategy implements OWorkflowStrategy {
 
   protected OER2GraphMapper mapper;
 

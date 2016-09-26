@@ -25,7 +25,7 @@ import com.orientechnologies.teleporter.factory.OStrategyFactory;
 import com.orientechnologies.teleporter.http.OServerCommandTeleporter;
 import com.orientechnologies.teleporter.importengine.rdbms.dbengine.ODBQueryEngine;
 import com.orientechnologies.teleporter.model.dbschema.OSourceDatabaseInfo;
-import com.orientechnologies.teleporter.strategy.OImportStrategy;
+import com.orientechnologies.teleporter.strategy.OWorkflowStrategy;
 import com.orientechnologies.teleporter.ui.OProgressMonitor;
 import com.orientechnologies.teleporter.util.ODriverConfigurator;
 import com.orientechnologies.orient.core.config.OGlobalConfiguration;
@@ -265,7 +265,7 @@ public class OTeleporter extends OServerPluginAbstract {
     ODBQueryEngine dbQueryEngine = new ODBQueryEngine(sourceInfo.getDriverName(), context);
     context.setDbQueryEngine(dbQueryEngine);
 
-    OImportStrategy strategy = FACTORY.buildStrategy(driver, chosenStrategy, context);
+    OWorkflowStrategy strategy = FACTORY.buildStrategy(driver, chosenStrategy, context);
 
     // Timer for statistics notifying
     Timer timer = new Timer();

@@ -20,7 +20,7 @@ package com.orientechnologies.teleporter.factory;
 
 import com.orientechnologies.teleporter.context.OTeleporterContext;
 import com.orientechnologies.teleporter.exception.OTeleporterIOException;
-import com.orientechnologies.teleporter.strategy.OImportStrategy;
+import com.orientechnologies.teleporter.strategy.OWorkflowStrategy;
 import com.orientechnologies.teleporter.strategy.rdbms.ODBMSNaiveAggregationStrategy;
 import com.orientechnologies.teleporter.strategy.rdbms.ODBMSNaiveStrategy;
 
@@ -36,10 +36,10 @@ public class OStrategyFactory {
 
   public OStrategyFactory() {}
 
-  public OImportStrategy buildStrategy(String storageDriver, String chosenStrategy, OTeleporterContext context) throws
+  public OWorkflowStrategy buildStrategy(String storageDriver, String chosenStrategy, OTeleporterContext context) throws
       OTeleporterIOException {
 
-    OImportStrategy strategy = null;
+    OWorkflowStrategy strategy = null;
 
     // choosing strategy for migration from RDBSs
 

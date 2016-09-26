@@ -30,10 +30,10 @@ package com.orientechnologies.teleporter.model.dbschema;
 public class ORelationship {
 
   private OEntity foreignEntity;				// Entity importing the key (starting entity)
-  private OEntity parentEntity;				// Entity exporting the key (arrival entity)
+  private OEntity parentEntity;			     	// Entity exporting the key (arrival entity)
   private OForeignKey foreignKey;
   private OPrimaryKey primaryKey;
-  private String direction;               // represents the direction of the relationship
+  private String direction;                    // represents the direction of the relationship
 
   public ORelationship(OEntity foreignEntity, OEntity parentEntity) {
     this.foreignEntity = foreignEntity;

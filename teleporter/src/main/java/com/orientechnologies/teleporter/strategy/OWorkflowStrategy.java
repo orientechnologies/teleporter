@@ -32,9 +32,9 @@ import java.util.List;
  * 
  */
 
-public interface OImportStrategy {
+public interface OWorkflowStrategy {
 
-  public void executeStrategy(OSourceInfo sourceInfo, String outOrientGraphUri, String chosenMapper, String xmlPath, String nameResolverConvention,
+  void executeStrategy(OSourceInfo sourceInfo, String outOrientGraphUri, String chosenMapper, String xmlPath, String nameResolverConvention,
                               List<String> includedTables, List<String> excludedTables, String configurationPath, OTeleporterContext context);
 
 }

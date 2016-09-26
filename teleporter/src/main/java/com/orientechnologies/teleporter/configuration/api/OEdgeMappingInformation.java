@@ -29,7 +29,7 @@ import java.util.List;
 
 public class OEdgeMappingInformation {
 
-    private OConfiguredEdgeClass belongingEdge;                             // mandatory
+    private OConfiguredEdgeClass belongingEdge;                        // mandatory
     private String fromTableName;                                      // mandatory
     private String toTableName;                                        // mandatory
     private List<String> fromColumns;                                  // mandatory

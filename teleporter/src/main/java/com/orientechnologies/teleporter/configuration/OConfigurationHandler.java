@@ -22,13 +22,23 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.teleporter.configuration.api.*;
 import com.orientechnologies.teleporter.context.OTeleporterContext;
 import com.orientechnologies.teleporter.exception.OTeleporterRuntimeException;
+import com.orientechnologies.teleporter.mapper.rdbms.OER2GraphMapper;
+import com.orientechnologies.teleporter.mapper.rdbms.classmapper.OClassMapper;
+import com.orientechnologies.teleporter.model.dbschema.OAttribute;
+import com.orientechnologies.teleporter.model.dbschema.OEntity;
+import com.orientechnologies.teleporter.model.dbschema.ORelationship;
+import com.orientechnologies.teleporter.model.dbschema.OSourceDatabaseInfo;
+import com.orientechnologies.teleporter.model.graphmodel.OEdgeType;
 import com.orientechnologies.teleporter.model.graphmodel.OGraphModel;
+import com.orientechnologies.teleporter.model.graphmodel.OModelProperty;
+import com.orientechnologies.teleporter.model.graphmodel.OVertexType;
 
 import java.util.*;
 
 /**
- * It parses the jsonConfiguration JSON and builds a OConfiguration object to handle all the information
- * in a easy way.
+ * It handles the configuration of the Teleporter workflow. It allows:
+ * 1. translation from OConfiguration object to JSON format and vice versa.
+ * 2. the OConfiguration object building starting from a mapping between dbms and graph models.
  *
  * @author Gabriele Ponzi
  * @email <gabriele.ponzi--at--gmail.com>
@@ -468,12 +478,119 @@ public class OConfigurationHandler {
         return propertiesDoc;
     }
 
-    public ODocument buildConfigurationFromGraphModel(OGraphModel graphModel) {
-        ODocument configuration = new ODocument();
+    public OConfiguration buildConfigurationFromGraphModel(OER2GraphMapper mapper, OTeleporterContext context) {
+
+        OConfiguration configuration = new OConfiguration();
+
+        /**
+         * Building configured vertices starting from Entities
+         */
+
+        List<OConfiguredVertexClass> configuredVertexClasses = new LinkedList<OConfiguredVertexClass>();
+        for(OEntity currentEntity: mapper.getEntity2classMappers().keySet()) {
+
+            OSourceDatabaseInfo currSourceDBInfo = currentEntity.getSourceDataseInfo();
+            List<OClassMapper> currClassMappers = mapper.getEntity2classMappers().get(currentEntity);
+            if(currClassMappers.size() == 0) {
+                context.getOutputManager().error("Error during the model building: the %s entity is not mapped to any vertex class", currentEntity.getName());
+                throw new OTeleporterRuntimeException();
+            }
+            if(currClassMappers.size() > 1) {
+                context.getOutputManager().error("Error during the model building: the %s entity is mapped to more than one vertex classes", currentEntity.getName());
+                throw new OTeleporterRuntimeException();
+            }
+            OClassMapper currClassMapper = currClassMappers.get(0);
+            OVertexType currVertexType = currClassMapper.getVertexType();
+            OConfiguredVertexClass currConfiguredVertexClass = new OConfiguredVertexClass(currVertexType.getName());
+
+            // building vertex mapping info
+            OVertexMappingInformation vertexMappingInfo = new OVertexMappingInformation(currConfiguredVertexClass);
+            List<OSourceTable> sourceTables = new LinkedList<OSourceTable>();
+            OSourceTable sourceTable = new OSourceTable(currSourceDBInfo.getSourceIdName() + "_" + currentEntity.getName());
+            sourceTable.setDataSource(currSourceDBInfo.getDriverName());
+            sourceTable.setTableName(currentEntity.getName());
+            sourceTables.add(sourceTable);
+            vertexMappingInfo.setSourceTables(sourceTables);
+            currConfiguredVertexClass.setMapping(vertexMappingInfo);
+
+            // building configured properties
+            List<OConfiguredProperty> configuredProperties = new LinkedList<OConfiguredProperty>();
+            for(OModelProperty currModelProperty: currVertexType.getProperties()) {
+                OConfiguredProperty currConfiguredProperty = new OConfiguredProperty(currModelProperty.getName());
+                currConfiguredProperty.setIncludedInMigration(true);
+                currConfiguredProperty.setPropertyType(currModelProperty.getOrientdbType());
+                currConfiguredProperty.setMandatory(false);
+                currConfiguredProperty.setReadOnly(false);
+                currConfiguredProperty.setNotNull(false);
+
+                OConfiguredPropertyMapping propertyMappingInfo = new OConfiguredPropertyMapping(sourceTable.getSourceIdName());
+                String correspondentAttributeName = currClassMapper.getAttributeByProperty(currModelProperty.getName());
+                OAttribute correspondentAttribute = currentEntity.getAttributeByName(correspondentAttributeName);
+                propertyMappingInfo.setColumnName(correspondentAttributeName);
+                propertyMappingInfo.setType(correspondentAttribute.getDataType());
+                currConfiguredProperty.setPropertyMapping(propertyMappingInfo);
+
+                configuredProperties.add(currConfiguredProperty);
+            }
+            currConfiguredVertexClass.setConfiguredProperties(configuredProperties);
+
+            // adding configured vertex to the list
+            configuredVertexClasses.add(currConfiguredVertexClass);
+        }
+        configuration.setConfiguredVertices(configuredVertexClasses);
 
 
+        /**
+         * Building configured edges starting from Relationships
+         */
+
+        List<OConfiguredEdgeClass> configuredEdgeClasses = new LinkedList<OConfiguredEdgeClass>();
+        for(ORelationship currentRelationship: mapper.getRelationship2edgeType().keySet()) {
+
+            OEdgeType currEdgeType = mapper.getRelationship2edgeType().get(currentRelationship);
+            OConfiguredEdgeClass currConfiguredEdgeClass = new OConfiguredEdgeClass(currEdgeType.getName());
+
+            // building edge mapping info
+            OEdgeMappingInformation edgeMappingInformation = new OEdgeMappingInformation(currConfiguredEdgeClass);
+            edgeMappingInformation.setFromTableName(currentRelationship.getForeignEntity().getName());
+            edgeMappingInformation.setToTableName(currentRelationship.getParentEntity().getName());
+
+            List<String> fromColumns = new LinkedList<String>();
+            for(OAttribute attribute: currentRelationship.getForeignKey().getInvolvedAttributes()) {
+                fromColumns.add(attribute.getName());
+            }
+            List<String> toColumns = new LinkedList<String>();
+            for(OAttribute attribute: currentRelationship.getPrimaryKey().getInvolvedAttributes()) {
+                fromColumns.add(attribute.getName());
+            }
+            edgeMappingInformation.setFromColumns(fromColumns);
+            edgeMappingInformation.setToColumns(toColumns);
+            edgeMappingInformation.setDirection(currentRelationship.getDirection());
+
+            // if the edgeType corresponds to a join table, also the join table mapping will be built
+            boolean currEdgeTypeFromJoinTable = false;
+            OEdgeType correspondentEdgeType = mapper.getRelationship2edgeType().get(currentRelationship);
 
 
+            if(mapper.getJoinVertexTypeByAggregatorEdge(correspondentEdgeType.getName()) != null) {
+                currEdgeTypeFromJoinTable = true;
+                //OAggregatedJoinTableMapping joinTableMapping = new OAggregatedJoinTableMapping();
+                //TODO !!!!!
+            }
+
+            currConfiguredEdgeClass.setMapping(edgeMappingInformation);
+
+
+            // building configured properties
+            List<OConfiguredProperty> configuredProperties = new LinkedList<OConfiguredProperty>();
+
+
+            currConfiguredEdgeClass.setConfiguredProperties(configuredProperties);
+
+            // adding configured edge to the list
+            configuredEdgeClasses.add(currConfiguredEdgeClass);
+        }
+        configuration.setConfiguredEdges(configuredEdgeClasses);
 
         return configuration;
     }
