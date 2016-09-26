@@ -21,6 +21,7 @@ package com.orientechnologies.teleporter.test.rdbms.types;
 import com.orientechnologies.teleporter.context.OOutputStreamManager;
 import com.orientechnologies.teleporter.context.OTeleporterContext;
 import com.orientechnologies.teleporter.importengine.rdbms.dbengine.ODBQueryEngine;
+import com.orientechnologies.teleporter.model.dbschema.OSourceDatabaseInfo;
 import com.orientechnologies.teleporter.nameresolver.OJavaConventionNameResolver;
 import com.orientechnologies.teleporter.persistence.handler.OHSQLDBDataTypeHandler;
 import com.orientechnologies.teleporter.strategy.rdbms.ODBMSNaiveStrategy;
@@ -52,12 +53,14 @@ public class DateTypeTest {
   private String username = "SA";
   private String password = "";
   private String outOrientGraphUri = "memory:testOrientDB";
+  private OSourceDatabaseInfo sourceDBInfo;
 
 
   @Before
   public void init() {
     this.context = new OTeleporterContext();
-    this.dbQueryEngine = new ODBQueryEngine(this.driver, this.jurl, this.username, this.password, this.context);
+    this.dbQueryEngine = new ODBQueryEngine(this.driver, this.context);
+    this.sourceDBInfo = new OSourceDatabaseInfo("source", this.driver, this.jurl, this.username, this.password);
     this.context.setDbQueryEngine(this.dbQueryEngine);
     this.context.setOutputManager(new OOutputStreamManager(0));
     this.context.setNameResolver(new OJavaConventionNameResolver());
@@ -99,7 +102,7 @@ public class DateTypeTest {
           + "('F003','The Departed','2006'))";
       st.execute(filmFilling);
 
-      this.importStrategy.executeStrategy(this.driver, "jdbc:hsqldb:mem:mydb", this.username, this.password, this.outOrientGraphUri, "basicDBMapper", null, "java", null, null, null, context);
+      this.importStrategy.executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "basicDBMapper", null, "java", null, null, null, context);
 
 
       /*
@@ -162,7 +165,7 @@ public class DateTypeTest {
           + "('F003','The Departed','2006-09-26'))";
       st.execute(filmFilling);
 
-      this.importStrategy.executeStrategy(this.driver, "jdbc:hsqldb:mem:mydb", this.username, this.password, this.outOrientGraphUri, "basicDBMapper", null, "java", null, null, null, context);
+      this.importStrategy.executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "basicDBMapper", null, "java", null, null, null, context);
 
 
       /*
@@ -226,7 +229,7 @@ public class DateTypeTest {
           + "('F003','The Departed','2006-09-26','2012-08-08 20:08:08'))";
       st.execute(filmFilling);
 
-      this.importStrategy.executeStrategy(this.driver, "jdbc:hsqldb:mem:mydb", this.username, this.password, this.outOrientGraphUri, "basicDBMapper", null, "java", null, null, null, context);
+      this.importStrategy.executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "basicDBMapper", null, "java", null, null, null, context);
 
 
       /*
@@ -291,7 +294,7 @@ public class DateTypeTest {
           + "('F003','The Departed','2006-09-26','2012-08-08 20:08:08+8:00'))";
       st.execute(filmFilling);
 
-      this.importStrategy.executeStrategy(this.driver, "jdbc:hsqldb:mem:mydb", this.username, this.password, this.outOrientGraphUri, "basicDBMapper", null, "java", null, null, null, context);
+      this.importStrategy.executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "basicDBMapper", null, "java", null, null, null, context);
 
 
       /*
@@ -356,7 +359,7 @@ public class DateTypeTest {
           + "('F003','The Departed','2006-09-26','20:08:08.034900'))";
       st.execute(filmFilling);
 
-      this.importStrategy.executeStrategy(this.driver, "jdbc:hsqldb:mem:mydb", this.username, this.password, this.outOrientGraphUri, "basicDBMapper", null, "java", null, null, null, context);
+      this.importStrategy.executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "basicDBMapper", null, "java", null, null, null, context);
 
 
       /*
@@ -420,7 +423,7 @@ public class DateTypeTest {
           + "('F003','The Departed','2006-09-26','20:08:08.034900-8:00'))";
       st.execute(filmFilling);
 
-      this.importStrategy.executeStrategy(this.driver, "jdbc:hsqldb:mem:mydb", this.username, this.password, this.outOrientGraphUri, "basicDBMapper", null, "java", null, null, null, context);
+      this.importStrategy.executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "basicDBMapper", null, "java", null, null, null, context);
 
 
       /*

@@ -16,7 +16,7 @@
  * For more information: http://www.orientdb.com
  */
 
-package com.orientechnologies.teleporter.model.dbschema;
+package com.orientechnologies.teleporter.model;
 
 /**
  * Interface that represents a generic data source schema with all its elements.
@@ -26,6 +26,6 @@ package com.orientechnologies.teleporter.model.dbschema;
  * 
  */
 
-public interface ODataSourceSchema {
+public interface ODataSourceSchemaInfo {
 
 }

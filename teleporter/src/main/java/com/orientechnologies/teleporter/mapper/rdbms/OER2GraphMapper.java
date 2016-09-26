@@ -27,6 +27,7 @@ import com.orientechnologies.teleporter.exception.OTeleporterRuntimeException;
 import com.orientechnologies.teleporter.importengine.rdbms.dbengine.ODBQueryEngine;
 import com.orientechnologies.teleporter.mapper.OSource2GraphMapper;
 import com.orientechnologies.teleporter.mapper.rdbms.classmapper.OClassMapper;
+import com.orientechnologies.teleporter.model.OSourceInfo;
 import com.orientechnologies.teleporter.model.dbschema.*;
 import com.orientechnologies.teleporter.model.graphmodel.*;
 import com.orientechnologies.teleporter.nameresolver.ONameResolver;
@@ -49,7 +50,8 @@ import java.util.Date;
 
 public class OER2GraphMapper extends OSource2GraphMapper {
 
-  protected ODBSourceConnection dbSourceConnection;
+  // single source database
+  protected OSourceDatabaseInfo sourceDBInfo;
 
   // source model
   protected ODataBaseSchema dataBaseSchema;
@@ -72,8 +74,9 @@ public class OER2GraphMapper extends OSource2GraphMapper {
 
   public final int DEFAULT_CLASS_MAPPER_INDEX = 0;
 
-  public OER2GraphMapper (String driver, String uri, String username, String password, List<String> includedTables, List<String> excludedTables, ODocument configuration) {
-    this.dbSourceConnection = new ODBSourceConnection(driver, uri, username, password);
+  public OER2GraphMapper (OSourceDatabaseInfo sourceDatabaseInfo, List<String> includedTables, List<String> excludedTables, ODocument configuration) {
+
+    this.sourceDBInfo = sourceDatabaseInfo;
 
     // new maps
     this.entity2classMappers = new IdentityHashMap<OEntity,List<OClassMapper>>();
@@ -169,7 +172,7 @@ public class OER2GraphMapper extends OSource2GraphMapper {
 
     try {
 
-      connection = this.dbSourceConnection.getConnection(context);
+      connection = ODBSourceConnection.getConnection(sourceDBInfo, context);
       DatabaseMetaData databaseMetaData = connection.getMetaData();
 
       /*
@@ -263,10 +266,10 @@ public class OER2GraphMapper extends OSource2GraphMapper {
     String tableSchemaPattern = null;
     String tableNamePattern = null;
     String[] tableTypes = {"TABLE"};
-    if(this.dbSourceConnection.getDriver().contains("Oracle")) {
+    if(this.sourceDBInfo.getDriverName().contains("Oracle")) {
       ResultSet schemas = databaseMetaData.getSchemas();
       while(schemas.next()) {
-        if(schemas.getString(1).equalsIgnoreCase(this.dbSourceConnection.getUsername())) {
+        if(schemas.getString(1).equalsIgnoreCase(this.sourceDBInfo.getUsername())) {
           tableSchemaPattern = schemas.getString(1);
           break;
         }
@@ -304,7 +307,7 @@ public class OER2GraphMapper extends OSource2GraphMapper {
       String currentTableSchema = tablesName2schema.get(currentTableName);
       String sql;
 
-      OQueryResult result = dbQueryEngine.countTableRecords(currentTableName, currentTableSchema, context);
+      OQueryResult result = dbQueryEngine.countTableRecords(sourceDBInfo, currentTableName, currentTableSchema, context);
 
       ResultSet currentTableRecordAmount = result.getResult();
       if (currentTableRecordAmount.next()) {
@@ -313,7 +316,7 @@ public class OER2GraphMapper extends OSource2GraphMapper {
       this.closeCursor(currentTableRecordAmount, context);
 
       // creating entity
-      OEntity currentEntity = new OEntity(currentTableName, currentTableSchema);
+      OEntity currentEntity = new OEntity(currentTableName, currentTableSchema, this.sourceDBInfo);
 
       // adding attributes and primary keys
       OPrimaryKey pKey = new OPrimaryKey(currentEntity);

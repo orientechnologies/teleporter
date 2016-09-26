@@ -24,6 +24,7 @@ import com.orientechnologies.teleporter.context.OOutputStreamManager;
 import com.orientechnologies.teleporter.context.OTeleporterContext;
 import com.orientechnologies.teleporter.importengine.rdbms.dbengine.ODBQueryEngine;
 import com.orientechnologies.teleporter.mapper.rdbms.OER2GraphMapper;
+import com.orientechnologies.teleporter.model.dbschema.OSourceDatabaseInfo;
 import com.orientechnologies.teleporter.nameresolver.OJavaConventionNameResolver;
 import com.orientechnologies.teleporter.persistence.handler.OHSQLDBDataTypeHandler;
 import com.orientechnologies.teleporter.util.OFileManager;
@@ -59,16 +60,19 @@ public class OrientDBSchemaWritingWithFullConfigTest {
     private String jurl = "jdbc:hsqldb:mem:mydb";
     private String username = "SA";
     private String password = "";
+    private OSourceDatabaseInfo sourceDBInfo;
+
 
     @Before
     public void init() {
         this.context = new OTeleporterContext();
-        this.dbQueryEngine = new ODBQueryEngine(this.driver, this.jurl, this.username, this.password, this.context);
+        this.dbQueryEngine = new ODBQueryEngine(this.driver, this.context);
         this.context.setDbQueryEngine(this.dbQueryEngine);
         this.context.setOutputManager(new OOutputStreamManager(0));
         this.context.setNameResolver(new OJavaConventionNameResolver());
         this.modelWriter = new OGraphModelWriter();
         this.outOrientGraphUri = "memory:testOrientDB";
+        this.sourceDBInfo = new OSourceDatabaseInfo("source", this.driver, this.jurl, this.username, this.password);
     }
 
     @Test
@@ -119,7 +123,7 @@ public class OrientDBSchemaWritingWithFullConfigTest {
 
             ODocument config = OFileManager.buildJsonFromFile(this.config);
 
-            this.mapper = new OER2GraphMapper(this.driver, this.jurl, this.username, this.password, null, null, config);
+            this.mapper = new OER2GraphMapper(this.sourceDBInfo, null, null, config);
             mapper.buildSourceDatabaseSchema(this.context);
             mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
             mapper.applyImportConfiguration(this.context);

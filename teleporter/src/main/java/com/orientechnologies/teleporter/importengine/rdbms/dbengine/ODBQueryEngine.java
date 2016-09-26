@@ -23,6 +23,7 @@ import com.orientechnologies.teleporter.factory.OQueryBuilderFactory;
 import com.orientechnologies.teleporter.importengine.ODataSourceQueryEngine;
 import com.orientechnologies.teleporter.model.dbschema.OEntity;
 import com.orientechnologies.teleporter.model.dbschema.OHierarchicalBag;
+import com.orientechnologies.teleporter.model.dbschema.OSourceDatabaseInfo;
 import com.orientechnologies.teleporter.persistence.util.ODBSourceConnection;
 import com.orientechnologies.teleporter.persistence.util.OQueryResult;
 
@@ -42,22 +43,20 @@ import java.util.List;
 
 public class ODBQueryEngine implements ODataSourceQueryEngine {
 
-  private ODBSourceConnection dataSource;
   private OQueryBuilderFactory queryBuilderFactory;
   private OQueryBuilder       queryBuilder;
 
 
-  public ODBQueryEngine(String driver, String uri, String username, String password, OTeleporterContext context) {
-    this.dataSource =  new ODBSourceConnection(driver, uri, username, password);
+  public ODBQueryEngine(String driver, OTeleporterContext context) {
     this.queryBuilderFactory = new OQueryBuilderFactory();
     this.queryBuilder = this.queryBuilderFactory.buildQueryBuilder(driver, context);
   }
 
 
-  public OQueryResult countTableRecords(String currentTableName, String currentTableSchema, OTeleporterContext context) {
+  public OQueryResult countTableRecords(OSourceDatabaseInfo sourceDBInfo, String currentTableName, String currentTableSchema, OTeleporterContext context) {
 
     String query = queryBuilder.countTableRecords(currentTableName, currentTableSchema, context);
-    return this.executeQuery(query, context);
+    return this.executeQuery(query, sourceDBInfo, context);
   }
 
   /**
@@ -69,21 +68,27 @@ public class ODBQueryEngine implements ODataSourceQueryEngine {
    */
   public OQueryResult getRecordById(OEntity entity, String[] propertyOfKey, String[] valueOfKey, OTeleporterContext context) {
 
+    OSourceDatabaseInfo sourceDBInfo = entity.getSourceDataseInfo();
+    // TODO: queryBuilder fetching
     String query = queryBuilder.getRecordById(entity, propertyOfKey, valueOfKey, context);
-    return this.executeQuery(query, context);
+    return this.executeQuery(query, sourceDBInfo, context);
   }
 
 
   public OQueryResult getRecordsByEntity(OEntity entity, OTeleporterContext context) {
 
+    OSourceDatabaseInfo sourceDBInfo = entity.getSourceDataseInfo();
+    // TODO: queryBuilder fetching
     String query = queryBuilder.getRecordsByEntity(entity, context);
-    return this.executeQuery(query, context);
+    return this.executeQuery(query, sourceDBInfo, context);
   }
 
   public OQueryResult getRecordsFromMultipleEntities(List<OEntity> mappedEntities, String[][] columns, OTeleporterContext context) {
 
+    OSourceDatabaseInfo sourceDBInfo = mappedEntities.get(0).getSourceDataseInfo();   // all the entities belong to the same source database
+    // TODO: queryBuilder fetching
     String query = queryBuilder.getRecordsFromMultipleEntities(mappedEntities, columns, context);
-    return this.executeQuery(query, context);
+    return this.executeQuery(query, sourceDBInfo, context);
   }
 
 
@@ -92,15 +97,19 @@ public class ODBQueryEngine implements ODataSourceQueryEngine {
    */
   public OQueryResult getRecordsFromSingleTableByDiscriminatorValue(String discriminatorColumn, String currentDiscriminatorValue, OEntity entity, OTeleporterContext context) {
 
+    OSourceDatabaseInfo sourceDBInfo = entity.getSourceDataseInfo();
+    // TODO: queryBuilder fetching
     String query = queryBuilder.getRecordsFromSingleTableByDiscriminatorValue(discriminatorColumn, currentDiscriminatorValue, entity, context);
-    return this.executeQuery(query, context);
+    return this.executeQuery(query, sourceDBInfo, context);
   }
 
 
   public OQueryResult getEntityTypeFromSingleTable(String discriminatorColumn, OEntity entity, String[] propertyOfKey, String[] valueOfKey, OTeleporterContext context) {
 
+    OSourceDatabaseInfo sourceDBInfo = entity.getSourceDataseInfo();
+    // TODO: queryBuilder fetching
     String query = queryBuilder.getEntityTypeFromSingleTable(discriminatorColumn, entity, propertyOfKey, valueOfKey, context);
-    return this.executeQuery(query, context);
+    return this.executeQuery(query, sourceDBInfo, context);
   }
 
 
@@ -110,11 +119,13 @@ public class ODBQueryEngine implements ODataSourceQueryEngine {
    */
   public OQueryResult buildAggregateTableFromHierarchicalBag(OHierarchicalBag bag, OTeleporterContext context) {
 
+    OSourceDatabaseInfo sourceDBInfo = bag.getSourceDataseInfo();
+    // TODO: queryBuilder fetching
     String query = queryBuilder.buildAggregateTableFromHierarchicalBag(bag, context);
-    return this.executeQuery(query, context);
+    return this.executeQuery(query, sourceDBInfo, context);
   }
 
-  public OQueryResult executeQuery(String query, OTeleporterContext context) {
+  public OQueryResult executeQuery(String query, OSourceDatabaseInfo sourceDBInfo, OTeleporterContext context) {
 
     ResultSet result = null;
     Connection dbConnection = null;
@@ -122,7 +133,7 @@ public class ODBQueryEngine implements ODataSourceQueryEngine {
 
     try {
       try {
-        dbConnection = dataSource.getConnection(context);
+        dbConnection = ODBSourceConnection.getConnection(sourceDBInfo, context);
       } catch (Exception e) {
         String mess = "";
         context.printExceptionMessage(e, mess, "error");

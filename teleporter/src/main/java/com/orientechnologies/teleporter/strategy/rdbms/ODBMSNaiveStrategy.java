@@ -30,6 +30,7 @@ import com.orientechnologies.teleporter.mapper.OSource2GraphMapper;
 import com.orientechnologies.teleporter.mapper.rdbms.OER2GraphMapper;
 import com.orientechnologies.teleporter.mapper.rdbms.classmapper.OClassMapper;
 import com.orientechnologies.teleporter.model.dbschema.OEntity;
+import com.orientechnologies.teleporter.model.dbschema.OSourceDatabaseInfo;
 import com.orientechnologies.teleporter.model.graphmodel.OGraphModel;
 import com.orientechnologies.teleporter.model.graphmodel.OVertexType;
 import com.orientechnologies.teleporter.nameresolver.ONameResolver;
@@ -57,11 +58,11 @@ public class ODBMSNaiveStrategy extends ODBMSImportStrategy {
   public ODBMSNaiveStrategy() {}
 
 
-  public OER2GraphMapper createSchemaMapper(String driver, String uri, String username, String password, String outOrientGraphUri, String chosenMapper, String xmlPath, ONameResolver nameResolver,
-                                                ODBMSDataTypeHandler handler, List<String> includedTables, List<String> excludedTables, ODocument config, OTeleporterContext context) {
+  public OER2GraphMapper createSchemaMapper(OSourceDatabaseInfo sourceDBInfo, String outOrientGraphUri, String chosenMapper, String xmlPath, ONameResolver nameResolver,
+                                            ODBMSDataTypeHandler handler, List<String> includedTables, List<String> excludedTables, ODocument config, OTeleporterContext context) {
 
     OMapperFactory mapperFactory = new OMapperFactory();
-    OER2GraphMapper mapper = (OER2GraphMapper) mapperFactory.buildMapper(chosenMapper, driver, uri, username, password, xmlPath, includedTables, excludedTables, config, context);
+    OER2GraphMapper mapper = (OER2GraphMapper) mapperFactory.buildMapper(chosenMapper, sourceDBInfo, xmlPath, includedTables, excludedTables, config, context);
 
     // Step 1: DataBase schema building
     mapper.buildSourceDatabaseSchema(context);
@@ -94,7 +95,7 @@ public class ODBMSNaiveStrategy extends ODBMSImportStrategy {
   }
 
 
-  public void executeImport(String driver, String uri, String username, String password, String outOrientGraphUri, OSource2GraphMapper genericMapper, ODBMSDataTypeHandler handler, OTeleporterContext context) {
+  public void executeImport(OSourceDatabaseInfo sourceDBInfo, String outOrientGraphUri, OSource2GraphMapper genericMapper, ODBMSDataTypeHandler handler, OTeleporterContext context) {
 
     try {
 

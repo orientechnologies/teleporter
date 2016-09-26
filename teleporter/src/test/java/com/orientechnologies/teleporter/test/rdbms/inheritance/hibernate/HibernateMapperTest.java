@@ -26,6 +26,7 @@ import com.orientechnologies.teleporter.mapper.rdbms.OHibernate2GraphMapper;
 import com.orientechnologies.teleporter.model.dbschema.OEntity;
 import com.orientechnologies.teleporter.model.dbschema.OHierarchicalBag;
 import com.orientechnologies.teleporter.model.dbschema.ORelationship;
+import com.orientechnologies.teleporter.model.dbschema.OSourceDatabaseInfo;
 import com.orientechnologies.teleporter.model.graphmodel.OVertexType;
 import com.orientechnologies.teleporter.nameresolver.OJavaConventionNameResolver;
 import com.orientechnologies.teleporter.persistence.handler.OHSQLDBDataTypeHandler;
@@ -55,8 +56,7 @@ public class HibernateMapperTest {
   private String jurl = "jdbc:hsqldb:mem:mydb";
   private String username = "SA";
   private String password = "";
-
-
+  private OSourceDatabaseInfo sourceDBInfo;
   private final static String XML_TABLE_PER_CLASS = "src/test/resources/inheritance/hibernate/tablePerClassHierarchyInheritanceTest.xml";
   private final static String XML_TABLE_PER_SUBCLASS1 = "src/test/resources/inheritance/hibernate/tablePerSubclassInheritanceTest1.xml";
   private final static String XML_TABLE_PER_SUBCLASS2 = "src/test/resources/inheritance/hibernate/tablePerSubclassInheritanceTest2.xml";
@@ -66,11 +66,12 @@ public class HibernateMapperTest {
   @Before
   public void init() {
     this.context = new OTeleporterContext();
-    this.dbQueryEngine = new ODBQueryEngine(this.driver, this.jurl, this.username, this.password, this.context);
+    this.dbQueryEngine = new ODBQueryEngine(this.driver, this.context);
     this.context.setDbQueryEngine(this.dbQueryEngine);
     this.context.setOutputManager(new OOutputStreamManager(0));
     this.context.setNameResolver(new OJavaConventionNameResolver());
     this.context.setDataTypeHandler(new OHSQLDBDataTypeHandler());
+    this.sourceDBInfo = new OSourceDatabaseInfo("source", this.driver, this.jurl, this.username, this.password);
   }
 
 
@@ -101,7 +102,7 @@ public class HibernateMapperTest {
           + "primary key (id), foreign key (RESIDENCE) references RESIDENCE(ID))";
       st.execute(employeeTableBuilding);
 
-      this.mapper = new OHibernate2GraphMapper("org.hsqldb.jdbc.JDBCDriver", this.jurl, this.username, this.password, HibernateMapperTest.XML_TABLE_PER_CLASS, null, null, null);
+      this.mapper = new OHibernate2GraphMapper(this.sourceDBInfo, HibernateMapperTest.XML_TABLE_PER_CLASS, null, null, null);
       mapper.buildSourceDatabaseSchema(this.context);
       mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
 
@@ -544,7 +545,7 @@ public class HibernateMapperTest {
           + "PAY_PER_HOUR decimal(10,2), CONTRACT_DURATION varchar(256), primary key (EID), foreign key (EID) references EMPLOYEE(ID))";
       st.execute(contractEmployeeTableBuilding);
 
-      this.mapper = new OHibernate2GraphMapper("org.hsqldb.jdbc.JDBCDriver", this.jurl, this.username, this.password, HibernateMapperTest.XML_TABLE_PER_SUBCLASS1, null, null, null);
+      this.mapper = new OHibernate2GraphMapper(this.sourceDBInfo, HibernateMapperTest.XML_TABLE_PER_SUBCLASS1, null, null, null);
       mapper.buildSourceDatabaseSchema(this.context);
       mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
 
@@ -1007,7 +1008,7 @@ public class HibernateMapperTest {
           + "PAY_PER_HOUR decimal(10,2), CONTRACT_DURATION varchar(256), primary key (EID), foreign key (EID) references EMPLOYEE(ID))";
       st.execute(contractEmployeeTableBuilding);
 
-      this.mapper = new OHibernate2GraphMapper("org.hsqldb.jdbc.JDBCDriver", this.jurl, this.username, this.password, HibernateMapperTest.XML_TABLE_PER_SUBCLASS2, null, null, null);
+      this.mapper = new OHibernate2GraphMapper(this.sourceDBInfo, HibernateMapperTest.XML_TABLE_PER_SUBCLASS2, null, null, null);
       mapper.buildSourceDatabaseSchema(this.context);
       mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
 
@@ -1466,7 +1467,7 @@ public class HibernateMapperTest {
           + "NAME varchar(256), RESIDENCE varchar(256), PAY_PER_HOUR decimal(10,2), CONTRACT_DURATION varchar(256), primary key (ID))";
       st.execute(contractEmployeeTableBuilding);
 
-      this.mapper = new OHibernate2GraphMapper("org.hsqldb.jdbc.JDBCDriver", this.jurl, this.username, this.password, HibernateMapperTest.XML_TABLE_PER_CONCRETE_CLASS, null, null, null);
+      this.mapper = new OHibernate2GraphMapper(this.sourceDBInfo, HibernateMapperTest.XML_TABLE_PER_CONCRETE_CLASS, null, null, null);
       mapper.buildSourceDatabaseSchema(this.context);
       mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
 

@@ -25,6 +25,7 @@ import com.orientechnologies.teleporter.mapper.rdbms.OER2GraphMapper;
 import com.orientechnologies.teleporter.mapper.rdbms.classmapper.OClassMapper;
 import com.orientechnologies.teleporter.model.dbschema.OEntity;
 import com.orientechnologies.teleporter.model.dbschema.ORelationship;
+import com.orientechnologies.teleporter.model.dbschema.OSourceDatabaseInfo;
 import com.orientechnologies.teleporter.model.graphmodel.OEdgeType;
 import com.orientechnologies.teleporter.model.graphmodel.OVertexType;
 import com.orientechnologies.teleporter.nameresolver.OJavaConventionNameResolver;
@@ -60,16 +61,19 @@ public class AggregationStrategyTest {
   private String username = "SA";
   private String password = "";
   private String outOrientGraphUri = "memory:testOrientDB";
+  private OSourceDatabaseInfo sourceDBInfo;
+
 
   @Before
   public void init() {
     this.importStrategy = new ODBMSNaiveAggregationStrategy();
     this.context = new OTeleporterContext();
-    this.dbQueryEngine = new ODBQueryEngine(this.driver, this.jurl, this.username, this.password, this.context);
+    this.dbQueryEngine = new ODBQueryEngine(this.driver, this.context);
     this.context.setDbQueryEngine(this.dbQueryEngine);
     this.context.setOutputManager(new OOutputStreamManager(0));
     this.context.setNameResolver(new OJavaConventionNameResolver());
     this.context.setDataTypeHandler(new OHSQLDBDataTypeHandler());
+    this.sourceDBInfo = new OSourceDatabaseInfo("source", this.driver, this.jurl, this.username, this.password);
   }
 
   @Test
@@ -110,7 +114,7 @@ public class AggregationStrategyTest {
       st.execute(branchTableBuilding);
 
 
-      OER2GraphMapper mapper = new OER2GraphMapper(this.driver, jurl, this.username, this.password, null, null, null);
+      OER2GraphMapper mapper = new OER2GraphMapper(this.sourceDBInfo, null, null, null);
       mapper.buildSourceDatabaseSchema(this.context);
       mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
 
@@ -544,7 +548,7 @@ public class AggregationStrategyTest {
       st.execute(film2actorFilling);
 
 
-      this.importStrategy.executeStrategy(this.driver, this.jurl, this.username, this.password, this.outOrientGraphUri, "basicDBMapper", null, "java", null, null, null, context);
+      this.importStrategy.executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "basicDBMapper", null, "java", null, null, null, context);
 
 
       /*

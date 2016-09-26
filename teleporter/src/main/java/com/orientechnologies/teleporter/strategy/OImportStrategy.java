@@ -19,6 +19,8 @@
 package com.orientechnologies.teleporter.strategy;
 
 import com.orientechnologies.teleporter.context.OTeleporterContext;
+import com.orientechnologies.teleporter.model.OSourceInfo;
+import com.orientechnologies.teleporter.model.dbschema.OSourceDatabaseInfo;
 
 import java.util.List;
 
@@ -32,7 +34,7 @@ import java.util.List;
 
 public interface OImportStrategy {
 
-  public void executeStrategy(String driver, String uri, String username, String password, String outOrientGraphUri, String chosenMapper, String xmlPath, String nameResolverConvention,
-      List<String> includedTables, List<String> excludedTables, String configurationPath, OTeleporterContext context);
+  public void executeStrategy(OSourceInfo sourceInfo, String outOrientGraphUri, String chosenMapper, String xmlPath, String nameResolverConvention,
+                              List<String> includedTables, List<String> excludedTables, String configurationPath, OTeleporterContext context);
 
 }

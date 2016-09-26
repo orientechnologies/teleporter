@@ -36,6 +36,7 @@ import java.util.Set;
 public class OEntity implements Comparable<OEntity> {
 
   private String name;
+  private OSourceDatabaseInfo sourceDbInfo;
   private String schemaName;
   private Set<OAttribute> attributes;
   private Set<OAttribute> inheritedAttributes;
@@ -56,8 +57,9 @@ public class OEntity implements Comparable<OEntity> {
   private OHierarchicalBag hierarchicalBag;
 
 
-  public OEntity(String name, String schemaName) {
+  public OEntity(String name, String schemaName, OSourceDatabaseInfo sourceDbInfo) {
     this.name = name;
+    this.sourceDbInfo = sourceDbInfo;
     this.schemaName = schemaName;
     this.attributes = new LinkedHashSet<OAttribute>();
     this.inheritedAttributes = new LinkedHashSet<OAttribute>();
@@ -153,6 +155,14 @@ public class OEntity implements Comparable<OEntity> {
 
   public void setName(String name) {
     this.name = name;
+  }
+
+  public OSourceDatabaseInfo getSourceDataseInfo() {
+    return this.sourceDbInfo;
+  }
+
+  public void setSourceDbInfo(OSourceDatabaseInfo sourceDbInfo) {
+    this.sourceDbInfo = sourceDbInfo;
   }
 
   public String getSchemaName() {
@@ -508,7 +518,7 @@ public class OEntity implements Comparable<OEntity> {
   @Override
   public boolean equals(Object obj) {
     OEntity that = (OEntity) obj;
-    return this.name.equals(that.getName());
+    return this.name.equals(that.getName()) && this.getSourceDataseInfo().equals(that.getSourceDataseInfo());
   }
 
 

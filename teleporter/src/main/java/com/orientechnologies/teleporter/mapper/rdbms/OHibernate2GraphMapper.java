@@ -24,6 +24,7 @@ import com.orientechnologies.teleporter.exception.OTeleporterRuntimeException;
 import com.orientechnologies.teleporter.model.dbschema.OAttribute;
 import com.orientechnologies.teleporter.model.dbschema.OEntity;
 import com.orientechnologies.teleporter.model.dbschema.OHierarchicalBag;
+import com.orientechnologies.teleporter.model.dbschema.OSourceDatabaseInfo;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -46,8 +47,8 @@ public class OHibernate2GraphMapper extends OER2GraphMapper {
 
   private String xmlPath;
 
-  public OHibernate2GraphMapper(String driver, String uri, String username, String password, String xmlPath, List<String> includedTables, List<String> excludedTables, ODocument configuration) {
-    super(driver, uri, username, password, includedTables, excludedTables, configuration);
+  public OHibernate2GraphMapper(OSourceDatabaseInfo sourceDBInfo, String xmlPath, List<String> includedTables, List<String> excludedTables, ODocument configuration) {
+    super(sourceDBInfo, includedTables, excludedTables, configuration);
     this.xmlPath = xmlPath;
   }
 
@@ -226,7 +227,7 @@ public class OHibernate2GraphMapper extends OER2GraphMapper {
           context.getOutputManager().error("XML Format error: problem in subclass definition, table attribute missing in the joined-subclass nodes.\n");
           throw new OTeleporterRuntimeException();
         }
-        currentChildEntity = new OEntity(currentEntityElementName, null);
+        currentChildEntity = new OEntity(currentEntityElementName, null, super.sourceDBInfo);
 
         // entity's attributes setting
         String discriminatorColumnName = discriminatorElement.getAttribute("column");

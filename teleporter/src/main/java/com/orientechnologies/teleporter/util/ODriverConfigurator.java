@@ -20,6 +20,7 @@ package com.orientechnologies.teleporter.util;
 
 import com.orientechnologies.teleporter.context.OTeleporterContext;
 import com.orientechnologies.teleporter.exception.OTeleporterRuntimeException;
+import com.orientechnologies.teleporter.model.dbschema.OSourceDatabaseInfo;
 import com.orientechnologies.teleporter.persistence.util.ODBSourceConnection;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
@@ -236,11 +237,9 @@ public class ODriverConfigurator {
       throws Exception {
 
     String driverName = checkConfiguration(driver, context);
-
-    ODBSourceConnection odbSourceConnection = new ODBSourceConnection(driverName, uri, username, password);
     Connection connection = null;
     try {
-      connection = odbSourceConnection.getConnection(context);
+      connection = ODBSourceConnection.getConnection(driverName, uri, username, password, context);
     } finally {
       if (connection != null) {
         connection.close();

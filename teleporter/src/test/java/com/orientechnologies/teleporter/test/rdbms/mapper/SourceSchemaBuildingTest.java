@@ -24,6 +24,7 @@ import com.orientechnologies.teleporter.importengine.rdbms.dbengine.ODBQueryEngi
 import com.orientechnologies.teleporter.mapper.rdbms.OER2GraphMapper;
 import com.orientechnologies.teleporter.model.dbschema.OEntity;
 import com.orientechnologies.teleporter.model.dbschema.ORelationship;
+import com.orientechnologies.teleporter.model.dbschema.OSourceDatabaseInfo;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -50,14 +51,17 @@ public class SourceSchemaBuildingTest {
   private String jurl = "jdbc:hsqldb:mem:mydb";
   private String username = "SA";
   private String password = "";
+  private OSourceDatabaseInfo sourceDBInfo;
 
 
   @Before
   public void init() {
     this.context = new OTeleporterContext();
-    this.dbQueryEngine = new ODBQueryEngine(this.driver, this.jurl, this.username, this.password, this.context);
+    this.dbQueryEngine = new ODBQueryEngine(this.driver, this.context);
     this.context.setDbQueryEngine(this.dbQueryEngine);
     context.setOutputManager(new OOutputStreamManager(0));
+    this.sourceDBInfo = new OSourceDatabaseInfo("source", this.driver, this.jurl, this.username, this.password);
+    this.mapper = new OER2GraphMapper(sourceDBInfo, null, null, null);
   }
 
 
@@ -87,8 +91,7 @@ public class SourceSchemaBuildingTest {
           " AUTHOR varchar(256) not null, primary key (BOOK_ID), foreign key (AUTHOR) references PARENT_AUTHOR(AUTHOR_ID))";
       st.execute(foreignTableBuilding);
 
-      this.mapper = new OER2GraphMapper(this.driver, this.jurl, this.username, this.password, null, null, null);
-      mapper.buildSourceDatabaseSchema(this.context);
+      this.mapper.buildSourceDatabaseSchema(this.context);
 
 
       /*
@@ -219,7 +222,6 @@ public class SourceSchemaBuildingTest {
           " foreign key (AUTHOR_NAME,AUTHOR_SURNAME) references PARENT_AUTHOR(AUTHOR_NAME,AUTHOR_SURNAME))";
       st.execute(foreignTableBuilding);
 
-      this.mapper = new OER2GraphMapper(this.driver, this.jurl, this.username, this.password, null, null, null);
       mapper.buildSourceDatabaseSchema(this.context);
 
 
@@ -357,7 +359,6 @@ public class SourceSchemaBuildingTest {
           " foreign key (TRANSLATOR) references PARENT_PERSON(PERSON_ID))";
       st.execute(foreignTableBuilding);
 
-      this.mapper = new OER2GraphMapper(this.driver, this.jurl, this.username, this.password, null, null, null);
       mapper.buildSourceDatabaseSchema(this.context);
 
 
@@ -503,7 +504,6 @@ public class SourceSchemaBuildingTest {
           " foreign key (TRANSLATOR_NAME,TRANSLATOR_SURNAME) references PARENT_PERSON(NAME,SURNAME))";
       st.execute(foreignTableBuilding);
 
-      this.mapper = new OER2GraphMapper(this.driver, this.jurl, this.username, this.password, null, null, null);
       mapper.buildSourceDatabaseSchema(this.context);
 
 
@@ -666,7 +666,6 @@ public class SourceSchemaBuildingTest {
           " foreign key (PROJECT_MANAGER) references PARENT_EMPLOYEE(EMP_ID))";
       st.execute(foreignTableBuilding);
 
-      this.mapper = new OER2GraphMapper(this.driver, this.jurl, this.username, this.password, null, null, null);
       mapper.buildSourceDatabaseSchema(this.context);
 
 
@@ -827,7 +826,6 @@ public class SourceSchemaBuildingTest {
 
       connection.commit();
 
-      this.mapper = new OER2GraphMapper(this.driver, this.jurl, this.username, this.password, null, null, null);
       mapper.buildSourceDatabaseSchema(this.context);
 
 

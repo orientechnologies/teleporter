@@ -18,6 +18,8 @@
 
 package com.orientechnologies.teleporter.model.dbschema;
 
+import com.orientechnologies.teleporter.model.ODataSourceSchemaInfo;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,7 +31,7 @@ import java.util.List;
  * 
  */
 
-public class ODataBaseSchema implements ODataSourceSchema {
+public class ODataBaseSchema implements ODataSourceSchemaInfo {
 
   private int majorVersion;
   private int minorVersion;	

@@ -25,6 +25,7 @@ import com.orientechnologies.teleporter.mapper.rdbms.OER2GraphMapper;
 import com.orientechnologies.teleporter.mapper.rdbms.classmapper.OClassMapper;
 import com.orientechnologies.teleporter.model.dbschema.OEntity;
 import com.orientechnologies.teleporter.model.dbschema.ORelationship;
+import com.orientechnologies.teleporter.model.dbschema.OSourceDatabaseInfo;
 import com.orientechnologies.teleporter.model.graphmodel.OEdgeType;
 import com.orientechnologies.teleporter.model.graphmodel.OModelProperty;
 import com.orientechnologies.teleporter.model.graphmodel.OVertexType;
@@ -62,17 +63,19 @@ public class RelationshipConfigurationMappingTest {
   private String jurl = "jdbc:hsqldb:mem:mydb";
   private String username = "SA";
   private String password = "";
+  private OSourceDatabaseInfo sourceDBInfo;
 
 
   @Before
   public void init() {
     this.context = new OTeleporterContext();
-    this.dbQueryEngine = new ODBQueryEngine(this.driver, this.jurl, this.username, this.password, this.context);
+    this.dbQueryEngine = new ODBQueryEngine(this.driver, this.context);
     this.context.setDbQueryEngine(this.dbQueryEngine);
     this.context.setOutputManager(new OOutputStreamManager(0));
     this.context.setNameResolver(new OJavaConventionNameResolver());
     this.context.setDataTypeHandler(new OHSQLDBDataTypeHandler());
     context.setOutputManager(new OOutputStreamManager(0));
+    this.sourceDBInfo = new OSourceDatabaseInfo("source", this.driver, this.jurl, this.username, this.password);
   }
 
   @Test
@@ -112,7 +115,7 @@ public class RelationshipConfigurationMappingTest {
 
       ODocument config = OFileManager.buildJsonFromFile(this.configDirectEdgesPath);
 
-      this.mapper = new OER2GraphMapper(this.driver, this.jurl, this.username, this.password, null, null, config);
+      this.mapper = new OER2GraphMapper(this.sourceDBInfo, null, null, config);
       mapper.buildSourceDatabaseSchema(this.context);
       mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
       mapper.applyImportConfiguration(this.context);
@@ -483,7 +486,7 @@ public class RelationshipConfigurationMappingTest {
 
       ODocument config = OFileManager.buildJsonFromFile(this.configInverseEdgesPath);
 
-      this.mapper = new OER2GraphMapper(this.driver, this.jurl, this.username, this.password, null, null, config);
+      this.mapper = new OER2GraphMapper(this.sourceDBInfo, null, null, config);
       mapper.buildSourceDatabaseSchema(this.context);
       mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
       mapper.applyImportConfiguration(this.context);
@@ -835,7 +838,7 @@ public class RelationshipConfigurationMappingTest {
 
       ODocument config = OFileManager.buildJsonFromFile(this.configJoinTableDirectEdgesPath);
 
-      this.mapper = new OER2GraphMapper(this.driver, this.jurl, this.username, this.password, null, null, config);
+      this.mapper = new OER2GraphMapper(this.sourceDBInfo, null, null, config);
       mapper.buildSourceDatabaseSchema(this.context);
       mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
       mapper.applyImportConfiguration(this.context);
@@ -1438,7 +1441,7 @@ public class RelationshipConfigurationMappingTest {
 
       ODocument config = OFileManager.buildJsonFromFile(this.configJoinTableInverseEdgesPath);
 
-      this.mapper = new OER2GraphMapper(this.driver, this.jurl, this.username, this.password, null, null, config);
+      this.mapper = new OER2GraphMapper(this.sourceDBInfo, null, null, config);
       mapper.buildSourceDatabaseSchema(this.context);
       mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
       mapper.applyImportConfiguration(this.context);
@@ -2041,7 +2044,7 @@ public class RelationshipConfigurationMappingTest {
 
       ODocument config = OFileManager.buildJsonFromFile(this.configJoinTableDirectEdgesPath);
 
-      this.mapper = new OER2GraphMapper(this.driver, this.jurl, this.username, this.password, null, null, config);
+      this.mapper = new OER2GraphMapper(this.sourceDBInfo, null, null, config);
       mapper.buildSourceDatabaseSchema(this.context);
       mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
       mapper.applyImportConfiguration(this.context);
@@ -2643,7 +2646,7 @@ public class RelationshipConfigurationMappingTest {
 
       ODocument config = OFileManager.buildJsonFromFile(this.configJoinTableInverseEdgesPath2);
 
-      this.mapper = new OER2GraphMapper(this.driver, this.jurl, this.username, this.password, null, null, config);
+      this.mapper = new OER2GraphMapper(this.sourceDBInfo, null, null, config);
       mapper.buildSourceDatabaseSchema(this.context);
       mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
       mapper.applyImportConfiguration(this.context);

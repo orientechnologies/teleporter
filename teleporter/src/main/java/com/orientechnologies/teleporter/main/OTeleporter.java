@@ -24,6 +24,7 @@ import com.orientechnologies.teleporter.exception.OTeleporterIOException;
 import com.orientechnologies.teleporter.factory.OStrategyFactory;
 import com.orientechnologies.teleporter.http.OServerCommandTeleporter;
 import com.orientechnologies.teleporter.importengine.rdbms.dbengine.ODBQueryEngine;
+import com.orientechnologies.teleporter.model.dbschema.OSourceDatabaseInfo;
 import com.orientechnologies.teleporter.strategy.OImportStrategy;
 import com.orientechnologies.teleporter.ui.OProgressMonitor;
 import com.orientechnologies.teleporter.util.ODriverConfigurator;
@@ -257,8 +258,11 @@ public class OTeleporter extends OServerPluginAbstract {
     ODriverConfigurator driverConfig = new ODriverConfigurator();
     String driverClassName = driverConfig.checkConfiguration(driver, context);
 
+    // Building source object
+    OSourceDatabaseInfo sourceInfo = new OSourceDatabaseInfo("source1", driverClassName, jurl, username, password);
+
     // DB Query engine building
-    ODBQueryEngine dbQueryEngine = new ODBQueryEngine(driverClassName, jurl, username, password, context);
+    ODBQueryEngine dbQueryEngine = new ODBQueryEngine(sourceInfo.getDriverName(), context);
     context.setDbQueryEngine(dbQueryEngine);
 
     OImportStrategy strategy = FACTORY.buildStrategy(driver, chosenStrategy, context);
@@ -275,7 +279,7 @@ public class OTeleporter extends OServerPluginAbstract {
       }, 0, 1000);
 
       // the last argument represents the nameResolver
-      strategy.executeStrategy(driverClassName, jurl, username, password, outDbUrl, chosenMapper, xmlPath, nameResolver, includedTables, excludedTables, configurationPath, context);
+      strategy.executeStrategy(sourceInfo, outDbUrl, chosenMapper, xmlPath, nameResolver, includedTables, excludedTables, configurationPath, context);
 
       // Disabling query scan threshold tip
       OGlobalConfiguration.QUERY_SCAN_THRESHOLD_TIP.setValue(50000);

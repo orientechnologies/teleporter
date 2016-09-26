@@ -19,7 +19,6 @@
 package com.orientechnologies.teleporter.mapper;
 
 import com.orientechnologies.teleporter.context.OTeleporterContext;
-import com.orientechnologies.teleporter.model.dbschema.ODataSourceSchema;
 import com.orientechnologies.teleporter.model.graphmodel.OGraphModel;
 import com.orientechnologies.teleporter.nameresolver.ONameResolver;
 

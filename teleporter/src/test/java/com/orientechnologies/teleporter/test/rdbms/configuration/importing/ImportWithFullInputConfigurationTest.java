@@ -21,6 +21,7 @@ package com.orientechnologies.teleporter.test.rdbms.configuration.importing;
 import com.orientechnologies.teleporter.context.OOutputStreamManager;
 import com.orientechnologies.teleporter.context.OTeleporterContext;
 import com.orientechnologies.teleporter.importengine.rdbms.dbengine.ODBQueryEngine;
+import com.orientechnologies.teleporter.model.dbschema.OSourceDatabaseInfo;
 import com.orientechnologies.teleporter.nameresolver.OJavaConventionNameResolver;
 import com.orientechnologies.teleporter.persistence.handler.OHSQLDBDataTypeHandler;
 import com.orientechnologies.teleporter.strategy.rdbms.ODBMSNaiveAggregationStrategy;
@@ -60,12 +61,13 @@ public class ImportWithFullInputConfigurationTest {
     private String username = "SA";
     private String password = "";
     private String outOrientGraphUri = "memory:testOrientDB";
+    private OSourceDatabaseInfo sourceDBInfo;
 
 
     @Before
     public void init() {
         this.context = new OTeleporterContext();
-        this.dbQueryEngine = new ODBQueryEngine(this.driver, this.jurl, this.username, this.password, this.context);
+        this.dbQueryEngine = new ODBQueryEngine(this.driver, this.context);
         this.context.setDbQueryEngine(this.dbQueryEngine);
         this.context.setOutputManager(new OOutputStreamManager(0));
         this.context.setNameResolver(new OJavaConventionNameResolver());
@@ -73,6 +75,7 @@ public class ImportWithFullInputConfigurationTest {
         this.naiveStrategy = new ODBMSNaiveStrategy();
         this.outOrientGraphUri = "plocal:target/testOrientDB";
         this.dbParentDirectoryPath = this.outOrientGraphUri.replace("plocal:","");
+        this.sourceDBInfo = new OSourceDatabaseInfo("source", this.driver, this.jurl, this.username, this.password);
     }
 
 
@@ -150,7 +153,7 @@ public class ImportWithFullInputConfigurationTest {
             st.execute(departmentFilling);
 
             this.naiveStrategy
-                    .executeStrategy(this.driver, this.jurl, this.username, this.password, this.outOrientGraphUri, "basicDBMapper", null, "java", null, null, this.config, context);
+                    .executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "basicDBMapper", null, "java", null, null, this.config, context);
 
 
             /**

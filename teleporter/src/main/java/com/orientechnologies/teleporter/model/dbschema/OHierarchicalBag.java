@@ -28,7 +28,7 @@ import java.util.Set;
  * It represents a hierarchical tree of entities.
  * It collects the involved entities, the "inheritance strategy" adopted at the lower level (DBMS level) and other
  * meta-data useful for records importing.
- * 
+ *
  * @author Gabriele Ponzi
  * @email  <gabriele.ponzi--at--gmail.com>
  *
@@ -123,7 +123,13 @@ public class OHierarchicalBag {
   }
 
 
+  public OSourceDatabaseInfo getSourceDataseInfo() {
 
-
-
+    Set<OEntity> entities = this.getDepth2entities().get(0);
+    Iterator<OEntity> it = entities.iterator();
+    if(it.hasNext()) {
+      return it.next().getSourceDataseInfo();
+    }
+    return null;
+  }
 }

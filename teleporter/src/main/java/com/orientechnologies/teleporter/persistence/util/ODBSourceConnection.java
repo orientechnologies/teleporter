@@ -20,6 +20,7 @@ package com.orientechnologies.teleporter.persistence.util;
 
 import com.orientechnologies.teleporter.context.OTeleporterContext;
 import com.orientechnologies.teleporter.exception.OTeleporterRuntimeException;
+import com.orientechnologies.teleporter.model.dbschema.OSourceDatabaseInfo;
 
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -37,27 +38,19 @@ import java.sql.DriverManager;
 
 public class ODBSourceConnection {
 
-  private String driver;
-  private String uri;
-  private String username;
-  private String password;
 
-
-  public ODBSourceConnection(String driver, String uri, String username, String password) {	
-    this.driver = driver;
-    this.uri = uri;
-    this.username = username;
-    this.password = password;
-  }
-
-  public Connection getConnection(OTeleporterContext context) {
+  public static Connection getConnection(OSourceDatabaseInfo sourceDBInfo, OTeleporterContext context) {
 
     Connection connection = null;
+    String driver = sourceDBInfo.getDriverName();
+    String uri = sourceDBInfo.getUrl();
+    String username =  sourceDBInfo.getUsername();
+    String password = sourceDBInfo.getPassword();
 
     try {
       URL u = new URL("jar:file:" + context.getDriverDependencyPath() + "!/");
       URLClassLoader ucl = new URLClassLoader(new URL[] { u });
-      Driver d = (Driver) Class.forName(this.driver, true, ucl).newInstance();
+      Driver d = (Driver) Class.forName(driver, true, ucl).newInstance();
       DriverManager.registerDriver(new ODriverShim(d));
       connection = DriverManager.getConnection(uri, username, password);
 
@@ -70,19 +63,25 @@ public class ODBSourceConnection {
     return connection;
   }
 
-  public String getDriver() {
-    return driver;
+  public static Connection getConnection(String driver, String uri, String username, String password, OTeleporterContext context) {
+
+    Connection connection = null;
+
+    try {
+      URL u = new URL("jar:file:" + context.getDriverDependencyPath() + "!/");
+      URLClassLoader ucl = new URLClassLoader(new URL[] { u });
+      Driver d = (Driver) Class.forName(driver, true, ucl).newInstance();
+      DriverManager.registerDriver(new ODriverShim(d));
+      connection = DriverManager.getConnection(uri, username, password);
+
+    } catch (Exception e) {
+      String mess = "";
+      context.printExceptionMessage(e, mess, "error");
+      context.printExceptionStackTrace(e, "error");
+      throw new OTeleporterRuntimeException(e);
+    }
+    return connection;
   }
 
-  public String getUri() {
-    return uri;
-  }
 
-  public String getUsername() {
-    return username;
-  }
-
-  public String getPassword() {
-    return password;
-  }
 }

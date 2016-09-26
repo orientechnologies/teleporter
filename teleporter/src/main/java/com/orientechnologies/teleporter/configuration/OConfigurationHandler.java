@@ -22,6 +22,7 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.teleporter.configuration.api.*;
 import com.orientechnologies.teleporter.context.OTeleporterContext;
 import com.orientechnologies.teleporter.exception.OTeleporterRuntimeException;
+import com.orientechnologies.teleporter.model.graphmodel.OGraphModel;
 
 import java.util.*;
 
@@ -465,5 +466,15 @@ public class OConfigurationHandler {
         }
 
         return propertiesDoc;
+    }
+
+    public ODocument buildConfigurationFromGraphModel(OGraphModel graphModel) {
+        ODocument configuration = new ODocument();
+
+
+
+
+
+        return configuration;
     }
 }

@@ -21,6 +21,7 @@ package com.orientechnologies.teleporter.test.rdbms.filter;
 import com.orientechnologies.teleporter.context.OOutputStreamManager;
 import com.orientechnologies.teleporter.context.OTeleporterContext;
 import com.orientechnologies.teleporter.importengine.rdbms.dbengine.ODBQueryEngine;
+import com.orientechnologies.teleporter.model.dbschema.OSourceDatabaseInfo;
 import com.orientechnologies.teleporter.nameresolver.OJavaConventionNameResolver;
 import com.orientechnologies.teleporter.persistence.handler.OHSQLDBDataTypeHandler;
 import com.orientechnologies.teleporter.strategy.rdbms.ODBMSNaiveStrategy;
@@ -58,7 +59,7 @@ public class FilterTableImportingTest {
   private String username = "SA";
   private String password = "";
   private String outOrientGraphUri = "memory:testOrientDB";
-
+  private OSourceDatabaseInfo sourceDBInfo;
   private final static String XML_TABLE_PER_CLASS = "src/test/resources/inheritance/hibernate/tablePerClassHierarchyImportTest.xml";
   private final static String XML_TABLE_PER_SUBCLASS1 = "src/test/resources/inheritance/hibernate/tablePerSubclassImportTest1.xml";
   private final static String XML_TABLE_PER_SUBCLASS2 = "src/test/resources/inheritance/hibernate/tablePerSubclassImportTest2.xml";
@@ -68,12 +69,13 @@ public class FilterTableImportingTest {
   @Before
   public void init() {
     this.context = new OTeleporterContext();
-    this.dbQueryEngine = new ODBQueryEngine(this.driver, this.jurl, this.username, this.password, this.context);
+    this.dbQueryEngine = new ODBQueryEngine(this.driver, this.context);
     this.context.setDbQueryEngine(this.dbQueryEngine);
     this.context.setOutputManager(new OOutputStreamManager(0));
     this.context.setNameResolver(new OJavaConventionNameResolver());
     this.context.setDataTypeHandler(new OHSQLDBDataTypeHandler());
     this.importStrategy = new ODBMSNaiveStrategy();
+    this.sourceDBInfo = new OSourceDatabaseInfo("source", this.driver, this.jurl, this.username, this.password);
   }
 
   @Test
@@ -134,7 +136,7 @@ public class FilterTableImportingTest {
       includedTables.add("MANAGER");
       includedTables.add("EMPLOYEE");
 
-      this.importStrategy.executeStrategy(this.driver, this.jurl, this.username, this.password, this.outOrientGraphUri, "basicDBMapper", null, "java", includedTables, null, null, context);
+      this.importStrategy.executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "basicDBMapper", null, "java", includedTables, null, null, context);
 
 
       /*
@@ -398,7 +400,7 @@ public class FilterTableImportingTest {
       List<String> excludedTables = new ArrayList<String>();
       excludedTables.add("RESIDENCE");
 
-      this.importStrategy.executeStrategy(this.driver, this.jurl, this.username, this.password, this.outOrientGraphUri, "basicDBMapper", null, "java", null, excludedTables, null, context);
+      this.importStrategy.executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "basicDBMapper", null, "java", null, excludedTables, null, context);
 
 
       /*
@@ -665,7 +667,7 @@ public class FilterTableImportingTest {
       includedTables.add("MANAGER");
       includedTables.add("EMPLOYEE");
 
-      this.importStrategy.executeStrategy(this.driver, this.jurl, this.username, this.password, this.outOrientGraphUri, "hibernate", FilterTableImportingTest.XML_TABLE_PER_CLASS, "java", includedTables, null, null, context);
+      this.importStrategy.executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "hibernate", FilterTableImportingTest.XML_TABLE_PER_CLASS, "java", includedTables, null, null, context);
 
       /*
        *  Testing context information
@@ -991,7 +993,7 @@ public class FilterTableImportingTest {
       includedTables.add("REGULAR_EMPLOYEE");
       includedTables.add("CONTRACT_EMPLOYEE");
 
-      this.importStrategy.executeStrategy(this.driver, this.jurl, this.username, this.password, this.outOrientGraphUri, "hibernate", FilterTableImportingTest.XML_TABLE_PER_SUBCLASS1, "java", includedTables, null, null, context);
+      this.importStrategy.executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "hibernate", FilterTableImportingTest.XML_TABLE_PER_SUBCLASS1, "java", includedTables, null, null, context);
 
       /*
        *  Testing context information
@@ -1312,7 +1314,7 @@ public class FilterTableImportingTest {
       List<String> excludedTables = new ArrayList<String>();
       excludedTables.add("RESIDENCE");
 
-      this.importStrategy.executeStrategy(this.driver, this.jurl, this.username, this.password, this.outOrientGraphUri, "hibernate", FilterTableImportingTest.XML_TABLE_PER_SUBCLASS2, "java", null, excludedTables, null, context);
+      this.importStrategy.executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "hibernate", FilterTableImportingTest.XML_TABLE_PER_SUBCLASS2, "java", null, excludedTables, null, context);
 
 
       /*
@@ -1643,7 +1645,7 @@ public class FilterTableImportingTest {
       includedTables.add("REGULAR_EMPLOYEE");
       includedTables.add("CONTRACT_EMPLOYEE");
 
-      this.importStrategy.executeStrategy(this.driver, this.jurl, this.username, this.password, this.outOrientGraphUri, "hibernate", FilterTableImportingTest.XML_TABLE_PER_CONCRETE_CLASS, "java", includedTables, null, null, context);
+      this.importStrategy.executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "hibernate", FilterTableImportingTest.XML_TABLE_PER_CONCRETE_CLASS, "java", includedTables, null, null, context);
 
       /*
        *  Testing context information

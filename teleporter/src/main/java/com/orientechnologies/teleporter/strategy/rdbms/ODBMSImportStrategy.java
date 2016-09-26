@@ -28,10 +28,8 @@ import com.orientechnologies.teleporter.importengine.rdbms.dbengine.ODBQueryEngi
 import com.orientechnologies.teleporter.importengine.rdbms.graphengine.OGraphEngineForDB;
 import com.orientechnologies.teleporter.mapper.OSource2GraphMapper;
 import com.orientechnologies.teleporter.mapper.rdbms.OER2GraphMapper;
-import com.orientechnologies.teleporter.model.dbschema.OAttribute;
-import com.orientechnologies.teleporter.model.dbschema.OEntity;
-import com.orientechnologies.teleporter.model.dbschema.OHierarchicalBag;
-import com.orientechnologies.teleporter.model.dbschema.ORelationship;
+import com.orientechnologies.teleporter.model.OSourceInfo;
+import com.orientechnologies.teleporter.model.dbschema.*;
 import com.orientechnologies.teleporter.model.graphmodel.OEdgeType;
 import com.orientechnologies.teleporter.model.graphmodel.OVertexType;
 import com.orientechnologies.teleporter.nameresolver.ONameResolver;
@@ -60,13 +58,14 @@ public abstract class ODBMSImportStrategy implements OImportStrategy {
   public ODBMSImportStrategy() {}
 
   @Override
-  public void executeStrategy(String driver, String uri, String username, String password, String outOrientGraphUri, String chosenMapper, String xmlPath, String nameResolverConvention,
-      List<String> includedTables, List<String> excludedTables, String configurationPath, OTeleporterContext context) {
+  public void executeStrategy(OSourceInfo sourceInfo, String outOrientGraphUri, String chosenMapper, String xmlPath, String nameResolverConvention,
+                              List<String> includedTables, List<String> excludedTables, String configurationPath, OTeleporterContext context) {
 
+    OSourceDatabaseInfo sourceDBInfo = (OSourceDatabaseInfo) sourceInfo;
     Date globalStart = new Date();
 
     ODataTypeHandlerFactory factory = new ODataTypeHandlerFactory();
-    ODBMSDataTypeHandler handler = (ODBMSDataTypeHandler) factory.buildDataTypeHandler(driver, context);
+    ODBMSDataTypeHandler handler = (ODBMSDataTypeHandler) factory.buildDataTypeHandler(sourceDBInfo.getDriverName(), context);
 
     /*
      * Step 1,2,3
@@ -79,11 +78,11 @@ public abstract class ODBMSImportStrategy implements OImportStrategy {
     OConfigurationManager confManager = new OConfigurationManager();
     ODocument config = confManager.loadConfiguration(outOrientGraphUri, configurationPath, context);
 
-    this.mapper = this.createSchemaMapper(driver, uri, username, password, outOrientGraphUri, chosenMapper, xmlPath, nameResolver, handler,
+    this.mapper = this.createSchemaMapper(sourceDBInfo, outOrientGraphUri, chosenMapper, xmlPath, nameResolver, handler,
             includedTables, excludedTables, config, context);
 
     // Step 4: Import
-    this.executeImport(driver, uri, username, password, outOrientGraphUri, mapper, handler, context);
+    this.executeImport(sourceDBInfo, outOrientGraphUri, mapper, handler, context);
     context.getStatistics().notifyListeners();
     context.getOutputManager().info("\n");
     context.getStatistics().runningStepNumber = -1;
@@ -95,12 +94,12 @@ public abstract class ODBMSImportStrategy implements OImportStrategy {
 
   }
 
-  public abstract OER2GraphMapper createSchemaMapper(String driver, String uri, String username, String password, String outOrientGraphUri, String chosenMapper,
+  public abstract OER2GraphMapper createSchemaMapper(OSourceDatabaseInfo sourceDBInfo, String outOrientGraphUri, String chosenMapper,
       String xmlPath, ONameResolver nameResolver, ODBMSDataTypeHandler handler, List<String> includedTables, List<String> excludedTables,
       ODocument config, OTeleporterContext context);
 
 
-  public abstract void executeImport(String driver, String uri, String username, String password, String outOrientGraphUri, OSource2GraphMapper mapper, ODBMSDataTypeHandler handler, OTeleporterContext context);
+  public abstract void executeImport(OSourceDatabaseInfo sourceDBInfo, String outOrientGraphUri, OSource2GraphMapper mapper, ODBMSDataTypeHandler handler, OTeleporterContext context);
 
   protected void importRecordsIntoVertexClass(List<OEntity> mappedEntities, OVertexType currentOutVertexType, ODBQueryEngine dbQueryEngine, OGraphEngineForDB graphEngine, OrientBaseGraph orientGraph, OTeleporterContext context) throws SQLException {
 
