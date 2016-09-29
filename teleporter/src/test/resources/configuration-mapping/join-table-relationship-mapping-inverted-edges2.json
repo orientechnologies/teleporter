@@ -2,7 +2,7 @@
   "vertices": [],
   "edges": [{
     "Features": {
-      "mapping": {
+      "mapping": [{
         "fromTable": "ACTOR",
         "fromColumns": ["ID"],
         "toTable": "FILM",
@@ -13,7 +13,7 @@
           "toColumns": ["FILM_ID"]
         },
         "direction": "inverse"
-      },
+      }],
       "properties": {
         "year": {
           "type": "DATE",

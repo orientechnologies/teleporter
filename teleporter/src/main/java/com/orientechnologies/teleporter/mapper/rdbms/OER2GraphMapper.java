@@ -27,7 +27,6 @@ import com.orientechnologies.teleporter.exception.OTeleporterRuntimeException;
 import com.orientechnologies.teleporter.importengine.rdbms.dbengine.ODBQueryEngine;
 import com.orientechnologies.teleporter.mapper.OSource2GraphMapper;
 import com.orientechnologies.teleporter.mapper.rdbms.classmapper.OClassMapper;
-import com.orientechnologies.teleporter.model.OSourceInfo;
 import com.orientechnologies.teleporter.model.dbschema.*;
 import com.orientechnologies.teleporter.model.graphmodel.*;
 import com.orientechnologies.teleporter.nameresolver.ONameResolver;
@@ -1070,92 +1069,90 @@ public class OER2GraphMapper extends OSource2GraphMapper {
     for(OConfiguredEdgeClass currentEdgeClass: configuredEdges) {
 
       String edgeName = currentEdgeClass.getName();
-      OEdgeMappingInformation edgeMapping = currentEdgeClass.getMapping();
+      List<OEdgeMappingInformation> edgeMappings = currentEdgeClass.getMappings();
 
-      // building relationship
-      String currentForeignEntityName = edgeMapping.getFromTableName();
-      String currentParentEntityName = edgeMapping.getToTableName();
-      List<String> fromColumns = edgeMapping.getFromColumns();
-      List<String> toColumns = edgeMapping.getToColumns();
-      OAggregatedJoinTableMapping joinTableMapping = edgeMapping.getRepresentedJoinTableMapping();
-
-      // jsonConfiguration errors managing (draconian approach)
-      if(currentForeignEntityName == null) {
-        context.getOutputManager().error("Configuration error: 'fromTable' field not found in the '%s' edge-type definition.",  edgeName);
-        throw new OTeleporterRuntimeException();
-      }
-      if(currentParentEntityName == null) {
-        context.getOutputManager().error("Configuration error: 'toTable' field not found in the '%s' edge-type definition.",  edgeName);
-        throw new OTeleporterRuntimeException();
-      }
-      if(fromColumns == null) {
-        context.getOutputManager().error("Configuration error: 'fromColumns' field not found in the '%s' edge-type definition.",  edgeName);
-        throw new OTeleporterRuntimeException();
-      }
-      if(toColumns == null) {
-        context.getOutputManager().error("Configuration error: 'toColumns' field not found in the '%s' edge-type definition.",  edgeName);
-        throw new OTeleporterRuntimeException();
-      }
-
-      String direction = edgeMapping.getDirection();
-
-      if(direction != null && !(direction.equals("direct") || direction.equals("inverse"))) {
-        context.getOutputManager().error("Configuration error: direction for the edge %s cannot be '%s'. Allowed values: 'direct' or 'inverse' \n", edgeName, direction);
-        throw new OTeleporterRuntimeException();
-      }
-
-      boolean foreignEntityIsJoinTableToAggregate = false;
-
-      if(joinTableMapping == null) {
-
+      for(OEdgeMappingInformation edgeMapping: edgeMappings) {
         // building relationship
-        ORelationship currentRelationship = buildRelationshipFromConfig(currentForeignEntityName, currentParentEntityName, fromColumns, toColumns, direction, foreignEntityIsJoinTableToAggregate, context);
+        String currentForeignEntityName = edgeMapping.getFromTableName();
+        String currentParentEntityName = edgeMapping.getToTableName();
+        List<String> fromColumns = edgeMapping.getFromColumns();
+        List<String> toColumns = edgeMapping.getToColumns();
+        OAggregatedJoinTableMapping joinTableMapping = edgeMapping.getRepresentedJoinTableMapping();
 
-        // building correspondent edgeType (check on inheritance not needed)
-        buildEdgeTypeFromConfiguredRelationship(currentRelationship, edgeName, currentEdgeClass, foreignEntityIsJoinTableToAggregate, context);
-
-      }
-      else {
-
-        String joinTableName = joinTableMapping.getTableName();
-        foreignEntityIsJoinTableToAggregate = true;
-
-        if(context.getExecutionStrategy().equals("naive-aggregate")) { // strategy is aggregated
-          List<String> joinTableFromColumns = joinTableMapping.getFromColumns();
-          List<String> joinTableToColumns = joinTableMapping.getToColumns();
-
-          // building left relationship
-          ORelationship currentRelationship = buildRelationshipFromConfig(joinTableName, currentForeignEntityName, joinTableFromColumns, fromColumns, direction, foreignEntityIsJoinTableToAggregate, context);
-
-          // building correspondent edgeType (check on inheritance not needed)
-          buildEdgeTypeFromConfiguredRelationship(currentRelationship, edgeName + "-left", currentEdgeClass, foreignEntityIsJoinTableToAggregate, context);
-
-          // building right relationship
-          currentRelationship = buildRelationshipFromConfig(joinTableName, currentParentEntityName, joinTableToColumns, toColumns, direction, foreignEntityIsJoinTableToAggregate, context);
-
-          // building correspondent edgeType (check on inheritance not needed)
-          buildEdgeTypeFromConfiguredRelationship(currentRelationship, edgeName + "-right", currentEdgeClass, foreignEntityIsJoinTableToAggregate, context);
-
-          // setting attributes of the join table
-          OEntity joinTable = this.dataBaseSchema.getEntityByName(joinTableName);
-          joinTable.setIsAggregableJoinTable(true);
-          joinTable.setDirectionOfN2NRepresentedRelationship(direction);
-          joinTable.setNameOfN2NRepresentedRelationship(edgeName);
-
-          // setting attributes of the correspondent vertex type
-          OVertexType correspondentVertexType = this.getVertexTypeByEntity(joinTable);
-          correspondentVertexType.setIsFromJoinTable(true);
-
+        // jsonConfiguration errors managing (draconian approach)
+        if (currentForeignEntityName == null) {
+          context.getOutputManager().error("Configuration error: 'fromTable' field not found in the '%s' edge-type definition.", edgeName);
+          throw new OTeleporterRuntimeException();
         }
-        else if(context.getExecutionStrategy().equals("naive")) {
-          context.getOutputManager().error("Configuration not compliant with the chosen strategy: you cannot perform the aggregation declared in the jsonConfiguration for the "
-                  + "join table %s while executing migration with a not-aggregating strategy. Thus no aggregation will be performed.\n", joinTableName);
+        if (currentParentEntityName == null) {
+          context.getOutputManager().error("Configuration error: 'toTable' field not found in the '%s' edge-type definition.", edgeName);
+          throw new OTeleporterRuntimeException();
+        }
+        if (fromColumns == null) {
+          context.getOutputManager().error("Configuration error: 'fromColumns' field not found in the '%s' edge-type definition.", edgeName);
+          throw new OTeleporterRuntimeException();
+        }
+        if (toColumns == null) {
+          context.getOutputManager().error("Configuration error: 'toColumns' field not found in the '%s' edge-type definition.", edgeName);
           throw new OTeleporterRuntimeException();
         }
 
+        String direction = edgeMapping.getDirection();
+
+        if (direction != null && !(direction.equals("direct") || direction.equals("inverse"))) {
+          context.getOutputManager().error("Configuration error: direction for the edge %s cannot be '%s'. Allowed values: 'direct' or 'inverse' \n", edgeName, direction);
+          throw new OTeleporterRuntimeException();
+        }
+
+        boolean foreignEntityIsJoinTableToAggregate = false;
+
+        if (joinTableMapping == null) {
+
+          // building relationship
+          ORelationship currentRelationship = buildRelationshipFromConfig(currentForeignEntityName, currentParentEntityName, fromColumns, toColumns, direction, foreignEntityIsJoinTableToAggregate, context);
+
+          // building correspondent edgeType (check on inheritance not needed)
+          buildEdgeTypeFromConfiguredRelationship(currentRelationship, edgeName, currentEdgeClass, foreignEntityIsJoinTableToAggregate, context);
+
+        } else {
+
+          String joinTableName = joinTableMapping.getTableName();
+          foreignEntityIsJoinTableToAggregate = true;
+
+          if (context.getExecutionStrategy().equals("naive-aggregate")) { // strategy is aggregated
+            List<String> joinTableFromColumns = joinTableMapping.getFromColumns();
+            List<String> joinTableToColumns = joinTableMapping.getToColumns();
+
+            // building left relationship
+            ORelationship currentRelationship = buildRelationshipFromConfig(joinTableName, currentForeignEntityName, joinTableFromColumns, fromColumns, direction, foreignEntityIsJoinTableToAggregate, context);
+
+            // building correspondent edgeType (check on inheritance not needed)
+            buildEdgeTypeFromConfiguredRelationship(currentRelationship, edgeName + "-left", currentEdgeClass, foreignEntityIsJoinTableToAggregate, context);
+
+            // building right relationship
+            currentRelationship = buildRelationshipFromConfig(joinTableName, currentParentEntityName, joinTableToColumns, toColumns, direction, foreignEntityIsJoinTableToAggregate, context);
+
+            // building correspondent edgeType (check on inheritance not needed)
+            buildEdgeTypeFromConfiguredRelationship(currentRelationship, edgeName + "-right", currentEdgeClass, foreignEntityIsJoinTableToAggregate, context);
+
+            // setting attributes of the join table
+            OEntity joinTable = this.dataBaseSchema.getEntityByName(joinTableName);
+            joinTable.setIsAggregableJoinTable(true);
+            joinTable.setDirectionOfN2NRepresentedRelationship(direction);
+            joinTable.setNameOfN2NRepresentedRelationship(edgeName);
+
+            // setting attributes of the correspondent vertex type
+            OVertexType correspondentVertexType = this.getVertexTypeByEntity(joinTable);
+            correspondentVertexType.setIsFromJoinTable(true);
+
+          } else if (context.getExecutionStrategy().equals("naive")) {
+            context.getOutputManager().error("Configuration not compliant with the chosen strategy: you cannot perform the aggregation declared in the jsonConfiguration for the "
+                    + "join table %s while executing migration with a not-aggregating strategy. Thus no aggregation will be performed.\n", joinTableName);
+            throw new OTeleporterRuntimeException();
+          }
+        }
       }
     }
-
   }
 
 
@@ -1627,6 +1624,16 @@ public class OER2GraphMapper extends OSource2GraphMapper {
     for(OVertexType currentVertexType: this.joinVertex2aggregatorEdges.keySet()) {
       if(currentVertexType.getName().equals(vertexTypeName)) {
         return this.joinVertex2aggregatorEdges.get(currentVertexType);
+      }
+    }
+    return null;
+  }
+
+  public OAggregatorEdge getAggregatorEdgeByEdgeTypeName(String edgeTypeName) {
+
+    for(OAggregatorEdge currAggregatorEdge: this.joinVertex2aggregatorEdges.values()) {
+      if(currAggregatorEdge.getEdgeType().getName().equals(edgeTypeName)) {
+        return currAggregatorEdge;
       }
     }
     return null;

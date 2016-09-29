@@ -172,13 +172,13 @@
   "edges": [
     {
       "WorksAt": {
-        "mapping": {
+        "mapping": [{
           "fromTable": "PERSON",
           "fromColumns": ["DEP_ID"],
           "toTable": "DEPARTMENT",
           "toColumns": ["ID"],
           "direction": "direct"
-        },
+        }],
         "properties": {
           "since": {
             "include": true,

@@ -18,6 +18,8 @@
 
 package com.orientechnologies.teleporter.configuration.api;
 
+import java.util.List;
+
 /**
  *
  * @author Gabriele Ponzi
@@ -27,18 +29,18 @@ package com.orientechnologies.teleporter.configuration.api;
 
 public class OConfiguredEdgeClass extends OConfiguredClass {
 
-    private OEdgeMappingInformation mapping;                  // mandatory
+    private List<OEdgeMappingInformation> mappings;                  // mandatory
 
     public OConfiguredEdgeClass(String edgeName) {
         super(edgeName);
     }
 
-    public OEdgeMappingInformation getMapping() {
-        return this.mapping;
+    public List<OEdgeMappingInformation> getMappings() {
+        return this.mappings;
     }
 
-    public void setMapping(OEdgeMappingInformation mapping) {
-        this.mapping = mapping;
+    public void setMappings(List<OEdgeMappingInformation> mappings) {
+        this.mappings = mappings;
     }
 
 }

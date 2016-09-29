@@ -2,13 +2,13 @@
   "vertices": [],
   "edges": [{
     "WorksAtProject": {
-      "mapping": {
+      "mapping": [{
         "fromTable": "EMPLOYEE",
         "fromColumns": ["PROJECT"],
         "toTable": "PROJECT",
         "toColumns": ["ID"],
         "direction": "direct"
-      },
+      }],
       "properties": {
         "updatedOn": {
           "type": "DATE",
@@ -27,13 +27,13 @@
     }
   }, {
     "HasManager": {
-      "mapping": {
+      "mapping": [{
         "fromTable": "PROJECT",
         "fromColumns": ["PROJECT_MANAGER"],
         "toTable": "EMPLOYEE",
         "toColumns": ["EMP_ID"],
         "direction": "direct"
-      },
+      }],
       "properties": {
         "updatedOn": {
           "type": "DATE",

@@ -2,13 +2,13 @@
 	"vertices": [],
 	"edges": [{
 		"HasEmployee": {
-			"mapping": {
+			"mapping": [{
 				"fromTable": "EMPLOYEE",
 				"fromColumns": ["PROJECT"],
 				"toTable": "PROJECT",
 				"toColumns": ["ID"],
 				"direction": "inverse"
-			},
+			}],
 			"properties": {
 				"updatedOn": {
 					"type": "DATE",
