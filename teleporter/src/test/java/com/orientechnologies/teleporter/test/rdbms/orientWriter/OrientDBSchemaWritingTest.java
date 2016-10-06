@@ -68,6 +68,7 @@ public class OrientDBSchemaWritingTest {
     this.dbQueryEngine = new ODBQueryEngine(this.driver, this.context);
     this.context.setDbQueryEngine(this.dbQueryEngine);
     this.context.setOutputManager(new OOutputStreamManager(0));
+    this.context.setDataTypeHandler(new OHSQLDBDataTypeHandler());
     this.modelWriter = new OGraphModelWriter();
     this.outOrientGraphUri = "memory:testOrientDB";
     this.sourceDBInfo = new OSourceDatabaseInfo("source", this.driver, this.jurl, this.username, this.password);
