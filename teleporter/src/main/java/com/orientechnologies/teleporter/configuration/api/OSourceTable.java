@@ -34,8 +34,8 @@ public class OSourceTable {
     private String tableName;                       // mandatory
     private List<String> aggregationColumns;        // optional (not present when there is not any aggregation)
 
-    public OSourceTable(String sourceName) {
-        this.sourceIdName = sourceName;
+    public OSourceTable(String sourceIdName) {
+        this.sourceIdName = sourceIdName;
     }
 
     public String getSourceIdName() {

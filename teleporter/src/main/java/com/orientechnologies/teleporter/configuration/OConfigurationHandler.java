@@ -47,6 +47,12 @@ import java.util.*;
 
 public class OConfigurationHandler {
 
+    private boolean runningAggregationStrategy;
+
+    public OConfigurationHandler(boolean runningAggregationStrategy) {
+        this.runningAggregationStrategy = runningAggregationStrategy;
+    }
+
     /**
      * Parsing method. It returns a OConfiguration object starting from a JSON configuration.
      *
@@ -55,7 +61,7 @@ public class OConfigurationHandler {
      * @return
      */
 
-    public OConfiguration buildConfigurationFromJSON(ODocument jsonConfiguration, OTeleporterContext context) {
+    public OConfiguration buildConfigurationFromJSONDoc(ODocument jsonConfiguration, OTeleporterContext context) {
 
         OConfiguration configuration = new OConfiguration();
 
@@ -146,7 +152,9 @@ public class OConfigurationHandler {
                 OSourceTable currentSourceTable = new OSourceTable(sourceIdName);
                 currentSourceTable.setDataSource(dataSource);
                 currentSourceTable.setTableName(sourceTableName);
-                currentSourceTable.setAggregationColumns(aggregationColumns);
+                if(aggregationFunction != null && aggregationColumns != null) {
+                    currentSourceTable.setAggregationColumns(aggregationColumns);
+                }
                 sourceTables.add(currentSourceTable);
 
                 i++;
@@ -195,6 +203,7 @@ public class OConfigurationHandler {
                 throw new OTeleporterRuntimeException();
             }
 
+            // for each relationship represented by the edge a mapping is built
             for(ODocument mappingDoc: mappingDocs) {
 
                 OEdgeMappingInformation currentMapping = new OEdgeMappingInformation(currentConfiguredEdge);
@@ -243,7 +252,7 @@ public class OConfigurationHandler {
 
                     joinTableMapping = new OAggregatedJoinTableMapping(joinTableName);
 
-                    if (context.getExecutionStrategy().equals("naive-aggregate")) {
+                    if (this.runningAggregationStrategy) {
                         // strategy is aggregated
                         List<String> joinTableFromColumns = joinTableDoc.field("fromColumns");
                         List<String> joinTableToColumns = joinTableDoc.field("toColumns");
@@ -309,6 +318,9 @@ public class OConfigurationHandler {
                     context.getStatistics().warningMessages.add("Configuration ERROR: the property " + propertyName + " will not added to the correspondent Class because the type is badly defined or not defined at all.");
                     continue;
                 }
+                else {
+                    propertyType = propertyType.toUpperCase(Locale.ENGLISH);        // normalization: orientdb types are upper case
+                }
 
                 Boolean mandatory = currentElementPropertyDoc.field("mandatory");
                 Boolean readOnly = currentElementPropertyDoc.field("readOnly");
@@ -372,7 +384,7 @@ public class OConfigurationHandler {
      * @param context
      * @return
      */
-    public ODocument buildJSONFromConfiguration(OConfiguration configuration, OTeleporterContext context) {
+    public ODocument buildJSONDocFromConfiguration(OConfiguration configuration, OTeleporterContext context) {
 
         ODocument jsonConfiguration = new ODocument();
 
@@ -525,64 +537,93 @@ public class OConfigurationHandler {
          * Building configured vertices starting from Vertices-Type
          */
 
-        List<OConfiguredVertexClass> configuredVertexClasses = new LinkedList<OConfiguredVertexClass>();
-        for(OVertexType currVertexType: mapper.getVertexType2classMappers().keySet()) {
-
-            OEntity currentEntity = mapper.getEntityByVertexType(currVertexType);
-            OSourceDatabaseInfo currSourceDBInfo = currentEntity.getSourceDataseInfo();
-            List<OClassMapper> currClassMappers = mapper.getVertexType2classMappers().get(currVertexType);
-            if(currClassMappers.size() == 0) {
-                context.getOutputManager().error("Error during the model building: the %s vertex class is not mapped to any vertex class", currVertexType.getName());
-                throw new OTeleporterRuntimeException();
-            }
-            if(currClassMappers.size() > 1) {
-                context.getOutputManager().error("Error during the model building: the %s vertex class is mapped to more than one vertex classes", currVertexType.getName());
-                throw new OTeleporterRuntimeException();
-            }
-            OClassMapper currClassMapper = currClassMappers.get(0);
-            OConfiguredVertexClass currConfiguredVertexClass = new OConfiguredVertexClass(currVertexType.getName());
-
-            // building vertex mapping info
-            OVertexMappingInformation vertexMappingInfo = new OVertexMappingInformation(currConfiguredVertexClass);
-            List<OSourceTable> sourceTables = new LinkedList<OSourceTable>();
-            OSourceTable sourceTable = new OSourceTable(currSourceDBInfo.getSourceIdName() + "_" + currentEntity.getName());
-            sourceTable.setDataSource(currSourceDBInfo.getDriverName());
-            sourceTable.setTableName(currentEntity.getName());
-            sourceTables.add(sourceTable);
-            vertexMappingInfo.setSourceTables(sourceTables);
-            currConfiguredVertexClass.setMapping(vertexMappingInfo);
-
-            // building configured properties
-            List<OConfiguredProperty> configuredProperties = new LinkedList<OConfiguredProperty>();
-            for(OModelProperty currModelProperty: currVertexType.getProperties()) {
-                OConfiguredProperty currConfiguredProperty = new OConfiguredProperty(currModelProperty.getName());
-                currConfiguredProperty.setIncludedInMigration(true);
-                currConfiguredProperty.setPropertyType(currModelProperty.getOrientdbType());
-                currConfiguredProperty.setMandatory(false);
-                currConfiguredProperty.setReadOnly(false);
-                currConfiguredProperty.setNotNull(false);
-
-                OConfiguredPropertyMapping propertyMappingInfo = new OConfiguredPropertyMapping(sourceTable.getSourceIdName());
-                String correspondentAttributeName = currClassMapper.getAttributeByProperty(currModelProperty.getName());
-                OAttribute correspondentAttribute = currentEntity.getAttributeByName(correspondentAttributeName);
-                propertyMappingInfo.setColumnName(correspondentAttributeName);
-                propertyMappingInfo.setType(correspondentAttribute.getDataType());
-                currConfiguredProperty.setPropertyMapping(propertyMappingInfo);
-
-                configuredProperties.add(currConfiguredProperty);
-            }
-            currConfiguredVertexClass.setConfiguredProperties(configuredProperties);
-
-            // adding configured vertex to the list
-            configuredVertexClasses.add(currConfiguredVertexClass);
-        }
-        configuration.setConfiguredVertices(configuredVertexClasses);
+        Map<String, String> tableName2SourceIdName = buildConfigVerticesFromGraphModel(mapper, configuration, context);
 
 
         /**
          * Building configured edges starting from Edges-Type
          */
 
+        buildConfigEdgesFromGraphModel(mapper, configuration, tableName2SourceIdName);
+
+        return configuration;
+    }
+
+
+    protected Map<String, String> buildConfigVerticesFromGraphModel(OER2GraphMapper mapper, OConfiguration configuration, OTeleporterContext context) {
+
+        Map<String,String> tableName2SourceIdName = new HashMap<String,String>();
+
+        // populating tableName2SourceIdName map with all the tables in every case (with aggregation or not)
+        for(OVertexType currVertexType: mapper.getVertexType2classMappers().keySet()) {
+            OEntity currentEntity = mapper.getEntityByVertexType(currVertexType);
+            OSourceDatabaseInfo currSourceDBInfo = currentEntity.getSourceDataseInfo();
+            String sourceIdName = currSourceDBInfo.getSourceIdName() + "_" + currentEntity.getName();
+            tableName2SourceIdName.put(currentEntity.getName(), sourceIdName);
+        }
+
+        List<OConfiguredVertexClass> configuredVertexClasses = new LinkedList<OConfiguredVertexClass>();
+
+        for(OVertexType currVertexType: mapper.getVertexType2classMappers().keySet()) {
+
+            if(this.runningAggregationStrategy && !currVertexType.isFromJoinTable()) {
+
+                OEntity currentEntity = mapper.getEntityByVertexType(currVertexType);
+                OSourceDatabaseInfo currSourceDBInfo = currentEntity.getSourceDataseInfo();
+                List<OClassMapper> currClassMappers = mapper.getVertexType2classMappers().get(currVertexType);
+                if (currClassMappers.size() == 0) {
+                    context.getOutputManager().error("Error during the model building: the %s vertex class is not mapped to any vertex class", currVertexType.getName());
+                    throw new OTeleporterRuntimeException();
+                }
+                if (currClassMappers.size() > 1) {
+                    context.getOutputManager().error("Error during the model building: the %s vertex class is mapped to more than one vertex classes", currVertexType.getName());
+                    throw new OTeleporterRuntimeException();
+                }
+                OClassMapper currClassMapper = currClassMappers.get(0);
+                OConfiguredVertexClass currConfiguredVertexClass = new OConfiguredVertexClass(currVertexType.getName());
+
+                // building vertex mapping info
+                OVertexMappingInformation vertexMappingInfo = new OVertexMappingInformation(currConfiguredVertexClass);
+                List<OSourceTable> sourceTables = new LinkedList<OSourceTable>();
+
+                String sourceIdName = currSourceDBInfo.getSourceIdName() + "_" + currentEntity.getName();
+                OSourceTable sourceTable = new OSourceTable(sourceIdName);
+                sourceTable.setDataSource(currSourceDBInfo.getSourceIdName());
+                sourceTable.setTableName(currentEntity.getName());
+                sourceTables.add(sourceTable);
+                vertexMappingInfo.setSourceTables(sourceTables);
+                currConfiguredVertexClass.setMapping(vertexMappingInfo);
+
+                // building configured properties
+                List<OConfiguredProperty> configuredProperties = new LinkedList<OConfiguredProperty>();
+                for (OModelProperty currModelProperty : currVertexType.getProperties()) {
+                    OConfiguredProperty currConfiguredProperty = new OConfiguredProperty(currModelProperty.getName());
+                    currConfiguredProperty.setIncludedInMigration(true);
+                    currConfiguredProperty.setPropertyType(currModelProperty.getOrientdbType());
+                    currConfiguredProperty.setMandatory(false);
+                    currConfiguredProperty.setReadOnly(false);
+                    currConfiguredProperty.setNotNull(false);
+
+                    OConfiguredPropertyMapping propertyMappingInfo = new OConfiguredPropertyMapping(sourceTable.getSourceIdName());
+                    String correspondentAttributeName = currClassMapper.getAttributeByProperty(currModelProperty.getName());
+                    OAttribute correspondentAttribute = currentEntity.getAttributeByName(correspondentAttributeName);
+                    propertyMappingInfo.setColumnName(correspondentAttributeName);
+                    propertyMappingInfo.setType(correspondentAttribute.getDataType());
+                    currConfiguredProperty.setPropertyMapping(propertyMappingInfo);
+
+                    configuredProperties.add(currConfiguredProperty);
+                }
+                currConfiguredVertexClass.setConfiguredProperties(configuredProperties);
+
+                // adding configured vertex to the list
+                configuredVertexClasses.add(currConfiguredVertexClass);
+            }
+        }
+        configuration.setConfiguredVertices(configuredVertexClasses);
+        return tableName2SourceIdName;
+    }
+
+    protected void buildConfigEdgesFromGraphModel(OER2GraphMapper mapper, OConfiguration configuration, Map<String, String> tableName2SourceIdName) {
         List<OConfiguredEdgeClass> configuredEdgeClasses = new LinkedList<OConfiguredEdgeClass>();
 
         for(OEdgeType currEdgeType: mapper.getGraphModel().getEdgesType()) {
@@ -595,6 +636,8 @@ public class OConfigurationHandler {
             List<OEdgeMappingInformation> edgeMappings = new LinkedList<OEdgeMappingInformation>();
             OAggregatorEdge aggregatorEdge = mapper.getAggregatorEdgeByEdgeTypeName(currEdgeType.getName());
 
+            OVertexType aggregatedVertexType = null;
+            OEntity joinTable = null;
             // the current edge type does not represent any join table
             if (aggregatorEdge == null) {
 
@@ -644,8 +687,8 @@ public class OConfigurationHandler {
                 currEdgeMappingInformation.setDirection("direct");
 
                 // the edgeType corresponds to a join table, so the join table mapping will be built
-                OVertexType aggregatedVertexType = mapper.getJoinVertexTypeByAggregatorEdge(aggregatorEdge.getEdgeType().getName());
-                OEntity joinTable = mapper.getEntityByVertexType(aggregatedVertexType);
+                aggregatedVertexType = mapper.getJoinVertexTypeByAggregatorEdge(aggregatorEdge.getEdgeType().getName());
+                joinTable = mapper.getEntityByVertexType(aggregatedVertexType);
                 OAggregatedJoinTableMapping joinTableMappingInfo = new OAggregatedJoinTableMapping(joinTable.getName());
 
                 Iterator<ORelationship> outRelationshipsIterator = joinTable.getOutRelationships().iterator();
@@ -669,14 +712,32 @@ public class OConfigurationHandler {
 
             // building configured properties
             List<OConfiguredProperty> configuredProperties = new LinkedList<OConfiguredProperty>();
-            // TODO: 29/09/16
+            for(OModelProperty currModelProperty: currEdgeType.getProperties()) {
+                OConfiguredProperty currConfiguredProperty = new OConfiguredProperty(currModelProperty.getName());
+                currConfiguredProperty.setIncludedInMigration(true);
+                currConfiguredProperty.setPropertyType(currModelProperty.getOrientdbType());
+                currConfiguredProperty.setMandatory(false);
+                currConfiguredProperty.setReadOnly(false);
+                currConfiguredProperty.setNotNull(false);
+
+                // the property mapping is present iff it comes from a column of an aggregated join table
+                // => the property mapping is present iff there was a join table aggregation
+                if(joinTable != null) {
+                    OConfiguredPropertyMapping propertyMappingInfo = new OConfiguredPropertyMapping(tableName2SourceIdName.get(joinTable.getName()));
+                    OClassMapper currClassMapper = mapper.getClassMappersByEntity(joinTable).get(0);  // join table is mapped with just a vertex class
+                    String correspondentAttributeName = currClassMapper.getAttributeByProperty(currModelProperty.getName());
+                    OAttribute correspondentAttribute = joinTable.getAttributeByName(correspondentAttributeName);
+                    propertyMappingInfo.setColumnName(correspondentAttributeName);
+                    propertyMappingInfo.setType(correspondentAttribute.getDataType());
+                    currConfiguredProperty.setPropertyMapping(propertyMappingInfo);
+                }
+                configuredProperties.add(currConfiguredProperty);
+            }
             currConfiguredEdgeClass.setConfiguredProperties(configuredProperties);
 
             // adding configured edge to the list
             configuredEdgeClasses.add(currConfiguredEdgeClass);
         }
         configuration.setConfiguredEdges(configuredEdgeClasses);
-
-        return configuration;
     }
 }

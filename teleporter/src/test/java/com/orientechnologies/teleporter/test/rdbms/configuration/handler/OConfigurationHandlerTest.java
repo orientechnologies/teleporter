@@ -23,11 +23,21 @@ import com.orientechnologies.teleporter.configuration.OConfigurationHandler;
 import com.orientechnologies.teleporter.configuration.api.*;
 import com.orientechnologies.teleporter.context.OOutputStreamManager;
 import com.orientechnologies.teleporter.context.OTeleporterContext;
+import com.orientechnologies.teleporter.importengine.rdbms.dbengine.ODBQueryEngine;
+import com.orientechnologies.teleporter.mapper.rdbms.OER2GraphMapper;
+import com.orientechnologies.teleporter.model.dbschema.OSourceDatabaseInfo;
+import com.orientechnologies.teleporter.nameresolver.OJavaConventionNameResolver;
+import com.orientechnologies.teleporter.persistence.handler.ODBMSDataTypeHandler;
+import com.orientechnologies.teleporter.persistence.handler.OHSQLDBDataTypeHandler;
+import com.orientechnologies.teleporter.util.ODocumentComparator;
 import com.orientechnologies.teleporter.util.OFileManager;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.Statement;
 import java.util.List;
 
 import static org.junit.Assert.*;
@@ -42,19 +52,38 @@ public class OConfigurationHandlerTest {
 
     private final String config1 = "src/test/resources/configuration-mapping/full-configuration-mapping.json";
     private final String config2 = "src/test/resources/configuration-mapping/joint-table-relationships-mapping-direct-edges.json";
+    private final String config3 = "src/test/resources/configuration-mapping/config-handler-output.json";
     private OTeleporterContext context;
-    OConfigurationHandler configurationHandler;
+    private ODBMSDataTypeHandler dataTypeHandler;
+
+    private OER2GraphMapper mapper;
+    private ODBQueryEngine dbQueryEngine;
+    private String driver = "org.hsqldb.jdbc.JDBCDriver";
+    private String jurl = "jdbc:hsqldb:mem:mydb";
+    private String username = "SA";
+    private String password = "";
+    private OSourceDatabaseInfo sourceDBInfo;
 
     @Before
     public void init() {
         this.context = new OTeleporterContext();
         this.context.setOutputManager(new OOutputStreamManager(0));
         this.context.setExecutionStrategy("naive-aggregate");
-        this.configurationHandler = new OConfigurationHandler();
+        this.dataTypeHandler = new OHSQLDBDataTypeHandler();
+        this.context.setDataTypeHandler(dataTypeHandler);
+        this.dbQueryEngine = new ODBQueryEngine(this.driver, this.context);
+        this.context.setDbQueryEngine(this.dbQueryEngine);
+        this.context.setOutputManager(new OOutputStreamManager(0));
+        this.sourceDBInfo = new OSourceDatabaseInfo("hsqldb", this.driver, this.jurl, this.username, this.password);
     }
 
     @Test
+    /**
+     * Testing OConfiguration building from JSON (case 1)
+     */
     public void test1() {
+
+        OConfigurationHandler configurationHandler = new OConfigurationHandler(false);
 
         ODocument inputConfigurationDoc = null;
         try {
@@ -64,7 +93,7 @@ public class OConfigurationHandlerTest {
             fail();
         }
 
-        OConfiguration configuration = this.configurationHandler.buildConfigurationFromJSON(inputConfigurationDoc, this.context);
+        OConfiguration configuration = configurationHandler.buildConfigurationFromJSONDoc(inputConfigurationDoc, this.context);
 
 
         /**
@@ -112,7 +141,7 @@ public class OConfigurationHandlerTest {
         assertNotNull(currentConfiguredProperty);
         assertNotNull(currentPropertyMapping);
         assertEquals("extKey1", currentConfiguredProperty.getPropertyName());
-        assertEquals("string", currentConfiguredProperty.getPropertyType());
+        assertEquals("STRING", currentConfiguredProperty.getPropertyType());
         assertEquals(true, currentConfiguredProperty.isIncludedInMigration());
         assertEquals(false, currentConfiguredProperty.isMandatory());
         assertEquals(false, currentConfiguredProperty.isReadOnly());
@@ -126,7 +155,7 @@ public class OConfigurationHandlerTest {
         assertNotNull(currentConfiguredProperty);
         assertNotNull(currentPropertyMapping);
         assertEquals("firstName", currentConfiguredProperty.getPropertyName());
-        assertEquals("string", currentConfiguredProperty.getPropertyType());
+        assertEquals("STRING", currentConfiguredProperty.getPropertyType());
         assertEquals(true, currentConfiguredProperty.isIncludedInMigration());
         assertEquals(true, currentConfiguredProperty.isMandatory());
         assertEquals(false, currentConfiguredProperty.isReadOnly());
@@ -140,7 +169,7 @@ public class OConfigurationHandlerTest {
         assertNotNull(currentConfiguredProperty);
         assertNotNull(currentPropertyMapping);
         assertEquals("lastName", currentConfiguredProperty.getPropertyName());
-        assertEquals("string", currentConfiguredProperty.getPropertyType());
+        assertEquals("STRING", currentConfiguredProperty.getPropertyType());
         assertEquals(true, currentConfiguredProperty.isIncludedInMigration());
         assertEquals(true, currentConfiguredProperty.isMandatory());
         assertEquals(false, currentConfiguredProperty.isReadOnly());
@@ -154,7 +183,7 @@ public class OConfigurationHandlerTest {
         assertNotNull(currentConfiguredProperty);
         assertNotNull(currentPropertyMapping);
         assertEquals("depId", currentConfiguredProperty.getPropertyName());
-        assertEquals("string", currentConfiguredProperty.getPropertyType());
+        assertEquals("STRING", currentConfiguredProperty.getPropertyType());
         assertEquals(false, currentConfiguredProperty.isIncludedInMigration());
         assertEquals(false, currentConfiguredProperty.isMandatory());
         assertEquals(false, currentConfiguredProperty.isReadOnly());
@@ -168,7 +197,7 @@ public class OConfigurationHandlerTest {
         assertNotNull(currentConfiguredProperty);
         assertNotNull(currentPropertyMapping);
         assertEquals("extKey2", currentConfiguredProperty.getPropertyName());
-        assertEquals("string", currentConfiguredProperty.getPropertyType());
+        assertEquals("STRING", currentConfiguredProperty.getPropertyType());
         assertEquals(true, currentConfiguredProperty.isIncludedInMigration());
         assertEquals(false, currentConfiguredProperty.isMandatory());
         assertEquals(false, currentConfiguredProperty.isReadOnly());
@@ -182,7 +211,7 @@ public class OConfigurationHandlerTest {
         assertNotNull(currentConfiguredProperty);
         assertNotNull(currentPropertyMapping);
         assertEquals("VAT", currentConfiguredProperty.getPropertyName());
-        assertEquals("string", currentConfiguredProperty.getPropertyType());
+        assertEquals("STRING", currentConfiguredProperty.getPropertyType());
         assertEquals(true, currentConfiguredProperty.isIncludedInMigration());
         assertEquals(true, currentConfiguredProperty.isMandatory());
         assertEquals(false, currentConfiguredProperty.isReadOnly());
@@ -196,7 +225,7 @@ public class OConfigurationHandlerTest {
         assertNotNull(currentConfiguredProperty);
         assertNotNull(currentPropertyMapping);
         assertEquals("updatedOn", currentConfiguredProperty.getPropertyName());
-        assertEquals("date", currentConfiguredProperty.getPropertyType());
+        assertEquals("DATE", currentConfiguredProperty.getPropertyType());
         assertEquals(false, currentConfiguredProperty.isIncludedInMigration());
         assertEquals(true, currentConfiguredProperty.isMandatory());
         assertEquals(false, currentConfiguredProperty.isReadOnly());
@@ -235,7 +264,7 @@ public class OConfigurationHandlerTest {
         assertNotNull(currentConfiguredProperty);
         assertNotNull(currentPropertyMapping);
         assertEquals("id", currentConfiguredProperty.getPropertyName());
-        assertEquals("string", currentConfiguredProperty.getPropertyType());
+        assertEquals("STRING", currentConfiguredProperty.getPropertyType());
         assertEquals(true, currentConfiguredProperty.isIncludedInMigration());
         assertEquals(false, currentConfiguredProperty.isMandatory());
         assertEquals(false, currentConfiguredProperty.isReadOnly());
@@ -249,7 +278,7 @@ public class OConfigurationHandlerTest {
         assertNotNull(currentConfiguredProperty);
         assertNotNull(currentPropertyMapping);
         assertEquals("departmentName", currentConfiguredProperty.getPropertyName());
-        assertEquals("string", currentConfiguredProperty.getPropertyType());
+        assertEquals("STRING", currentConfiguredProperty.getPropertyType());
         assertEquals(true, currentConfiguredProperty.isIncludedInMigration());
         assertEquals(true, currentConfiguredProperty.isMandatory());
         assertEquals(false, currentConfiguredProperty.isReadOnly());
@@ -263,7 +292,7 @@ public class OConfigurationHandlerTest {
         assertNotNull(currentConfiguredProperty);
         assertNotNull(currentPropertyMapping);
         assertEquals("location", currentConfiguredProperty.getPropertyName());
-        assertEquals("string", currentConfiguredProperty.getPropertyType());
+        assertEquals("STRING", currentConfiguredProperty.getPropertyType());
         assertEquals(true, currentConfiguredProperty.isIncludedInMigration());
         assertEquals(true, currentConfiguredProperty.isMandatory());
         assertEquals(false, currentConfiguredProperty.isReadOnly());
@@ -277,7 +306,7 @@ public class OConfigurationHandlerTest {
         assertNotNull(currentConfiguredProperty);
         assertNotNull(currentPropertyMapping);
         assertEquals("updatedOn", currentConfiguredProperty.getPropertyName());
-        assertEquals("date", currentConfiguredProperty.getPropertyType());
+        assertEquals("DATE", currentConfiguredProperty.getPropertyType());
         assertEquals(false, currentConfiguredProperty.isIncludedInMigration());
         assertEquals(true, currentConfiguredProperty.isMandatory());
         assertEquals(false, currentConfiguredProperty.isReadOnly());
@@ -319,7 +348,7 @@ public class OConfigurationHandlerTest {
         assertNotNull(currentConfiguredProperty);
         assertNull(currentPropertyMapping);
         assertEquals("since", currentConfiguredProperty.getPropertyName());
-        assertEquals("date", currentConfiguredProperty.getPropertyType());
+        assertEquals("DATE", currentConfiguredProperty.getPropertyType());
         assertEquals(true, currentConfiguredProperty.isIncludedInMigration());
         assertEquals(true, currentConfiguredProperty.isMandatory());
         assertEquals(false, currentConfiguredProperty.isReadOnly());
@@ -330,13 +359,18 @@ public class OConfigurationHandlerTest {
          * 1. Writing the configuration on a second JSON document through the configurationHandler.
          * 2. Checking that the original JSON configuration and the final just written configuration are equal.
          */
-        ODocument writtenJsonConfiguration = this.configurationHandler.buildJSONFromConfiguration(configuration, context);
-        assertEquals(inputConfigurationDoc.toJSON(""), writtenJsonConfiguration.toJSON(""));
+        ODocument writtenJsonConfiguration = configurationHandler.buildJSONDocFromConfiguration(configuration, context);
+        assertTrue(ODocumentComparator.areEquals(inputConfigurationDoc, writtenJsonConfiguration));
     }
 
 
     @Test
+    /**
+     * Testing OConfiguration building from JSON (case 2)
+     */
     public void test2() {
+
+        OConfigurationHandler configurationHandler = new OConfigurationHandler(true);
 
         ODocument inputConfigurationDoc = null;
         try {
@@ -346,7 +380,7 @@ public class OConfigurationHandlerTest {
             fail();
         }
 
-        OConfiguration configuration = this.configurationHandler.buildConfigurationFromJSON(inputConfigurationDoc, this.context);
+        OConfiguration configuration = configurationHandler.buildConfigurationFromJSONDoc(inputConfigurationDoc, this.context);
 
 
         /**
@@ -404,8 +438,471 @@ public class OConfigurationHandlerTest {
          * 1. Writing the configuration on a second JSON document through the configurationHandler.
          * 2. Checking that the original JSON configuration and the final just written configuration are equal.
          */
-        ODocument writtenJsonConfiguration = this.configurationHandler.buildJSONFromConfiguration(configuration, context);
+        ODocument writtenJsonConfiguration = configurationHandler.buildJSONDocFromConfiguration(configuration, context);
         assertEquals(inputConfigurationDoc.toJSON(""), writtenJsonConfiguration.toJSON(""));
+    }
+
+    @Test
+    /**
+     * Testing:
+     * - OConfiguration building from Graph Model
+     * (case 1)
+     */
+    public void test3() {
+
+        OConfigurationHandler configurationHandler = new OConfigurationHandler(true);
+        Connection connection = null;
+        Statement st = null;
+
+        try {
+
+            /**
+             * Graph model building
+             */
+
+            Class.forName(this.driver);
+            connection = DriverManager.getConnection(this.jurl, this.username, this.password);
+
+            String departmentTableBuilding = "create memory table DEPARTMENT (ID varchar(256) not null, DEPARTMENT_NAME  varchar(256) not null," +
+                    " LOCATION varchar(256) not null, primary key (ID))";
+            st = connection.createStatement();
+            st.execute(departmentTableBuilding);
+
+            String employeeTableBuilding = "create memory table EMPLOYEE (ID varchar(256) not null," +
+                    " FIRST_NAME varchar(256) not null, LAST_NAME varchar(256) not null, SALARY double not null," +
+                    " EMAIL varchar(256) not null, DEPARTMENT varchar(256) not null, primary key (ID)," +
+                    " foreign key (DEPARTMENT) references DEPARTMENT(ID))";
+            st.execute(employeeTableBuilding);
+
+            String projectTableBuilding = "create memory table PROJECT (ID varchar(256) not null, PROJECT_NAME  varchar(256)," +
+                    " DESCRIPTION varchar(256) not null, START_DATE date not null, EXPECTED_END_DATE date not null, primary key (ID))";
+            st.execute(projectTableBuilding);
+
+            String projectEmployeeTableBuilding = "create memory table EMPLOYEE_PROJECT (EMPLOYEE_ID  varchar(256)not null, PROJECT_ID varchar(256) not null," +
+                    " ROLE varchar(256) not null, primary key (EMPLOYEE_ID, PROJECT_ID), foreign key (EMPLOYEE_ID) references EMPLOYEE(ID)," +
+                    " foreign key (PROJECT_ID) references PROJECT(ID))";
+            st.execute(projectEmployeeTableBuilding);
+
+            this.mapper = new OER2GraphMapper(this.sourceDBInfo, null, null, null, configurationHandler);
+            this.mapper.buildSourceDatabaseSchema(this.context);
+            this.mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
+            this.mapper.performMany2ManyAggregation(context);
+
+
+            /**
+             * Testing OConfiguration building
+             */
+
+            OConfiguration configuredGraph = configurationHandler.buildConfigurationFromGraphModel(this.mapper,this.context);
+
+            assertEquals(3, configuredGraph.getConfiguredVertices().size());
+            assertEquals(2, configuredGraph.getConfiguredEdges().size());
+
+            OConfiguredVertexClass employeeConfiguredVertex = configuredGraph.getVertexClassByName("Employee");
+            OConfiguredVertexClass projectConfiguredVertex = configuredGraph.getVertexClassByName("Project");
+            OConfiguredVertexClass departmentConfiguredVertex = configuredGraph.getVertexClassByName("Department");
+            OConfiguredEdgeClass employee2projectConfiguredEdge = configuredGraph.getEdgeClassByName("EmployeeProject");
+            OConfiguredEdgeClass hasDepartmentConfiguredEdge = configuredGraph.getEdgeClassByName("HasDepartment");
+
+            /**
+             * Employee vertex check
+             */
+
+            assertEquals("Employee", employeeConfiguredVertex.getName());
+
+            // mapping and source tables
+            OVertexMappingInformation vertexMapping = employeeConfiguredVertex.getMapping();
+            assertEquals(employeeConfiguredVertex, vertexMapping.getBelongingVertex());
+            assertNull(vertexMapping.getAggregationFunction());
+            List<OSourceTable> sourceTables = vertexMapping.getSourceTables();
+            assertEquals(1, sourceTables.size());
+            OSourceTable sourceTable = sourceTables.get(0);
+            assertNull(sourceTable.getAggregationColumns());
+            assertEquals("hsqldb_EMPLOYEE", sourceTable.getSourceIdName());
+            assertEquals("hsqldb", sourceTable.getDataSource());
+            assertEquals("EMPLOYEE", sourceTable.getTableName());
+
+            // properties check
+            List<OConfiguredProperty> configuredProperties = employeeConfiguredVertex.getConfiguredProperties();
+            assertEquals(6, configuredProperties.size());
+
+            OConfiguredProperty currConfiguredProperty = configuredProperties.get(0);
+            assertEquals("id", currConfiguredProperty.getPropertyName());
+            assertEquals("STRING", currConfiguredProperty.getPropertyType());
+            assertTrue(currConfiguredProperty.isIncludedInMigration());
+            assertFalse(currConfiguredProperty.isMandatory());
+            assertFalse(currConfiguredProperty.isReadOnly());
+            assertFalse(currConfiguredProperty.isNotNull());
+            OConfiguredPropertyMapping currPropertyMapping = currConfiguredProperty.getPropertyMapping();
+            assertEquals("hsqldb_EMPLOYEE", currPropertyMapping.getSourceName());
+            assertEquals("ID", currPropertyMapping.getColumnName());
+            assertEquals("VARCHAR", currPropertyMapping.getType());
+
+            currConfiguredProperty = configuredProperties.get(1);
+            assertEquals("firstName", currConfiguredProperty.getPropertyName());
+            assertEquals("STRING", currConfiguredProperty.getPropertyType());
+            assertTrue(currConfiguredProperty.isIncludedInMigration());
+            assertFalse(currConfiguredProperty.isMandatory());
+            assertFalse(currConfiguredProperty.isReadOnly());
+            assertFalse(currConfiguredProperty.isNotNull());
+            currPropertyMapping = currConfiguredProperty.getPropertyMapping();
+            assertEquals("hsqldb_EMPLOYEE", currPropertyMapping.getSourceName());
+            assertEquals("FIRST_NAME", currPropertyMapping.getColumnName());
+            assertEquals("VARCHAR", currPropertyMapping.getType());
+
+            currConfiguredProperty = configuredProperties.get(2);
+            assertEquals("lastName", currConfiguredProperty.getPropertyName());
+            assertEquals("STRING", currConfiguredProperty.getPropertyType());
+            assertTrue(currConfiguredProperty.isIncludedInMigration());
+            assertFalse(currConfiguredProperty.isMandatory());
+            assertFalse(currConfiguredProperty.isReadOnly());
+            assertFalse(currConfiguredProperty.isNotNull());
+            currPropertyMapping = currConfiguredProperty.getPropertyMapping();
+            assertEquals("hsqldb_EMPLOYEE", currPropertyMapping.getSourceName());
+            assertEquals("LAST_NAME", currPropertyMapping.getColumnName());
+            assertEquals("VARCHAR", currPropertyMapping.getType());
+
+            currConfiguredProperty = configuredProperties.get(3);
+            assertEquals("salary", currConfiguredProperty.getPropertyName());
+            assertEquals("DOUBLE", currConfiguredProperty.getPropertyType());
+            assertTrue(currConfiguredProperty.isIncludedInMigration());
+            assertFalse(currConfiguredProperty.isMandatory());
+            assertFalse(currConfiguredProperty.isReadOnly());
+            assertFalse(currConfiguredProperty.isNotNull());
+            currPropertyMapping = currConfiguredProperty.getPropertyMapping();
+            assertEquals("hsqldb_EMPLOYEE", currPropertyMapping.getSourceName());
+            assertEquals("SALARY", currPropertyMapping.getColumnName());
+            assertEquals("DOUBLE", currPropertyMapping.getType());
+
+            currConfiguredProperty = configuredProperties.get(4);
+            assertEquals("email", currConfiguredProperty.getPropertyName());
+            assertEquals("STRING", currConfiguredProperty.getPropertyType());
+            assertTrue(currConfiguredProperty.isIncludedInMigration());
+            assertFalse(currConfiguredProperty.isMandatory());
+            assertFalse(currConfiguredProperty.isReadOnly());
+            assertFalse(currConfiguredProperty.isNotNull());
+            currPropertyMapping = currConfiguredProperty.getPropertyMapping();
+            assertEquals("hsqldb_EMPLOYEE", currPropertyMapping.getSourceName());
+            assertEquals("EMAIL", currPropertyMapping.getColumnName());
+            assertEquals("VARCHAR", currPropertyMapping.getType());
+
+            currConfiguredProperty = configuredProperties.get(5);
+            assertEquals("department", currConfiguredProperty.getPropertyName());
+            assertEquals("STRING", currConfiguredProperty.getPropertyType());
+            assertTrue(currConfiguredProperty.isIncludedInMigration());
+            assertFalse(currConfiguredProperty.isMandatory());
+            assertFalse(currConfiguredProperty.isReadOnly());
+            assertFalse(currConfiguredProperty.isNotNull());
+            currPropertyMapping = currConfiguredProperty.getPropertyMapping();
+            assertEquals("hsqldb_EMPLOYEE", currPropertyMapping.getSourceName());
+            assertEquals("DEPARTMENT", currPropertyMapping.getColumnName());
+            assertEquals("VARCHAR", currPropertyMapping.getType());
+
+            /**
+             * Project vertex check
+             */
+
+            assertEquals("Project", projectConfiguredVertex.getName());
+
+            // mapping and source tables
+            vertexMapping = projectConfiguredVertex.getMapping();
+            assertEquals(projectConfiguredVertex, vertexMapping.getBelongingVertex());
+            assertNull(vertexMapping.getAggregationFunction());
+            sourceTables = vertexMapping.getSourceTables();
+            assertEquals(1, sourceTables.size());
+            sourceTable = sourceTables.get(0);
+            assertNull(sourceTable.getAggregationColumns());
+            assertEquals("hsqldb_PROJECT", sourceTable.getSourceIdName());
+            assertEquals("hsqldb", sourceTable.getDataSource());
+            assertEquals("PROJECT", sourceTable.getTableName());
+
+            // properties check
+            configuredProperties = projectConfiguredVertex.getConfiguredProperties();
+            assertEquals(5, configuredProperties.size());
+
+            currConfiguredProperty = configuredProperties.get(0);
+            assertEquals("id", currConfiguredProperty.getPropertyName());
+            assertEquals("STRING", currConfiguredProperty.getPropertyType());
+            assertTrue(currConfiguredProperty.isIncludedInMigration());
+            assertFalse(currConfiguredProperty.isMandatory());
+            assertFalse(currConfiguredProperty.isReadOnly());
+            assertFalse(currConfiguredProperty.isNotNull());
+            currPropertyMapping = currConfiguredProperty.getPropertyMapping();
+            assertEquals("hsqldb_PROJECT", currPropertyMapping.getSourceName());
+            assertEquals("ID", currPropertyMapping.getColumnName());
+            assertEquals("VARCHAR", currPropertyMapping.getType());
+
+            currConfiguredProperty = configuredProperties.get(1);
+            assertEquals("projectName", currConfiguredProperty.getPropertyName());
+            assertEquals("STRING", currConfiguredProperty.getPropertyType());
+            assertTrue(currConfiguredProperty.isIncludedInMigration());
+            assertFalse(currConfiguredProperty.isMandatory());
+            assertFalse(currConfiguredProperty.isReadOnly());
+            assertFalse(currConfiguredProperty.isNotNull());
+            currPropertyMapping = currConfiguredProperty.getPropertyMapping();
+            assertEquals("hsqldb_PROJECT", currPropertyMapping.getSourceName());
+            assertEquals("PROJECT_NAME", currPropertyMapping.getColumnName());
+            assertEquals("VARCHAR", currPropertyMapping.getType());
+
+            currConfiguredProperty = configuredProperties.get(2);
+            assertEquals("description", currConfiguredProperty.getPropertyName());
+            assertEquals("STRING", currConfiguredProperty.getPropertyType());
+            assertTrue(currConfiguredProperty.isIncludedInMigration());
+            assertFalse(currConfiguredProperty.isMandatory());
+            assertFalse(currConfiguredProperty.isReadOnly());
+            assertFalse(currConfiguredProperty.isNotNull());
+            currPropertyMapping = currConfiguredProperty.getPropertyMapping();
+            assertEquals("hsqldb_PROJECT", currPropertyMapping.getSourceName());
+            assertEquals("DESCRIPTION", currPropertyMapping.getColumnName());
+            assertEquals("VARCHAR", currPropertyMapping.getType());
+
+            currConfiguredProperty = configuredProperties.get(3);
+            assertEquals("startDate", currConfiguredProperty.getPropertyName());
+            assertEquals("DATE", currConfiguredProperty.getPropertyType());
+            assertTrue(currConfiguredProperty.isIncludedInMigration());
+            assertFalse(currConfiguredProperty.isMandatory());
+            assertFalse(currConfiguredProperty.isReadOnly());
+            assertFalse(currConfiguredProperty.isNotNull());
+            currPropertyMapping = currConfiguredProperty.getPropertyMapping();
+            assertEquals("hsqldb_PROJECT", currPropertyMapping.getSourceName());
+            assertEquals("START_DATE", currPropertyMapping.getColumnName());
+            assertEquals("DATE", currPropertyMapping.getType());
+
+            currConfiguredProperty = configuredProperties.get(4);
+            assertEquals("expectedEndDate", currConfiguredProperty.getPropertyName());
+            assertEquals("DATE", currConfiguredProperty.getPropertyType());
+            assertTrue(currConfiguredProperty.isIncludedInMigration());
+            assertFalse(currConfiguredProperty.isMandatory());
+            assertFalse(currConfiguredProperty.isReadOnly());
+            assertFalse(currConfiguredProperty.isNotNull());
+            currPropertyMapping = currConfiguredProperty.getPropertyMapping();
+            assertEquals("hsqldb_PROJECT", currPropertyMapping.getSourceName());
+            assertEquals("EXPECTED_END_DATE", currPropertyMapping.getColumnName());
+            assertEquals("DATE", currPropertyMapping.getType());
+
+            /**
+             * Department vertex check
+             */
+
+            assertEquals("Department", departmentConfiguredVertex.getName());
+
+            // mapping and source tables
+            vertexMapping = departmentConfiguredVertex.getMapping();
+            assertEquals(departmentConfiguredVertex, vertexMapping.getBelongingVertex());
+            assertNull(vertexMapping.getAggregationFunction());
+            sourceTables = vertexMapping.getSourceTables();
+            assertEquals(1, sourceTables.size());
+            sourceTable = sourceTables.get(0);
+            assertNull(sourceTable.getAggregationColumns());
+            assertEquals("hsqldb_DEPARTMENT", sourceTable.getSourceIdName());
+            assertEquals("hsqldb", sourceTable.getDataSource());
+            assertEquals("DEPARTMENT", sourceTable.getTableName());
+
+            // properties check
+            configuredProperties = departmentConfiguredVertex.getConfiguredProperties();
+            assertEquals(3, configuredProperties.size());
+
+            currConfiguredProperty = configuredProperties.get(0);
+            assertEquals("id", currConfiguredProperty.getPropertyName());
+            assertEquals("STRING", currConfiguredProperty.getPropertyType());
+            assertTrue(currConfiguredProperty.isIncludedInMigration());
+            assertFalse(currConfiguredProperty.isMandatory());
+            assertFalse(currConfiguredProperty.isReadOnly());
+            assertFalse(currConfiguredProperty.isNotNull());
+            currPropertyMapping = currConfiguredProperty.getPropertyMapping();
+            assertEquals("hsqldb_DEPARTMENT", currPropertyMapping.getSourceName());
+            assertEquals("ID", currPropertyMapping.getColumnName());
+            assertEquals("VARCHAR", currPropertyMapping.getType());
+
+            currConfiguredProperty = configuredProperties.get(1);
+            assertEquals("departmentName", currConfiguredProperty.getPropertyName());
+            assertEquals("STRING", currConfiguredProperty.getPropertyType());
+            assertTrue(currConfiguredProperty.isIncludedInMigration());
+            assertFalse(currConfiguredProperty.isMandatory());
+            assertFalse(currConfiguredProperty.isReadOnly());
+            assertFalse(currConfiguredProperty.isNotNull());
+            currPropertyMapping = currConfiguredProperty.getPropertyMapping();
+            assertEquals("hsqldb_DEPARTMENT", currPropertyMapping.getSourceName());
+            assertEquals("DEPARTMENT_NAME", currPropertyMapping.getColumnName());
+            assertEquals("VARCHAR", currPropertyMapping.getType());
+
+            currConfiguredProperty = configuredProperties.get(2);
+            assertEquals("location", currConfiguredProperty.getPropertyName());
+            assertEquals("STRING", currConfiguredProperty.getPropertyType());
+            assertTrue(currConfiguredProperty.isIncludedInMigration());
+            assertFalse(currConfiguredProperty.isMandatory());
+            assertFalse(currConfiguredProperty.isReadOnly());
+            assertFalse(currConfiguredProperty.isNotNull());
+            currPropertyMapping = currConfiguredProperty.getPropertyMapping();
+            assertEquals("hsqldb_DEPARTMENT", currPropertyMapping.getSourceName());
+            assertEquals("LOCATION", currPropertyMapping.getColumnName());
+            assertEquals("VARCHAR", currPropertyMapping.getType());
+
+            /**
+             * Project2Employee edge check
+             */
+
+            assertEquals("EmployeeProject", employee2projectConfiguredEdge.getName());
+
+            // mapping check
+            List<OEdgeMappingInformation> mappings = employee2projectConfiguredEdge.getMappings();
+            assertEquals(1, mappings.size());
+            OEdgeMappingInformation edgeMapping = mappings.get(0);
+            assertEquals(employee2projectConfiguredEdge, edgeMapping.getBelongingEdge());
+            assertEquals("EMPLOYEE", edgeMapping.getFromTableName());
+            assertEquals("PROJECT", edgeMapping.getToTableName());
+            assertEquals(1, edgeMapping.getFromColumns().size());
+            assertEquals("ID", edgeMapping.getFromColumns().get(0));
+            assertEquals(1, edgeMapping.getToColumns().size());
+            assertEquals("ID", edgeMapping.getToColumns().get(0));
+            assertEquals("direct", edgeMapping.getDirection());
+            OAggregatedJoinTableMapping joinTableMapping = edgeMapping.getRepresentedJoinTableMapping();
+            assertNotNull(joinTableMapping);
+            assertEquals("EMPLOYEE_PROJECT", joinTableMapping.getTableName());
+            assertEquals(1, joinTableMapping.getFromColumns().size());
+            assertEquals("EMPLOYEE_ID", joinTableMapping.getFromColumns().get(0));
+            assertEquals(1, joinTableMapping.getToColumns().size());
+            assertEquals("PROJECT_ID", joinTableMapping.getToColumns().get(0));
+
+            // properties check
+            configuredProperties = employee2projectConfiguredEdge.getConfiguredProperties();
+            assertEquals(1, configuredProperties.size());
+
+            currConfiguredProperty = configuredProperties.get(0);
+            assertEquals("role", currConfiguredProperty.getPropertyName());
+            assertEquals("STRING", currConfiguredProperty.getPropertyType());
+            assertTrue(currConfiguredProperty.isIncludedInMigration());
+            assertFalse(currConfiguredProperty.isMandatory());
+            assertFalse(currConfiguredProperty.isReadOnly());
+            assertFalse(currConfiguredProperty.isNotNull());
+            currPropertyMapping = currConfiguredProperty.getPropertyMapping();
+            assertNotNull(currPropertyMapping);
+            assertEquals("hsqldb_EMPLOYEE_PROJECT", currPropertyMapping.getSourceName());
+            assertEquals("ROLE", currPropertyMapping.getColumnName());
+            assertEquals("VARCHAR", currPropertyMapping.getType());
+
+            /**
+             * HasDepartment edge check
+             */
+
+            assertEquals("HasDepartment", hasDepartmentConfiguredEdge.getName());
+
+            // mapping check
+            mappings = hasDepartmentConfiguredEdge.getMappings();
+            assertEquals(1, mappings.size());
+            edgeMapping = mappings.get(0);
+            assertEquals(hasDepartmentConfiguredEdge, edgeMapping.getBelongingEdge());
+            assertEquals("EMPLOYEE", edgeMapping.getFromTableName());
+            assertEquals("DEPARTMENT", edgeMapping.getToTableName());
+            assertEquals(1, edgeMapping.getFromColumns().size());
+            assertEquals("DEPARTMENT", edgeMapping.getFromColumns().get(0));
+            assertEquals(1, edgeMapping.getToColumns().size());
+            assertEquals("ID", edgeMapping.getToColumns().get(0));
+            assertEquals("direct", edgeMapping.getDirection());
+            joinTableMapping = edgeMapping.getRepresentedJoinTableMapping();
+            assertNull(joinTableMapping);
+
+            // properties check
+            configuredProperties = hasDepartmentConfiguredEdge.getConfiguredProperties();
+            assertEquals(0, configuredProperties.size());
+
+
+        }catch(Exception e) {
+            e.printStackTrace();
+            fail();
+        }finally {
+            try {
+
+                // Dropping Source DB Schema and OrientGraph
+                String dbDropping = "drop schema public cascade";
+                st.execute(dbDropping);
+                connection.close();
+            }catch(Exception e) {
+                e.printStackTrace();
+                fail();
+            }
+        }
+    }
+
+
+    @Test
+    /**
+     * Testing:
+     * - JSON building from OConfiguration
+     * (case 1)
+     */
+    public void test4() {
+
+        OConfigurationHandler configurationHandler = new OConfigurationHandler(true);
+        Connection connection = null;
+        Statement st = null;
+
+        try {
+
+            /**
+             * Graph model building
+             */
+
+            Class.forName(this.driver);
+            connection = DriverManager.getConnection(this.jurl, this.username, this.password);
+
+            String departmentTableBuilding = "create memory table DEPARTMENT (ID varchar(256) not null, DEPARTMENT_NAME  varchar(256) not null," +
+                    " LOCATION varchar(256) not null, primary key (ID))";
+            st = connection.createStatement();
+            st.execute(departmentTableBuilding);
+
+            String employeeTableBuilding = "create memory table EMPLOYEE (ID varchar(256) not null," +
+                    " FIRST_NAME varchar(256) not null, LAST_NAME varchar(256) not null, SALARY double not null," +
+                    " EMAIL varchar(256) not null, DEPARTMENT varchar(256) not null, primary key (ID)," +
+                    " foreign key (DEPARTMENT) references DEPARTMENT(ID))";
+            st.execute(employeeTableBuilding);
+
+            String projectTableBuilding = "create memory table PROJECT (ID varchar(256) not null, PROJECT_NAME  varchar(256)," +
+                    " DESCRIPTION varchar(256) not null, START_DATE date not null, EXPECTED_END_DATE date not null, primary key (ID))";
+            st.execute(projectTableBuilding);
+
+            String projectEmployeeTableBuilding = "create memory table EMPLOYEE_PROJECT (EMPLOYEE_ID  varchar(256)not null, PROJECT_ID varchar(256) not null," +
+                    " ROLE varchar(256) not null, primary key (EMPLOYEE_ID, PROJECT_ID), foreign key (EMPLOYEE_ID) references EMPLOYEE(ID)," +
+                    " foreign key (PROJECT_ID) references PROJECT(ID))";
+            st.execute(projectEmployeeTableBuilding);
+
+            this.mapper = new OER2GraphMapper(this.sourceDBInfo, null, null, null, configurationHandler);
+            this.mapper.buildSourceDatabaseSchema(this.context);
+            this.mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
+            this.mapper.performMany2ManyAggregation(context);
+
+            OConfiguration configuredGraph = configurationHandler.buildConfigurationFromGraphModel(this.mapper,this.context);
+
+            /**
+             * Testing JSON building
+             */
+
+            ODocument inputConfigurationDoc = null;
+            try {
+                inputConfigurationDoc = OFileManager.buildJsonFromFile(this.config3);
+            }catch(IOException e) {
+                e.printStackTrace();
+                fail();
+            }
+
+            ODocument configuredGraphDoc = configurationHandler.buildJSONDocFromConfiguration(configuredGraph, this.context);
+            assertTrue(ODocumentComparator.areEquals(inputConfigurationDoc, configuredGraphDoc));
+
+        }catch(Exception e) {
+            e.printStackTrace();
+            fail();
+        }finally {
+            try {
+
+                // Dropping Source DB Schema and OrientGraph
+                String dbDropping = "drop schema public cascade";
+                st.execute(dbDropping);
+                connection.close();
+            }catch(Exception e) {
+                e.printStackTrace();
+                fail();
+            }
+        }
     }
 
 }

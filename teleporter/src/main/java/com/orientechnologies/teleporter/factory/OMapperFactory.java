@@ -19,6 +19,7 @@
 package com.orientechnologies.teleporter.factory;
 
 import com.orientechnologies.orient.core.record.impl.ODocument;
+import com.orientechnologies.teleporter.configuration.OConfigurationHandler;
 import com.orientechnologies.teleporter.context.OTeleporterContext;
 import com.orientechnologies.teleporter.mapper.OSource2GraphMapper;
 import com.orientechnologies.teleporter.mapper.rdbms.OER2GraphMapper;
@@ -41,19 +42,19 @@ public class OMapperFactory {
   public OMapperFactory() {}
 
   public OSource2GraphMapper buildMapper(String chosenMapper, OSourceInfo sourceInfo, String xmlPath, List<String> includedTables, List<String> excludedTables,
-                                         ODocument configuration, OTeleporterContext context) {
+                                         ODocument configuration, OConfigurationHandler configHandler, OTeleporterContext context) {
 
     OSource2GraphMapper mapper = null;
 
     switch(chosenMapper) {
 
-    case "basicDBMapper":   mapper = new OER2GraphMapper((OSourceDatabaseInfo) sourceInfo, includedTables, excludedTables, configuration);
+    case "basicDBMapper":   mapper = new OER2GraphMapper((OSourceDatabaseInfo) sourceInfo, includedTables, excludedTables, configuration, configHandler);
       break;
 
-    case "hibernate":   mapper = new OHibernate2GraphMapper((OSourceDatabaseInfo) sourceInfo, xmlPath, includedTables, excludedTables, configuration);
+    case "hibernate":   mapper = new OHibernate2GraphMapper((OSourceDatabaseInfo) sourceInfo, xmlPath, includedTables, excludedTables, configuration, configHandler);
       break;
 
-    default :  mapper = new OER2GraphMapper((OSourceDatabaseInfo) sourceInfo, includedTables, excludedTables, configuration);
+    default :  mapper = new OER2GraphMapper((OSourceDatabaseInfo) sourceInfo, includedTables, excludedTables, configuration, configHandler);
     }
 
     return mapper;

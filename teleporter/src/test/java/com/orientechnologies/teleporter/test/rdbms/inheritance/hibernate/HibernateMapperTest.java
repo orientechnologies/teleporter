@@ -102,7 +102,7 @@ public class HibernateMapperTest {
           + "primary key (id), foreign key (RESIDENCE) references RESIDENCE(ID))";
       st.execute(employeeTableBuilding);
 
-      this.mapper = new OHibernate2GraphMapper(this.sourceDBInfo, HibernateMapperTest.XML_TABLE_PER_CLASS, null, null, null);
+      this.mapper = new OHibernate2GraphMapper(this.sourceDBInfo, HibernateMapperTest.XML_TABLE_PER_CLASS, null, null, null, null);
       mapper.buildSourceDatabaseSchema(this.context);
       mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
 
@@ -545,7 +545,7 @@ public class HibernateMapperTest {
           + "PAY_PER_HOUR decimal(10,2), CONTRACT_DURATION varchar(256), primary key (EID), foreign key (EID) references EMPLOYEE(ID))";
       st.execute(contractEmployeeTableBuilding);
 
-      this.mapper = new OHibernate2GraphMapper(this.sourceDBInfo, HibernateMapperTest.XML_TABLE_PER_SUBCLASS1, null, null, null);
+      this.mapper = new OHibernate2GraphMapper(this.sourceDBInfo, HibernateMapperTest.XML_TABLE_PER_SUBCLASS1, null, null, null, null);
       mapper.buildSourceDatabaseSchema(this.context);
       mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
 
@@ -1008,7 +1008,7 @@ public class HibernateMapperTest {
           + "PAY_PER_HOUR decimal(10,2), CONTRACT_DURATION varchar(256), primary key (EID), foreign key (EID) references EMPLOYEE(ID))";
       st.execute(contractEmployeeTableBuilding);
 
-      this.mapper = new OHibernate2GraphMapper(this.sourceDBInfo, HibernateMapperTest.XML_TABLE_PER_SUBCLASS2, null, null, null);
+      this.mapper = new OHibernate2GraphMapper(this.sourceDBInfo, HibernateMapperTest.XML_TABLE_PER_SUBCLASS2, null, null, null, null);
       mapper.buildSourceDatabaseSchema(this.context);
       mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
 
@@ -1467,7 +1467,7 @@ public class HibernateMapperTest {
           + "NAME varchar(256), RESIDENCE varchar(256), PAY_PER_HOUR decimal(10,2), CONTRACT_DURATION varchar(256), primary key (ID))";
       st.execute(contractEmployeeTableBuilding);
 
-      this.mapper = new OHibernate2GraphMapper(this.sourceDBInfo, HibernateMapperTest.XML_TABLE_PER_CONCRETE_CLASS, null, null, null);
+      this.mapper = new OHibernate2GraphMapper(this.sourceDBInfo, HibernateMapperTest.XML_TABLE_PER_CONCRETE_CLASS, null, null, null, null);
       mapper.buildSourceDatabaseSchema(this.context);
       mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
 

@@ -11,14 +11,14 @@
 			}],
 			"properties": {
 				"updatedOn": {
+					"include": true,
 					"type": "DATE",
-					"value": "$from.date",
 					"mandatory": true,
 					"readOnly": false,
 					"notNull": false
 				},
 				"propWithoutTypeField": {
-					"value": "$from.date",
+					"include": true,
 					"mandatory": true,
 					"readOnly": false,
 					"notNull": false

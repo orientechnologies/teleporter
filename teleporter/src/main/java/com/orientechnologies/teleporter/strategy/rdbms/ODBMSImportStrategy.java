@@ -19,6 +19,7 @@
 package com.orientechnologies.teleporter.strategy.rdbms;
 
 import com.orientechnologies.orient.core.record.impl.ODocument;
+import com.orientechnologies.teleporter.configuration.OConfigurationHandler;
 import com.orientechnologies.teleporter.context.OTeleporterContext;
 import com.orientechnologies.teleporter.context.OTeleporterStatistics;
 import com.orientechnologies.teleporter.exception.OTeleporterRuntimeException;
@@ -36,7 +37,7 @@ import com.orientechnologies.teleporter.nameresolver.ONameResolver;
 import com.orientechnologies.teleporter.persistence.handler.ODBMSDataTypeHandler;
 import com.orientechnologies.teleporter.persistence.util.OQueryResult;
 import com.orientechnologies.teleporter.strategy.OWorkflowStrategy;
-import com.orientechnologies.teleporter.util.OConfigurationManager;
+import com.orientechnologies.teleporter.util.OJSONConfigurationManager;
 import com.orientechnologies.teleporter.util.OFunctionsHandler;
 import com.tinkerpop.blueprints.impls.orient.OrientBaseGraph;
 import com.tinkerpop.blueprints.impls.orient.OrientVertex;
@@ -64,8 +65,9 @@ public abstract class ODBMSImportStrategy implements OWorkflowStrategy {
     OSourceDatabaseInfo sourceDBInfo = (OSourceDatabaseInfo) sourceInfo;
     Date globalStart = new Date();
 
-    ODataTypeHandlerFactory factory = new ODataTypeHandlerFactory();
-    ODBMSDataTypeHandler handler = (ODBMSDataTypeHandler) factory.buildDataTypeHandler(sourceDBInfo.getDriverName(), context);
+    ODataTypeHandlerFactory dataTypeHandlerFactory = new ODataTypeHandlerFactory();
+    ODBMSDataTypeHandler handler = (ODBMSDataTypeHandler) dataTypeHandlerFactory.buildDataTypeHandler(sourceDBInfo.getDriverName(), context);
+    OConfigurationHandler configHandler = this.buildConfigurationHandler();
 
     /*
      * Step 1,2,3
@@ -75,11 +77,11 @@ public abstract class ODBMSImportStrategy implements OWorkflowStrategy {
     context.getStatistics().runningStepNumber = -1;
 
     // manage conf if present: loading
-    OConfigurationManager confManager = new OConfigurationManager();
+    OJSONConfigurationManager confManager = new OJSONConfigurationManager();
     ODocument config = confManager.loadConfiguration(outOrientGraphUri, configurationPath, context);
 
     this.mapper = this.createSchemaMapper(sourceDBInfo, outOrientGraphUri, chosenMapper, xmlPath, nameResolver, handler,
-            includedTables, excludedTables, config, context);
+            includedTables, excludedTables, config, configHandler, context);
 
     // Step 4: Import
     this.executeImport(sourceDBInfo, outOrientGraphUri, mapper, handler, context);
@@ -94,9 +96,11 @@ public abstract class ODBMSImportStrategy implements OWorkflowStrategy {
 
   }
 
+  protected abstract OConfigurationHandler buildConfigurationHandler();
+
   public abstract OER2GraphMapper createSchemaMapper(OSourceDatabaseInfo sourceDBInfo, String outOrientGraphUri, String chosenMapper,
       String xmlPath, ONameResolver nameResolver, ODBMSDataTypeHandler handler, List<String> includedTables, List<String> excludedTables,
-      ODocument config, OTeleporterContext context);
+      ODocument config, OConfigurationHandler configHandler, OTeleporterContext context);
 
 
   public abstract void executeImport(OSourceDatabaseInfo sourceDBInfo, String outOrientGraphUri, OSource2GraphMapper mapper, ODBMSDataTypeHandler handler, OTeleporterContext context);

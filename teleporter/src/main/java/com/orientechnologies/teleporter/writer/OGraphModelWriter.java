@@ -53,7 +53,6 @@ public class OGraphModelWriter {
 
     this.orientdbTypeName2orientdbType.put("boolean",OType.BOOLEAN);
     this.orientdbTypeName2orientdbType.put("integer",OType.INTEGER);
-    this.orientdbTypeName2orientdbType.put("integer",OType.DECIMAL);
     this.orientdbTypeName2orientdbType.put("short",OType.SHORT);
     this.orientdbTypeName2orientdbType.put("long",OType.LONG);
     this.orientdbTypeName2orientdbType.put("float",OType.FLOAT);

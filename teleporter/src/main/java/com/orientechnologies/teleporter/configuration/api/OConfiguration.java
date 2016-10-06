@@ -54,4 +54,24 @@ public class OConfiguration {
     public void setConfiguredEdges(List<OConfiguredEdgeClass> configuredEdges) {
         this.configuredEdges = configuredEdges;
     }
+
+    public OConfiguredVertexClass getVertexClassByName(String vertexClassName) {
+
+        for(OConfiguredVertexClass currVertexClass: this.configuredVertices) {
+            if(currVertexClass.getName().equals(vertexClassName)) {
+                return currVertexClass;
+            }
+        }
+        return null;
+    }
+
+    public OConfiguredEdgeClass getEdgeClassByName(String edgeClassName) {
+
+        for(OConfiguredEdgeClass currEdgeClass: this.configuredEdges) {
+            if(currEdgeClass.getName().equals(edgeClassName)) {
+                return currEdgeClass;
+            }
+        }
+        return null;
+    }
 }

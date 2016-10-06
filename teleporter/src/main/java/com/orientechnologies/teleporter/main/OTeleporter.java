@@ -259,7 +259,7 @@ public class OTeleporter extends OServerPluginAbstract {
     String driverClassName = driverConfig.checkConfiguration(driver, context);
 
     // Building source object
-    OSourceDatabaseInfo sourceInfo = new OSourceDatabaseInfo("source1", driverClassName, jurl, username, password);
+    OSourceDatabaseInfo sourceInfo = new OSourceDatabaseInfo(driver, driverClassName, jurl, username, password);
 
     // DB Query engine building
     ODBQueryEngine dbQueryEngine = new ODBQueryEngine(sourceInfo.getDriverName(), context);

@@ -135,7 +135,7 @@ public class FilterTableMappingTest {
       includedTables.add("MANAGER");
       includedTables.add("EMPLOYEE");
 
-      this.mapper = new OER2GraphMapper(this.sourceDBInfo, includedTables, null, null);
+      this.mapper = new OER2GraphMapper(this.sourceDBInfo, includedTables, null, null, null);
       mapper.buildSourceDatabaseSchema(this.context);
       mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
 
@@ -524,7 +524,7 @@ public class FilterTableMappingTest {
       List<String> excludedTables = new ArrayList<String>();
       excludedTables.add("RESIDENCE");
 
-      this.mapper = new OER2GraphMapper(this.sourceDBInfo, null, excludedTables, null);
+      this.mapper = new OER2GraphMapper(this.sourceDBInfo, null, excludedTables, null, null);
       mapper.buildSourceDatabaseSchema(this.context);
       mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
 
@@ -915,7 +915,7 @@ public class FilterTableMappingTest {
       includedTables.add("MANAGER");
       includedTables.add("EMPLOYEE");
 
-      this.mapper = new OHibernate2GraphMapper(this.sourceDBInfo, FilterTableMappingTest.XML_TABLE_PER_CLASS, includedTables, null, null);
+      this.mapper = new OHibernate2GraphMapper(this.sourceDBInfo, FilterTableMappingTest.XML_TABLE_PER_CLASS, includedTables, null, null, null);
       mapper.buildSourceDatabaseSchema(this.context);
       mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
 
@@ -1688,7 +1688,7 @@ public class FilterTableMappingTest {
       includedTables.add("REGULAR_EMPLOYEE");
       includedTables.add("CONTRACT_EMPLOYEE");
 
-      this.mapper = new OHibernate2GraphMapper(this.sourceDBInfo, FilterTableMappingTest.XML_TABLE_PER_SUBCLASS1, includedTables, null, null);
+      this.mapper = new OHibernate2GraphMapper(this.sourceDBInfo, FilterTableMappingTest.XML_TABLE_PER_SUBCLASS1, includedTables, null, null, null);
       mapper.buildSourceDatabaseSchema(this.context);
       mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
 
@@ -2462,7 +2462,7 @@ public class FilterTableMappingTest {
       List<String> excludedTables = new ArrayList<String>();
       excludedTables.add("RESIDENCE");
 
-      this.mapper = new OHibernate2GraphMapper(this.sourceDBInfo, FilterTableMappingTest.XML_TABLE_PER_SUBCLASS2, null, excludedTables, null);
+      this.mapper = new OHibernate2GraphMapper(this.sourceDBInfo, FilterTableMappingTest.XML_TABLE_PER_SUBCLASS2, null, excludedTables, null, null);
       mapper.buildSourceDatabaseSchema(this.context);
       mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
 
@@ -3243,7 +3243,7 @@ public class FilterTableMappingTest {
       includedTables.add("REGULAR_EMPLOYEE");
       includedTables.add("CONTRACT_EMPLOYEE");
 
-      this.mapper = new OHibernate2GraphMapper(this.sourceDBInfo, FilterTableMappingTest.XML_TABLE_PER_CONCRETE_CLASS, includedTables, null, null);
+      this.mapper = new OHibernate2GraphMapper(this.sourceDBInfo, FilterTableMappingTest.XML_TABLE_PER_CONCRETE_CLASS, includedTables, null, null, null);
       mapper.buildSourceDatabaseSchema(this.context);
       mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
 

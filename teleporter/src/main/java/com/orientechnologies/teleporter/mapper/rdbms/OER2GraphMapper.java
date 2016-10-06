@@ -73,7 +73,7 @@ public class OER2GraphMapper extends OSource2GraphMapper {
 
   public final int DEFAULT_CLASS_MAPPER_INDEX = 0;
 
-  public OER2GraphMapper (OSourceDatabaseInfo sourceDatabaseInfo, List<String> includedTables, List<String> excludedTables, ODocument configuration) {
+  public OER2GraphMapper (OSourceDatabaseInfo sourceDatabaseInfo, List<String> includedTables, List<String> excludedTables, ODocument configuration, OConfigurationHandler configHandler) {
 
     this.sourceDBInfo = sourceDatabaseInfo;
 
@@ -102,7 +102,7 @@ public class OER2GraphMapper extends OSource2GraphMapper {
     this.dataBaseSchema = new ODataBaseSchema();
     this.graphModel = new OGraphModel();
 
-    this.parser = new OConfigurationHandler();
+    this.parser = configHandler;
 
   }
 
@@ -609,8 +609,10 @@ public class OER2GraphMapper extends OSource2GraphMapper {
       Map<String,String> attribute2property = new LinkedHashMap<String,String>();   // map to maintain the mapping between the attributes of the current entity and the properties of the correspondent vertex type
       Map<String,String> property2attribute = new LinkedHashMap<String,String>();   // map to maintain the mapping between the properties of the current vertex type and the attributes of the correspondent entity
       for(OAttribute currentAttribute: currentEntity.getAttributes()) {
+        String orientdbDataType = context.getDataTypeHandler().resolveType(currentAttribute.getDataType().toLowerCase(Locale.ENGLISH), context).toString();
         OModelProperty currentProperty = new OModelProperty(nameResolver.resolveVertexProperty(currentAttribute.getName()), currentAttribute.getOrdinalPosition(),
                 currentAttribute.getDataType(), currentEntity.getPrimaryKey().getInvolvedAttributes().contains(currentAttribute), currentVertexType);
+        currentProperty.setOrientdbType(orientdbDataType);
         currentVertexType.getProperties().add(currentProperty);
 
         attribute2property.put(currentAttribute.getName(), currentProperty.getName());
@@ -768,7 +770,7 @@ public class OER2GraphMapper extends OSource2GraphMapper {
 
     if(this.jsonConfiguration != null) {
 
-      OConfiguration configuration = this.parser.buildConfigurationFromJSON(this.jsonConfiguration, context);
+      OConfiguration configuration = this.parser.buildConfigurationFromJSONDoc(this.jsonConfiguration, context);
 
     /*
      * Adding/updating classes according to the manual jsonConfiguration
@@ -1417,7 +1419,7 @@ public class OER2GraphMapper extends OSource2GraphMapper {
         else
           edgeType = currentVertexType.getName();
 
-        OEdgeType newAggregatorEdge = new OEdgeType(edgeType, null, inVertexType);
+        OEdgeType newAggregatorEdge = new OEdgeType(edgeType, outVertexType, inVertexType);
 
         int position = 1;
         // adding to the edge all properties not belonging to the primary key
@@ -1426,6 +1428,7 @@ public class OER2GraphMapper extends OSource2GraphMapper {
           // if property does not belong to the primary key add it to the aggregator edge
           if(!currentProperty.isFromPrimaryKey()) {
             OModelProperty newProperty = new OModelProperty(currentProperty.getName(), position, currentProperty.getOriginalType(), currentProperty.isFromPrimaryKey(), newAggregatorEdge);
+            newProperty.setOrientdbType(currentProperty.getOrientdbType());
             if(currentProperty.isMandatory() != null)
               newProperty.setMandatory(currentProperty.isMandatory());
             if(currentProperty.isReadOnly() != null)
@@ -1441,6 +1444,7 @@ public class OER2GraphMapper extends OSource2GraphMapper {
         for(OModelProperty currentProperty: currentOutEdge1.getProperties()) {
           if(newAggregatorEdge.getPropertyByName(currentProperty.getName()) == null) {
             OModelProperty newProperty = new OModelProperty(currentProperty.getName(), position, currentProperty.getOriginalType(), currentProperty.isFromPrimaryKey(), newAggregatorEdge);
+            newProperty.setOrientdbType(currentProperty.getOrientdbType());
             if(currentProperty.isMandatory() != null)
               newProperty.setMandatory(currentProperty.isMandatory());
             if(currentProperty.isReadOnly() != null)
@@ -1454,6 +1458,7 @@ public class OER2GraphMapper extends OSource2GraphMapper {
         for(OModelProperty currentProperty: currentOutEdge2.getProperties()) {
           if(newAggregatorEdge.getPropertyByName(currentProperty.getName()) == null) {
             OModelProperty newProperty = new OModelProperty(currentProperty.getName(), position, currentProperty.getOriginalType(), currentProperty.isFromPrimaryKey(), newAggregatorEdge);
+            newProperty.setOrientdbType(currentProperty.getOrientdbType());
             if(currentProperty.isMandatory() != null)
               newProperty.setMandatory(currentProperty.isMandatory());
             if(currentProperty.isReadOnly() != null)

@@ -22,7 +22,7 @@
       "properties": {
         "extKey1": {
           "include": true,
-          "type": "string",
+          "type": "STRING",
           "mandatory": false,
           "readOnly": false,
           "notNull": false,
@@ -34,7 +34,7 @@
         },
         "firstName": {
           "include": true,
-          "type": "string",
+          "type": "STRING",
           "mandatory": true,
           "readOnly": false,
           "notNull": true,
@@ -46,7 +46,7 @@
         },
         "lastName": {
           "include": true,
-          "type": "string",
+          "type": "STRING",
           "mandatory": true,
           "readOnly": false,
           "notNull": true,
@@ -58,7 +58,7 @@
         },
         "depId": {
           "include": false,
-          "type": "string",
+          "type": "STRING",
           "mandatory": false,
           "readOnly": false,
           "notNull": false,
@@ -70,7 +70,7 @@
         },
         "extKey2": {
           "include": true,
-          "type": "string",
+          "type": "STRING",
           "mandatory": false,
           "readOnly": false,
           "notNull": false,
@@ -82,7 +82,7 @@
         },
         "VAT": {
           "include": true,
-          "type": "string",
+          "type": "STRING",
           "mandatory": true,
           "readOnly": false,
           "notNull": true,
@@ -94,7 +94,7 @@
         },
         "updatedOn": {
           "include": false,
-          "type": "date",
+          "type": "DATE",
           "mandatory": true,
           "readOnly": false,
           "notNull": true,
@@ -120,7 +120,7 @@
       "properties": {
         "id": {
           "include": true,
-          "type": "string",
+          "type": "STRING",
           "mandatory": false,
           "readOnly": false,
           "notNull": false,
@@ -132,7 +132,7 @@
         },
         "departmentName": {
           "include": true,
-          "type": "string",
+          "type": "STRING",
           "mandatory": true,
           "readOnly": false,
           "notNull": true,
@@ -144,7 +144,7 @@
         },
         "location": {
           "include": true,
-          "type": "string",
+          "type": "STRING",
           "mandatory": true,
           "readOnly": false,
           "notNull": true,
@@ -156,7 +156,7 @@
         },
         "updatedOn": {
           "include": false,
-          "type": "date",
+          "type": "DATE",
           "mandatory": true,
           "readOnly": false,
           "notNull": true,
@@ -182,7 +182,7 @@
         "properties": {
           "since": {
             "include": true,
-            "type": "date",
+            "type": "DATE",
             "mandatory": true,
             "readOnly": false,
             "notNull": false

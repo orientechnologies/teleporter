@@ -293,6 +293,7 @@ public class HibernateImportTest {
         assertEquals("E002", v.getProperty("id"));
         assertEquals("Andrew Brown", v.getProperty("name"));
         assertEquals("R001", v.getProperty("residence"));
+        Object o = v.getProperty("salary");
         assertEquals("1000.00", v.getProperty("salary").toString());
         assertEquals("10", v.getProperty("bonus").toString());
         assertNull(v.getProperty("payPerHour"));

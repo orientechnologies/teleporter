@@ -16,8 +16,8 @@
       }],
       "properties": {
         "year": {
+          "include": true,
           "type": "DATE",
-          "value": "$from.date",
           "mandatory": true,
           "readOnly": false,
           "notNull": false

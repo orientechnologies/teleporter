@@ -742,7 +742,10 @@ public class OGraphEngineForDB {
       for(OModelProperty currentProperty: edgeType.getAllProperties()) {
 
         String currentPropertyName = currentProperty.getName();
-        String currentPropertyType = context.getDataTypeHandler().resolveType(currentProperty.getOriginalType().toLowerCase(Locale.ENGLISH),context).toString();
+        String currentPropertyType = currentProperty.getOrientdbType();
+        if(currentProperty.getOrientdbType() == null) { // superfluous ?!
+          currentPropertyType = context.getDataTypeHandler().resolveType(currentProperty.getOriginalType().toLowerCase(Locale.ENGLISH), context).toString();
+        }
         String currentOriginalType = currentProperty.getOriginalType();
         OVertexType joinVertexType = this.mapper.getJoinVertexTypeByAggregatorEdge(edgeType.getName());
 

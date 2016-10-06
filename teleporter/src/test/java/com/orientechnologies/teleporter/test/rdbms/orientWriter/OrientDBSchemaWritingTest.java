@@ -100,7 +100,7 @@ public class OrientDBSchemaWritingTest {
           " AUTHOR_ID varchar(256) not null, primary key (ID), foreign key (AUTHOR_ID) references BOOK_AUTHOR(ID))";
       st.execute(foreignTableBuilding);
 
-      this.mapper = new OER2GraphMapper(this.sourceDBInfo, null, null, null);
+      this.mapper = new OER2GraphMapper(this.sourceDBInfo, null, null, null, null);
       mapper.buildSourceDatabaseSchema(this.context);
       mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
       modelWriter.writeModelOnOrient(mapper.getGraphModel(), new OHSQLDBDataTypeHandler(), this.outOrientGraphUri, context);
@@ -219,7 +219,7 @@ public class OrientDBSchemaWritingTest {
           " PRICE varchar(256) not null, primary key (ID), foreign key (BOOK_ID) references BOOK(ID))";
       st.execute(itemTableBuilding);
 
-      this.mapper = new OER2GraphMapper(this.sourceDBInfo, null, null, null);
+      this.mapper = new OER2GraphMapper(this.sourceDBInfo, null, null, null, null);
       mapper.buildSourceDatabaseSchema(this.context);
       mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
       modelWriter.writeModelOnOrient(mapper.getGraphModel(), new OHSQLDBDataTypeHandler(), this.outOrientGraphUri, context);
@@ -359,7 +359,7 @@ public class OrientDBSchemaWritingTest {
           " DATE  date, AUTHOR_ID varchar(256) not null, primary key (ID), foreign key (AUTHOR_ID) references AUTHOR(ID))";
       st.execute(articleTableBuilding);
 
-      this.mapper = new OER2GraphMapper(this.sourceDBInfo, null, null, null);
+      this.mapper = new OER2GraphMapper(this.sourceDBInfo, null, null, null, null);
       mapper.buildSourceDatabaseSchema(this.context);
       mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
       modelWriter.writeModelOnOrient(mapper.getGraphModel(), new OHSQLDBDataTypeHandler(), this.outOrientGraphUri, context);
@@ -497,7 +497,7 @@ public class OrientDBSchemaWritingTest {
           " foreign key (AUTHOR_NAME,AUTHOR_SURNAME) references AUTHOR(NAME,SURNAME))";
       st.execute(bookTableBuilding);
 
-      this.mapper = new OER2GraphMapper(this.sourceDBInfo, null, null, null);
+      this.mapper = new OER2GraphMapper(this.sourceDBInfo, null, null, null, null);
       mapper.buildSourceDatabaseSchema(this.context);
       mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
       modelWriter.writeModelOnOrient(mapper.getGraphModel(), new OHSQLDBDataTypeHandler(), this.outOrientGraphUri, context);
@@ -621,7 +621,7 @@ public class OrientDBSchemaWritingTest {
           " foreign key (ACTOR_ID) references ACTOR(ID))";
       st.execute(film2actorTableBuilding);
 
-      this.mapper = new OER2GraphMapper(this.sourceDBInfo, null, null, null);
+      this.mapper = new OER2GraphMapper(this.sourceDBInfo, null, null, null, null);
       mapper.buildSourceDatabaseSchema(this.context);
       mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
       modelWriter.writeModelOnOrient(mapper.getGraphModel(), new OHSQLDBDataTypeHandler(), this.outOrientGraphUri, context);
@@ -756,7 +756,7 @@ public class OrientDBSchemaWritingTest {
           " foreign key (PROJECT_MANAGER) references EMPLOYEE(EMP_ID))";
       st.execute(foreignTableBuilding);
 
-      this.mapper = new OER2GraphMapper(this.sourceDBInfo, null, null, null);
+      this.mapper = new OER2GraphMapper(this.sourceDBInfo, null, null, null, null);
       mapper.buildSourceDatabaseSchema(this.context);
       mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
       modelWriter.writeModelOnOrient(mapper.getGraphModel(), new OHSQLDBDataTypeHandler(), this.outOrientGraphUri, context);
@@ -879,7 +879,7 @@ public class OrientDBSchemaWritingTest {
           " DATE  date, AUTHOR_ID varchar(256) not null, primary key (ID), foreign key (AUTHOR_ID) references AUTHOR(ID))";
       st.execute(articleTableBuilding);
 
-      this.mapper = new OER2GraphMapper(this.sourceDBInfo, null, null, null);
+      this.mapper = new OER2GraphMapper(this.sourceDBInfo, null, null, null, null);
       mapper.buildSourceDatabaseSchema(this.context);
       mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
       modelWriter.writeModelOnOrient(mapper.getGraphModel(), new OHSQLDBDataTypeHandler(), this.outOrientGraphUri, context);
