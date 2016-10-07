@@ -51,7 +51,7 @@ public class OEntity implements Comparable<OEntity> {
   private boolean inheritedInRelationshipsRecovered;
   private Boolean isAggregable;
   private String directionOfN2NRepresentedRelationship;  // when the entity corresponds to an aggregable join table it's 'direct' by default (at the first invocation of 'isAggregableJoinTable()')
-  private String nameOfN2NRepresentedRelationship;      // we can have this parameter only in a join table and with the manual jsonConfiguration of its represented relationship
+  private String nameOfN2NRepresentedRelationship;      // we can have this parameter only in a join table and with the manual migrationConfigDoc of its represented relationship
   private OEntity parentEntity;
   private int inheritanceLevel;
   private OHierarchicalBag hierarchicalBag;

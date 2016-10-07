@@ -18,11 +18,13 @@
 
 package com.orientechnologies.teleporter.configuration.api;
 
+import com.orientechnologies.teleporter.model.dbschema.OEntity;
+
 import java.util.LinkedList;
 import java.util.List;
 
 /**
- * It collects all the information contained in the jsonConfiguration submitted by the user.
+ * It collects all the information contained in the migrationConfigDoc submitted by the user.
  *
  * @author Gabriele Ponzi
  * @email <gabriele.ponzi--at--gmail.com>
@@ -73,5 +75,39 @@ public class OConfiguration {
             }
         }
         return null;
+    }
+
+    public OConfiguredVertexClass getVertexByMappedEntities(List<OEntity> mappedEntities) {
+
+        for(OConfiguredVertexClass currConfiguredVertex: this.configuredVertices) {
+            boolean isTargetVertex = this.isTargetVertex(currConfiguredVertex, mappedEntities);
+
+            if(isTargetVertex) {
+                return currConfiguredVertex;
+            }
+        }
+        return null;
+    }
+
+    private boolean isTargetVertex(OConfiguredVertexClass currConfiguredVertex, List<OEntity> mappedEntities) {
+
+        List<OSourceTable> sourceTables = currConfiguredVertex.getMapping().getSourceTables();
+
+        for(OEntity currEntity: mappedEntities) {
+            String entityName = currEntity.getName();
+
+            boolean containsEntity = false;
+            for (OSourceTable sourceTable : sourceTables) {
+                if(sourceTable.getTableName().equals(entityName)) {
+                    containsEntity = true;
+                    break;
+                }
+            }
+            if(!containsEntity) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }

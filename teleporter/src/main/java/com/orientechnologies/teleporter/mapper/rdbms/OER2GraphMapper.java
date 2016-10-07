@@ -67,8 +67,9 @@ public class OER2GraphMapper extends OSource2GraphMapper {
   protected List<String> includedTables;
   protected List<String> excludedTables;
 
-  // supplementary jsonConfiguration
-  protected ODocument jsonConfiguration;
+  // supplementary migrationConfigDoc
+  protected ODocument migrationConfigDoc;
+  protected OConfiguration migrationConfig;
   protected OConfigurationHandler parser;
 
   public final int DEFAULT_CLASS_MAPPER_INDEX = 0;
@@ -96,7 +97,7 @@ public class OER2GraphMapper extends OSource2GraphMapper {
 
     else
       this.excludedTables = new ArrayList<String>();
-    this.jsonConfiguration = configuration;
+    this.migrationConfigDoc = configuration;
 
     // creating the two empty models
     this.dataBaseSchema = new ODataBaseSchema();
@@ -684,7 +685,7 @@ public class OER2GraphMapper extends OSource2GraphMapper {
           if(currentOutVertex != null && currentInVertex != null) {
 
             // check on the presence of the relationship in the map performed in order to avoid generating several edgeTypes for the same relationship.
-            // when the edge was built before from the jsonConfiguration and the relationship was inserted with that edgeType in the map, the relationships
+            // when the edge was built before from the migrationConfigDoc and the relationship was inserted with that edgeType in the map, the relationships
             // mustn't be analyzed at this point! CHANGE IT when you'll implement the pipeline
             if(!this.relationship2edgeType.containsKey(relationship)) {
 
@@ -761,26 +762,26 @@ public class OER2GraphMapper extends OSource2GraphMapper {
   /**
    * MACRO EXECUTION BLOCK: APPLY IMPORT CONFIGURATION
    * Builds the graph model and the rules for the mapping with the source database schema through 2 micro execution blocks:
-   *  - upsert Relationships according to the jsonConfiguration
+   *  - upsert Relationships according to the migrationConfigDoc
    *
    *  @param context
    */
 
   public void applyImportConfiguration(OTeleporterContext context) {
 
-    if(this.jsonConfiguration != null) {
+    if(this.migrationConfigDoc != null) {
 
-      OConfiguration configuration = this.parser.buildConfigurationFromJSONDoc(this.jsonConfiguration, context);
-
-    /*
-     * Adding/updating classes according to the manual jsonConfiguration
-     */
-      this.upsertClassesFromConfiguration(configuration, context);
+      this.migrationConfig = this.parser.buildConfigurationFromJSONDoc(this.migrationConfigDoc, context);
 
     /*
-     * Adding/updating relationships according to the manual jsonConfiguration
+     * Adding/updating classes according to the manual migrationConfigDoc
      */
-      this.upsertRelationshipsFromConfiguration(configuration, context);
+      this.upsertClassesFromConfiguration(context);
+
+    /*
+     * Adding/updating relationships according to the manual migrationConfigDoc
+     */
+      this.upsertRelationshipsFromConfiguration(context);
     }
   }
 
@@ -788,16 +789,15 @@ public class OER2GraphMapper extends OSource2GraphMapper {
   /**
    * MICRO EXECUTION BLOCK: APPLY IMPORT CONFIGURATION - UPSERT CLASSES' MAPPING FROM CONFIGURATION
    * Builds the Vertex Types starting from the Entities in the source database schema.
-   * Adds and/or updates Vertex Types and Entities in the source database schema according to the manual jsonConfiguration passed to Teleporter.
+   * Adds and/or updates Vertex Types and Entities in the source database schema according to the manual migrationConfigDoc passed to Teleporter.
    *
-   * @param configuration
    * @param context
    */
 
-  private void upsertClassesFromConfiguration(OConfiguration configuration, OTeleporterContext context) {
+  private void upsertClassesFromConfiguration(OTeleporterContext context) {
 
     OTeleporterStatistics statistics = context.getStatistics();
-    List<OConfiguredVertexClass> configuredVertices = configuration.getConfiguredVertices();
+    List<OConfiguredVertexClass> configuredVertices = this.migrationConfig.getConfiguredVertices();
 
     // building the current-in-vertex and the current-out-vertex and adding the edge to them
     ONameResolver nameResolver = context.getNameResolver();
@@ -819,7 +819,7 @@ public class OER2GraphMapper extends OSource2GraphMapper {
         String sourceTableName = sourceId2tableName.entrySet().iterator().next().getValue();
         OClassMapper currentClassMapper = this.entity2classMappers.get(this.dataBaseSchema.getEntityByName(sourceTableName)).get(0);
 
-        // updating vertex and table mapping according to the jsonConfiguration
+        // updating vertex and table mapping according to the migrationConfigDoc
         OVertexType currentVertexType = currentClassMapper.getVertexType();
         currentVertexType.setName(currentConfiguredVertexClass.getName());
 
@@ -860,28 +860,6 @@ public class OER2GraphMapper extends OSource2GraphMapper {
 
       // aggregation case
       else if(sourceId2tableName.size() > 1) {
-
-        String[][] columns = new String[sourceTables.size()][sourceTables.get(0).getAggregationColumns().size()];
-        int j = 0;
-        for (OSourceTable currentSourceTable : sourceTables) {
-          List<String> aggregationColumns = currentSourceTable.getAggregationColumns();
-
-          if (aggregationColumns != null) {
-            int k = 0;
-            for (String attribute : aggregationColumns) {
-              columns[j][k] = attribute;
-              k++;
-            }
-          }
-          j++;
-        }
-
-        if (aggregationFunction != null) {
-          context.setAggregationFunction(aggregationFunction);
-        }
-        if (columns[0][0] != null) {
-          context.setColumns(columns);
-        }
 
         List<OVertexType> verticesToMerge = new LinkedList<OVertexType>();
         OVertexType newAggregatedVertexType = new OVertexType(currentConfiguredVertexClass.getName());
@@ -1055,15 +1033,14 @@ public class OER2GraphMapper extends OSource2GraphMapper {
   /**
    * MICRO EXECUTION BLOCK: APPLY IMPORT CONFIGURATION - UPSERT RELATIONSHIPS FROM CONFIGURATION
    * Builds the Edge Types starting from the Relationships in the source database schema.
-   * Adds and/or updates Relationships in the source database schema according to the manual jsonConfiguration passed to Teleporter.
+   * Adds and/or updates Relationships in the source database schema according to the manual migrationConfigDoc passed to Teleporter.
    *
-   * @param configuration
    * @param context
    */
 
-  private void upsertRelationshipsFromConfiguration(OConfiguration configuration, OTeleporterContext context) {
+  private void upsertRelationshipsFromConfiguration(OTeleporterContext context) {
 
-    List<OConfiguredEdgeClass> configuredEdges = configuration.getConfiguredEdges();
+    List<OConfiguredEdgeClass> configuredEdges = this.migrationConfig.getConfiguredEdges();
 
     // building the current-in-vertex and the current-out-vertex and adding the edge to them
     ONameResolver nameResolver = context.getNameResolver();
@@ -1081,7 +1058,7 @@ public class OER2GraphMapper extends OSource2GraphMapper {
         List<String> toColumns = edgeMapping.getToColumns();
         OAggregatedJoinTableMapping joinTableMapping = edgeMapping.getRepresentedJoinTableMapping();
 
-        // jsonConfiguration errors managing (draconian approach)
+        // migrationConfigDoc errors managing (draconian approach)
         if (currentForeignEntityName == null) {
           context.getOutputManager().error("Configuration error: 'fromTable' field not found in the '%s' edge-type definition.", edgeName);
           throw new OTeleporterRuntimeException();
@@ -1148,7 +1125,7 @@ public class OER2GraphMapper extends OSource2GraphMapper {
             correspondentVertexType.setIsFromJoinTable(true);
 
           } else if (context.getExecutionStrategy().equals("naive")) {
-            context.getOutputManager().error("Configuration not compliant with the chosen strategy: you cannot perform the aggregation declared in the jsonConfiguration for the "
+            context.getOutputManager().error("Configuration not compliant with the chosen strategy: you cannot perform the aggregation declared in the migrationConfigDoc for the "
                     + "join table %s while executing migration with a not-aggregating strategy. Thus no aggregation will be performed.\n", joinTableName);
             throw new OTeleporterRuntimeException();
           }
@@ -1697,12 +1674,20 @@ public class OER2GraphMapper extends OSource2GraphMapper {
     this.excludedTables = excludedTables;
   }
 
-  public ODocument getJsonConfiguration() {
-    return this.jsonConfiguration;
+  public ODocument getMigrationConfigDoc() {
+    return this.migrationConfigDoc;
   }
 
-  public void setJsonConfiguration(ODocument jsonConfiguration) {
-    this.jsonConfiguration = jsonConfiguration;
+  public void setMigrationConfigDoc(ODocument migrationConfigDoc) {
+    this.migrationConfigDoc = migrationConfigDoc;
+  }
+
+  public OConfiguration getMigrationConfig() {
+    return this.migrationConfig;
+  }
+
+  public void setMigrationConfig(OConfiguration migrationConfig) {
+    this.migrationConfig = migrationConfig;
   }
 
   public boolean isTableAllowed(String tableName) {

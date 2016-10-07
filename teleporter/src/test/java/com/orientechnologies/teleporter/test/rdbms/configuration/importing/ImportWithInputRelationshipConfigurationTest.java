@@ -391,7 +391,7 @@ public class ImportWithInputRelationshipConfigurationTest {
   @Test
 
   /*
-   *  Two tables: 2 relationships declared through foreign keys but the first one is overridden through a jsonConfiguration.
+   *  Two tables: 2 relationships declared through foreign keys but the first one is overridden through a migrationConfigDoc.
    *  Changes on the final edge:
    *  - name
    *  - direction inverted
@@ -405,7 +405,7 @@ public class ImportWithInputRelationshipConfigurationTest {
    *  EMPLOYEE --[HasProject]--> PROJECT
    *  PROJECT --[HasProjectManager]--> EMPLOYEE
    *
-   *  But through jsonConfiguration we obtain:
+   *  But through migrationConfigDoc we obtain:
    *
    *  PROJECT --[HasEmployee]--> EMPLOYEE
    *  PROJECT --[HasProjectManager]--> EMPLOYEE
@@ -715,14 +715,14 @@ public class ImportWithInputRelationshipConfigurationTest {
 
   /*
    *  Three tables: 1  N-N relationship, no foreign keys declared for the join table in the db.
-   *  Through the jsonConfiguration we obtain the following schema:
+   *  Through the migrationConfigDoc we obtain the following schema:
    *
    *  ACTOR
    *  FILM
    *  ACTOR2FILM: foreign key (ACTOR_ID) references ACTOR(ID)
    *              foreign key (FILM_ID) references FILM(ID)
    *
-   *  With "direct" direction in the jsonConfiguration we obtain:
+   *  With "direct" direction in the migrationConfigDoc we obtain:
    *
    *  ACTOR --[Performs]--> FILM
    *
@@ -1119,14 +1119,14 @@ public class ImportWithInputRelationshipConfigurationTest {
 
   /*
    *  Three tables: 1  N-N relationship, no foreign keys declared for the join table in the db.
-   *  Through the jsonConfiguration we obtain the following schema:
+   *  Through the migrationConfigDoc we obtain the following schema:
    *
    *  ACTOR
    *  FILM
    *  ACTOR2FILM: foreign key (ACTOR_ID) references ACTOR(ID)
    *              foreign key (FILM_ID) references FILM(ID)
    *
-   *  With "direct" direction in the jsonConfiguration we would obtain:
+   *  With "direct" direction in the migrationConfigDoc we would obtain:
    *
    *  FILM --[Performs]--> ACTOR
    *
@@ -1530,8 +1530,8 @@ public class ImportWithInputRelationshipConfigurationTest {
    *  ACTOR2FILM: foreign key (ACTOR_ID) references ACTOR(ID)
    *              foreign key (FILM_ID) references FILM(ID)
    *
-   *  Through the jsonConfiguration we want name the relationship "Performs".
-   *  With "direct" direction in the jsonConfiguration we obtain:
+   *  Through the migrationConfigDoc we want name the relationship "Performs".
+   *  With "direct" direction in the migrationConfigDoc we obtain:
    *
    *  ACTOR --[Performs]--> FILM
    *
@@ -1933,8 +1933,8 @@ public class ImportWithInputRelationshipConfigurationTest {
    *  ACTOR2FILM: foreign key (ACTOR_ID) references ACTOR(ID)
    *              foreign key (FILM_ID) references FILM(ID)
    *
-   *  Through the jsonConfiguration we want name the relationship "Performs".
-   *  With "direct" direction in the jsonConfiguration we would obtain:
+   *  Through the migrationConfigDoc we want name the relationship "Performs".
+   *  With "direct" direction in the migrationConfigDoc we would obtain:
    *
    *  ACTOR --[Features]--> FILM
    *

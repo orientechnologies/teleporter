@@ -24,7 +24,6 @@ import com.orientechnologies.teleporter.importengine.rdbms.dbengine.ODBQueryEngi
 import com.orientechnologies.teleporter.model.dbschema.OSourceDatabaseInfo;
 import com.orientechnologies.teleporter.nameresolver.OJavaConventionNameResolver;
 import com.orientechnologies.teleporter.persistence.handler.OHSQLDBDataTypeHandler;
-import com.orientechnologies.teleporter.strategy.rdbms.ODBMSNaiveAggregationStrategy;
 import com.orientechnologies.teleporter.strategy.rdbms.ODBMSNaiveStrategy;
 import com.orientechnologies.teleporter.util.OFileManager;
 import com.tinkerpop.blueprints.Direction;
@@ -32,7 +31,6 @@ import com.tinkerpop.blueprints.Edge;
 import com.tinkerpop.blueprints.Vertex;
 import com.tinkerpop.blueprints.impls.orient.OrientGraphNoTx;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.sql.Connection;
@@ -41,7 +39,6 @@ import java.sql.Statement;
 import java.util.Iterator;
 
 import static org.junit.Assert.*;
-import static org.junit.Assert.fail;
 
 /**
  * @author Gabriele Ponzi

@@ -20,6 +20,8 @@ package com.orientechnologies.teleporter.strategy.rdbms;
 
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.teleporter.configuration.OConfigurationHandler;
+import com.orientechnologies.teleporter.configuration.api.OConfiguredVertexClass;
+import com.orientechnologies.teleporter.configuration.api.OSourceTable;
 import com.orientechnologies.teleporter.context.OTeleporterContext;
 import com.orientechnologies.teleporter.context.OTeleporterStatistics;
 import com.orientechnologies.teleporter.exception.OTeleporterRuntimeException;
@@ -60,7 +62,7 @@ public abstract class ODBMSImportStrategy implements OWorkflowStrategy {
 
   @Override
   public void executeStrategy(OSourceInfo sourceInfo, String outOrientGraphUri, String chosenMapper, String xmlPath, String nameResolverConvention,
-                              List<String> includedTables, List<String> excludedTables, String configurationPath, OTeleporterContext context) {
+                              List<String> includedTables, List<String> excludedTables, String migrationConfigPath, OTeleporterContext context) {
 
     OSourceDatabaseInfo sourceDBInfo = (OSourceDatabaseInfo) sourceInfo;
     Date globalStart = new Date();
@@ -78,7 +80,7 @@ public abstract class ODBMSImportStrategy implements OWorkflowStrategy {
 
     // manage conf if present: loading
     OJSONConfigurationManager confManager = new OJSONConfigurationManager();
-    ODocument config = confManager.loadConfiguration(outOrientGraphUri, configurationPath, context);
+    ODocument config = confManager.loadMigrationConfig(outOrientGraphUri, migrationConfigPath, context);
 
     this.mapper = this.createSchemaMapper(sourceDBInfo, outOrientGraphUri, chosenMapper, xmlPath, nameResolver, handler,
             includedTables, excludedTables, config, configHandler, context);
@@ -100,12 +102,12 @@ public abstract class ODBMSImportStrategy implements OWorkflowStrategy {
 
   public abstract OER2GraphMapper createSchemaMapper(OSourceDatabaseInfo sourceDBInfo, String outOrientGraphUri, String chosenMapper,
       String xmlPath, ONameResolver nameResolver, ODBMSDataTypeHandler handler, List<String> includedTables, List<String> excludedTables,
-      ODocument config, OConfigurationHandler configHandler, OTeleporterContext context);
+      ODocument migrationConfig, OConfigurationHandler configHandler, OTeleporterContext context);
 
 
   public abstract void executeImport(OSourceDatabaseInfo sourceDBInfo, String outOrientGraphUri, OSource2GraphMapper mapper, ODBMSDataTypeHandler handler, OTeleporterContext context);
 
-  protected void importRecordsIntoVertexClass(List<OEntity> mappedEntities, OVertexType currentOutVertexType, ODBQueryEngine dbQueryEngine, OGraphEngineForDB graphEngine, OrientBaseGraph orientGraph, OTeleporterContext context) throws SQLException {
+  protected void importRecordsIntoVertexClass(List<OEntity> mappedEntities, String[][] aggregationColumns, OVertexType currentOutVertexType, ODBQueryEngine dbQueryEngine, OGraphEngineForDB graphEngine, OrientBaseGraph orientGraph, OTeleporterContext context) throws SQLException {
 
     OTeleporterStatistics statistics = context.getStatistics();
     OQueryResult queryResult;
@@ -118,8 +120,7 @@ public abstract class ODBMSImportStrategy implements OWorkflowStrategy {
       queryResult = dbQueryEngine.getRecordsByEntity(mappedEntities.get(0), context);
     }
     else {
-      String[][] columns = context.getColumns();
-      queryResult = dbQueryEngine.getRecordsFromMultipleEntities(mappedEntities, columns, context);
+      queryResult = dbQueryEngine.getRecordsFromMultipleEntities(mappedEntities, aggregationColumns, context);
     }
 
     //if (handler.geospatialImplemented && super.hasGeospatialAttributes(entity, handler)) {
@@ -802,5 +803,25 @@ public abstract class ODBMSImportStrategy implements OWorkflowStrategy {
     return false;
   }
 
+  protected String[][] buildAggregationColumnsFromAggregatedVertex(OConfiguredVertexClass configuredVertex) {
+
+    String[][] columns;
+    List<OSourceTable> sourceTables = configuredVertex.getMapping().getSourceTables();
+    columns = new String[sourceTables.size()][sourceTables.get(0).getAggregationColumns().size()];
+    int j = 0;
+    for (OSourceTable currentSourceTable : sourceTables) {
+      List<String> aggregationColumns = currentSourceTable.getAggregationColumns();
+
+      if (aggregationColumns != null) {
+        int k = 0;
+        for (String attribute : aggregationColumns) {
+          columns[j][k] = attribute;
+          k++;
+        }
+      }
+      j++;
+    }
+    return columns;
+  }
 
 }

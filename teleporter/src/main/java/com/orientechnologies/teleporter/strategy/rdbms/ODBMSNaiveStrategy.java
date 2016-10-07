@@ -21,6 +21,8 @@ package com.orientechnologies.teleporter.strategy.rdbms;
 import com.orientechnologies.orient.core.intent.OIntentMassiveInsert;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.teleporter.configuration.OConfigurationHandler;
+import com.orientechnologies.teleporter.configuration.api.OConfiguredVertexClass;
+import com.orientechnologies.teleporter.configuration.api.OSourceTable;
 import com.orientechnologies.teleporter.context.OTeleporterContext;
 import com.orientechnologies.teleporter.context.OTeleporterStatistics;
 import com.orientechnologies.teleporter.exception.OTeleporterRuntimeException;
@@ -65,11 +67,11 @@ public class ODBMSNaiveStrategy extends ODBMSImportStrategy {
 
 
   public OER2GraphMapper createSchemaMapper(OSourceDatabaseInfo sourceDBInfo, String outOrientGraphUri, String chosenMapper, String xmlPath, ONameResolver nameResolver,
-                                            ODBMSDataTypeHandler handler, List<String> includedTables, List<String> excludedTables, ODocument config,
+                                            ODBMSDataTypeHandler handler, List<String> includedTables, List<String> excludedTables, ODocument migrationConfig,
                                             OConfigurationHandler configHandler, OTeleporterContext context) {
 
     OMapperFactory mapperFactory = new OMapperFactory();
-    OER2GraphMapper mapper = (OER2GraphMapper) mapperFactory.buildMapper(chosenMapper, sourceDBInfo, xmlPath, includedTables, excludedTables, config, configHandler, context);
+    OER2GraphMapper mapper = (OER2GraphMapper) mapperFactory.buildMapper(chosenMapper, sourceDBInfo, xmlPath, includedTables, excludedTables, migrationConfig, configHandler, context);
 
     // Step 1: DataBase schema building
     mapper.buildSourceDatabaseSchema(context);
@@ -83,7 +85,7 @@ public class ODBMSNaiveStrategy extends ODBMSImportStrategy {
     context.getOutputManager().info("\n");
     context.getOutputManager().debug("\n%s\n", mapper.getGraphModel().toString());
 
-    // Step 3: eventual jsonConfiguration applying
+    // Step 3: eventual migrationConfigDoc applying
     mapper.applyImportConfiguration(context);
 
     // Step 4: Writing schema on OrientDB
@@ -144,7 +146,16 @@ public class ODBMSNaiveStrategy extends ODBMSImportStrategy {
         }
 
         if (allEntitiesNotBelongingToHierarchies) {
-          super.importRecordsIntoVertexClass(mappedEntities, currentOutVertexType, dbQueryEngine, graphEngine, orientGraph, context);
+
+          String aggregationColumns[][] = null;
+
+          //  classes' aggregation case
+          if(mappedEntities.size() > 1) {
+            OConfiguredVertexClass configuredVertex = mapper.getMigrationConfig().getVertexByMappedEntities(mappedEntities);
+            aggregationColumns = super.buildAggregationColumnsFromAggregatedVertex(configuredVertex);
+          }
+
+          super.importRecordsIntoVertexClass(mappedEntities, aggregationColumns, currentOutVertexType, dbQueryEngine, graphEngine, orientGraph, context);
         }
       }
 
@@ -161,7 +172,5 @@ public class ODBMSNaiveStrategy extends ODBMSImportStrategy {
       context.printExceptionStackTrace(e, "debug");
     }
   }
-
-
 
 }

@@ -120,13 +120,13 @@ public class OConfigurationHandlerTest {
         assertNotNull(personSourceTable);
         assertNotNull(vatProfileSourceTable);
         assertEquals("sourceTable1", personSourceTable.getSourceIdName());
-        assertEquals("mysql", personSourceTable.getDataSource());
+        assertEquals("hsqldb", personSourceTable.getDataSource());
         assertEquals("PERSON", personSourceTable.getTableName());
         assertNotNull(personSourceTable.getAggregationColumns());
         assertEquals(1, personSourceTable.getAggregationColumns().size());
         assertEquals("ID", personSourceTable.getAggregationColumns().get(0));
         assertEquals("sourceTable2", vatProfileSourceTable.getSourceIdName());
-        assertEquals("mysql", vatProfileSourceTable.getDataSource());
+        assertEquals("hsqldb", vatProfileSourceTable.getDataSource());
         assertEquals("VAT_PROFILE", vatProfileSourceTable.getTableName());
         assertNotNull(vatProfileSourceTable.getAggregationColumns());
         assertEquals(1, vatProfileSourceTable.getAggregationColumns().size());

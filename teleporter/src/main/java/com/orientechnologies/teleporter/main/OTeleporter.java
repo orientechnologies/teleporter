@@ -232,13 +232,13 @@ public class OTeleporter extends OServerPluginAbstract {
    *          the level of the logging messages that will be printed on the OutputStream during the execution
    * @param excludedTables
    * @param includedTables
-   * @param configurationPath
+   * @param migrationConfigPath
    * @throws OTeleporterIOException
    */
 
   public static void execute(String driver, String jurl, String username, String password, String outDbUrl, String chosenStrategy,
       String chosenMapper, String xmlPath, String nameResolver, String outputLevel, List<String> includedTables,
-      List<String> excludedTables, String configurationPath, OOutputStreamManager outputManager) throws OTeleporterIOException {
+      List<String> excludedTables, String migrationConfigPath, OOutputStreamManager outputManager) throws OTeleporterIOException {
 
     // Disabling query scan threshold tip
     OGlobalConfiguration.QUERY_SCAN_THRESHOLD_TIP.setValue(-1);
@@ -254,7 +254,7 @@ public class OTeleporter extends OServerPluginAbstract {
     OProgressMonitor progressMonitor = new OProgressMonitor(context);
     progressMonitor.initialize();
 
-    // JDBC Driver jsonConfiguration and driver class name fetching
+    // JDBC Driver migrationConfigDoc and driver class name fetching
     ODriverConfigurator driverConfig = new ODriverConfigurator();
     String driverClassName = driverConfig.checkConfiguration(driver, context);
 
@@ -279,7 +279,7 @@ public class OTeleporter extends OServerPluginAbstract {
       }, 0, 1000);
 
       // the last argument represents the nameResolver
-      strategy.executeStrategy(sourceInfo, outDbUrl, chosenMapper, xmlPath, nameResolver, includedTables, excludedTables, configurationPath, context);
+      strategy.executeStrategy(sourceInfo, outDbUrl, chosenMapper, xmlPath, nameResolver, includedTables, excludedTables, migrationConfigPath, context);
 
       // Disabling query scan threshold tip
       OGlobalConfiguration.QUERY_SCAN_THRESHOLD_TIP.setValue(50000);

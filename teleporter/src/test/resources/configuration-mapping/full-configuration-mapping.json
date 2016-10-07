@@ -6,13 +6,13 @@
         "sourceTables": [
           {
             "name": "sourceTable1",
-            "dataSource": "mysql",
+            "dataSource": "hsqldb",
             "tableName": "PERSON",
             "aggregationColumns" : ["ID"]
           },
           {
             "name": "sourceTable2",
-            "dataSource": "mysql",
+            "dataSource": "hsqldb",
             "tableName": "VAT_PROFILE",
             "aggregationColumns" : ["ID"]
           }

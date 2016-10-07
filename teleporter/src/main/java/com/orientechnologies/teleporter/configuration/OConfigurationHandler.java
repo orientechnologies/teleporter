@@ -65,10 +65,10 @@ public class OConfigurationHandler {
 
         OConfiguration configuration = new OConfiguration();
 
-        // parsing vertices' jsonConfiguration
+        // parsing vertices' migrationConfigDoc
         this.buildConfiguredVertices(jsonConfiguration, configuration, context);
 
-        // parsing edges' jsonConfiguration
+        // parsing edges' migrationConfigDoc
         this.buildConfiguredEdges(jsonConfiguration, configuration, context);
 
         return configuration;
@@ -214,7 +214,7 @@ public class OConfigurationHandler {
 
                 ODocument joinTableDoc = mappingDoc.field("joinTable");
 
-                // jsonConfiguration errors managing (draconian approach)
+                // migrationConfigDoc errors managing (draconian approach)
                 if (currentForeignEntityName == null) {
                     context.getOutputManager().error("Configuration error: 'fromTable' field not found in the '%s' edge-type mapping.", configuredEdgeClassName);
                     throw new OTeleporterRuntimeException();
@@ -269,13 +269,13 @@ public class OConfigurationHandler {
                         joinTableMapping.setFromColumns(joinTableFromColumns);
                         joinTableMapping.setToColumns(joinTableToColumns);
                     } else if (context.getExecutionStrategy().equals("naive")) {
-                        context.getOutputManager().error("Configuration not compliant with the chosen strategy: you cannot perform the aggregation declared in the jsonConfiguration for the "
+                        context.getOutputManager().error("Configuration not compliant with the chosen strategy: you cannot perform the aggregation declared in the migrationConfigDoc for the "
                                 + "join table %s while executing migration with a not-aggregating strategy. Thus no aggregation will be performed.\n", joinTableName);
                         throw new OTeleporterRuntimeException();
                     }
                 }
 
-                // Updating edge's jsonConfiguration
+                // Updating edge's migrationConfigDoc
                 currentMapping.setFromTableName(currentForeignEntityName);
                 currentMapping.setToTableName(currentParentEntityName);
                 currentMapping.setFromColumns(fromColumns);

@@ -38,7 +38,7 @@ import java.util.Map;
 
 
 /**
- * Executes an automatic jsonConfiguration of the chosen driver JDBC.
+ * Executes an automatic migrationConfigDoc of the chosen driver JDBC.
  *
  * @author Gabriele Ponzi
  * @email <gabriele.ponzi--at--gmail.com>
@@ -202,7 +202,7 @@ public class ODriverConfigurator {
           // read json from the file in the ORIENTDB_HOME/config path
           is = new FileInputStream(new File(this.localJsonPath));
         } catch (IOException e2) {
-          String mess = "The jdbc-drivers jsonConfiguration cannot be found. The connection to orientdb.com did not succeed and the jsonConfiguration file \"jdbc-drivers.json\" is not present in ORIENTDB_HOME/config.\n";
+          String mess = "The jdbc-drivers migrationConfigDoc cannot be found. The connection to orientdb.com did not succeed and the migrationConfigDoc file \"jdbc-drivers.json\" is not present in ORIENTDB_HOME/config.\n";
           context.printExceptionMessage(e2, mess, "error");
           context.printExceptionStackTrace(e2, "error");
           throw new OTeleporterRuntimeException(e2);

@@ -37,7 +37,7 @@ import java.util.*;
 
 /**
  * Extends OER2GraphMapper thus manages the source DB schema and the destination graph model with their correspondences.
- * Unlike the superclass, this class builds the source DB schema starting from Hibernate's XML jsonConfiguration file.
+ * Unlike the superclass, this class builds the source DB schema starting from Hibernate's XML migrationConfigDoc file.
  * 
  * @author Gabriele Ponzi
  * @email  <gabriele.ponzi--at--gmail.com>
@@ -48,8 +48,8 @@ public class OHibernate2GraphMapper extends OER2GraphMapper {
 
   private String xmlPath;
 
-  public OHibernate2GraphMapper(OSourceDatabaseInfo sourceDBInfo, String xmlPath, List<String> includedTables, List<String> excludedTables, ODocument configuration, OConfigurationHandler configHandler) {
-    super(sourceDBInfo, includedTables, excludedTables, configuration, configHandler);
+  public OHibernate2GraphMapper(OSourceDatabaseInfo sourceDBInfo, String xmlPath, List<String> includedTables, List<String> excludedTables, ODocument migrationConfig, OConfigurationHandler configHandler) {
+    super(sourceDBInfo, includedTables, excludedTables, migrationConfig, configHandler);
     this.xmlPath = xmlPath;
   }
 
