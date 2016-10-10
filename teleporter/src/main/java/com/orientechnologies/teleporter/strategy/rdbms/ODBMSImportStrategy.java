@@ -61,7 +61,7 @@ public abstract class ODBMSImportStrategy implements OWorkflowStrategy {
   public ODBMSImportStrategy() {}
 
   @Override
-  public void executeStrategy(OSourceInfo sourceInfo, String outOrientGraphUri, String chosenMapper, String xmlPath, String nameResolverConvention,
+  public ODocument executeStrategy(OSourceInfo sourceInfo, String outOrientGraphUri, String chosenMapper, String xmlPath, String nameResolverConvention,
                               List<String> includedTables, List<String> excludedTables, String migrationConfigPath, OTeleporterContext context) {
 
     OSourceDatabaseInfo sourceDBInfo = (OSourceDatabaseInfo) sourceInfo;
@@ -95,6 +95,8 @@ public abstract class ODBMSImportStrategy implements OWorkflowStrategy {
 
     context.getOutputManager().info("\n\nImporting complete in %s\n", OFunctionsHandler.getHMSFormat(globalStart, globalEnd));
     context.getOutputManager().info(context.getStatistics().toString());
+
+    return null;
 
   }
 
@@ -187,7 +189,6 @@ public abstract class ODBMSImportStrategy implements OWorkflowStrategy {
    * Adopted in case of "Table per Hierarchy" inheritance strategy.
    * @param bag
    * @param orientGraph
-   * @param
    * @param context
    */
   protected void tablePerHierarchyImport(OHierarchicalBag bag, OER2GraphMapper mapper, ODBQueryEngine dbQueryEngine, OGraphEngineForDB graphDBCommandEngine, OrientBaseGraph orientGraph, OTeleporterContext context) {

@@ -26,11 +26,12 @@ import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.Callable;
 
 /**
  * Created by Enrico Risa on 27/11/15.
  */
-public class OTeleporterJob implements Runnable {
+public class OTeleporterJob implements Callable<Object> {
 
   private final ODocument     cfg;
   private OTeleporterListener listener;
@@ -50,7 +51,7 @@ public class OTeleporterJob implements Runnable {
   }
 
   @Override
-  public void run() {
+  public ODocument call() {
 
     id = UUID.randomUUID().toString();
 
@@ -67,8 +68,10 @@ public class OTeleporterJob implements Runnable {
     final List<String> includedTables = cfg.field("includes");
     final List<String> excludedTable = cfg.field("excludes");
     status = Status.RUNNING;
+
+    ODocument executionResult = null;
     try {
-      OTeleporter.execute(driver, jurl, username, password, outDbUrl, chosenStrategy, chosenMapper, xmlPath, nameResolver,
+      executionResult = OTeleporter.execute(driver, jurl, username, password, outDbUrl, chosenStrategy, chosenMapper, xmlPath, nameResolver,
           outputLevel, includedTables, excludedTable, new OOutputStreamManager(stream, 2));
     } catch (Exception e) {
     }
@@ -82,6 +85,7 @@ public class OTeleporterJob implements Runnable {
       }
     }
 
+    return executionResult;
   }
 
   public void validate() {

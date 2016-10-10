@@ -57,7 +57,6 @@ import java.util.List;
 
 public class ODBMSNaiveStrategy extends ODBMSImportStrategy {
 
-
   public ODBMSNaiveStrategy() {}
 
   @Override

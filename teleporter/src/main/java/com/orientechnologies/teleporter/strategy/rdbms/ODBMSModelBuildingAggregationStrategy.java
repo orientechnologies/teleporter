@@ -18,6 +18,17 @@
 
 package com.orientechnologies.teleporter.strategy.rdbms;
 
+import com.orientechnologies.orient.core.record.impl.ODocument;
+import com.orientechnologies.teleporter.configuration.OConfigurationHandler;
+import com.orientechnologies.teleporter.context.OTeleporterContext;
+import com.orientechnologies.teleporter.factory.OMapperFactory;
+import com.orientechnologies.teleporter.mapper.rdbms.OER2GraphMapper;
+import com.orientechnologies.teleporter.model.dbschema.OSourceDatabaseInfo;
+import com.orientechnologies.teleporter.nameresolver.ONameResolver;
+import com.orientechnologies.teleporter.persistence.handler.ODBMSDataTypeHandler;
+
+import java.util.List;
+
 /**
  * @author Gabriele Ponzi
  * @email  <gabriele.ponzi--at--gmail.com>
@@ -25,5 +36,42 @@ package com.orientechnologies.teleporter.strategy.rdbms;
  */
 
 public class ODBMSModelBuildingAggregationStrategy extends ODBMSModelBuildingStrategy {
+
+    public ODBMSModelBuildingAggregationStrategy() {}
+
+    @Override
+    public OER2GraphMapper createSchemaMapper(OSourceDatabaseInfo sourceDBInfo, String outOrientGraphUri, String chosenMapper, String xmlPath, ONameResolver nameResolver, ODBMSDataTypeHandler handler, List<String> includedTables, List<String> excludedTables, ODocument migrationConfig, OConfigurationHandler configHandler, OTeleporterContext context) {
+
+        OMapperFactory mapperFactory = new OMapperFactory();
+        OER2GraphMapper mapper = (OER2GraphMapper) mapperFactory.buildMapper(chosenMapper, sourceDBInfo, xmlPath, includedTables, excludedTables, migrationConfig, configHandler, context);
+
+        // Step 1: DataBase schema building
+        mapper.buildSourceDatabaseSchema(context);
+        context.getStatistics().notifyListeners();
+        context.getOutputManager().info("\n");
+        context.getOutputManager().debug("\n%s\n", ((OER2GraphMapper)mapper).getDataBaseSchema().toString());
+
+        // Step 2: Graph model building
+        mapper.buildGraphModel(nameResolver, context);
+        context.getStatistics().notifyListeners();
+        context.getOutputManager().info("\n");
+        context.getOutputManager().debug("\n%s\n", ((OER2GraphMapper)mapper).getGraphModel().toString());
+
+        // Step 3: Eventual migrationConfigDoc applying
+        mapper.applyImportConfiguration(context);
+
+        // Step 4: Aggregation
+        ((OER2GraphMapper)mapper).performAggregations(context);
+        context.getOutputManager().debug("\n'Junction-Entity' aggregation complete.\n");
+        context.getOutputManager().debug("\n%s\n", ((OER2GraphMapper)mapper).getGraphModel().toString());
+
+        return mapper;
+    }
+
+    @Override
+    protected OConfigurationHandler buildConfigurationHandler() {
+        return new OConfigurationHandler(true);
+    }
+
 
 }

@@ -18,6 +18,7 @@
 
 package com.orientechnologies.teleporter.strategy;
 
+import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.teleporter.context.OTeleporterContext;
 import com.orientechnologies.teleporter.model.OSourceInfo;
 import com.orientechnologies.teleporter.model.dbschema.OSourceDatabaseInfo;
@@ -34,7 +35,7 @@ import java.util.List;
 
 public interface OWorkflowStrategy {
 
-  void executeStrategy(OSourceInfo sourceInfo, String outOrientGraphUri, String chosenMapper, String xmlPath, String nameResolverConvention,
-                              List<String> includedTables, List<String> excludedTables, String configurationPath, OTeleporterContext context);
+  ODocument executeStrategy(OSourceInfo sourceInfo, String outOrientGraphUri, String chosenMapper, String xmlPath, String nameResolverConvention,
+                            List<String> includedTables, List<String> excludedTables, String configurationPath, OTeleporterContext context);
 
 }

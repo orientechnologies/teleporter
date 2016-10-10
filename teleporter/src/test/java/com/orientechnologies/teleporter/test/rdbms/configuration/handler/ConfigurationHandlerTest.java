@@ -48,7 +48,7 @@ import static org.junit.Assert.*;
  *
  */
 
-public class OConfigurationHandlerTest {
+public class ConfigurationHandlerTest {
 
     private final String config1 = "src/test/resources/configuration-mapping/full-configuration-mapping.json";
     private final String config2 = "src/test/resources/configuration-mapping/joint-table-relationships-mapping-direct-edges.json";

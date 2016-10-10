@@ -73,14 +73,22 @@ public class OServerCommandTeleporter extends OServerCommandAuthenticatedServerA
   private void doPost(OHttpRequest iRequest, OHttpResponse iResponse, String[] parts) throws IOException {
 
     if ("job".equalsIgnoreCase(parts[1])) {
-      ODocument cfg = new ODocument().fromJSON(iRequest.content);
-      handler.executeImport(cfg);
-      iResponse.send(OHttpUtils.STATUS_OK_CODE, "OK", OHttpUtils.CONTENT_JSON, null, null);
+      ODocument args = new ODocument().fromJSON(iRequest.content);
+      Object executionResult = handler.execute(args);
+
+      if(executionResult != null) {
+        // the result corresponds to the graph model representation
+        String jsonGraphModel = ((ODocument)executionResult).toJSON("prettyPrint");
+        iResponse.send(OHttpUtils.STATUS_OK_CODE, "OK", OHttpUtils.CONTENT_JSON, jsonGraphModel, null);
+      }
+      else {
+        iResponse.send(OHttpUtils.STATUS_OK_CODE, "OK", OHttpUtils.CONTENT_JSON, null, null);
+      }
 
     } else if ("test".equalsIgnoreCase(parts[1])) {
-      ODocument cfg = new ODocument().fromJSON(iRequest.content);
+      ODocument args = new ODocument().fromJSON(iRequest.content);
       try {
-        handler.checkConnection(cfg);
+        handler.checkConnection(args);
       } catch (Exception e) {
         throw new IllegalArgumentException(e);
       }
