@@ -529,7 +529,7 @@ public class OConfigurationHandler {
         return propertiesDoc;
     }
 
-    public OConfiguration buildConfigurationFromGraphModel(OER2GraphMapper mapper, OTeleporterContext context) {
+    public OConfiguration buildConfigurationFromMapper(OER2GraphMapper mapper, OTeleporterContext context) {
 
         OConfiguration configuration = new OConfiguration();
 

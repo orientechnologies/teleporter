@@ -130,4 +130,14 @@ public class OFileManager {
 
   }
 
+
+  public static void writeFileFromText(String text, String outFilePath) throws IOException {
+
+    File outFile = new File(outFilePath);
+    outFile.getParentFile().mkdirs();
+    outFile.createNewFile();
+    PrintWriter out = new PrintWriter(outFile);
+    out.println(text);
+    out.close();
+  }
 }

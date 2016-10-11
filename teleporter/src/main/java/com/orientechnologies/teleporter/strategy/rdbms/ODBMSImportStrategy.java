@@ -39,7 +39,7 @@ import com.orientechnologies.teleporter.nameresolver.ONameResolver;
 import com.orientechnologies.teleporter.persistence.handler.ODBMSDataTypeHandler;
 import com.orientechnologies.teleporter.persistence.util.OQueryResult;
 import com.orientechnologies.teleporter.strategy.OWorkflowStrategy;
-import com.orientechnologies.teleporter.util.OJSONConfigurationManager;
+import com.orientechnologies.teleporter.util.OMigrationConfigManager;
 import com.orientechnologies.teleporter.util.OFunctionsHandler;
 import com.tinkerpop.blueprints.impls.orient.OrientBaseGraph;
 import com.tinkerpop.blueprints.impls.orient.OrientVertex;
@@ -79,8 +79,7 @@ public abstract class ODBMSImportStrategy implements OWorkflowStrategy {
     context.getStatistics().runningStepNumber = -1;
 
     // manage conf if present: loading
-    OJSONConfigurationManager confManager = new OJSONConfigurationManager();
-    ODocument config = confManager.loadMigrationConfig(outOrientGraphUri, migrationConfigPath, context);
+    ODocument config = OMigrationConfigManager.loadMigrationConfig(outOrientGraphUri, migrationConfigPath, context);
 
     this.mapper = this.createSchemaMapper(sourceDBInfo, outOrientGraphUri, chosenMapper, xmlPath, nameResolver, handler,
             includedTables, excludedTables, config, configHandler, context);

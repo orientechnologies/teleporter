@@ -493,7 +493,7 @@ public class ConfigurationHandlerTest {
              * Testing OConfiguration building
              */
 
-            OConfiguration configuredGraph = configurationHandler.buildConfigurationFromGraphModel(this.mapper,this.context);
+            OConfiguration configuredGraph = configurationHandler.buildConfigurationFromMapper(this.mapper,this.context);
 
             assertEquals(3, configuredGraph.getConfiguredVertices().size());
             assertEquals(2, configuredGraph.getConfiguredEdges().size());
@@ -871,7 +871,7 @@ public class ConfigurationHandlerTest {
             this.mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
             this.mapper.performMany2ManyAggregation(context);
 
-            OConfiguration configuredGraph = configurationHandler.buildConfigurationFromGraphModel(this.mapper,this.context);
+            OConfiguration configuredGraph = configurationHandler.buildConfigurationFromMapper(this.mapper,this.context);
 
             /**
              * Testing JSON building

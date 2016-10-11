@@ -31,7 +31,7 @@ import com.orientechnologies.teleporter.nameresolver.ONameResolver;
 import com.orientechnologies.teleporter.persistence.handler.ODBMSDataTypeHandler;
 import com.orientechnologies.teleporter.strategy.OWorkflowStrategy;
 import com.orientechnologies.teleporter.util.OFunctionsHandler;
-import com.orientechnologies.teleporter.util.OJSONConfigurationManager;
+import com.orientechnologies.teleporter.util.OMigrationConfigManager;
 
 import java.util.Date;
 import java.util.List;
@@ -67,7 +67,7 @@ public abstract class ODBMSModelBuildingStrategy implements OWorkflowStrategy {
         context.getStatistics().runningStepNumber = -1;
 
         // manage conf if present: loading
-        OJSONConfigurationManager confManager = new OJSONConfigurationManager();
+        OMigrationConfigManager confManager = new OMigrationConfigManager();
         ODocument config = confManager.loadMigrationConfig(outOrientGraphUri, migrationConfigPath, context);
 
         this.mapper = this.createSchemaMapper(sourceDBInfo, outOrientGraphUri, chosenMapper, xmlPath, nameResolver, handler,
@@ -78,8 +78,8 @@ public abstract class ODBMSModelBuildingStrategy implements OWorkflowStrategy {
         context.getOutputManager().info("\n\nGraph model building complete in %s\n", OFunctionsHandler.getHMSFormat(globalStart, globalEnd));
         context.getOutputManager().info(context.getStatistics().toString());
 
-        // Graph Model translation
-        OConfiguration configuredGraph = configurationHandler.buildConfigurationFromGraphModel(this.mapper, context);
+        // Building Graph Model mapping (for graph rendering too)
+        OConfiguration configuredGraph = configurationHandler.buildConfigurationFromMapper(this.mapper, context);
         ODocument configuredGraphDoc = configurationHandler.buildJSONDocFromConfiguration(configuredGraph, context);
 
         return configuredGraphDoc;

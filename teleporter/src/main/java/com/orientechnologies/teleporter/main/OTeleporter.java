@@ -19,12 +19,14 @@
 package com.orientechnologies.teleporter.main;
 
 import com.orientechnologies.orient.core.record.impl.ODocument;
+import com.orientechnologies.teleporter.configuration.api.OSourceTable;
 import com.orientechnologies.teleporter.context.OOutputStreamManager;
 import com.orientechnologies.teleporter.context.OTeleporterContext;
 import com.orientechnologies.teleporter.exception.OTeleporterIOException;
 import com.orientechnologies.teleporter.factory.OStrategyFactory;
 import com.orientechnologies.teleporter.http.OServerCommandTeleporter;
 import com.orientechnologies.teleporter.importengine.rdbms.dbengine.ODBQueryEngine;
+import com.orientechnologies.teleporter.model.OSourceInfo;
 import com.orientechnologies.teleporter.model.dbschema.OSourceDatabaseInfo;
 import com.orientechnologies.teleporter.strategy.OWorkflowStrategy;
 import com.orientechnologies.teleporter.ui.OProgressMonitor;
@@ -36,6 +38,7 @@ import com.orientechnologies.orient.server.config.OServerParameterConfiguration;
 import com.orientechnologies.orient.server.network.OServerNetworkListener;
 import com.orientechnologies.orient.server.network.protocol.http.ONetworkProtocolHttpAbstract;
 import com.orientechnologies.orient.server.plugin.OServerPluginAbstract;
+import com.orientechnologies.teleporter.util.OMigrationConfigManager;
 
 import java.io.File;
 import java.io.IOException;
@@ -94,6 +97,7 @@ public class OTeleporter extends OServerPluginAbstract {
 
     // Mandatory args validation
 
+    /*
     if (!arguments.containsKey("-jdriver")) {
       outputManager
               .error("Argument -jdriver is mandatory, please try again with expected argument: -jdriver <your-db-driver-name>\n");
@@ -103,7 +107,7 @@ public class OTeleporter extends OServerPluginAbstract {
     if (!arguments.containsKey("-jurl")) {
       outputManager.error("Argument -jurl is mandatory, please try again with expected argument: -jurl <input-db-jdbc-URL>\n");
       throw new OTeleporterIOException();
-    }
+    }*/
 
     if (!arguments.containsKey("-ourl")) {
       outputManager
@@ -112,18 +116,21 @@ public class OTeleporter extends OServerPluginAbstract {
     }
 
     // simple syntax check on command
-
-    if (!arguments.get("-jdriver").equalsIgnoreCase("Oracle") && !arguments.get("-jdriver").equalsIgnoreCase("SQLServer")
-            && !arguments.get("-jdriver").equalsIgnoreCase("MySQL") && !arguments.get("-jdriver").equalsIgnoreCase("PostgreSQL")
-            && !arguments.get("-jdriver").equalsIgnoreCase("HyperSQL")) {
-      outputManager
-              .error("Not valid db-driver name. Type one of the following driver names: 'Oracle','SQLServer','MySQL','PostgreSQL','HyperSQL'\n");
-      throw new OTeleporterIOException();
+    if (arguments.get("-jdriver") != null) {
+      if (!arguments.get("-jdriver").equalsIgnoreCase("Oracle") && !arguments.get("-jdriver").equalsIgnoreCase("SQLServer")
+              && !arguments.get("-jdriver").equalsIgnoreCase("MySQL") && !arguments.get("-jdriver").equalsIgnoreCase("PostgreSQL")
+              && !arguments.get("-jdriver").equalsIgnoreCase("HyperSQL")) {
+        outputManager
+                .error("Not valid db-driver name. Type one of the following driver names: 'Oracle','SQLServer','MySQL','PostgreSQL','HyperSQL'\n");
+        throw new OTeleporterIOException();
+      }
     }
 
-    if (!arguments.get("-jurl").contains("jdbc:")) {
-      outputManager.error("Not valid db-url.\n");
-      throw new OTeleporterIOException();
+    if(arguments.get("-jurl") != null) {
+      if (!arguments.get("-jurl").contains("jdbc:")) {
+        outputManager.error("Not valid db-url.\n");
+        throw new OTeleporterIOException();
+      }
     }
 
     if (!(arguments.get("-ourl").contains("plocal:") | arguments.get("-ourl").contains("remote:") | arguments.get("-ourl")
@@ -238,8 +245,40 @@ public class OTeleporter extends OServerPluginAbstract {
    */
 
   public static ODocument execute(String driver, String jurl, String username, String password, String outDbUrl, String chosenStrategy,
-                               String chosenMapper, String xmlPath, String nameResolver, String outputLevel, List<String> includedTables,
-                               List<String> excludedTables, String migrationConfigPath, OOutputStreamManager outputManager) throws OTeleporterIOException {
+                                  String chosenMapper, String xmlPath, String nameResolver, String outputLevel, List<String> includedTables,
+                                  List<String> excludedTables, String migrationConfigPath, OOutputStreamManager outputManager) throws OTeleporterIOException {
+
+    final OTeleporterContext context = new OTeleporterContext();
+    context.setOutputManager(outputManager);
+    ODriverConfigurator driverConfig = new ODriverConfigurator();
+    List<OSourceDatabaseInfo> sourcesInfo = null;
+    boolean sourceInfoLoaded = false;
+
+    if(driver == null || jurl == null) {
+
+      // try to get args from config files in the target orientdb db (if already present)
+      ODocument sourcesInfoDoc = OMigrationConfigManager.loadSourceInfo(outDbUrl, context);
+      if(sourcesInfoDoc == null) {
+        outputManager
+                .error("Arguments -jdriver, -jurl, -juser and -jpasswd, necessary to access the source databases, were not specified and " +
+                        "no previous sources's info were found in the target OrientDB graph database.\n");
+        throw new OTeleporterIOException();
+      }
+      else {
+        sourceInfoLoaded = true;
+        sourcesInfo = OMigrationConfigManager.extractSourceDatabaseInfo(sourcesInfoDoc);
+        driverConfig.checkConfiguration(sourcesInfo.get(0).getSourceIdName(), context);
+      }
+    }
+    else {
+      String driverClassName = driverConfig.checkConfiguration(driver, context);
+      OSourceDatabaseInfo sourceDBInfo = new OSourceDatabaseInfo(driver, driverClassName, jurl, username, password);
+      sourcesInfo = new LinkedList<OSourceDatabaseInfo>();
+      sourcesInfo.add(sourceDBInfo);
+    }
+
+    // fetching the first source access info (now Teleporter is conceived to accept just a source info for the migration)
+    OSourceDatabaseInfo sourceInfo = sourcesInfo.get(0);
 
     // Disabling query scan threshold tip
     OGlobalConfiguration.QUERY_SCAN_THRESHOLD_TIP.setValue(-1);
@@ -249,18 +288,9 @@ public class OTeleporter extends OServerPluginAbstract {
     if (outputLevel != null)
       outputManager.setLevel(Integer.parseInt(outputLevel));
 
-    // Context and Progress Monitor initialization
-    final OTeleporterContext context = new OTeleporterContext();
-    context.setOutputManager(outputManager);
+    // Progress Monitor initialization
     OProgressMonitor progressMonitor = new OProgressMonitor(context);
     progressMonitor.initialize();
-
-    // JDBC Driver migrationConfigDoc and driver class name fetching
-    ODriverConfigurator driverConfig = new ODriverConfigurator();
-    String driverClassName = driverConfig.checkConfiguration(driver, context);
-
-    // Building source object
-    OSourceDatabaseInfo sourceInfo = new OSourceDatabaseInfo(driver, driverClassName, jurl, username, password);
 
     // DB Query engine building
     ODBQueryEngine dbQueryEngine = new ODBQueryEngine(sourceInfo.getDriverName(), context);
@@ -285,6 +315,11 @@ public class OTeleporter extends OServerPluginAbstract {
 
       // Disabling query scan threshold tip
       OGlobalConfiguration.QUERY_SCAN_THRESHOLD_TIP.setValue(50000);
+
+      // Writing sources access info
+      if(!sourceInfoLoaded) {
+        OMigrationConfigManager.upsertSourceDatabaseInfo(sourcesInfo, outDbUrl, context);
+      }
 
     } finally {
       timer.cancel();
