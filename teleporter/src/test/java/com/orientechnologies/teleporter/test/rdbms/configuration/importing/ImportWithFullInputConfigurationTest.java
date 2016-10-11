@@ -51,7 +51,8 @@ public class ImportWithFullInputConfigurationTest {
     private OTeleporterContext context;
     private ODBMSNaiveStrategy naiveStrategy;
     private String dbParentDirectoryPath;
-    private final String config = "src/test/resources/configuration-mapping/full-configuration-mapping.json";
+    private final String configPathJson = "src/test/resources/configuration-mapping/full-configuration-mapping.json";
+    private String config;
     private ODBQueryEngine dbQueryEngine;
     private String driver = "org.hsqldb.jdbc.JDBCDriver";
     private String jurl = "jdbc:hsqldb:mem:mydb";
@@ -73,6 +74,15 @@ public class ImportWithFullInputConfigurationTest {
         this.outOrientGraphUri = "plocal:target/testOrientDB";
         this.dbParentDirectoryPath = this.outOrientGraphUri.replace("plocal:","");
         this.sourceDBInfo = new OSourceDatabaseInfo("source", this.driver, this.jurl, this.username, this.password);
+        this.initConfigs();
+    }
+
+    private void initConfigs() {
+        try {
+            this.config = OFileManager.buildJsonFromFile(configPathJson).toJSON("");
+        }catch(Exception e) {
+            fail();
+        }
     }
 
 

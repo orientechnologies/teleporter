@@ -67,12 +67,13 @@ public class OTeleporterJob implements Callable<Object> {
     final String outputLevel = cfg.field("level");
     final List<String> includedTables = cfg.field("includes");
     final List<String> excludedTable = cfg.field("excludes");
+    final String migrationConfig = cfg.field("migrationConfig");
     status = Status.RUNNING;
 
     ODocument executionResult = null;
     try {
       executionResult = OTeleporter.execute(driver, jurl, username, password, outDbUrl, chosenStrategy, chosenMapper, xmlPath, nameResolver,
-          outputLevel, includedTables, excludedTable, new OOutputStreamManager(stream, 2));
+          outputLevel, includedTables, excludedTable, migrationConfig, new OOutputStreamManager(stream, 2));
     } catch (Exception e) {
     }
 

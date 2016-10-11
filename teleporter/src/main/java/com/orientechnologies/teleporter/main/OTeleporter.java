@@ -213,8 +213,53 @@ public class OTeleporter extends OServerPluginAbstract {
     }
     String configurationPath = arguments.get("-conf");
 
+
+
     OTeleporter.execute(driver, jurl, username, password, outDbUrl, chosenStrategy, chosenMapper, xmlPath, nameResolver,
-            outputLevel, includedTables, excludedTables, configurationPath, outputManager);
+            outputLevel, configurationPath, includedTables, excludedTables, outputManager);
+  }
+
+  /**
+   * Executes the import of the source DB in a OrientDB Graph through different parameters.
+   *
+   * @param driver
+   *          the driver name of the DBMS from which you want to execute the import
+   * @param jurl
+   *          an absolute URL giving the location of the source DB to import
+   * @param username
+   *          to access to the source DB
+   * @param password
+   *          to access to the source DB
+   * @param chosenStrategy
+   *          the execution approach adopted during the importing of data
+   * @param outDbUrl
+   *          an absolute URI for the destination Orient Graph DB
+   * @param nameResolver
+   *          the name of the resolver which transforms the names of all the elements of the source DB according to a specific
+   *          convention (if null Java convention is adopted)
+   * @param outputLevel
+   *          the level of the logging messages that will be printed on the OutputStream during the execution
+   * @param excludedTables
+   * @param includedTables
+   * @param configurationPath
+   * @throws OTeleporterIOException
+   */
+
+  public static void execute(String driver, String jurl, String username, String password, String outDbUrl, String chosenStrategy,
+                             String chosenMapper, String xmlPath, String nameResolver, String outputLevel, String configurationPath, List<String> includedTables,
+                             List<String> excludedTables, OOutputStreamManager outputManager) throws OTeleporterIOException {
+
+    // manage conf if present: loading
+    OTeleporterContext context = new OTeleporterContext();
+    context.setOutputManager(outputManager);
+    ODocument migrationConfigDoc = OMigrationConfigManager.loadMigrationConfig(outDbUrl, configurationPath, context);
+    String migrationConfig = null;
+    if(migrationConfigDoc != null) {
+      migrationConfig = migrationConfigDoc.toJSON("");
+    }
+
+    execute(driver, jurl, username, password, outDbUrl, chosenStrategy, chosenMapper, xmlPath, nameResolver, outputLevel, includedTables, excludedTables, migrationConfig, outputManager);
+
   }
 
 
@@ -240,13 +285,13 @@ public class OTeleporter extends OServerPluginAbstract {
    *          the level of the logging messages that will be printed on the OutputStream during the execution
    * @param excludedTables
    * @param includedTables
-   * @param migrationConfigPath
+   * @param migrationConfig
    * @throws OTeleporterIOException
    */
 
   public static ODocument execute(String driver, String jurl, String username, String password, String outDbUrl, String chosenStrategy,
                                   String chosenMapper, String xmlPath, String nameResolver, String outputLevel, List<String> includedTables,
-                                  List<String> excludedTables, String migrationConfigPath, OOutputStreamManager outputManager) throws OTeleporterIOException {
+                                  List<String> excludedTables, String migrationConfig, OOutputStreamManager outputManager) throws OTeleporterIOException {
 
     final OTeleporterContext context = new OTeleporterContext();
     context.setOutputManager(outputManager);
@@ -311,7 +356,7 @@ public class OTeleporter extends OServerPluginAbstract {
       }, 0, 1000);
 
       // the last argument represents the nameResolver
-      executionResult = strategy.executeStrategy(sourceInfo, outDbUrl, chosenMapper, xmlPath, nameResolver, includedTables, excludedTables, migrationConfigPath, context);
+      executionResult = strategy.executeStrategy(sourceInfo, outDbUrl, chosenMapper, xmlPath, nameResolver, includedTables, excludedTables, migrationConfig, context);
 
       // Disabling query scan threshold tip
       OGlobalConfiguration.QUERY_SCAN_THRESHOLD_TIP.setValue(50000);

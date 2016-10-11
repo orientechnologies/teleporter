@@ -39,7 +39,6 @@ import com.orientechnologies.teleporter.nameresolver.ONameResolver;
 import com.orientechnologies.teleporter.persistence.handler.ODBMSDataTypeHandler;
 import com.orientechnologies.teleporter.persistence.util.OQueryResult;
 import com.orientechnologies.teleporter.strategy.OWorkflowStrategy;
-import com.orientechnologies.teleporter.util.OMigrationConfigManager;
 import com.orientechnologies.teleporter.util.OFunctionsHandler;
 import com.tinkerpop.blueprints.impls.orient.OrientBaseGraph;
 import com.tinkerpop.blueprints.impls.orient.OrientVertex;
@@ -62,10 +61,17 @@ public abstract class ODBMSImportStrategy implements OWorkflowStrategy {
 
   @Override
   public ODocument executeStrategy(OSourceInfo sourceInfo, String outOrientGraphUri, String chosenMapper, String xmlPath, String nameResolverConvention,
-                              List<String> includedTables, List<String> excludedTables, String migrationConfigPath, OTeleporterContext context) {
+                                   List<String> includedTables, List<String> excludedTables, String jsonMigrationConfig, OTeleporterContext context) {
 
     OSourceDatabaseInfo sourceDBInfo = (OSourceDatabaseInfo) sourceInfo;
     Date globalStart = new Date();
+
+    // configuration building
+    ODocument migrationConfig = null;
+    if(jsonMigrationConfig != null) {
+      migrationConfig = new ODocument();
+      migrationConfig.fromJSON(jsonMigrationConfig, "noMap");
+    }
 
     ODataTypeHandlerFactory dataTypeHandlerFactory = new ODataTypeHandlerFactory();
     ODBMSDataTypeHandler handler = (ODBMSDataTypeHandler) dataTypeHandlerFactory.buildDataTypeHandler(sourceDBInfo.getDriverName(), context);
@@ -78,11 +84,8 @@ public abstract class ODBMSImportStrategy implements OWorkflowStrategy {
     ONameResolver nameResolver = nameResolverFactory.buildNameResolver(nameResolverConvention, context);
     context.getStatistics().runningStepNumber = -1;
 
-    // manage conf if present: loading
-    ODocument config = OMigrationConfigManager.loadMigrationConfig(outOrientGraphUri, migrationConfigPath, context);
-
     this.mapper = this.createSchemaMapper(sourceDBInfo, outOrientGraphUri, chosenMapper, xmlPath, nameResolver, handler,
-            includedTables, excludedTables, config, configHandler, context);
+            includedTables, excludedTables, migrationConfig, configHandler, context);
 
     // Step 4: Import
     this.executeImport(sourceDBInfo, outOrientGraphUri, mapper, handler, context);

@@ -50,10 +50,17 @@ public abstract class ODBMSModelBuildingStrategy implements OWorkflowStrategy {
 
     @Override
     public ODocument executeStrategy(OSourceInfo sourceInfo, String outOrientGraphUri, String chosenMapper, String xmlPath, String nameResolverConvention,
-                                List<String> includedTables, List<String> excludedTables, String migrationConfigPath, OTeleporterContext context) {
+                                     List<String> includedTables, List<String> excludedTables, String jsonMigrationConfig, OTeleporterContext context) {
 
         OSourceDatabaseInfo sourceDBInfo = (OSourceDatabaseInfo) sourceInfo;
         Date globalStart = new Date();
+
+        // configuration building
+        ODocument migrationConfig = null;
+        if(jsonMigrationConfig != null) {
+            migrationConfig = new ODocument();
+            migrationConfig.fromJSON(jsonMigrationConfig, "noMap");
+        }
 
         ODataTypeHandlerFactory dataTypeHandlerFactory = new ODataTypeHandlerFactory();
         ODBMSDataTypeHandler handler = (ODBMSDataTypeHandler) dataTypeHandlerFactory.buildDataTypeHandler(sourceDBInfo.getDriverName(), context);
@@ -66,12 +73,8 @@ public abstract class ODBMSModelBuildingStrategy implements OWorkflowStrategy {
         ONameResolver nameResolver = nameResolverFactory.buildNameResolver(nameResolverConvention, context);
         context.getStatistics().runningStepNumber = -1;
 
-        // manage conf if present: loading
-        OMigrationConfigManager confManager = new OMigrationConfigManager();
-        ODocument config = confManager.loadMigrationConfig(outOrientGraphUri, migrationConfigPath, context);
-
         this.mapper = this.createSchemaMapper(sourceDBInfo, outOrientGraphUri, chosenMapper, xmlPath, nameResolver, handler,
-                includedTables, excludedTables, config, configurationHandler, context);
+                includedTables, excludedTables, migrationConfig, configurationHandler, context);
 
         Date globalEnd = new Date();
 
