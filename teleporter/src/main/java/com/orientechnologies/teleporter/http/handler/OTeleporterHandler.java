@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 /**
  * Created by Enrico Risa on 27/11/15.
@@ -41,7 +42,7 @@ public class OTeleporterHandler {
    *
    * @param args
    */
-  public Object execute(ODocument args) {
+  public ODocument execute(ODocument args) {
 
     OTeleporterJob job = new OTeleporterJob(args, new OTeleporterListener() {
       @Override
@@ -53,7 +54,16 @@ public class OTeleporterHandler {
     job.validate();
 
     currentJob = job;
-    Object executionResult = pool.submit(job);
+    Future<ODocument> future = pool.submit(job);
+    ODocument executionResult = null;
+
+    try {
+      //print the return value of Future, notice the output delay in console
+      // because Future.get() waits for task to get completed
+      executionResult = future.get();
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
 
     return executionResult;
   }

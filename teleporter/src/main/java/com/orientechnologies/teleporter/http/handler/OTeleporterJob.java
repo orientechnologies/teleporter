@@ -19,6 +19,7 @@
 package com.orientechnologies.teleporter.http.handler;
 
 import com.orientechnologies.teleporter.context.OOutputStreamManager;
+import com.orientechnologies.teleporter.exception.OTeleporterIOException;
 import com.orientechnologies.teleporter.main.OTeleporter;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
@@ -31,7 +32,7 @@ import java.util.concurrent.Callable;
 /**
  * Created by Enrico Risa on 27/11/15.
  */
-public class OTeleporterJob implements Callable<Object> {
+public class OTeleporterJob implements Callable<ODocument> {
 
   private final ODocument     cfg;
   private OTeleporterListener listener;
@@ -72,19 +73,46 @@ public class OTeleporterJob implements Callable<Object> {
 
     ODocument executionResult = null;
     try {
-      executionResult = OTeleporter.execute(driver, jurl, username, password, outDbUrl, chosenStrategy, chosenMapper, xmlPath, nameResolver,
-          outputLevel, includedTables, excludedTable, migrationConfig, new OOutputStreamManager(stream, 2));
+      if(chosenStrategy.equals("interactive") || chosenStrategy.equals("interactive-aggr")) {
+        executionResult = OTeleporter.execute(driver, jurl, username, password, outDbUrl, chosenStrategy, chosenMapper, xmlPath, nameResolver,
+                outputLevel, includedTables, excludedTable, migrationConfig, new OOutputStreamManager(stream, 2));
+
+        synchronized (listener) {
+          status = Status.FINISHED;
+          try {
+            listener.wait(5000);
+            listener.onEnd(this);
+          } catch (InterruptedException e) {
+          }
+        }
+      }
+      else {
+        new Thread(new Runnable() {
+          @Override
+          public void run() {
+            try {
+              OTeleporter.execute(driver, jurl, username, password, outDbUrl, chosenStrategy, chosenMapper, xmlPath, nameResolver,
+                      outputLevel, includedTables, excludedTable, migrationConfig, new OOutputStreamManager(stream, 2));
+            } catch (OTeleporterIOException e) {
+              e.printStackTrace();
+            }
+            synchronized (listener) {
+              status = Status.FINISHED;
+              try {
+                listener.wait(5000);
+                listener.onEnd(OTeleporterJob.this);
+              } catch (InterruptedException e) {
+              }
+            }
+          }
+        }).start();
+        executionResult = new ODocument();
+
+      }
     } catch (Exception e) {
     }
 
-    synchronized (listener) {
-      status = Status.FINISHED;
-      try {
-        listener.wait(5000);
-        listener.onEnd(this);
-      } catch (InterruptedException e) {
-      }
-    }
+
 
     return executionResult;
   }
@@ -95,7 +123,7 @@ public class OTeleporterJob implements Callable<Object> {
 
   /**
    * Single Job Status
-   * 
+   *
    * @return ODocument
    */
   public ODocument status() {

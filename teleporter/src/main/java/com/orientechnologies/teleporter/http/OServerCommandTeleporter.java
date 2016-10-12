@@ -74,7 +74,7 @@ public class OServerCommandTeleporter extends OServerCommandAuthenticatedServerA
 
     if ("job".equalsIgnoreCase(parts[1])) {
       ODocument args = new ODocument().fromJSON(iRequest.content);
-      Object executionResult = handler.execute(args);
+      ODocument executionResult = handler.execute(args);
 
       if(executionResult != null) {
         // the result corresponds to the graph model representation

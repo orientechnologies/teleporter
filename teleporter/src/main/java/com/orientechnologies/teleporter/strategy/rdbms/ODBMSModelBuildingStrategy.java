@@ -57,7 +57,7 @@ public abstract class ODBMSModelBuildingStrategy implements OWorkflowStrategy {
 
         // configuration building
         ODocument migrationConfig = null;
-        if(jsonMigrationConfig != null) {
+        if(jsonMigrationConfig != null && jsonMigrationConfig.length() > 0) {
             migrationConfig = new ODocument();
             migrationConfig.fromJSON(jsonMigrationConfig, "noMap");
         }

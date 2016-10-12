@@ -1,6 +1,5 @@
 package com.orientechnologies.teleporter.util;
 
-import com.oracle.javafx.jmx.json.JSONDocument;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
 import java.util.Arrays;

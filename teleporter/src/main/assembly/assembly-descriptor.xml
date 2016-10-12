@@ -12,7 +12,7 @@
             <directory>${basedir}/script</directory>
             <outputDirectory>orientdb-teleporter/bin</outputDirectory>
             <includes>
-                <includedInMigration>oteleporter.*</includedInMigration>
+                <include>oteleporter.*</include>
             </includes>
             <fileMode>755</fileMode>
             <filtered>true</filtered>
@@ -21,7 +21,7 @@
             <directory>${basedir}/src/main/resources</directory>
             <outputDirectory>orientdb-teleporter/config</outputDirectory>
             <includes>
-                <includedInMigration>jdbc-drivers*</includedInMigration>
+                <include>jdbc-drivers*</include>
             </includes>
             <fileMode>755</fileMode>
             <filtered>true</filtered>
@@ -30,15 +30,15 @@
             <directory>${basedir}/target</directory>
             <outputDirectory>orientdb-teleporter/plugins</outputDirectory>
             <includes>
-                <includedInMigration>orientdb-teleporter*.jar</includedInMigration>
+                <include>orientdb-teleporter*.jar</include>
             </includes>
         </fileSet>
         <fileSet>
             <directory>${basedir}</directory>
             <outputDirectory>orientdb-teleporter</outputDirectory>
             <includes>
-                <includedInMigration>LICENSE.txt</includedInMigration>
-                <includedInMigration>README.txt</includedInMigration>
+                <include>LICENSE.txt</include>
+                <include>README.txt</include>
             </includes>
             <filtered>true</filtered>
         </fileSet>
