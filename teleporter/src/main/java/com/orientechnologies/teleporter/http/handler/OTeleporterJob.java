@@ -74,7 +74,7 @@ public class OTeleporterJob implements Callable<ODocument> {
     ODocument executionResult = null;
     try {
       if(chosenStrategy.equals("interactive") || chosenStrategy.equals("interactive-aggr")) {
-        executionResult = OTeleporter.execute(driver, jurl, username, password, outDbUrl, chosenStrategy, chosenMapper, xmlPath, nameResolver,
+        executionResult = OTeleporter.executeJob(driver, jurl, username, password, outDbUrl, chosenStrategy, chosenMapper, xmlPath, nameResolver,
                 outputLevel, includedTables, excludedTable, migrationConfig, new OOutputStreamManager(stream, 2));
 
         synchronized (listener) {
@@ -91,7 +91,7 @@ public class OTeleporterJob implements Callable<ODocument> {
           @Override
           public void run() {
             try {
-              OTeleporter.execute(driver, jurl, username, password, outDbUrl, chosenStrategy, chosenMapper, xmlPath, nameResolver,
+              OTeleporter.executeJob(driver, jurl, username, password, outDbUrl, chosenStrategy, chosenMapper, xmlPath, nameResolver,
                       outputLevel, includedTables, excludedTable, migrationConfig, new OOutputStreamManager(stream, 2));
             } catch (OTeleporterIOException e) {
               e.printStackTrace();
@@ -111,8 +111,6 @@ public class OTeleporterJob implements Callable<ODocument> {
       }
     } catch (Exception e) {
     }
-
-
 
     return executionResult;
   }

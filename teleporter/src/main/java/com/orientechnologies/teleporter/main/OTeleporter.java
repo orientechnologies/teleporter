@@ -18,26 +18,24 @@
 
 package com.orientechnologies.teleporter.main;
 
+import com.orientechnologies.orient.core.config.OGlobalConfiguration;
+import com.orientechnologies.orient.core.exception.OConfigurationException;
 import com.orientechnologies.orient.core.record.impl.ODocument;
-import com.orientechnologies.teleporter.configuration.api.OSourceTable;
+import com.orientechnologies.orient.server.OServer;
+import com.orientechnologies.orient.server.config.OServerParameterConfiguration;
+import com.orientechnologies.orient.server.network.OServerNetworkListener;
+import com.orientechnologies.orient.server.network.protocol.http.ONetworkProtocolHttpAbstract;
+import com.orientechnologies.orient.server.plugin.OServerPluginAbstract;
 import com.orientechnologies.teleporter.context.OOutputStreamManager;
 import com.orientechnologies.teleporter.context.OTeleporterContext;
 import com.orientechnologies.teleporter.exception.OTeleporterIOException;
 import com.orientechnologies.teleporter.factory.OStrategyFactory;
 import com.orientechnologies.teleporter.http.OServerCommandTeleporter;
 import com.orientechnologies.teleporter.importengine.rdbms.dbengine.ODBQueryEngine;
-import com.orientechnologies.teleporter.model.OSourceInfo;
 import com.orientechnologies.teleporter.model.dbschema.OSourceDatabaseInfo;
 import com.orientechnologies.teleporter.strategy.OWorkflowStrategy;
 import com.orientechnologies.teleporter.ui.OProgressMonitor;
 import com.orientechnologies.teleporter.util.ODriverConfigurator;
-import com.orientechnologies.orient.core.config.OGlobalConfiguration;
-import com.orientechnologies.orient.core.exception.OConfigurationException;
-import com.orientechnologies.orient.server.OServer;
-import com.orientechnologies.orient.server.config.OServerParameterConfiguration;
-import com.orientechnologies.orient.server.network.OServerNetworkListener;
-import com.orientechnologies.orient.server.network.protocol.http.ONetworkProtocolHttpAbstract;
-import com.orientechnologies.orient.server.plugin.OServerPluginAbstract;
 import com.orientechnologies.teleporter.util.OMigrationConfigManager;
 
 import java.io.File;
@@ -216,7 +214,7 @@ public class OTeleporter extends OServerPluginAbstract {
 
 
     OTeleporter.execute(driver, jurl, username, password, outDbUrl, chosenStrategy, chosenMapper, xmlPath, nameResolver,
-            outputLevel, configurationPath, includedTables, excludedTables, outputManager);
+            outputLevel, includedTables, excludedTables, configurationPath, outputManager);
   }
 
   /**
@@ -246,18 +244,20 @@ public class OTeleporter extends OServerPluginAbstract {
    */
 
   public static void execute(String driver, String jurl, String username, String password, String outDbUrl, String chosenStrategy,
-                             String chosenMapper, String xmlPath, String nameResolver, String outputLevel, String configurationPath, List<String> includedTables,
-                             List<String> excludedTables, OOutputStreamManager outputManager) throws OTeleporterIOException {
+                             String chosenMapper, String xmlPath, String nameResolver, String outputLevel, List<String> includedTables,
+                             List<String> excludedTables, String configurationPath, OOutputStreamManager outputManager) throws OTeleporterIOException {
 
     // manage conf if present: loading
-    OTeleporterContext.getInstance().setOutputManager(outputManager);
-    ODocument migrationConfigDoc = OMigrationConfigManager.loadMigrationConfig(outDbUrl, configurationPath);
+    ODocument migrationConfigDoc = null;
+    if(configurationPath != null) {
+      migrationConfigDoc = OMigrationConfigManager.loadMigrationConfig(outDbUrl, configurationPath);
+    }
     String migrationConfig = null;
     if(migrationConfigDoc != null) {
       migrationConfig = migrationConfigDoc.toJSON("");
     }
 
-    execute(driver, jurl, username, password, outDbUrl, chosenStrategy, chosenMapper, xmlPath, nameResolver, outputLevel, includedTables, excludedTables, migrationConfig, outputManager);
+    executeJob(driver, jurl, username, password, outDbUrl, chosenStrategy, chosenMapper, xmlPath, nameResolver, outputLevel, includedTables, excludedTables, migrationConfig, outputManager);
 
   }
 
@@ -288,11 +288,11 @@ public class OTeleporter extends OServerPluginAbstract {
    * @throws OTeleporterIOException
    */
 
-  public static ODocument execute(String driver, String jurl, String username, String password, String outDbUrl, String chosenStrategy,
-                                  String chosenMapper, String xmlPath, String nameResolver, String outputLevel, List<String> includedTables,
-                                  List<String> excludedTables, String migrationConfig, OOutputStreamManager outputManager) throws OTeleporterIOException {
+  public static ODocument executeJob(String driver, String jurl, String username, String password, String outDbUrl, String chosenStrategy,
+                                     String chosenMapper, String xmlPath, String nameResolver, String outputLevel, List<String> includedTables,
+                                     List<String> excludedTables, String migrationConfig, OOutputStreamManager outputManager) throws OTeleporterIOException {
 
-    OTeleporterContext.getInstance().setOutputManager(outputManager);
+    OTeleporterContext.newInstance().setOutputManager(outputManager);
     ODriverConfigurator driverConfig = new ODriverConfigurator();
     List<OSourceDatabaseInfo> sourcesInfo = null;
     boolean sourceInfoLoaded = false;
@@ -374,7 +374,7 @@ public class OTeleporter extends OServerPluginAbstract {
                                   String chosenMapper, String xmlPath, String nameResolver, String outputLevel, List<String> includedTables,
                                   List<String> excludedTables, OOutputStreamManager outputManager) throws OTeleporterIOException {
 
-    return execute(driver, jurl, username, password, outDbUrl, chosenStrategy, chosenMapper, xmlPath, nameResolver, outputLevel, includedTables, excludedTables, null, outputManager);
+    return executeJob(driver, jurl, username, password, outDbUrl, chosenStrategy, chosenMapper, xmlPath, nameResolver, outputLevel, includedTables, excludedTables, null, outputManager);
   }
 
   @Override
