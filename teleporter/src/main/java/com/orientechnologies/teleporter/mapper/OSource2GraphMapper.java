@@ -45,11 +45,11 @@ public abstract class OSource2GraphMapper {
     return this.graphModel;
   }
 
-  public abstract void buildSourceDatabaseSchema(OTeleporterContext context);
+  public abstract void buildSourceDatabaseSchema();
 
-  public abstract void buildGraphModel(ONameResolver nameResolver, OTeleporterContext context);
+  public abstract void buildGraphModel(ONameResolver nameResolver);
 
-  public abstract void applyImportConfiguration(OTeleporterContext context);
+  public abstract void applyImportConfiguration();
 
   public abstract String toString();
 

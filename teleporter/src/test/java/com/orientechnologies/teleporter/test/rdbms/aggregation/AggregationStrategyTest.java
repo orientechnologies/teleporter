@@ -67,8 +67,8 @@ public class AggregationStrategyTest {
   @Before
   public void init() {
     this.importStrategy = new ODBMSNaiveAggregationStrategy();
-    this.context = new OTeleporterContext();
-    this.dbQueryEngine = new ODBQueryEngine(this.driver, this.context);
+    this.context = OTeleporterContext.newInstance();
+    this.dbQueryEngine = new ODBQueryEngine(this.driver);
     this.context.setDbQueryEngine(this.dbQueryEngine);
     this.context.setOutputManager(new OOutputStreamManager(0));
     this.context.setNameResolver(new OJavaConventionNameResolver());
@@ -115,8 +115,8 @@ public class AggregationStrategyTest {
 
 
       OER2GraphMapper mapper = new OER2GraphMapper(this.sourceDBInfo, null, null, null, null);
-      mapper.buildSourceDatabaseSchema(this.context);
-      mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
+      mapper.buildSourceDatabaseSchema();
+      mapper.buildGraphModel(new OJavaConventionNameResolver());
 
 
       /*
@@ -282,7 +282,7 @@ public class AggregationStrategyTest {
       /*
        * Aggregation of join tables
        */
-      mapper.performMany2ManyAggregation(context);
+      mapper.performMany2ManyAggregation();
       
       
       /*
@@ -548,7 +548,7 @@ public class AggregationStrategyTest {
       st.execute(film2actorFilling);
 
 
-      this.importStrategy.executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "basicDBMapper", null, "java", null, null, null, context);
+      this.importStrategy.executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "basicDBMapper", null, "java", null, null, null);
 
 
       /*

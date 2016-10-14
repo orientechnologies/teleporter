@@ -43,7 +43,7 @@ public class ExceptionPrintingTest {
 
   @Before
   public void init() {
-    this.context = new OTeleporterContext();
+    this.context = OTeleporterContext.newInstance();
     this.context.setOutputManager(new OOutputStreamManager(0));
     context.setOutputManager(new OOutputStreamManager(0));
   }

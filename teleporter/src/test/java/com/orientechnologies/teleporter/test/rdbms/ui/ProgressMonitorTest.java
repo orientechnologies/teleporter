@@ -45,12 +45,12 @@ public class ProgressMonitorTest {
 
   @Before
   public void init() {
-    this.context = new OTeleporterContext();
+    this.context = OTeleporterContext.newInstance();
     this.statistics = new OTeleporterStatistics();
     this.context.setStatistics(this.statistics);
     this.outputManager = new OOutputStreamManager(2);
     this.context.setOutputManager(outputManager);
-    this.progressMonitor = new OProgressMonitor(this.context);
+    this.progressMonitor = new OProgressMonitor();
   }
 
   //  @Ignore

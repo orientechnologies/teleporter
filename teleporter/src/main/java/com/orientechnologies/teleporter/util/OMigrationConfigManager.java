@@ -56,7 +56,7 @@ public class OMigrationConfigManager {
    *               in the <db-path>/teleporter-config/ path (migrationConfigDoc.json)
    *       (iii) - else execute strategy without migrationConfigDoc
    **/
-  public static ODocument loadMigrationConfig(String outOrientGraphUri, String configurationPath, OTeleporterContext context) {
+  public static ODocument loadMigrationConfig(String outOrientGraphUri, String configurationPath) {
 
     if(outOrientGraphUri.contains("\\")) {
       outOrientGraphUri = outOrientGraphUri.replace("\\","/");
@@ -80,32 +80,32 @@ public class OMigrationConfigManager {
     try {
       if (configPresentInDB) {
         config = OFileManager.buildJsonFromFile(outDBConfigPath);
-        context.getOutputManager().info("Configuration correctly loaded from %s.\n", outDBConfigPath);
+        OTeleporterContext.getInstance().getOutputManager().info("Configuration correctly loaded from %s.\n", outDBConfigPath);
       } else {
         config = OFileManager.buildJsonFromFile(configurationPath);
         // (ii)
         if (config != null) {
-          context.getOutputManager().info("Configuration correctly loaded from %s and saved in %s.\n", configurationPath, outDBConfigPath);
+          OTeleporterContext.getInstance().getOutputManager().info("Configuration correctly loaded from %s and saved in %s.\n", configurationPath, outDBConfigPath);
 
           // manage conf if present: updating in the db directory
-          copyConfigurationInDatabase(config, configurationPath, context);
+          copyConfigurationInDatabase(config, configurationPath);
         }
         // (iii)
         else {
-          context.getOutputManager().info("No migrationConfigDoc file was found. Migration will be performed with standard mapping policies.\n");
+          OTeleporterContext.getInstance().getOutputManager().info("No migrationConfigDoc file was found. Migration will be performed with standard mapping policies.\n");
         }
       }
     } catch (Exception e) {
       String mess = "";
-      context.printExceptionMessage(e, mess, "error");
-      context.printExceptionStackTrace(e, "error");
+      OTeleporterContext.getInstance().printExceptionMessage(e, mess, "error");
+      OTeleporterContext.getInstance().printExceptionStackTrace(e, "error");
       throw new OTeleporterRuntimeException(e);
     }
 
     return config;
   }
 
-  public static void copyConfigurationInDatabase(ODocument config, String configurationPath, OTeleporterContext context) {
+  public static void copyConfigurationInDatabase(ODocument config, String configurationPath) {
 
     // if we have config in input and it is not present in the DB then we copy it in the <db-path>/teleporter-config/ path
     if (config != null) {
@@ -114,8 +114,8 @@ public class OMigrationConfigManager {
           copyConfigIntoTargetDB(configurationPath, outDBConfigPath);
         } catch (IOException e) {
           String mess = "";
-          context.printExceptionMessage(e, mess, "error");
-          context.printExceptionStackTrace(e, "error");
+          OTeleporterContext.getInstance().printExceptionMessage(e, mess, "error");
+          OTeleporterContext.getInstance().printExceptionStackTrace(e, "error");
           throw new OTeleporterRuntimeException(e);
         }
       }
@@ -139,7 +139,7 @@ public class OMigrationConfigManager {
    *  (i) - if db and sourceAccessInfoDoc are present use the default config
    * (ii) - else execute strategy without sourceAccessInfoConfigDoc
    **/
-  public static ODocument loadSourceInfo(String outOrientGraphUri, OTeleporterContext context) {
+  public static ODocument loadSourceInfo(String outOrientGraphUri) {
 
     if(outOrientGraphUri.contains("\\")) {
       outOrientGraphUri = outOrientGraphUri.replace("\\","/");
@@ -163,15 +163,15 @@ public class OMigrationConfigManager {
     try {
       if (configPresentInDB) {
         sourcesAccessInfo = OFileManager.buildJsonFromFile(outDBConfigPath);
-        context.getOutputManager().info("Sources' access info correctly loaded from %s.\n", outDBConfigPath);
+        OTeleporterContext.getInstance().getOutputManager().info("Sources' access info correctly loaded from %s.\n", outDBConfigPath);
       } else {
         // (iii)
-        context.getOutputManager().info("No sources' access info file was found.\n");
+        OTeleporterContext.getInstance().getOutputManager().info("No sources' access info file was found.\n");
       }
     } catch (Exception e) {
       String mess = "";
-      context.printExceptionMessage(e, mess, "error");
-      context.printExceptionStackTrace(e, "error");
+      OTeleporterContext.getInstance().printExceptionMessage(e, mess, "error");
+      OTeleporterContext.getInstance().printExceptionStackTrace(e, "error");
       throw new OTeleporterRuntimeException(e);
     }
 
@@ -196,7 +196,7 @@ public class OMigrationConfigManager {
     return sourcesInfo;
   }
 
-  public static void upsertSourceDatabaseInfo(List<OSourceDatabaseInfo> sourcesInfo, String outOrientGraphUri, OTeleporterContext context) {
+  public static void upsertSourceDatabaseInfo(List<OSourceDatabaseInfo> sourcesInfo, String outOrientGraphUri) {
 
     if(outOrientGraphUri.contains("\\")) {
       outOrientGraphUri = outOrientGraphUri.replace("\\","/");
@@ -236,8 +236,8 @@ public class OMigrationConfigManager {
       OFileManager.writeFileFromText(jsonSourcesInfo, outDBSourceInfoPath);
     }catch(IOException e) {
       String mess = "";
-      context.printExceptionMessage(e, mess, "error");
-      context.printExceptionStackTrace(e, "error");
+      OTeleporterContext.getInstance().printExceptionMessage(e, mess, "error");
+      OTeleporterContext.getInstance().printExceptionStackTrace(e, "error");
     }
 
   }

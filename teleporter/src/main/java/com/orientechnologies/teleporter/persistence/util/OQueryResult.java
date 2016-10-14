@@ -69,7 +69,7 @@ public class OQueryResult {
     this.result = result;
   }
 
-  public void closeAll(OTeleporterContext context) {
+  public void closeAll() {
 
     try {
       if(this.statement != null && !this.statement.isClosed()) 
@@ -80,8 +80,8 @@ public class OQueryResult {
         this.dbConnection.close();
     } catch(SQLException e) {
       String mess = "";
-      context.printExceptionMessage(e, mess, "error");
-      context.printExceptionStackTrace(e, "debug");
+      OTeleporterContext.getInstance().printExceptionMessage(e, mess, "error");
+      OTeleporterContext.getInstance().printExceptionStackTrace(e, "debug");
     }
   }
 

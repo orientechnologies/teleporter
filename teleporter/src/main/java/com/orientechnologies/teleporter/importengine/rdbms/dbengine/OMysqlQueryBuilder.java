@@ -42,12 +42,11 @@ public class OMysqlQueryBuilder extends OCommonQueryBuilder {
      *
      * @param mappedEntities
      * @param columns
-     * @param context
      * @return
      */
 
     @Override
-    public String getRecordsFromMultipleEntities(List<OEntity> mappedEntities, String[][] columns, OTeleporterContext context) {
+    public String getRecordsFromMultipleEntities(List<OEntity> mappedEntities, String[][] columns) {
         String query;
 
         OEntity first = mappedEntities.get(0);

@@ -67,52 +67,52 @@ public class ODBMSNaiveStrategy extends ODBMSImportStrategy {
 
   public OER2GraphMapper createSchemaMapper(OSourceDatabaseInfo sourceDBInfo, String outOrientGraphUri, String chosenMapper, String xmlPath, ONameResolver nameResolver,
                                             ODBMSDataTypeHandler handler, List<String> includedTables, List<String> excludedTables, ODocument migrationConfig,
-                                            OConfigurationHandler configHandler, OTeleporterContext context) {
+                                            OConfigurationHandler configHandler) {
 
     OMapperFactory mapperFactory = new OMapperFactory();
-    OER2GraphMapper mapper = (OER2GraphMapper) mapperFactory.buildMapper(chosenMapper, sourceDBInfo, xmlPath, includedTables, excludedTables, migrationConfig, configHandler, context);
+    OER2GraphMapper mapper = (OER2GraphMapper) mapperFactory.buildMapper(chosenMapper, sourceDBInfo, xmlPath, includedTables, excludedTables, migrationConfig, configHandler);
 
     // Step 1: DataBase schema building
-    mapper.buildSourceDatabaseSchema(context);
-    context.getStatistics().notifyListeners();
-    context.getOutputManager().info("\n");
-    context.getOutputManager().debug("\n%s\n", ((OER2GraphMapper)mapper).getDataBaseSchema().toString());
+    mapper.buildSourceDatabaseSchema();
+    OTeleporterContext.getInstance().getStatistics().notifyListeners();
+    OTeleporterContext.getInstance().getOutputManager().info("\n");
+    OTeleporterContext.getInstance().getOutputManager().debug("\n%s\n", ((OER2GraphMapper)mapper).getDataBaseSchema().toString());
 
     // Step 2: Graph model building
-    mapper.buildGraphModel(nameResolver, context);
-    context.getStatistics().notifyListeners();
-    context.getOutputManager().info("\n");
-    context.getOutputManager().debug("\n%s\n", mapper.getGraphModel().toString());
+    mapper.buildGraphModel(nameResolver);
+    OTeleporterContext.getInstance().getStatistics().notifyListeners();
+    OTeleporterContext.getInstance().getOutputManager().info("\n");
+    OTeleporterContext.getInstance().getOutputManager().debug("\n%s\n", mapper.getGraphModel().toString());
 
     // Step 3: eventual migrationConfigDoc applying
-    mapper.applyImportConfiguration(context);
+    mapper.applyImportConfiguration();
 
     // Step 4: Writing schema on OrientDB
     OGraphModelWriter graphModelWriter = new OGraphModelWriter();
     OGraphModel graphModel = ((OER2GraphMapper)mapper).getGraphModel();
-    boolean success = graphModelWriter.writeModelOnOrient(graphModel, handler, outOrientGraphUri, context);
+    boolean success = graphModelWriter.writeModelOnOrient(graphModel, handler, outOrientGraphUri);
     if(!success) {
-      context.getOutputManager().error("Writing not complete. Something gone wrong.\n");
+      OTeleporterContext.getInstance().getOutputManager().error("Writing not complete. Something gone wrong.\n");
       throw new OTeleporterRuntimeException();
     }
-    context.getStatistics().notifyListeners();
-    context.getOutputManager().debug("\nOrientDB Schema writing complete.\n");
-    context.getOutputManager().info("\n");
+    OTeleporterContext.getInstance().getStatistics().notifyListeners();
+    OTeleporterContext.getInstance().getOutputManager().debug("\nOrientDB Schema writing complete.\n");
+    OTeleporterContext.getInstance().getOutputManager().info("\n");
 
     return mapper;
   }
 
 
-  public void executeImport(OSourceDatabaseInfo sourceDBInfo, String outOrientGraphUri, OSource2GraphMapper genericMapper, ODBMSDataTypeHandler handler, OTeleporterContext context) {
+  public void executeImport(OSourceDatabaseInfo sourceDBInfo, String outOrientGraphUri, OSource2GraphMapper genericMapper, ODBMSDataTypeHandler handler) {
 
     try {
 
-      OTeleporterStatistics statistics = context.getStatistics();
+      OTeleporterStatistics statistics = OTeleporterContext.getInstance().getStatistics();
       statistics.startWork4Time = new Date();
       statistics.runningStepNumber = 4;
 
       OER2GraphMapper mapper = (OER2GraphMapper) genericMapper;
-      ODBQueryEngine dbQueryEngine = context.getDbQueryEngine();
+      ODBQueryEngine dbQueryEngine = OTeleporterContext.getInstance().getDbQueryEngine();
       OGraphEngineForDB graphEngine = new OGraphEngineForDB((OER2GraphMapper) mapper, handler);
 
       // OrientDB graph initialization/connection
@@ -123,7 +123,7 @@ public class ODBMSNaiveStrategy extends ODBMSImportStrategy {
       orientGraph.setStandardElementConstraints(false);
 
       // Importing from Entities belonging to hierarchical bags
-      super.importEntitiesBelongingToHierarchies(dbQueryEngine, graphEngine, orientGraph, context);
+      super.importEntitiesBelongingToHierarchies(dbQueryEngine, graphEngine, orientGraph);
 
       // Importing from Entities NOT belonging to hierarchical bags
       for (OVertexType currentOutVertexType : mapper.getVertexType2classMappers().keySet()) {
@@ -154,21 +154,21 @@ public class ODBMSNaiveStrategy extends ODBMSImportStrategy {
             aggregationColumns = super.buildAggregationColumnsFromAggregatedVertex(configuredVertex);
           }
 
-          super.importRecordsIntoVertexClass(mappedEntities, aggregationColumns, currentOutVertexType, dbQueryEngine, graphEngine, orientGraph, context);
+          super.importRecordsIntoVertexClass(mappedEntities, aggregationColumns, currentOutVertexType, dbQueryEngine, graphEngine, orientGraph);
         }
       }
 
       statistics.notifyListeners();
       statistics.runningStepNumber = -1;
       orientGraph.shutdown();
-      context.getOutputManager().info("\n");
+      OTeleporterContext.getInstance().getOutputManager().info("\n");
 
     } catch (OTeleporterRuntimeException e) {
       throw e;
     } catch (Exception e) {
       String mess = "";
-      context.printExceptionMessage(e, mess, "error");
-      context.printExceptionStackTrace(e, "debug");
+      OTeleporterContext.getInstance().printExceptionMessage(e, mess, "error");
+      OTeleporterContext.getInstance().printExceptionStackTrace(e, "debug");
     }
   }
 

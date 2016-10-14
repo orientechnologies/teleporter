@@ -28,13 +28,15 @@ import java.io.Writer;
 
 /**
  * Context class for Drakkar execution.
- * 
+ *
  * @author Gabriele Ponzi
  * @email  <gabriele.ponzi--at--gmail.com>
  *
  */
 
 public class OTeleporterContext {
+
+  private static OTeleporterContext instance = null;
 
   private OTeleporterStatistics  statistics;
   private OOutputStreamManager   outputManager;
@@ -44,10 +46,21 @@ public class OTeleporterContext {
   private String                 executionStrategy;
   private ODBQueryEngine         dbQueryEngine;
 
-  public OTeleporterContext() {
+  private OTeleporterContext() {
     this.statistics = new OTeleporterStatistics();
   }
 
+  public static OTeleporterContext getInstance() {
+    if (instance == null) {
+      instance = new OTeleporterContext();
+    }
+    return instance;
+  }
+
+  public static OTeleporterContext newInstance() {
+    instance = new OTeleporterContext();
+    return instance;
+  }
 
   public OTeleporterStatistics getStatistics() {
     return this.statistics;
@@ -122,14 +135,14 @@ public class OTeleporterContext {
       message += "\n" + e.getClass().getName();
 
     switch(level) {
-    case "debug": this.outputManager.debug(message);
-      break;
-    case "info": this.outputManager.info(message);
-      break;
-    case "warn": this.outputManager.warn(message);
-      break;
-    case "error": this.outputManager.error(message);
-      break;
+      case "debug": this.outputManager.debug(message);
+        break;
+      case "info": this.outputManager.info(message);
+        break;
+      case "warn": this.outputManager.warn(message);
+        break;
+      case "error": this.outputManager.error(message);
+        break;
     }
 
     return message;
@@ -149,14 +162,14 @@ public class OTeleporterContext {
     String s = writer.toString();
 
     switch(level) {
-    case "debug": this.outputManager.debug("\n" + s + "\n");
-      break;
-    case "info": this.outputManager.info("\n" + s + "\n");
-      break;
-    case "warn": this.outputManager.warn("\n" + s + "\n");
-      break;
-    case "error": this.outputManager.error("\n" + s + "\n");
-      break;
+      case "debug": this.outputManager.debug("\n" + s + "\n");
+        break;
+      case "info": this.outputManager.info("\n" + s + "\n");
+        break;
+      case "warn": this.outputManager.warn("\n" + s + "\n");
+        break;
+      case "error": this.outputManager.error("\n" + s + "\n");
+        break;
     }
 
     return s;

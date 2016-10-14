@@ -250,9 +250,8 @@ public class OTeleporter extends OServerPluginAbstract {
                              List<String> excludedTables, OOutputStreamManager outputManager) throws OTeleporterIOException {
 
     // manage conf if present: loading
-    OTeleporterContext context = new OTeleporterContext();
-    context.setOutputManager(outputManager);
-    ODocument migrationConfigDoc = OMigrationConfigManager.loadMigrationConfig(outDbUrl, configurationPath, context);
+    OTeleporterContext.getInstance().setOutputManager(outputManager);
+    ODocument migrationConfigDoc = OMigrationConfigManager.loadMigrationConfig(outDbUrl, configurationPath);
     String migrationConfig = null;
     if(migrationConfigDoc != null) {
       migrationConfig = migrationConfigDoc.toJSON("");
@@ -293,8 +292,7 @@ public class OTeleporter extends OServerPluginAbstract {
                                   String chosenMapper, String xmlPath, String nameResolver, String outputLevel, List<String> includedTables,
                                   List<String> excludedTables, String migrationConfig, OOutputStreamManager outputManager) throws OTeleporterIOException {
 
-    final OTeleporterContext context = new OTeleporterContext();
-    context.setOutputManager(outputManager);
+    OTeleporterContext.getInstance().setOutputManager(outputManager);
     ODriverConfigurator driverConfig = new ODriverConfigurator();
     List<OSourceDatabaseInfo> sourcesInfo = null;
     boolean sourceInfoLoaded = false;
@@ -302,7 +300,7 @@ public class OTeleporter extends OServerPluginAbstract {
     if(driver == null || jurl == null) {
 
       // try to get args from config files in the target orientdb db (if already present)
-      ODocument sourcesInfoDoc = OMigrationConfigManager.loadSourceInfo(outDbUrl, context);
+      ODocument sourcesInfoDoc = OMigrationConfigManager.loadSourceInfo(outDbUrl);
       if(sourcesInfoDoc == null) {
         outputManager
                 .error("Arguments -jdriver, -jurl, -juser and -jpasswd, necessary to access the source databases, were not specified and " +
@@ -312,11 +310,11 @@ public class OTeleporter extends OServerPluginAbstract {
       else {
         sourceInfoLoaded = true;
         sourcesInfo = OMigrationConfigManager.extractSourceDatabaseInfo(sourcesInfoDoc);
-        driverConfig.checkConfiguration(sourcesInfo.get(0).getSourceIdName(), context);
+        driverConfig.checkConfiguration(sourcesInfo.get(0).getSourceIdName());
       }
     }
     else {
-      String driverClassName = driverConfig.checkConfiguration(driver, context);
+      String driverClassName = driverConfig.checkConfiguration(driver);
       OSourceDatabaseInfo sourceDBInfo = new OSourceDatabaseInfo(driver, driverClassName, jurl, username, password);
       sourcesInfo = new LinkedList<OSourceDatabaseInfo>();
       sourcesInfo.add(sourceDBInfo);
@@ -334,14 +332,14 @@ public class OTeleporter extends OServerPluginAbstract {
       outputManager.setLevel(Integer.parseInt(outputLevel));
 
     // Progress Monitor initialization
-    OProgressMonitor progressMonitor = new OProgressMonitor(context);
+    OProgressMonitor progressMonitor = new OProgressMonitor();
     progressMonitor.initialize();
 
     // DB Query engine building
-    ODBQueryEngine dbQueryEngine = new ODBQueryEngine(sourceInfo.getDriverName(), context);
-    context.setDbQueryEngine(dbQueryEngine);
+    ODBQueryEngine dbQueryEngine = new ODBQueryEngine(sourceInfo.getDriverName());
+    OTeleporterContext.getInstance().setDbQueryEngine(dbQueryEngine);
 
-    OWorkflowStrategy strategy = FACTORY.buildStrategy(driver, chosenStrategy, context);
+    OWorkflowStrategy strategy = FACTORY.buildStrategy(driver, chosenStrategy);
     ODocument executionResult;
 
     // Timer for statistics notifying
@@ -351,19 +349,19 @@ public class OTeleporter extends OServerPluginAbstract {
 
         @Override
         public void run() {
-          context.getStatistics().notifyListeners();
+          OTeleporterContext.getInstance().getStatistics().notifyListeners();
         }
       }, 0, 1000);
 
       // the last argument represents the nameResolver
-      executionResult = strategy.executeStrategy(sourceInfo, outDbUrl, chosenMapper, xmlPath, nameResolver, includedTables, excludedTables, migrationConfig, context);
+      executionResult = strategy.executeStrategy(sourceInfo, outDbUrl, chosenMapper, xmlPath, nameResolver, includedTables, excludedTables, migrationConfig);
 
       // Disabling query scan threshold tip
       OGlobalConfiguration.QUERY_SCAN_THRESHOLD_TIP.setValue(50000);
 
       // Writing sources access info
       if(!sourceInfoLoaded) {
-        OMigrationConfigManager.upsertSourceDatabaseInfo(sourcesInfo, outDbUrl, context);
+        OMigrationConfigManager.upsertSourceDatabaseInfo(sourcesInfo, outDbUrl);
       }
 
     } finally {

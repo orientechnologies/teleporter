@@ -35,11 +35,11 @@ import java.util.List;
 
 public interface OQueryBuilder {
 
-    String countTableRecords(String currentTableName, String currentTableSchema, OTeleporterContext context);
-    String getRecordById(OEntity entity, String[] propertyOfKey, String[] valueOfKey, OTeleporterContext context);
-    String getRecordsByEntity(OEntity entity, OTeleporterContext context);
-    String getRecordsFromMultipleEntities(List<OEntity> mappedEntities, String[][] columns, OTeleporterContext context);
-    String getRecordsFromSingleTableByDiscriminatorValue(String discriminatorColumn, String currentDiscriminatorValue, OEntity entity, OTeleporterContext context);
-    String getEntityTypeFromSingleTable(String discriminatorColumn, OEntity entity, String[] propertyOfKey, String[] valueOfKey, OTeleporterContext context);
-    String buildAggregateTableFromHierarchicalBag(OHierarchicalBag bag, OTeleporterContext context);
+    String countTableRecords(String currentTableName, String currentTableSchema);
+    String getRecordById(OEntity entity, String[] propertyOfKey, String[] valueOfKey);
+    String getRecordsByEntity(OEntity entity);
+    String getRecordsFromMultipleEntities(List<OEntity> mappedEntities, String[][] columns);
+    String getRecordsFromSingleTableByDiscriminatorValue(String discriminatorColumn, String currentDiscriminatorValue, OEntity entity);
+    String getEntityTypeFromSingleTable(String discriminatorColumn, OEntity entity, String[] propertyOfKey, String[] valueOfKey);
+    String buildAggregateTableFromHierarchicalBag(OHierarchicalBag bag);
 }

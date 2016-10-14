@@ -69,11 +69,11 @@ public class InteractiveStrategyTest {
 
     @Before
     public void init() {
-        this.context = new OTeleporterContext();
+        this.context = OTeleporterContext.newInstance();
         this.context.setExecutionStrategy("interactive-aggr");
         this.dataTypeHandler = new OHSQLDBDataTypeHandler();
         this.context.setDataTypeHandler(dataTypeHandler);
-        this.dbQueryEngine = new ODBQueryEngine(this.driver, this.context);
+        this.dbQueryEngine = new ODBQueryEngine(this.driver);
         this.context.setDbQueryEngine(this.dbQueryEngine);
         this.context.setOutputManager(new OOutputStreamManager(0));
         this.sourceDBInfo = new OSourceDatabaseInfo("hsqldb", this.driver, this.jurl, this.username, this.password);
@@ -120,7 +120,7 @@ public class InteractiveStrategyTest {
                     " foreign key (PROJECT_ID) references PROJECT(ID))";
             st.execute(projectEmployeeTableBuilding);
 
-            ODocument executionResult = this.strategy.executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "basicDBMapper", null, "java", null, null, null, this.context);
+            ODocument executionResult = this.strategy.executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "basicDBMapper", null, "java", null, null, null);
 
             /**
              * Testing JSON building

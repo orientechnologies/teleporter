@@ -43,8 +43,6 @@ import java.util.Date;
 
 public class OProgressMonitor implements OStatisticsListener {
 
-  private OTeleporterContext context;
-
   private final String work1Title;
   private final String work2Title;
   private final String work3Title;
@@ -54,12 +52,11 @@ public class OProgressMonitor implements OStatisticsListener {
   /**
    * initialize progress bar properties.
    */
-  public OProgressMonitor(OTeleporterContext context) {
+  public OProgressMonitor() {
     this.work1Title = String.format("%-35s","(1/4) Source DB Schema building:");
     this.work2Title = String.format("%-35s","(2/4) Graph Model building:");
     this.work3Title = String.format("%-35s","(3/4) OrientDB Schema writing:");
     this.work4Title = String.format("%-35s","(4/4) OrientDB importing:");
-    this.context = context;
     this.firstPrint = true;
   }
 
@@ -209,7 +206,7 @@ public class OProgressMonitor implements OStatisticsListener {
 
 
   public void initialize() {
-    context.getStatistics().registerListener(this);
+    OTeleporterContext.getInstance().getStatistics().registerListener(this);
   }
 
   public String printProgressBar(String workTitle, int workDonePercentage, String progressBarWork, long elapsedTime, int occurredWarnings, int importedRecords, int totalRecords) {
@@ -232,7 +229,7 @@ public class OProgressMonitor implements OStatisticsListener {
     String remainingHMSTime = OFunctionsHandler.getHMSFormat(remainingTime);
 
     String message = String.format(format, workTitle, workDonePercentage, progressBarWork, " Elapsed:", elapsedHMSTime, " Remaining:", remainingHMSTime, " Warnings:", occurredWarnings, " Records:", importedRecords + "/" + totalRecords);
-    context.getOutputManager().info(message);
+    OTeleporterContext.getInstance().getOutputManager().info(message);
 
     return message;
   }

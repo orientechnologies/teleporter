@@ -66,8 +66,8 @@ public class OrientDBSchemaWritingWithFullConfigTest {
 
     @Before
     public void init() {
-        this.context = new OTeleporterContext();
-        this.dbQueryEngine = new ODBQueryEngine(this.driver, this.context);
+        this.context = OTeleporterContext.newInstance();
+        this.dbQueryEngine = new ODBQueryEngine(this.driver);
         this.context.setDbQueryEngine(this.dbQueryEngine);
         this.context.setOutputManager(new OOutputStreamManager(0));
         this.context.setNameResolver(new OJavaConventionNameResolver());
@@ -126,10 +126,10 @@ public class OrientDBSchemaWritingWithFullConfigTest {
             ODocument config = OFileManager.buildJsonFromFile(this.config);
 
             this.mapper = new OER2GraphMapper(this.sourceDBInfo, null, null, config, new OConfigurationHandler(true));
-            mapper.buildSourceDatabaseSchema(this.context);
-            mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
-            mapper.applyImportConfiguration(this.context);
-            modelWriter.writeModelOnOrient(mapper.getGraphModel(), new OHSQLDBDataTypeHandler(), this.outOrientGraphUri, context);
+            mapper.buildSourceDatabaseSchema();
+            mapper.buildGraphModel(new OJavaConventionNameResolver());
+            mapper.applyImportConfiguration();
+            modelWriter.writeModelOnOrient(mapper.getGraphModel(), new OHSQLDBDataTypeHandler(), this.outOrientGraphUri);
 
 
             /**

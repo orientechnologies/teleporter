@@ -45,7 +45,7 @@ public class OCommonQueryBuilder implements OQueryBuilder {
 
 
     @Override
-    public String countTableRecords(String currentTableName, String currentTableSchema, OTeleporterContext context) {
+    public String countTableRecords(String currentTableName, String currentTableSchema) {
         String query;
 
         if(currentTableSchema != null)
@@ -57,7 +57,7 @@ public class OCommonQueryBuilder implements OQueryBuilder {
     }
 
     @Override
-    public String getRecordById(OEntity entity, String[] propertyOfKey, String[] valueOfKey, OTeleporterContext context) {
+    public String getRecordById(OEntity entity, String[] propertyOfKey, String[] valueOfKey) {
         String query;
 
         String entityName = entity.getName();
@@ -80,7 +80,7 @@ public class OCommonQueryBuilder implements OQueryBuilder {
     }
 
     @Override
-    public String getRecordsByEntity(OEntity entity, OTeleporterContext context) {
+    public String getRecordsByEntity(OEntity entity) {
         String query;
 
         String entityName = entity.getName();
@@ -95,7 +95,7 @@ public class OCommonQueryBuilder implements OQueryBuilder {
     }
 
     @Override
-    public String getRecordsFromMultipleEntities(List<OEntity> mappedEntities, String[][] columns, OTeleporterContext context) {
+    public String getRecordsFromMultipleEntities(List<OEntity> mappedEntities, String[][] columns) {
         String query;
 
         OEntity first = mappedEntities.get(0);
@@ -120,7 +120,7 @@ public class OCommonQueryBuilder implements OQueryBuilder {
     }
 
     @Override
-    public String getRecordsFromSingleTableByDiscriminatorValue(String discriminatorColumn, String currentDiscriminatorValue, OEntity entity, OTeleporterContext context) {
+    public String getRecordsFromSingleTableByDiscriminatorValue(String discriminatorColumn, String currentDiscriminatorValue, OEntity entity) {
         String query;
 
         String entityName = entity.getName();
@@ -137,7 +137,7 @@ public class OCommonQueryBuilder implements OQueryBuilder {
     }
 
     @Override
-    public String getEntityTypeFromSingleTable(String discriminatorColumn, OEntity physicalEntity, String[] propertyOfKey, String[] valueOfKey, OTeleporterContext context) {
+    public String getEntityTypeFromSingleTable(String discriminatorColumn, OEntity physicalEntity, String[] propertyOfKey, String[] valueOfKey) {
         String query;
 
         String physicalEntityName = physicalEntity.getName();
@@ -160,7 +160,7 @@ public class OCommonQueryBuilder implements OQueryBuilder {
     }
 
     @Override
-    public String buildAggregateTableFromHierarchicalBag(OHierarchicalBag bag, OTeleporterContext context) {
+    public String buildAggregateTableFromHierarchicalBag(OHierarchicalBag bag) {
         String query;
 
         Iterator<OEntity> it = bag.getDepth2entities().get(0).iterator();

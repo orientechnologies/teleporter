@@ -75,8 +75,8 @@ public class ImportWithInputRelationshipConfigurationTest {
 
   @Before
   public void init() {
-    this.context = new OTeleporterContext();
-    this.dbQueryEngine = new ODBQueryEngine(this.driver, this.context);
+    this.context = OTeleporterContext.newInstance();
+    this.dbQueryEngine = new ODBQueryEngine(this.driver);
     this.context.setDbQueryEngine(this.dbQueryEngine);
     this.context.setOutputManager(new OOutputStreamManager(0));
     this.context.setNameResolver(new OJavaConventionNameResolver());
@@ -156,7 +156,7 @@ public class ImportWithInputRelationshipConfigurationTest {
       st.execute(projectFilling);
 
       this.naiveStrategy
-              .executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "basicDBMapper", null, "java", null, null, this.configDirectEdges, context);
+              .executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "basicDBMapper", null, "java", null, null, this.configDirectEdges);
 
 
       /*
@@ -478,7 +478,7 @@ public class ImportWithInputRelationshipConfigurationTest {
       st.execute(parentTableBuilding);
 
       this.naiveStrategy
-              .executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "basicDBMapper", null, "java", null, null, this.configInverseEdges, context);
+              .executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "basicDBMapper", null, "java", null, null, this.configInverseEdges);
 
 
       /*
@@ -809,7 +809,7 @@ public class ImportWithInputRelationshipConfigurationTest {
       st.execute(film2actorFilling);
 
       this.naiveAggregationStrategy
-              .executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "basicDBMapper", null, "java", null, null, this.configJoinTableDirectEdges, context);
+              .executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "basicDBMapper", null, "java", null, null, this.configJoinTableDirectEdges);
 
       /*
        *  Testing context information
@@ -1215,7 +1215,7 @@ public class ImportWithInputRelationshipConfigurationTest {
       st.execute(film2actorFilling);
 
       this.naiveAggregationStrategy
-              .executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "basicDBMapper", null, "java", null, null, this.configJoinTableInverseEdges, context);
+              .executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "basicDBMapper", null, "java", null, null, this.configJoinTableInverseEdges);
 
       /*
        *  Testing context information
@@ -1618,7 +1618,7 @@ public class ImportWithInputRelationshipConfigurationTest {
               + "('A008','F003','15000000'))";
       st.execute(film2actorFilling);
 
-      this.naiveAggregationStrategy.executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "basicDBMapper", null, "java", null, null, this.configJoinTableDirectEdges, context);
+      this.naiveAggregationStrategy.executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "basicDBMapper", null, "java", null, null, this.configJoinTableDirectEdges);
 
       /*
        *  Testing context information
@@ -2023,7 +2023,7 @@ public class ImportWithInputRelationshipConfigurationTest {
               + "('F003','A008','15000000'))";
       st.execute(film2actorFilling);
 
-      this.naiveAggregationStrategy.executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "basicDBMapper", null, "java", null, null, this.configJoinTableInverseEdges2, context);
+      this.naiveAggregationStrategy.executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "basicDBMapper", null, "java", null, null, this.configJoinTableInverseEdges2);
 
       /*
        *  Testing context information

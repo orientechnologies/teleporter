@@ -38,7 +38,7 @@ import com.orientechnologies.teleporter.persistence.handler.OSQLServerDataTypeHa
 
 public class ODataTypeHandlerFactory {
 
-  public ODriverDataTypeHandler buildDataTypeHandler(String driver, OTeleporterContext context) {
+  public ODriverDataTypeHandler buildDataTypeHandler(String driver) {
     ODriverDataTypeHandler handler = null;
 
     switch(driver) {
@@ -59,11 +59,11 @@ public class ODataTypeHandlerFactory {
     break;
 
     default :  	handler = new ODBMSDataTypeHandler();
-    context.getStatistics().warningMessages.add("Driver " + driver + " is not completely supported. Thus problems may occur during type conversion.");
+      OTeleporterContext.getInstance().getStatistics().warningMessages.add("Driver " + driver + " is not completely supported. Thus problems may occur during type conversion.");
     break;
     }
 
-    context.setDataTypeHandler(handler);
+    OTeleporterContext.getInstance().setDataTypeHandler(handler);
 
     return handler;
   }

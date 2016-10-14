@@ -51,7 +51,7 @@ public class ODBMSDataTypeHandler implements ODriverDataTypeHandler {
    * The method returns the Orient Type starting from the string name type of the original DBMS.
    * If the starting type is not mapped, OType.STRING is returned.
    */
-  public OType resolveType(String type, OTeleporterContext context) {
+  public OType resolveType(String type) {
 
     // normalization
     type = type.toLowerCase();
@@ -62,7 +62,7 @@ public class ODBMSDataTypeHandler implements ODriverDataTypeHandler {
 
     // Undefined Types
     else {
-      context.getStatistics().warningMessages.add("The original type '" + type + "' is not convertible into any OrientDB type thus, in order to prevent data loss, it will be converted to the OrientDB Type String.");
+      OTeleporterContext.getInstance().getStatistics().warningMessages.add("The original type '" + type + "' is not convertible into any OrientDB type thus, in order to prevent data loss, it will be converted to the OrientDB Type String.");
       return OType.STRING;
     }
   }

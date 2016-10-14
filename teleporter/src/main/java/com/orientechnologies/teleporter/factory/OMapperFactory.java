@@ -42,7 +42,7 @@ public class OMapperFactory {
   public OMapperFactory() {}
 
   public OSource2GraphMapper buildMapper(String chosenMapper, OSourceInfo sourceInfo, String xmlPath, List<String> includedTables, List<String> excludedTables,
-                                         ODocument configuration, OConfigurationHandler configHandler, OTeleporterContext context) {
+                                         ODocument configuration, OConfigurationHandler configHandler) {
 
     OSource2GraphMapper mapper = null;
 

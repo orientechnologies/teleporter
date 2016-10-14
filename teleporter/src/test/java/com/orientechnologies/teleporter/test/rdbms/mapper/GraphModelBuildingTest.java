@@ -61,8 +61,8 @@ public class GraphModelBuildingTest {
 
   @Before
   public void init() {
-    this.context = new OTeleporterContext();
-    this.dbQueryEngine = new ODBQueryEngine(this.driver, this.context);
+    this.context = OTeleporterContext.newInstance();
+    this.dbQueryEngine = new ODBQueryEngine(this.driver);
     this.context.setDbQueryEngine(this.dbQueryEngine);
     this.context.setOutputManager(new OOutputStreamManager(0));
     this.context.setDataTypeHandler(new OHSQLDBDataTypeHandler());
@@ -97,8 +97,8 @@ public class GraphModelBuildingTest {
       st.execute(foreignTableBuilding);
 
       this.mapper = new OER2GraphMapper(this.sourceDBInfo, null, null, null, null);
-      mapper.buildSourceDatabaseSchema(this.context);
-      mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
+      mapper.buildSourceDatabaseSchema();
+      mapper.buildGraphModel(new OJavaConventionNameResolver());
 
 
       /*
@@ -281,8 +281,8 @@ public class GraphModelBuildingTest {
       st.execute(itemTableBuilding);
 
       this.mapper = new OER2GraphMapper(this.sourceDBInfo, null, null, null, null);
-      mapper.buildSourceDatabaseSchema(this.context);
-      mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
+      mapper.buildSourceDatabaseSchema();
+      mapper.buildGraphModel(new OJavaConventionNameResolver());
 
 
       /*
@@ -517,8 +517,8 @@ public class GraphModelBuildingTest {
       st.execute(articleTableBuilding);
 
       this.mapper = new OER2GraphMapper(this.sourceDBInfo, null, null, null, null);
-      mapper.buildSourceDatabaseSchema(this.context);
-      mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
+      mapper.buildSourceDatabaseSchema();
+      mapper.buildGraphModel(new OJavaConventionNameResolver());
 
 
       /*
@@ -750,8 +750,8 @@ public class GraphModelBuildingTest {
       st.execute(bookTableBuilding);
 
       this.mapper = new OER2GraphMapper(this.sourceDBInfo, null, null, null, null);
-      mapper.buildSourceDatabaseSchema(this.context);
-      mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
+      mapper.buildSourceDatabaseSchema();
+      mapper.buildGraphModel(new OJavaConventionNameResolver());
 
 
       /*
@@ -943,8 +943,8 @@ public class GraphModelBuildingTest {
       st.execute(film2actorTableBuilding);
 
       this.mapper = new OER2GraphMapper(this.sourceDBInfo, null, null, null, null);
-      mapper.buildSourceDatabaseSchema(this.context);
-      mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
+      mapper.buildSourceDatabaseSchema();
+      mapper.buildGraphModel(new OJavaConventionNameResolver());
 
 
       /*
@@ -1168,8 +1168,8 @@ public class GraphModelBuildingTest {
       st.execute(foreignTableBuilding);
 
       this.mapper = new OER2GraphMapper(this.sourceDBInfo, null, null, null, null);
-      mapper.buildSourceDatabaseSchema(this.context);
-      mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
+      mapper.buildSourceDatabaseSchema();
+      mapper.buildGraphModel(new OJavaConventionNameResolver());
 
 
       /*

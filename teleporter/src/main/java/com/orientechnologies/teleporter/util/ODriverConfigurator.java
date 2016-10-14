@@ -93,7 +93,7 @@ public class ODriverConfigurator {
    * It Checks if the requested driver is already present in the classpath, if not present it downloads the last available driver
    * version. Moreover it gets the driver class name corresponding to the chosen DBMS.
    */
-  public String checkConfiguration(String driverName, OTeleporterContext context) {
+  public String checkConfiguration(String driverName) {
 
     String classPath = "../lib/";
     String driverClassName = null;
@@ -102,7 +102,7 @@ public class ODriverConfigurator {
     try {
 
       // fetching online JSON
-      ODocument json = readJsonFromUrl(DRIVERS, context);
+      ODocument json = readJsonFromUrl(DRIVERS);
 
       ODocument fields = null;
 
@@ -126,7 +126,7 @@ public class ODriverConfigurator {
 
       if (driverPath == null) {
 
-        context.getOutputManager().info("\nDownloading the necessary JDBC driver in ORIENTDB_HOME/lib ...\n");
+        OTeleporterContext.getInstance().getOutputManager().info("\nDownloading the necessary JDBC driver in ORIENTDB_HOME/lib ...\n");
 
         // download last available jdbc driver version
         String driverDownldUrl = (String) fields.field("url");
@@ -146,16 +146,16 @@ public class ODriverConfigurator {
           driverPath = split[0] + ".jar";
         }
 
-        context.getOutputManager().info("Driver JDBC downloaded.\n");
+        OTeleporterContext.getInstance().getOutputManager().info("Driver JDBC downloaded.\n");
       }
 
       // saving driver
-      context.setDriverDependencyPath(driverPath);
+      OTeleporterContext.getInstance().setDriverDependencyPath(driverPath);
 
     } catch (Exception e) {
       String mess = "";
-      context.printExceptionMessage(e, mess, "error");
-      context.printExceptionStackTrace(e, "error");
+      OTeleporterContext.getInstance().printExceptionMessage(e, mess, "error");
+      OTeleporterContext.getInstance().printExceptionStackTrace(e, "error");
       throw new OTeleporterRuntimeException(e);
     }
 
@@ -183,7 +183,7 @@ public class ODriverConfigurator {
     return null;
   }
 
-  public ODocument readJsonFromUrl(String url, OTeleporterContext context) {
+  public ODocument readJsonFromUrl(String url) {
 
     InputStream is = null;
     ODocument json = null;
@@ -203,8 +203,8 @@ public class ODriverConfigurator {
           is = new FileInputStream(new File(this.localJsonPath));
         } catch (IOException e2) {
           String mess = "The jdbc-drivers migrationConfigDoc cannot be found. The connection to orientdb.com did not succeed and the migrationConfigDoc file \"jdbc-drivers.json\" is not present in ORIENTDB_HOME/config.\n";
-          context.printExceptionMessage(e2, mess, "error");
-          context.printExceptionStackTrace(e2, "error");
+          OTeleporterContext.getInstance().printExceptionMessage(e2, mess, "error");
+          OTeleporterContext.getInstance().printExceptionStackTrace(e2, "error");
           throw new OTeleporterRuntimeException(e2);
         }
       }
@@ -217,29 +217,29 @@ public class ODriverConfigurator {
 
     } catch (Exception e) {
       String mess = "";
-      context.printExceptionMessage(e, mess, "error");
-      context.printExceptionStackTrace(e, "error");
+      OTeleporterContext.getInstance().printExceptionMessage(e, mess, "error");
+      OTeleporterContext.getInstance().printExceptionStackTrace(e, "error");
       throw new OTeleporterRuntimeException(e);
     } finally {
       try {
         is.close();
       } catch (Exception e) {
         String mess = "";
-        context.printExceptionMessage(e, mess, "error");
-        context.printExceptionStackTrace(e, "error");
+        OTeleporterContext.getInstance().printExceptionMessage(e, mess, "error");
+        OTeleporterContext.getInstance().printExceptionStackTrace(e, "error");
         throw new OTeleporterRuntimeException(e);
       }
     }
     return json;
   }
 
-  public void checkConnection(String driver, String uri, String username, String password, OTeleporterContext context)
+  public void checkConnection(String driver, String uri, String username, String password)
       throws Exception {
 
-    String driverName = checkConfiguration(driver, context);
+    String driverName = checkConfiguration(driver);
     Connection connection = null;
     try {
-      connection = ODBSourceConnection.getConnection(driverName, uri, username, password, context);
+      connection = ODBSourceConnection.getConnection(driverName, uri, username, password);
     } finally {
       if (connection != null) {
         connection.close();

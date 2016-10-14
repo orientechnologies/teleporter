@@ -32,6 +32,6 @@ import com.orientechnologies.orient.core.metadata.schema.OType;
 
 public interface ODriverDataTypeHandler {
 
-  public OType resolveType(String type, OTeleporterContext context);
+  public OType resolveType(String type);
 
 }

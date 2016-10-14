@@ -54,7 +54,7 @@ public class OHibernate2GraphMapper extends OER2GraphMapper {
   }
 
   @Override
-  public void buildSourceDatabaseSchema(OTeleporterContext context) {
+  public void buildSourceDatabaseSchema() {
 
     try {
 
@@ -62,7 +62,7 @@ public class OHibernate2GraphMapper extends OER2GraphMapper {
        * Building Info from DB Schema
        */
 
-      super.buildSourceDatabaseSchema(context);
+      super.buildSourceDatabaseSchema();
 
 
       /*
@@ -86,13 +86,13 @@ public class OHibernate2GraphMapper extends OER2GraphMapper {
         if(currentEntityElement.hasAttribute("table"))
           currentEntity = super.dataBaseSchema.getEntityByNameIgnoreCase(currentEntityElement.getAttribute("table"));
         else {
-          context.getOutputManager().error("XML Format error: problem in class definition, table attribute missing in the class node.\n");
+          OTeleporterContext.getInstance().getOutputManager().error("XML Format error: problem in class definition, table attribute missing in the class node.\n");
           throw new OTeleporterRuntimeException();
         }
 
         // inheritance
         if(currentEntity != null)
-          this.detectInheritanceAndUpdateSchema(currentEntity, currentEntityElement, context);
+          this.detectInheritanceAndUpdateSchema(currentEntity, currentEntityElement);
       }
 
       // sorting tables for inheritance level and then for name
@@ -100,15 +100,15 @@ public class OHibernate2GraphMapper extends OER2GraphMapper {
 
     } catch (Exception e) {
       String mess = "";
-      context.printExceptionMessage(e, mess, "error");
-      context.printExceptionStackTrace(e, "error");
+      OTeleporterContext.getInstance().printExceptionMessage(e, mess, "error");
+      OTeleporterContext.getInstance().printExceptionStackTrace(e, "error");
       throw new OTeleporterRuntimeException(e);
     }
 
   }
 
 
-  private void detectInheritanceAndUpdateSchema(OEntity parentEntity, Element parentEntityElement, OTeleporterContext context) {
+  private void detectInheritanceAndUpdateSchema(OEntity parentEntity, Element parentEntityElement) {
 
     NodeList subclassElements = parentEntityElement.getElementsByTagName("subclass");
     NodeList joinedSubclassElements = parentEntityElement.getElementsByTagName("joined-subclass");
@@ -122,7 +122,7 @@ public class OHibernate2GraphMapper extends OER2GraphMapper {
     if(subclassElements.getLength() > 0) {
       if(parentEntityElement.hasAttribute("discriminator-value")) 
         rootDiscriminatorValue = parentEntityElement.getAttribute("discriminator-value");
-      this.performSubclassTagInheritance(hierarchicalBag, parentEntity, subclassElements, discriminatorElement, rootDiscriminatorValue, context);
+      this.performSubclassTagInheritance(hierarchicalBag, parentEntity, subclassElements, discriminatorElement, rootDiscriminatorValue);
     }
 
     // TABLE PER SUBCLASS Inheritance
@@ -141,7 +141,7 @@ public class OHibernate2GraphMapper extends OER2GraphMapper {
         hierarchicalBag.setDiscriminatorColumn(discriminatorElement.getAttribute("column"));
       }
 
-      this.performJoinedSubclassTagInheritance(hierarchicalBag, parentEntity, joinedSubclassElements, context);
+      this.performJoinedSubclassTagInheritance(hierarchicalBag, parentEntity, joinedSubclassElements);
     }
 
     // TABLE PER CONCRETE CLASS Inheritance
@@ -160,14 +160,14 @@ public class OHibernate2GraphMapper extends OER2GraphMapper {
         hierarchicalBag.setDiscriminatorColumn(discriminatorElement.getAttribute("column"));
       }
 
-      this.performUnionSubclassTagInheritance(hierarchicalBag, parentEntity, unionSubclassElements, context);
+      this.performUnionSubclassTagInheritance(hierarchicalBag, parentEntity, unionSubclassElements);
     }
 
   }
 
 
   // Table per Class Hierarchy or Table per Subclass Inheritance
-  private void performSubclassTagInheritance(OHierarchicalBag hierarchicalBag, OEntity parentEntity, NodeList subclassElements, Element discriminatorElement, String rootDiscriminatorValue, OTeleporterContext context) {
+  private void performSubclassTagInheritance(OHierarchicalBag hierarchicalBag, OEntity parentEntity, NodeList subclassElements, Element discriminatorElement, String rootDiscriminatorValue) {
 
     NodeList joinElements;
     Element currentEntityElement;
@@ -197,7 +197,7 @@ public class OHibernate2GraphMapper extends OER2GraphMapper {
       for(int j=0; j<subclassElements.getLength(); j++) {
         currentEntityElement = (Element)subclassElements.item(j);
         joinElements = currentEntityElement.getElementsByTagName("join");
-        performJoinedSubclassTagInheritance(hierarchicalBag, parentEntity, joinElements, context);
+        performJoinedSubclassTagInheritance(hierarchicalBag, parentEntity, joinElements);
       }
     }
 
@@ -225,7 +225,7 @@ public class OHibernate2GraphMapper extends OER2GraphMapper {
         if(currentEntityElement.hasAttribute("name"))
           currentEntityElementName = currentEntityElement.getAttribute("name");
         else {
-          context.getOutputManager().error("XML Format error: problem in subclass definition, table attribute missing in the joined-subclass nodes.\n");
+          OTeleporterContext.getInstance().getOutputManager().error("XML Format error: problem in subclass definition, table attribute missing in the joined-subclass nodes.\n");
           throw new OTeleporterRuntimeException();
         }
         currentChildEntity = new OEntity(currentEntityElementName, null, super.sourceDBInfo);
@@ -278,7 +278,7 @@ public class OHibernate2GraphMapper extends OER2GraphMapper {
   }
 
   // Table per Subclass Inheritance
-  private void performJoinedSubclassTagInheritance(OHierarchicalBag hierarchicalBag, OEntity parentEntity, NodeList joinedSubclassElements, OTeleporterContext context) {
+  private void performJoinedSubclassTagInheritance(OHierarchicalBag hierarchicalBag, OEntity parentEntity, NodeList joinedSubclassElements) {
 
     Element currentChildElement;
     OEntity currentChildEntity;
@@ -289,7 +289,7 @@ public class OHibernate2GraphMapper extends OER2GraphMapper {
       if(currentChildElement.hasAttribute("table"))
         currentChildEntityName = currentChildElement.getAttribute("table");
       else {
-        context.getOutputManager().error("XML Format error: problem in subclass definition, table attribute missing in the joined-subclass nodes.\n");
+        OTeleporterContext.getInstance().getOutputManager().error("XML Format error: problem in subclass definition, table attribute missing in the joined-subclass nodes.\n");
         throw new OTeleporterRuntimeException();
       }
       currentChildEntity = super.dataBaseSchema.getEntityByNameIgnoreCase(currentChildEntityName);
@@ -321,13 +321,13 @@ public class OHibernate2GraphMapper extends OER2GraphMapper {
       currentChildEntity.setHierarchicalBag(hierarchicalBag);
 
       // recursive call on the node
-      this.detectInheritanceAndUpdateSchema(currentChildEntity, currentChildElement, context);
+      this.detectInheritanceAndUpdateSchema(currentChildEntity, currentChildElement);
     }
 
   }
 
   // Table per Concrete Class
-  void performUnionSubclassTagInheritance(OHierarchicalBag hierarchicalBag, OEntity parentEntity, NodeList unionSubclassElements, OTeleporterContext context) {
+  void performUnionSubclassTagInheritance(OHierarchicalBag hierarchicalBag, OEntity parentEntity, NodeList unionSubclassElements) {
 
     Element currentChildElement;
     OEntity currentChildEntity;
@@ -339,7 +339,7 @@ public class OHibernate2GraphMapper extends OER2GraphMapper {
       if(currentChildElement.hasAttribute("table"))
         currentChildEntityName = currentChildElement.getAttribute("table");
       else {
-        context.getOutputManager().error("XML Format error: problem in subclass definition, table attribute missing in the joined-subclass nodes.\n");
+        OTeleporterContext.getInstance().getOutputManager().error("XML Format error: problem in subclass definition, table attribute missing in the joined-subclass nodes.\n");
         throw new OTeleporterRuntimeException();
       }
 
@@ -372,7 +372,7 @@ public class OHibernate2GraphMapper extends OER2GraphMapper {
       currentChildEntity.setHierarchicalBag(hierarchicalBag);
 
       // recursive call on the node
-      this.detectInheritanceAndUpdateSchema(currentChildEntity, currentChildElement, context);
+      this.detectInheritanceAndUpdateSchema(currentChildEntity, currentChildElement);
 
       // removing inherited attributes
       it = currentChildEntity.getAttributes().iterator();

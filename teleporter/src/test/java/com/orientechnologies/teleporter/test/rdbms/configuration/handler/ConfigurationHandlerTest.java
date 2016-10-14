@@ -66,12 +66,12 @@ public class ConfigurationHandlerTest {
 
     @Before
     public void init() {
-        this.context = new OTeleporterContext();
+        this.context = OTeleporterContext.newInstance();
         this.context.setOutputManager(new OOutputStreamManager(0));
         this.context.setExecutionStrategy("naive-aggregate");
         this.dataTypeHandler = new OHSQLDBDataTypeHandler();
         this.context.setDataTypeHandler(dataTypeHandler);
-        this.dbQueryEngine = new ODBQueryEngine(this.driver, this.context);
+        this.dbQueryEngine = new ODBQueryEngine(this.driver);
         this.context.setDbQueryEngine(this.dbQueryEngine);
         this.context.setOutputManager(new OOutputStreamManager(0));
         this.sourceDBInfo = new OSourceDatabaseInfo("hsqldb", this.driver, this.jurl, this.username, this.password);
@@ -93,7 +93,7 @@ public class ConfigurationHandlerTest {
             fail();
         }
 
-        OConfiguration configuration = configurationHandler.buildConfigurationFromJSONDoc(inputConfigurationDoc, this.context);
+        OConfiguration configuration = configurationHandler.buildConfigurationFromJSONDoc(inputConfigurationDoc);
 
 
         /**
@@ -359,7 +359,7 @@ public class ConfigurationHandlerTest {
          * 1. Writing the configuration on a second JSON document through the configurationHandler.
          * 2. Checking that the original JSON configuration and the final just written configuration are equal.
          */
-        ODocument writtenJsonConfiguration = configurationHandler.buildJSONDocFromConfiguration(configuration, context);
+        ODocument writtenJsonConfiguration = configurationHandler.buildJSONDocFromConfiguration(configuration);
         assertTrue(ODocumentComparator.areEquals(inputConfigurationDoc, writtenJsonConfiguration));
     }
 
@@ -380,7 +380,7 @@ public class ConfigurationHandlerTest {
             fail();
         }
 
-        OConfiguration configuration = configurationHandler.buildConfigurationFromJSONDoc(inputConfigurationDoc, this.context);
+        OConfiguration configuration = configurationHandler.buildConfigurationFromJSONDoc(inputConfigurationDoc);
 
 
         /**
@@ -438,7 +438,7 @@ public class ConfigurationHandlerTest {
          * 1. Writing the configuration on a second JSON document through the configurationHandler.
          * 2. Checking that the original JSON configuration and the final just written configuration are equal.
          */
-        ODocument writtenJsonConfiguration = configurationHandler.buildJSONDocFromConfiguration(configuration, context);
+        ODocument writtenJsonConfiguration = configurationHandler.buildJSONDocFromConfiguration(configuration);
         assertEquals(inputConfigurationDoc.toJSON(""), writtenJsonConfiguration.toJSON(""));
     }
 
@@ -484,16 +484,16 @@ public class ConfigurationHandlerTest {
             st.execute(projectEmployeeTableBuilding);
 
             this.mapper = new OER2GraphMapper(this.sourceDBInfo, null, null, null, configurationHandler);
-            this.mapper.buildSourceDatabaseSchema(this.context);
-            this.mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
-            this.mapper.performMany2ManyAggregation(context);
+            this.mapper.buildSourceDatabaseSchema();
+            this.mapper.buildGraphModel(new OJavaConventionNameResolver());
+            this.mapper.performMany2ManyAggregation();
 
 
             /**
              * Testing OConfiguration building
              */
 
-            OConfiguration configuredGraph = configurationHandler.buildConfigurationFromMapper(this.mapper,this.context);
+            OConfiguration configuredGraph = configurationHandler.buildConfigurationFromMapper(this.mapper);
 
             assertEquals(3, configuredGraph.getConfiguredVertices().size());
             assertEquals(2, configuredGraph.getConfiguredEdges().size());
@@ -867,11 +867,11 @@ public class ConfigurationHandlerTest {
             st.execute(projectEmployeeTableBuilding);
 
             this.mapper = new OER2GraphMapper(this.sourceDBInfo, null, null, null, configurationHandler);
-            this.mapper.buildSourceDatabaseSchema(this.context);
-            this.mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
-            this.mapper.performMany2ManyAggregation(context);
+            this.mapper.buildSourceDatabaseSchema();
+            this.mapper.buildGraphModel(new OJavaConventionNameResolver());
+            this.mapper.performMany2ManyAggregation();
 
-            OConfiguration configuredGraph = configurationHandler.buildConfigurationFromMapper(this.mapper,this.context);
+            OConfiguration configuredGraph = configurationHandler.buildConfigurationFromMapper(this.mapper);
 
             /**
              * Testing JSON building
@@ -885,7 +885,7 @@ public class ConfigurationHandlerTest {
                 fail();
             }
 
-            ODocument configuredGraphDoc = configurationHandler.buildJSONDocFromConfiguration(configuredGraph, this.context);
+            ODocument configuredGraphDoc = configurationHandler.buildJSONDocFromConfiguration(configuredGraph);
             assertTrue(ODocumentComparator.areEquals(inputConfigurationDoc, configuredGraphDoc));
 
         }catch(Exception e) {

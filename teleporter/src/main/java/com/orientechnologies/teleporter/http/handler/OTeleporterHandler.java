@@ -82,9 +82,8 @@ public class OTeleporterHandler {
     final String jurl = args.field("jurl");
     final String username = args.field("username");
     final String password = args.field("password");
-    OTeleporterContext oTeleporterContext = new OTeleporterContext();
-    oTeleporterContext.setOutputManager(new OOutputStreamManager(2));
-    configurator.checkConnection(driver, jurl, username, password, oTeleporterContext);
+    OTeleporterContext.getInstance().setOutputManager(new OOutputStreamManager(2));
+    configurator.checkConnection(driver, jurl, username, password);
   }
 
   /**

@@ -68,8 +68,8 @@ public class HibernateImportTest {
 
   @Before
   public void init() {
-    this.context = new OTeleporterContext();
-    this.dbQueryEngine = new ODBQueryEngine(this.driver, this.context);
+    this.context = OTeleporterContext.newInstance();
+    this.dbQueryEngine = new ODBQueryEngine(this.driver);
     this.context.setDbQueryEngine(this.dbQueryEngine);
     this.context.setOutputManager(new OOutputStreamManager(0));
     this.context.setNameResolver(new OJavaConventionNameResolver());
@@ -126,7 +126,7 @@ public class HibernateImportTest {
           + "('E003','cont_emp','Jack Johnson',NULL,NULL,'50.00','6','R002',NULL))";
       st.execute(employeeFilling);
 
-      this.importStrategy.executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "hibernate", HibernateImportTest.XML_TABLE_PER_CLASS, "java", null, null, null, context);
+      this.importStrategy.executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "hibernate", HibernateImportTest.XML_TABLE_PER_CLASS, "java", null, null, null);
 
       /*
        *  Testing context information
@@ -480,7 +480,7 @@ public class HibernateImportTest {
           + "('E003','50.00','6'))";
       st.execute(contractEmployeeFilling);
 
-      this.importStrategy.executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "hibernate", HibernateImportTest.XML_TABLE_PER_SUBCLASS1, "java", null, null, null, context);
+      this.importStrategy.executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "hibernate", HibernateImportTest.XML_TABLE_PER_SUBCLASS1, "java", null, null, null);
 
       /*
        *  Testing context information
@@ -832,7 +832,7 @@ public class HibernateImportTest {
           + "('E003','50.00','6'))";
       st.execute(contractEmployeeFilling);
 
-      this.importStrategy.executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "hibernate", HibernateImportTest.XML_TABLE_PER_SUBCLASS2, "java", null, null, null, context);
+      this.importStrategy.executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "hibernate", HibernateImportTest.XML_TABLE_PER_SUBCLASS2, "java", null, null, null);
 
       /*
        *  Testing context information
@@ -1184,7 +1184,7 @@ public class HibernateImportTest {
           + "('E003','Jack Johnson','R002',NULL,'50.00','6'))";
       st.execute(contractEmployeeFilling);
 
-      this.importStrategy.executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "hibernate", HibernateImportTest.XML_TABLE_PER_CONCRETE_CLASS, "java", null, null, null, context);
+      this.importStrategy.executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "hibernate", HibernateImportTest.XML_TABLE_PER_CONCRETE_CLASS, "java", null, null, null);
 
       /*
        *  Testing context information

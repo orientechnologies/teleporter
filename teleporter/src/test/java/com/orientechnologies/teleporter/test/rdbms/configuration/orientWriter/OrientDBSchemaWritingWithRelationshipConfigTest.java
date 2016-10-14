@@ -69,8 +69,8 @@ public class OrientDBSchemaWritingWithRelationshipConfigTest {
 
   @Before
   public void init() {
-    this.context = new OTeleporterContext();
-    this.dbQueryEngine = new ODBQueryEngine(this.driver, this.context);
+    this.context = OTeleporterContext.newInstance();
+    this.dbQueryEngine = new ODBQueryEngine(this.driver);
     this.context.setDbQueryEngine(this.dbQueryEngine);
     this.context.setOutputManager(new OOutputStreamManager(0));
     this.context.setNameResolver(new OJavaConventionNameResolver());
@@ -119,10 +119,10 @@ public class OrientDBSchemaWritingWithRelationshipConfigTest {
       ODocument config = OFileManager.buildJsonFromFile(this.configDirectEdgesPath);
 
       this.mapper = new OER2GraphMapper(this.sourceDBInfo, null, null, config, new OConfigurationHandler(false));
-      mapper.buildSourceDatabaseSchema(this.context);
-      mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
-      mapper.applyImportConfiguration(this.context);
-      modelWriter.writeModelOnOrient(mapper.getGraphModel(), new OHSQLDBDataTypeHandler(), this.outOrientGraphUri, context);
+      mapper.buildSourceDatabaseSchema();
+      mapper.buildGraphModel(new OJavaConventionNameResolver());
+      mapper.applyImportConfiguration();
+      modelWriter.writeModelOnOrient(mapper.getGraphModel(), new OHSQLDBDataTypeHandler(), this.outOrientGraphUri);
 
 
       /*
@@ -308,10 +308,10 @@ public class OrientDBSchemaWritingWithRelationshipConfigTest {
       ODocument config = OFileManager.buildJsonFromFile(this.configInverseEdgesPath);
 
       this.mapper = new OER2GraphMapper(this.sourceDBInfo, null, null, config, new OConfigurationHandler(false));
-      mapper.buildSourceDatabaseSchema(this.context);
-      mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
-      mapper.applyImportConfiguration(this.context);
-      modelWriter.writeModelOnOrient(mapper.getGraphModel(), new OHSQLDBDataTypeHandler(), this.outOrientGraphUri, context);
+      mapper.buildSourceDatabaseSchema();
+      mapper.buildGraphModel(new OJavaConventionNameResolver());
+      mapper.applyImportConfiguration();
+      modelWriter.writeModelOnOrient(mapper.getGraphModel(), new OHSQLDBDataTypeHandler(), this.outOrientGraphUri);
 
 
       /*
@@ -482,11 +482,11 @@ public class OrientDBSchemaWritingWithRelationshipConfigTest {
       ODocument config = OFileManager.buildJsonFromFile(this.configJoinTableDirectEdgesPath);
 
       this.mapper = new OER2GraphMapper(this.sourceDBInfo, null, null, config, new OConfigurationHandler(true));
-      mapper.buildSourceDatabaseSchema(this.context);
-      mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
-      mapper.applyImportConfiguration(this.context);
-      mapper.performAggregations(this.context);
-      modelWriter.writeModelOnOrient(mapper.getGraphModel(), new OHSQLDBDataTypeHandler(), this.outOrientGraphUri, context);
+      mapper.buildSourceDatabaseSchema();
+      mapper.buildGraphModel(new OJavaConventionNameResolver());
+      mapper.applyImportConfiguration();
+      mapper.performAggregations();
+      modelWriter.writeModelOnOrient(mapper.getGraphModel(), new OHSQLDBDataTypeHandler(), this.outOrientGraphUri);
 
 
       /*
@@ -650,11 +650,11 @@ public class OrientDBSchemaWritingWithRelationshipConfigTest {
       ODocument config = OFileManager.buildJsonFromFile(this.configJoinTableInverseEdgesPath);
 
       this.mapper = new OER2GraphMapper(this.sourceDBInfo, null, null, config, new OConfigurationHandler(true));
-      mapper.buildSourceDatabaseSchema(this.context);
-      mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
-      mapper.applyImportConfiguration(this.context);
-      mapper.performAggregations(this.context);
-      modelWriter.writeModelOnOrient(mapper.getGraphModel(), new OHSQLDBDataTypeHandler(), this.outOrientGraphUri, context);
+      mapper.buildSourceDatabaseSchema();
+      mapper.buildGraphModel(new OJavaConventionNameResolver());
+      mapper.applyImportConfiguration();
+      mapper.performAggregations();
+      modelWriter.writeModelOnOrient(mapper.getGraphModel(), new OHSQLDBDataTypeHandler(), this.outOrientGraphUri);
 
 
       /*
@@ -817,11 +817,11 @@ public class OrientDBSchemaWritingWithRelationshipConfigTest {
       ODocument config = OFileManager.buildJsonFromFile(this.configJoinTableDirectEdgesPath);
 
       this.mapper = new OER2GraphMapper(this.sourceDBInfo, null, null, config, new OConfigurationHandler(true));
-      mapper.buildSourceDatabaseSchema(this.context);
-      mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
-      mapper.applyImportConfiguration(this.context);
-      mapper.performAggregations(this.context);
-      modelWriter.writeModelOnOrient(mapper.getGraphModel(), new OHSQLDBDataTypeHandler(), this.outOrientGraphUri, context);
+      mapper.buildSourceDatabaseSchema();
+      mapper.buildGraphModel(new OJavaConventionNameResolver());
+      mapper.applyImportConfiguration();
+      mapper.performAggregations();
+      modelWriter.writeModelOnOrient(mapper.getGraphModel(), new OHSQLDBDataTypeHandler(), this.outOrientGraphUri);
 
 
       /*
@@ -985,11 +985,11 @@ public class OrientDBSchemaWritingWithRelationshipConfigTest {
       ODocument config = OFileManager.buildJsonFromFile(this.configJoinTableInverseEdgesPath2);
 
       this.mapper = new OER2GraphMapper(this.sourceDBInfo, null, null, config, new OConfigurationHandler(true));
-      mapper.buildSourceDatabaseSchema(this.context);
-      mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
-      mapper.applyImportConfiguration(this.context);
-      mapper.performAggregations(this.context);
-      modelWriter.writeModelOnOrient(mapper.getGraphModel(), new OHSQLDBDataTypeHandler(), this.outOrientGraphUri, context);
+      mapper.buildSourceDatabaseSchema();
+      mapper.buildGraphModel(new OJavaConventionNameResolver());
+      mapper.applyImportConfiguration();
+      mapper.performAggregations();
+      modelWriter.writeModelOnOrient(mapper.getGraphModel(), new OHSQLDBDataTypeHandler(), this.outOrientGraphUri);
 
 
       /*

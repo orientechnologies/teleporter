@@ -65,8 +65,8 @@ public class FullConfigurationMappingTest {
 
     @Before
     public void init() {
-        this.context = new OTeleporterContext();
-        this.dbQueryEngine = new ODBQueryEngine(this.driver, this.context);
+        this.context = OTeleporterContext.newInstance();
+        this.dbQueryEngine = new ODBQueryEngine(this.driver);
         this.context.setDbQueryEngine(this.dbQueryEngine);
         this.context.setOutputManager(new OOutputStreamManager(0));
         this.context.setNameResolver(new OJavaConventionNameResolver());
@@ -123,9 +123,9 @@ public class FullConfigurationMappingTest {
             ODocument config = OFileManager.buildJsonFromFile(this.config);
 
             this.mapper = new OER2GraphMapper(this.sourceDBInfo, null, null, config, new OConfigurationHandler(true));
-            this.mapper.buildSourceDatabaseSchema(this.context);
-            this.mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
-            this.mapper.applyImportConfiguration(this.context);
+            this.mapper.buildSourceDatabaseSchema();
+            this.mapper.buildGraphModel(new OJavaConventionNameResolver());
+            this.mapper.applyImportConfiguration();
 
 
             /*

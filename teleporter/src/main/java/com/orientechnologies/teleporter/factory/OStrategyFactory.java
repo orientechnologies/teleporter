@@ -38,7 +38,7 @@ public class OStrategyFactory {
 
   public OStrategyFactory() {}
 
-  public OWorkflowStrategy buildStrategy(String storageDriver, String chosenStrategy, OTeleporterContext context) throws
+  public OWorkflowStrategy buildStrategy(String storageDriver, String chosenStrategy) throws
           OTeleporterIOException {
 
     OWorkflowStrategy strategy = null;
@@ -63,10 +63,10 @@ public class OStrategyFactory {
         case "interactive-aggr":   strategy = new ODBMSModelBuildingAggregationStrategy();
           break;
 
-        default :  context.getOutputManager().error("The typed strategy doesn't exist for migration from the chosen RDBMS.\n");
+        default :  OTeleporterContext.getInstance().getOutputManager().error("The typed strategy doesn't exist for migration from the chosen RDBMS.\n");
       }
 
-      context.setExecutionStrategy(chosenStrategy);
+      OTeleporterContext.getInstance().setExecutionStrategy(chosenStrategy);
     }
 
     if(strategy == null)
