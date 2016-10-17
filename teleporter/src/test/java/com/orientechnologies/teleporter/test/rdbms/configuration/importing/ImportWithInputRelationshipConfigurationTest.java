@@ -28,6 +28,7 @@ import com.orientechnologies.teleporter.persistence.handler.OHSQLDBDataTypeHandl
 import com.orientechnologies.teleporter.strategy.rdbms.ODBMSNaiveAggregationStrategy;
 import com.orientechnologies.teleporter.strategy.rdbms.ODBMSNaiveStrategy;
 import com.orientechnologies.teleporter.util.OFileManager;
+import com.orientechnologies.teleporter.util.OMigrationConfigManager;
 import com.tinkerpop.blueprints.Direction;
 import com.tinkerpop.blueprints.Edge;
 import com.tinkerpop.blueprints.Vertex;
@@ -54,22 +55,17 @@ public class ImportWithInputRelationshipConfigurationTest {
   private ODBMSNaiveStrategy            naiveStrategy;
   private ODBMSNaiveAggregationStrategy naiveAggregationStrategy;
   private String                        dbParentDirectoryPath;
-  private final String configDirectEdgesPathJSON = "src/test/resources/configuration-mapping/relationships-mapping-direct-edges.json";
-  private final String configInverseEdgesPathJSON = "src/test/resources/configuration-mapping/relationships-mapping-inverted-edges.json";
-  private final String configJoinTableDirectEdgesPathJSON = "src/test/resources/configuration-mapping/joint-table-relationships-mapping-direct-edges.json";
-  private final String configJoinTableInverseEdgesPathJSON = "src/test/resources/configuration-mapping/joint-table-relationships-mapping-inverted-edges.json";
-  private final String configJoinTableInverseEdgesPath2JSON = "src/test/resources/configuration-mapping/join-table-relationship-mapping-inverted-edges2.json";
-  private String configDirectEdges;
-  private String configInverseEdges;
-  private String configJoinTableDirectEdges;
-  private String configJoinTableInverseEdges;
-  private String configJoinTableInverseEdges2;
+  private final String configDirectEdgesPath = "src/test/resources/configuration-mapping/relationships-mapping-direct-edges.json";
+  private final String configInverseEdgesPath = "src/test/resources/configuration-mapping/relationships-mapping-inverted-edges.json";
+  private final String configJoinTableDirectEdgesPath = "src/test/resources/configuration-mapping/joint-table-relationships-mapping-direct-edges.json";
+  private final String configJoinTableInverseEdgesPath = "src/test/resources/configuration-mapping/joint-table-relationships-mapping-inverted-edges.json";
+  private final String configJoinTableInverseEdgesPath2 = "src/test/resources/configuration-mapping/join-table-relationship-mapping-inverted-edges2.json";
   private ODBQueryEngine dbQueryEngine;
   private String driver = "org.hsqldb.jdbc.JDBCDriver";
   private String jurl = "jdbc:hsqldb:mem:mydb";
   private String username = "SA";
   private String password = "";
-  private String outOrientGraphUri = "memory:testOrientDB";
+  private String outOrientGraphUri;
   private OSourceDatabaseInfo sourceDBInfo;
 
 
@@ -86,19 +82,6 @@ public class ImportWithInputRelationshipConfigurationTest {
     this.outOrientGraphUri = "plocal:target/testOrientDB";
     this.dbParentDirectoryPath = this.outOrientGraphUri.replace("plocal:","");
     this.sourceDBInfo = new OSourceDatabaseInfo("source", this.driver, this.jurl, this.username, this.password);
-    this.initializeConfigs();
-  }
-
-  private void initializeConfigs() {
-    try {
-      this.configDirectEdges = OFileManager.buildJsonFromFile(configDirectEdgesPathJSON).toJSON("");
-      this.configInverseEdges = OFileManager.buildJsonFromFile(configInverseEdgesPathJSON).toJSON("");
-      this.configJoinTableDirectEdges = OFileManager.buildJsonFromFile(configJoinTableDirectEdgesPathJSON).toJSON("");
-      this.configJoinTableInverseEdges = OFileManager.buildJsonFromFile(configJoinTableInverseEdgesPathJSON).toJSON("");
-      this.configJoinTableInverseEdges2 = OFileManager.buildJsonFromFile(configJoinTableInverseEdgesPath2JSON).toJSON("");
-    }catch(Exception e) {
-      fail();
-    }
   }
 
 
@@ -155,8 +138,10 @@ public class ImportWithInputRelationshipConfigurationTest {
               + "('P002','Contracts Update','E005'))";
       st.execute(projectFilling);
 
+      ODocument config = OMigrationConfigManager.loadMigrationConfigFromFile(this.configDirectEdgesPath);
+
       this.naiveStrategy
-              .executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "basicDBMapper", null, "java", null, null, this.configDirectEdges);
+              .executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "basicDBMapper", null, "java", null, null, config);
 
 
       /*
@@ -477,8 +462,10 @@ public class ImportWithInputRelationshipConfigurationTest {
       st = connection.createStatement();
       st.execute(parentTableBuilding);
 
+      ODocument config = OMigrationConfigManager.loadMigrationConfigFromFile(this.configInverseEdgesPath);
+
       this.naiveStrategy
-              .executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "basicDBMapper", null, "java", null, null, this.configInverseEdges);
+              .executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "basicDBMapper", null, "java", null, null, config);
 
 
       /*
@@ -808,8 +795,10 @@ public class ImportWithInputRelationshipConfigurationTest {
               + "('A008','F003','15000000'))";
       st.execute(film2actorFilling);
 
+      ODocument config = OMigrationConfigManager.loadMigrationConfigFromFile(this.configJoinTableDirectEdgesPath);
+
       this.naiveAggregationStrategy
-              .executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "basicDBMapper", null, "java", null, null, this.configJoinTableDirectEdges);
+              .executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "basicDBMapper", null, "java", null, null, config);
 
       /*
        *  Testing context information
@@ -1214,8 +1203,10 @@ public class ImportWithInputRelationshipConfigurationTest {
               + "('F003','A008','15000000'))";
       st.execute(film2actorFilling);
 
+      ODocument config = OMigrationConfigManager.loadMigrationConfigFromFile(this.configJoinTableInverseEdgesPath);
+
       this.naiveAggregationStrategy
-              .executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "basicDBMapper", null, "java", null, null, this.configJoinTableInverseEdges);
+              .executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "basicDBMapper", null, "java", null, null, config);
 
       /*
        *  Testing context information
@@ -1618,7 +1609,9 @@ public class ImportWithInputRelationshipConfigurationTest {
               + "('A008','F003','15000000'))";
       st.execute(film2actorFilling);
 
-      this.naiveAggregationStrategy.executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "basicDBMapper", null, "java", null, null, this.configJoinTableDirectEdges);
+      ODocument config = OMigrationConfigManager.loadMigrationConfigFromFile(this.configJoinTableDirectEdgesPath);
+
+      this.naiveAggregationStrategy.executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "basicDBMapper", null, "java", null, null, config);
 
       /*
        *  Testing context information
@@ -2023,7 +2016,9 @@ public class ImportWithInputRelationshipConfigurationTest {
               + "('F003','A008','15000000'))";
       st.execute(film2actorFilling);
 
-      this.naiveAggregationStrategy.executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "basicDBMapper", null, "java", null, null, this.configJoinTableInverseEdges2);
+      ODocument config = OMigrationConfigManager.loadMigrationConfigFromFile(this.configJoinTableInverseEdgesPath2);
+
+      this.naiveAggregationStrategy.executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "basicDBMapper", null, "java", null, null, config);
 
       /*
        *  Testing context information

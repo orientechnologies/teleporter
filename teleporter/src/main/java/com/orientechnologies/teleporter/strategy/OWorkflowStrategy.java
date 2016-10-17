@@ -35,6 +35,6 @@ import java.util.List;
 public interface OWorkflowStrategy {
 
   ODocument executeStrategy(OSourceInfo sourceInfo, String outOrientGraphUri, String chosenMapper, String xmlPath, String nameResolverConvention,
-                            List<String> includedTables, List<String> excludedTables, String jsonMigrationConfig);
+                            List<String> includedTables, List<String> excludedTables, ODocument migrationConfig);
 
 }

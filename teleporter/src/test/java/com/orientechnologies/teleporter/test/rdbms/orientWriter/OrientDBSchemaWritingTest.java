@@ -59,7 +59,7 @@ public class OrientDBSchemaWritingTest {
   private String jurl = "jdbc:hsqldb:mem:mydb";
   private String username = "SA";
   private String password = "";
-  private String outOrientGraphUri = "memory:testOrientDB";
+  private String outOrientGraphUri;
   private OSourceDatabaseInfo sourceDBInfo;
 
   @Before
@@ -70,7 +70,7 @@ public class OrientDBSchemaWritingTest {
     this.context.setOutputManager(new OOutputStreamManager(0));
     this.context.setDataTypeHandler(new OHSQLDBDataTypeHandler());
     this.modelWriter = new OGraphModelWriter();
-    this.outOrientGraphUri = "memory:testOrientDB";
+    this.outOrientGraphUri = "plocal:target/testOrientDB";
     this.sourceDBInfo = new OSourceDatabaseInfo("source", this.driver, this.jurl, this.username, this.password);
   }
 

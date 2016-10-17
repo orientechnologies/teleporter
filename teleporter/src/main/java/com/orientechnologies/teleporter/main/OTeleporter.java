@@ -247,18 +247,21 @@ public class OTeleporter extends OServerPluginAbstract {
                              String chosenMapper, String xmlPath, String nameResolver, String outputLevel, List<String> includedTables,
                              List<String> excludedTables, String configurationPath, OOutputStreamManager outputManager) throws OTeleporterIOException {
 
-    // manage conf if present: loading
+    // trying to load the configuration starting from the input configurationPath
     ODocument migrationConfigDoc = null;
+    String jsonMigrationConfig = null;
     if(configurationPath != null) {
-      migrationConfigDoc = OMigrationConfigManager.loadMigrationConfig(outDbUrl, configurationPath);
-    }
-    String migrationConfig = null;
-    if(migrationConfigDoc != null) {
-      migrationConfig = migrationConfigDoc.toJSON("");
+      migrationConfigDoc = OMigrationConfigManager.loadMigrationConfigFromFile(configurationPath);
+      if(migrationConfigDoc != null) {
+        jsonMigrationConfig = migrationConfigDoc.toJSON("");
+      }
+      else {
+        OTeleporterContext.getInstance().getOutputManager().info("No migration configuration file was found in the suggested path. Migration will be performed according " +
+                "to standard mapping rules or to the latest configured policies if any.\n");
+      }
     }
 
-    executeJob(driver, jurl, username, password, outDbUrl, chosenStrategy, chosenMapper, xmlPath, nameResolver, outputLevel, includedTables, excludedTables, migrationConfig, outputManager);
-
+    executeJob(driver, jurl, username, password, outDbUrl, chosenStrategy, chosenMapper, xmlPath, nameResolver, outputLevel, includedTables, excludedTables, jsonMigrationConfig, outputManager);
   }
 
 
@@ -284,13 +287,13 @@ public class OTeleporter extends OServerPluginAbstract {
    *          the level of the logging messages that will be printed on the OutputStream during the execution
    * @param excludedTables
    * @param includedTables
-   * @param migrationConfig
+   * @param jsonMigrationConfig
    * @throws OTeleporterIOException
    */
 
   public static ODocument executeJob(String driver, String jurl, String username, String password, String outDbUrl, String chosenStrategy,
                                      String chosenMapper, String xmlPath, String nameResolver, String outputLevel, List<String> includedTables,
-                                     List<String> excludedTables, String migrationConfig, OOutputStreamManager outputManager) throws OTeleporterIOException {
+                                     List<String> excludedTables, String jsonMigrationConfig, OOutputStreamManager outputManager) throws OTeleporterIOException {
 
     OTeleporterContext.newInstance().setOutputManager(outputManager);
     ODriverConfigurator driverConfig = new ODriverConfigurator();
@@ -320,8 +323,36 @@ public class OTeleporter extends OServerPluginAbstract {
       sourcesInfo.add(sourceDBInfo);
     }
 
+    /**
+     * Handling configuration files (source access info and migration configuration file)
+     */
+
     // fetching the first source access info (now Teleporter is conceived to accept just a source info for the migration)
     OSourceDatabaseInfo sourceInfo = sourcesInfo.get(0);
+
+    // migration configuration
+    ODocument migrationConfig = null;
+    if(jsonMigrationConfig != null && jsonMigrationConfig.length() > 0) {
+
+      // use this migration and write it in the target database
+      migrationConfig = new ODocument();
+      migrationConfig.fromJSON(jsonMigrationConfig, "noMap");
+      OMigrationConfigManager.writeConfigurationInTargetDB(migrationConfig, outDbUrl);
+    }
+    else {
+      // try to load a previous file configuration in the target db
+      OTeleporterContext.getInstance().getOutputManager().info("Trying to load a previous configuration file in the target OrientDB database...\n");
+      String configurationPath = OMigrationConfigManager.buildConfigurationFilePath(outDbUrl, OMigrationConfigManager.getConfigFileName());
+      migrationConfig = OMigrationConfigManager.loadMigrationConfigFromFile(configurationPath);
+      // if present use it
+      if(migrationConfig != null) {
+        OTeleporterContext.getInstance().getOutputManager().info("A previous configuration in the %s path was loaded and it will be used for the current migration.", configurationPath);
+      }
+      // else no migration will be used for the migration/sync
+      else {
+        OTeleporterContext.getInstance().getOutputManager().info("No previous configuration in the %s path was found.\nMigration will be performed according to standard mapping rules.\n\n", configurationPath);
+      }
+    }
 
     // Disabling query scan threshold tip
     OGlobalConfiguration.QUERY_SCAN_THRESHOLD_TIP.setValue(-1);

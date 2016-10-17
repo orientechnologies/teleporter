@@ -58,7 +58,7 @@ public class FilterTableImportingTest {
   private String jurl = "jdbc:hsqldb:mem:mydb";
   private String username = "SA";
   private String password = "";
-  private String outOrientGraphUri = "memory:testOrientDB";
+  private String outOrientGraphUri;
   private OSourceDatabaseInfo sourceDBInfo;
   private final static String XML_TABLE_PER_CLASS = "src/test/resources/inheritance/hibernate/tablePerClassHierarchyImportTest.xml";
   private final static String XML_TABLE_PER_SUBCLASS1 = "src/test/resources/inheritance/hibernate/tablePerSubclassImportTest1.xml";
@@ -68,6 +68,7 @@ public class FilterTableImportingTest {
 
   @Before
   public void init() {
+    this.outOrientGraphUri = "plocal:target/testOrientDB";
     this.context = OTeleporterContext.newInstance();
     this.dbQueryEngine = new ODBQueryEngine(this.driver);
     this.context.setDbQueryEngine(this.dbQueryEngine);

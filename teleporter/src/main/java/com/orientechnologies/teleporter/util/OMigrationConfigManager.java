@@ -40,61 +40,27 @@ public class OMigrationConfigManager {
 
   // config info
   private final static String configurationDirectoryName = "teleporter-config/";
-  private final static String configFileName = "migration-config.json";
-  private final static String sourceInfoFileName = "sources-access-info.json";
-  private static String outDBConfigPath;       // path ORIENTDB_HOME/<db-name>/teleporter-config/migartion-config.json
-  private static String outDBSourceInfoPath;       // path ORIENTDB_HOME/<db-name>/teleporter-config/sources-access-info.json
+  private final static String configFileName = "migration-config.json";           // path ORIENTDB_HOME/<db-name>/teleporter-config/migration-config.json
+  private final static String sourceInfoFileName = "sources-access-info.json";    // path ORIENTDB_HOME/<db-name>/teleporter-config/sources-access-info.json
   private static boolean configPresentInDB;
 
 
   /**
-   * Loading eventual migrationConfigDoc.
+   * Loading eventual migrationConfigDoc from an external configuration file.
    * Look for the config in the <db-path>/teleporter-config/ path:
-   *  (i) - if db and migrationConfigDoc are present use the default config
-   *      - else
-   *       (ii)  - if an external config path was passed as argument then load the config, use it for the steps 1,2,3 and then copy it
+   * (i)  - if the external config path is available then load the config and use it for the steps 1,2,3
    *               in the <db-path>/teleporter-config/ path (migrationConfigDoc.json)
-   *       (iii) - else execute strategy without migrationConfigDoc
+   * (ii) - else execute strategy without migration config
    **/
-  public static ODocument loadMigrationConfig(String outOrientGraphUri, String configurationPath) {
+  public static ODocument loadMigrationConfigFromFile(String configurationPath) {
 
-    if(outOrientGraphUri.contains("\\")) {
-      outOrientGraphUri = outOrientGraphUri.replace("\\","/");
-    }
-
-    // checking the presence of the migrationConfigDoc in the target db
-    if (!(outOrientGraphUri.charAt(outOrientGraphUri.length() - 1) == '/')) {
-      outOrientGraphUri += "/";
-    }
-    outDBConfigPath = outOrientGraphUri + configurationDirectoryName + configFileName;
-    outDBConfigPath = outDBConfigPath.replace("plocal:", "");
-    File confFileInOrientDB = new File(outDBConfigPath);
-
-    if (confFileInOrientDB.exists())
-      configPresentInDB = true;
-    else
-      configPresentInDB = false;
-
-    // (i)
     ODocument config = null;
     try {
-      if (configPresentInDB) {
-        config = OFileManager.buildJsonFromFile(outDBConfigPath);
-        OTeleporterContext.getInstance().getOutputManager().info("Configuration correctly loaded from %s.\n", outDBConfigPath);
-      } else {
         config = OFileManager.buildJsonFromFile(configurationPath);
-        // (ii)
+        // (i)
         if (config != null) {
-          OTeleporterContext.getInstance().getOutputManager().info("Configuration correctly loaded from %s and saved in %s.\n", configurationPath, outDBConfigPath);
-
-          // manage conf if present: updating in the db directory
-          copyConfigurationInDatabase(config, configurationPath);
+          OTeleporterContext.getInstance().getOutputManager().info("Configuration correctly loaded from %s.\n", configurationPath);
         }
-        // (iii)
-        else {
-          OTeleporterContext.getInstance().getOutputManager().info("No migrationConfigDoc file was found. Migration will be performed with standard mapping policies.\n");
-        }
-      }
     } catch (Exception e) {
       String mess = "";
       OTeleporterContext.getInstance().printExceptionMessage(e, mess, "error");
@@ -105,7 +71,21 @@ public class OMigrationConfigManager {
     return config;
   }
 
-  public static void copyConfigurationInDatabase(ODocument config, String configurationPath) {
+  public static String buildConfigurationFilePath(String outOrientGraphUri, String configFileName) {
+    if(outOrientGraphUri.contains("\\")) {
+      outOrientGraphUri = outOrientGraphUri.replace("\\","/");
+    }
+
+    // checking the presence of the migrationConfigDoc in the target db
+    if (!(outOrientGraphUri.charAt(outOrientGraphUri.length() - 1) == '/')) {
+      outOrientGraphUri += "/";
+    }
+    String outDBConfigPath = outOrientGraphUri + configurationDirectoryName + configFileName;
+    outDBConfigPath = outDBConfigPath.replace("plocal:", "");
+    return outDBConfigPath;
+  }
+
+  /*public static void copyConfigurationInDatabase(ODocument config, String configurationPath, String outDBConfigPath) {
 
     // if we have config in input and it is not present in the DB then we copy it in the <db-path>/teleporter-config/ path
     if (config != null) {
@@ -131,6 +111,27 @@ public class OMigrationConfigManager {
     FileChannel in = new FileInputStream(sourceConfig).getChannel();
     FileChannel out = new FileOutputStream(destinationConfig).getChannel();
     out.transferFrom(in, 0, in.size());
+  }*/
+
+
+  public static void writeConfigurationInTargetDB(ODocument migrationConfig, String outOrientGraphUri) {
+
+    String outDBConfigPath = buildConfigurationFilePath(outOrientGraphUri, configFileName);
+    File confFileInOrientDB = new File(outDBConfigPath);
+
+    if (confFileInOrientDB.exists()) {
+      confFileInOrientDB.delete();
+    }
+
+    String jsonSourcesInfo = migrationConfig.toJSON("prettyPrint");
+    try {
+      OFileManager.writeFileFromText(jsonSourcesInfo, outDBConfigPath);
+    }catch(IOException e) {
+      String mess = "";
+      OTeleporterContext.getInstance().printExceptionMessage(e, mess, "error");
+      OTeleporterContext.getInstance().printExceptionStackTrace(e, "error");
+    }
+
   }
 
   /**
@@ -141,16 +142,7 @@ public class OMigrationConfigManager {
    **/
   public static ODocument loadSourceInfo(String outOrientGraphUri) {
 
-    if(outOrientGraphUri.contains("\\")) {
-      outOrientGraphUri = outOrientGraphUri.replace("\\","/");
-    }
-
-    // checking the presence of the migrationConfigDoc in the target db
-    if (!(outOrientGraphUri.charAt(outOrientGraphUri.length() - 1) == '/')) {
-      outOrientGraphUri += "/";
-    }
-    outDBConfigPath = outOrientGraphUri + configurationDirectoryName + sourceInfoFileName;
-    outDBConfigPath = outDBConfigPath.replace("plocal:", "");
+    String outDBConfigPath = buildConfigurationFilePath(outOrientGraphUri, sourceInfoFileName);
     File confFileInOrientDB = new File(outDBConfigPath);
 
     if (confFileInOrientDB.exists())
@@ -198,18 +190,8 @@ public class OMigrationConfigManager {
 
   public static void upsertSourceDatabaseInfo(List<OSourceDatabaseInfo> sourcesInfo, String outOrientGraphUri) {
 
-    if(outOrientGraphUri.contains("\\")) {
-      outOrientGraphUri = outOrientGraphUri.replace("\\","/");
-    }
-
-    if (!(outOrientGraphUri.charAt(outOrientGraphUri.length() - 1) == '/')) {
-      outOrientGraphUri += "/";
-    }
-
-    outDBSourceInfoPath = outOrientGraphUri + configurationDirectoryName + sourceInfoFileName;
-    outDBSourceInfoPath = outDBSourceInfoPath.replace("plocal:", "");
-
-    File confFileInOrientDB = new File(outDBSourceInfoPath);
+    String outDBConfigPath = buildConfigurationFilePath(outOrientGraphUri, sourceInfoFileName);
+    File confFileInOrientDB = new File(outDBConfigPath);
 
     if (confFileInOrientDB.exists()) {
       confFileInOrientDB.delete();
@@ -233,12 +215,23 @@ public class OMigrationConfigManager {
 
     String jsonSourcesInfo = sourcesInfoDoc.toJSON("prettyPrint");
     try {
-      OFileManager.writeFileFromText(jsonSourcesInfo, outDBSourceInfoPath);
+      OFileManager.writeFileFromText(jsonSourcesInfo, outDBConfigPath);
     }catch(IOException e) {
       String mess = "";
       OTeleporterContext.getInstance().printExceptionMessage(e, mess, "error");
       OTeleporterContext.getInstance().printExceptionStackTrace(e, "error");
     }
+  }
 
+  public static String getConfigurationDirectoryName() {
+    return configurationDirectoryName;
+  }
+
+  public static String getConfigFileName() {
+    return configFileName;
+  }
+
+  public static String getSourceInfoFileName() {
+    return sourceInfoFileName;
   }
 }

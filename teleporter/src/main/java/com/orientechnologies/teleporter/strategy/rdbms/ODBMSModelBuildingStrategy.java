@@ -50,17 +50,10 @@ public abstract class ODBMSModelBuildingStrategy implements OWorkflowStrategy {
 
     @Override
     public ODocument executeStrategy(OSourceInfo sourceInfo, String outOrientGraphUri, String chosenMapper, String xmlPath, String nameResolverConvention,
-                                     List<String> includedTables, List<String> excludedTables, String jsonMigrationConfig) {
+                                     List<String> includedTables, List<String> excludedTables, ODocument migrationConfig) {
 
         OSourceDatabaseInfo sourceDBInfo = (OSourceDatabaseInfo) sourceInfo;
         Date globalStart = new Date();
-
-        // configuration building
-        ODocument migrationConfig = null;
-        if(jsonMigrationConfig != null && jsonMigrationConfig.length() > 0) {
-            migrationConfig = new ODocument();
-            migrationConfig.fromJSON(jsonMigrationConfig, "noMap");
-        }
 
         ODataTypeHandlerFactory dataTypeHandlerFactory = new ODataTypeHandlerFactory();
         ODBMSDataTypeHandler handler = (ODBMSDataTypeHandler) dataTypeHandlerFactory.buildDataTypeHandler(sourceDBInfo.getDriverName());

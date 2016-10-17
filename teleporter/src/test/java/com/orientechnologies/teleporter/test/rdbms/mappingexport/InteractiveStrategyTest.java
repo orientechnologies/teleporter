@@ -62,13 +62,14 @@ public class InteractiveStrategyTest {
     private String jurl = "jdbc:hsqldb:mem:mydb";
     private String username = "SA";
     private String password = "";
-    private String outOrientGraphUri = "memory:testOrientDB";
+    private String outOrientGraphUri;
     private OSourceDatabaseInfo sourceDBInfo;
     private ODBMSModelBuildingStrategy strategy;
 
 
     @Before
     public void init() {
+        this.outOrientGraphUri = "plocal:target/testOrientDB";
         this.context = OTeleporterContext.newInstance();
         this.context.setExecutionStrategy("interactive-aggr");
         this.dataTypeHandler = new OHSQLDBDataTypeHandler();

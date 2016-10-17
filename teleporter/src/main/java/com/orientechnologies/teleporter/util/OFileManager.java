@@ -121,6 +121,10 @@ public class OFileManager {
     }
 
     File jsonFile = new File(filePath);
+    if(!jsonFile.exists()) {
+      return null;
+    }
+
     FileInputStream is = new FileInputStream(jsonFile);
     BufferedReader rd = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF-8")));
     ODocument json = new ODocument();

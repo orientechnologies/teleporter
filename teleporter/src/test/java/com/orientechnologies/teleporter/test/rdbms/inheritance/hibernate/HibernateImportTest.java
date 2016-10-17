@@ -56,7 +56,7 @@ public class HibernateImportTest {
   private String jurl = "jdbc:hsqldb:mem:mydb";
   private String username = "SA";
   private String password = "";
-  private String outOrientGraphUri = "memory:testOrientDB";
+  private String outOrientGraphUri;
   private OSourceDatabaseInfo sourceDBInfo;
 
 
@@ -68,6 +68,7 @@ public class HibernateImportTest {
 
   @Before
   public void init() {
+    this.outOrientGraphUri = "plocal:target/testOrientDB";
     this.context = OTeleporterContext.newInstance();
     this.dbQueryEngine = new ODBQueryEngine(this.driver);
     this.context.setDbQueryEngine(this.dbQueryEngine);

@@ -18,6 +18,7 @@
 
 package com.orientechnologies.teleporter.test.rdbms.configuration.importing;
 
+import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.teleporter.context.OOutputStreamManager;
 import com.orientechnologies.teleporter.context.OTeleporterContext;
 import com.orientechnologies.teleporter.importengine.rdbms.dbengine.ODBQueryEngine;
@@ -26,6 +27,7 @@ import com.orientechnologies.teleporter.nameresolver.OJavaConventionNameResolver
 import com.orientechnologies.teleporter.persistence.handler.OHSQLDBDataTypeHandler;
 import com.orientechnologies.teleporter.strategy.rdbms.ODBMSNaiveStrategy;
 import com.orientechnologies.teleporter.util.OFileManager;
+import com.orientechnologies.teleporter.util.OMigrationConfigManager;
 import com.tinkerpop.blueprints.Direction;
 import com.tinkerpop.blueprints.Edge;
 import com.tinkerpop.blueprints.Vertex;
@@ -52,13 +54,12 @@ public class ImportWithFullInputConfigurationTest {
     private ODBMSNaiveStrategy naiveStrategy;
     private String dbParentDirectoryPath;
     private final String configPathJson = "src/test/resources/configuration-mapping/full-configuration-mapping.json";
-    private String config;
     private ODBQueryEngine dbQueryEngine;
     private String driver = "org.hsqldb.jdbc.JDBCDriver";
     private String jurl = "jdbc:hsqldb:mem:mydb";
     private String username = "SA";
     private String password = "";
-    private String outOrientGraphUri = "memory:testOrientDB";
+    private String outOrientGraphUri;
     private OSourceDatabaseInfo sourceDBInfo;
 
 
@@ -74,15 +75,6 @@ public class ImportWithFullInputConfigurationTest {
         this.outOrientGraphUri = "plocal:target/testOrientDB";
         this.dbParentDirectoryPath = this.outOrientGraphUri.replace("plocal:","");
         this.sourceDBInfo = new OSourceDatabaseInfo("source", this.driver, this.jurl, this.username, this.password);
-        this.initConfigs();
-    }
-
-    private void initConfigs() {
-        try {
-            this.config = OFileManager.buildJsonFromFile(configPathJson).toJSON("");
-        }catch(Exception e) {
-            fail();
-        }
     }
 
 
@@ -159,8 +151,10 @@ public class ImportWithFullInputConfigurationTest {
                     + "('D002','Contracts Update','Glasgow','2016-05-10'))";
             st.execute(departmentFilling);
 
+            ODocument configDoc = OMigrationConfigManager.loadMigrationConfigFromFile(this.configPathJson);
+
             this.naiveStrategy
-                    .executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "basicDBMapper", null, "java", null, null, this.config);
+                    .executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "basicDBMapper", null, "java", null, null, configDoc);
 
 
             /**

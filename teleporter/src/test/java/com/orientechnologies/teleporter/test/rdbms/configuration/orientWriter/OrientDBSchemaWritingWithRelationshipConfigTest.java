@@ -77,7 +77,7 @@ public class OrientDBSchemaWritingWithRelationshipConfigTest {
     this.context.setDataTypeHandler(new OHSQLDBDataTypeHandler());
     this.sourceDBInfo = new OSourceDatabaseInfo("source", this.driver, this.jurl, this.username, this.password);
     this.modelWriter = new OGraphModelWriter();
-    this.outOrientGraphUri = "memory:testOrientDB";
+    this.outOrientGraphUri = "plocal:target/testOrientDB";
   }
 
   @Test

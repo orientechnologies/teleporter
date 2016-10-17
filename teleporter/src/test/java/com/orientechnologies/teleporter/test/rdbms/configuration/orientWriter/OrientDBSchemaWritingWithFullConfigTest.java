@@ -73,7 +73,7 @@ public class OrientDBSchemaWritingWithFullConfigTest {
         this.context.setNameResolver(new OJavaConventionNameResolver());
         this.context.setDataTypeHandler(new OHSQLDBDataTypeHandler());
         this.modelWriter = new OGraphModelWriter();
-        this.outOrientGraphUri = "memory:testOrientDB";
+        this.outOrientGraphUri = "plocal:target/testOrientDB";
         this.sourceDBInfo = new OSourceDatabaseInfo("source", this.driver, this.jurl, this.username, this.password);
     }
 

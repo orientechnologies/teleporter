@@ -142,7 +142,7 @@ public abstract class TeleporterInvocationTest {
     public void prepareArguments() {
       this.arguments.put("-jdriver", "hypersql");
       this.arguments.put("-jurl", this.jurl);
-      this.arguments.put("-ourl", "memory:testOrientDB");
+      this.arguments.put("-ourl", "plocal:target/testOrientDB");
       this.arguments.put("-juser", this.username);
       this.arguments.put("-jpasswd", this.password);
     }
