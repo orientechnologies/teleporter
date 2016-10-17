@@ -323,23 +323,24 @@ public class OGraphEngineForDB {
               }
             }
             else {
-              equalProperties = false;
               equalVersions = false;
             }
+          }
+          else {
+            equalVersions = false;
+          }
 
-            if(!equalVersions) {
-              // removing old eventual properties
-              for(String propertyKey: vertex.getPropertyKeys()) {
-                vertex.removeProperty(propertyKey);
-              }
-
-              // setting new properties and save
-              //              long millis = ((Date)properties.get("datanascita")).getTime();
-              this.setElementProperties(vertex, properties);
-              statistics.orientUpdatedVertices++;
-              OTeleporterContext.getInstance().getOutputManager().debug("\nLoaded properties: %s\n", properties.toString());
-              OTeleporterContext.getInstance().getOutputManager().debug("\nNew vertex inserted (all props setted): %s\n", vertex.toString());
+          if(!equalVersions) {
+            // removing old eventual properties
+            for(String propertyKey: vertex.getPropertyKeys()) {
+              vertex.removeProperty(propertyKey);
             }
+
+            // setting new properties and save
+            this.setElementProperties(vertex, properties);
+            statistics.orientUpdatedVertices++;
+            OTeleporterContext.getInstance().getOutputManager().debug("\nLoaded properties: %s\n", properties.toString());
+            OTeleporterContext.getInstance().getOutputManager().debug("\nNew vertex upserted (all props setted): %s\n", vertex.toString());
           }
         }
       }
@@ -360,6 +361,11 @@ public class OGraphEngineForDB {
     Date currentDateValue;
     byte[] currentBinaryValue;
     String currentAttributeValue;
+
+    // TODELETE
+    if(currentPropertyName.equals("notificationType")) {
+      System.out.println();
+    }
 
     // disambiguation on OrientDB Schema type
 
