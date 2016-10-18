@@ -837,16 +837,6 @@ public class OER2GraphMapper extends OSource2GraphMapper {
           propertyToUpdate.setReadOnly(configuredProperty.isReadOnly());
           propertyToUpdate.setNotNull(configuredProperty.isNotNull());
           propertyToUpdate.setOriginalType(originalType);
-
-          /**
-           * Updating rules
-           */
-
-          // updating properties mapping
-          if(!configuredProperty.isIncludedInMigration()) {
-            currentClassMapper.getAttribute2property().put(columnName,null);
-            currentClassMapper.getProperty2attribute().remove(actualPropertyName);
-          }
         }
       }
 
@@ -987,12 +977,8 @@ public class OER2GraphMapper extends OSource2GraphMapper {
             for(OConfiguredProperty prop: originalTable2configuredProperties.get(tableName)) {
               String columnName = prop.getPropertyMapping().getColumnName();
               String propertyName = prop.getPropertyName();
-              if (prop.isIncludedInMigration()) {
-                attribute2property.put(columnName, propertyName);
-                property2attribute.put(propertyName, columnName);
-              } else {
-                attribute2property.put(columnName, null);
-              }
+              attribute2property.put(columnName, propertyName);
+              property2attribute.put(propertyName, columnName);
             }
 
             // removing old entities' rules

@@ -414,14 +414,15 @@ public class FullConfigurationMappingTest {
             assertEquals(personClassMapper.getVertexType(), personVertexType);
 
             assertEquals(4, personClassMapper.attribute2property.size());
-            assertEquals(3, personClassMapper.property2attribute.size());
+            assertEquals(4, personClassMapper.property2attribute.size());
             assertEquals("extKey1", personClassMapper.attribute2property.get("ID"));
             assertEquals("firstName", personClassMapper.attribute2property.get("NAME"));
             assertEquals("lastName", personClassMapper.attribute2property.get("SURNAME"));
-            assertNull(personClassMapper.attribute2property.get("DEP_ID"));
+            assertEquals("depId", personClassMapper.attribute2property.get("DEP_ID"));
             assertEquals("ID", personClassMapper.property2attribute.get("extKey1"));
             assertEquals("NAME", personClassMapper.property2attribute.get("firstName"));
             assertEquals("SURNAME", personClassMapper.property2attribute.get("lastName"));
+            assertEquals("DEP_ID", personClassMapper.property2attribute.get("depId"));
 
             OClassMapper vatProfileClassMapper = mapper.getClassMappersByVertex(personVertexType).get(1);
             assertEquals(1, mapper.getClassMappersByEntity(vatProfileEntity).size());
@@ -430,12 +431,13 @@ public class FullConfigurationMappingTest {
             assertEquals(vatProfileClassMapper.getVertexType(), personVertexType);
 
             assertEquals(3, vatProfileClassMapper.attribute2property.size());
-            assertEquals(2, vatProfileClassMapper.property2attribute.size());
+            assertEquals(3, vatProfileClassMapper.property2attribute.size());
             assertEquals("extKey2", vatProfileClassMapper.attribute2property.get("ID"));
             assertEquals("VAT", vatProfileClassMapper.attribute2property.get("VAT"));
-            assertNull(vatProfileClassMapper.attribute2property.get("UPDATED_ON"));
+            assertEquals("updatedOn", vatProfileClassMapper.attribute2property.get("UPDATED_ON"));
             assertEquals("ID", vatProfileClassMapper.property2attribute.get("extKey2"));
             assertEquals("VAT", vatProfileClassMapper.property2attribute.get("VAT"));
+            assertEquals("UPDATED_ON", vatProfileClassMapper.property2attribute.get("updatedOn"));
 
             assertEquals(1, mapper.getClassMappersByVertex(departmentVertexType).size());
             OClassMapper departmentClassMapper = mapper.getClassMappersByVertex(departmentVertexType).get(0);
@@ -445,14 +447,15 @@ public class FullConfigurationMappingTest {
             assertEquals(departmentClassMapper.getVertexType(), departmentVertexType);
 
             assertEquals(4, departmentClassMapper.attribute2property.size());
-            assertEquals(3, departmentClassMapper.property2attribute.size());
+            assertEquals(4, departmentClassMapper.property2attribute.size());
             assertEquals("id", departmentClassMapper.attribute2property.get("ID"));
             assertEquals("departmentName", departmentClassMapper.attribute2property.get("NAME"));
             assertEquals("location", departmentClassMapper.attribute2property.get("LOCATION"));
-            assertNull(departmentClassMapper.attribute2property.get("UPDATED_ON"));
+            assertEquals("updatedOn", departmentClassMapper.attribute2property.get("UPDATED_ON"));
             assertEquals("ID", departmentClassMapper.property2attribute.get("id"));
             assertEquals("NAME", departmentClassMapper.property2attribute.get("departmentName"));
             assertEquals("LOCATION", departmentClassMapper.property2attribute.get("location"));
+            assertEquals("UPDATED_ON", departmentClassMapper.property2attribute.get("updatedOn"));
 
             // Relationships-Edges Mapping
 

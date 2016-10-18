@@ -253,6 +253,9 @@ public class OGraphEngineForDB {
           }
         }
       }
+      if(vertexType.getName().equalsIgnoreCase("generationnotificationevent")) {
+        int a = 4+5;
+      }
 
       if(vertex == null) {
         String classAndClusterName = vertexType.getName();
@@ -361,11 +364,6 @@ public class OGraphEngineForDB {
     Date currentDateValue;
     byte[] currentBinaryValue;
     String currentAttributeValue;
-
-    // TODELETE
-    if(currentPropertyName.equals("notificationType")) {
-      System.out.println();
-    }
 
     // disambiguation on OrientDB Schema type
 
