@@ -343,11 +343,11 @@ public class OTeleporter extends OServerPluginAbstract {
       // try to load a previous file configuration in the target db
       OTeleporterContext.getInstance().getOutputManager().info("\nTrying to load a previous configuration file in the target OrientDB database...\n");
       String configurationPath = OMigrationConfigManager.buildConfigurationFilePath(outDbUrl, OMigrationConfigManager.getConfigFileName());
-      configurationPath = configurationPath.substring(0, configurationPath.lastIndexOf("/")+1);
+      String configDirPath = configurationPath.substring(0, configurationPath.lastIndexOf("/")+1);
       migrationConfig = OMigrationConfigManager.loadMigrationConfigFromFile(configurationPath);
       // if present use it
       if(migrationConfig != null) {
-        OTeleporterContext.getInstance().getOutputManager().info("A previous configuration in the %s path was loaded and it will be used for the current migration.", configurationPath);
+        OTeleporterContext.getInstance().getOutputManager().info("A previous configuration in the %s path was loaded and it will be used for the current migration.", configDirPath);
       }
       // else no migration will be used for the migration/sync
       else {
