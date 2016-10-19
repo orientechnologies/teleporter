@@ -67,7 +67,7 @@ public class OConfigurationManager {
         }
         // (iii)
         else {
-          context.getOutputManager().info("No configuration file was found. Migration will be performed with standard mapping policies.\n");
+          context.getOutputManager().info("No configuration file was found. Migration will be performed according to standard mapping policies.\n");
         }
       }
     } catch (Exception e) {
