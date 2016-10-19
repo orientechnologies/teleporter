@@ -115,7 +115,7 @@ public class AggregationStrategyTest {
       st.execute(branchTableBuilding);
 
 
-      OER2GraphMapper mapper = new OER2GraphMapper(this.sourceDBInfo, null, null, null, null);
+      OER2GraphMapper mapper = new OER2GraphMapper(this.sourceDBInfo, null, null, null);
       mapper.buildSourceDatabaseSchema();
       mapper.buildGraphModel(new OJavaConventionNameResolver());
 

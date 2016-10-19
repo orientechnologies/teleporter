@@ -61,7 +61,7 @@ public class SourceSchemaBuildingTest {
     this.context.setDbQueryEngine(this.dbQueryEngine);
     context.setOutputManager(new OOutputStreamManager(0));
     this.sourceDBInfo = new OSourceDatabaseInfo("source", this.driver, this.jurl, this.username, this.password);
-    this.mapper = new OER2GraphMapper(sourceDBInfo, null, null, null, null);
+    this.mapper = new OER2GraphMapper(sourceDBInfo, null, null, null);
   }
 
 

@@ -21,6 +21,7 @@ package com.orientechnologies.teleporter.strategy.rdbms;
 import com.orientechnologies.orient.core.intent.OIntentMassiveInsert;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.teleporter.configuration.OConfigurationHandler;
+import com.orientechnologies.teleporter.configuration.api.OConfiguration;
 import com.orientechnologies.teleporter.configuration.api.OConfiguredVertexClass;
 import com.orientechnologies.teleporter.configuration.api.OSourceTable;
 import com.orientechnologies.teleporter.context.OTeleporterContext;
@@ -66,11 +67,10 @@ public class ODBMSNaiveStrategy extends ODBMSImportStrategy {
 
 
   public OER2GraphMapper createSchemaMapper(OSourceDatabaseInfo sourceDBInfo, String outOrientGraphUri, String chosenMapper, String xmlPath, ONameResolver nameResolver,
-                                            ODBMSDataTypeHandler handler, List<String> includedTables, List<String> excludedTables, ODocument migrationConfig,
-                                            OConfigurationHandler configHandler) {
+                                            ODBMSDataTypeHandler handler, List<String> includedTables, List<String> excludedTables, OConfiguration migrationConfig) {
 
     OMapperFactory mapperFactory = new OMapperFactory();
-    OER2GraphMapper mapper = (OER2GraphMapper) mapperFactory.buildMapper(chosenMapper, sourceDBInfo, xmlPath, includedTables, excludedTables, migrationConfig, configHandler);
+    OER2GraphMapper mapper = (OER2GraphMapper) mapperFactory.buildMapper(chosenMapper, sourceDBInfo, xmlPath, includedTables, excludedTables, migrationConfig);
 
     // Step 1: DataBase schema building
     mapper.buildSourceDatabaseSchema();
@@ -88,7 +88,7 @@ public class ODBMSNaiveStrategy extends ODBMSImportStrategy {
     mapper.applyImportConfiguration();
 
     // Step 4: Writing schema on OrientDB
-    OGraphModelWriter graphModelWriter = new OGraphModelWriter();
+    OGraphModelWriter graphModelWriter = new OGraphModelWriter(migrationConfig);
     OGraphModel graphModel = ((OER2GraphMapper)mapper).getGraphModel();
     boolean success = graphModelWriter.writeModelOnOrient(graphModel, handler, outOrientGraphUri);
     if(!success) {

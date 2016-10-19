@@ -20,6 +20,7 @@ package com.orientechnologies.teleporter.strategy.rdbms;
 
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.teleporter.configuration.OConfigurationHandler;
+import com.orientechnologies.teleporter.configuration.api.OConfiguration;
 import com.orientechnologies.teleporter.configuration.api.OConfiguredVertexClass;
 import com.orientechnologies.teleporter.configuration.api.OSourceTable;
 import com.orientechnologies.teleporter.context.OTeleporterContext;
@@ -57,11 +58,12 @@ public abstract class ODBMSImportStrategy implements OWorkflowStrategy {
 
   protected OER2GraphMapper mapper;
 
+
   public ODBMSImportStrategy() {}
 
   @Override
   public ODocument executeStrategy(OSourceInfo sourceInfo, String outOrientGraphUri, String chosenMapper, String xmlPath, String nameResolverConvention,
-                                   List<String> includedTables, List<String> excludedTables, ODocument migrationConfig) {
+                                   List<String> includedTables, List<String> excludedTables, ODocument migrationConfigDoc) {
 
     OSourceDatabaseInfo sourceDBInfo = (OSourceDatabaseInfo) sourceInfo;
     Date globalStart = new Date();
@@ -69,6 +71,14 @@ public abstract class ODBMSImportStrategy implements OWorkflowStrategy {
     ODataTypeHandlerFactory dataTypeHandlerFactory = new ODataTypeHandlerFactory();
     ODBMSDataTypeHandler handler = (ODBMSDataTypeHandler) dataTypeHandlerFactory.buildDataTypeHandler(sourceDBInfo.getDriverName());
     OConfigurationHandler configHandler = this.buildConfigurationHandler();
+
+    /**
+     *     building configuration
+     */
+    OConfiguration migrationConfig = null;
+    if(migrationConfigDoc != null) {
+      migrationConfig = configHandler.buildConfigurationFromJSONDoc(migrationConfigDoc);
+    }
 
     /*
      * Step 1,2,3
@@ -78,7 +88,7 @@ public abstract class ODBMSImportStrategy implements OWorkflowStrategy {
     OTeleporterContext.getInstance().getStatistics().runningStepNumber = -1;
 
     this.mapper = this.createSchemaMapper(sourceDBInfo, outOrientGraphUri, chosenMapper, xmlPath, nameResolver, handler,
-            includedTables, excludedTables, migrationConfig, configHandler);
+            includedTables, excludedTables, migrationConfig);
 
     // Step 4: Import
     this.executeImport(sourceDBInfo, outOrientGraphUri, mapper, handler);
@@ -98,8 +108,8 @@ public abstract class ODBMSImportStrategy implements OWorkflowStrategy {
   protected abstract OConfigurationHandler buildConfigurationHandler();
 
   public abstract OER2GraphMapper createSchemaMapper(OSourceDatabaseInfo sourceDBInfo, String outOrientGraphUri, String chosenMapper,
-      String xmlPath, ONameResolver nameResolver, ODBMSDataTypeHandler handler, List<String> includedTables, List<String> excludedTables,
-      ODocument migrationConfig, OConfigurationHandler configHandler);
+                                                     String xmlPath, ONameResolver nameResolver, ODBMSDataTypeHandler handler, List<String> includedTables, List<String> excludedTables,
+                                                     OConfiguration migrationConfig);
 
 
   public abstract void executeImport(OSourceDatabaseInfo sourceDBInfo, String outOrientGraphUri, OSource2GraphMapper mapper, ODBMSDataTypeHandler handler);
@@ -234,7 +244,7 @@ public abstract class ODBMSImportStrategy implements OWorkflowStrategy {
                 currentInVertexType = mapper.getVertexTypeByEntity(currentRelation.getParentEntity());
               }
 
-                // if the parent entity belongs to hierarchical bag, we need to know which is it the more stringent subclass of the record with a certain id
+              // if the parent entity belongs to hierarchical bag, we need to know which is it the more stringent subclass of the record with a certain id
               else {
                 String[] propertyOfKey = new String[currentRelation.getForeignKey().getInvolvedAttributes().size()];
                 String[] valueOfKey = new String[currentRelation.getForeignKey().getInvolvedAttributes().size()];
@@ -381,7 +391,7 @@ public abstract class ODBMSImportStrategy implements OWorkflowStrategy {
                   currentInVertexType = mapper.getVertexTypeByEntity(currentRelation.getParentEntity());
                 }
 
-                  // if the parent entity belongs to hierarchical bag, we need to know which is it the more stringent subclass of the record with a certain id
+                // if the parent entity belongs to hierarchical bag, we need to know which is it the more stringent subclass of the record with a certain id
                 else if(!currentEntity.getHierarchicalBag().equals(currentParentEntity.getHierarchicalBag())){
                   propertyOfKey = new String[currentRelation.getForeignKey().getInvolvedAttributes().size()];
                   valueOfKey = new String[currentRelation.getForeignKey().getInvolvedAttributes().size()];
@@ -506,7 +516,7 @@ public abstract class ODBMSImportStrategy implements OWorkflowStrategy {
                   currentInVertexType = mapper.getVertexTypeByEntity(currentRelation.getParentEntity());
                 }
 
-                  // if the parent entity belongs to hierarchical bag, we need to know which is it the more stringent subclass of the record with a certain id
+                // if the parent entity belongs to hierarchical bag, we need to know which is it the more stringent subclass of the record with a certain id
                 else if(!currentEntity.getHierarchicalBag().equals(currentParentEntity.getHierarchicalBag())) {
                   propertyOfKey = new String[currentRelation.getForeignKey().getInvolvedAttributes().size()];
                   String[] valueOfKey = new String[currentRelation.getForeignKey().getInvolvedAttributes().size()];
@@ -584,11 +594,11 @@ public abstract class ODBMSImportStrategy implements OWorkflowStrategy {
 
     switch(currentParentEntity.getHierarchicalBag().getInheritancePattern()) {
 
-    case "table-per-hierarchy": return searchParentEntityTypeFromSingleTable(currentParentEntity, propertyOfKey, valueOfKey, physicalArrivalEntity, dbQueryEngine);
+      case "table-per-hierarchy": return searchParentEntityTypeFromSingleTable(currentParentEntity, propertyOfKey, valueOfKey, physicalArrivalEntity, dbQueryEngine);
 
-    case "table-per-type": return searchParentEntityTypeFromSubclassTable(currentParentEntity, propertyOfKey, valueOfKey, dbQueryEngine);
+      case "table-per-type": return searchParentEntityTypeFromSubclassTable(currentParentEntity, propertyOfKey, valueOfKey, dbQueryEngine);
 
-    case "table-per-concrete-type": return searchParentEntityTypeFromConcreteTable(currentParentEntity, propertyOfKey, valueOfKey, dbQueryEngine);
+      case "table-per-concrete-type": return searchParentEntityTypeFromConcreteTable(currentParentEntity, propertyOfKey, valueOfKey, dbQueryEngine);
 
     }
 

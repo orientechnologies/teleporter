@@ -19,6 +19,7 @@
 package com.orientechnologies.teleporter.test.rdbms.configuration.mapping;
 
 import com.orientechnologies.teleporter.configuration.OConfigurationHandler;
+import com.orientechnologies.teleporter.configuration.api.OConfiguration;
 import com.orientechnologies.teleporter.context.OOutputStreamManager;
 import com.orientechnologies.teleporter.context.OTeleporterContext;
 import com.orientechnologies.teleporter.importengine.rdbms.dbengine.ODBQueryEngine;
@@ -115,8 +116,10 @@ public class RelationshipConfigurationMappingTest {
       st.execute(foreignTableBuilding);
 
       ODocument config = OFileManager.buildJsonFromFile(this.configDirectEdgesPath);
+      OConfigurationHandler configHandler = new OConfigurationHandler(false);
+      OConfiguration migrationConfig = configHandler.buildConfigurationFromJSONDoc(config);
 
-      this.mapper = new OER2GraphMapper(this.sourceDBInfo, null, null, config, new OConfigurationHandler(false));
+      this.mapper = new OER2GraphMapper(this.sourceDBInfo, null, null, migrationConfig);
       mapper.buildSourceDatabaseSchema();
       mapper.buildGraphModel(new OJavaConventionNameResolver());
       mapper.applyImportConfiguration();
@@ -486,8 +489,10 @@ public class RelationshipConfigurationMappingTest {
       st.execute(parentTableBuilding);
 
       ODocument config = OFileManager.buildJsonFromFile(this.configInverseEdgesPath);
+      OConfigurationHandler configHandler = new OConfigurationHandler(false);
+      OConfiguration migrationConfig = configHandler.buildConfigurationFromJSONDoc(config);
 
-      this.mapper = new OER2GraphMapper(this.sourceDBInfo, null, null, config, new OConfigurationHandler(false));
+      this.mapper = new OER2GraphMapper(this.sourceDBInfo, null, null, migrationConfig);
       mapper.buildSourceDatabaseSchema();
       mapper.buildGraphModel(new OJavaConventionNameResolver());
       mapper.applyImportConfiguration();
@@ -838,8 +843,10 @@ public class RelationshipConfigurationMappingTest {
       st.execute(actorFilmTableBuilding);
 
       ODocument config = OFileManager.buildJsonFromFile(this.configJoinTableDirectEdgesPath);
+      OConfigurationHandler configHandler = new OConfigurationHandler(true);
+      OConfiguration migrationConfig = configHandler.buildConfigurationFromJSONDoc(config);
 
-      this.mapper = new OER2GraphMapper(this.sourceDBInfo, null, null, config, new OConfigurationHandler(true));
+      this.mapper = new OER2GraphMapper(this.sourceDBInfo, null, null, migrationConfig);
       mapper.buildSourceDatabaseSchema();
       mapper.buildGraphModel(new OJavaConventionNameResolver());
       mapper.applyImportConfiguration();
@@ -1441,8 +1448,10 @@ public class RelationshipConfigurationMappingTest {
       st.execute(actorFilmTableBuilding);
 
       ODocument config = OFileManager.buildJsonFromFile(this.configJoinTableInverseEdgesPath);
+      OConfigurationHandler configHandler = new OConfigurationHandler(true);
+      OConfiguration migrationConfig = configHandler.buildConfigurationFromJSONDoc(config);
 
-      this.mapper = new OER2GraphMapper(this.sourceDBInfo, null, null, config, new OConfigurationHandler(true));
+      this.mapper = new OER2GraphMapper(this.sourceDBInfo, null, null, migrationConfig);
       mapper.buildSourceDatabaseSchema();
       mapper.buildGraphModel(new OJavaConventionNameResolver());
       mapper.applyImportConfiguration();
@@ -2044,8 +2053,10 @@ public class RelationshipConfigurationMappingTest {
       st.execute(actorFilmTableBuilding);
 
       ODocument config = OFileManager.buildJsonFromFile(this.configJoinTableDirectEdgesPath);
+      OConfigurationHandler configHandler = new OConfigurationHandler(true);
+      OConfiguration migrationConfig = configHandler.buildConfigurationFromJSONDoc(config);
 
-      this.mapper = new OER2GraphMapper(this.sourceDBInfo, null, null, config, new OConfigurationHandler(true));
+      this.mapper = new OER2GraphMapper(this.sourceDBInfo, null, null, migrationConfig);
       mapper.buildSourceDatabaseSchema();
       mapper.buildGraphModel(new OJavaConventionNameResolver());
       mapper.applyImportConfiguration();
@@ -2646,8 +2657,10 @@ public class RelationshipConfigurationMappingTest {
       st.execute(actorFilmTableBuilding);
 
       ODocument config = OFileManager.buildJsonFromFile(this.configJoinTableInverseEdgesPath2);
+      OConfigurationHandler configHandler = new OConfigurationHandler(true);
+      OConfiguration migrationConfig = configHandler.buildConfigurationFromJSONDoc(config);
 
-      this.mapper = new OER2GraphMapper(this.sourceDBInfo, null, null, config, new OConfigurationHandler(true));
+      this.mapper = new OER2GraphMapper(this.sourceDBInfo, null, null, migrationConfig);
       mapper.buildSourceDatabaseSchema();
       mapper.buildGraphModel(new OJavaConventionNameResolver());
       mapper.applyImportConfiguration();

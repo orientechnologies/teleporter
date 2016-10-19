@@ -50,7 +50,7 @@ public abstract class ODBMSModelBuildingStrategy implements OWorkflowStrategy {
 
     @Override
     public ODocument executeStrategy(OSourceInfo sourceInfo, String outOrientGraphUri, String chosenMapper, String xmlPath, String nameResolverConvention,
-                                     List<String> includedTables, List<String> excludedTables, ODocument migrationConfig) {
+                                     List<String> includedTables, List<String> excludedTables, ODocument migrationConfigDoc) {
 
         OSourceDatabaseInfo sourceDBInfo = (OSourceDatabaseInfo) sourceInfo;
         Date globalStart = new Date();
@@ -58,6 +58,14 @@ public abstract class ODBMSModelBuildingStrategy implements OWorkflowStrategy {
         ODataTypeHandlerFactory dataTypeHandlerFactory = new ODataTypeHandlerFactory();
         ODBMSDataTypeHandler handler = (ODBMSDataTypeHandler) dataTypeHandlerFactory.buildDataTypeHandler(sourceDBInfo.getDriverName());
         OConfigurationHandler configurationHandler = this.buildConfigurationHandler();
+
+        /**
+         *     building configuration
+         */
+        OConfiguration migrationConfig = null;
+        if(migrationConfigDoc != null) {
+            migrationConfig = configurationHandler.buildConfigurationFromJSONDoc(migrationConfigDoc);
+        }
 
         /*
          * Step 1,2
@@ -67,7 +75,7 @@ public abstract class ODBMSModelBuildingStrategy implements OWorkflowStrategy {
         OTeleporterContext.getInstance().getStatistics().runningStepNumber = -1;
 
         this.mapper = this.createSchemaMapper(sourceDBInfo, outOrientGraphUri, chosenMapper, xmlPath, nameResolver, handler,
-                includedTables, excludedTables, migrationConfig, configurationHandler);
+                includedTables, excludedTables, migrationConfig);
 
         Date globalEnd = new Date();
 
@@ -83,7 +91,7 @@ public abstract class ODBMSModelBuildingStrategy implements OWorkflowStrategy {
 
     public abstract OER2GraphMapper createSchemaMapper(OSourceDatabaseInfo sourceDBInfo, String outOrientGraphUri, String chosenMapper,
                                                        String xmlPath, ONameResolver nameResolver, ODBMSDataTypeHandler handler, List<String> includedTables, List<String> excludedTables,
-                                                       ODocument migrationConfig, OConfigurationHandler configHandler);
+                                                       OConfiguration migrationConfig);
 
     protected abstract OConfigurationHandler buildConfigurationHandler();
 

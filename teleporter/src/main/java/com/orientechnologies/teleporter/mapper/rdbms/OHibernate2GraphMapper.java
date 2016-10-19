@@ -18,8 +18,7 @@
 
 package com.orientechnologies.teleporter.mapper.rdbms;
 
-import com.orientechnologies.orient.core.record.impl.ODocument;
-import com.orientechnologies.teleporter.configuration.OConfigurationHandler;
+import com.orientechnologies.teleporter.configuration.api.OConfiguration;
 import com.orientechnologies.teleporter.context.OTeleporterContext;
 import com.orientechnologies.teleporter.exception.OTeleporterRuntimeException;
 import com.orientechnologies.teleporter.model.dbschema.OAttribute;
@@ -48,8 +47,8 @@ public class OHibernate2GraphMapper extends OER2GraphMapper {
 
   private String xmlPath;
 
-  public OHibernate2GraphMapper(OSourceDatabaseInfo sourceDBInfo, String xmlPath, List<String> includedTables, List<String> excludedTables, ODocument migrationConfig, OConfigurationHandler configHandler) {
-    super(sourceDBInfo, includedTables, excludedTables, migrationConfig, configHandler);
+  public OHibernate2GraphMapper(OSourceDatabaseInfo sourceDBInfo, String xmlPath, List<String> includedTables, List<String> excludedTables, OConfiguration migrationConfig) {
+    super(sourceDBInfo, includedTables, excludedTables, migrationConfig);
     this.xmlPath = xmlPath;
   }
 

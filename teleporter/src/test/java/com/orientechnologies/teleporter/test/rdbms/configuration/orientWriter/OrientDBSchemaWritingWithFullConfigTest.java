@@ -21,6 +21,7 @@ package com.orientechnologies.teleporter.test.rdbms.configuration.orientWriter;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.teleporter.configuration.OConfigurationHandler;
+import com.orientechnologies.teleporter.configuration.api.OConfiguration;
 import com.orientechnologies.teleporter.context.OOutputStreamManager;
 import com.orientechnologies.teleporter.context.OTeleporterContext;
 import com.orientechnologies.teleporter.importengine.rdbms.dbengine.ODBQueryEngine;
@@ -124,8 +125,10 @@ public class OrientDBSchemaWritingWithFullConfigTest {
             st.execute(departmentTableBuilding);
 
             ODocument config = OFileManager.buildJsonFromFile(this.config);
+            OConfigurationHandler configHandler = new OConfigurationHandler(true);
+            OConfiguration migrationConfig = configHandler.buildConfigurationFromJSONDoc(config);
 
-            this.mapper = new OER2GraphMapper(this.sourceDBInfo, null, null, config, new OConfigurationHandler(true));
+            this.mapper = new OER2GraphMapper(this.sourceDBInfo, null, null, migrationConfig);
             mapper.buildSourceDatabaseSchema();
             mapper.buildGraphModel(new OJavaConventionNameResolver());
             mapper.applyImportConfiguration();

@@ -337,7 +337,7 @@ public class OTeleporter extends OServerPluginAbstract {
       // use this migration and write it in the target database
       migrationConfig = new ODocument();
       migrationConfig.fromJSON(jsonMigrationConfig, "noMap");
-      OMigrationConfigManager.writeConfigurationInTargetDB(migrationConfig, outDbUrl);
+      //OMigrationConfigManager.writeConfigurationInTargetDB(migrationConfig, outDbUrl);
     }
     else {
       // try to load a previous file configuration in the target db
@@ -394,6 +394,10 @@ public class OTeleporter extends OServerPluginAbstract {
       // Writing sources access info
       if(!sourceInfoLoaded) {
         OMigrationConfigManager.upsertSourceDatabaseInfo(sourcesInfo, outDbUrl);
+      }
+      // Writing last configuration
+      if(jsonMigrationConfig != null && jsonMigrationConfig.length() > 0) {
+        OMigrationConfigManager.writeConfigurationInTargetDB(migrationConfig, outDbUrl);
       }
 
     } finally {

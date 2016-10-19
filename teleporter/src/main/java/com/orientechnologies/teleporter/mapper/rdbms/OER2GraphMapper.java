@@ -68,13 +68,11 @@ public class OER2GraphMapper extends OSource2GraphMapper {
   protected List<String> excludedTables;
 
   // supplementary migrationConfigDoc
-  protected ODocument migrationConfigDoc;
   protected OConfiguration migrationConfig;
-  protected OConfigurationHandler parser;
 
   public final int DEFAULT_CLASS_MAPPER_INDEX = 0;
 
-  public OER2GraphMapper (OSourceDatabaseInfo sourceDatabaseInfo, List<String> includedTables, List<String> excludedTables, ODocument configuration, OConfigurationHandler configHandler) {
+  public OER2GraphMapper (OSourceDatabaseInfo sourceDatabaseInfo, List<String> includedTables, List<String> excludedTables, OConfiguration migrationConfig) {
 
     this.sourceDBInfo = sourceDatabaseInfo;
 
@@ -97,14 +95,11 @@ public class OER2GraphMapper extends OSource2GraphMapper {
 
     else
       this.excludedTables = new ArrayList<String>();
-    this.migrationConfigDoc = configuration;
 
     // creating the two empty models
     this.dataBaseSchema = new ODataBaseSchema();
     this.graphModel = new OGraphModel();
-
-    this.parser = configHandler;
-
+    this.migrationConfig = migrationConfig;
   }
 
   // old map managing
@@ -762,9 +757,7 @@ public class OER2GraphMapper extends OSource2GraphMapper {
 
   public void applyImportConfiguration() {
 
-    if(this.migrationConfigDoc != null) {
-
-      this.migrationConfig = this.parser.buildConfigurationFromJSONDoc(this.migrationConfigDoc);
+    if(this.migrationConfig != null) {
 
     /*
      * Adding/updating classes according to the manual migrationConfigDoc
@@ -1651,14 +1644,6 @@ public class OER2GraphMapper extends OSource2GraphMapper {
 
   public void setExcludedTables(List<String> excludedTables) {
     this.excludedTables = excludedTables;
-  }
-
-  public ODocument getMigrationConfigDoc() {
-    return this.migrationConfigDoc;
-  }
-
-  public void setMigrationConfigDoc(ODocument migrationConfigDoc) {
-    this.migrationConfigDoc = migrationConfigDoc;
   }
 
   public OConfiguration getMigrationConfig() {

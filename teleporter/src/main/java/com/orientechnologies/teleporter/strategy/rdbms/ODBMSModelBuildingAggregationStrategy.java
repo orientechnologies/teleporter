@@ -20,6 +20,7 @@ package com.orientechnologies.teleporter.strategy.rdbms;
 
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.teleporter.configuration.OConfigurationHandler;
+import com.orientechnologies.teleporter.configuration.api.OConfiguration;
 import com.orientechnologies.teleporter.context.OTeleporterContext;
 import com.orientechnologies.teleporter.factory.OMapperFactory;
 import com.orientechnologies.teleporter.mapper.rdbms.OER2GraphMapper;
@@ -40,10 +41,10 @@ public class ODBMSModelBuildingAggregationStrategy extends ODBMSModelBuildingStr
     public ODBMSModelBuildingAggregationStrategy() {}
 
     @Override
-    public OER2GraphMapper createSchemaMapper(OSourceDatabaseInfo sourceDBInfo, String outOrientGraphUri, String chosenMapper, String xmlPath, ONameResolver nameResolver, ODBMSDataTypeHandler handler, List<String> includedTables, List<String> excludedTables, ODocument migrationConfig, OConfigurationHandler configHandler) {
+    public OER2GraphMapper createSchemaMapper(OSourceDatabaseInfo sourceDBInfo, String outOrientGraphUri, String chosenMapper, String xmlPath, ONameResolver nameResolver, ODBMSDataTypeHandler handler, List<String> includedTables, List<String> excludedTables, OConfiguration migrationConfig) {
 
         OMapperFactory mapperFactory = new OMapperFactory();
-        OER2GraphMapper mapper = (OER2GraphMapper) mapperFactory.buildMapper(chosenMapper, sourceDBInfo, xmlPath, includedTables, excludedTables, migrationConfig, configHandler);
+        OER2GraphMapper mapper = (OER2GraphMapper) mapperFactory.buildMapper(chosenMapper, sourceDBInfo, xmlPath, includedTables, excludedTables, migrationConfig);
 
         // Step 1: DataBase schema building
         mapper.buildSourceDatabaseSchema();

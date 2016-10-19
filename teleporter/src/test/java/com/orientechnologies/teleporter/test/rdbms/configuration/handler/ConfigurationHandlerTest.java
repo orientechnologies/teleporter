@@ -483,7 +483,7 @@ public class ConfigurationHandlerTest {
                     " foreign key (PROJECT_ID) references PROJECT(ID))";
             st.execute(projectEmployeeTableBuilding);
 
-            this.mapper = new OER2GraphMapper(this.sourceDBInfo, null, null, null, configurationHandler);
+            this.mapper = new OER2GraphMapper(this.sourceDBInfo, null, null, null);
             this.mapper.buildSourceDatabaseSchema();
             this.mapper.buildGraphModel(new OJavaConventionNameResolver());
             this.mapper.performMany2ManyAggregation();
@@ -866,7 +866,7 @@ public class ConfigurationHandlerTest {
                     " foreign key (PROJECT_ID) references PROJECT(ID))";
             st.execute(projectEmployeeTableBuilding);
 
-            this.mapper = new OER2GraphMapper(this.sourceDBInfo, null, null, null, configurationHandler);
+            this.mapper = new OER2GraphMapper(this.sourceDBInfo, null, null, null);
             this.mapper.buildSourceDatabaseSchema();
             this.mapper.buildGraphModel(new OJavaConventionNameResolver());
             this.mapper.performMany2ManyAggregation();

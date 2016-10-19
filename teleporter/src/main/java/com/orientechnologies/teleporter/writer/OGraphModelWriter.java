@@ -26,11 +26,13 @@ import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.orient.core.sql.OCommandSQL;
+import com.orientechnologies.teleporter.configuration.api.OConfiguration;
 import com.orientechnologies.teleporter.context.OTeleporterContext;
 import com.orientechnologies.teleporter.context.OTeleporterStatistics;
 import com.orientechnologies.teleporter.exception.OTeleporterRuntimeException;
 import com.orientechnologies.teleporter.model.graphmodel.*;
 import com.orientechnologies.teleporter.persistence.handler.ODriverDataTypeHandler;
+import com.orientechnologies.teleporter.util.OMigrationConfigManager;
 import com.tinkerpop.blueprints.impls.orient.*;
 
 import java.util.*;
@@ -47,8 +49,14 @@ import java.util.*;
 public class OGraphModelWriter {
 
   private Map<String,OType> orientdbTypeName2orientdbType;
+  private OConfiguration previousConfiguration;
 
   public OGraphModelWriter() {
+    this.init();
+  }
+
+  public OGraphModelWriter(OConfiguration previousConfig) {
+    this.previousConfiguration = previousConfig;
     this.init();
   }
 
