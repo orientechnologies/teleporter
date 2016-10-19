@@ -341,8 +341,9 @@ public class OTeleporter extends OServerPluginAbstract {
     }
     else {
       // try to load a previous file configuration in the target db
-      OTeleporterContext.getInstance().getOutputManager().info("Trying to load a previous configuration file in the target OrientDB database...\n");
+      OTeleporterContext.getInstance().getOutputManager().info("\nTrying to load a previous configuration file in the target OrientDB database...\n");
       String configurationPath = OMigrationConfigManager.buildConfigurationFilePath(outDbUrl, OMigrationConfigManager.getConfigFileName());
+      configurationPath = configurationPath.substring(0, configurationPath.lastIndexOf("/")+1);
       migrationConfig = OMigrationConfigManager.loadMigrationConfigFromFile(configurationPath);
       // if present use it
       if(migrationConfig != null) {

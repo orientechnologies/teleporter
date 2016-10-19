@@ -615,13 +615,6 @@ public class SequentialExecutionsTest {
         assertNotNull(e.getId());
         count++;
       }
-      assertEquals(4, count);
-
-      count = 0;
-      for(Edge e: orientGraph.getEdgesOfClass("HasDirector")) {
-        assertNotNull(e.getId());
-        count++;
-      }
       assertEquals(2, count);
 
       count = 0;
@@ -631,8 +624,7 @@ public class SequentialExecutionsTest {
       }
       assertEquals(2, count);
 
-
-
+      assertNull(orientGraph.getEdgeType("HasDirector"));
 
     }catch(Exception e) {
       e.printStackTrace();
@@ -1282,15 +1274,9 @@ public class SequentialExecutionsTest {
         assertNotNull(e.getId());
         count++;
       }
-      assertEquals(2, count);
+      assertEquals(0, count);
 
-      count = 0;
-      for(Edge e: orientGraph.getEdgesOfClass("HasDirector")) {
-        assertNotNull(e.getId());
-        count++;
-      }
-      assertEquals(2, count);
-
+      assertNull(orientGraph.getEdgeType("HasDirector"));
 
     }catch(Exception e) {
       e.printStackTrace();

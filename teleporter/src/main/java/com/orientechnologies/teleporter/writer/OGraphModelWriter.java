@@ -19,8 +19,12 @@
 package com.orientechnologies.teleporter.writer;
 
 import com.orientechnologies.common.exception.OException;
+import com.orientechnologies.orient.core.index.OIndex;
+import com.orientechnologies.orient.core.index.OIndexManagerProxy;
+import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.metadata.schema.OType;
+import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.orient.core.sql.OCommandSQL;
 import com.orientechnologies.teleporter.context.OTeleporterContext;
 import com.orientechnologies.teleporter.context.OTeleporterStatistics;
@@ -89,6 +93,17 @@ public class OGraphModelWriter {
     int numberOfEdges = graphModel.getEdgesType().size();
     statistics.totalNumberOfEdgeTypes = numberOfEdges;
     statistics.totalNumberOfIndices = numberOfVertices;
+
+    // deleting orient classes not present in the current graph model
+    Collection<OClass> orientClasses = orientGraph.getRawGraph().getMetadata().getSchema().getClasses();
+    for(OClass currOrientClass: orientClasses) {
+      String orientClassName = currOrientClass.getName();
+      if(! (orientClassName.startsWith("O") || orientClassName.startsWith("V") || orientClassName.startsWith("E") || orientClassName.startsWith("_")) ) {
+        if (graphModel.getVertexTypeByNameIgnoreCase(orientClassName) == null && graphModel.getEdgeTypeByNameIgnoreCase(orientClassName) == null) {
+          orientGraph.getRawGraph().getMetadata().getSchema().dropClass(orientClassName);
+        }
+      }
+    }
 
     if(!this.inheritanceChangesPresent(graphModel, orientGraph)) {
 
@@ -244,6 +259,7 @@ public class OGraphModelWriter {
         String currentType = null;
         List<String> properties = null;
         iteration = 1;
+        OIndexManagerProxy indexManager = orientGraph.getRawGraph().getMetadata().getIndexManager();
         boolean isPresent;
         for(OVertexType currentVertexType: graphModel.getVerticesType()) {
 
@@ -255,8 +271,22 @@ public class OGraphModelWriter {
             }
           }
 
+          // checking if the old index is based on the same properties of the current Class, if not it will be deleted
+          String indexClassName = currentType + ".pkey";
+          OIndex<?> classIndex = indexManager.getClassIndex(currentType, indexClassName);
+          if(classIndex != null) {
+            List<String> fieldNames = classIndex.getDefinition().getFields();
+
+            for (String field : fieldNames) {
+              if (!properties.contains(field)) {
+                indexManager.dropIndex(indexClassName);
+                break;
+              }
+            }
+          }
+
           // check if vertex type is already present in the orient schema
-          isPresent = orientGraph.getRawGraph().getMetadata().getIndexManager().existsIndex(currentType + ".pkey");
+          isPresent = indexManager.existsIndex(indexClassName);
 
           if(!isPresent) {
 
@@ -322,7 +352,6 @@ public class OGraphModelWriter {
   private boolean checkAndUpdateClass(OrientBaseGraph orientGraph, OElementType currentElementType, ODriverDataTypeHandler handler) {
 
     boolean updated = false;
-
     OrientElementType orientElementType = null;
 
     if(currentElementType instanceof OVertexType) {
@@ -341,8 +370,19 @@ public class OGraphModelWriter {
     OType actualOrientType;   // the actual type present in the orientdb schema from last execution
     OType newResolvedType;    // the type returned by the resolver on the basis of the actual source
 
+    /**
+     * Class name comparison
+     */
+    String className = currentElementType.getName();
+    if(!orientElementType.getName().equals(className)) {
+      orientElementType.setName(className);
+    }
 
-    // check from model properties
+    /**
+     * Properties comparison
+     */
+
+    // checking from model properties
     Iterator<OModelProperty> it1 = currentElementType.getProperties().iterator();
     OModelProperty currentProperty;
     while(it1.hasNext()) {
@@ -367,14 +407,15 @@ public class OGraphModelWriter {
       }
     }
 
-    // check from orientdb schema properties
+    // checking from orientdb schema properties
     OProperty orientSchemaProperty2;
     Iterator<OProperty> it2 = orientElementType.declaredProperties().iterator();
     List<String> toDrop = new LinkedList<String>();
     while(it2.hasNext()) {
       orientSchemaProperty2 = it2.next();
       // if the property is not present in the model vertex type, then is added to a "to-drop list"
-      if(currentElementType.getPropertyByName(orientSchemaProperty2.getName()) == null) {
+      if(currentElementType.getPropertyByName(orientSchemaProperty2.getName()) == null ||
+              !currentElementType.getPropertyByName(orientSchemaProperty2.getName()).isIncludedInMigration()) {
         toDrop.add(orientSchemaProperty2.getName());
         updated = true;
       }
