@@ -25,10 +25,7 @@ import com.orientechnologies.teleporter.exception.OTeleporterRuntimeException;
 import com.orientechnologies.teleporter.mapper.rdbms.OAggregatorEdge;
 import com.orientechnologies.teleporter.mapper.rdbms.OER2GraphMapper;
 import com.orientechnologies.teleporter.mapper.rdbms.classmapper.OClassMapper;
-import com.orientechnologies.teleporter.model.dbschema.OAttribute;
-import com.orientechnologies.teleporter.model.dbschema.OCanonicalRelationship;
-import com.orientechnologies.teleporter.model.dbschema.OEntity;
-import com.orientechnologies.teleporter.model.dbschema.OSourceDatabaseInfo;
+import com.orientechnologies.teleporter.model.dbschema.*;
 import com.orientechnologies.teleporter.model.graphmodel.OEdgeType;
 import com.orientechnologies.teleporter.model.graphmodel.OModelProperty;
 import com.orientechnologies.teleporter.model.graphmodel.OVertexType;
@@ -656,7 +653,7 @@ public class OConfigurationHandler {
 
             // edge mapping info building
             OEdgeMappingInformation currEdgeMappingInformation = new OEdgeMappingInformation(currConfiguredEdgeClass);
-            List<OCanonicalRelationship> relationships = mapper.getEdgeType2relationships().get(currEdgeType);
+            List<ORelationship> relationships = mapper.getEdgeType2relationships().get(currEdgeType);
             List<OEdgeMappingInformation> edgeMappings = new LinkedList<OEdgeMappingInformation>();
             OAggregatorEdge aggregatorEdge = mapper.getAggregatorEdgeByEdgeTypeName(currEdgeType.getName());
 
@@ -666,7 +663,7 @@ public class OConfigurationHandler {
             if (aggregatorEdge == null) {
 
                 // building the edge mappings
-                for (OCanonicalRelationship currentRelationship : relationships) {
+                for (ORelationship currentRelationship : relationships) {
 
                     // building the edge mapping info
                     currEdgeMappingInformation.setFromTableName(currentRelationship.getForeignEntity().getName());

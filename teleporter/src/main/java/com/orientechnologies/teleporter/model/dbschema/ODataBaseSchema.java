@@ -40,7 +40,7 @@ public class ODataBaseSchema implements ODataSourceSchemaInfo {
   private String productName;
   private String productVersion;
   private List<OEntity> entities;
-  private List<OCanonicalRelationship> relationships;
+  private List<ORelationship> relationships;
   private List<OHierarchicalBag> hierarchicalBags;
 
   public ODataBaseSchema(int majorVersion, int minorVersion, int driverMajorVersion, int driverMinorVersion, String productName, String productVersion) {		
@@ -51,13 +51,13 @@ public class ODataBaseSchema implements ODataSourceSchemaInfo {
     this.productName = productName;
     this.productVersion = productVersion;
     this.entities = new ArrayList<OEntity>();
-    this.relationships = new ArrayList<OCanonicalRelationship>();
+    this.relationships = new ArrayList<ORelationship>();
     this.hierarchicalBags = new ArrayList<OHierarchicalBag>();
   }
 
   public ODataBaseSchema() {
     this.entities = new ArrayList<OEntity>();
-    this.relationships = new ArrayList<OCanonicalRelationship>();
+    this.relationships = new ArrayList<ORelationship>();
     this.hierarchicalBags = new ArrayList<OHierarchicalBag>();
   }
 
@@ -117,11 +117,11 @@ public class ODataBaseSchema implements ODataSourceSchemaInfo {
     this.entities = entitiess;
   }
 
-  public List<OCanonicalRelationship> getRelationships() {
+  public List<ORelationship> getRelationships() {
     return relationships;
   }
 
-  public void setRelationships(List<OCanonicalRelationship> relationships) {
+  public void setRelationships(List<ORelationship> relationships) {
     this.relationships = relationships;
   }
 
@@ -153,12 +153,12 @@ public class ODataBaseSchema implements ODataSourceSchemaInfo {
     return null;
   }
 
-  public OCanonicalRelationship getRelationshipByInvolvedEntitiesAndAttributes(OEntity currentForeignEntity, OEntity currentParentEntity,
+  public ORelationship getRelationshipByInvolvedEntitiesAndAttributes(OEntity currentForeignEntity, OEntity currentParentEntity,
                                                                                List<String> fromColumns, List<String> toColumns) {
 
-    for(OCanonicalRelationship currentRelationship: this.relationships) {
+    for(ORelationship currentRelationship: this.relationships) {
       if(currentRelationship.getForeignEntity().getName().equals(currentForeignEntity.getName()) && currentRelationship.getParentEntity().getName().equals(currentParentEntity.getName())) {
-        if(sameAttributesInvolved(currentRelationship.getForeignKey(), fromColumns) && sameAttributesInvolved(currentRelationship.getPrimaryKey(), toColumns)) {
+        if(sameAttributesInvolved(currentRelationship.getFromColumns(), fromColumns) && sameAttributesInvolved(currentRelationship.getToColumns(), toColumns)) {
           return currentRelationship;
         }
       }
@@ -170,24 +170,26 @@ public class ODataBaseSchema implements ODataSourceSchemaInfo {
    * It checks if the attributes of a OKey passed as parameter correspond to the string names in the array columns.
    * Order is not relevant.
    *
-   * @param key
    * @param columns
+   * @param columnsName
    * @return
    */
-  private boolean sameAttributesInvolved(OKey key, List<String> columns) {
+  private boolean sameAttributesInvolved(List<OAttribute> columns, List<String> columnsName) {
 
-    if(key.getInvolvedAttributes().size() != columns.size()) {
+    if(columns.size() != columnsName.size()) {
       return false;
     }
 
-    for(String column: columns) {
-      if(key.getAttributeByName(column) == null) {
-        return false;
-      }
-    }
+    for(String column: columnsName) {
 
-    for(String column: columns) {
-      if(key.getAttributeByName(column) == null) {
+      boolean present = false;
+      for(OAttribute attribute: columns) {
+        if(attribute.getName().equals(column)) {
+          present = true;
+          break;
+        }
+      }
+      if(!present) {
         return false;
       }
     }

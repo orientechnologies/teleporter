@@ -35,9 +35,17 @@ public class OLogicalRelationship extends ORelationship {
         return fromColumns;
     }
 
+    public void setFromColumns(List<OAttribute> columns) {
+        this.fromColumns = columns;
+    }
+
     @Override
     public List<OAttribute> getToColumns() {
         return toColumns;
+    }
+
+    public void setToColumns(List<OAttribute> columns) {
+        this.toColumns = columns;
     }
 
     @Override
