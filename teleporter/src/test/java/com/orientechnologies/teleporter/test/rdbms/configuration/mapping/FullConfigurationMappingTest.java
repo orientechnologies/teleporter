@@ -26,8 +26,8 @@ import com.orientechnologies.teleporter.context.OTeleporterContext;
 import com.orientechnologies.teleporter.importengine.rdbms.dbengine.ODBQueryEngine;
 import com.orientechnologies.teleporter.mapper.rdbms.OER2GraphMapper;
 import com.orientechnologies.teleporter.mapper.rdbms.classmapper.OClassMapper;
+import com.orientechnologies.teleporter.model.dbschema.OCanonicalRelationship;
 import com.orientechnologies.teleporter.model.dbschema.OEntity;
-import com.orientechnologies.teleporter.model.dbschema.ORelationship;
 import com.orientechnologies.teleporter.model.dbschema.OSourceDatabaseInfo;
 import com.orientechnologies.teleporter.model.graphmodel.OEdgeType;
 import com.orientechnologies.teleporter.model.graphmodel.OModelProperty;
@@ -236,25 +236,25 @@ public class FullConfigurationMappingTest {
 
             // relationship, primary and foreign key check
             assertEquals(1, mapper.getDataBaseSchema().getRelationships().size());
-            assertEquals(0, vatProfileEntity.getOutRelationships().size());
-            assertEquals(1, personEntity.getOutRelationships().size());
-            assertEquals(0, departmentEntity.getOutRelationships().size());
-            assertEquals(0, vatProfileEntity.getInRelationships().size());
-            assertEquals(0, personEntity.getInRelationships().size());
-            assertEquals(1, departmentEntity.getInRelationships().size());
+            assertEquals(0, vatProfileEntity.getOutCanonicalRelationships().size());
+            assertEquals(1, personEntity.getOutCanonicalRelationships().size());
+            assertEquals(0, departmentEntity.getOutCanonicalRelationships().size());
+            assertEquals(0, vatProfileEntity.getInCanonicalRelationships().size());
+            assertEquals(0, personEntity.getInCanonicalRelationships().size());
+            assertEquals(1, departmentEntity.getInCanonicalRelationships().size());
             assertEquals(0, vatProfileEntity.getForeignKeys().size());
             assertEquals(1, personEntity.getForeignKeys().size());
             assertEquals(0, departmentEntity.getForeignKeys().size());
 
-            Iterator<ORelationship> it = personEntity.getOutRelationships().iterator();
-            ORelationship currentRelationship = it.next();
+            Iterator<OCanonicalRelationship> it = personEntity.getOutCanonicalRelationships().iterator();
+            OCanonicalRelationship currentRelationship = it.next();
             assertEquals("DEPARTMENT", currentRelationship.getParentEntity().getName());
             assertEquals("PERSON", currentRelationship.getForeignEntity().getName());
             assertEquals(departmentEntity.getPrimaryKey(), currentRelationship.getPrimaryKey());
             assertEquals(personEntity.getForeignKeys().get(0), currentRelationship.getForeignKey());
 
-            Iterator<ORelationship> it2 = departmentEntity.getInRelationships().iterator();
-            ORelationship currentRelationship2 = it2.next();
+            Iterator<OCanonicalRelationship> it2 = departmentEntity.getInCanonicalRelationships().iterator();
+            OCanonicalRelationship currentRelationship2 = it2.next();
             assertEquals(currentRelationship, currentRelationship2);
 
             assertEquals("DEP_ID", personEntity.getForeignKeys().get(0).getInvolvedAttributes().get(0).getName());
@@ -462,8 +462,8 @@ public class FullConfigurationMappingTest {
 
             // Relationships-Edges Mapping
 
-            Iterator<ORelationship> itRelationships = personEntity.getOutRelationships().iterator();
-            ORelationship worksAtRelationship = itRelationships.next();
+            Iterator<OCanonicalRelationship> itRelationships = personEntity.getOutCanonicalRelationships().iterator();
+            OCanonicalRelationship worksAtRelationship = itRelationships.next();
             assertFalse(itRelationships.hasNext());
 
             assertEquals(1, mapper.getRelationship2edgeType().size());

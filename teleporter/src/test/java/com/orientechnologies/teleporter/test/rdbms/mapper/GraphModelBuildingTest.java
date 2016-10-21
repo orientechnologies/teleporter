@@ -23,8 +23,8 @@ import com.orientechnologies.teleporter.context.OTeleporterContext;
 import com.orientechnologies.teleporter.importengine.rdbms.dbengine.ODBQueryEngine;
 import com.orientechnologies.teleporter.mapper.rdbms.OER2GraphMapper;
 import com.orientechnologies.teleporter.mapper.rdbms.classmapper.OClassMapper;
+import com.orientechnologies.teleporter.model.dbschema.OCanonicalRelationship;
 import com.orientechnologies.teleporter.model.dbschema.OEntity;
-import com.orientechnologies.teleporter.model.dbschema.ORelationship;
 import com.orientechnologies.teleporter.model.dbschema.OSourceDatabaseInfo;
 import com.orientechnologies.teleporter.model.graphmodel.OEdgeType;
 import com.orientechnologies.teleporter.model.graphmodel.OVertexType;
@@ -218,8 +218,8 @@ public class GraphModelBuildingTest {
 
       // Relationships-Edges Mapping
 
-      Iterator<ORelationship> it = bookEntity.getOutRelationships().iterator();
-      ORelationship hasAuthorRelationship = it.next();
+      Iterator<OCanonicalRelationship> it = bookEntity.getOutCanonicalRelationships().iterator();
+      OCanonicalRelationship hasAuthorRelationship = it.next();
       assertFalse(it.hasNext());
 
       assertEquals(1, mapper.getRelationship2edgeType().size());
@@ -448,11 +448,11 @@ public class GraphModelBuildingTest {
 
       // Relationships-Edges Mapping
 
-      Iterator<ORelationship> it = bookEntity.getOutRelationships().iterator();
-      ORelationship hasAuthorRelationship = it.next();
+      Iterator<OCanonicalRelationship> it = bookEntity.getOutCanonicalRelationships().iterator();
+      OCanonicalRelationship hasAuthorRelationship = it.next();
       assertFalse(it.hasNext());
-      it = itemEntity.getOutRelationships().iterator();
-      ORelationship hasBookRelationship = it.next();
+      it = itemEntity.getOutCanonicalRelationships().iterator();
+      OCanonicalRelationship hasBookRelationship = it.next();
       assertFalse(it.hasNext());
 
       assertEquals(2, mapper.getRelationship2edgeType().size());
@@ -684,11 +684,11 @@ public class GraphModelBuildingTest {
 
       // Relationships-Edges Mapping
 
-      Iterator<ORelationship> it = bookEntity.getOutRelationships().iterator();
-      ORelationship hasAuthorRelationship1 = it.next();
+      Iterator<OCanonicalRelationship> it = bookEntity.getOutCanonicalRelationships().iterator();
+      OCanonicalRelationship hasAuthorRelationship1 = it.next();
       assertFalse(it.hasNext());
-      it = articleEntity.getOutRelationships().iterator();
-      ORelationship hasAuthorRelationship2 = it.next();
+      it = articleEntity.getOutCanonicalRelationships().iterator();
+      OCanonicalRelationship hasAuthorRelationship2 = it.next();
       assertFalse(it.hasNext());
 
       assertEquals(2, mapper.getRelationship2edgeType().size());
@@ -879,8 +879,8 @@ public class GraphModelBuildingTest {
 
       // Relationships-Edges Mapping
 
-      Iterator<ORelationship> it = bookEntity.getOutRelationships().iterator();
-      ORelationship hasAuthorRelationship = it.next();
+      Iterator<OCanonicalRelationship> it = bookEntity.getOutCanonicalRelationships().iterator();
+      OCanonicalRelationship hasAuthorRelationship = it.next();
       assertFalse(it.hasNext());
 
       assertEquals(1, mapper.getRelationship2edgeType().size());
@@ -1103,9 +1103,9 @@ public class GraphModelBuildingTest {
 
       // Relationships-Edges Mapping
 
-      Iterator<ORelationship> it = filmActorEntity.getOutRelationships().iterator();
-      ORelationship hasActorRelationship = it.next();
-      ORelationship hasFilmRelationship = it.next();
+      Iterator<OCanonicalRelationship> it = filmActorEntity.getOutCanonicalRelationships().iterator();
+      OCanonicalRelationship hasActorRelationship = it.next();
+      OCanonicalRelationship hasFilmRelationship = it.next();
       assertFalse(it.hasNext());
 
       assertEquals(2, mapper.getRelationship2edgeType().size());
@@ -1297,11 +1297,11 @@ public class GraphModelBuildingTest {
 
       // Relationships-Edges Mapping
 
-      Iterator<ORelationship> it = employeeEntity.getOutRelationships().iterator();
-      ORelationship hasManagerRelationship = it.next();
+      Iterator<OCanonicalRelationship> it = employeeEntity.getOutCanonicalRelationships().iterator();
+      OCanonicalRelationship hasManagerRelationship = it.next();
       assertFalse(it.hasNext());
-      it = projectEntity.getOutRelationships().iterator();
-      ORelationship hasProjectManagerRelationship = it.next();
+      it = projectEntity.getOutCanonicalRelationships().iterator();
+      OCanonicalRelationship hasProjectManagerRelationship = it.next();
       assertFalse(it.hasNext());
 
       assertEquals(2, mapper.getRelationship2edgeType().size());

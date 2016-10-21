@@ -26,8 +26,8 @@ import com.orientechnologies.teleporter.exception.OTeleporterRuntimeException;
 import com.orientechnologies.teleporter.mapper.rdbms.OAggregatorEdge;
 import com.orientechnologies.teleporter.mapper.rdbms.OER2GraphMapper;
 import com.orientechnologies.teleporter.model.dbschema.OAttribute;
+import com.orientechnologies.teleporter.model.dbschema.OCanonicalRelationship;
 import com.orientechnologies.teleporter.model.dbschema.OEntity;
-import com.orientechnologies.teleporter.model.dbschema.ORelationship;
 import com.orientechnologies.teleporter.model.graphmodel.OEdgeType;
 import com.orientechnologies.teleporter.model.graphmodel.OModelProperty;
 import com.orientechnologies.teleporter.model.graphmodel.OVertexType;
@@ -543,7 +543,7 @@ public class OGraphEngineForDB {
    * @throws SQLException
    */
 
-  public OrientVertex upsertReachedVertexWithEdge(OrientBaseGraph orientGraph, ResultSet foreignRecord, ORelationship relation, OrientVertex currentOutVertex, OVertexType currentInVertexType,
+  public OrientVertex upsertReachedVertexWithEdge(OrientBaseGraph orientGraph, ResultSet foreignRecord, OCanonicalRelationship relation, OrientVertex currentOutVertex, OVertexType currentInVertexType,
                                                   String edgeType) throws SQLException {
 
     OrientVertex currentInVertex = null;
@@ -554,14 +554,14 @@ public class OGraphEngineForDB {
 
       OTeleporterStatistics statistics = OTeleporterContext.getInstance().getStatistics();
 
-      // building keys and values for the lookup 
-
-      String[] propertyOfKey = new String[relation.getForeignKey().getInvolvedAttributes().size()];
-      String[] valueOfKey = new String[relation.getForeignKey().getInvolvedAttributes().size()];
+      // building keys and values for the lookup
+      List<OAttribute> fromColumns = relation.getFromColumns();
+      String[] propertyOfKey = new String[fromColumns.size()];
+      String[] valueOfKey = new String[fromColumns.size()];
 
       int index = 0;
-      for(OAttribute foreignAttribute: relation.getForeignKey().getInvolvedAttributes())  {
-        String attributeName = relation.getPrimaryKey().getInvolvedAttributes().get(index).getName();
+      for(OAttribute foreignAttribute: fromColumns)  {
+        String attributeName = relation.getToColumns().get(index).getName();
         propertyOfKey[index] =  mapper.getPropertyNameByVertexTypeAndAttribute(currentInVertexType, attributeName);
         valueOfKey[index] = foreignRecord.getString((foreignAttribute.getName()));
         index++;
@@ -697,31 +697,31 @@ public class OGraphEngineForDB {
 
     try {
 
-      Iterator<ORelationship> it = joinTable.getOutRelationships().iterator();
-      ORelationship relationship1 = it.next();
-      ORelationship relationship2 = it.next();
+      Iterator<OCanonicalRelationship> it = joinTable.getOutCanonicalRelationships().iterator();
+      OCanonicalRelationship relationship1 = it.next();
+      OCanonicalRelationship relationship2 = it.next();
 
 
       // Building keys and values for out-vertex lookup
 
-      String[] keysOutVertex = new String[relationship1.getForeignKey().getInvolvedAttributes().size()];
-      String[] valuesOutVertex = new String[relationship1.getForeignKey().getInvolvedAttributes().size()];
+      String[] keysOutVertex = new String[relationship1.getFromColumns().size()];
+      String[] valuesOutVertex = new String[relationship1.getFromColumns().size()];
 
       int index = 0;
-      for(OAttribute foreignKeyAttribute: relationship1.getForeignKey().getInvolvedAttributes()) {
-        keysOutVertex[index] = this.mapper.getPropertyNameByEntityAndAttribute(relationship1.getParentEntity(), relationship1.getPrimaryKey().getInvolvedAttributes().get(index).getName());
+      for(OAttribute foreignKeyAttribute: relationship1.getFromColumns()) {
+        keysOutVertex[index] = this.mapper.getPropertyNameByEntityAndAttribute(relationship1.getParentEntity(), relationship1.getToColumns().get(index).getName());
         valuesOutVertex[index] = jointTableRecord.getString(foreignKeyAttribute.getName());
         index++;
       }
 
       // Building keys and values for in-vertex lookup
 
-      String[] keysInVertex = new String[relationship2.getPrimaryKey().getInvolvedAttributes().size()];
-      String[] valuesInVertex = new String[relationship2.getPrimaryKey().getInvolvedAttributes().size()];
+      String[] keysInVertex = new String[relationship2.getToColumns().size()];
+      String[] valuesInVertex = new String[relationship2.getToColumns().size()];
 
       index = 0;
-      for(OAttribute foreignKeyAttribute: relationship2.getForeignKey().getInvolvedAttributes()) {
-        keysInVertex[index] = this.mapper.getPropertyNameByEntityAndAttribute(relationship2.getParentEntity(), relationship2.getPrimaryKey().getInvolvedAttributes().get(index).getName());
+      for(OAttribute foreignKeyAttribute: relationship2.getFromColumns()) {
+        keysInVertex[index] = this.mapper.getPropertyNameByEntityAndAttribute(relationship2.getParentEntity(), relationship2.getToColumns().get(index).getName());
         valuesInVertex[index] = jointTableRecord.getString(foreignKeyAttribute.getName());
         index++;
       }

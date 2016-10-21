@@ -40,7 +40,7 @@ public class ODataBaseSchema implements ODataSourceSchemaInfo {
   private String productName;
   private String productVersion;
   private List<OEntity> entities;
-  private List<ORelationship> relationships;
+  private List<OCanonicalRelationship> relationships;
   private List<OHierarchicalBag> hierarchicalBags;
 
   public ODataBaseSchema(int majorVersion, int minorVersion, int driverMajorVersion, int driverMinorVersion, String productName, String productVersion) {		
@@ -51,13 +51,13 @@ public class ODataBaseSchema implements ODataSourceSchemaInfo {
     this.productName = productName;
     this.productVersion = productVersion;
     this.entities = new ArrayList<OEntity>();
-    this.relationships = new ArrayList<ORelationship>();
+    this.relationships = new ArrayList<OCanonicalRelationship>();
     this.hierarchicalBags = new ArrayList<OHierarchicalBag>();
   }
 
   public ODataBaseSchema() {
     this.entities = new ArrayList<OEntity>();
-    this.relationships = new ArrayList<ORelationship>();
+    this.relationships = new ArrayList<OCanonicalRelationship>();
     this.hierarchicalBags = new ArrayList<OHierarchicalBag>();
   }
 
@@ -117,11 +117,11 @@ public class ODataBaseSchema implements ODataSourceSchemaInfo {
     this.entities = entitiess;
   }
 
-  public List<ORelationship> getRelationships() {
+  public List<OCanonicalRelationship> getRelationships() {
     return relationships;
   }
 
-  public void setRelationships(List<ORelationship> relationships) {
+  public void setRelationships(List<OCanonicalRelationship> relationships) {
     this.relationships = relationships;
   }
 
@@ -153,10 +153,10 @@ public class ODataBaseSchema implements ODataSourceSchemaInfo {
     return null;
   }
 
-  public ORelationship getRelationshipByInvolvedEntitiesAndAttributes(OEntity currentForeignEntity, OEntity currentParentEntity,
-      List<String> fromColumns, List<String> toColumns) {
+  public OCanonicalRelationship getRelationshipByInvolvedEntitiesAndAttributes(OEntity currentForeignEntity, OEntity currentParentEntity,
+                                                                               List<String> fromColumns, List<String> toColumns) {
 
-    for(ORelationship currentRelationship: this.relationships) {
+    for(OCanonicalRelationship currentRelationship: this.relationships) {
       if(currentRelationship.getForeignEntity().getName().equals(currentForeignEntity.getName()) && currentRelationship.getParentEntity().getName().equals(currentParentEntity.getName())) {
         if(sameAttributesInvolved(currentRelationship.getForeignKey(), fromColumns) && sameAttributesInvolved(currentRelationship.getPrimaryKey(), toColumns)) {
           return currentRelationship;

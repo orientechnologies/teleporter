@@ -117,19 +117,15 @@ public class OKey {
   }
 
   public String toString() {
-    String s = "[";
 
+    String s = "[";
     for(OAttribute attribute: this.involvedAttributes) {
       s += attribute.getName() + ",";
     }
-
     s = s.substring(0, s.length()-1);
-
     s += "]";
 
     return s;
   }
-
-
 
 }

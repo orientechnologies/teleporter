@@ -25,8 +25,8 @@ import com.orientechnologies.teleporter.context.OTeleporterContext;
 import com.orientechnologies.teleporter.importengine.rdbms.dbengine.ODBQueryEngine;
 import com.orientechnologies.teleporter.mapper.rdbms.OER2GraphMapper;
 import com.orientechnologies.teleporter.mapper.rdbms.classmapper.OClassMapper;
+import com.orientechnologies.teleporter.model.dbschema.OCanonicalRelationship;
 import com.orientechnologies.teleporter.model.dbschema.OEntity;
-import com.orientechnologies.teleporter.model.dbschema.ORelationship;
 import com.orientechnologies.teleporter.model.dbschema.OSourceDatabaseInfo;
 import com.orientechnologies.teleporter.model.graphmodel.OEdgeType;
 import com.orientechnologies.teleporter.model.graphmodel.OModelProperty;
@@ -201,22 +201,22 @@ public class RelationshipConfigurationMappingTest {
 
       // relationship, primary and foreign key check
       assertEquals(2, mapper.getDataBaseSchema().getRelationships().size());
-      assertEquals(1, projectEntity.getOutRelationships().size());
-      assertEquals(1, employeeEntity.getOutRelationships().size());
-      assertEquals(1, projectEntity.getInRelationships().size());
-      assertEquals(1, employeeEntity.getInRelationships().size());
+      assertEquals(1, projectEntity.getOutCanonicalRelationships().size());
+      assertEquals(1, employeeEntity.getOutCanonicalRelationships().size());
+      assertEquals(1, projectEntity.getInCanonicalRelationships().size());
+      assertEquals(1, employeeEntity.getInCanonicalRelationships().size());
       assertEquals(1, employeeEntity.getForeignKeys().size());
       assertEquals(1, projectEntity.getForeignKeys().size());
 
-      Iterator<ORelationship> it = projectEntity.getOutRelationships().iterator();
-      ORelationship currentRelationship = it.next();
+      Iterator<OCanonicalRelationship> it = projectEntity.getOutCanonicalRelationships().iterator();
+      OCanonicalRelationship currentRelationship = it.next();
       assertEquals("EMPLOYEE", currentRelationship.getParentEntity().getName());
       assertEquals("PROJECT", currentRelationship.getForeignEntity().getName());
       assertEquals(employeeEntity.getPrimaryKey(), currentRelationship.getPrimaryKey());
       assertEquals(projectEntity.getForeignKeys().get(0), currentRelationship.getForeignKey());
 
-      Iterator<ORelationship> it2 = employeeEntity.getInRelationships().iterator();
-      ORelationship currentRelationship2 = it2.next();
+      Iterator<OCanonicalRelationship> it2 = employeeEntity.getInCanonicalRelationships().iterator();
+      OCanonicalRelationship currentRelationship2 = it2.next();
       assertEquals(currentRelationship, currentRelationship2);
 
       assertEquals("PROJECT_MANAGER", projectEntity.getForeignKeys().get(0).getInvolvedAttributes().get(0).getName());
@@ -224,14 +224,14 @@ public class RelationshipConfigurationMappingTest {
 
       assertFalse(it.hasNext());
 
-      it = employeeEntity.getOutRelationships().iterator();
+      it = employeeEntity.getOutCanonicalRelationships().iterator();
       currentRelationship = it.next();
       assertEquals("PROJECT", currentRelationship.getParentEntity().getName());
       assertEquals("EMPLOYEE", currentRelationship.getForeignEntity().getName());
       assertEquals(projectEntity.getPrimaryKey(), currentRelationship.getPrimaryKey());
       assertEquals(employeeEntity.getForeignKeys().get(0), currentRelationship.getForeignKey());
 
-      it2 = projectEntity.getInRelationships().iterator();
+      it2 = projectEntity.getInCanonicalRelationships().iterator();
       currentRelationship2 = it2.next();
       assertEquals(currentRelationship, currentRelationship2);
 
@@ -394,12 +394,12 @@ public class RelationshipConfigurationMappingTest {
 
       // Relationships-Edges Mapping
 
-      Iterator<ORelationship> itRelationships = employeeEntity.getOutRelationships().iterator();
-      ORelationship worksAtRelationship = itRelationships.next();
+      Iterator<OCanonicalRelationship> itRelationships = employeeEntity.getOutCanonicalRelationships().iterator();
+      OCanonicalRelationship worksAtRelationship = itRelationships.next();
       assertFalse(itRelationships.hasNext());
 
-      itRelationships = projectEntity.getOutRelationships().iterator();
-      ORelationship hasManagerRelationship = itRelationships.next();
+      itRelationships = projectEntity.getOutCanonicalRelationships().iterator();
+      OCanonicalRelationship hasManagerRelationship = itRelationships.next();
       assertFalse(itRelationships.hasNext());
 
       assertEquals(2, mapper.getRelationship2edgeType().size());
@@ -574,22 +574,22 @@ public class RelationshipConfigurationMappingTest {
 
       // relationship, primary and foreign key check
       assertEquals(2, mapper.getDataBaseSchema().getRelationships().size());
-      assertEquals(1, projectEntity.getOutRelationships().size());
-      assertEquals(1, employeeEntity.getOutRelationships().size());
-      assertEquals(1, projectEntity.getInRelationships().size());
-      assertEquals(1, employeeEntity.getInRelationships().size());
+      assertEquals(1, projectEntity.getOutCanonicalRelationships().size());
+      assertEquals(1, employeeEntity.getOutCanonicalRelationships().size());
+      assertEquals(1, projectEntity.getInCanonicalRelationships().size());
+      assertEquals(1, employeeEntity.getInCanonicalRelationships().size());
       assertEquals(1, employeeEntity.getForeignKeys().size());
       assertEquals(1, projectEntity.getForeignKeys().size());
 
-      Iterator<ORelationship> it = projectEntity.getOutRelationships().iterator();
-      ORelationship currentRelationship = it.next();
+      Iterator<OCanonicalRelationship> it = projectEntity.getOutCanonicalRelationships().iterator();
+      OCanonicalRelationship currentRelationship = it.next();
       assertEquals("EMPLOYEE", currentRelationship.getParentEntity().getName());
       assertEquals("PROJECT", currentRelationship.getForeignEntity().getName());
       assertEquals(employeeEntity.getPrimaryKey(), currentRelationship.getPrimaryKey());
       assertEquals(projectEntity.getForeignKeys().get(0), currentRelationship.getForeignKey());
 
-      Iterator<ORelationship> it2 = employeeEntity.getInRelationships().iterator();
-      ORelationship currentRelationship2 = it2.next();
+      Iterator<OCanonicalRelationship> it2 = employeeEntity.getInCanonicalRelationships().iterator();
+      OCanonicalRelationship currentRelationship2 = it2.next();
       assertEquals(currentRelationship, currentRelationship2);
 
       assertEquals("PROJECT_MANAGER", projectEntity.getForeignKeys().get(0).getInvolvedAttributes().get(0).getName());
@@ -597,14 +597,14 @@ public class RelationshipConfigurationMappingTest {
 
       assertFalse(it.hasNext());
 
-      it = employeeEntity.getOutRelationships().iterator();
+      it = employeeEntity.getOutCanonicalRelationships().iterator();
       currentRelationship = it.next();
       assertEquals("PROJECT", currentRelationship.getParentEntity().getName());
       assertEquals("EMPLOYEE", currentRelationship.getForeignEntity().getName());
       assertEquals(projectEntity.getPrimaryKey(), currentRelationship.getPrimaryKey());
       assertEquals(employeeEntity.getForeignKeys().get(0), currentRelationship.getForeignKey());
 
-      it2 = projectEntity.getInRelationships().iterator();
+      it2 = projectEntity.getInCanonicalRelationships().iterator();
       currentRelationship2 = it2.next();
       assertEquals(currentRelationship, currentRelationship2);
 
@@ -757,12 +757,12 @@ public class RelationshipConfigurationMappingTest {
 
       // Relationships-Edges Mapping
 
-      Iterator<ORelationship> itRelationships = employeeEntity.getOutRelationships().iterator();
-      ORelationship projectRelationship = itRelationships.next();
+      Iterator<OCanonicalRelationship> itRelationships = employeeEntity.getOutCanonicalRelationships().iterator();
+      OCanonicalRelationship projectRelationship = itRelationships.next();
       assertFalse(itRelationships.hasNext());
 
-      itRelationships = projectEntity.getOutRelationships().iterator();
-      ORelationship hasProjectManagerRelationship = itRelationships.next();
+      itRelationships = projectEntity.getOutCanonicalRelationships().iterator();
+      OCanonicalRelationship hasProjectManagerRelationship = itRelationships.next();
       assertFalse(itRelationships.hasNext());
 
       assertEquals(2, mapper.getRelationship2edgeType().size());
@@ -944,25 +944,25 @@ public class RelationshipConfigurationMappingTest {
 
       // relationship, primary and foreign key check
       assertEquals(2, mapper.getDataBaseSchema().getRelationships().size());
-      assertEquals(0, filmEntity.getOutRelationships().size());
-      assertEquals(0, actorEntity.getOutRelationships().size());
-      assertEquals(2, actorFilmEntity.getOutRelationships().size());
-      assertEquals(1, filmEntity.getInRelationships().size());
-      assertEquals(1, actorEntity.getInRelationships().size());
-      assertEquals(0, actorFilmEntity.getInRelationships().size());
+      assertEquals(0, filmEntity.getOutCanonicalRelationships().size());
+      assertEquals(0, actorEntity.getOutCanonicalRelationships().size());
+      assertEquals(2, actorFilmEntity.getOutCanonicalRelationships().size());
+      assertEquals(1, filmEntity.getInCanonicalRelationships().size());
+      assertEquals(1, actorEntity.getInCanonicalRelationships().size());
+      assertEquals(0, actorFilmEntity.getInCanonicalRelationships().size());
       assertEquals(0, actorEntity.getForeignKeys().size());
       assertEquals(0, filmEntity.getForeignKeys().size());
       assertEquals(2, actorFilmEntity.getForeignKeys().size());
 
-      Iterator<ORelationship> it = actorFilmEntity.getOutRelationships().iterator();
-      ORelationship currentRelationship = it.next();
+      Iterator<OCanonicalRelationship> it = actorFilmEntity.getOutCanonicalRelationships().iterator();
+      OCanonicalRelationship currentRelationship = it.next();
       assertEquals("ACTOR", currentRelationship.getParentEntity().getName());
       assertEquals("ACTOR_FILM", currentRelationship.getForeignEntity().getName());
       assertEquals(actorEntity.getPrimaryKey(), currentRelationship.getPrimaryKey());
       assertEquals(actorFilmEntity.getForeignKeys().get(0), currentRelationship.getForeignKey());
 
-      Iterator<ORelationship> it2 = actorEntity.getInRelationships().iterator();
-      ORelationship currentRelationship2 = it2.next();
+      Iterator<OCanonicalRelationship> it2 = actorEntity.getInCanonicalRelationships().iterator();
+      OCanonicalRelationship currentRelationship2 = it2.next();
       assertEquals(currentRelationship, currentRelationship2);
 
       assertEquals("ACTOR_ID", actorFilmEntity.getForeignKeys().get(0).getInvolvedAttributes().get(0).getName());
@@ -974,7 +974,7 @@ public class RelationshipConfigurationMappingTest {
       assertEquals(filmEntity.getPrimaryKey(), currentRelationship.getPrimaryKey());
       assertEquals(actorFilmEntity.getForeignKeys().get(1), currentRelationship.getForeignKey());
 
-      it2 = filmEntity.getInRelationships().iterator();
+      it2 = filmEntity.getInCanonicalRelationships().iterator();
       currentRelationship2 = it2.next();
       assertEquals(currentRelationship, currentRelationship2);
 
@@ -1168,9 +1168,9 @@ public class RelationshipConfigurationMappingTest {
 
       // Relationships-Edges Mapping
 
-      Iterator<ORelationship> itRelationships = actorFilmEntity.getOutRelationships().iterator();
-      ORelationship performsLeftRelationship = itRelationships.next();
-      ORelationship performsRightRelationship = itRelationships.next();
+      Iterator<OCanonicalRelationship> itRelationships = actorFilmEntity.getOutCanonicalRelationships().iterator();
+      OCanonicalRelationship performsLeftRelationship = itRelationships.next();
+      OCanonicalRelationship performsRightRelationship = itRelationships.next();
       assertFalse(itRelationships.hasNext());
 
       assertEquals(2, mapper.getRelationship2edgeType().size());
@@ -1358,7 +1358,7 @@ public class RelationshipConfigurationMappingTest {
 
       // Relationships-Edges Mapping
 
-      itRelationships = actorFilmEntity.getOutRelationships().iterator();
+      itRelationships = actorFilmEntity.getOutCanonicalRelationships().iterator();
       performsLeftRelationship = itRelationships.next();
       performsRightRelationship = itRelationships.next();
       assertFalse(itRelationships.hasNext());
@@ -1549,25 +1549,25 @@ public class RelationshipConfigurationMappingTest {
 
       // relationship, primary and foreign key check
       assertEquals(2, mapper.getDataBaseSchema().getRelationships().size());
-      assertEquals(0, filmEntity.getOutRelationships().size());
-      assertEquals(0, actorEntity.getOutRelationships().size());
-      assertEquals(2, filmActorEntity.getOutRelationships().size());
-      assertEquals(1, filmEntity.getInRelationships().size());
-      assertEquals(1, actorEntity.getInRelationships().size());
-      assertEquals(0, filmActorEntity.getInRelationships().size());
+      assertEquals(0, filmEntity.getOutCanonicalRelationships().size());
+      assertEquals(0, actorEntity.getOutCanonicalRelationships().size());
+      assertEquals(2, filmActorEntity.getOutCanonicalRelationships().size());
+      assertEquals(1, filmEntity.getInCanonicalRelationships().size());
+      assertEquals(1, actorEntity.getInCanonicalRelationships().size());
+      assertEquals(0, filmActorEntity.getInCanonicalRelationships().size());
       assertEquals(0, actorEntity.getForeignKeys().size());
       assertEquals(0, filmEntity.getForeignKeys().size());
       assertEquals(2, filmActorEntity.getForeignKeys().size());
 
-      Iterator<ORelationship> it = filmActorEntity.getOutRelationships().iterator();
-      ORelationship currentRelationship = it.next();
+      Iterator<OCanonicalRelationship> it = filmActorEntity.getOutCanonicalRelationships().iterator();
+      OCanonicalRelationship currentRelationship = it.next();
       assertEquals("FILM", currentRelationship.getParentEntity().getName());
       assertEquals("FILM_ACTOR", currentRelationship.getForeignEntity().getName());
       assertEquals(filmEntity.getPrimaryKey(), currentRelationship.getPrimaryKey());
       assertEquals(filmActorEntity.getForeignKeys().get(0), currentRelationship.getForeignKey());
 
-      Iterator<ORelationship> it2 = filmEntity.getInRelationships().iterator();
-      ORelationship currentRelationship2 = it2.next();
+      Iterator<OCanonicalRelationship> it2 = filmEntity.getInCanonicalRelationships().iterator();
+      OCanonicalRelationship currentRelationship2 = it2.next();
       assertEquals(currentRelationship, currentRelationship2);
 
       assertEquals("FILM_ID", filmActorEntity.getForeignKeys().get(0).getInvolvedAttributes().get(0).getName());
@@ -1580,7 +1580,7 @@ public class RelationshipConfigurationMappingTest {
       assertEquals(actorEntity.getPrimaryKey(), currentRelationship.getPrimaryKey());
       assertEquals(filmActorEntity.getForeignKeys().get(1), currentRelationship.getForeignKey());
 
-      it2 = actorEntity.getInRelationships().iterator();
+      it2 = actorEntity.getInCanonicalRelationships().iterator();
       currentRelationship2 = it2.next();
       assertEquals(currentRelationship, currentRelationship2);
 
@@ -1774,9 +1774,9 @@ public class RelationshipConfigurationMappingTest {
 
       // Relationships-Edges Mapping
 
-      Iterator<ORelationship> itRelationships = filmActorEntity.getOutRelationships().iterator();
-      ORelationship performsLeftRelationship = itRelationships.next();
-      ORelationship performsRightRelationship = itRelationships.next();
+      Iterator<OCanonicalRelationship> itRelationships = filmActorEntity.getOutCanonicalRelationships().iterator();
+      OCanonicalRelationship performsLeftRelationship = itRelationships.next();
+      OCanonicalRelationship performsRightRelationship = itRelationships.next();
       assertFalse(itRelationships.hasNext());
 
       assertEquals(2, mapper.getRelationship2edgeType().size());
@@ -1964,7 +1964,7 @@ public class RelationshipConfigurationMappingTest {
 
       // Relationships-Edges Mapping
 
-      itRelationships = filmActorEntity.getOutRelationships().iterator();
+      itRelationships = filmActorEntity.getOutCanonicalRelationships().iterator();
       performsLeftRelationship = itRelationships.next();
       performsRightRelationship = itRelationships.next();
       assertFalse(itRelationships.hasNext());
@@ -2154,25 +2154,25 @@ public class RelationshipConfigurationMappingTest {
 
       // relationship, primary and foreign key check
       assertEquals(2, mapper.getDataBaseSchema().getRelationships().size());
-      assertEquals(0, filmEntity.getOutRelationships().size());
-      assertEquals(0, actorEntity.getOutRelationships().size());
-      assertEquals(2, actorFilmEntity.getOutRelationships().size());
-      assertEquals(1, filmEntity.getInRelationships().size());
-      assertEquals(1, actorEntity.getInRelationships().size());
-      assertEquals(0, actorFilmEntity.getInRelationships().size());
+      assertEquals(0, filmEntity.getOutCanonicalRelationships().size());
+      assertEquals(0, actorEntity.getOutCanonicalRelationships().size());
+      assertEquals(2, actorFilmEntity.getOutCanonicalRelationships().size());
+      assertEquals(1, filmEntity.getInCanonicalRelationships().size());
+      assertEquals(1, actorEntity.getInCanonicalRelationships().size());
+      assertEquals(0, actorFilmEntity.getInCanonicalRelationships().size());
       assertEquals(0, actorEntity.getForeignKeys().size());
       assertEquals(0, filmEntity.getForeignKeys().size());
       assertEquals(2, actorFilmEntity.getForeignKeys().size());
 
-      Iterator<ORelationship> it = actorFilmEntity.getOutRelationships().iterator();
-      ORelationship currentRelationship = it.next();
+      Iterator<OCanonicalRelationship> it = actorFilmEntity.getOutCanonicalRelationships().iterator();
+      OCanonicalRelationship currentRelationship = it.next();
       assertEquals("ACTOR", currentRelationship.getParentEntity().getName());
       assertEquals("ACTOR_FILM", currentRelationship.getForeignEntity().getName());
       assertEquals(actorEntity.getPrimaryKey(), currentRelationship.getPrimaryKey());
       assertEquals(actorFilmEntity.getForeignKeys().get(0), currentRelationship.getForeignKey());
 
-      Iterator<ORelationship> it2 = actorEntity.getInRelationships().iterator();
-      ORelationship currentRelationship2 = it2.next();
+      Iterator<OCanonicalRelationship> it2 = actorEntity.getInCanonicalRelationships().iterator();
+      OCanonicalRelationship currentRelationship2 = it2.next();
       assertEquals(currentRelationship, currentRelationship2);
 
       assertEquals("ACTOR_ID", actorFilmEntity.getForeignKeys().get(0).getInvolvedAttributes().get(0).getName());
@@ -2184,7 +2184,7 @@ public class RelationshipConfigurationMappingTest {
       assertEquals(filmEntity.getPrimaryKey(), currentRelationship.getPrimaryKey());
       assertEquals(actorFilmEntity.getForeignKeys().get(1), currentRelationship.getForeignKey());
 
-      it2 = filmEntity.getInRelationships().iterator();
+      it2 = filmEntity.getInCanonicalRelationships().iterator();
       currentRelationship2 = it2.next();
       assertEquals(currentRelationship, currentRelationship2);
 
@@ -2378,9 +2378,9 @@ public class RelationshipConfigurationMappingTest {
 
       // Relationships-Edges Mapping
 
-      Iterator<ORelationship> itRelationships = actorFilmEntity.getOutRelationships().iterator();
-      ORelationship performsLeftRelationship = itRelationships.next();
-      ORelationship performsRightRelationship = itRelationships.next();
+      Iterator<OCanonicalRelationship> itRelationships = actorFilmEntity.getOutCanonicalRelationships().iterator();
+      OCanonicalRelationship performsLeftRelationship = itRelationships.next();
+      OCanonicalRelationship performsRightRelationship = itRelationships.next();
       assertFalse(itRelationships.hasNext());
 
       assertEquals(2, mapper.getRelationship2edgeType().size());
@@ -2568,7 +2568,7 @@ public class RelationshipConfigurationMappingTest {
 
       // Relationships-Edges Mapping
 
-      itRelationships = actorFilmEntity.getOutRelationships().iterator();
+      itRelationships = actorFilmEntity.getOutCanonicalRelationships().iterator();
       performsLeftRelationship = itRelationships.next();
       performsRightRelationship = itRelationships.next();
       assertFalse(itRelationships.hasNext());
@@ -2758,25 +2758,25 @@ public class RelationshipConfigurationMappingTest {
 
       // relationship, primary and foreign key check
       assertEquals(2, mapper.getDataBaseSchema().getRelationships().size());
-      assertEquals(0, filmEntity.getOutRelationships().size());
-      assertEquals(0, actorEntity.getOutRelationships().size());
-      assertEquals(2, filmActorEntity.getOutRelationships().size());
-      assertEquals(1, filmEntity.getInRelationships().size());
-      assertEquals(1, actorEntity.getInRelationships().size());
-      assertEquals(0, filmActorEntity.getInRelationships().size());
+      assertEquals(0, filmEntity.getOutCanonicalRelationships().size());
+      assertEquals(0, actorEntity.getOutCanonicalRelationships().size());
+      assertEquals(2, filmActorEntity.getOutCanonicalRelationships().size());
+      assertEquals(1, filmEntity.getInCanonicalRelationships().size());
+      assertEquals(1, actorEntity.getInCanonicalRelationships().size());
+      assertEquals(0, filmActorEntity.getInCanonicalRelationships().size());
       assertEquals(0, actorEntity.getForeignKeys().size());
       assertEquals(0, filmEntity.getForeignKeys().size());
       assertEquals(2, filmActorEntity.getForeignKeys().size());
 
-      Iterator<ORelationship> it = filmActorEntity.getOutRelationships().iterator();
-      ORelationship currentRelationship = it.next();
+      Iterator<OCanonicalRelationship> it = filmActorEntity.getOutCanonicalRelationships().iterator();
+      OCanonicalRelationship currentRelationship = it.next();
       assertEquals("ACTOR", currentRelationship.getParentEntity().getName());
       assertEquals("FILM_ACTOR", currentRelationship.getForeignEntity().getName());
       assertEquals(actorEntity.getPrimaryKey(), currentRelationship.getPrimaryKey());
       assertEquals(filmActorEntity.getForeignKeys().get(0), currentRelationship.getForeignKey());
 
-      Iterator<ORelationship> it2 = actorEntity.getInRelationships().iterator();
-      ORelationship currentRelationship2 = it2.next();
+      Iterator<OCanonicalRelationship> it2 = actorEntity.getInCanonicalRelationships().iterator();
+      OCanonicalRelationship currentRelationship2 = it2.next();
       assertEquals(currentRelationship, currentRelationship2);
 
       assertEquals("ACTOR_ID", filmActorEntity.getForeignKeys().get(0).getInvolvedAttributes().get(0).getName());
@@ -2789,7 +2789,7 @@ public class RelationshipConfigurationMappingTest {
       assertEquals(filmEntity.getPrimaryKey(), currentRelationship.getPrimaryKey());
       assertEquals(filmActorEntity.getForeignKeys().get(1), currentRelationship.getForeignKey());
 
-      it2 = filmEntity.getInRelationships().iterator();
+      it2 = filmEntity.getInCanonicalRelationships().iterator();
       currentRelationship2 = it2.next();
       assertEquals(currentRelationship, currentRelationship2);
 
@@ -2983,9 +2983,9 @@ public class RelationshipConfigurationMappingTest {
 
       // Relationships-Edges Mapping
 
-      Iterator<ORelationship> itRelationships = filmActorEntity.getOutRelationships().iterator();
-      ORelationship performsLeftRelationship = itRelationships.next();
-      ORelationship performsRightRelationship = itRelationships.next();
+      Iterator<OCanonicalRelationship> itRelationships = filmActorEntity.getOutCanonicalRelationships().iterator();
+      OCanonicalRelationship performsLeftRelationship = itRelationships.next();
+      OCanonicalRelationship performsRightRelationship = itRelationships.next();
       assertFalse(itRelationships.hasNext());
 
       assertEquals(2, mapper.getRelationship2edgeType().size());
@@ -3172,7 +3172,7 @@ public class RelationshipConfigurationMappingTest {
 
       // Relationships-Edges Mapping
 
-      itRelationships = filmActorEntity.getOutRelationships().iterator();
+      itRelationships = filmActorEntity.getOutCanonicalRelationships().iterator();
       performsLeftRelationship = itRelationships.next();
       performsRightRelationship = itRelationships.next();
       assertFalse(itRelationships.hasNext());

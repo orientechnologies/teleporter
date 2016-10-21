@@ -18,7 +18,7 @@
 
 package com.orientechnologies.teleporter.nameresolver;
 
-import com.orientechnologies.teleporter.model.dbschema.ORelationship;
+import com.orientechnologies.teleporter.model.dbschema.OCanonicalRelationship;
 
 /**
  * Interface that performs name transformations on the elements 
@@ -35,6 +35,6 @@ public interface ONameResolver {
 
   public  String resolveVertexProperty(String candidateName);
 
-  public String resolveEdgeName(ORelationship relationship);
+  public String resolveEdgeName(OCanonicalRelationship relationship);
 
 }

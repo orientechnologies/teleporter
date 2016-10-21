@@ -23,8 +23,8 @@ import com.orientechnologies.teleporter.context.OTeleporterContext;
 import com.orientechnologies.teleporter.importengine.rdbms.dbengine.ODBQueryEngine;
 import com.orientechnologies.teleporter.mapper.rdbms.OER2GraphMapper;
 import com.orientechnologies.teleporter.mapper.rdbms.classmapper.OClassMapper;
+import com.orientechnologies.teleporter.model.dbschema.OCanonicalRelationship;
 import com.orientechnologies.teleporter.model.dbschema.OEntity;
-import com.orientechnologies.teleporter.model.dbschema.ORelationship;
 import com.orientechnologies.teleporter.model.dbschema.OSourceDatabaseInfo;
 import com.orientechnologies.teleporter.model.graphmodel.OEdgeType;
 import com.orientechnologies.teleporter.model.graphmodel.OVertexType;
@@ -248,18 +248,18 @@ public class AggregationStrategyTest {
 
       // Relationships-Edges Mapping
 
-      Iterator<ORelationship> it = deptEmpEntity.getOutRelationships().iterator();
-      ORelationship hasDepartmentRelationship1 = it.next();
-      ORelationship hasEmployeeRelationship1 = it.next();
+      Iterator<OCanonicalRelationship> it = deptEmpEntity.getOutCanonicalRelationships().iterator();
+      OCanonicalRelationship hasDepartmentRelationship1 = it.next();
+      OCanonicalRelationship hasEmployeeRelationship1 = it.next();
       assertFalse(it.hasNext());
 
-      it = deptMgrEntity.getOutRelationships().iterator();
-      ORelationship hasDepartmentRelationship2 = it.next();
-      ORelationship hasEmployeeRelationship2 = it.next();
+      it = deptMgrEntity.getOutCanonicalRelationships().iterator();
+      OCanonicalRelationship hasDepartmentRelationship2 = it.next();
+      OCanonicalRelationship hasEmployeeRelationship2 = it.next();
       assertFalse(it.hasNext());
 
-      it = branchEntity.getOutRelationships().iterator();
-      ORelationship hasDepartmentRelationship3 = it.next();
+      it = branchEntity.getOutCanonicalRelationships().iterator();
+      OCanonicalRelationship hasDepartmentRelationship3 = it.next();
       assertFalse(it.hasNext());
 
       assertEquals(5, mapper.getRelationship2edgeType().size());
@@ -420,17 +420,17 @@ public class AggregationStrategyTest {
 
       // Relationships-Edges Mapping
 
-      it = deptEmpEntity.getOutRelationships().iterator();
+      it = deptEmpEntity.getOutCanonicalRelationships().iterator();
       hasDepartmentRelationship1 = it.next();
       hasEmployeeRelationship1 = it.next();
       assertFalse(it.hasNext());
 
-      it = deptMgrEntity.getOutRelationships().iterator();
+      it = deptMgrEntity.getOutCanonicalRelationships().iterator();
       hasDepartmentRelationship2 = it.next();
       hasEmployeeRelationship2 = it.next();
       assertFalse(it.hasNext());
 
-      it = branchEntity.getOutRelationships().iterator();
+      it = branchEntity.getOutCanonicalRelationships().iterator();
       hasDepartmentRelationship3 = it.next();
       assertFalse(it.hasNext());
 

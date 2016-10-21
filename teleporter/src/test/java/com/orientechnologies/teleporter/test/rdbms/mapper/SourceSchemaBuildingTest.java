@@ -22,8 +22,8 @@ import com.orientechnologies.teleporter.context.OOutputStreamManager;
 import com.orientechnologies.teleporter.context.OTeleporterContext;
 import com.orientechnologies.teleporter.importengine.rdbms.dbengine.ODBQueryEngine;
 import com.orientechnologies.teleporter.mapper.rdbms.OER2GraphMapper;
+import com.orientechnologies.teleporter.model.dbschema.OCanonicalRelationship;
 import com.orientechnologies.teleporter.model.dbschema.OEntity;
-import com.orientechnologies.teleporter.model.dbschema.ORelationship;
 import com.orientechnologies.teleporter.model.dbschema.OSourceDatabaseInfo;
 import org.junit.Assert;
 import org.junit.Before;
@@ -153,22 +153,22 @@ public class SourceSchemaBuildingTest {
       assertEquals("FOREIGN_BOOK", foreignEntity.getAttributeByName("AUTHOR").getBelongingEntity().getName());
 
       // relationship, primary and foreign key check
-      assertEquals(1, foreignEntity.getOutRelationships().size());
-      assertEquals(0, parentEntity.getOutRelationships().size());
-      assertEquals(0, foreignEntity.getInRelationships().size());
-      assertEquals(1, parentEntity.getInRelationships().size());
+      assertEquals(1, foreignEntity.getOutCanonicalRelationships().size());
+      assertEquals(0, parentEntity.getOutCanonicalRelationships().size());
+      assertEquals(0, foreignEntity.getInCanonicalRelationships().size());
+      assertEquals(1, parentEntity.getInCanonicalRelationships().size());
       assertEquals(0,parentEntity.getForeignKeys().size());
       assertEquals(1,foreignEntity.getForeignKeys().size());
 
-      Iterator<ORelationship> it = foreignEntity.getOutRelationships().iterator();
-      ORelationship currentRelationship = it.next();
+      Iterator<OCanonicalRelationship> it = foreignEntity.getOutCanonicalRelationships().iterator();
+      OCanonicalRelationship currentRelationship = it.next();
       assertEquals("PARENT_AUTHOR", currentRelationship.getParentEntity().getName());
       assertEquals("FOREIGN_BOOK", currentRelationship.getForeignEntity().getName());
       assertEquals(parentEntity.getPrimaryKey(), currentRelationship.getPrimaryKey());
       assertEquals(foreignEntity.getForeignKeys().get(0), currentRelationship.getForeignKey());
 
-      Iterator<ORelationship> it2 = parentEntity.getInRelationships().iterator();
-      ORelationship currentRelationship2 = it2.next();
+      Iterator<OCanonicalRelationship> it2 = parentEntity.getInCanonicalRelationships().iterator();
+      OCanonicalRelationship currentRelationship2 = it2.next();
       assertEquals(currentRelationship, currentRelationship2);
 
       assertEquals("AUTHOR", foreignEntity.getForeignKeys().get(0).getInvolvedAttributes().get(0).getName());
@@ -290,22 +290,22 @@ public class SourceSchemaBuildingTest {
       assertEquals("FOREIGN_BOOK", foreignEntity.getAttributeByName("AUTHOR_SURNAME").getBelongingEntity().getName());
 
       // relationship, primary and foreign key check
-      assertEquals(1, foreignEntity.getOutRelationships().size());
-      assertEquals(0, parentEntity.getOutRelationships().size());
-      assertEquals(0, foreignEntity.getInRelationships().size());
-      assertEquals(1, parentEntity.getInRelationships().size());
+      assertEquals(1, foreignEntity.getOutCanonicalRelationships().size());
+      assertEquals(0, parentEntity.getOutCanonicalRelationships().size());
+      assertEquals(0, foreignEntity.getInCanonicalRelationships().size());
+      assertEquals(1, parentEntity.getInCanonicalRelationships().size());
       assertEquals(0,parentEntity.getForeignKeys().size());
       assertEquals(1,foreignEntity.getForeignKeys().size());
 
-      Iterator<ORelationship> it = foreignEntity.getOutRelationships().iterator();
-      ORelationship currentRelationship = it.next();
+      Iterator<OCanonicalRelationship> it = foreignEntity.getOutCanonicalRelationships().iterator();
+      OCanonicalRelationship currentRelationship = it.next();
       assertEquals("PARENT_AUTHOR", currentRelationship.getParentEntity().getName());
       assertEquals("FOREIGN_BOOK", currentRelationship.getForeignEntity().getName());
       assertEquals(parentEntity.getPrimaryKey(), currentRelationship.getPrimaryKey());
       assertEquals(foreignEntity.getForeignKeys().get(0), currentRelationship.getForeignKey());
 
-      Iterator<ORelationship> it2 = parentEntity.getInRelationships().iterator();
-      ORelationship currentRelationship2 = it2.next();
+      Iterator<OCanonicalRelationship> it2 = parentEntity.getInCanonicalRelationships().iterator();
+      OCanonicalRelationship currentRelationship2 = it2.next();
       assertEquals(currentRelationship, currentRelationship2);
 
       assertEquals("AUTHOR_NAME", foreignEntity.getForeignKeys().get(0).getInvolvedAttributes().get(0).getName());
@@ -421,23 +421,23 @@ public class SourceSchemaBuildingTest {
       assertEquals("FOREIGN_ARTICLE", foreignEntity.getAttributeByName("TRANSLATOR").getBelongingEntity().getName());
 
       // relationship, primary and foreign key check
-      assertEquals(2, foreignEntity.getOutRelationships().size());
-      assertEquals(0, parentEntity.getOutRelationships().size());
-      assertEquals(0, foreignEntity.getInRelationships().size());
-      assertEquals(2, parentEntity.getInRelationships().size());
+      assertEquals(2, foreignEntity.getOutCanonicalRelationships().size());
+      assertEquals(0, parentEntity.getOutCanonicalRelationships().size());
+      assertEquals(0, foreignEntity.getInCanonicalRelationships().size());
+      assertEquals(2, parentEntity.getInCanonicalRelationships().size());
       assertEquals(0,parentEntity.getForeignKeys().size());
       assertEquals(2,foreignEntity.getForeignKeys().size());
 
       // first relationship
-      Iterator<ORelationship> it = foreignEntity.getOutRelationships().iterator();
-      ORelationship currentRelationship = it.next();
+      Iterator<OCanonicalRelationship> it = foreignEntity.getOutCanonicalRelationships().iterator();
+      OCanonicalRelationship currentRelationship = it.next();
       assertEquals("PARENT_PERSON", currentRelationship.getParentEntity().getName());
       assertEquals("FOREIGN_ARTICLE", currentRelationship.getForeignEntity().getName());
       assertEquals(parentEntity.getPrimaryKey(), currentRelationship.getPrimaryKey());
       assertEquals(foreignEntity.getForeignKeys().get(0), currentRelationship.getForeignKey());
 
-      Iterator<ORelationship> it2 = parentEntity.getInRelationships().iterator();
-      ORelationship currentRelationship2 = it2.next();
+      Iterator<OCanonicalRelationship> it2 = parentEntity.getInCanonicalRelationships().iterator();
+      OCanonicalRelationship currentRelationship2 = it2.next();
       assertEquals(currentRelationship, currentRelationship2);
 
       assertEquals("AUTHOR", foreignEntity.getForeignKeys().get(0).getInvolvedAttributes().get(0).getName());
@@ -578,23 +578,23 @@ public class SourceSchemaBuildingTest {
       assertEquals("FOREIGN_ARTICLE", foreignEntity.getAttributeByName("TRANSLATOR_SURNAME").getBelongingEntity().getName());
 
       // relationship, primary and foreign key check
-      assertEquals(2, foreignEntity.getOutRelationships().size());
-      assertEquals(0, parentEntity.getOutRelationships().size());
-      assertEquals(0, foreignEntity.getInRelationships().size());
-      assertEquals(2, parentEntity.getInRelationships().size());
+      assertEquals(2, foreignEntity.getOutCanonicalRelationships().size());
+      assertEquals(0, parentEntity.getOutCanonicalRelationships().size());
+      assertEquals(0, foreignEntity.getInCanonicalRelationships().size());
+      assertEquals(2, parentEntity.getInCanonicalRelationships().size());
       assertEquals(0,parentEntity.getForeignKeys().size());
       assertEquals(2,foreignEntity.getForeignKeys().size());
 
       // first relationship
-      Iterator<ORelationship> it = foreignEntity.getOutRelationships().iterator();
-      ORelationship currentRelationship = it.next();
+      Iterator<OCanonicalRelationship> it = foreignEntity.getOutCanonicalRelationships().iterator();
+      OCanonicalRelationship currentRelationship = it.next();
       assertEquals("PARENT_PERSON", currentRelationship.getParentEntity().getName());
       assertEquals("FOREIGN_ARTICLE", currentRelationship.getForeignEntity().getName());
       assertEquals(parentEntity.getPrimaryKey(), currentRelationship.getPrimaryKey());
       assertEquals(foreignEntity.getForeignKeys().get(0), currentRelationship.getForeignKey());
 
-      Iterator<ORelationship> it2 = parentEntity.getInRelationships().iterator();
-      ORelationship currentRelationship2 = it2.next();
+      Iterator<OCanonicalRelationship> it2 = parentEntity.getInCanonicalRelationships().iterator();
+      OCanonicalRelationship currentRelationship2 = it2.next();
       assertEquals(currentRelationship, currentRelationship2);
 
       assertEquals("AUTHOR_NAME", foreignEntity.getForeignKeys().get(0).getInvolvedAttributes().get(0).getName());
@@ -734,30 +734,30 @@ public class SourceSchemaBuildingTest {
       assertEquals("FOREIGN_PROJECT", foreignEntity.getAttributeByName("PROJECT_MANAGER").getBelongingEntity().getName());
 
       // relationship, primary and foreign key check
-      assertEquals(1, foreignEntity.getOutRelationships().size());
-      assertEquals(1, parentEntity.getOutRelationships().size());
-      assertEquals(0, foreignEntity.getInRelationships().size());
-      assertEquals(2, parentEntity.getInRelationships().size());
+      assertEquals(1, foreignEntity.getOutCanonicalRelationships().size());
+      assertEquals(1, parentEntity.getOutCanonicalRelationships().size());
+      assertEquals(0, foreignEntity.getInCanonicalRelationships().size());
+      assertEquals(2, parentEntity.getInCanonicalRelationships().size());
       assertEquals(1,parentEntity.getForeignKeys().size());
       assertEquals(1,foreignEntity.getForeignKeys().size());
 
       // first relationship
-      Iterator<ORelationship> it = foreignEntity.getOutRelationships().iterator();
-      ORelationship currentRelationship = it.next();
+      Iterator<OCanonicalRelationship> it = foreignEntity.getOutCanonicalRelationships().iterator();
+      OCanonicalRelationship currentRelationship = it.next();
       assertEquals("PARENT_EMPLOYEE", currentRelationship.getParentEntity().getName());
       assertEquals("FOREIGN_PROJECT", currentRelationship.getForeignEntity().getName());
       assertEquals(parentEntity.getPrimaryKey(), currentRelationship.getPrimaryKey());
       assertEquals(foreignEntity.getForeignKeys().get(0), currentRelationship.getForeignKey());
 
-      Iterator<ORelationship> it2 = parentEntity.getInRelationships().iterator();
-      ORelationship currentRelationship2 = it2.next();
+      Iterator<OCanonicalRelationship> it2 = parentEntity.getInCanonicalRelationships().iterator();
+      OCanonicalRelationship currentRelationship2 = it2.next();
       assertEquals(currentRelationship, currentRelationship2);
 
       assertEquals("PROJECT_MANAGER", foreignEntity.getForeignKeys().get(0).getInvolvedAttributes().get(0).getName());
       assertEquals("EMP_ID", parentEntity.getPrimaryKey().getInvolvedAttributes().get(0).getName());
 
       // second relationship
-      it = parentEntity.getOutRelationships().iterator();
+      it = parentEntity.getOutCanonicalRelationships().iterator();
       currentRelationship = it.next();
       assertEquals("PARENT_EMPLOYEE", currentRelationship.getParentEntity().getName());
       assertEquals("PARENT_EMPLOYEE", currentRelationship.getForeignEntity().getName());
@@ -861,26 +861,26 @@ public class SourceSchemaBuildingTest {
 
 
       // relationship, primary and foreign key check
-      assertEquals(0, filmEntity.getOutRelationships().size());
-      assertEquals(0, actorEntity.getOutRelationships().size());
-      assertEquals(2, film2actor.getOutRelationships().size());
-      assertEquals(1, filmEntity.getInRelationships().size());
-      assertEquals(1, actorEntity.getInRelationships().size());
-      assertEquals(0, film2actor.getInRelationships().size());
+      assertEquals(0, filmEntity.getOutCanonicalRelationships().size());
+      assertEquals(0, actorEntity.getOutCanonicalRelationships().size());
+      assertEquals(2, film2actor.getOutCanonicalRelationships().size());
+      assertEquals(1, filmEntity.getInCanonicalRelationships().size());
+      assertEquals(1, actorEntity.getInCanonicalRelationships().size());
+      assertEquals(0, film2actor.getInCanonicalRelationships().size());
       assertEquals(0,filmEntity.getForeignKeys().size());
       assertEquals(0,actorEntity.getForeignKeys().size());
       assertEquals(2,film2actor.getForeignKeys().size());
 
       // first relationship
-      Iterator<ORelationship> it = film2actor.getOutRelationships().iterator();
-      ORelationship currentRelationship = it.next();
+      Iterator<OCanonicalRelationship> it = film2actor.getOutCanonicalRelationships().iterator();
+      OCanonicalRelationship currentRelationship = it.next();
       assertEquals("ACTOR", currentRelationship.getParentEntity().getName());
       assertEquals("FILM2ACTOR", currentRelationship.getForeignEntity().getName());
       assertEquals(actorEntity.getPrimaryKey(), currentRelationship.getPrimaryKey());
       assertEquals(film2actor.getForeignKeys().get(0), currentRelationship.getForeignKey());
 
-      Iterator<ORelationship> it2 = actorEntity.getInRelationships().iterator();
-      ORelationship currentRelationship2 = it2.next();
+      Iterator<OCanonicalRelationship> it2 = actorEntity.getInCanonicalRelationships().iterator();
+      OCanonicalRelationship currentRelationship2 = it2.next();
       assertEquals(currentRelationship, currentRelationship2);
 
       assertEquals("ACTOR_ID", film2actor.getForeignKeys().get(0).getInvolvedAttributes().get(0).getName());
@@ -894,8 +894,8 @@ public class SourceSchemaBuildingTest {
       assertEquals(filmEntity.getPrimaryKey(), currentRelationship.getPrimaryKey());
       assertEquals(film2actor.getForeignKeys().get(1), currentRelationship.getForeignKey());
 
-      Iterator<ORelationship> it3 = filmEntity.getInRelationships().iterator();
-      ORelationship currentRelationship3 = it3.next();
+      Iterator<OCanonicalRelationship> it3 = filmEntity.getInCanonicalRelationships().iterator();
+      OCanonicalRelationship currentRelationship3 = it3.next();
       assertEquals(currentRelationship, currentRelationship3);
 
       assertEquals("FILM_ID", film2actor.getForeignKeys().get(1).getInvolvedAttributes().get(0).getName());

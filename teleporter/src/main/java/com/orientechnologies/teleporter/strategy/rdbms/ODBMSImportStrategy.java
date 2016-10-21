@@ -148,7 +148,7 @@ public abstract class ODBMSImportStrategy implements OWorkflowStrategy {
       // for each attribute of the entity belonging to the primary key, correspondent relationship is
       // built as edge and for the referenced record a vertex is built (only id)
       for(OEntity entity: mappedEntities) {
-        for (ORelationship currentRelationship : entity.getOutRelationships()) {
+        for (OCanonicalRelationship currentRelationship : entity.getOutCanonicalRelationships()) {
           OEntity currentParentEntity = mapper.getDataBaseSchema().getEntityByName(currentRelationship.getParentEntity().getName());
           currentInVertexType = mapper.getVertexTypeByEntity(currentParentEntity);
 
@@ -235,7 +235,7 @@ public abstract class ODBMSImportStrategy implements OWorkflowStrategy {
 
             // for each attribute of the entity belonging to the primary key, correspondent relationship is
             // built as edge and for the referenced record a vertex is built (only id)
-            for(ORelationship currentRelation: currentEntity.getAllOutRelationships()) {
+            for(OCanonicalRelationship currentRelation: currentEntity.getAllOutCanonicalRelationships()) {
 
               currentParentEntity = mapper.getDataBaseSchema().getEntityByNameIgnoreCase(currentRelation.getParentEntity().getName());
 
@@ -246,12 +246,12 @@ public abstract class ODBMSImportStrategy implements OWorkflowStrategy {
 
               // if the parent entity belongs to hierarchical bag, we need to know which is it the more stringent subclass of the record with a certain id
               else {
-                String[] propertyOfKey = new String[currentRelation.getForeignKey().getInvolvedAttributes().size()];
-                String[] valueOfKey = new String[currentRelation.getForeignKey().getInvolvedAttributes().size()];
+                String[] propertyOfKey = new String[currentRelation.getFromColumns().size()];
+                String[] valueOfKey = new String[currentRelation.getFromColumns().size()];
 
                 int index = 0;
-                for(OAttribute foreignAttribute: currentRelation.getForeignKey().getInvolvedAttributes())  {
-                  propertyOfKey[index] = currentRelation.getPrimaryKey().getInvolvedAttributes().get(index).getName();
+                for(OAttribute foreignAttribute: currentRelation.getFromColumns())  {
+                  propertyOfKey[index] = currentRelation.getToColumns().get(index).getName();
                   valueOfKey[index] = currentRecord.getString((foreignAttribute.getName()));
                   index++;
                 }
@@ -381,7 +381,7 @@ public abstract class ODBMSImportStrategy implements OWorkflowStrategy {
 
               // for each attribute of the entity belonging to the primary key, correspondent relationship is
               // built as edge and for the referenced record a vertex is built (only id)
-              for(ORelationship currentRelation: currentEntity.getAllOutRelationships()) {
+              for(OCanonicalRelationship currentRelation: currentEntity.getAllOutCanonicalRelationships()) {
 
                 currentParentEntity = mapper.getDataBaseSchema().getEntityByNameIgnoreCase(currentRelation.getParentEntity().getName());
                 currentInVertexType = null; // reset for the current iteration
@@ -393,12 +393,12 @@ public abstract class ODBMSImportStrategy implements OWorkflowStrategy {
 
                 // if the parent entity belongs to hierarchical bag, we need to know which is it the more stringent subclass of the record with a certain id
                 else if(!currentEntity.getHierarchicalBag().equals(currentParentEntity.getHierarchicalBag())){
-                  propertyOfKey = new String[currentRelation.getForeignKey().getInvolvedAttributes().size()];
-                  valueOfKey = new String[currentRelation.getForeignKey().getInvolvedAttributes().size()];
+                  propertyOfKey = new String[currentRelation.getFromColumns().size()];
+                  valueOfKey = new String[currentRelation.getFromColumns().size()];
 
                   int index = 0;
-                  for(OAttribute foreignAttribute: currentRelation.getForeignKey().getInvolvedAttributes())  {
-                    propertyOfKey[index] = currentRelation.getPrimaryKey().getInvolvedAttributes().get(index).getName();
+                  for(OAttribute foreignAttribute: currentRelation.getFromColumns())  {
+                    propertyOfKey[index] = currentRelation.getToColumns().get(index).getName();
                     valueOfKey[index] = fullRecord.getString((foreignAttribute.getName()));
                     index++;
                   }
@@ -506,7 +506,7 @@ public abstract class ODBMSImportStrategy implements OWorkflowStrategy {
 
               // for each attribute of the entity belonging to the primary key, correspondent relationship is
               // built as edge and for the referenced record a vertex is built (only id)
-              for(ORelationship currentRelation: currentEntity.getAllOutRelationships()) {
+              for(OCanonicalRelationship currentRelation: currentEntity.getAllOutCanonicalRelationships()) {
 
                 currentParentEntity = mapper.getDataBaseSchema().getEntityByNameIgnoreCase(currentRelation.getParentEntity().getName());
                 currentInVertexType = null; // reset for the current iteration
@@ -518,12 +518,12 @@ public abstract class ODBMSImportStrategy implements OWorkflowStrategy {
 
                 // if the parent entity belongs to hierarchical bag, we need to know which is it the more stringent subclass of the record with a certain id
                 else if(!currentEntity.getHierarchicalBag().equals(currentParentEntity.getHierarchicalBag())) {
-                  propertyOfKey = new String[currentRelation.getForeignKey().getInvolvedAttributes().size()];
-                  String[] valueOfKey = new String[currentRelation.getForeignKey().getInvolvedAttributes().size()];
+                  propertyOfKey = new String[currentRelation.getFromColumns().size()];
+                  String[] valueOfKey = new String[currentRelation.getFromColumns().size()];
 
                   int index = 0;
-                  for(OAttribute foreignAttribute: currentRelation.getForeignKey().getInvolvedAttributes())  {
-                    propertyOfKey[index] = currentRelation.getPrimaryKey().getInvolvedAttributes().get(index).getName();
+                  for(OAttribute foreignAttribute: currentRelation.getFromColumns())  {
+                    propertyOfKey[index] = currentRelation.getToColumns().get(index).getName();
                     valueOfKey[index] = currentRecord.getString((foreignAttribute.getName()));
                     index++;
                   }

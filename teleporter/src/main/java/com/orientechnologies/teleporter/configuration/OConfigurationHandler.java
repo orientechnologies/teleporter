@@ -26,8 +26,8 @@ import com.orientechnologies.teleporter.mapper.rdbms.OAggregatorEdge;
 import com.orientechnologies.teleporter.mapper.rdbms.OER2GraphMapper;
 import com.orientechnologies.teleporter.mapper.rdbms.classmapper.OClassMapper;
 import com.orientechnologies.teleporter.model.dbschema.OAttribute;
+import com.orientechnologies.teleporter.model.dbschema.OCanonicalRelationship;
 import com.orientechnologies.teleporter.model.dbschema.OEntity;
-import com.orientechnologies.teleporter.model.dbschema.ORelationship;
 import com.orientechnologies.teleporter.model.dbschema.OSourceDatabaseInfo;
 import com.orientechnologies.teleporter.model.graphmodel.OEdgeType;
 import com.orientechnologies.teleporter.model.graphmodel.OModelProperty;
@@ -653,7 +653,7 @@ public class OConfigurationHandler {
 
             // edge mapping info building
             OEdgeMappingInformation currEdgeMappingInformation = new OEdgeMappingInformation(currConfiguredEdgeClass);
-            List<ORelationship> relationships = mapper.getEdgeType2relationships().get(currEdgeType);
+            List<OCanonicalRelationship> relationships = mapper.getEdgeType2relationships().get(currEdgeType);
             List<OEdgeMappingInformation> edgeMappings = new LinkedList<OEdgeMappingInformation>();
             OAggregatorEdge aggregatorEdge = mapper.getAggregatorEdgeByEdgeTypeName(currEdgeType.getName());
 
@@ -663,18 +663,18 @@ public class OConfigurationHandler {
             if (aggregatorEdge == null) {
 
                 // building the edge mappings
-                for (ORelationship currentRelationship : relationships) {
+                for (OCanonicalRelationship currentRelationship : relationships) {
 
                     // building the edge mapping info
                     currEdgeMappingInformation.setFromTableName(currentRelationship.getForeignEntity().getName());
                     currEdgeMappingInformation.setToTableName(currentRelationship.getParentEntity().getName());
 
                     List<String> fromColumns = new LinkedList<String>();
-                    for (OAttribute attribute : currentRelationship.getForeignKey().getInvolvedAttributes()) {
+                    for (OAttribute attribute : currentRelationship.getFromColumns()) {
                         fromColumns.add(attribute.getName());
                     }
                     List<String> toColumns = new LinkedList<String>();
-                    for (OAttribute attribute : currentRelationship.getPrimaryKey().getInvolvedAttributes()) {
+                    for (OAttribute attribute : currentRelationship.getToColumns()) {
                         toColumns.add(attribute.getName());
                     }
                     currEdgeMappingInformation.setFromColumns(fromColumns);
@@ -712,15 +712,15 @@ public class OConfigurationHandler {
                 joinTable = mapper.getEntityByVertexType(aggregatedVertexType);
                 OAggregatedJoinTableMapping joinTableMappingInfo = new OAggregatedJoinTableMapping(joinTable.getName());
 
-                Iterator<ORelationship> outRelationshipsIterator = joinTable.getOutRelationships().iterator();
-                ORelationship currRelationship = outRelationshipsIterator.next();
+                Iterator<OCanonicalRelationship> outRelationshipsIterator = joinTable.getOutCanonicalRelationships().iterator();
+                OCanonicalRelationship currRelationship = outRelationshipsIterator.next();
                 fromColumns = new LinkedList<String>();
-                for (OAttribute attribute : currRelationship.getForeignKey().getInvolvedAttributes()) {
+                for (OAttribute attribute : currRelationship.getFromColumns()) {
                     fromColumns.add(attribute.getName());
                 }
                 currRelationship = outRelationshipsIterator.next();
                 toColumns = new LinkedList<String>();
-                for (OAttribute attribute : currRelationship.getForeignKey().getInvolvedAttributes()) {
+                for (OAttribute attribute : currRelationship.getFromColumns()) {
                     toColumns.add(attribute.getName());
                 }
                 joinTableMappingInfo.setFromColumns(fromColumns);
