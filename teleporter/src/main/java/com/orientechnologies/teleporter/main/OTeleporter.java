@@ -313,11 +313,11 @@ public class OTeleporter extends OServerPluginAbstract {
       else {
         sourceInfoLoaded = true;
         sourcesInfo = OMigrationConfigManager.extractSourceDatabaseInfo(sourcesInfoDoc);
-        driverConfig.checkConfiguration(sourcesInfo.get(0).getSourceIdName());
+        driverConfig.checkDriverConfiguration(sourcesInfo.get(0).getSourceIdName());
       }
     }
     else {
-      String driverClassName = driverConfig.checkConfiguration(driver);
+      String driverClassName = driverConfig.fetchDriverClassName(driver);
       OSourceDatabaseInfo sourceDBInfo = new OSourceDatabaseInfo(driver, driverClassName, jurl, username, password);
       sourcesInfo = new LinkedList<OSourceDatabaseInfo>();
       sourcesInfo.add(sourceDBInfo);

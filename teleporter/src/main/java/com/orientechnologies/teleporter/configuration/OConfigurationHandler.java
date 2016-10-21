@@ -619,7 +619,7 @@ public class OConfigurationHandler {
                 List<OConfiguredProperty> configuredProperties = new LinkedList<OConfiguredProperty>();
                 for (OModelProperty currModelProperty : currVertexType.getProperties()) {
                     OConfiguredProperty currConfiguredProperty = new OConfiguredProperty(currModelProperty.getName());
-                    currConfiguredProperty.setIncludedInMigration(true);
+                    currConfiguredProperty.setIncludedInMigration(currModelProperty.isIncludedInMigration());
                     currConfiguredProperty.setPropertyType(currModelProperty.getOrientdbType());
                     currConfiguredProperty.setMandatory(false);
                     currConfiguredProperty.setReadOnly(false);

@@ -68,7 +68,8 @@ public class DriverConfiguratorTest {
         System.out.println("Driver not present in '../lib/' path.");
       }
 
-      String driverName = this.driverConfigurator.checkConfiguration("hypersql");
+      String driverName = this.driverConfigurator.fetchDriverClassName("hypersql");
+      this.driverConfigurator.checkDriverConfiguration("hypersql");
       OFileManager.deleteFile("../lib/" + fileName);
 
     }catch(Exception e) {
