@@ -18,7 +18,10 @@
 
 package com.orientechnologies.teleporter.configuration.api;
 
+import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -29,26 +32,31 @@ import java.util.List;
 
 public class OConfiguredClass {
 
-    private String name;                                        // mandatory
-    private List<OConfiguredProperty> configuredProperties;     // mandatory
+  private String                                 name;                                                                    // mandatory
+  private final Map<String, OConfiguredProperty> configuredProperties = new LinkedHashMap<String, OConfiguredProperty>(); // mandatory
 
-    public OConfiguredClass(String elementName) {
-        this.name = elementName;
-    }
+  public OConfiguredClass(String elementName) {
+    this.name = elementName;
+  }
 
-    public String getName() {
-        return this.name;
-    }
+  public String getName() {
+    return this.name;
+  }
 
-    public void setName(String name) {
-        this.name = name;
-    }
+  public void setName(String name) {
+    this.name = name;
+  }
 
-    public List<OConfiguredProperty> getConfiguredProperties() {
-        return this.configuredProperties;
-    }
+  public Collection<OConfiguredProperty> getConfiguredProperties() {
+    return this.configuredProperties.values();
+  }
 
-    public void setConfiguredProperties(List<OConfiguredProperty> configuredProperties) {
-        this.configuredProperties = configuredProperties;
-    }
+  public void setConfiguredProperties(final List<OConfiguredProperty> configuredProperties) {
+    for (OConfiguredProperty p : configuredProperties)
+      this.configuredProperties.put(p.getPropertyName(), p);
+  }
+
+  public OConfiguredProperty getProperty(final String propertyName) {
+    return configuredProperties.get(propertyName);
+  }
 }

@@ -1205,7 +1205,7 @@ public class OER2GraphMapper extends OSource2GraphMapper {
     currentEdgeType.setName(edgeName);
 
     // extracting properties info if present and adding them to the current edge-type
-    List<OConfiguredProperty> properties = currentEdgeClass.getConfiguredProperties();
+    Collection<OConfiguredProperty> properties = currentEdgeClass.getConfiguredProperties();
 
     // adding properties to the edge
     if(properties != null) {

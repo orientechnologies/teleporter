@@ -126,6 +126,7 @@ public class OConfigurationHandler {
                 String sourceIdName = sourceTable.field("name");
                 String sourceTableName = sourceTable.field("tableName");
                 String dataSource = sourceTable.field("dataSource");
+                List<String> primaryKey = sourceTable.field("primaryKey");
                 if(sourceIdName == null) {
                     OTeleporterContext.getInstance().getOutputManager()
                             .error("Configuration error: 'name' field not found in the '%s' vertex-class mapping with the source table.",  configuredVertexClassName);
@@ -155,6 +156,7 @@ public class OConfigurationHandler {
                 OSourceTable currentSourceTable = new OSourceTable(sourceIdName);
                 currentSourceTable.setDataSource(dataSource);
                 currentSourceTable.setTableName(sourceTableName);
+                currentSourceTable.setPrimaryKey(primaryKey);
                 if(aggregationFunction != null && aggregationColumns != null) {
                     currentSourceTable.setAggregationColumns(aggregationColumns);
                 }
@@ -521,7 +523,7 @@ public class OConfigurationHandler {
     }
 
 
-    private ODocument writeConfiguredProperties(List<OConfiguredProperty> configuredProperties) {
+    private ODocument writeConfiguredProperties(Collection<OConfiguredProperty> configuredProperties) {
         ODocument propertiesDoc = new ODocument();
 
         for(OConfiguredProperty currConfiguredProperty: configuredProperties) {
@@ -611,6 +613,7 @@ public class OConfigurationHandler {
                 OSourceTable sourceTable = new OSourceTable(sourceIdName);
                 sourceTable.setDataSource(currSourceDBInfo.getSourceIdName());
                 sourceTable.setTableName(currentEntity.getName());
+                sourceTable.setPrimaryKey(currSourceDBInfo.getPrimaryKey());
                 sourceTables.add(sourceTable);
                 vertexMappingInfo.setSourceTables(sourceTables);
                 currConfiguredVertexClass.setMapping(vertexMappingInfo);

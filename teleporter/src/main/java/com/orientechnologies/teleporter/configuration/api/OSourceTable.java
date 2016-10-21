@@ -29,44 +29,53 @@ import java.util.List;
 
 public class OSourceTable {
 
-    private String sourceIdName;                    // mandatory
-    private String dataSource;                      // mandatory
-    private String tableName;                       // mandatory
-    private List<String> aggregationColumns;        // optional (not present when there is not any aggregation)
+  private String       sourceIdName;       // mandatory
+  private String       dataSource;         // mandatory
+  private String       tableName;          // mandatory
+  private List<String> aggregationColumns; // optional (not present when there is not any aggregation)
+  private List<String> primaryKey;
 
-    public OSourceTable(String sourceIdName) {
-        this.sourceIdName = sourceIdName;
-    }
+  public OSourceTable(String sourceIdName) {
+    this.sourceIdName = sourceIdName;
+  }
 
-    public String getSourceIdName() {
-        return this.sourceIdName;
-    }
+  public String getSourceIdName() {
+    return this.sourceIdName;
+  }
 
-    public void setSourceIdName(String sourceIdName) {
-        this.sourceIdName = sourceIdName;
-    }
+  public void setSourceIdName(String sourceIdName) {
+    this.sourceIdName = sourceIdName;
+  }
 
-    public String getDataSource() {
-        return this.dataSource;
-    }
+  public String getDataSource() {
+    return this.dataSource;
+  }
 
-    public void setDataSource(String dataSource) {
-        this.dataSource = dataSource;
-    }
+  public void setDataSource(String dataSource) {
+    this.dataSource = dataSource;
+  }
 
-    public String getTableName() {
-        return this.tableName;
-    }
+  public String getTableName() {
+    return this.tableName;
+  }
 
-    public void setTableName(String tableName) {
-        this.tableName = tableName;
-    }
+  public void setTableName(String tableName) {
+    this.tableName = tableName;
+  }
 
-    public List<String> getAggregationColumns() {
-        return this.aggregationColumns;
-    }
+  public List<String> getAggregationColumns() {
+    return this.aggregationColumns;
+  }
 
-    public void setAggregationColumns(List<String> aggregationColumns) {
-        this.aggregationColumns = aggregationColumns;
-    }
+  public void setAggregationColumns(List<String> aggregationColumns) {
+    this.aggregationColumns = aggregationColumns;
+  }
+
+  public List<String> getPrimaryKey() {
+    return primaryKey;
+  }
+
+  public void setPrimaryKey(final List<String> primaryKey) {
+    this.primaryKey = primaryKey;
+  }
 }

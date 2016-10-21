@@ -21,11 +21,10 @@ package com.orientechnologies.teleporter.util;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.teleporter.context.OTeleporterContext;
 import com.orientechnologies.teleporter.exception.OTeleporterRuntimeException;
-import com.orientechnologies.teleporter.main.OTeleporter;
 import com.orientechnologies.teleporter.model.dbschema.OSourceDatabaseInfo;
 
-import java.io.*;
-import java.nio.channels.FileChannel;
+import java.io.File;
+import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -182,7 +181,8 @@ public class OMigrationConfigManager {
       String url = info.field("url");
       String user = info.field("username");
       String passwd = info.field("password");
-      OSourceDatabaseInfo sourceInfo = new OSourceDatabaseInfo(sourceIdName, driverName, url, user, passwd);
+      List<String> primaryKey = info.field("primaryKey");
+      OSourceDatabaseInfo sourceInfo = new OSourceDatabaseInfo(sourceIdName, driverName, url, user, passwd,primaryKey);
       sourcesInfo.add(sourceInfo);
     }
     return sourcesInfo;
