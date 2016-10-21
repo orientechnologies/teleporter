@@ -44,7 +44,7 @@ import static org.junit.Assert.*;
 
 /**
  * @author Gabriele Ponzi
- * @email  <gabriele.ponzi--at--gmail.com>
+ * @email  <g.ponzi--at--orientdb.com>
  *
  */
 

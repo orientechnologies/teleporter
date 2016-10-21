@@ -29,7 +29,7 @@ import java.util.List;
  * Interface representing the query builder used by the DB Query Engine, hiding specific implementation for each DBMS.
  *
  * @author Gabriele Ponzi
- * @email  <gabriele.ponzi--at--gmail.com>
+ * @email  <g.ponzi--at--orientdb.com>
  *
  */
 

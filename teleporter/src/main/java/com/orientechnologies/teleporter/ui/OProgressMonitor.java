@@ -37,7 +37,7 @@ import java.util.Date;
  * OrientDB importing:         90% [...........................................       ] Elapsed: 00:00:00 Remaining: 00:00:00 Warnings: 5
  *
  * @author Gabriele Ponzi
- * @email  <gabriele.ponzi--at--gmail.com>
+ * @email  <g.ponzi--at--orientdb.com>
  *
  */
 

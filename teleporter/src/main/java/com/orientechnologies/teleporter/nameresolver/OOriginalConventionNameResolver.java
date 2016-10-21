@@ -24,7 +24,7 @@ import com.orientechnologies.teleporter.model.dbschema.ORelationship;
  * Implementation of ONameResolver that maintains the original name convention.
  * 
  * @author Gabriele Ponzi
- * @email  <gabriele.ponzi--at--gmail.com>
+ * @email  <g.ponzi--at--orientdb.com>
  *
  */
 

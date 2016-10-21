@@ -23,7 +23,7 @@ package com.orientechnologies.teleporter.model.dbschema;
  * based on the importing of a single primary key (composite or not) through a foreign key.
  * 
  * @author Gabriele Ponzi
- * @email  <gabriele.ponzi--at--gmail.com>
+ * @email  <g.ponzi--at--orientdb.com>
  * 
  */
 

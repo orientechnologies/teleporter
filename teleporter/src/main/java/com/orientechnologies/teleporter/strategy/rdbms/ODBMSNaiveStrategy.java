@@ -52,7 +52,7 @@ import java.util.List;
  * translated semi-directly in a correspondent and coherent graph model.
  *
  * @author Gabriele Ponzi
- * @email  <gabriele.ponzi--at--gmail.com>
+ * @email  <g.ponzi--at--orientdb.com>
  *
  */
 

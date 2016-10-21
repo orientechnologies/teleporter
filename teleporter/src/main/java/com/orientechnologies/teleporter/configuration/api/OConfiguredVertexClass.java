@@ -21,7 +21,7 @@ package com.orientechnologies.teleporter.configuration.api;
 /**
  *
  * @author Gabriele Ponzi
- * @email <gabriele.ponzi--at--gmail.com>
+ * @email <g.ponzi--at--orientdb.com>
  *
  */
 

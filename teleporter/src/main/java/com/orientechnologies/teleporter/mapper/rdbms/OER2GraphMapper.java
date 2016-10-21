@@ -43,7 +43,7 @@ import java.util.Date;
  * the second from the source DB schema just created.
  *
  * @author Gabriele Ponzi
- * @email  <gabriele.ponzi--at--gmail.com>
+ * @email  <g.ponzi--at--orientdb.com>
  *
  */
 

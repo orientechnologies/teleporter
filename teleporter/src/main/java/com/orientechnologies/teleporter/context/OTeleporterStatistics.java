@@ -31,7 +31,7 @@ import java.util.*;
  * 4. OrientDB importing
  * 
  * @author Gabriele Ponzi
- * @email  <gabriele.ponzi--at--gmail.com>
+ * @email  <g.ponzi--at--orientdb.com>
  *
  */
 

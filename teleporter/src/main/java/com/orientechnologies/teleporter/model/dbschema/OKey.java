@@ -26,7 +26,7 @@ import java.util.List;
  * and OForeignKey that differ each other only by their usage.
  * 
  * @author Gabriele Ponzi
- * @email  <gabriele.ponzi--at--gmail.com>
+ * @email  <g.ponzi--at--orientdb.com>
  * 
  */
 

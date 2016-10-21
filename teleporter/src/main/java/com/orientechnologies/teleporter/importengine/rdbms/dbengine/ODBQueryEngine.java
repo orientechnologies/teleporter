@@ -37,7 +37,7 @@ import java.util.List;
  * Implementation of ODataSourceQueryEngine. It executes the necessary queries for the source DB records fetching.
  *
  * @author Gabriele Ponzi
- * @email  <gabriele.ponzi--at--gmail.com>
+ * @email  <g.ponzi--at--orientdb.com>
  *
  */
 

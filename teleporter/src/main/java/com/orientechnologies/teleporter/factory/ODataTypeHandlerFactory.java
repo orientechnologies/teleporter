@@ -32,7 +32,7 @@ import com.orientechnologies.teleporter.persistence.handler.OSQLServerDataTypeHa
  * DBMS from which the import is performed.
  * 
  * @author Gabriele Ponzi
- * @email  <gabriele.ponzi--at--gmail.com>
+ * @email  <g.ponzi--at--orientdb.com>
  *
  */
 

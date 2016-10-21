@@ -28,7 +28,7 @@ import com.orientechnologies.teleporter.nameresolver.OOriginalConventionNameReso
  * If the name is not specified (null value) a JavaConventionNameResolver is instantiated.
  *  
  * @author Gabriele Ponzi
- * @email  <gabriele.ponzi--at--gmail.com>
+ * @email  <g.ponzi--at--orientdb.com>
  *
  */
 

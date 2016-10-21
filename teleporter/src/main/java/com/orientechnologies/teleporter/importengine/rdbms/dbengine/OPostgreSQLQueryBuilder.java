@@ -28,7 +28,7 @@ import java.util.List;
  * Query Builder for PostgreSQL DBMS. It extends the OCommonQueryBuilder class and overrides only the needed methods.
  *
  * @author Gabriele Ponzi
- * @email  <gabriele.ponzi--at--gmail.com>
+ * @email  <g.ponzi--at--orientdb.com>
  *
  */
 public class OPostgreSQLQueryBuilder extends OCommonQueryBuilder {

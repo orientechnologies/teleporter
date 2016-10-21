@@ -25,7 +25,7 @@ import com.orientechnologies.teleporter.model.dbschema.ORelationship;
  * of the data source according to a specific convention.
  * 
  * @author Gabriele Ponzi
- * @email  <gabriele.ponzi--at--gmail.com>
+ * @email  <g.ponzi--at--orientdb.com>
  *
  */
 

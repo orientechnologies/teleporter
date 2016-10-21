@@ -28,7 +28,7 @@ import com.orientechnologies.teleporter.nameresolver.ONameResolver;
  * the second from the data source schema just created.
  * 
  * @author Gabriele Ponzi
- * @email  <gabriele.ponzi--at--gmail.com>
+ * @email  <g.ponzi--at--orientdb.com>
  *
  */
 

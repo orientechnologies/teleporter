@@ -24,7 +24,7 @@ import com.orientechnologies.teleporter.context.OTeleporterStatistics;
  * Listener interface of ODrakkarStatistics.
  * 
  * @author Gabriele Ponzi
- * @email  <gabriele.ponzi--at--gmail.com>
+ * @email  <g.ponzi--at--orientdb.com>
  *
  */
 

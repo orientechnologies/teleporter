@@ -28,7 +28,7 @@ import java.util.Map;
  * No Geospatial implemented.
  * 
  * @author Gabriele Ponzi
- * @email  <gabriele.ponzi--at--gmail.com>
+ * @email  <g.ponzi--at--orientdb.com>
  *
  */
 

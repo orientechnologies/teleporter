@@ -22,7 +22,7 @@ package com.orientechnologies.teleporter.exception;
  * It represents a Runtime Exception in Teleporter.
  * 
  * @author Gabriele Ponzi
- * @email  <gabriele.ponzi--at--gmail.com>
+ * @email  <g.ponzi--at--orientdb.com>
  *
  */
 

@@ -46,7 +46,7 @@ import java.util.*;
  * Main Class from which the importing process starts.
  *
  * @author Gabriele Ponzi
- * @email <gabriele.ponzi--at--gmail.com>
+ * @email <g.ponzi--at--orientdb.com>
  *
  */
 

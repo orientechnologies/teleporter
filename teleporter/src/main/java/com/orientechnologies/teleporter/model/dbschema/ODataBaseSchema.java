@@ -27,7 +27,7 @@ import java.util.List;
  * It represents the schema of a source DB with all its elements.
  * 
  * @author Gabriele Ponzi
- * @email  <gabriele.ponzi--at--gmail.com>
+ * @email  <g.ponzi--at--orientdb.com>
  * 
  */
 

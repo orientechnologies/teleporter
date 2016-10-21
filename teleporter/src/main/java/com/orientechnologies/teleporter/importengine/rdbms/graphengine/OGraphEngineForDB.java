@@ -50,7 +50,7 @@ import java.util.*;
  * Executes the necessary operations of insert and upsert for the destination Orient DB populating.
  *
  * @author Gabriele Ponzi
- * @email  <gabriele.ponzi--at--gmail.com>
+ * @email  <g.ponzi--at--orientdb.com>
  *
  */
 

@@ -34,7 +34,7 @@ import java.util.List;
  * Factory used to instantiate the chosen 'Mapper' which will be adopted for the source schema building.
  *
  * @author Gabriele Ponzi
- * @email  <gabriele.ponzi--at--gmail.com>
+ * @email  <g.ponzi--at--orientdb.com>
  *
  */
 

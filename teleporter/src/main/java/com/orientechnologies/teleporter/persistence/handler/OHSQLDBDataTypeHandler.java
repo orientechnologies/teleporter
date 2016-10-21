@@ -28,7 +28,7 @@ import com.orientechnologies.orient.core.metadata.schema.OType;
  * No Geospatial implementable (HSQLDB doesn't support this feature).
  * 
  * @author Gabriele Ponzi
- * @email  <gabriele.ponzi--at--gmail.com>
+ * @email  <g.ponzi--at--orientdb.com>
  *
  */
 

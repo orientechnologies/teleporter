@@ -39,7 +39,7 @@ import java.util.*;
  * Unlike the superclass, this class builds the source DB schema starting from Hibernate's XML migrationConfigDoc file.
  * 
  * @author Gabriele Ponzi
- * @email  <gabriele.ponzi--at--gmail.com>
+ * @email  <g.ponzi--at--orientdb.com>
  *
  */
 

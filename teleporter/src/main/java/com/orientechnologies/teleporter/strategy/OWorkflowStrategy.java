@@ -28,7 +28,7 @@ import java.util.List;
  * Interface that represents a specific approach of data importing.
  * 
  * @author Gabriele Ponzi
- * @email  <gabriele.ponzi--at--gmail.com>
+ * @email  <g.ponzi--at--orientdb.com>
  * 
  */
 

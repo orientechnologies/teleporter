@@ -30,7 +30,7 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
  * Generic Handler that executes generic type conversions to the OrientDB types.
  * 
  * @author Gabriele Ponzi
- * @email  <gabriele.ponzi--at--gmail.com>
+ * @email  <g.ponzi--at--orientdb.com>
  *
  */
 

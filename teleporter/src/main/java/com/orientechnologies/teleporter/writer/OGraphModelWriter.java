@@ -42,7 +42,7 @@ import java.util.*;
  * on OrientDB as an OrientDB Schema.
  *
  * @author Gabriele Ponzi
- * @email  <gabriele.ponzi--at--gmail.com>
+ * @email  <g.ponzi--at--orientdb.com>
  *
  */
 

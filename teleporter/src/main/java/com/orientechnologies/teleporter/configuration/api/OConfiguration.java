@@ -27,7 +27,7 @@ import java.util.List;
  * It collects all the information contained in the migrationConfigDoc submitted by the user.
  *
  * @author Gabriele Ponzi
- * @email <gabriele.ponzi--at--gmail.com>
+ * @email <g.ponzi--at--orientdb.com>
  *
  */
 

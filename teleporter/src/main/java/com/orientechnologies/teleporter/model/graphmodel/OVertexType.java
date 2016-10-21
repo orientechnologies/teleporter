@@ -28,7 +28,7 @@ import com.tinkerpop.blueprints.Direction;
  * It's a simple vertex-type in the graph model.
  * 
  * @author Gabriele Ponzi
- * @email  <gabriele.ponzi--at--gmail.com>
+ * @email  <g.ponzi--at--orientdb.com>
  *
  */
 

@@ -23,7 +23,7 @@ package com.orientechnologies.teleporter.model.graphmodel;
  * It's a simple edge-type in the graph model.
  * 
  * @author Gabriele Ponzi
- * @email  <gabriele.ponzi--at--gmail.com>
+ * @email  <g.ponzi--at--orientdb.com>
  *
  */
 

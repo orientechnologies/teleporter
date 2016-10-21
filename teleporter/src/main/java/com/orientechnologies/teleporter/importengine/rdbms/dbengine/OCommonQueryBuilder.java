@@ -31,7 +31,7 @@ import java.util.List;
  * This class is extended by DBMS-specific query builder implementations.
  *
  * @author Gabriele Ponzi
- * @email  <gabriele.ponzi--at--gmail.com>
+ * @email  <g.ponzi--at--orientdb.com>
  *
  */
 

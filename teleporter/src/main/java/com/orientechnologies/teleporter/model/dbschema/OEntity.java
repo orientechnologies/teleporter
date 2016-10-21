@@ -29,7 +29,7 @@ import java.util.Set;
  * It represents an entity of the source DB.
  *
  * @author Gabriele Ponzi
- * @email  <gabriele.ponzi--at--gmail.com>
+ * @email  <g.ponzi--at--orientdb.com>
  *
  */
 

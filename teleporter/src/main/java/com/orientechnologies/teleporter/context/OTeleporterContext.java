@@ -30,7 +30,7 @@ import java.io.Writer;
  * Context class for Drakkar execution.
  *
  * @author Gabriele Ponzi
- * @email  <gabriele.ponzi--at--gmail.com>
+ * @email  <g.ponzi--at--orientdb.com>
  *
  */
 

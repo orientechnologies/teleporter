@@ -40,7 +40,7 @@ import java.util.Map;
  * Executes an automatic migrationConfigDoc of the chosen driver JDBC.
  *
  * @author Gabriele Ponzi
- * @email <gabriele.ponzi--at--gmail.com>
+ * @email <g.ponzi--at--orientdb.com>
  *
  */
 
@@ -90,8 +90,12 @@ public class ODriverConfigurator {
 
   }
 
-  /*
-   * It performs a fetching of the driver class name from the driver name (corresponding to the chosen DBMS) through a connection to the 'http://orientdb.com/jdbc-drivers.json' resource.
+  /**
+   * It performs a fetching of the driver class name from the driver name (corresponding to the chosen DBMS)
+   * Connection to the 'http://orientdb.com/jdbc-drivers.json' resource if needed.
+   *
+   * @param driverName (case insensitive)
+   * @return driverClassName
    */
   public String fetchDriverClassName(String driverName) {
 
@@ -132,10 +136,14 @@ public class ODriverConfigurator {
   }
 
 
-  /*
+  /**
    * It Checks if the requested driver is already present in the classpath, if not present it downloads the last available driver
    * version.
+   * Connection to the 'http://orientdb.com/jdbc-drivers.json' resource if needed.
+   *
+   * @param driverName (case insensitive)
    */
+
   public void checkDriverConfiguration(String driverName) {
 
     driverName = driverName.toLowerCase();

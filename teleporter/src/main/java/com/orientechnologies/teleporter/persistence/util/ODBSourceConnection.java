@@ -32,7 +32,7 @@ import java.sql.DriverManager;
  * Utility class to which connection with source DB is delegated.
  * 
  * @author Gabriele Ponzi
- * @email  <gabriele.ponzi--at--gmail.com>
+ * @email  <g.ponzi--at--orientdb.com>
  * 
  */
 

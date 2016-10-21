@@ -26,7 +26,7 @@ import com.orientechnologies.orient.core.metadata.schema.OType;
  * to the specific driver of the source DB.
  * 
  * @author Gabriele Ponzi
- * @email  <gabriele.ponzi--at--gmail.com>
+ * @email  <g.ponzi--at--orientdb.com>
  *
  */
 

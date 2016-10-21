@@ -55,7 +55,7 @@ import java.util.List;
  * policy on the junction tables of dimension equals to 2.
  *
  * @author Gabriele Ponzi
- * @email  <gabriele.ponzi--at--gmail.com>
+ * @email  <g.ponzi--at--orientdb.com>
  *
  */
 

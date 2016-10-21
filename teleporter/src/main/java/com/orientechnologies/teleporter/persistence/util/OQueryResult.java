@@ -29,7 +29,7 @@ import java.sql.Statement;
  * Encapsulates the query results with the correspondent statement and connection.
  * 
  * @author Gabriele Ponzi
- * @email  <gabriele.ponzi--at--gmail.com>
+ * @email  <g.ponzi--at--orientdb.com>
  *
  */
 

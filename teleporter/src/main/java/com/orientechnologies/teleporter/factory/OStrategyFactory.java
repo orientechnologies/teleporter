@@ -30,7 +30,7 @@ import com.orientechnologies.teleporter.strategy.rdbms.ODBMSSimpleModelBuildingS
  * Factory used to instantiate the chosen strategy for the importing phase starting from its name.
  *
  * @author Gabriele Ponzi
- * @email  <gabriele.ponzi--at--gmail.com>
+ * @email  <g.ponzi--at--orientdb.com>
  *
  */
 

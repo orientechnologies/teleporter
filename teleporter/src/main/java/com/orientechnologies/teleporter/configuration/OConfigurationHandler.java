@@ -41,7 +41,7 @@ import java.util.*;
  * 2. the OConfiguration object building starting from a mapping between dbms and graph models.
  *
  * @author Gabriele Ponzi
- * @email <gabriele.ponzi--at--gmail.com>
+ * @email <g.ponzi--at--orientdb.com>
  *
  */
 

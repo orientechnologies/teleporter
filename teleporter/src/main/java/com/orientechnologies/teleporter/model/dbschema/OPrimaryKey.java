@@ -22,7 +22,7 @@ package com.orientechnologies.teleporter.model.dbschema;
  * It represents a primary key for an entity.
  * 
  * @author Gabriele Ponzi
- * @email  <gabriele.ponzi--at--gmail.com>
+ * @email  <g.ponzi--at--orientdb.com>
  *
  */
 
