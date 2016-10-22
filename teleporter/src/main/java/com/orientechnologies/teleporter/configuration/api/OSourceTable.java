@@ -33,7 +33,7 @@ public class OSourceTable {
   private String       dataSource;         // mandatory
   private String       tableName;          // mandatory
   private List<String> aggregationColumns; // optional (not present when there is not any aggregation)
-  private List<String> primaryKey;
+  private List<String> primaryKeyColumns;
 
   public OSourceTable(String sourceIdName) {
     this.sourceIdName = sourceIdName;
@@ -71,11 +71,11 @@ public class OSourceTable {
     this.aggregationColumns = aggregationColumns;
   }
 
-  public List<String> getPrimaryKey() {
-    return primaryKey;
+  public List<String> getPrimaryKeyColumns() {
+    return primaryKeyColumns;
   }
 
-  public void setPrimaryKey(final List<String> primaryKey) {
-    this.primaryKey = primaryKey;
+  public void setPrimaryKeyColumns(final List<String> primaryKeyColumns) {
+    this.primaryKeyColumns = primaryKeyColumns;
   }
 }

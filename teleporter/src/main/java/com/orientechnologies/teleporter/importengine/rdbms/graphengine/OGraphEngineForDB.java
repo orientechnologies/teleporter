@@ -28,6 +28,7 @@ import com.orientechnologies.teleporter.mapper.rdbms.OER2GraphMapper;
 import com.orientechnologies.teleporter.model.dbschema.OAttribute;
 import com.orientechnologies.teleporter.model.dbschema.OCanonicalRelationship;
 import com.orientechnologies.teleporter.model.dbschema.OEntity;
+import com.orientechnologies.teleporter.model.dbschema.OLogicalRelationship;
 import com.orientechnologies.teleporter.model.graphmodel.OEdgeType;
 import com.orientechnologies.teleporter.model.graphmodel.OModelProperty;
 import com.orientechnologies.teleporter.model.graphmodel.OVertexType;
@@ -535,7 +536,7 @@ public class OGraphEngineForDB {
    * @param relation the relation between two entities
    * @param currentOutVertex the current-out-vertex
    * @param currentInVertexType the type correspondent to the current-in-vertex
-   * @param edgeType type of the OEdgeType present between the two OVertexType, used as label during the insert of the edge in the graph
+   * @param edgeTypeName type of the OEdgeType present between the two OVertexType, used as label during the insert of the edge in the graph
    *
    * The method executes insert on reached vertex:
    * - if the vertex is not already reached, it's inserted in the graph and an edge between the out-visited-vertex and the in-reached-vertex is added
@@ -544,7 +545,7 @@ public class OGraphEngineForDB {
    */
 
   public OrientVertex upsertReachedVertexWithEdge(OrientBaseGraph orientGraph, ResultSet foreignRecord, OCanonicalRelationship relation, OrientVertex currentOutVertex, OVertexType currentInVertexType,
-                                                  String edgeType) throws SQLException {
+                                                  String edgeTypeName) throws SQLException {
 
     OrientVertex currentInVertex = null;
     String propsAndValuesOfKey = "";
@@ -621,7 +622,7 @@ public class OGraphEngineForDB {
         }
 
         // upsert of the edge between the currentOutVertex and the currentInVertex
-        this.upsertEdge(orientGraph, currentOutVertex, currentInVertex, edgeType, null, direction);
+        this.upsertEdge(orientGraph, currentOutVertex, currentInVertex, edgeTypeName, null, direction);
       }
 
     } catch (Exception e) {
@@ -634,6 +635,73 @@ public class OGraphEngineForDB {
     }
 
     return currentInVertex;
+  }
+
+  public void connectVertexToRelatedVertices(OrientBaseGraph orientGraph, OLogicalRelationship relation, Vertex currentOutVertex, OVertexType currentOutVertexType,
+                                             OVertexType currentInVertexType, String edgeTypeName) {
+
+    String propsAndValuesOfKey = "";
+    String direction = relation.getDirection();
+
+    try {
+
+      // building keys and values for the lookup
+      List<OAttribute> fromColumns = relation.getFromColumns();
+      String[] propertyOfKey = new String[fromColumns.size()];
+      String[] valueOfKey = new String[fromColumns.size()];
+
+      int index = 0;
+      for(OAttribute foreignAttribute: fromColumns)  {
+        String attributeName = relation.getToColumns().get(index).getName();
+        propertyOfKey[index] =  mapper.getPropertyNameByVertexTypeAndAttribute(currentInVertexType, attributeName);
+
+        String outVertexPropertyName = mapper.getPropertyNameByVertexTypeAndAttribute(currentOutVertexType, foreignAttribute.getName());
+        valueOfKey[index] = currentOutVertex.getProperty(outVertexPropertyName);
+        index++;
+      }
+
+      String s = "Keys and values in the lookup (upsertVisitedVertex):\t";
+      for(int i=0; i<propertyOfKey.length;i++) {
+        propsAndValuesOfKey += propertyOfKey[i] + ":" + valueOfKey[i] + ",";
+      }
+      if(propsAndValuesOfKey.length() > 0)
+        propsAndValuesOfKey = propsAndValuesOfKey.substring(0, propsAndValuesOfKey.length()-1);
+      else
+        propsAndValuesOfKey = "no identifier for the current record.";
+      s += propsAndValuesOfKey;
+      OTeleporterContext.getInstance().getOutputManager().debug("\n" + s + "\n");
+
+      // new vertex is added only if all the values in the foreign key are different from null
+      boolean ok = true;
+
+      for(int i=0; i<valueOfKey.length; i++) {
+        if(valueOfKey[i] == null) {
+          ok = false;
+          break;
+        }
+      }
+
+      // all values are different from null, thus vertex is searched in the graph and in case is added if not found.
+      if(ok) {
+
+        Iterable<Vertex> inVertices = orientGraph.getVertices(currentInVertexType.getName(), propertyOfKey, valueOfKey);
+
+        for(Vertex currentInVertex: inVertices) {
+          this.insertEdge(orientGraph, (OrientVertex) currentOutVertex, (OrientVertex) currentInVertex, edgeTypeName, null, direction);
+        }
+
+      }
+
+    } catch (Exception e) {
+      String mess =  "Problem encountered during the insert of the edge between two vertices. outVertexType: " + currentOutVertexType.getName() +
+              ", inVertexType: " + currentInVertexType.getName();
+      OTeleporterContext.getInstance().printExceptionMessage(e, mess, "error");
+      OTeleporterContext.getInstance().printExceptionStackTrace(e, "error");
+      if(orientGraph != null)
+        orientGraph.shutdown();
+      throw new OTeleporterRuntimeException(e);
+    }
+
   }
 
   public void upsertEdge(OrientBaseGraph orientGraph, OrientVertex currentOutVertex, OrientVertex currentInVertex, String edgeType, Map<String, Object> properties, String direction) {
@@ -685,6 +753,32 @@ public class OGraphEngineForDB {
       }
     } catch (Exception e) {
       String mess =  "Problem encountered during the upsert of an edge. Vertex-out: " + currentOutVertex + ";\tVertex-in: " + currentInVertex;
+      OTeleporterContext.getInstance().printExceptionMessage(e, mess, "error");
+      OTeleporterContext.getInstance().printExceptionStackTrace(e, "error");
+      if(orientGraph != null)
+        orientGraph.shutdown();
+      throw new OTeleporterRuntimeException(e);
+    }
+  }
+
+  public void insertEdge(OrientBaseGraph orientGraph, OrientVertex currentOutVertex, OrientVertex currentInVertex, String edgeType, Map<String, Object> properties, String direction) {
+
+    OTeleporterStatistics statistics = OTeleporterContext.getInstance().getStatistics();
+
+    try {
+      OrientEdge edge = null;
+      if(direction != null && direction.equals("direct")) {
+        edge = this.addEdgeToGraph(orientGraph, null, currentOutVertex, currentInVertex, edgeType);
+      }
+      else if(direction != null && direction.equals("inverse")) {
+        edge = this.addEdgeToGraph(orientGraph, null, currentInVertex, currentOutVertex, edgeType);
+      }
+      this.setElementProperties(edge, properties);
+      statistics.orientAddedEdges++;
+      OTeleporterContext.getInstance().getOutputManager().debug("\nNew edge inserted: %s\n", edge.toString());
+
+    } catch (Exception e) {
+      String mess =  "Problem encountered during the insert of an edge. Vertex-out: " + currentOutVertex + ";\tVertex-in: " + currentInVertex;
       OTeleporterContext.getInstance().printExceptionMessage(e, mess, "error");
       OTeleporterContext.getInstance().printExceptionStackTrace(e, "error");
       if(orientGraph != null)

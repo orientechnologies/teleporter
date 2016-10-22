@@ -7,7 +7,8 @@
           {
             "name": "hsqldb_PROJECT",
             "dataSource": "hsqldb",
-            "tableName": "PROJECT"
+            "tableName": "PROJECT",
+            "primaryKey" : ["ID"]
           }
         ]
       },
@@ -81,7 +82,8 @@
           {
             "name": "hsqldb_DEPARTMENT",
             "dataSource": "hsqldb",
-            "tableName": "DEPARTMENT"
+            "tableName": "DEPARTMENT",
+            "primaryKey" : ["ID"]
           }
         ]
       },
@@ -131,7 +133,8 @@
           {
             "name": "hsqldb_EMPLOYEE",
             "dataSource": "hsqldb",
-            "tableName": "EMPLOYEE"
+            "tableName": "EMPLOYEE",
+            "primaryKey" : ["ID"]
           }
         ]
       },

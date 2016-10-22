@@ -142,6 +142,7 @@ public class OConfigurationHandler {
                 sourceId2tableName.put(sourceIdName, sourceTableName);
 
                 List<String> aggregationColumns = sourceTable.field("aggregationColumns");
+                List<String> primaryKeyColumns = sourceTable.field("primaryKey");
 
                 if(aggregationFunction != null && aggregationColumns == null) {
                     OTeleporterContext.getInstance().getOutputManager()
@@ -153,10 +154,11 @@ public class OConfigurationHandler {
                 OSourceTable currentSourceTable = new OSourceTable(sourceIdName);
                 currentSourceTable.setDataSource(dataSource);
                 currentSourceTable.setTableName(sourceTableName);
-                currentSourceTable.setPrimaryKey(primaryKey);
+                currentSourceTable.setPrimaryKeyColumns(primaryKey);
                 if(aggregationFunction != null && aggregationColumns != null) {
                     currentSourceTable.setAggregationColumns(aggregationColumns);
                 }
+                currentSourceTable.setPrimaryKeyColumns(primaryKeyColumns);
                 sourceTables.add(currentSourceTable);
 
                 i++;
@@ -442,6 +444,9 @@ public class OConfigurationHandler {
                 if(aggregationColumns != null) {
                     currSourceTableDoc.field("aggregationColumns", aggregationColumns);
                 }
+                if(currSourceTable.getPrimaryKeyColumns() != null) {
+                    currSourceTableDoc.field("primaryKey", currSourceTable.getPrimaryKeyColumns());
+                }
                 sourceTablesDoc.add(currSourceTableDoc);
             }
             currVertexMappingDoc.field("sourceTables", sourceTablesDoc);
@@ -606,11 +611,16 @@ public class OConfigurationHandler {
                 OVertexMappingInformation vertexMappingInfo = new OVertexMappingInformation(currConfiguredVertexClass);
                 List<OSourceTable> sourceTables = new LinkedList<OSourceTable>();
 
+                List<String> primaryKeyColumns = new LinkedList<String>();
+                for(OAttribute currAttribute: currentEntity.getPrimaryKey().getInvolvedAttributes()) {
+                    primaryKeyColumns.add(currAttribute.getName());
+                }
+
                 String sourceIdName = currSourceDBInfo.getSourceIdName() + "_" + currentEntity.getName();
                 OSourceTable sourceTable = new OSourceTable(sourceIdName);
                 sourceTable.setDataSource(currSourceDBInfo.getSourceIdName());
                 sourceTable.setTableName(currentEntity.getName());
-                sourceTable.setPrimaryKey(currSourceDBInfo.getPrimaryKey());
+                sourceTable.setPrimaryKeyColumns(primaryKeyColumns);
                 sourceTables.add(sourceTable);
                 vertexMappingInfo.setSourceTables(sourceTables);
                 currConfiguredVertexClass.setMapping(vertexMappingInfo);

@@ -119,7 +119,7 @@ public class OMDMSerializer extends ORecordSerializerBinary {
         query.append(table.getTableName());
         query.append(" where ");
 
-        final String pk = table.getPrimaryKey().get(0);
+        final String pk = table.getPrimaryKeyColumns().get(0);
         final OConfiguredProperty externalIdFieldName = config.getProperty(pk);
 
         if (!((ODocument) record).containsField(externalIdFieldName.getPropertyName()))

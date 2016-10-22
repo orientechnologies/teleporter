@@ -197,6 +197,29 @@ public class ODBMSNaiveAggregationStrategy extends ODBMSImportStrategy {
         }
       }
 
+      // Second round in order to add edges belonging to Edge Types coming from Logical Relationships
+      for(OVertexType currentOutVertexType : mapper.getVertexType2classMappers().keySet()) {
+
+        List<OClassMapper> classMappers = ((OER2GraphMapper)super.mapper).getClassMappersByVertex(currentOutVertexType);
+        List<OEntity> mappedEntities = new LinkedList<OEntity>();
+        int numberOfLogicalRelationships = 0;
+
+        // checking condition
+        boolean allEntitiesAggregableAndNotBelongingToHierarchies = true;
+        for(OClassMapper classMapper: classMappers) {
+          OEntity currentEntity = classMapper.getEntity();
+          mappedEntities.add(currentEntity);
+          numberOfLogicalRelationships += currentEntity.getOutLogicalRelationships().size();
+
+        }
+
+        // CHECK ON "Entities NOT belonging to hierarchical bags" needed? !!!!!!!
+
+        if(numberOfLogicalRelationships > 0) {
+          super.importEdgesStartingFromVertexClass(mappedEntities, currentOutVertexType, graphEngine, orientGraph);
+        }
+      }
+
       statistics.notifyListeners();
       statistics.runningStepNumber = -1;
       orientGraph.shutdown();

@@ -41,6 +41,7 @@ import com.orientechnologies.teleporter.persistence.handler.ODBMSDataTypeHandler
 import com.orientechnologies.teleporter.persistence.util.OQueryResult;
 import com.orientechnologies.teleporter.strategy.OWorkflowStrategy;
 import com.orientechnologies.teleporter.util.OFunctionsHandler;
+import com.tinkerpop.blueprints.Vertex;
 import com.tinkerpop.blueprints.impls.orient.OrientBaseGraph;
 import com.tinkerpop.blueprints.impls.orient.OrientVertex;
 
@@ -114,7 +115,21 @@ public abstract class ODBMSImportStrategy implements OWorkflowStrategy {
 
   public abstract void executeImport(OSourceDatabaseInfo sourceDBInfo, String outOrientGraphUri, OSource2GraphMapper mapper, ODBMSDataTypeHandler handler);
 
-  protected void importRecordsIntoVertexClass(List<OEntity> mappedEntities, String[][] aggregationColumns, OVertexType currentOutVertexType, ODBQueryEngine dbQueryEngine, OGraphEngineForDB graphEngine, OrientBaseGraph orientGraph) throws SQLException {
+
+  /**
+   * It imports all vertices into a Vertex Class (so 1 or more mapped entities). It's used for the first scan to import all vertices and edges
+   * belonging to an Edge Class coming from a Canonical Relationship in the source database.
+   *
+   * @param mappedEntities
+   * @param aggregationColumns
+   * @param currentOutVertexType
+   * @param dbQueryEngine
+   * @param graphEngine
+   * @param orientGraph
+   */
+
+  protected void importRecordsIntoVertexClass(List<OEntity> mappedEntities, String[][] aggregationColumns, OVertexType currentOutVertexType, ODBQueryEngine dbQueryEngine,
+                                              OGraphEngineForDB graphEngine, OrientBaseGraph orientGraph) throws SQLException {
 
     OTeleporterStatistics statistics = OTeleporterContext.getInstance().getStatistics();
     OQueryResult queryResult;
@@ -145,8 +160,8 @@ public abstract class ODBMSImportStrategy implements OWorkflowStrategy {
       currentRecord = records;
       currentOutVertex = (OrientVertex) graphEngine.upsertVisitedVertex(orientGraph, currentRecord, currentOutVertexType, null);
 
-      // for each attribute of the entity belonging to the primary key, correspondent relationship is
-      // built as edge and for the referenced record a vertex is built (only id)
+      // for each attribute of the entity belonging to a foreign key, correspondent relationship is
+      // built as edge and for the referenced record a new clean vertex is built (only id will be set)
       for(OEntity entity: mappedEntities) {
         for (OCanonicalRelationship currentRelationship : entity.getOutCanonicalRelationships()) {
           OEntity currentParentEntity = mapper.getDataBaseSchema().getEntityByName(currentRelationship.getParentEntity().getName());
@@ -164,6 +179,42 @@ public abstract class ODBMSImportStrategy implements OWorkflowStrategy {
 
     // closing resultset, connection and statement
     queryResult.closeAll();
+  }
+
+
+  /**
+   * It imports all out edges starting from a Vertex Class (so 1 or more mapped entities). It's used for the second scan to import edges
+   * belonging to an Edge Class coming from a Logical Relationship in the source database.
+   *
+   * @param mappedEntities
+   * @param currentOutVertexType
+   * @param graphEngine
+   * @param orientGraph
+   */
+
+  protected void importEdgesStartingFromVertexClass(List<OEntity> mappedEntities, OVertexType currentOutVertexType,
+                                                    OGraphEngineForDB graphEngine, OrientBaseGraph orientGraph) throws SQLException {
+
+    OTeleporterStatistics statistics = OTeleporterContext.getInstance().getStatistics();
+    OVertexType currentInVertexType;
+    OEdgeType edgeType;
+
+    // for each vertex belonging to the Vertex Class under discussion, all the out edges are added
+    for(Vertex currentOutVertex: orientGraph.getVerticesOfClass(currentOutVertexType.getName())) {
+
+      // for each logical relationship add all the out edges with the target in vertex
+      for(OEntity entity: mappedEntities) {
+        for (OLogicalRelationship currentRelationship : entity.getOutLogicalRelationships()) {
+          OEntity currentParentEntity = mapper.getDataBaseSchema().getEntityByName(currentRelationship.getParentEntity().getName());
+          currentInVertexType = mapper.getVertexTypeByEntity(currentParentEntity);
+          edgeType = mapper.getRelationship2edgeType().get(currentRelationship);
+
+          graphEngine.connectVertexToRelatedVertices(orientGraph, currentRelationship, currentOutVertex, currentOutVertexType, currentInVertexType, edgeType.getName());
+        }
+      }
+
+    }
+
   }
 
 

@@ -1204,6 +1204,7 @@ public class OER2GraphMapper extends OSource2GraphMapper {
       ((OLogicalRelationship)currentRelationship).setFromColumns(fromAttributes);
       ((OLogicalRelationship)currentRelationship).setToColumns(toAttributes);
 
+      currentForeignEntity.getOutLogicalRelationships().add((OLogicalRelationship) currentRelationship);
     }
 
     // Adding the direction of the relationship if it's different from null and if the foreign entity is not a join table.
