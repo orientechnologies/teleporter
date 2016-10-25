@@ -113,7 +113,7 @@ public class SourceSchemaBuildingTest {
 
       // entities check
       Assert.assertEquals(2, mapper.getDataBaseSchema().getEntities().size());
-      Assert.assertEquals(1, mapper.getDataBaseSchema().getRelationships().size());
+      Assert.assertEquals(1, mapper.getDataBaseSchema().getCanonicalRelationships().size());
       assertNotNull(parentEntity);
       assertNotNull(foreignEntity);
 
@@ -244,7 +244,7 @@ public class SourceSchemaBuildingTest {
 
       // entities check
       Assert.assertEquals(2, mapper.getDataBaseSchema().getEntities().size());
-      Assert.assertEquals(1, mapper.getDataBaseSchema().getRelationships().size());
+      Assert.assertEquals(1, mapper.getDataBaseSchema().getCanonicalRelationships().size());
       assertNotNull(parentEntity);
       assertNotNull(foreignEntity);
 
@@ -381,7 +381,7 @@ public class SourceSchemaBuildingTest {
 
       // entities check
       Assert.assertEquals(2, mapper.getDataBaseSchema().getEntities().size());
-      Assert.assertEquals(2, mapper.getDataBaseSchema().getRelationships().size());
+      Assert.assertEquals(2, mapper.getDataBaseSchema().getCanonicalRelationships().size());
       assertNotNull(parentEntity);
       assertNotNull(foreignEntity);
 
@@ -526,7 +526,7 @@ public class SourceSchemaBuildingTest {
 
       // entities check
       Assert.assertEquals(2, mapper.getDataBaseSchema().getEntities().size());
-      Assert.assertEquals(2, mapper.getDataBaseSchema().getRelationships().size());
+      Assert.assertEquals(2, mapper.getDataBaseSchema().getCanonicalRelationships().size());
       assertNotNull(parentEntity);
       assertNotNull(foreignEntity);
 
@@ -688,7 +688,7 @@ public class SourceSchemaBuildingTest {
 
       // entities check
       Assert.assertEquals(2, mapper.getDataBaseSchema().getEntities().size());
-      Assert.assertEquals(2, mapper.getDataBaseSchema().getRelationships().size());
+      Assert.assertEquals(2, mapper.getDataBaseSchema().getCanonicalRelationships().size());
       assertNotNull(parentEntity);
       assertNotNull(foreignEntity);
 
@@ -849,7 +849,7 @@ public class SourceSchemaBuildingTest {
 
       // entities check
       Assert.assertEquals(3, mapper.getDataBaseSchema().getEntities().size());
-      Assert.assertEquals(2, mapper.getDataBaseSchema().getRelationships().size());
+      Assert.assertEquals(2, mapper.getDataBaseSchema().getCanonicalRelationships().size());
       assertNotNull(filmEntity);
       assertNotNull(actorEntity);
       assertNotNull(film2actor);

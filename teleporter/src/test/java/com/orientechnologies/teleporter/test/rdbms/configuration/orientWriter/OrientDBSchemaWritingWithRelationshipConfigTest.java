@@ -125,7 +125,7 @@ public class OrientDBSchemaWritingWithRelationshipConfigTest {
       mapper.buildSourceDatabaseSchema();
       mapper.buildGraphModel(new OJavaConventionNameResolver());
       mapper.applyImportConfiguration();
-      modelWriter.writeModelOnOrient(mapper.getGraphModel(), new OHSQLDBDataTypeHandler(), this.outOrientGraphUri);
+      modelWriter.writeModelOnOrient(mapper, new OHSQLDBDataTypeHandler(), this.outOrientGraphUri);
 
 
       /*
@@ -316,7 +316,7 @@ public class OrientDBSchemaWritingWithRelationshipConfigTest {
       mapper.buildSourceDatabaseSchema();
       mapper.buildGraphModel(new OJavaConventionNameResolver());
       mapper.applyImportConfiguration();
-      modelWriter.writeModelOnOrient(mapper.getGraphModel(), new OHSQLDBDataTypeHandler(), this.outOrientGraphUri);
+      modelWriter.writeModelOnOrient(mapper, new OHSQLDBDataTypeHandler(), this.outOrientGraphUri);
 
 
       /*
@@ -493,7 +493,7 @@ public class OrientDBSchemaWritingWithRelationshipConfigTest {
       mapper.buildGraphModel(new OJavaConventionNameResolver());
       mapper.applyImportConfiguration();
       mapper.performAggregations();
-      modelWriter.writeModelOnOrient(mapper.getGraphModel(), new OHSQLDBDataTypeHandler(), this.outOrientGraphUri);
+      modelWriter.writeModelOnOrient(mapper, new OHSQLDBDataTypeHandler(), this.outOrientGraphUri);
 
 
       /*
@@ -663,7 +663,7 @@ public class OrientDBSchemaWritingWithRelationshipConfigTest {
       mapper.buildGraphModel(new OJavaConventionNameResolver());
       mapper.applyImportConfiguration();
       mapper.performAggregations();
-      modelWriter.writeModelOnOrient(mapper.getGraphModel(), new OHSQLDBDataTypeHandler(), this.outOrientGraphUri);
+      modelWriter.writeModelOnOrient(mapper, new OHSQLDBDataTypeHandler(), this.outOrientGraphUri);
 
 
       /*
@@ -832,7 +832,7 @@ public class OrientDBSchemaWritingWithRelationshipConfigTest {
       mapper.buildGraphModel(new OJavaConventionNameResolver());
       mapper.applyImportConfiguration();
       mapper.performAggregations();
-      modelWriter.writeModelOnOrient(mapper.getGraphModel(), new OHSQLDBDataTypeHandler(), this.outOrientGraphUri);
+      modelWriter.writeModelOnOrient(mapper, new OHSQLDBDataTypeHandler(), this.outOrientGraphUri);
 
 
       /*
@@ -1002,7 +1002,7 @@ public class OrientDBSchemaWritingWithRelationshipConfigTest {
       mapper.buildGraphModel(new OJavaConventionNameResolver());
       mapper.applyImportConfiguration();
       mapper.performAggregations();
-      modelWriter.writeModelOnOrient(mapper.getGraphModel(), new OHSQLDBDataTypeHandler(), this.outOrientGraphUri);
+      modelWriter.writeModelOnOrient(mapper, new OHSQLDBDataTypeHandler(), this.outOrientGraphUri);
 
 
       /*

@@ -40,7 +40,8 @@ public class ODataBaseSchema implements ODataSourceSchemaInfo {
   private String productName;
   private String productVersion;
   private List<OEntity> entities;
-  private List<ORelationship> relationships;
+  private List<OCanonicalRelationship> canonicalRelationships;
+  private List<OLogicalRelationship> logicalRelationships;
   private List<OHierarchicalBag> hierarchicalBags;
 
   public ODataBaseSchema(int majorVersion, int minorVersion, int driverMajorVersion, int driverMinorVersion, String productName, String productVersion) {		
@@ -51,13 +52,15 @@ public class ODataBaseSchema implements ODataSourceSchemaInfo {
     this.productName = productName;
     this.productVersion = productVersion;
     this.entities = new ArrayList<OEntity>();
-    this.relationships = new ArrayList<ORelationship>();
+    this.canonicalRelationships = new ArrayList<OCanonicalRelationship>();
+    this.logicalRelationships = new ArrayList<OLogicalRelationship>();
     this.hierarchicalBags = new ArrayList<OHierarchicalBag>();
   }
 
   public ODataBaseSchema() {
     this.entities = new ArrayList<OEntity>();
-    this.relationships = new ArrayList<ORelationship>();
+    this.canonicalRelationships = new ArrayList<OCanonicalRelationship>();
+    this.logicalRelationships = new ArrayList<OLogicalRelationship>();
     this.hierarchicalBags = new ArrayList<OHierarchicalBag>();
   }
 
@@ -117,12 +120,20 @@ public class ODataBaseSchema implements ODataSourceSchemaInfo {
     this.entities = entitiess;
   }
 
-  public List<ORelationship> getRelationships() {
-    return relationships;
+  public List<OCanonicalRelationship> getCanonicalRelationships() {
+    return canonicalRelationships;
   }
 
-  public void setRelationships(List<ORelationship> relationships) {
-    this.relationships = relationships;
+  public void setCanonicalRelationships(List<OCanonicalRelationship> canonicalRelationships) {
+    this.canonicalRelationships = canonicalRelationships;
+  }
+
+  public List<OLogicalRelationship> getLogicalRelationships() {
+    return logicalRelationships;
+  }
+
+  public void setLogicalRelationships(List<OLogicalRelationship> logicalRelationships) {
+    this.logicalRelationships = logicalRelationships;
   }
 
   public List<OHierarchicalBag> getHierarchicalBags() {
@@ -156,7 +167,7 @@ public class ODataBaseSchema implements ODataSourceSchemaInfo {
   public ORelationship getRelationshipByInvolvedEntitiesAndAttributes(OEntity currentForeignEntity, OEntity currentParentEntity,
                                                                                List<String> fromColumns, List<String> toColumns) {
 
-    for(ORelationship currentRelationship: this.relationships) {
+    for(ORelationship currentRelationship: this.canonicalRelationships) {
       if(currentRelationship.getForeignEntity().getName().equals(currentForeignEntity.getName()) && currentRelationship.getParentEntity().getName().equals(currentParentEntity.getName())) {
         if(sameAttributesInvolved(currentRelationship.getFromColumns(), fromColumns) && sameAttributesInvolved(currentRelationship.getToColumns(), toColumns)) {
           return currentRelationship;
@@ -204,7 +215,7 @@ public class ODataBaseSchema implements ODataSourceSchemaInfo {
         "\nDriver major version: " + this.driverMajorVersion + "\tDriver minor version: " + this.driverMinorVersion + "\n\n\n";
 
     s += "Number of Entities: " + this.entities.size() + ".\n"
-        + "Number of Relationship: " + this.relationships.size() + ".\n\n\n";
+        + "Number of Relationship: " + this.canonicalRelationships.size() + ".\n\n\n";
 
     for(OEntity e: this.entities)
       s += e.toString();

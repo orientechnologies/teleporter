@@ -684,6 +684,8 @@ public class OGraphEngineForDB {
       // all values are different from null, thus vertex is searched in the graph and in case is added if not found.
       if(ok) {
 
+        int verticesCount = (int) orientGraph.getVertexType(currentInVertexType.getName()).count();
+        OTeleporterContext.getInstance().getStatistics().leftVerticesCurrentLogicalRelationship = verticesCount;
         Iterable<Vertex> inVertices = orientGraph.getVertices(currentInVertexType.getName(), propertyOfKey, valueOfKey);
 
         for(Vertex currentInVertex: inVertices) {

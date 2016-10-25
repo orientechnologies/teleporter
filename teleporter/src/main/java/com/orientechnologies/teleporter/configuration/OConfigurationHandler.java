@@ -635,12 +635,15 @@ public class OConfigurationHandler {
                     currConfiguredProperty.setReadOnly(false);
                     currConfiguredProperty.setNotNull(false);
 
-                    OConfiguredPropertyMapping propertyMappingInfo = new OConfiguredPropertyMapping(sourceTable.getSourceIdName());
                     String correspondentAttributeName = currClassMapper.getAttributeByProperty(currModelProperty.getName());
                     OAttribute correspondentAttribute = currentEntity.getAttributeByName(correspondentAttributeName);
-                    propertyMappingInfo.setColumnName(correspondentAttributeName);
-                    propertyMappingInfo.setType(correspondentAttribute.getDataType());
-                    currConfiguredProperty.setPropertyMapping(propertyMappingInfo);
+
+                    if(correspondentAttribute != null) {
+                        OConfiguredPropertyMapping propertyMappingInfo = new OConfiguredPropertyMapping(sourceTable.getSourceIdName());
+                        propertyMappingInfo.setColumnName(correspondentAttributeName);
+                        propertyMappingInfo.setType(correspondentAttribute.getDataType());
+                        currConfiguredProperty.setPropertyMapping(propertyMappingInfo);
+                    }
 
                     configuredProperties.add(currConfiguredProperty);
                 }

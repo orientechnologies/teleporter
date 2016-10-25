@@ -90,7 +90,7 @@ public class ODBMSNaiveStrategy extends ODBMSImportStrategy {
     // Step 4: Writing schema on OrientDB
     OGraphModelWriter graphModelWriter = new OGraphModelWriter(migrationConfig);
     OGraphModel graphModel = ((OER2GraphMapper)mapper).getGraphModel();
-    boolean success = graphModelWriter.writeModelOnOrient(graphModel, handler, outOrientGraphUri);
+    boolean success = graphModelWriter.writeModelOnOrient(mapper, handler, outOrientGraphUri);
     if(!success) {
       OTeleporterContext.getInstance().getOutputManager().error("Writing not complete. Something gone wrong.\n");
       throw new OTeleporterRuntimeException();

@@ -98,7 +98,7 @@ public class ODBMSNaiveAggregationStrategy extends ODBMSImportStrategy {
     // Step 5: Writing schema on OrientDB
     OGraphModelWriter graphModelWriter = new OGraphModelWriter(migrationConfig);
     OGraphModel graphModel = ((OER2GraphMapper)mapper).getGraphModel();
-    boolean success = graphModelWriter.writeModelOnOrient(graphModel, handler, outOrientGraphUri);
+    boolean success = graphModelWriter.writeModelOnOrient(mapper, handler, outOrientGraphUri);
     if(!success) {
       OTeleporterContext.getInstance().getOutputManager().error("Writing not complete. Something gone wrong.\n");
       throw new OTeleporterRuntimeException();
@@ -122,11 +122,11 @@ public class ODBMSNaiveAggregationStrategy extends ODBMSImportStrategy {
 
       OER2GraphMapper mapper = (OER2GraphMapper) genericMapper;
       ODBQueryEngine dbQueryEngine = OTeleporterContext.getInstance().getDbQueryEngine();
-      OGraphEngineForDB graphEngine = new OGraphEngineForDB((OER2GraphMapper)mapper, handler);
+      OGraphEngineForDB graphEngine = new OGraphEngineForDB((OER2GraphMapper) mapper, handler);
 
       // OrientDB graph initialization/connection
       OrientBaseGraph orientGraph = null;
-      OrientGraphFactory factory = new OrientGraphFactory(outOrientGraphUri,"admin","admin");
+      OrientGraphFactory factory = new OrientGraphFactory(outOrientGraphUri, "admin", "admin");
       orientGraph = factory.getNoTx();
       orientGraph.getRawGraph().declareIntent(new OIntentMassiveInsert());
       orientGraph.setStandardElementConstraints(false);
@@ -137,18 +137,17 @@ public class ODBMSNaiveAggregationStrategy extends ODBMSImportStrategy {
       // Importing from Entities NOT belonging to hierarchical bags NOR corresponding to join tables
       for (OVertexType currentOutVertexType : mapper.getVertexType2classMappers().keySet()) {
 
-        List<OClassMapper> classMappers = ((OER2GraphMapper)super.mapper).getClassMappersByVertex(currentOutVertexType);
+        List<OClassMapper> classMappers = ((OER2GraphMapper) super.mapper).getClassMappersByVertex(currentOutVertexType);
         List<OEntity> mappedEntities = new LinkedList<OEntity>();
 
         // checking condition
         boolean allEntitiesNotAggregableAndNotBelongingToHierarchies = true;
-        for(OClassMapper classMapper: classMappers) {
+        for (OClassMapper classMapper : classMappers) {
           OEntity currentEntity = classMapper.getEntity();
-          if(currentEntity.getHierarchicalBag() != null || currentEntity.isAggregableJoinTable()) {
+          if (currentEntity.getHierarchicalBag() != null || currentEntity.isAggregableJoinTable()) {
             allEntitiesNotAggregableAndNotBelongingToHierarchies = false;
             break;
-          }
-          else {
+          } else {
             mappedEntities.add(currentEntity);
           }
         }
@@ -158,7 +157,7 @@ public class ODBMSNaiveAggregationStrategy extends ODBMSImportStrategy {
           String aggregationColumns[][] = null;
 
           //  classes' aggregation case
-          if(mappedEntities.size() > 1) {
+          if (mappedEntities.size() > 1) {
             OConfiguredVertexClass configuredVertex = mapper.getMigrationConfig().getVertexByMappedEntities(mappedEntities);
             aggregationColumns = super.buildAggregationColumnsFromAggregatedVertex(configuredVertex);
           }
@@ -170,24 +169,23 @@ public class ODBMSNaiveAggregationStrategy extends ODBMSImportStrategy {
       // Importing from Entities NOT belonging to hierarchical bags and corresponding to join tables
       for (OVertexType currentOutVertexType : mapper.getVertexType2classMappers().keySet()) {
 
-        List<OClassMapper> classMappers = ((OER2GraphMapper)super.mapper).getClassMappersByVertex(currentOutVertexType);
+        List<OClassMapper> classMappers = ((OER2GraphMapper) super.mapper).getClassMappersByVertex(currentOutVertexType);
         List<OEntity> mappedEntities = new LinkedList<OEntity>();
 
         // checking condition
         boolean allEntitiesAggregableAndNotBelongingToHierarchies = true;
-        for(OClassMapper classMapper: classMappers) {
+        for (OClassMapper classMapper : classMappers) {
           OEntity currentEntity = classMapper.getEntity();
-          if(currentEntity.getHierarchicalBag() != null || !currentEntity.isAggregableJoinTable()) {
+          if (currentEntity.getHierarchicalBag() != null || !currentEntity.isAggregableJoinTable()) {
             allEntitiesAggregableAndNotBelongingToHierarchies = false;
             break;
-          }
-          else {
+          } else {
             mappedEntities.add(currentEntity);
           }
         }
 
         // join tables are not aggregable with other join tables, so for each vertex type we can have just one join table
-        if(mappedEntities.size() > 1) {
+        if (mappedEntities.size() > 1) {
           OTeleporterContext.getInstance().getOutputManager().error("The '%s' vertex type is mapped with several join tables: you cannot aggregate multiple join tables.");
           break;
         }
@@ -198,27 +196,32 @@ public class ODBMSNaiveAggregationStrategy extends ODBMSImportStrategy {
       }
 
       // Second round in order to add edges belonging to Edge Types coming from Logical Relationships
-      for(OVertexType currentOutVertexType : mapper.getVertexType2classMappers().keySet()) {
+      int totalNumberOfLogicalRelationships = mapper.getDataBaseSchema().getLogicalRelationships().size();
+      if (totalNumberOfLogicalRelationships > 0) {
+        statistics.startWork5Time = new Date();
+        statistics.runningStepNumber = 5;
 
-        List<OClassMapper> classMappers = ((OER2GraphMapper)super.mapper).getClassMappersByVertex(currentOutVertexType);
-        List<OEntity> mappedEntities = new LinkedList<OEntity>();
-        int numberOfLogicalRelationships = 0;
+        statistics.totalNumberOfLogicalRelationships = totalNumberOfLogicalRelationships;
+        for (OVertexType currentOutVertexType : mapper.getVertexType2classMappers().keySet()) {
 
-        // checking condition
-        boolean allEntitiesAggregableAndNotBelongingToHierarchies = true;
-        for(OClassMapper classMapper: classMappers) {
-          OEntity currentEntity = classMapper.getEntity();
-          mappedEntities.add(currentEntity);
-          numberOfLogicalRelationships += currentEntity.getOutLogicalRelationships().size();
+          List<OClassMapper> classMappers = ((OER2GraphMapper) super.mapper).getClassMappersByVertex(currentOutVertexType);
+          List<OEntity> mappedEntities = new LinkedList<OEntity>();
+          int numberOfLogicalRelationships = 0;
 
+          // checking condition
+          boolean allEntitiesAggregableAndNotBelongingToHierarchies = true;
+          for (OClassMapper classMapper : classMappers) {
+            OEntity currentEntity = classMapper.getEntity();
+            mappedEntities.add(currentEntity);
+            numberOfLogicalRelationships += currentEntity.getOutLogicalRelationships().size();
+          }
+
+          // CHECK ON "Entities NOT belonging to hierarchical bags" needed? !!!!!!!
+          if (numberOfLogicalRelationships > 0) {
+            super.importEdgesStartingFromVertexClass(mappedEntities, currentOutVertexType, graphEngine, orientGraph);
+          }
         }
-
-        // CHECK ON "Entities NOT belonging to hierarchical bags" needed? !!!!!!!
-
-        if(numberOfLogicalRelationships > 0) {
-          super.importEdgesStartingFromVertexClass(mappedEntities, currentOutVertexType, graphEngine, orientGraph);
-        }
-      }
+    }
 
       statistics.notifyListeners();
       statistics.runningStepNumber = -1;

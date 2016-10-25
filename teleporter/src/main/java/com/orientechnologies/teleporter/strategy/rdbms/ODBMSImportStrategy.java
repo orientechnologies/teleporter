@@ -204,12 +204,15 @@ public abstract class ODBMSImportStrategy implements OWorkflowStrategy {
 
       // for each logical relationship add all the out edges with the target in vertex
       for(OEntity entity: mappedEntities) {
+        statistics.analyzedLogicalRelationships++;
         for (OLogicalRelationship currentRelationship : entity.getOutLogicalRelationships()) {
+          statistics.doneLeftVerticesCurrentLogicalRelationship = 0;
           OEntity currentParentEntity = mapper.getDataBaseSchema().getEntityByName(currentRelationship.getParentEntity().getName());
           currentInVertexType = mapper.getVertexTypeByEntity(currentParentEntity);
           edgeType = mapper.getRelationship2edgeType().get(currentRelationship);
 
           graphEngine.connectVertexToRelatedVertices(orientGraph, currentRelationship, currentOutVertex, currentOutVertexType, currentInVertexType, edgeType.getName());
+          statistics.doneLeftVerticesCurrentLogicalRelationship++;
         }
       }
 

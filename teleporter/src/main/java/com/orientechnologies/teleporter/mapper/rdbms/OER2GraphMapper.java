@@ -430,7 +430,7 @@ public class OER2GraphMapper extends OSource2GraphMapper {
         currentForeignEntity.getForeignKeys().add(currentFk);
 
         // adding the relationship to the db schema
-        this.dataBaseSchema.getRelationships().add(currentRelationship);
+        this.dataBaseSchema.getCanonicalRelationships().add(currentRelationship);
         // adding relationship to the current entity
         currentForeignEntity.getOutCanonicalRelationships().add(currentRelationship);
         // updating statistics
@@ -442,7 +442,7 @@ public class OER2GraphMapper extends OSource2GraphMapper {
       statistics.entitiesAnalyzedForRelationship++;
     }
 
-    statistics.totalNumberOfRelationships = this.dataBaseSchema.getRelationships().size();
+    statistics.totalNumberOfRelationships = this.dataBaseSchema.getCanonicalRelationships().size();
   }
 
 
@@ -457,7 +457,7 @@ public class OER2GraphMapper extends OSource2GraphMapper {
     int iteration = 1;
     OTeleporterContext.getInstance().getOutputManager().debug("\nConnecting IN relationships...\n");
 
-    for(ORelationship currentRelationship: this.dataBaseSchema.getRelationships()) {
+    for(ORelationship currentRelationship: this.dataBaseSchema.getCanonicalRelationships()) {
       OEntity currentInEntity = this.getDataBaseSchema().getEntityByName(currentRelationship.getParentEntity().getName());
       currentInEntity.getInCanonicalRelationships().add((OCanonicalRelationship) currentRelationship);
     }
@@ -653,7 +653,7 @@ public class OER2GraphMapper extends OSource2GraphMapper {
 
     OTeleporterStatistics statistics = OTeleporterContext.getInstance().getStatistics();
 
-    int numberOfEdgeType = this.dataBaseSchema.getRelationships().size();
+    int numberOfEdgeType = this.dataBaseSchema.getCanonicalRelationships().size();
     statistics.totalNumberOfModelEdges = numberOfEdgeType;
     String edgeType = null;
     int iteration = 1;
@@ -806,28 +806,49 @@ public class OER2GraphMapper extends OSource2GraphMapper {
         OVertexType currentVertexType = currentClassMapper.getVertexType();
         currentVertexType.setName(currentConfiguredVertexClass.getName());
 
+        int lastOrdinalPosition = 1;
+
         for(OConfiguredProperty configuredProperty: currentConfiguredVertexClass.getConfiguredProperties()) {
 
           OConfiguredPropertyMapping propertyMapping = configuredProperty.getPropertyMapping();
-          String columnName = propertyMapping.getColumnName();
-          String originalType = propertyMapping.getType();
-          String originalPropertyName = currentClassMapper.getPropertyByAttribute(propertyMapping.getColumnName());
+
+          String originalPropertyName;
+          String columnName = null;
+          String originalType = null;
+          if (propertyMapping != null) {
+            columnName = propertyMapping.getColumnName();
+            originalType = propertyMapping.getType();
+            originalPropertyName = currentClassMapper.getPropertyByAttribute(propertyMapping.getColumnName());
+          }
+          else {
+            originalPropertyName = currentVertexType.getPropertyByOrdinalPosition(lastOrdinalPosition + 1).getName();
+          }
+          String orientdbType = configuredProperty.getPropertyType();
           OModelProperty propertyToUpdate = currentVertexType.getPropertyByNameAmongAll(originalPropertyName);
           String actualPropertyName = configuredProperty.getPropertyName();
 
-          if(!originalPropertyName.equals(actualPropertyName)) {
-            propertyToUpdate.setName(actualPropertyName);
-            // updating properties mapping
-            currentClassMapper.getAttribute2property().put(columnName,actualPropertyName);
-            currentClassMapper.getProperty2attribute().remove(originalPropertyName);
-            currentClassMapper.getProperty2attribute().put(actualPropertyName,columnName);
+          if(originalPropertyName != null) {
+            if (!originalPropertyName.equals(actualPropertyName)) {
+              propertyToUpdate.setName(actualPropertyName);
+              // updating properties mapping
+              currentClassMapper.getAttribute2property().put(columnName, actualPropertyName);
+              currentClassMapper.getProperty2attribute().remove(originalPropertyName);
+              currentClassMapper.getProperty2attribute().put(actualPropertyName, columnName);
+            }
+            propertyToUpdate.setIncludedInMigration(configuredProperty.isIncludedInMigration());
+            propertyToUpdate.setOrientdbType(configuredProperty.getPropertyType());
+            propertyToUpdate.setMandatory(configuredProperty.isMandatory());
+            propertyToUpdate.setReadOnly(configuredProperty.isReadOnly());
+            propertyToUpdate.setNotNull(configuredProperty.isNotNull());
+            propertyToUpdate.setOriginalType(originalType);
+            propertyToUpdate.setOrientdbType(orientdbType);
           }
-          propertyToUpdate.setIncludedInMigration(configuredProperty.isIncludedInMigration());
-          propertyToUpdate.setOrientdbType(configuredProperty.getPropertyType());
-          propertyToUpdate.setMandatory(configuredProperty.isMandatory());
-          propertyToUpdate.setReadOnly(configuredProperty.isReadOnly());
-          propertyToUpdate.setNotNull(configuredProperty.isNotNull());
-          propertyToUpdate.setOriginalType(originalType);
+          else {
+            propertyToUpdate = new OModelProperty(actualPropertyName, lastOrdinalPosition, originalType, orientdbType, false, currentVertexType, false, false, false);
+            currentVertexType.getProperties().add(propertyToUpdate);
+          }
+
+          lastOrdinalPosition = propertyToUpdate.getOrdinalPosition() + 1;
         }
       }
 
@@ -1170,7 +1191,7 @@ public class OER2GraphMapper extends OSource2GraphMapper {
         ((OCanonicalRelationship)currentRelationship).setForeignKey(currentFk);
 
         currentForeignEntity.getForeignKeys().add(currentFk);
-        this.dataBaseSchema.getRelationships().add(currentRelationship);
+        this.dataBaseSchema.getCanonicalRelationships().add((OCanonicalRelationship) currentRelationship);
 
         // adding relationship to the current entity
         currentForeignEntity.getOutCanonicalRelationships().add((OCanonicalRelationship) currentRelationship);
@@ -1205,6 +1226,7 @@ public class OER2GraphMapper extends OSource2GraphMapper {
       ((OLogicalRelationship)currentRelationship).setToColumns(toAttributes);
 
       currentForeignEntity.getOutLogicalRelationships().add((OLogicalRelationship) currentRelationship);
+      dataBaseSchema.getLogicalRelationships().add((OLogicalRelationship) currentRelationship);
     }
 
     // Adding the direction of the relationship if it's different from null and if the foreign entity is not a join table.

@@ -22,6 +22,7 @@ import com.orientechnologies.orient.core.config.OGlobalConfiguration;
 import com.orientechnologies.orient.core.exception.OConfigurationException;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.orient.core.serialization.serializer.record.ORecordSerializerFactory;
+import com.orientechnologies.orient.core.serialization.serializer.record.binary.ORecordSerializerBinary;
 import com.orientechnologies.orient.server.OServer;
 import com.orientechnologies.orient.server.config.OServerParameterConfiguration;
 import com.orientechnologies.orient.server.network.OServerNetworkListener;
@@ -284,6 +285,9 @@ public class OTeleporter extends OServerPluginAbstract {
       List<String> includedTables, List<String> excludedTables, String jsonMigrationConfig, OOutputStreamManager outputManager)
       throws OTeleporterIOException {
 
+    // REGISTER THE BINARY RECORD SERIALIZER TO SUPPORT ANY OF THE EXTERNAL FIELDS
+    ORecordSerializerFactory.instance().register("ORecordSerializerBinary", new ORecordSerializerBinary());
+
     OTeleporterContext.newInstance().setOutputManager(outputManager);
     ODriverConfigurator driverConfig = new ODriverConfigurator();
     List<OSourceDatabaseInfo> sourcesInfo = null;
@@ -397,6 +401,9 @@ public class OTeleporter extends OServerPluginAbstract {
 
     } finally {
       timer.cancel();
+
+      // REGISTER THE MDM RECORD SERIALIZER TO SUPPORT ANY OF THE EXTERNAL FIELDS
+      ORecordSerializerFactory.instance().register("ORecordSerializerBinary", new OMDMSerializer());
     }
     return executionResult;
   }
@@ -422,9 +429,6 @@ public class OTeleporter extends OServerPluginAbstract {
       throw new OConfigurationException("HTTP listener not found");
 
     listener.registerStatelessCommand(new OServerCommandTeleporter());
-
-    // REGISTER THE MDM RECORD SERIALIZER TO SUPPORT ANY OF THE EXTERNAL FIELDS
-    ORecordSerializerFactory.instance().register("ORecordSerializerBinary", new OMDMSerializer());
   }
 
   @Override

@@ -133,7 +133,7 @@ public class HibernateMapperTest {
 
       // entities check
       Assert.assertEquals(4, mapper.getDataBaseSchema().getEntities().size());
-      Assert.assertEquals(1, mapper.getDataBaseSchema().getRelationships().size());
+      Assert.assertEquals(1, mapper.getDataBaseSchema().getCanonicalRelationships().size());
       assertNotNull(employeeEntity);
       assertNotNull(regularEmployeeEntity);
       assertNotNull(contractEmployeeEntity);
@@ -576,7 +576,7 @@ public class HibernateMapperTest {
 
       // entities check
       Assert.assertEquals(4, mapper.getDataBaseSchema().getEntities().size());
-      Assert.assertEquals(3, mapper.getDataBaseSchema().getRelationships().size());
+      Assert.assertEquals(3, mapper.getDataBaseSchema().getCanonicalRelationships().size());
       assertNotNull(employeeEntity);
       assertNotNull(regularEmployeeEntity);
       assertNotNull(contractEmployeeEntity);
@@ -1039,7 +1039,7 @@ public class HibernateMapperTest {
 
       // entities check
       Assert.assertEquals(4, mapper.getDataBaseSchema().getEntities().size());
-      Assert.assertEquals(3, mapper.getDataBaseSchema().getRelationships().size());
+      Assert.assertEquals(3, mapper.getDataBaseSchema().getCanonicalRelationships().size());
       assertNotNull(employeeEntity);
       assertNotNull(regularEmployeeEntity);
       assertNotNull(contractEmployeeEntity);
@@ -1498,7 +1498,7 @@ public class HibernateMapperTest {
 
       // entities check
       Assert.assertEquals(4, mapper.getDataBaseSchema().getEntities().size());
-      Assert.assertEquals(1, mapper.getDataBaseSchema().getRelationships().size());
+      Assert.assertEquals(1, mapper.getDataBaseSchema().getCanonicalRelationships().size());
       assertNotNull(employeeEntity);
       assertNotNull(regularEmployeeEntity);
       assertNotNull(contractEmployeeEntity);

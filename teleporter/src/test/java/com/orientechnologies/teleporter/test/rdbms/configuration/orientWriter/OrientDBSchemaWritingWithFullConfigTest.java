@@ -132,7 +132,7 @@ public class OrientDBSchemaWritingWithFullConfigTest {
             mapper.buildSourceDatabaseSchema();
             mapper.buildGraphModel(new OJavaConventionNameResolver());
             mapper.applyImportConfiguration();
-            modelWriter.writeModelOnOrient(mapper.getGraphModel(), new OHSQLDBDataTypeHandler(), this.outOrientGraphUri);
+            modelWriter.writeModelOnOrient(mapper, new OHSQLDBDataTypeHandler(), this.outOrientGraphUri);
 
 
             /**

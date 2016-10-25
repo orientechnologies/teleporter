@@ -167,7 +167,7 @@ public class FilterTableMappingTest {
 
       // entities check
       Assert.assertEquals(3, mapper.getDataBaseSchema().getEntities().size());
-      Assert.assertEquals(1, mapper.getDataBaseSchema().getRelationships().size());
+      Assert.assertEquals(1, mapper.getDataBaseSchema().getCanonicalRelationships().size());
       assertNotNull(employeeEntity);
       assertNotNull(countryEntity);
       assertNotNull(managerEntity);
@@ -556,7 +556,7 @@ public class FilterTableMappingTest {
 
       // entities check
       Assert.assertEquals(3, mapper.getDataBaseSchema().getEntities().size());
-      Assert.assertEquals(1, mapper.getDataBaseSchema().getRelationships().size());
+      Assert.assertEquals(1, mapper.getDataBaseSchema().getCanonicalRelationships().size());
       assertNotNull(employeeEntity);
       assertNotNull(countryEntity);
       assertNotNull(managerEntity);
@@ -950,7 +950,7 @@ public class FilterTableMappingTest {
 
       // entities check
       Assert.assertEquals(6, mapper.getDataBaseSchema().getEntities().size());
-      Assert.assertEquals(1, mapper.getDataBaseSchema().getRelationships().size());
+      Assert.assertEquals(1, mapper.getDataBaseSchema().getCanonicalRelationships().size());
       assertNotNull(employeeEntity);
       assertNotNull(regularEmployeeEntity);
       assertNotNull(contractEmployeeEntity);
@@ -1723,7 +1723,7 @@ public class FilterTableMappingTest {
 
       // entities check
       Assert.assertEquals(6, mapper.getDataBaseSchema().getEntities().size());
-      Assert.assertEquals(4, mapper.getDataBaseSchema().getRelationships().size());
+      Assert.assertEquals(4, mapper.getDataBaseSchema().getCanonicalRelationships().size());
       assertNotNull(employeeEntity);
       assertNotNull(regularEmployeeEntity);
       assertNotNull(contractEmployeeEntity);
@@ -2497,7 +2497,7 @@ public class FilterTableMappingTest {
 
       // entities check
       Assert.assertEquals(6, mapper.getDataBaseSchema().getEntities().size());
-      Assert.assertEquals(4, mapper.getDataBaseSchema().getRelationships().size());
+      Assert.assertEquals(4, mapper.getDataBaseSchema().getCanonicalRelationships().size());
       assertNotNull(employeeEntity);
       assertNotNull(regularEmployeeEntity);
       assertNotNull(contractEmployeeEntity);
@@ -3278,7 +3278,7 @@ public class FilterTableMappingTest {
 
       // entities check
       Assert.assertEquals(6, mapper.getDataBaseSchema().getEntities().size());
-      Assert.assertEquals(1, mapper.getDataBaseSchema().getRelationships().size());
+      Assert.assertEquals(1, mapper.getDataBaseSchema().getCanonicalRelationships().size());
       assertNotNull(employeeEntity);
       assertNotNull(regularEmployeeEntity);
       assertNotNull(contractEmployeeEntity);

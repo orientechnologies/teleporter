@@ -72,6 +72,13 @@ public class OTeleporterStatistics {
   public volatile int orientAddedEdges;
   public volatile Date startWork4Time;
 
+  // Logical Relationships
+  public volatile int totalNumberOfLogicalRelationships;
+  public volatile int analyzedLogicalRelationships;
+  public volatile int leftVerticesCurrentLogicalRelationship;
+  public volatile int doneLeftVerticesCurrentLogicalRelationship;
+  public volatile Date startWork5Time;
+
   // Warnings and Error Messages
   public volatile Set<String> warningMessages;
   public volatile Set<String> errorMessages;
@@ -113,6 +120,11 @@ public class OTeleporterStatistics {
     this.analyzedRecords = 0;
     this.orientAddedVertices = 0;
     this.orientAddedEdges = 0;
+
+    this.totalNumberOfLogicalRelationships = 0;
+    this.analyzedLogicalRelationships = 0;
+    this.leftVerticesCurrentLogicalRelationship = 0;
+    this.doneLeftVerticesCurrentLogicalRelationship = 0;
 
   }
 

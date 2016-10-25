@@ -148,7 +148,7 @@ public class RelationshipConfigurationMappingTest {
 
       // entities check
       assertEquals(2, mapper.getDataBaseSchema().getEntities().size());
-      assertEquals(2, mapper.getDataBaseSchema().getRelationships().size());
+      assertEquals(2, mapper.getDataBaseSchema().getCanonicalRelationships().size());
       assertNotNull(employeeEntity);
       assertNotNull(projectEntity);
 
@@ -200,7 +200,7 @@ public class RelationshipConfigurationMappingTest {
       assertEquals("PROJECT", projectEntity.getAttributeByName("PROJECT_MANAGER").getBelongingEntity().getName());
 
       // relationship, primary and foreign key check
-      assertEquals(2, mapper.getDataBaseSchema().getRelationships().size());
+      assertEquals(2, mapper.getDataBaseSchema().getCanonicalRelationships().size());
       assertEquals(1, projectEntity.getOutCanonicalRelationships().size());
       assertEquals(1, employeeEntity.getOutCanonicalRelationships().size());
       assertEquals(1, projectEntity.getInCanonicalRelationships().size());
@@ -521,7 +521,7 @@ public class RelationshipConfigurationMappingTest {
 
       // entities check
       assertEquals(2, mapper.getDataBaseSchema().getEntities().size());
-      assertEquals(2, mapper.getDataBaseSchema().getRelationships().size());
+      assertEquals(2, mapper.getDataBaseSchema().getCanonicalRelationships().size());
       assertNotNull(employeeEntity);
       assertNotNull(projectEntity);
 
@@ -573,7 +573,7 @@ public class RelationshipConfigurationMappingTest {
       assertEquals("PROJECT", projectEntity.getAttributeByName("PROJECT_MANAGER").getBelongingEntity().getName());
 
       // relationship, primary and foreign key check
-      assertEquals(2, mapper.getDataBaseSchema().getRelationships().size());
+      assertEquals(2, mapper.getDataBaseSchema().getCanonicalRelationships().size());
       assertEquals(1, projectEntity.getOutCanonicalRelationships().size());
       assertEquals(1, employeeEntity.getOutCanonicalRelationships().size());
       assertEquals(1, projectEntity.getInCanonicalRelationships().size());
@@ -876,7 +876,7 @@ public class RelationshipConfigurationMappingTest {
 
       // entities check
       assertEquals(3, mapper.getDataBaseSchema().getEntities().size());
-      assertEquals(2, mapper.getDataBaseSchema().getRelationships().size());
+      assertEquals(2, mapper.getDataBaseSchema().getCanonicalRelationships().size());
       assertNotNull(actorEntity);
       assertNotNull(filmEntity);
       assertNotNull(actorFilmEntity);
@@ -943,7 +943,7 @@ public class RelationshipConfigurationMappingTest {
       assertEquals("ACTOR_FILM", actorFilmEntity.getAttributeByName("PAYMENT").getBelongingEntity().getName());
 
       // relationship, primary and foreign key check
-      assertEquals(2, mapper.getDataBaseSchema().getRelationships().size());
+      assertEquals(2, mapper.getDataBaseSchema().getCanonicalRelationships().size());
       assertEquals(0, filmEntity.getOutCanonicalRelationships().size());
       assertEquals(0, actorEntity.getOutCanonicalRelationships().size());
       assertEquals(2, actorFilmEntity.getOutCanonicalRelationships().size());
@@ -1481,7 +1481,7 @@ public class RelationshipConfigurationMappingTest {
 
       // entities check
       assertEquals(3, mapper.getDataBaseSchema().getEntities().size());
-      assertEquals(2, mapper.getDataBaseSchema().getRelationships().size());
+      assertEquals(2, mapper.getDataBaseSchema().getCanonicalRelationships().size());
       assertNotNull(actorEntity);
       assertNotNull(filmEntity);
       assertNotNull(filmActorEntity);
@@ -1548,7 +1548,7 @@ public class RelationshipConfigurationMappingTest {
       assertEquals("FILM_ACTOR", filmActorEntity.getAttributeByName("PAYMENT").getBelongingEntity().getName());
 
       // relationship, primary and foreign key check
-      assertEquals(2, mapper.getDataBaseSchema().getRelationships().size());
+      assertEquals(2, mapper.getDataBaseSchema().getCanonicalRelationships().size());
       assertEquals(0, filmEntity.getOutCanonicalRelationships().size());
       assertEquals(0, actorEntity.getOutCanonicalRelationships().size());
       assertEquals(2, filmActorEntity.getOutCanonicalRelationships().size());
@@ -2086,7 +2086,7 @@ public class RelationshipConfigurationMappingTest {
 
       // entities check
       assertEquals(3, mapper.getDataBaseSchema().getEntities().size());
-      assertEquals(2, mapper.getDataBaseSchema().getRelationships().size());
+      assertEquals(2, mapper.getDataBaseSchema().getCanonicalRelationships().size());
       assertNotNull(actorEntity);
       assertNotNull(filmEntity);
       assertNotNull(actorFilmEntity);
@@ -2153,7 +2153,7 @@ public class RelationshipConfigurationMappingTest {
       assertEquals("ACTOR_FILM", actorFilmEntity.getAttributeByName("PAYMENT").getBelongingEntity().getName());
 
       // relationship, primary and foreign key check
-      assertEquals(2, mapper.getDataBaseSchema().getRelationships().size());
+      assertEquals(2, mapper.getDataBaseSchema().getCanonicalRelationships().size());
       assertEquals(0, filmEntity.getOutCanonicalRelationships().size());
       assertEquals(0, actorEntity.getOutCanonicalRelationships().size());
       assertEquals(2, actorFilmEntity.getOutCanonicalRelationships().size());
@@ -2690,7 +2690,7 @@ public class RelationshipConfigurationMappingTest {
 
       // entities check
       assertEquals(3, mapper.getDataBaseSchema().getEntities().size());
-      assertEquals(2, mapper.getDataBaseSchema().getRelationships().size());
+      assertEquals(2, mapper.getDataBaseSchema().getCanonicalRelationships().size());
       assertNotNull(actorEntity);
       assertNotNull(filmEntity);
       assertNotNull(filmActorEntity);
@@ -2757,7 +2757,7 @@ public class RelationshipConfigurationMappingTest {
       assertEquals("FILM_ACTOR", filmActorEntity.getAttributeByName("PAYMENT").getBelongingEntity().getName());
 
       // relationship, primary and foreign key check
-      assertEquals(2, mapper.getDataBaseSchema().getRelationships().size());
+      assertEquals(2, mapper.getDataBaseSchema().getCanonicalRelationships().size());
       assertEquals(0, filmEntity.getOutCanonicalRelationships().size());
       assertEquals(0, actorEntity.getOutCanonicalRelationships().size());
       assertEquals(2, filmActorEntity.getOutCanonicalRelationships().size());

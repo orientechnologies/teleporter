@@ -90,6 +90,15 @@ public class OElementType implements Comparable<OElementType> {
     this.inheritanceLevel = inheritanceLevel;
   }
 
+  public OModelProperty getPropertyByOrdinalPosition(int position) {
+    for (OModelProperty property : this.properties) {
+      if (property.getOrdinalPosition() == position) {
+        return property;
+      }
+    }
+    return null;
+  }
+
   public void removePropertyByName(String toRemove) {
     Iterator<OModelProperty> it = this.properties.iterator();
     OModelProperty currentProperty = null;

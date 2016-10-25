@@ -155,7 +155,7 @@ public class FullConfigurationMappingTest {
 
             // entities check
             assertEquals(3, mapper.getDataBaseSchema().getEntities().size());
-            assertEquals(1, mapper.getDataBaseSchema().getRelationships().size());
+            assertEquals(1, mapper.getDataBaseSchema().getCanonicalRelationships().size());
             assertNotNull(personEntity);
             assertNotNull(vatProfileEntity);
             assertNotNull(departmentEntity);
@@ -235,7 +235,7 @@ public class FullConfigurationMappingTest {
 
 
             // relationship, primary and foreign key check
-            assertEquals(1, mapper.getDataBaseSchema().getRelationships().size());
+            assertEquals(1, mapper.getDataBaseSchema().getCanonicalRelationships().size());
             assertEquals(0, vatProfileEntity.getOutCanonicalRelationships().size());
             assertEquals(1, personEntity.getOutCanonicalRelationships().size());
             assertEquals(0, departmentEntity.getOutCanonicalRelationships().size());

@@ -24,15 +24,17 @@ import com.orientechnologies.orient.core.index.OIndexManagerProxy;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.metadata.schema.OType;
-import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.orient.core.sql.OCommandSQL;
 import com.orientechnologies.teleporter.configuration.api.OConfiguration;
 import com.orientechnologies.teleporter.context.OTeleporterContext;
 import com.orientechnologies.teleporter.context.OTeleporterStatistics;
 import com.orientechnologies.teleporter.exception.OTeleporterRuntimeException;
+import com.orientechnologies.teleporter.mapper.rdbms.OER2GraphMapper;
+import com.orientechnologies.teleporter.model.dbschema.OAttribute;
+import com.orientechnologies.teleporter.model.dbschema.ODataBaseSchema;
+import com.orientechnologies.teleporter.model.dbschema.OLogicalRelationship;
 import com.orientechnologies.teleporter.model.graphmodel.*;
 import com.orientechnologies.teleporter.persistence.handler.ODriverDataTypeHandler;
-import com.orientechnologies.teleporter.util.OMigrationConfigManager;
 import com.tinkerpop.blueprints.impls.orient.*;
 
 import java.util.*;
@@ -78,13 +80,15 @@ public class OGraphModelWriter {
   }
 
 
-  public boolean writeModelOnOrient(OGraphModel graphModel, ODriverDataTypeHandler handler, String outOrientGraphUri) {
+  public boolean writeModelOnOrient(OER2GraphMapper mapper, ODriverDataTypeHandler handler, String outOrientGraphUri) {
     boolean success = false;
 
+    OGraphModel graphModel = mapper.getGraphModel();
     OrientBaseGraph orientGraph = null;
     OrientGraphFactory factory = new OrientGraphFactory(outOrientGraphUri,"admin","admin");
     try {
       orientGraph = factory.getNoTx();
+      orientGraph.setUseLightweightEdges(true);
     } catch (Exception e) {
       String mess = "";
       OTeleporterContext.getInstance().printExceptionMessage(e, mess, "error");
@@ -327,6 +331,62 @@ public class OGraphModelWriter {
           iteration++;
           statistics.wroteIndexes++;
         }
+
+
+        /*
+         *  Writing indexes on properties involved in Logical Relationships
+         */
+
+        iteration = 1;
+        ODataBaseSchema dbSchema = mapper.getDataBaseSchema();
+        for(OLogicalRelationship logicalRelationship: dbSchema.getLogicalRelationships()) {
+          OVertexType currentVertexType = mapper.getVertexTypeByEntity(logicalRelationship.getParentEntity());
+
+          currentType = currentVertexType.getName();
+          properties = new ArrayList<String>();
+
+          String indexClassName = currentType + ".";
+          for(OAttribute attribute: logicalRelationship.getToColumns()) {
+            String correspondentPropertyName = mapper.getPropertyNameByVertexTypeAndAttribute(currentVertexType, attribute.getName());
+            properties.add(correspondentPropertyName);
+            indexClassName += correspondentPropertyName + "_";
+          }
+          indexClassName = indexClassName.substring(0, indexClassName.lastIndexOf("_"));
+
+          // check if vertex type is already present in the orient schema
+          isPresent = indexManager.existsIndex(indexClassName);
+
+          if(!isPresent) {
+
+            String propertiesList = "";
+            int j = 0;
+            for(String property: properties) {
+              if(j == properties.size()-1)
+                propertiesList += property;
+              else
+                propertiesList += property + ",";
+              j++;
+            }
+
+            if(!propertiesList.isEmpty()) {
+              OTeleporterContext.getInstance().getOutputManager()
+                      .debug("\nBuilding index for '%s' on %s  (%s/%s)...\n", currentVertexType.getName(), propertiesList, iteration, numberOfVertices);
+              statement = "create index `" + indexClassName + "` on `" + currentType + "` (" + propertiesList + ") notunique_hash_index";
+              sqlCommand = new OCommandSQL(statement);
+              orientGraph.getRawGraph().command(sqlCommand).execute();
+              OTeleporterContext.getInstance().getOutputManager().debug("\nIndex for %s built.\n", currentVertexType.getName());
+            }
+            else {
+              OTeleporterContext.getInstance().getStatistics().warningMessages.add("The table '" + currentVertexType.getName() + "' has not primary key constraints defined in the db schema,"
+                      + " thus the correspondent Class Vertex in Orient will not have a default index on the property deriving from the original primary key.");
+            }
+          }
+          else {
+            OTeleporterContext.getInstance().getOutputManager().debug("\nIndex for %s already present in the Orient schema.\n", currentVertexType.getName());
+          }
+
+        }
+
       } catch (OException e) {
         String mess = "";
         OTeleporterContext.getInstance().printExceptionMessage(e, mess, "error");
