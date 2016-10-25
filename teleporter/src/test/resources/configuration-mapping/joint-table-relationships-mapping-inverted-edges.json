@@ -18,6 +18,7 @@
         "year": {
           "include": true,
           "type": "DATE",
+          "ordinalPosition": 1,
           "mandatory": true,
           "readOnly": false,
           "notNull": false

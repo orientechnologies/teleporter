@@ -13,12 +13,14 @@
         "updatedOn": {
           "include": true,
           "type": "DATE",
+          "ordinalPosition": 1,
           "mandatory": true,
           "readOnly": false,
           "notNull": false
         },
         "propWithoutTypeField": {
           "include": true,
+          "ordinalPosition": 2,
           "mandatory": true,
           "readOnly": false,
           "notNull": false
@@ -38,6 +40,7 @@
         "updatedOn": {
           "include": true,
           "type": "DATE",
+          "ordinalPosition": 1,
           "mandatory": false,
           "readOnly": false,
           "notNull": false

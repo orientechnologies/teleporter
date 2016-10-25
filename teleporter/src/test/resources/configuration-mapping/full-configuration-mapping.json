@@ -25,6 +25,7 @@
         "extKey1": {
           "include": true,
           "type": "STRING",
+          "ordinalPosition": 1,
           "mandatory": false,
           "readOnly": false,
           "notNull": false,
@@ -37,6 +38,7 @@
         "firstName": {
           "include": true,
           "type": "STRING",
+          "ordinalPosition": 2,
           "mandatory": true,
           "readOnly": false,
           "notNull": true,
@@ -49,6 +51,7 @@
         "lastName": {
           "include": true,
           "type": "STRING",
+          "ordinalPosition": 3,
           "mandatory": true,
           "readOnly": false,
           "notNull": true,
@@ -61,6 +64,7 @@
         "depId": {
           "include": false,
           "type": "STRING",
+          "ordinalPosition": 4,
           "mandatory": false,
           "readOnly": false,
           "notNull": false,
@@ -73,6 +77,7 @@
         "extKey2": {
           "include": true,
           "type": "STRING",
+          "ordinalPosition": 5,
           "mandatory": false,
           "readOnly": false,
           "notNull": false,
@@ -85,6 +90,7 @@
         "VAT": {
           "include": true,
           "type": "STRING",
+          "ordinalPosition": 6,
           "mandatory": true,
           "readOnly": false,
           "notNull": true,
@@ -97,6 +103,7 @@
         "updatedOn": {
           "include": false,
           "type": "DATE",
+          "ordinalPosition": 7,
           "mandatory": true,
           "readOnly": false,
           "notNull": true,
@@ -124,6 +131,7 @@
         "id": {
           "include": true,
           "type": "STRING",
+          "ordinalPosition": 1,
           "mandatory": false,
           "readOnly": false,
           "notNull": false,
@@ -136,6 +144,7 @@
         "departmentName": {
           "include": true,
           "type": "STRING",
+          "ordinalPosition": 2,
           "mandatory": true,
           "readOnly": false,
           "notNull": true,
@@ -148,6 +157,7 @@
         "location": {
           "include": true,
           "type": "STRING",
+          "ordinalPosition": 3,
           "mandatory": true,
           "readOnly": false,
           "notNull": true,
@@ -160,6 +170,7 @@
         "updatedOn": {
           "include": false,
           "type": "DATE",
+          "ordinalPosition": 4,
           "mandatory": true,
           "readOnly": false,
           "notNull": true,
@@ -186,6 +197,7 @@
           "since": {
             "include": true,
             "type": "DATE",
+            "ordinalPosition": 1,
             "mandatory": true,
             "readOnly": false,
             "notNull": false

@@ -30,6 +30,7 @@ public class OConfiguredProperty {
     private String propertyName;                // mandatory
     private boolean isIncludedInMigration;      // mandatory
     private String propertyType;                // mandatory
+    private int ordinalPosition;                // mandatory (just in POC)
     private boolean isMandatory;                // mandatory
     private boolean isReadOnly;                 // mandatory
     private boolean isNotNull;                  // mandatory
@@ -61,6 +62,14 @@ public class OConfiguredProperty {
 
     public void setPropertyType(String propertyType) {
         this.propertyType = propertyType;
+    }
+
+    public int getOrdinalPosition() {
+        return this.ordinalPosition;
+    }
+
+    public void setOrdinalPosition(int ordinalPosition) {
+        this.ordinalPosition = ordinalPosition;
     }
 
     public boolean isMandatory() {

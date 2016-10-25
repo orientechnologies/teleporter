@@ -323,6 +323,7 @@ public class OConfigurationHandler {
                 ODocument currentElementPropertyDoc = elementPropsDoc.field(propertyName);
                 Boolean isIncludedInMigration = currentElementPropertyDoc.field("include");
                 String propertyType = currentElementPropertyDoc.field("type");
+                Integer ordinalPosition = currentElementPropertyDoc.field("ordinalPosition");
                 if(isIncludedInMigration == null) {
                     OTeleporterContext.getInstance().getOutputManager()
                             .error("Configuration error: 'include' field not found in the '%s' property definition ('%s' Class).",  propertyName, className);
@@ -335,6 +336,12 @@ public class OConfigurationHandler {
                 }
                 else {
                     propertyType = propertyType.toUpperCase(Locale.ENGLISH);        // normalization: orientdb types are upper case
+                }
+
+                if(ordinalPosition == null) {
+                    OTeleporterContext.getInstance().getOutputManager()
+                            .error("Configuration error: 'ordinalPosition' field not found in the '%s' property definition ('%s' Class).",  propertyName, className);
+                    throw new OTeleporterRuntimeException();
                 }
 
                 Boolean mandatory = currentElementPropertyDoc.field("mandatory");
@@ -387,6 +394,7 @@ public class OConfigurationHandler {
                 OConfiguredProperty currentConfiguredProperty = new OConfiguredProperty(propertyName);
                 currentConfiguredProperty.setIncludedInMigration(isIncludedInMigration);
                 currentConfiguredProperty.setPropertyType(propertyType);
+                currentConfiguredProperty.setOrdinalPosition(ordinalPosition.byteValue());
                 currentConfiguredProperty.setMandatory(mandatory);
                 currentConfiguredProperty.setReadOnly(readOnly);
                 currentConfiguredProperty.setNotNull(notNull);
@@ -533,6 +541,7 @@ public class OConfigurationHandler {
             String propertyName = currConfiguredProperty.getPropertyName();
             currConfiguredPropertyInfoDoc.field("include", currConfiguredProperty.isIncludedInMigration());
             currConfiguredPropertyInfoDoc.field("type", currConfiguredProperty.getPropertyType());
+            currConfiguredPropertyInfoDoc.field("ordinalPosition", currConfiguredProperty.getOrdinalPosition());
             currConfiguredPropertyInfoDoc.field("mandatory", currConfiguredProperty.isMandatory());
             currConfiguredPropertyInfoDoc.field("readOnly", currConfiguredProperty.isReadOnly());
             currConfiguredPropertyInfoDoc.field("notNull", currConfiguredProperty.isNotNull());
@@ -631,6 +640,7 @@ public class OConfigurationHandler {
                     OConfiguredProperty currConfiguredProperty = new OConfiguredProperty(currModelProperty.getName());
                     currConfiguredProperty.setIncludedInMigration(currModelProperty.isIncludedInMigration());
                     currConfiguredProperty.setPropertyType(currModelProperty.getOrientdbType());
+                    currConfiguredProperty.setOrdinalPosition(currModelProperty.getOrdinalPosition());
                     currConfiguredProperty.setMandatory(false);
                     currConfiguredProperty.setReadOnly(false);
                     currConfiguredProperty.setNotNull(false);
@@ -750,6 +760,7 @@ public class OConfigurationHandler {
                 OConfiguredProperty currConfiguredProperty = new OConfiguredProperty(currModelProperty.getName());
                 currConfiguredProperty.setIncludedInMigration(true);
                 currConfiguredProperty.setPropertyType(currModelProperty.getOrientdbType());
+                currConfiguredProperty.setOrdinalPosition(currModelProperty.getOrdinalPosition());
                 currConfiguredProperty.setMandatory(false);
                 currConfiguredProperty.setReadOnly(false);
                 currConfiguredProperty.setNotNull(false);

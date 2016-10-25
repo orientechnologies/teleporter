@@ -16,6 +16,7 @@
         "id": {
           "include": true,
           "type": "STRING",
+          "ordinalPosition": 1,
           "mandatory": false,
           "readOnly": false,
           "notNull": false,
@@ -28,6 +29,7 @@
         "projectName": {
           "include": true,
           "type": "STRING",
+          "ordinalPosition": 2,
           "mandatory": false,
           "readOnly": false,
           "notNull": false,
@@ -40,6 +42,7 @@
         "description": {
           "include": true,
           "type": "STRING",
+          "ordinalPosition": 3,
           "mandatory": false,
           "readOnly": false,
           "notNull": false,
@@ -52,6 +55,7 @@
         "startDate": {
           "include": true,
           "type": "DATE",
+          "ordinalPosition": 4,
           "mandatory": false,
           "readOnly": false,
           "notNull": false,
@@ -64,6 +68,7 @@
         "expectedEndDate": {
           "include": true,
           "type": "DATE",
+          "ordinalPosition": 5,
           "mandatory": false,
           "readOnly": false,
           "notNull": false,
@@ -91,6 +96,7 @@
         "id": {
           "include": true,
           "type": "STRING",
+          "ordinalPosition": 1,
           "mandatory": false,
           "readOnly": false,
           "notNull": false,
@@ -103,6 +109,7 @@
         "departmentName": {
           "include": true,
           "type": "STRING",
+          "ordinalPosition": 2,
           "mandatory": false,
           "readOnly": false,
           "notNull": false,
@@ -115,6 +122,7 @@
         "location": {
           "include": true,
           "type": "STRING",
+          "ordinalPosition": 3,
           "mandatory": false,
           "readOnly": false,
           "notNull": false,
@@ -142,6 +150,7 @@
         "id": {
           "include": true,
           "type": "STRING",
+          "ordinalPosition": 1,
           "mandatory": false,
           "readOnly": false,
           "notNull": false,
@@ -154,6 +163,7 @@
         "firstName": {
           "include": true,
           "type": "STRING",
+          "ordinalPosition": 2,
           "mandatory": false,
           "readOnly": false,
           "notNull": false,
@@ -166,6 +176,7 @@
         "lastName": {
           "include": true,
           "type": "STRING",
+          "ordinalPosition": 3,
           "mandatory": false,
           "readOnly": false,
           "notNull": false,
@@ -178,6 +189,7 @@
         "salary": {
           "include": true,
           "type": "DOUBLE",
+          "ordinalPosition": 4,
           "mandatory": false,
           "readOnly": false,
           "notNull": false,
@@ -190,6 +202,7 @@
         "email": {
           "include": true,
           "type": "STRING",
+          "ordinalPosition": 5,
           "mandatory": false,
           "readOnly": false,
           "notNull": false,
@@ -202,6 +215,7 @@
         "department": {
           "include": true,
           "type": "STRING",
+          "ordinalPosition": 6,
           "mandatory": false,
           "readOnly": false,
           "notNull": false,
@@ -245,6 +259,7 @@
           "role": {
             "include": true,
             "type": "STRING",
+            "ordinalPosition": 1,
             "mandatory": false,
             "readOnly": false,
             "notNull": false,
