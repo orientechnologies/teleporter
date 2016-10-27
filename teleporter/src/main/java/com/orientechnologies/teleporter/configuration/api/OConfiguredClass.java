@@ -59,4 +59,17 @@ public class OConfiguredClass {
   public OConfiguredProperty getProperty(final String propertyName) {
     return configuredProperties.get(propertyName);
   }
+
+  public OConfiguredProperty getPropertyByAttribute(String attributeName) {
+
+    for(Map.Entry<String, OConfiguredProperty> entry: configuredProperties.entrySet()) {
+      OConfiguredPropertyMapping mapping = entry.getValue().getPropertyMapping();
+      if(mapping != null) {
+        if(mapping.getColumnName().equals(attributeName)) {
+          return entry.getValue();
+        }
+      }
+    }
+    return null;
+  }
 }

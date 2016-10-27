@@ -167,7 +167,7 @@ public class OModelProperty {
 
   public String toString() {
     String s = "";
-    s += this.ordinalPosition + ": " + this.name + " ( " + this.originalType + " )";
+    s += this.ordinalPosition + ": " + this.name + " ( " + this.orientdbType + " )";
     return s;
   }
 

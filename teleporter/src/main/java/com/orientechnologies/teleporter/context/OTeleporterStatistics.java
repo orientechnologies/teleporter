@@ -74,7 +74,7 @@ public class OTeleporterStatistics {
 
   // Logical Relationships
   public volatile int totalNumberOfLogicalRelationships;
-  public volatile int analyzedLogicalRelationships;
+  public volatile int doneLogicalRelationships;
   public volatile int leftVerticesCurrentLogicalRelationship;
   public volatile int doneLeftVerticesCurrentLogicalRelationship;
   public volatile Date startWork5Time;
@@ -122,7 +122,7 @@ public class OTeleporterStatistics {
     this.orientAddedEdges = 0;
 
     this.totalNumberOfLogicalRelationships = 0;
-    this.analyzedLogicalRelationships = 0;
+    this.doneLogicalRelationships = 0;
     this.leftVerticesCurrentLogicalRelationship = 0;
     this.doneLeftVerticesCurrentLogicalRelationship = 0;
 

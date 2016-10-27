@@ -777,6 +777,7 @@ public class OGraphEngineForDB {
       }
       this.setElementProperties(edge, properties);
       statistics.orientAddedEdges++;
+      statistics.doneLeftVerticesCurrentLogicalRelationship++;
       OTeleporterContext.getInstance().getOutputManager().debug("\nNew edge inserted: %s\n", edge.toString());
 
     } catch (Exception e) {

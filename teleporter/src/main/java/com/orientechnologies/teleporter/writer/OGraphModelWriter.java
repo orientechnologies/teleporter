@@ -456,7 +456,12 @@ public class OGraphModelWriter {
     while(it1.hasNext()) {
       currentProperty = it1.next();
       orientSchemaProperty = orientElementType.getProperty(currentProperty.getName());
-      newResolvedType = handler.resolveType(currentProperty.getOriginalType().toLowerCase(Locale.ENGLISH));
+      if(currentProperty.getOrientdbType() != null) {
+        newResolvedType = this.resolveOrientDBType(currentProperty.getOrientdbType());
+      }
+      else {
+        newResolvedType = handler.resolveType(currentProperty.getOriginalType().toLowerCase(Locale.ENGLISH));
+      }
 
       if(orientSchemaProperty != null) {
         // property present in orientdb schema, check if is it equal (type check), in case it's modified

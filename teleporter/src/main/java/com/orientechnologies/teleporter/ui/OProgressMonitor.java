@@ -215,14 +215,22 @@ public class OProgressMonitor implements OStatisticsListener {
   public String updateWork5OnEvent(OTeleporterStatistics statistics) {
 
     Date currentTime = new Date();
+    int numberOfLogicalRelationships = statistics.totalNumberOfLogicalRelationships;
+
+    // TO CHECK
 
     int work5DonePercentage;
-    if(statistics.totalNumberOfLogicalRelationships > 0) {
+    if(numberOfLogicalRelationships > 0) {
 
-      int work5probability1 = statistics.doneLeftVerticesCurrentLogicalRelationship / statistics.leftVerticesCurrentLogicalRelationship;
-      int work5probability2 = statistics.analyzedLogicalRelationships / statistics.totalNumberOfLogicalRelationships;
+      int work5percentage1 = statistics.doneLeftVerticesCurrentLogicalRelationship / statistics.leftVerticesCurrentLogicalRelationship;
+      int work5percentage2 = statistics.doneLogicalRelationships / statistics.totalNumberOfLogicalRelationships;
 
-      work5DonePercentage = (work5probability1 * 100) * (work5probability2 * 100);
+      if(work5percentage2 == 1) {
+        work5DonePercentage = 100;
+      }
+      else {
+        work5DonePercentage = (work5percentage2 + (work5percentage1 / numberOfLogicalRelationships)) * 100;
+      }
 
     }
     else {

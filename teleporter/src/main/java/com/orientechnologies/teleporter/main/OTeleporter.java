@@ -403,7 +403,7 @@ public class OTeleporter extends OServerPluginAbstract {
       timer.cancel();
 
       // REGISTER THE MDM RECORD SERIALIZER TO SUPPORT ANY OF THE EXTERNAL FIELDS
-      //ORecordSerializerFactory.instance().register("ORecordSerializerBinary", new OMDMSerializer());
+      ORecordSerializerFactory.instance().register("ORecordSerializerBinary", new OMDMSerializer());
     }
     return executionResult;
   }

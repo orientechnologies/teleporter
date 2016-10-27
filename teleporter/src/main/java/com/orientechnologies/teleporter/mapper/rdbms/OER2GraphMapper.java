@@ -18,6 +18,7 @@
 
 package com.orientechnologies.teleporter.mapper.rdbms;
 
+import com.orientechnologies.orient.stresstest.OStressTester;
 import com.orientechnologies.teleporter.configuration.api.*;
 import com.orientechnologies.teleporter.context.OTeleporterContext;
 import com.orientechnologies.teleporter.context.OTeleporterStatistics;
@@ -806,49 +807,69 @@ public class OER2GraphMapper extends OSource2GraphMapper {
         OVertexType currentVertexType = currentClassMapper.getVertexType();
         currentVertexType.setName(currentConfiguredVertexClass.getName());
 
-        int lastOrdinalPosition = 1;
-
+        List<OConfiguredProperty> configuredPropertiedToAdd = new LinkedList<OConfiguredProperty>();
         for(OConfiguredProperty configuredProperty: currentConfiguredVertexClass.getConfiguredProperties()) {
 
           OConfiguredPropertyMapping propertyMapping = configuredProperty.getPropertyMapping();
-
-          String originalPropertyName;
+          OModelProperty propertyToUpsert = null;
+          String originalPropertyName = null;
           String columnName = null;
           String originalType = null;
+
           if (propertyMapping != null) {
+            // fetch the property by name
             columnName = propertyMapping.getColumnName();
             originalType = propertyMapping.getType();
             originalPropertyName = currentClassMapper.getPropertyByAttribute(propertyMapping.getColumnName());
+            propertyToUpsert = currentVertexType.getPropertyByNameAmongAll(originalPropertyName);
           }
           else {
-            originalPropertyName = currentVertexType.getPropertyByOrdinalPosition(lastOrdinalPosition + 1).getName();
+            // fetch the property by ordinalPosition
+            propertyToUpsert = currentVertexType.getPropertyByOrdinalPosition(configuredProperty.getOrdinalPosition());
           }
+
           String orientdbType = configuredProperty.getPropertyType();
-          OModelProperty propertyToUpdate = currentVertexType.getPropertyByNameAmongAll(originalPropertyName);
           String actualPropertyName = configuredProperty.getPropertyName();
 
-          if(originalPropertyName != null) {
+          if(propertyToUpsert != null) {
+            if(originalPropertyName == null) {
+              originalPropertyName = propertyToUpsert.getName();
+            }
             if (!originalPropertyName.equals(actualPropertyName)) {
-              propertyToUpdate.setName(actualPropertyName);
+              propertyToUpsert.setName(actualPropertyName);
+
               // updating properties mapping
               currentClassMapper.getAttribute2property().put(columnName, actualPropertyName);
               currentClassMapper.getProperty2attribute().remove(originalPropertyName);
               currentClassMapper.getProperty2attribute().put(actualPropertyName, columnName);
             }
-            propertyToUpdate.setIncludedInMigration(configuredProperty.isIncludedInMigration());
-            propertyToUpdate.setOrientdbType(configuredProperty.getPropertyType());
-            propertyToUpdate.setMandatory(configuredProperty.isMandatory());
-            propertyToUpdate.setReadOnly(configuredProperty.isReadOnly());
-            propertyToUpdate.setNotNull(configuredProperty.isNotNull());
-            propertyToUpdate.setOriginalType(originalType);
-            propertyToUpdate.setOrientdbType(orientdbType);
+            propertyToUpsert.setIncludedInMigration(configuredProperty.isIncludedInMigration());
+            propertyToUpsert.setOrientdbType(configuredProperty.getPropertyType());
+            propertyToUpsert.setMandatory(configuredProperty.isMandatory());
+            propertyToUpsert.setReadOnly(configuredProperty.isReadOnly());
+            propertyToUpsert.setNotNull(configuredProperty.isNotNull());
+            propertyToUpsert.setOriginalType(originalType);
+            propertyToUpsert.setOrientdbType(orientdbType);
           }
           else {
-            propertyToUpdate = new OModelProperty(actualPropertyName, lastOrdinalPosition, originalType, orientdbType, false, currentVertexType, false, false, false);
-            currentVertexType.getProperties().add(propertyToUpdate);
+            configuredPropertiedToAdd.add(configuredProperty);
           }
+        }
 
-          lastOrdinalPosition = propertyToUpdate.getOrdinalPosition() + 1;
+        // adding new props
+        for(OConfiguredProperty configuredProperty: configuredPropertiedToAdd) {
+          String propertyName = configuredProperty.getPropertyName();
+          String originalType = null;
+          if(configuredProperty.getPropertyMapping() != null) {
+            originalType = configuredProperty.getPropertyMapping().getType();
+          }
+          String orientdbType = configuredProperty.getPropertyType();
+          int ordinalPosition = configuredProperty.getOrdinalPosition();
+          OModelProperty newProperty = new OModelProperty(propertyName, ordinalPosition, originalType, orientdbType, false, currentVertexType, false, false, false);
+          currentVertexType.getProperties().add(newProperty);
+
+          // updating properties mapping
+          currentClassMapper.getProperty2attribute().put(propertyName, null);
         }
       }
 

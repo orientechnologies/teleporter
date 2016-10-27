@@ -120,25 +120,25 @@ public class OMDMSerializer extends ORecordSerializerBinary {
         query.append(" where ");
 
         final String pk = table.getPrimaryKeyColumns().get(0);
-        final OConfiguredProperty externalIdFieldName = config.getProperty(pk);
+        final OConfiguredProperty externalIdField = config.getPropertyByAttribute(pk);
 
-        if (!((ODocument) record).containsField(externalIdFieldName.getPropertyName()))
+        if (!((ODocument) record).containsField(externalIdField.getPropertyName()))
           // LAZY LOAD THE EXTERNAL ID FIELD
-          record = super.fromStream(iSource, iRecord, new String[] { externalIdFieldName.getPropertyName() });
+          record = super.fromStream(iSource, iRecord, new String[] { externalIdField.getPropertyName() });
 
-        final Object extId = ((ODocument) record).field(externalIdFieldName.getPropertyName());
+        final Object extId = ((ODocument) record).field(externalIdField.getPropertyName());
         if (extId == null)
           return record;
 
-        query.append(pk);
+        query.append(externalIdField.getPropertyName());
         query.append(" = ");
 
-        if (externalIdFieldName.getPropertyType().equalsIgnoreCase("string"))
+        if (externalIdField.getPropertyType().equalsIgnoreCase("string"))
           query.append("'");
 
         query.append(extId);
 
-        if (externalIdFieldName.getPropertyType().equals("string"))
+        if (externalIdField.getPropertyType().equals("string"))
           query.append("'");
 
         final Connection jdbcConnection;
