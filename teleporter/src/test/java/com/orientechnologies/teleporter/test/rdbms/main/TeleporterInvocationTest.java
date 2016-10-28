@@ -18,9 +18,15 @@
 
 package com.orientechnologies.teleporter.test.rdbms.main;
 
+import com.orientechnologies.orient.core.Orient;
+import com.orientechnologies.orient.core.storage.OStorage;
+import com.orientechnologies.orient.core.storage.impl.local.paginated.OLocalPaginatedStorage;
+import com.orientechnologies.orient.server.OServer;
 import com.orientechnologies.orient.server.OServerMain;
+import com.orientechnologies.teleporter.util.OFileManager;
 import com.tinkerpop.blueprints.impls.orient.OrientGraphNoTx;
 
+import java.io.File;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.Statement;
@@ -46,21 +52,57 @@ public abstract class TeleporterInvocationTest {
   private String username = "SA";
   private String password = "";
 
+  // server configuration path
+  private final String configurationPath = "orientdb-server-config.xml";
+  private final String serverHome = "src/test/target/server";
+
 
   protected void buildEnvironmentForExecution() {
     this.buildHSQLDBDatabaseToImport();
     try {
       OServerMain.create();
+      this.startServer(OServerMain.server());
     } catch(Exception e) {
       fail("Server instance not created correctly.");
     }
   }
 
+  private void startServer(OServer server) throws Exception {
+    System.out.println("Starting server from " + this.serverHome + "...");
+
+    System.setProperty("ORIENTDB_HOME", this.serverHome);
+    server.setServerRootDirectory(this.serverHome);
+    server.startup(getClass().getClassLoader().getResourceAsStream(this.configurationPath));
+    server.activate();
+  }
+
+  public void shutdownServer(OServer server) {
+    if (server != null) {
+      server.shutdown();
+    }
+    closeStorages();
+  }
+
+  public void closeStorages() {
+    for (OStorage s : Orient.instance().getStorages()) {
+      if (s instanceof OLocalPaginatedStorage && ((OLocalPaginatedStorage) s).getStoragePath().startsWith(getDatabasePath(""))) {
+        s.close(true, false);
+        Orient.instance().unregisterStorage(s);
+      }
+    }
+  }
+
+  private String getDatabasePath(String databaseName) {
+    return this.serverHome + "/databases/" + databaseName;
+  }
+
+
   protected void shutdownEnvironment() {
 
     this.purgeAndCloseSourceDatabase();
-    this.purgeAndCloseTargetDatabase();
-
+    this.purgeAndCloseOrientdbDatabase();
+    this.shutdownServer(OServerMain.server());
+    this.purgeOrientdbServer();
   }
 
   private void buildHSQLDBDatabaseToImport() {
@@ -148,7 +190,7 @@ public abstract class TeleporterInvocationTest {
   public void prepareArguments() {
     this.arguments.put("-jdriver", "hypersql");
     this.arguments.put("-jurl", this.jurl);
-    this.arguments.put("-ourl", "plocal:target/testOrientDB");
+    this.arguments.put("-ourl", "plocal:target/server/databases/testOrientDB");
     this.arguments.put("-juser", this.username);
     this.arguments.put("-jpasswd", this.password);
   }
@@ -182,9 +224,9 @@ public abstract class TeleporterInvocationTest {
 
   }
 
-  private void purgeAndCloseTargetDatabase() {
+  private void purgeAndCloseOrientdbDatabase() {
 
-    OrientGraphNoTx orientGraph = new OrientGraphNoTx("memory:testOrientDB");
+    OrientGraphNoTx orientGraph = new OrientGraphNoTx("plocal:src/test/target/server/databases/testOrientDB");
 
     try {
 
@@ -198,6 +240,16 @@ public abstract class TeleporterInvocationTest {
       fail();
     }
 
+  }
+
+  private void purgeOrientdbServer() {
+
+    try {
+      OFileManager.deleteFile(this.serverHome);
+    }catch(Exception e) {
+      e.printStackTrace();
+      fail();
+    }
   }
 
 }
