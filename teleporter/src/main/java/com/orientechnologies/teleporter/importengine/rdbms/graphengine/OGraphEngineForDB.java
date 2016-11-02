@@ -637,6 +637,15 @@ public class OGraphEngineForDB {
     return currentInVertex;
   }
 
+  /**
+   * Dead!
+   * @param orientGraph
+   * @param relation
+   * @param currentOutVertex
+   * @param currentOutVertexType
+   * @param currentInVertexType
+     * @param edgeTypeName
+     */
   public void connectVertexToRelatedVertices(OrientBaseGraph orientGraph, OLogicalRelationship relation, Vertex currentOutVertex, OVertexType currentOutVertexType,
                                              OVertexType currentInVertexType, String edgeTypeName) {
 
@@ -763,6 +772,17 @@ public class OGraphEngineForDB {
     }
   }
 
+
+
+  /**
+   * Dead!
+   * @param orientGraph
+   * @param currentOutVertex
+   * @param currentInVertex
+   * @param edgeType
+   * @param properties
+     * @param direction
+     */
   public void insertEdge(OrientBaseGraph orientGraph, OrientVertex currentOutVertex, OrientVertex currentInVertex, String edgeType, Map<String, Object> properties, String direction) {
 
     OTeleporterStatistics statistics = OTeleporterContext.getInstance().getStatistics();
@@ -906,4 +926,15 @@ public class OGraphEngineForDB {
 
   }
 
+  public void updateVertexAccordingToLogicalRelationship(OrientVertex currentOutVertex, OVertexType currentInVertexType, List<String> fromPropertiesToUpdate) {
+
+    Map<String,String> updatedProps = new LinkedHashMap<String,String>();
+    for(String property: fromPropertiesToUpdate) {
+      String oldValue = currentOutVertex.getProperty(property);
+      String newValue = "$" + currentInVertexType.getName() + ":" + oldValue;
+      updatedProps.put(property, newValue);
+    }
+    currentOutVertex.setProperties(updatedProps);
+
+  }
 }

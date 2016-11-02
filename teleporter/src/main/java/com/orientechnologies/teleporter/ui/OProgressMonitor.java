@@ -222,8 +222,16 @@ public class OProgressMonitor implements OStatisticsListener {
     int work5DonePercentage;
     if(numberOfLogicalRelationships > 0) {
 
-      int work5percentage1 = statistics.doneLeftVerticesCurrentLogicalRelationship / statistics.leftVerticesCurrentLogicalRelationship;
+      int work5percentage1;
+      if(statistics.leftVerticesCurrentLogicalRelationship > 0) {
+        work5percentage1 = statistics.doneLeftVerticesCurrentLogicalRelationship / statistics.leftVerticesCurrentLogicalRelationship;
+      }
+      else {
+        work5percentage1 = 0;
+
+      }
       int work5percentage2 = statistics.doneLogicalRelationships / statistics.totalNumberOfLogicalRelationships;
+
 
       if(work5percentage2 == 1) {
         work5DonePercentage = 100;

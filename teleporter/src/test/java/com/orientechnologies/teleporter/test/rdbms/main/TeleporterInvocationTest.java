@@ -19,6 +19,8 @@
 package com.orientechnologies.teleporter.test.rdbms.main;
 
 import com.orientechnologies.orient.core.Orient;
+import com.orientechnologies.orient.core.serialization.serializer.record.ORecordSerializerFactory;
+import com.orientechnologies.orient.core.serialization.serializer.record.binary.ORecordSerializerBinary;
 import com.orientechnologies.orient.core.storage.OStorage;
 import com.orientechnologies.orient.core.storage.impl.local.paginated.OLocalPaginatedStorage;
 import com.orientechnologies.orient.server.OServer;
@@ -26,7 +28,6 @@ import com.orientechnologies.orient.server.OServerMain;
 import com.orientechnologies.teleporter.util.OFileManager;
 import com.tinkerpop.blueprints.impls.orient.OrientGraphNoTx;
 
-import java.io.File;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.Statement;
@@ -54,7 +55,7 @@ public abstract class TeleporterInvocationTest {
 
   // server configuration path
   private final String configurationPath = "orientdb-server-config.xml";
-  private final String serverHome = "src/test/target/server";
+  private final String serverHome = "target/server";
 
 
   protected void buildEnvironmentForExecution() {
@@ -76,33 +77,8 @@ public abstract class TeleporterInvocationTest {
     server.activate();
   }
 
-  public void shutdownServer(OServer server) {
-    if (server != null) {
-      server.shutdown();
-    }
-    closeStorages();
-  }
-
-  public void closeStorages() {
-    for (OStorage s : Orient.instance().getStorages()) {
-      if (s instanceof OLocalPaginatedStorage && ((OLocalPaginatedStorage) s).getStoragePath().startsWith(getDatabasePath(""))) {
-        s.close(true, false);
-        Orient.instance().unregisterStorage(s);
-      }
-    }
-  }
-
   private String getDatabasePath(String databaseName) {
     return this.serverHome + "/databases/" + databaseName;
-  }
-
-
-  protected void shutdownEnvironment() {
-
-    this.purgeAndCloseSourceDatabase();
-    this.purgeAndCloseOrientdbDatabase();
-    this.shutdownServer(OServerMain.server());
-    this.purgeOrientdbServer();
   }
 
   private void buildHSQLDBDatabaseToImport() {
@@ -208,7 +184,34 @@ public abstract class TeleporterInvocationTest {
 
   }
 
-  private void purgeAndCloseSourceDatabase() {
+  protected void shutdownEnvironment() {
+
+    this.closeAndDropSourceDatabase();
+    this.closeAndDropOrientdbDatabase();
+    //this.shutdownServer(OServerMain.server());
+    this.purgeOrientdbServer();
+
+    // REGISTER THE BINARY RECORD SERIALIZER TO SUPPORT ANY OF THE EXTERNAL FIELDS
+    ORecordSerializerFactory.instance().register("ORecordSerializerBinary", new ORecordSerializerBinary());
+  }
+
+  public void shutdownServer(OServer server) {
+    if (server != null) {
+      server.shutdown();
+    }
+    closeStorages();
+  }
+
+  public void closeStorages() {
+    for (OStorage s : Orient.instance().getStorages()) {
+      if (s instanceof OLocalPaginatedStorage && ((OLocalPaginatedStorage) s).getStoragePath().startsWith(getDatabasePath(""))) {
+        s.close(true, false);
+        Orient.instance().unregisterStorage(s);
+      }
+    }
+  }
+
+  private void closeAndDropSourceDatabase() {
 
     try {
 
@@ -224,7 +227,7 @@ public abstract class TeleporterInvocationTest {
 
   }
 
-  private void purgeAndCloseOrientdbDatabase() {
+  private void closeAndDropOrientdbDatabase() {
 
     OrientGraphNoTx orientGraph = new OrientGraphNoTx("plocal:src/test/target/server/databases/testOrientDB");
 

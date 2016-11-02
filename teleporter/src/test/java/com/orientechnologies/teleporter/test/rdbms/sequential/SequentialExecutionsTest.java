@@ -76,7 +76,6 @@ public class SequentialExecutionsTest {
     this.context.setDataTypeHandler(new OHSQLDBDataTypeHandler());
     this.naiveImportStrategy = new ODBMSNaiveStrategy();
     this.naiveAggregationImportStrategy = new ODBMSNaiveAggregationStrategy();
-    this.outOrientGraphUri = "memory:testOrientDB";
     this.sourceDBInfo = new OSourceDatabaseInfo("source", this.driver, this.jurl, this.username, this.password);
   }
 

@@ -218,7 +218,7 @@ public class ODBMSNaiveAggregationStrategy extends ODBMSImportStrategy {
 
           // CHECK ON "Entities NOT belonging to hierarchical bags" needed? !!!!!!!
           if (numberOfLogicalRelationships > 0) {
-            super.importEdgesStartingFromVertexClass(mappedEntities, currentOutVertexType, graphEngine, orientGraph);
+            super.updateVerticesAccordingToLogicalRelationship(mappedEntities, currentOutVertexType, graphEngine, orientGraph);
           }
         }
     }

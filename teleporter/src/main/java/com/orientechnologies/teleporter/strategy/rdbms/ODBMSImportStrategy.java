@@ -32,9 +32,11 @@ import com.orientechnologies.teleporter.importengine.rdbms.dbengine.ODBQueryEngi
 import com.orientechnologies.teleporter.importengine.rdbms.graphengine.OGraphEngineForDB;
 import com.orientechnologies.teleporter.mapper.OSource2GraphMapper;
 import com.orientechnologies.teleporter.mapper.rdbms.OER2GraphMapper;
+import com.orientechnologies.teleporter.mapper.rdbms.classmapper.OClassMapper;
 import com.orientechnologies.teleporter.model.OSourceInfo;
 import com.orientechnologies.teleporter.model.dbschema.*;
 import com.orientechnologies.teleporter.model.graphmodel.OEdgeType;
+import com.orientechnologies.teleporter.model.graphmodel.OModelProperty;
 import com.orientechnologies.teleporter.model.graphmodel.OVertexType;
 import com.orientechnologies.teleporter.nameresolver.ONameResolver;
 import com.orientechnologies.teleporter.persistence.handler.ODBMSDataTypeHandler;
@@ -216,11 +218,53 @@ public abstract class ODBMSImportStrategy implements OWorkflowStrategy {
         }
         statistics.doneLogicalRelationships++;
       }
-
     }
-
   }
 
+
+  protected void updateVerticesAccordingToLogicalRelationship(List<OEntity> mappedEntities, OVertexType currentOutVertexType,
+                                                              OGraphEngineForDB graphEngine, OrientBaseGraph orientGraph) {
+
+    OTeleporterStatistics statistics = OTeleporterContext.getInstance().getStatistics();
+    OVertexType currentInVertexType;
+    statistics.doneLeftVerticesCurrentLogicalRelationship = 0;
+
+    // for each logical relationship add all the out edges with the target in vertex
+    for(OEntity entity: mappedEntities) {
+
+      for (OLogicalRelationship currentRelationship : entity.getOutLogicalRelationships()) {
+        OEntity currentParentEntity = mapper.getDataBaseSchema().getEntityByName(currentRelationship.getParentEntity().getName());
+        currentInVertexType = mapper.getVertexTypeByEntity(currentParentEntity);
+
+        List<OAttribute> fromColumns = currentRelationship.getFromColumns();
+        List<String> propertiesToUpdate = new LinkedList<String>();
+        OClassMapper classMapper = mapper.getClassMappersByEntity(entity).get(0);
+
+        for(OAttribute attribute: fromColumns) {
+          String property = classMapper.getPropertyByAttribute(attribute.getName());
+          propertiesToUpdate.add(property);
+        }
+
+        statistics.leftVerticesCurrentLogicalRelationship = (int) orientGraph.countVertices(currentOutVertexType.getName());
+
+        // for each vertex belonging to the Vertex Class under discussion, all the out edges are added
+        for(Vertex currentOutVertex: orientGraph.getVerticesOfClass(currentOutVertexType.getName())) {
+          graphEngine.updateVertexAccordingToLogicalRelationship((OrientVertex) currentOutVertex, currentInVertexType, propertiesToUpdate);
+          statistics.doneLeftVerticesCurrentLogicalRelationship++;
+        }
+      }
+      statistics.doneLogicalRelationships++;
+    }
+  }
+
+
+
+  /**
+   *
+   * @param dbQueryEngine
+   * @param graphEngine
+   * @param orientGraph
+   */
 
   protected void importEntitiesBelongingToHierarchies(ODBQueryEngine dbQueryEngine, OGraphEngineForDB graphEngine, OrientBaseGraph orientGraph) {
 
