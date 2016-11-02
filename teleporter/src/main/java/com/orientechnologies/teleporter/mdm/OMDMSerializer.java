@@ -1,56 +1,29 @@
 package com.orientechnologies.teleporter.mdm;
 
-import com.orientechnologies.common.exception.OException;
-import com.orientechnologies.common.io.OIOUtils;
 import com.orientechnologies.orient.core.db.ODatabaseDocumentInternal;
 import com.orientechnologies.orient.core.db.ODatabaseRecordThreadLocal;
-import com.orientechnologies.orient.core.exception.OConfigurationException;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.record.ORecord;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.orient.core.serialization.serializer.record.binary.ORecordSerializerBinary;
-import com.orientechnologies.orient.server.OServerMain;
-import com.orientechnologies.teleporter.configuration.OConfigurationHandler;
 import com.orientechnologies.teleporter.configuration.api.*;
 
-import java.io.File;
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * @author Luca Garulli
  */
 public class OMDMSerializer extends ORecordSerializerBinary {
-  // TODO: SPEED UP PARSING BY BUILDING AD-HOC POJO PARSED ONLY THE FIRST TIME
-  private final Map<String, OConfiguration>  entities    = new ConcurrentHashMap<String, OConfiguration>();
-  private final Map<String, OMDMDataSources> dataSources = new ConcurrentHashMap<String, OMDMDataSources>();
+  private final OMDMConfiguration configuration = new OMDMConfiguration();
 
   public OMDMSerializer() {
-
-    for (Map.Entry<String, String> entry : OServerMain.server().getAvailableStorageNames().entrySet()) {
-      if (entry.getValue().startsWith("plocal:")) {
-
-        final String path = entry.getValue().substring("plocal:".length());
-        final File file = new File(path + "/teleporter-config/migration-config.json");
-        if (file.exists()) {
-          try {
-            final ODocument doc = new ODocument().fromJSON(OIOUtils.readFileAsString(file), "noMap");
-
-            entities.put(entry.getKey(), new OConfigurationHandler(false).buildConfigurationFromJSONDoc(doc));
-
-            dataSources.put(entry.getKey(), new OMDMDataSources(path));
-
-          } catch (IOException e) {
-            throw OException.wrapException(new OConfigurationException("Error on reading Migration config file at: " + file), e);
-          }
-        }
-      }
-    }
   }
 
   @Override
@@ -103,7 +76,7 @@ public class OMDMSerializer extends ORecordSerializerBinary {
       }
 
       if (!extProperties.isEmpty()) {
-        final OMDMDataSources ds = dataSources.get(ODatabaseRecordThreadLocal.INSTANCE.get().getName());
+        final OMDMDataSources ds = configuration.getDataSources(ODatabaseRecordThreadLocal.INSTANCE.get().getName());
 
         final StringBuilder query = new StringBuilder("select ");
 
@@ -180,9 +153,9 @@ public class OMDMSerializer extends ORecordSerializerBinary {
 
         if (cls != null) {
           if (cls.isVertexType())
-            return entities.get(db.getName()).getVertexClassByName(((ODocument) iRecord).getClassName());
+            return configuration.getVertexClass(db.getName(), ((ODocument) iRecord).getClassName());
           else if (cls.isEdgeType())
-            return entities.get(db.getName()).getEdgeClassByName(((ODocument) iRecord).getClassName());
+            return configuration.getEdgeClass(db.getName(), ((ODocument) iRecord).getClassName());
         }
       }
     }
@@ -196,10 +169,8 @@ public class OMDMSerializer extends ORecordSerializerBinary {
         final OClass cls = ((ODocument) iRecord).getSchemaClass();
 
         if (cls != null) {
-          if (cls.isVertexType())
-            return entities.get(db.getName());
-          else if (cls.isEdgeType())
-            return entities.get(db.getName());
+          if (cls.isVertexType() || cls.isEdgeType())
+            return configuration.getEntities(db.getName());
         }
       }
     }
