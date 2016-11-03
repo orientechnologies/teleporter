@@ -196,7 +196,7 @@ public class ODBMSNaiveAggregationStrategy extends ODBMSImportStrategy {
       }
 
       // Second round in order to add edges belonging to Edge Types coming from Logical Relationships
-      int totalNumberOfLogicalRelationships = mapper.getDataBaseSchema().getLogicalRelationships().size();
+     /* int totalNumberOfLogicalRelationships = mapper.getDataBaseSchema().getLogicalRelationships().size();
       if (totalNumberOfLogicalRelationships > 0) {
         statistics.startWork5Time = new Date();
         statistics.runningStepNumber = 5;
@@ -221,7 +221,7 @@ public class ODBMSNaiveAggregationStrategy extends ODBMSImportStrategy {
             super.updateVerticesAccordingToLogicalRelationship(mappedEntities, currentOutVertexType, graphEngine, orientGraph);
           }
         }
-    }
+    }*/
 
       statistics.notifyListeners();
       statistics.runningStepNumber = -1;

@@ -186,6 +186,7 @@
   "edges": [
     {
       "WorksAt": {
+        "isLogical": false,
         "mapping": [{
           "fromTable": "PERSON",
           "fromColumns": ["DEP_ID"],

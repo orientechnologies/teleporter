@@ -90,7 +90,7 @@ public class OConfigurationHandler {
                 throw new OTeleporterRuntimeException();
             }
 
-            OConfiguredVertexClass currentConfiguredVertex = new OConfiguredVertexClass(configuredVertexClassName);
+            OConfiguredVertexClass currentConfiguredVertex = new OConfiguredVertexClass(configuredVertexClassName, configuration);
             OVertexMappingInformation currentMapping = new OVertexMappingInformation(currentConfiguredVertex);
             ODocument mappingDoc = currentVertexDoc.field("mapping");
 
@@ -195,7 +195,7 @@ public class OConfigurationHandler {
                 OTeleporterContext.getInstance().getOutputManager().error("Configuration error: wrong edge definition.");
             }
             String configuredEdgeClassName = edgeFields[0];
-            OConfiguredEdgeClass currentConfiguredEdge = new OConfiguredEdgeClass(configuredEdgeClassName);
+            OConfiguredEdgeClass currentConfiguredEdge = new OConfiguredEdgeClass(configuredEdgeClassName, configuration);
             OAggregatedJoinTableMapping joinTableMapping = null;
             List<OEdgeMappingInformation> edgeMappings = new LinkedList<OEdgeMappingInformation>();
             ODocument currentEdgeInfo = currentEdgeDoc.field(configuredEdgeClassName);
@@ -280,7 +280,8 @@ public class OConfigurationHandler {
 
                         joinTableMapping.setFromColumns(joinTableFromColumns);
                         joinTableMapping.setToColumns(joinTableToColumns);
-                    } else if (OTeleporterContext.getInstance().getExecutionStrategy().equals("naive")) {
+                    }
+                    else {
                         OTeleporterContext.getInstance().getOutputManager()
                                 .error("Configuration not compliant with the chosen strategy: you cannot perform the aggregation declared in the migrationConfigDoc for the "
                                 + "join table %s while executing migration with a not-aggregating strategy. Thus no aggregation will be performed.\n", joinTableName);
@@ -299,6 +300,11 @@ public class OConfigurationHandler {
             }
 
             ((OConfiguredEdgeClass)currentConfiguredEdge).setMappings(edgeMappings);
+
+            // TO DELETE after poc
+            if(currentEdgeInfo.field("isLogical") != null) {
+                currentConfiguredEdge.setLogical((boolean)currentEdgeInfo.field("isLogical"));
+            }
 
             // extract and set configured properties
             List<OConfiguredProperty> configuredProperties = this.extractProperties(currentEdgeInfo, configuredEdgeClassName);
@@ -516,6 +522,8 @@ public class OConfigurationHandler {
 
             currEdgeInfoDoc.field("mapping", edgeMappingDocs);
 
+            // TO DELETE after poc
+            currEdgeInfoDoc.field("isLogical", currConfiguredEdge.isLogical());
 
             /*
              * Setting properties
@@ -614,7 +622,7 @@ public class OConfigurationHandler {
                     throw new OTeleporterRuntimeException();
                 }
                 OClassMapper currClassMapper = currClassMappers.get(0);
-                OConfiguredVertexClass currConfiguredVertexClass = new OConfiguredVertexClass(currVertexType.getName());
+                OConfiguredVertexClass currConfiguredVertexClass = new OConfiguredVertexClass(currVertexType.getName(), configuration);
 
                 // building vertex mapping info
                 OVertexMappingInformation vertexMappingInfo = new OVertexMappingInformation(currConfiguredVertexClass);
@@ -672,7 +680,7 @@ public class OConfigurationHandler {
 
         for(OEdgeType currEdgeType: mapper.getGraphModel().getEdgesType()) {
 
-            OConfiguredEdgeClass currConfiguredEdgeClass = new OConfiguredEdgeClass(currEdgeType.getName());
+            OConfiguredEdgeClass currConfiguredEdgeClass = new OConfiguredEdgeClass(currEdgeType.getName(), configuration);
 
             // edge mapping info building
             OEdgeMappingInformation currEdgeMappingInformation = new OEdgeMappingInformation(currConfiguredEdgeClass);
@@ -682,11 +690,18 @@ public class OConfigurationHandler {
 
             OVertexType aggregatedVertexType = null;
             OEntity joinTable = null;
+            boolean isLogicalEdge = false;
+
             // the current edge type does not represent any join table
             if (aggregatorEdge == null) {
 
                 // building the edge mappings
                 for (ORelationship currentRelationship : relationships) {
+
+                    // TO DELETE after poc
+                    if(currentRelationship instanceof OLogicalRelationship) {
+                        isLogicalEdge = true;
+                    }
 
                     // building the edge mapping info
                     currEdgeMappingInformation.setFromTableName(currentRelationship.getForeignEntity().getName());
@@ -753,6 +768,7 @@ public class OConfigurationHandler {
                 edgeMappings.add(currEdgeMappingInformation);
             }
             currConfiguredEdgeClass.setMappings(edgeMappings);
+            currConfiguredEdgeClass.setLogical(isLogicalEdge);
 
             // building configured properties
             List<OConfiguredProperty> configuredProperties = new LinkedList<OConfiguredProperty>();
@@ -766,15 +782,20 @@ public class OConfigurationHandler {
                 currConfiguredProperty.setNotNull(false);
 
                 // the property mapping is present iff it comes from a column of an aggregated join table
-                // => the property mapping is present iff there was a join table aggregation
+                // => the property mapping is present if there was a join table aggregation but not always vice versa.
                 if(joinTable != null) {
-                    OConfiguredPropertyMapping propertyMappingInfo = new OConfiguredPropertyMapping(tableName2SourceIdName.get(joinTable.getName()));
                     OClassMapper currClassMapper = mapper.getClassMappersByEntity(joinTable).get(0);  // join table is mapped with just a vertex class
                     String correspondentAttributeName = currClassMapper.getAttributeByProperty(currModelProperty.getName());
                     OAttribute correspondentAttribute = joinTable.getAttributeByName(correspondentAttributeName);
-                    propertyMappingInfo.setColumnName(correspondentAttributeName);
-                    propertyMappingInfo.setType(correspondentAttribute.getDataType());
-                    currConfiguredProperty.setPropertyMapping(propertyMappingInfo);
+
+                    // if correspondent attribute != null the property comes from a column of the join table
+                    // otherwise it was added, so there is not mapping with the source database.
+                    if(correspondentAttribute != null) {
+                        OConfiguredPropertyMapping propertyMappingInfo = new OConfiguredPropertyMapping(tableName2SourceIdName.get(joinTable.getName()));
+                        propertyMappingInfo.setColumnName(correspondentAttributeName);
+                        propertyMappingInfo.setType(correspondentAttribute.getDataType());
+                        currConfiguredProperty.setPropertyMapping(propertyMappingInfo);
+                    }
                 }
                 configuredProperties.add(currConfiguredProperty);
             }

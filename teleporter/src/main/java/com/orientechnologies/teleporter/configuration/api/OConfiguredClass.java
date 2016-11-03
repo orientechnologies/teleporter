@@ -32,11 +32,14 @@ import java.util.Map;
 
 public class OConfiguredClass {
 
-  private String                                 name;                                                                    // mandatory
-  private final Map<String, OConfiguredProperty> configuredProperties = new LinkedHashMap<String, OConfiguredProperty>(); // mandatory
+  protected String                                 name;                                                  // mandatory
+  protected final Map<String, OConfiguredProperty> configuredProperties = new LinkedHashMap<String, OConfiguredProperty>();         // mandatory
+  protected OConfiguration globalConfiguration;
 
-  public OConfiguredClass(String elementName) {
+
+  public OConfiguredClass(String elementName, OConfiguration globalConfiguration) {
     this.name = elementName;
+    this.globalConfiguration = globalConfiguration;
   }
 
   public String getName() {
@@ -56,6 +59,14 @@ public class OConfiguredClass {
       this.configuredProperties.put(p.getPropertyName(), p);
   }
 
+  public OConfiguration getGlobalConfiguration() {
+    return this.globalConfiguration;
+  }
+
+  public void setGlobalConfiguration(OConfiguration globalConfiguration) {
+    this.globalConfiguration = globalConfiguration;
+  }
+
   public OConfiguredProperty getProperty(final String propertyName) {
     return configuredProperties.get(propertyName);
   }
@@ -71,5 +82,23 @@ public class OConfiguredClass {
       }
     }
     return null;
+  }
+
+  public String[] getPropertiesByColumns(List<String> columns) {
+    String[] properties = new String[columns.size()];
+    int i = 0;
+
+    // maintains properties order (otherwise index does not work)
+    for(Map.Entry entry: this.configuredProperties.entrySet()) {
+      OConfiguredProperty currConfiguredProperty = (OConfiguredProperty) entry.getValue();
+      if(columns.contains(currConfiguredProperty.getPropertyMapping().getColumnName())) {
+        properties[i] = currConfiguredProperty.getPropertyName();
+      }
+      i++;
+      if(i >= columns.size()) {
+        break;
+      }
+    }
+    return properties;
   }
 }

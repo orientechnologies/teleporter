@@ -2,6 +2,7 @@
   "vertices": [],
   "edges": [{
     "Performs": {
+      "isLogical": false,
       "mapping": [{
         "fromTable": "FILM",
         "fromColumns": ["ID"],

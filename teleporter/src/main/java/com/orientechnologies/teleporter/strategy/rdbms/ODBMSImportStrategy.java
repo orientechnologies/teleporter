@@ -73,14 +73,14 @@ public abstract class ODBMSImportStrategy implements OWorkflowStrategy {
 
     ODataTypeHandlerFactory dataTypeHandlerFactory = new ODataTypeHandlerFactory();
     ODBMSDataTypeHandler handler = (ODBMSDataTypeHandler) dataTypeHandlerFactory.buildDataTypeHandler(sourceDBInfo.getDriverName());
-    OConfigurationHandler configHandler = this.buildConfigurationHandler();
+    OConfigurationHandler configurationHandler = this.buildConfigurationHandler();
 
     /**
      *     building configuration
      */
     OConfiguration migrationConfig = null;
     if(migrationConfigDoc != null) {
-      migrationConfig = configHandler.buildConfigurationFromJSONDoc(migrationConfigDoc);
+      migrationConfig = configurationHandler.buildConfigurationFromJSONDoc(migrationConfigDoc);
     }
 
     /*
@@ -104,7 +104,11 @@ public abstract class ODBMSImportStrategy implements OWorkflowStrategy {
     OTeleporterContext.getInstance().getOutputManager().info("\n\nImporting complete in %s\n", OFunctionsHandler.getHMSFormat(globalStart, globalEnd));
     OTeleporterContext.getInstance().getOutputManager().info(OTeleporterContext.getInstance().getStatistics().toString());
 
-    return null;
+    // Building Graph Model mapping (for graph rendering too)
+    OConfiguration configuredGraph = configurationHandler.buildConfigurationFromMapper(this.mapper);
+    ODocument configuredGraphDoc = configurationHandler.buildJSONDocFromConfiguration(configuredGraph);
+
+    return configuredGraphDoc;
 
   }
 

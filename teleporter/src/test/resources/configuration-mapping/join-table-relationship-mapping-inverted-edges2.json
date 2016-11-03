@@ -2,6 +2,7 @@
   "vertices": [],
   "edges": [{
     "Features": {
+      "isLogical": false,
       "mapping": [{
         "fromTable": "ACTOR",
         "fromColumns": ["ID"],

@@ -395,8 +395,8 @@ public class OTeleporter extends OServerPluginAbstract {
         OMigrationConfigManager.upsertSourceDatabaseInfo(sourcesInfo, outDbUrl);
       }
       // Writing last configuration
-      if (jsonMigrationConfig != null && jsonMigrationConfig.length() > 0) {
-        OMigrationConfigManager.writeConfigurationInTargetDB(migrationConfig, outDbUrl);
+      if (executionResult != null) {
+        OMigrationConfigManager.writeConfigurationInTargetDB(executionResult, outDbUrl);
       }
 
     } finally {

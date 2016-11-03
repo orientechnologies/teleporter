@@ -2,6 +2,7 @@
 	"vertices": [],
 	"edges": [{
 		"HasEmployee": {
+			"isLogical": false,
 			"mapping": [{
 				"fromTable": "EMPLOYEE",
 				"fromColumns": ["PROJECT"],

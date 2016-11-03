@@ -35,6 +35,10 @@ public class OEdgeMappingInformation {
   private String                      direction;                                          // mandatory
   private OAggregatedJoinTableMapping representedJoinTableMapping;   // may be null if the edge does not represent a join table
 
+  // Lazy loading: classes are stored in this variables in order to avoid a double scan of the vertices when fromProperty and toProperty are requested.
+  private OConfiguredVertexClass fromVertexClass;
+  private OConfiguredVertexClass toVertexClass;
+
   public OEdgeMappingInformation(OConfiguredEdgeClass belongingEdge) {
     this.belongingEdge = belongingEdge;
   }
@@ -80,23 +84,31 @@ public class OEdgeMappingInformation {
   }
 
   public String getFromClass() {
-    // TODO
-    return null;
+    if(this.fromVertexClass == null) {
+      this.fromVertexClass = belongingEdge.getGlobalConfiguration().getVertexClassByTableName(this.fromTableName);
+    }
+    return this.fromVertexClass.getName();
   }
 
   public String getToClass() {
-    // TODO
-    return null;
+    if(this.toVertexClass == null) {
+      this.toVertexClass = belongingEdge.getGlobalConfiguration().getVertexClassByTableName(this.toTableName);
+    }
+    return this.toVertexClass.getName();
   }
 
-  public String getFromProperty() {
-    // TODO
-    return null;
+  public String[] getFromProperty() {
+    if(this.fromVertexClass == null) {
+      this.fromVertexClass = belongingEdge.getGlobalConfiguration().getVertexClassByTableName(this.toTableName);
+    }
+    return this.fromVertexClass.getPropertiesByColumns(this.fromColumns);
   }
 
-  public String getToProperty() {
-    // TODO
-    return null;
+  public String[] getToProperty() {
+    if(this.toVertexClass == null) {
+      this.toVertexClass = belongingEdge.getGlobalConfiguration().getVertexClassByTableName(this.toTableName);
+    }
+    return this.toVertexClass.getPropertiesByColumns(this.toColumns);
   }
 
   public String getDirection() {

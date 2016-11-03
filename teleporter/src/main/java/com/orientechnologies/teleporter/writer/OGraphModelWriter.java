@@ -282,52 +282,8 @@ public class OGraphModelWriter {
               properties.add(currentProperty.getName());
             }
           }
+          this.buildIndexOnExternalKey(orientGraph, numberOfVertices, iteration, currentType, properties, indexManager, currentVertexType);
 
-          // checking if the old index is based on the same properties of the current Class, if not it will be deleted
-          String indexClassName = currentType + ".pkey";
-          OIndex<?> classIndex = indexManager.getClassIndex(currentType, indexClassName);
-          if(classIndex != null) {
-            List<String> fieldNames = classIndex.getDefinition().getFields();
-
-            for (String field : fieldNames) {
-              if (!properties.contains(field)) {
-                indexManager.dropIndex(indexClassName);
-                break;
-              }
-            }
-          }
-
-          // check if vertex type is already present in the orient schema
-          isPresent = indexManager.existsIndex(indexClassName);
-
-          if(!isPresent) {
-
-            String propertiesList = "";
-            int j = 0;
-            for(String property: properties) {
-              if(j == properties.size()-1)
-                propertiesList += property;
-              else
-                propertiesList += property + ",";
-              j++;
-            }
-
-            if(!propertiesList.isEmpty()) {
-              OTeleporterContext.getInstance().getOutputManager()
-                      .debug("\nBuilding index for '%s' on %s  (%s/%s)...\n", currentVertexType.getName(), propertiesList, iteration, numberOfVertices);
-              statement = "create index `" + currentType + ".pkey`" + " on `" + currentType + "` (" + propertiesList + ") unique_hash_index";
-              sqlCommand = new OCommandSQL(statement);
-              orientGraph.getRawGraph().command(sqlCommand).execute();
-              OTeleporterContext.getInstance().getOutputManager().debug("\nIndex for %s built.\n", currentVertexType.getName());
-            }
-            else {
-              OTeleporterContext.getInstance().getStatistics().warningMessages.add("The table '" + currentVertexType.getName() + "' has not primary key constraints defined in the db schema,"
-                      + " thus the correspondent Class Vertex in Orient will not have a default index on the property deriving from the original primary key.");
-            }
-          }
-          else {
-            OTeleporterContext.getInstance().getOutputManager().debug("\nIndex for %s already present in the Orient schema.\n", currentVertexType.getName());
-          }
           iteration++;
           statistics.wroteIndexes++;
         }
@@ -340,51 +296,36 @@ public class OGraphModelWriter {
         iteration = 1;
         ODataBaseSchema dbSchema = mapper.getDataBaseSchema();
         for(OLogicalRelationship logicalRelationship: dbSchema.getLogicalRelationships()) {
-          OVertexType currentVertexType = mapper.getVertexTypeByEntity(logicalRelationship.getParentEntity());
 
-          currentType = currentVertexType.getName();
+          // index on in-vertex type
+          OVertexType currentInVertexType = mapper.getVertexTypeByEntity(logicalRelationship.getParentEntity());
+
+          currentType = currentInVertexType.getName();
           properties = new ArrayList<String>();
 
           String indexClassName = currentType + ".";
           for(OAttribute attribute: logicalRelationship.getToColumns()) {
-            String correspondentPropertyName = mapper.getPropertyNameByVertexTypeAndAttribute(currentVertexType, attribute.getName());
+            String correspondentPropertyName = mapper.getPropertyNameByVertexTypeAndAttribute(currentInVertexType, attribute.getName());
             properties.add(correspondentPropertyName);
             indexClassName += correspondentPropertyName + "_";
           }
           indexClassName = indexClassName.substring(0, indexClassName.lastIndexOf("_"));
+          this.buildLogicalIndex(orientGraph, numberOfVertices, iteration, currentType, properties, indexManager, currentInVertexType, indexClassName);
 
-          // check if vertex type is already present in the orient schema
-          isPresent = indexManager.existsIndex(indexClassName);
+          // index on out-vertex type
+          OVertexType currentOutVertexType = mapper.getVertexTypeByEntity(logicalRelationship.getForeignEntity());
 
-          if(!isPresent) {
+          currentType = currentOutVertexType.getName();
+          properties = new ArrayList<String>();
 
-            String propertiesList = "";
-            int j = 0;
-            for(String property: properties) {
-              if(j == properties.size()-1)
-                propertiesList += property;
-              else
-                propertiesList += property + ",";
-              j++;
-            }
-
-            if(!propertiesList.isEmpty()) {
-              OTeleporterContext.getInstance().getOutputManager()
-                      .debug("\nBuilding index for '%s' on %s  (%s/%s)...\n", currentVertexType.getName(), propertiesList, iteration, numberOfVertices);
-              statement = "create index `" + indexClassName + "` on `" + currentType + "` (" + propertiesList + ") notunique_hash_index";
-              sqlCommand = new OCommandSQL(statement);
-              orientGraph.getRawGraph().command(sqlCommand).execute();
-              OTeleporterContext.getInstance().getOutputManager().debug("\nIndex for %s built.\n", currentVertexType.getName());
-            }
-            else {
-              OTeleporterContext.getInstance().getStatistics().warningMessages.add("The table '" + currentVertexType.getName() + "' has not primary key constraints defined in the db schema,"
-                      + " thus the correspondent Class Vertex in Orient will not have a default index on the property deriving from the original primary key.");
-            }
+          indexClassName = currentType + ".";
+          for(OAttribute attribute: logicalRelationship.getFromColumns()) {
+            String correspondentPropertyName = mapper.getPropertyNameByVertexTypeAndAttribute(currentOutVertexType, attribute.getName());
+            properties.add(correspondentPropertyName);
+            indexClassName += correspondentPropertyName + "_";
           }
-          else {
-            OTeleporterContext.getInstance().getOutputManager().debug("\nIndex for %s already present in the Orient schema.\n", currentVertexType.getName());
-          }
-
+          indexClassName = indexClassName.substring(0, indexClassName.lastIndexOf("_"));
+          this.buildLogicalIndex(orientGraph, numberOfVertices, iteration, currentType, properties, indexManager, currentInVertexType, indexClassName);
         }
 
       } catch (OException e) {
@@ -407,6 +348,126 @@ public class OGraphModelWriter {
     }
 
     return success;
+  }
+
+
+  /**
+   * It builds an index on the properties correspondent to the columns belonging to the original primary key (external key).
+   * If the index is already defined no more indexes will be added.
+   * During the sync if the properties changed names, the old index will be dropped.
+   *
+   * @param orientGraph
+   * @param numberOfVertices
+   * @param iteration
+   * @param currentType
+   * @param properties
+   * @param indexManager
+   * @param currentVertexType
+   */
+
+  private void buildIndexOnExternalKey(OrientBaseGraph orientGraph, int numberOfVertices, int iteration, String currentType, List<String> properties, OIndexManagerProxy indexManager, OVertexType currentVertexType) {
+    boolean isPresent;
+    String statement;
+    OCommandSQL sqlCommand;
+
+    // checking if the old index is based on the same properties of the current Class, if not it will be deleted
+    String indexClassName = currentType + ".pkey";
+    OIndex<?> classIndex = indexManager.getClassIndex(currentType, indexClassName);
+    if(classIndex != null) {
+      List<String> fieldNames = classIndex.getDefinition().getFields();
+
+      for (String field : fieldNames) {
+        if (!properties.contains(field)) {
+          indexManager.dropIndex(indexClassName);
+          break;
+        }
+      }
+    }
+
+    // check if vertex type is already present in the orient schema
+    isPresent = indexManager.existsIndex(indexClassName);
+
+    if(!isPresent) {
+
+      String propertiesList = "";
+      int j = 0;
+      for(String property: properties) {
+        if(j == properties.size()-1)
+          propertiesList += property;
+        else
+          propertiesList += property + ",";
+        j++;
+      }
+
+      if(!propertiesList.isEmpty()) {
+        OTeleporterContext.getInstance().getOutputManager()
+                .debug("\nBuilding index for '%s' on %s  (%s/%s)...\n", currentVertexType.getName(), propertiesList, iteration, numberOfVertices);
+        statement = "create index `" + currentType + ".pkey`" + " on `" + currentType + "` (" + propertiesList + ") unique_hash_index";
+        sqlCommand = new OCommandSQL(statement);
+        orientGraph.getRawGraph().command(sqlCommand).execute();
+        OTeleporterContext.getInstance().getOutputManager().debug("\nIndex for %s built.\n", currentVertexType.getName());
+      }
+      else {
+        OTeleporterContext.getInstance().getStatistics().warningMessages.add("The table '" + currentVertexType.getName() + "' has not primary key constraints defined in the db schema,"
+                + " thus the correspondent Class Vertex in Orient will not have a default index on the property deriving from the original primary key.");
+      }
+    }
+    else {
+      OTeleporterContext.getInstance().getOutputManager().debug("\nIndex for %s already present in the Orient schema.\n", currentVertexType.getName());
+    }
+  }
+
+
+  /**
+   * It build an index if it's not already present in the database.
+   *
+   * @param orientGraph
+   * @param numberOfVertices
+   * @param iteration
+   * @param currentType
+   * @param properties
+   * @param indexManager
+   * @param currentVertexType
+   * @param indexClassName
+   */
+
+  private void buildLogicalIndex(OrientBaseGraph orientGraph, int numberOfVertices, int iteration, String currentType, List<String> properties, OIndexManagerProxy indexManager, OVertexType currentVertexType, String indexClassName) {
+
+    boolean isPresent;
+    String statement;
+    OCommandSQL sqlCommand;
+
+    // check if vertex type is already present in the orient schema
+    isPresent = indexManager.existsIndex(indexClassName);
+
+    if(!isPresent) {
+
+      String propertiesList = "";
+      int j = 0;
+      for(String property: properties) {
+        if(j == properties.size()-1)
+          propertiesList += property;
+        else
+          propertiesList += property + ",";
+        j++;
+      }
+
+      if(!propertiesList.isEmpty()) {
+        OTeleporterContext.getInstance().getOutputManager()
+                .debug("\nBuilding index for '%s' on %s  (%s/%s)...\n", currentVertexType.getName(), propertiesList, iteration, numberOfVertices);
+        statement = "create index `" + indexClassName + "` on `" + currentType + "` (" + propertiesList + ") notunique_hash_index";
+        sqlCommand = new OCommandSQL(statement);
+        orientGraph.getRawGraph().command(sqlCommand).execute();
+        OTeleporterContext.getInstance().getOutputManager().debug("\nIndex for %s built.\n", currentVertexType.getName());
+      }
+      else {
+        OTeleporterContext.getInstance().getStatistics().warningMessages.add("The table '" + currentVertexType.getName() + "' has not primary key constraints defined in the db schema,"
+                + " thus the correspondent Class Vertex in Orient will not have a default index on the property deriving from the original primary key.");
+      }
+    }
+    else {
+      OTeleporterContext.getInstance().getOutputManager().debug("\nIndex for %s already present in the Orient schema.\n", currentVertexType.getName());
+    }
   }
 
 

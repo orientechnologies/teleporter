@@ -2,6 +2,7 @@
   "vertices": [],
   "edges": [{
     "WorksAtProject": {
+      "isLogical": false,
       "mapping": [{
         "fromTable": "EMPLOYEE",
         "fromColumns": ["PROJECT"],
@@ -29,6 +30,7 @@
     }
   }, {
     "HasManager": {
+      "isLogical": false,
       "mapping": [{
         "fromTable": "PROJECT",
         "fromColumns": ["PROJECT_MANAGER"],

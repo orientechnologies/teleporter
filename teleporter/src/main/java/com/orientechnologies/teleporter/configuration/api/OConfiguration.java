@@ -18,6 +18,7 @@
 
 package com.orientechnologies.teleporter.configuration.api;
 
+import com.orientechnologies.teleporter.context.OTeleporterContext;
 import com.orientechnologies.teleporter.model.dbschema.OEntity;
 
 import java.util.LinkedList;
@@ -33,12 +34,21 @@ import java.util.List;
 
 public class OConfiguration {
 
+    private static OConfiguration instance = null;
+
     private List<OConfiguredVertexClass> configuredVertices;  // may be empty but not null
     private List<OConfiguredEdgeClass> configuredEdges;       // may be empty but not null
 
     public OConfiguration() {
         this.configuredVertices = new LinkedList<OConfiguredVertexClass>();
         this.configuredEdges = new LinkedList<OConfiguredEdgeClass>();
+    }
+
+    public static OConfiguration getInstance() {
+        if (instance == null) {
+            instance = new OConfiguration();
+        }
+        return instance;
     }
 
     public List<OConfiguredVertexClass> getConfiguredVertices() {
@@ -109,5 +119,18 @@ public class OConfiguration {
         }
 
         return true;
+    }
+
+    public OConfiguredVertexClass getVertexClassByTableName(String tableName) {
+
+        for(OConfiguredVertexClass vertexClass: this.configuredVertices) {
+            List<OSourceTable> sourceTables = vertexClass.getMapping().getSourceTables();
+            for(OSourceTable sourceTable: sourceTables) {
+                if(sourceTable.getTableName().equals(tableName)) {
+                    return vertexClass;
+                }
+            }
+        }
+        return null;
     }
 }

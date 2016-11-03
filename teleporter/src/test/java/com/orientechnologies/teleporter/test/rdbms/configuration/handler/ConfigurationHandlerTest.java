@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.orientechnologies.orient.core.record.impl.ODocument;
@@ -78,6 +79,7 @@ public class ConfigurationHandlerTest {
     this.context.setOutputManager(new OOutputStreamManager(0));
     this.sourceDBInfo = new OSourceDatabaseInfo("hsqldb", this.driver, this.jurl, this.username, this.password);
   }
+
 
   @Test
   /**
@@ -361,6 +363,7 @@ public class ConfigurationHandlerTest {
     assertTrue(ODocumentComparator.areEquals(inputConfigurationDoc, writtenJsonConfiguration));
   }
 
+
   @Test
   /**
    * Testing OConfiguration building from JSON (case 2)
@@ -433,8 +436,10 @@ public class ConfigurationHandlerTest {
      * configuration and the final just written configuration are equal.
      */
     ODocument writtenJsonConfiguration = configurationHandler.buildJSONDocFromConfiguration(configuration);
-    assertEquals(inputConfigurationDoc.toJSON(""), writtenJsonConfiguration.toJSON(""));
+    assertTrue(ODocumentComparator.areEquals(inputConfigurationDoc, writtenJsonConfiguration));
+
   }
+
 
   @Test
   /**
@@ -814,6 +819,7 @@ public class ConfigurationHandlerTest {
       }
     }
   }
+
 
   @Test
   /**

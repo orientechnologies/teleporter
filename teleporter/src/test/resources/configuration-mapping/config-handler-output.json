@@ -231,6 +231,7 @@
   "edges": [
     {
       "HasDepartment": {
+        "isLogical": false,
         "mapping": [{
           "fromTable": "EMPLOYEE",
           "fromColumns": ["DEPARTMENT"],
@@ -243,6 +244,7 @@
     },
     {
       "EmployeeProject": {
+        "isLogical": false,
         "mapping": [{
           "fromTable": "EMPLOYEE",
           "fromColumns": ["ID"],
