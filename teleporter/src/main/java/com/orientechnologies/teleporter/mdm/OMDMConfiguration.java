@@ -34,7 +34,7 @@ public class OMDMConfiguration {
           try {
             final ODocument doc = new ODocument().fromJSON(OIOUtils.readFileAsString(file), "noMap");
 
-            entities.put(entry.getKey(), new OConfigurationHandler(false).buildConfigurationFromJSONDoc(doc));
+            entities.put(entry.getKey(), new OConfigurationHandler(true).buildConfigurationFromJSONDoc(doc));
 
             dataSources.put(entry.getKey(), new OMDMDataSources(path));
 
