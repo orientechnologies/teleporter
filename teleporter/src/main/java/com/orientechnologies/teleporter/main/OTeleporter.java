@@ -64,12 +64,12 @@ public class OTeleporter extends OServerPluginAbstract {
   private static final OStrategyFactory FACTORY = new OStrategyFactory();
 
   private static final String teleport =
-      "OrientDB                  \n" + " ______________________________________________________________________________ \n"
-          + " ___  __/__  ____/__  /___  ____/__  __ \\_  __ \\__  __\\__  __/__  ____/__  _ _ \\  \n"
-          + " __  /  __  __/  __  / __  __/  __  /_/ /  / / /_  /_/ /_  /  __  __/  __  /_/ /\n"
-          + " _  /   _  /___  _  /___  /___  _  ____// /_/ /_  _, _/_  /   _  /___  _  _, _/ \n"
-          + " /_/    /_____/  /_____/_____/  /_/     \\____/ /_/ |_| /_/    /_____/  /_/ |_|  \n" + "\n"
-          + "                                                  http://orientdb.com/teleporter";
+          "OrientDB                  \n" + " ______________________________________________________________________________ \n"
+                  + " ___  __/__  ____/__  /___  ____/__  __ \\_  __ \\__  __\\__  __/__  ____/__  _ _ \\  \n"
+                  + " __  /  __  __/  __  / __  __/  __  /_/ /  / / /_  /_/ /_  /  __  __/  __  /_/ /\n"
+                  + " _  /   _  /___  _  /___  /___  _  ____// /_/ /_  _, _/_  /   _  /___  _  _, _/ \n"
+                  + " /_/    /_____/  /_____/_____/  /_/     \\____/ /_/ |_| /_/    /_____/  /_/ |_|  \n" + "\n"
+                  + "                                                  http://orientdb.com/teleporter";
   private OServer server;
 
   public static void main(String[] args) throws Exception {
@@ -86,7 +86,7 @@ public class OTeleporter extends OServerPluginAbstract {
 
     if (args.length < 6) {
       outputManager.error(
-          "Syntax error, missing argument. Use:\n ./oteleporter.sh -jdriver <jdbc-driver> -jurl <jdbc-url> -juser <username> -jpasswd <password> -ourl <orientdb-url>.\n");
+              "Syntax error, missing argument. Use:\n ./oteleporter.sh -jdriver <jdbc-driver> -jurl <jdbc-url> -juser <username> -jpasswd <password> -ourl <orientdb-url>.\n");
       throw new OTeleporterIOException();
     }
 
@@ -115,17 +115,17 @@ public class OTeleporter extends OServerPluginAbstract {
 
     if (!arguments.containsKey("-ourl")) {
       outputManager
-          .error("Argument -ourl is mandatory, please try again with expected argument: -ourl <output-orientdb-desired-URL>\n");
+              .error("Argument -ourl is mandatory, please try again with expected argument: -ourl <output-orientdb-desired-URL>\n");
       throw new OTeleporterIOException();
     }
 
     // simple syntax check on command
     if (arguments.get("-jdriver") != null) {
       if (!arguments.get("-jdriver").equalsIgnoreCase("Oracle") && !arguments.get("-jdriver").equalsIgnoreCase("SQLServer")
-          && !arguments.get("-jdriver").equalsIgnoreCase("MySQL") && !arguments.get("-jdriver").equalsIgnoreCase("PostgreSQL")
-          && !arguments.get("-jdriver").equalsIgnoreCase("HyperSQL")) {
+              && !arguments.get("-jdriver").equalsIgnoreCase("MySQL") && !arguments.get("-jdriver").equalsIgnoreCase("PostgreSQL")
+              && !arguments.get("-jdriver").equalsIgnoreCase("HyperSQL")) {
         outputManager.error(
-            "Not valid db-driver name. Type one of the following driver names: 'Oracle','SQLServer','MySQL','PostgreSQL','HyperSQL'\n");
+                "Not valid db-driver name. Type one of the following driver names: 'Oracle','SQLServer','MySQL','PostgreSQL','HyperSQL'\n");
         throw new OTeleporterIOException();
       }
     }
@@ -138,7 +138,7 @@ public class OTeleporter extends OServerPluginAbstract {
     }
 
     if (!(arguments.get("-ourl").contains("plocal:") | arguments.get("-ourl").contains("remote:") | arguments.get("-ourl")
-        .contains("memory:"))) {
+            .contains("memory:"))) {
       outputManager.error("Not valid output orient db uri.\n");
       throw new OTeleporterIOException();
     }
@@ -152,9 +152,9 @@ public class OTeleporter extends OServerPluginAbstract {
 
     if (arguments.get("-v") != null) {
       if (!(arguments.get("-v").equals("0") | arguments.get("-v").equals("1") | arguments.get("-v").equals("2") | arguments
-          .get("-v").equals("3"))) {
+              .get("-v").equals("3"))) {
         outputManager
-            .error("Not valid output level. Available levels:\n0 - No messages\n1 - Debug\n2 - Info\n3 - Warning \n4 - Error\n");
+                .error("Not valid output level. Available levels:\n0 - No messages\n1 - Debug\n2 - Info\n3 - Warning \n4 - Error\n");
         throw new OTeleporterIOException();
       }
     }
@@ -218,8 +218,8 @@ public class OTeleporter extends OServerPluginAbstract {
     String configurationPath = arguments.get("-conf");
 
     OTeleporter
-        .execute(driver, jurl, username, password, outDbUrl, chosenStrategy, chosenMapper, xmlPath, nameResolver, outputLevel,
-            includedTables, excludedTables, configurationPath, outputManager);
+            .execute(driver, jurl, username, password, outDbUrl, chosenStrategy, chosenMapper, xmlPath, nameResolver, outputLevel,
+                    includedTables, excludedTables, configurationPath, outputManager);
   }
 
   /**
@@ -241,8 +241,8 @@ public class OTeleporter extends OServerPluginAbstract {
    */
 
   public static void execute(String driver, String jurl, String username, String password, String outDbUrl, String chosenStrategy,
-      String chosenMapper, String xmlPath, String nameResolver, String outputLevel, List<String> includedTables,
-      List<String> excludedTables, String configurationPath, OOutputStreamManager outputManager) throws OTeleporterIOException {
+                             String chosenMapper, String xmlPath, String nameResolver, String outputLevel, List<String> includedTables,
+                             List<String> excludedTables, String configurationPath, OOutputStreamManager outputManager) throws OTeleporterIOException {
 
     // trying to load the configuration starting from the input configurationPath
     ODocument migrationConfigDoc = null;
@@ -253,13 +253,13 @@ public class OTeleporter extends OServerPluginAbstract {
         jsonMigrationConfig = migrationConfigDoc.toJSON("");
       } else {
         OTeleporterContext.getInstance().getOutputManager().info(
-            "No migration configuration file was found in the suggested path. Migration will be performed according "
-                + "to standard mapping rules or to the latest configured policies if any.\n");
+                "No migration configuration file was found in the suggested path. Migration will be performed according "
+                        + "to standard mapping rules or to the latest configured policies if any.\n");
       }
     }
 
     executeJob(driver, jurl, username, password, outDbUrl, chosenStrategy, chosenMapper, xmlPath, nameResolver, outputLevel,
-        includedTables, excludedTables, jsonMigrationConfig, outputManager);
+            includedTables, excludedTables, jsonMigrationConfig, outputManager);
   }
 
   /**
@@ -281,9 +281,9 @@ public class OTeleporter extends OServerPluginAbstract {
    */
 
   public static ODocument executeJob(String driver, String jurl, String username, String password, String outDbUrl,
-      String chosenStrategy, String chosenMapper, String xmlPath, String nameResolver, String outputLevel,
-      List<String> includedTables, List<String> excludedTables, String jsonMigrationConfig, OOutputStreamManager outputManager)
-      throws OTeleporterIOException {
+                                     String chosenStrategy, String chosenMapper, String xmlPath, String nameResolver, String outputLevel,
+                                     List<String> includedTables, List<String> excludedTables, String jsonMigrationConfig, OOutputStreamManager outputManager)
+          throws OTeleporterIOException {
 
     // REGISTER THE BINARY RECORD SERIALIZER TO SUPPORT ANY OF THE EXTERNAL FIELDS
     ORecordSerializerFactory.instance().register("ORecordSerializerBinary", new ORecordSerializerBinary());
@@ -299,13 +299,12 @@ public class OTeleporter extends OServerPluginAbstract {
       ODocument sourcesInfoDoc = OMigrationConfigManager.loadSourceInfo(outDbUrl);
       if (sourcesInfoDoc == null) {
         outputManager.error(
-            "Arguments -jdriver, -jurl, -juser and -jpasswd, necessary to access the source databases, were not specified and "
-                + "no previous sources's info were found in the target OrientDB graph database.\n");
+                "Arguments -jdriver, -jurl, -juser and -jpasswd, necessary to access the source databases, were not specified and "
+                        + "no previous sources's info were found in the target OrientDB graph database.\n");
         throw new OTeleporterIOException();
       } else {
         sourceInfoLoaded = true;
         sourcesInfo = OMigrationConfigManager.extractSourceDatabaseInfo(sourcesInfoDoc);
-        driverConfig.checkDriverConfiguration(sourcesInfo.get(0).getSourceIdName());
       }
     }
     else {
@@ -314,6 +313,9 @@ public class OTeleporter extends OServerPluginAbstract {
       sourcesInfo = new LinkedList<OSourceDatabaseInfo>();
       sourcesInfo.add(sourceDBInfo);
     }
+    // checking driver configuration
+    driverConfig.checkDriverConfiguration(sourcesInfo.get(0).getSourceIdName());
+
 
     /**
      * Handling configuration files (source access info and migration configuration file)
@@ -333,22 +335,22 @@ public class OTeleporter extends OServerPluginAbstract {
     } else {
       // try to load a previous file configuration in the target db
       OTeleporterContext.getInstance().getOutputManager()
-          .info("\nTrying to load a previous configuration file in the target OrientDB database...\n");
+              .info("\nTrying to load a previous configuration file in the target OrientDB database...\n");
       String configurationPath = OMigrationConfigManager
-          .buildConfigurationFilePath(outDbUrl, OMigrationConfigManager.getConfigFileName());
+              .buildConfigurationFilePath(outDbUrl, OMigrationConfigManager.getConfigFileName());
       String configDirPath = configurationPath.substring(0, configurationPath.lastIndexOf("/") + 1);
       migrationConfig = OMigrationConfigManager.loadMigrationConfigFromFile(configurationPath);
       // if present use it
       if (migrationConfig != null) {
         OTeleporterContext.getInstance().getOutputManager()
-            .info("A previous configuration in the %s path was loaded and it will be used for the current migration.",
-                configDirPath);
+                .info("A previous configuration in the %s path was loaded and it will be used for the current migration.",
+                        configDirPath);
       }
       // else no migration will be used for the migration/sync
       else {
         OTeleporterContext.getInstance().getOutputManager().info(
-            "No previous configuration in the %s path was found.\nMigration will be performed according to standard mapping rules.\n\n",
-            configurationPath);
+                "No previous configuration in the %s path was found.\nMigration will be performed according to standard mapping rules.\n\n",
+                configurationPath);
       }
     }
 
@@ -384,8 +386,8 @@ public class OTeleporter extends OServerPluginAbstract {
 
       // the last argument represents the nameResolver
       executionResult = strategy
-          .executeStrategy(sourceInfo, outDbUrl, chosenMapper, xmlPath, nameResolver, includedTables, excludedTables,
-              migrationConfig);
+              .executeStrategy(sourceInfo, outDbUrl, chosenMapper, xmlPath, nameResolver, includedTables, excludedTables,
+                      migrationConfig);
 
       // Disabling query scan threshold tip
       OGlobalConfiguration.QUERY_SCAN_THRESHOLD_TIP.setValue(50000);
@@ -409,11 +411,11 @@ public class OTeleporter extends OServerPluginAbstract {
   }
 
   public static ODocument execute(String driver, String jurl, String username, String password, String outDbUrl,
-      String chosenStrategy, String chosenMapper, String xmlPath, String nameResolver, String outputLevel,
-      List<String> includedTables, List<String> excludedTables, OOutputStreamManager outputManager) throws OTeleporterIOException {
+                                  String chosenStrategy, String chosenMapper, String xmlPath, String nameResolver, String outputLevel,
+                                  List<String> includedTables, List<String> excludedTables, OOutputStreamManager outputManager) throws OTeleporterIOException {
 
     return executeJob(driver, jurl, username, password, outDbUrl, chosenStrategy, chosenMapper, xmlPath, nameResolver, outputLevel,
-        includedTables, excludedTables, null, outputManager);
+            includedTables, excludedTables, null, outputManager);
   }
 
   @Override
