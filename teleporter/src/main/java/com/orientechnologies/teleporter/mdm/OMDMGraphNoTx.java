@@ -1,5 +1,6 @@
 package com.orientechnologies.teleporter.mdm;
 
+import com.orientechnologies.orient.core.db.document.ODatabaseDocumentTx;
 import com.orientechnologies.orient.core.db.record.OIdentifiable;
 import com.tinkerpop.blueprints.impls.orient.OrientGraphNoTx;
 import com.tinkerpop.blueprints.impls.orient.OrientVertex;
@@ -11,6 +12,11 @@ import com.tinkerpop.blueprints.impls.orient.OrientVertex;
  */
 public class OMDMGraphNoTx extends OrientGraphNoTx {
   private final OMDMConfiguration configuration;
+
+  public OMDMGraphNoTx(final OMDMConfiguration configuration, final ODatabaseDocumentTx db) {
+    super(db);
+    this.configuration = configuration;
+  }
 
   public OMDMGraphNoTx(final OMDMConfiguration configuration, final String url) {
     super(url);
