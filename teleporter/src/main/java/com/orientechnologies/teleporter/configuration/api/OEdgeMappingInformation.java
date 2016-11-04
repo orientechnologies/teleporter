@@ -97,7 +97,7 @@ public class OEdgeMappingInformation {
     return this.toVertexClass.getName();
   }
 
-  public String[] getFromProperty() {
+  public String[] getFromProperties() {
     if(this.fromVertexClass == null) {
       this.fromVertexClass = belongingEdge.getGlobalConfiguration().getVertexClassByTableName(this.toTableName);
     }

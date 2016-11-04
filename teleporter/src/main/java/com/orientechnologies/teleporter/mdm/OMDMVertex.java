@@ -33,10 +33,20 @@ public class OMDMVertex extends OrientVertex {
       if (cls != null) {
 
         for (OEdgeMappingInformation m : cls.getMappings()) {
-          final Object joinValue = getProperty(m.getFromProperty());
+          final StringBuilder sqlTo = new StringBuilder("select from " + m.getToClass() + " where ");
+          final String[] properties = m.getFromProperties();
+          final Object[] joinValues = new Object[properties.length];
+          for (int i = 0; i < properties.length; ++i) {
+            final String p = properties[i];
+            joinValues[i] = getProperty(p);
 
-          final String sqlTo = "select from " + m.getToClass() + " where " + m.getToProperty() + " = ?";
-          return g.command(new OCommandSQL(sqlTo)).execute(joinValue);
+            if (i > 0)
+              sqlTo.append(" and ");
+
+            sqlTo.append(m.getToProperty() + " = ?");
+          }
+
+          return g.command(new OCommandSQL(sqlTo.toString())).execute(joinValues);
         }
       }
     }
