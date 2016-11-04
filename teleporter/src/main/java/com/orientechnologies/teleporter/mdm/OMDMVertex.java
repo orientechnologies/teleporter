@@ -6,6 +6,7 @@ import com.orientechnologies.teleporter.configuration.api.OConfiguredEdgeClass;
 import com.orientechnologies.teleporter.configuration.api.OEdgeMappingInformation;
 import com.tinkerpop.blueprints.Direction;
 import com.tinkerpop.blueprints.Vertex;
+import com.tinkerpop.blueprints.impls.orient.OrientBaseGraph;
 import com.tinkerpop.blueprints.impls.orient.OrientVertex;
 
 /**
@@ -17,11 +18,11 @@ public class OMDMVertex extends OrientVertex {
   public OMDMVertex() {
   }
 
-  public OMDMVertex(final OMDMGraphNoTx graph, final String className, final Object... fields) {
+  public OMDMVertex(final OrientBaseGraph graph, final String className, final Object... fields) {
     super(graph, className, fields);
   }
 
-  public OMDMVertex(final OMDMGraphNoTx graph, final OIdentifiable record) {
+  public OMDMVertex(final OrientBaseGraph graph, final OIdentifiable record) {
     super(graph, record);
   }
 
