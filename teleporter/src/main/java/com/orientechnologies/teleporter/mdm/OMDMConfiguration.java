@@ -12,6 +12,7 @@ import com.orientechnologies.teleporter.configuration.api.OConfiguredVertexClass
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -57,7 +58,12 @@ public class OMDMConfiguration {
   public OConfiguration getEntities(final String databaseName) {
     return entities.get(databaseName);
   }
+
   public OMDMDataSources getDataSources(final String databaseName) {
     return dataSources.get(databaseName);
+  }
+
+  public List<OConfiguredEdgeClass> getEdgeClasses(final String databaseName) {
+    return entities.get(databaseName).getConfiguredEdges();
   }
 }

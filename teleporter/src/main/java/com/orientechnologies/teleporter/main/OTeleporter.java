@@ -79,7 +79,7 @@ public class OTeleporter extends OServerPluginAbstract {
           + " /_/    /_____/  /_____/_____/  /_/     \\____/ /_/ |_| /_/    /_____/  /_/ |_|  \n" + "\n"
           + "                                                  http://orientdb.com/teleporter";
   private OServer           server;
-  private OMDMConfiguration mdmConfiguration;
+  private static OMDMConfiguration mdmConfiguration;
 
   public static void main(String[] args) throws Exception {
 
@@ -412,7 +412,7 @@ public class OTeleporter extends OServerPluginAbstract {
       timer.cancel();
 
       // REGISTER THE MDM RECORD SERIALIZER TO SUPPORT ANY OF THE EXTERNAL FIELDS
-      ORecordSerializerFactory.instance().register(OMDMSerializer.NAME, new OMDMSerializer());
+      ORecordSerializerFactory.instance().register(OMDMSerializer.NAME, new OMDMSerializer(mdmConfiguration));
     }
     return executionResult;
   }

@@ -21,9 +21,10 @@ import java.util.Set;
  * @author Luca Garulli
  */
 public class OMDMSerializer extends ORecordSerializerBinary {
-  private final OMDMConfiguration configuration = new OMDMConfiguration();
+  private final OMDMConfiguration configuration;
 
-  public OMDMSerializer() {
+  public OMDMSerializer(final OMDMConfiguration configuration) {
+    this.configuration = configuration;
   }
 
   @Override

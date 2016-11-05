@@ -344,11 +344,11 @@ public class OConfigurationHandler {
                     propertyType = propertyType.toUpperCase(Locale.ENGLISH);        // normalization: orientdb types are upper case
                 }
 
-                if(ordinalPosition == null) {
-                    OTeleporterContext.getInstance().getOutputManager()
-                            .error("Configuration error: 'ordinalPosition' field not found in the '%s' property definition ('%s' Class).",  propertyName, className);
-                    throw new OTeleporterRuntimeException();
-                }
+//                if(ordinalPosition == null) {
+//                    OTeleporterContext.getInstance().getOutputManager()
+//                            .error("Configuration error: 'ordinalPosition' field not found in the '%s' property definition ('%s' Class).",  propertyName, className);
+//                    throw new OTeleporterRuntimeException();
+//                }
 
                 Boolean mandatory = currentElementPropertyDoc.field("mandatory");
                 Boolean readOnly = currentElementPropertyDoc.field("readOnly");
@@ -400,7 +400,7 @@ public class OConfigurationHandler {
                 OConfiguredProperty currentConfiguredProperty = new OConfiguredProperty(propertyName);
                 currentConfiguredProperty.setIncludedInMigration(isIncludedInMigration);
                 currentConfiguredProperty.setPropertyType(propertyType);
-                currentConfiguredProperty.setOrdinalPosition(ordinalPosition.byteValue());
+//                currentConfiguredProperty.setOrdinalPosition(ordinalPosition);
                 currentConfiguredProperty.setMandatory(mandatory);
                 currentConfiguredProperty.setReadOnly(readOnly);
                 currentConfiguredProperty.setNotNull(notNull);
