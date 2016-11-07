@@ -1,7 +1,7 @@
 package com.orientechnologies.teleporter.mdm;
 
+import com.orientechnologies.orient.core.db.ODatabaseDocumentInternal;
 import com.orientechnologies.orient.core.db.OPartitionedDatabasePool;
-import com.orientechnologies.orient.core.db.document.ODatabaseDocumentTx;
 import com.orientechnologies.orient.core.db.record.OIdentifiable;
 import com.tinkerpop.blueprints.impls.orient.OrientGraph;
 import com.tinkerpop.blueprints.impls.orient.OrientVertex;
@@ -14,7 +14,7 @@ import com.tinkerpop.blueprints.impls.orient.OrientVertex;
 public class OMDMGraphTx extends OrientGraph {
   private final OMDMConfiguration configuration;
 
-  public OMDMGraphTx(final OMDMConfiguration configuration, final ODatabaseDocumentTx db) {
+  public OMDMGraphTx(final OMDMConfiguration configuration, final ODatabaseDocumentInternal db) {
     super(db);
     this.configuration = configuration;
   }
@@ -29,7 +29,7 @@ public class OMDMGraphTx extends OrientGraph {
     this.configuration = configuration;
   }
 
-  public OMDMGraphTx(final OMDMConfiguration configuration, final ODatabaseDocumentTx iDatabase, final String user,
+  public OMDMGraphTx(final OMDMConfiguration configuration, final ODatabaseDocumentInternal iDatabase, final String user,
       final String password, final Settings iConfiguration) {
     super(iDatabase, user, password, iConfiguration);
     this.configuration = configuration;

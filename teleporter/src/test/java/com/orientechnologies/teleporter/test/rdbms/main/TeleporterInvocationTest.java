@@ -206,7 +206,7 @@ public abstract class TeleporterInvocationTest {
     for (OStorage s : Orient.instance().getStorages()) {
       if (s instanceof OLocalPaginatedStorage && ((OLocalPaginatedStorage) s).getStoragePath().startsWith(getDatabasePath(""))) {
         s.close(true, false);
-        Orient.instance().unregisterStorage(s);
+//        Orient.instance().unregisterStorage(s);
       }
     }
   }

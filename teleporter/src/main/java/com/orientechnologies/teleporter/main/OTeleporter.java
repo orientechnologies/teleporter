@@ -19,8 +19,8 @@
 package com.orientechnologies.teleporter.main;
 
 import com.orientechnologies.orient.core.config.OGlobalConfiguration;
+import com.orientechnologies.orient.core.db.ODatabaseDocumentInternal;
 import com.orientechnologies.orient.core.db.OPartitionedDatabasePool;
-import com.orientechnologies.orient.core.db.document.ODatabaseDocumentTx;
 import com.orientechnologies.orient.core.exception.OConfigurationException;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.orient.core.serialization.serializer.record.ORecordSerializerFactory;
@@ -453,12 +453,12 @@ public class OTeleporter extends OServerPluginAbstract {
       }
 
       @Override
-      public OrientBaseGraph getGraph(ODatabaseDocumentTx database) {
+      public OrientBaseGraph getGraph(ODatabaseDocumentInternal database) {
         return new OMDMGraphTx(mdmConfiguration, database);
       }
 
       @Override
-      public OrientBaseGraph getGraph(ODatabaseDocumentTx database, String user, String password,
+      public OrientBaseGraph getGraph(ODatabaseDocumentInternal database, String user, String password,
           OrientConfigurableGraph.Settings settings) {
         return new OMDMGraphTx(mdmConfiguration, database, user, password, settings);
       }
@@ -469,7 +469,7 @@ public class OTeleporter extends OServerPluginAbstract {
       }
 
       @Override
-      public OrientBaseGraph getGraph(ODatabaseDocumentTx database, boolean autoCreateTx) {
+      public OrientBaseGraph getGraph(ODatabaseDocumentInternal database, boolean autoCreateTx) {
         return new OMDMGraphTx(mdmConfiguration, database);
       }
     });
@@ -486,12 +486,12 @@ public class OTeleporter extends OServerPluginAbstract {
       }
 
       @Override
-      public OrientBaseGraph getGraph(ODatabaseDocumentTx database) {
+      public OrientBaseGraph getGraph(ODatabaseDocumentInternal database) {
         return new OMDMGraphNoTx(mdmConfiguration, database);
       }
 
       @Override
-      public OrientBaseGraph getGraph(ODatabaseDocumentTx database, String user, String password,
+      public OrientBaseGraph getGraph(ODatabaseDocumentInternal database, String user, String password,
           OrientConfigurableGraph.Settings settings) {
         return new OMDMGraphNoTx(mdmConfiguration, database, user, password, settings);
       }
@@ -502,7 +502,7 @@ public class OTeleporter extends OServerPluginAbstract {
       }
 
       @Override
-      public OrientBaseGraph getGraph(ODatabaseDocumentTx database, boolean autoCreateTx) {
+      public OrientBaseGraph getGraph(ODatabaseDocumentInternal database, boolean autoCreateTx) {
         return new OMDMGraphNoTx(mdmConfiguration, database);
       }
     });

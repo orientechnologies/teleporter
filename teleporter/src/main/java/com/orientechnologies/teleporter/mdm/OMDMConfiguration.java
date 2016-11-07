@@ -12,6 +12,7 @@ import com.orientechnologies.teleporter.configuration.api.OConfiguredVertexClass
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -26,33 +27,37 @@ public class OMDMConfiguration {
 
   public OMDMConfiguration() {
 
+    final String dbDirectory = OServerMain.server().getDatabaseDirectory();
+
     for (Map.Entry<String, String> entry : OServerMain.server().getAvailableStorageNames().entrySet()) {
-      if (entry.getValue().startsWith("plocal:")) {
+      final File file = new File(dbDirectory + "/" + entry.getKey() + "/teleporter-config/migration-config.json");
+      if (file.exists()) {
+        try {
+          final ODocument doc = new ODocument().fromJSON(OIOUtils.readFileAsString(file), "noMap");
 
-        final String path = entry.getValue().substring("plocal:".length());
-        final File file = new File(path + "/teleporter-config/migration-config.json");
-        if (file.exists()) {
-          try {
-            final ODocument doc = new ODocument().fromJSON(OIOUtils.readFileAsString(file), "noMap");
+          entities.put(entry.getKey(), new OConfigurationHandler(true).buildConfigurationFromJSONDoc(doc));
 
-            entities.put(entry.getKey(), new OConfigurationHandler(true).buildConfigurationFromJSONDoc(doc));
+          dataSources.put(entry.getKey(), new OMDMDataSources(dbDirectory + "/" + entry.getKey()));
 
-            dataSources.put(entry.getKey(), new OMDMDataSources(path));
-
-          } catch (IOException e) {
-            throw OException.wrapException(new OConfigurationException("Error on reading Migration config file at: " + file), e);
-          }
+        } catch (IOException e) {
+          throw OException.wrapException(new OConfigurationException("Error on reading Migration config file at: " + file), e);
         }
       }
     }
   }
 
   public OConfiguredVertexClass getVertexClass(final String databaseName, final String vertexClassName) {
-    return entities.get(databaseName).getVertexClassByName(vertexClassName);
+    final OConfiguration dbCfg = entities.get(databaseName);
+    if (dbCfg != null)
+      return dbCfg.getVertexClassByName(vertexClassName);
+    return null;
   }
 
   public OConfiguredEdgeClass getEdgeClass(final String databaseName, final String edgeClassName) {
-    return entities.get(databaseName).getEdgeClassByName(edgeClassName);
+    final OConfiguration dbCfg = entities.get(databaseName);
+    if (dbCfg != null)
+      return dbCfg.getEdgeClassByName(edgeClassName);
+    return null;
   }
 
   public OConfiguration getEntities(final String databaseName) {
@@ -64,6 +69,9 @@ public class OMDMConfiguration {
   }
 
   public List<OConfiguredEdgeClass> getEdgeClasses(final String databaseName) {
-    return entities.get(databaseName).getConfiguredEdges();
+    final OConfiguration dbCfg = entities.get(databaseName);
+    if (dbCfg != null)
+      return dbCfg.getConfiguredEdges();
+    return new ArrayList<OConfiguredEdgeClass>();
   }
 }
