@@ -1,5 +1,6 @@
 package com.orientechnologies.teleporter.mdm;
 
+import com.orientechnologies.common.collection.OMultiCollectionIterator;
 import com.orientechnologies.common.util.OPair;
 import com.orientechnologies.orient.core.db.record.OIdentifiable;
 import com.orientechnologies.orient.core.record.impl.ODocument;
@@ -37,7 +38,7 @@ public class OMDMVertex extends OrientVertex {
     Iterable<Vertex> result = null;
 
     if (iLabels != null && iLabels.length > 0) {
-      result = getVerticesByLabel(iLabels[0]);
+      result = getVerticesByLabel(iDirection, iLabels[0]);
     } else {
       final ODocument doc = getRecord();
       final String[] fieldNames = doc.fieldNames();
@@ -50,7 +51,7 @@ public class OMDMVertex extends OrientVertex {
 
         final Object fieldValue = doc.rawField(fieldName);
         if (fieldValue != null) {
-          result = getVerticesByLabel(connection.getValue());
+          result = getVerticesByLabel(iDirection, connection.getValue());
           if (result != null)
             break;
         }
@@ -85,27 +86,55 @@ public class OMDMVertex extends OrientVertex {
     return super.getEdges(iDirection, iLabels);
   }
 
-  private Iterable<Vertex> getVerticesByLabel(final String label) {
+  private Iterable<Vertex> getVerticesByLabel(Direction iDirection, final String label) {
     final OMDMGraphNoTx g = (OMDMGraphNoTx) getGraph();
     final OConfiguredEdgeClass cls = g.getConfiguration().getEdgeClass(g.getRawGraph().getName(), label);
     if (cls != null && cls.isLogical()) {
 
       for (OEdgeMappingInformation m : cls.getMappings()) {
-        final String[] properties = m.getFromProperties();
-        final Object[] joinValues = new Object[properties.length];
+        String [] classes;
+        String[] properties;
+        Object[] joinValues;
 
-        final StringBuilder sqlTo = new StringBuilder("select from " + m.getToClass() + " where ");
-        for (int i = 0; i < properties.length; ++i) {
-          final String p = properties[i];
-          joinValues[i] = getProperty(p);
+        OMultiCollectionIterator result = new OMultiCollectionIterator();
 
-          if (i > 0)
-            sqlTo.append(" and ");
+        if(iDirection==Direction.OUT || iDirection==Direction.BOTH){
+          String clazz = m.getToClass();
+          properties = m.getToProperties();
+          joinValues = new Object[properties.length];
+          final StringBuilder sqlTo = new StringBuilder("select from " + clazz + " where ");
+          for (int i = 0; i < properties.length; ++i) {
+            final String p = properties[i];
+            joinValues[i] = getProperty(p);
 
-          sqlTo.append(m.getToProperties()[i] + " = ?");
+            if (i > 0)
+              sqlTo.append(" and ");
+
+            sqlTo.append(p + " = ?");
+          }
+
+          Iterable iterable = g.command(new OCommandSQL(sqlTo.toString())).execute(joinValues);
+          result.add(iterable);
+
+        } else if(iDirection==Direction.IN || iDirection==Direction.BOTH){
+          String clazz = m.getFromClass();
+          properties = m.getFromProperties();
+          joinValues = new Object[properties.length];
+          final StringBuilder sqlTo = new StringBuilder("select from " +clazz+ " where ");
+          for (int i = 0; i < properties.length; ++i) {
+            final String p = properties[i];
+            joinValues[i] = getProperty(p);
+
+            if (i > 0)
+              sqlTo.append(" and ");
+
+            sqlTo.append(p + " = ?");
+          }
+
+          Iterable iterable = g.command(new OCommandSQL(sqlTo.toString())).execute(joinValues);
+          result.add(iterable);
         }
-
-        return g.command(new OCommandSQL(sqlTo.toString())).execute(joinValues);
+        return result;
       }
     }
     return null;
