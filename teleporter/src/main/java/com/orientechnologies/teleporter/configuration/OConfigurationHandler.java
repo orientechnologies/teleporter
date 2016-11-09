@@ -147,7 +147,7 @@ public class OConfigurationHandler {
                 if(aggregationFunction != null && aggregationColumns == null) {
                     OTeleporterContext.getInstance().getOutputManager()
                             .error("Configuration error: 'aggregationColumns' field not found in the '%s' vertex-class mapping with the source table " +
-                            "('aggregationFunction' field is stated, thus 'aggregationColumns' field is expected for each source table).",  configuredVertexClassName);
+                                    "('aggregationFunction' field is stated, thus 'aggregationColumns' field is expected for each source table).",  configuredVertexClassName);
                     throw new OTeleporterRuntimeException();
                 }
 
@@ -284,7 +284,7 @@ public class OConfigurationHandler {
                     else {
                         OTeleporterContext.getInstance().getOutputManager()
                                 .error("Configuration not compliant with the chosen strategy: you cannot perform the aggregation declared in the migrationConfigDoc for the "
-                                + "join table %s while executing migration with a not-aggregating strategy. Thus no aggregation will be performed.\n", joinTableName);
+                                        + "join table %s while executing migration with a not-aggregating strategy. Thus no aggregation will be performed.\n", joinTableName);
                         throw new OTeleporterRuntimeException();
                     }
                 }
@@ -344,11 +344,11 @@ public class OConfigurationHandler {
                     propertyType = propertyType.toUpperCase(Locale.ENGLISH);        // normalization: orientdb types are upper case
                 }
 
-//                if(ordinalPosition == null) {
-//                    OTeleporterContext.getInstance().getOutputManager()
-//                            .error("Configuration error: 'ordinalPosition' field not found in the '%s' property definition ('%s' Class).",  propertyName, className);
-//                    throw new OTeleporterRuntimeException();
-//                }
+                if(ordinalPosition == null) {
+                    OTeleporterContext.getInstance().getOutputManager()
+                            .error("Configuration error: 'ordinalPosition' field not found in the '%s' property definition ('%s' Class).",  propertyName, className);
+                    throw new OTeleporterRuntimeException();
+                }
 
                 Boolean mandatory = currentElementPropertyDoc.field("mandatory");
                 Boolean readOnly = currentElementPropertyDoc.field("readOnly");
@@ -400,7 +400,7 @@ public class OConfigurationHandler {
                 OConfiguredProperty currentConfiguredProperty = new OConfiguredProperty(propertyName);
                 currentConfiguredProperty.setIncludedInMigration(isIncludedInMigration);
                 currentConfiguredProperty.setPropertyType(propertyType);
-//                currentConfiguredProperty.setOrdinalPosition(ordinalPosition);
+                currentConfiguredProperty.setOrdinalPosition(ordinalPosition);
                 currentConfiguredProperty.setMandatory(mandatory);
                 currentConfiguredProperty.setReadOnly(readOnly);
                 currentConfiguredProperty.setNotNull(notNull);
