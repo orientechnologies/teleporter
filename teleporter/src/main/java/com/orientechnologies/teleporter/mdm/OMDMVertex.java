@@ -69,11 +69,11 @@ public class OMDMVertex extends OrientVertex {
     Iterable<Edge> result = null;
 
     if (iLabels != null && iLabels.length > 0) {
-      result = getEdgesByLabel(iLabels[0]);
+      result = getEdgesByLabel(iDirection, iLabels[0]);
     } else {
       final OMDMGraphNoTx g = (OMDMGraphNoTx) getGraph();
       for( OConfiguredEdgeClass cls : g.getConfiguration().getEdgeClasses(g.getRawGraph().getName()) ){
-        result = getEdgesByLabel(cls.getName());
+        result = getEdgesByLabel(iDirection, cls.getName());
         if (result != null)
           break;
       }
@@ -92,7 +92,6 @@ public class OMDMVertex extends OrientVertex {
     if (cls != null && cls.isLogical()) {
 
       for (OEdgeMappingInformation m : cls.getMappings()) {
-        String [] classes;
         String[] properties;
         Object[] joinValues;
 
@@ -140,6 +139,64 @@ public class OMDMVertex extends OrientVertex {
     return null;
   }
 
+  private Iterable<Edge> getEdgesByLabel(Direction iDirection, final String label) {
+    final OMDMGraphNoTx g = (OMDMGraphNoTx) getGraph();
+    final OConfiguredEdgeClass cls = g.getConfiguration().getEdgeClass(g.getRawGraph().getName(), label);
+    if (cls != null && cls.isLogical()) {
+
+      final List<Edge> result = new ArrayList<Edge>();
+
+      for (OEdgeMappingInformation m : cls.getMappings()) {
+        String[] properties;
+        Object[] joinValues;
+
+        OMultiCollectionIterator<OrientVertex> resultVertices = new OMultiCollectionIterator();
+
+        if(iDirection==Direction.OUT || iDirection==Direction.BOTH){
+          String clazz = m.getToClass();
+          properties = m.getToProperties();
+          joinValues = new Object[properties.length];
+          final StringBuilder sqlTo = new StringBuilder("select from " + clazz + " where ");
+          for (int i = 0; i < properties.length; ++i) {
+            final String p = properties[i];
+            joinValues[i] = getProperty(p);
+
+            if (i > 0)
+              sqlTo.append(" and ");
+
+            sqlTo.append(p + " = ?");
+          }
+
+          Iterable<OrientVertex> iterable = g.command(new OCommandSQL(sqlTo.toString())).execute(joinValues);
+          resultVertices.add(iterable);
+
+        } else if(iDirection==Direction.IN || iDirection==Direction.BOTH){
+          String clazz = m.getFromClass();
+          properties = m.getFromProperties();
+          joinValues = new Object[properties.length];
+          final StringBuilder sqlTo = new StringBuilder("select from " +clazz+ " where ");
+          for (int i = 0; i < properties.length; ++i) {
+            final String p = properties[i];
+            joinValues[i] = getProperty(p);
+
+            if (i > 0)
+              sqlTo.append(" and ");
+
+            sqlTo.append(p + " = ?");
+          }
+
+          Iterable<OrientVertex> iterable = g.command(new OCommandSQL(sqlTo.toString())).execute(joinValues);
+          resultVertices.add(iterable);
+        }
+        for (OrientVertex v : resultVertices) {
+          result.add(new OMDMEdge(g, getIdentity(), v.getIdentity(), label));
+        }
+      }
+      return result;
+    }
+    return null;
+  }
+
   private Iterable<Edge> getEdgesByLabel(final String label) {
     final OMDMGraphNoTx g = (OMDMGraphNoTx) getGraph();
     final OConfiguredEdgeClass cls = g.getConfiguration().getEdgeClass(g.getRawGraph().getName(), label);
@@ -170,4 +227,5 @@ public class OMDMVertex extends OrientVertex {
     }
     return null;
   }
+
 }
