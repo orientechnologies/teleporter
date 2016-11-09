@@ -87,15 +87,17 @@ public class OConfiguredClass {
   public String[] getPropertiesByColumns(List<String> columns) {
     String[] properties = new String[columns.size()];
     int i = 0;
+    int j = 0;
 
     // maintains properties order (otherwise index does not work)
     for(Map.Entry entry: this.configuredProperties.entrySet()) {
       OConfiguredProperty currConfiguredProperty = (OConfiguredProperty) entry.getValue();
       if(columns.contains(currConfiguredProperty.getPropertyMapping().getColumnName())) {
-        properties[i] = currConfiguredProperty.getPropertyName();
+        properties[j] = currConfiguredProperty.getPropertyName();
+        j++;
       }
       i++;
-      if(i >= columns.size()) {
+      if(j >= columns.size()) {
         break;
       }
     }
