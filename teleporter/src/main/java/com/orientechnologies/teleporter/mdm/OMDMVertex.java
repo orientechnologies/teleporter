@@ -170,6 +170,10 @@ public class OMDMVertex extends OrientVertex {
           Iterable<OrientVertex> iterable = g.command(new OCommandSQL(sqlTo.toString())).execute(joinValues);
           resultVertices.add(iterable);
 
+          for (OrientVertex v : resultVertices) {
+            result.add(new OMDMEdge(g, getIdentity(), v.getIdentity(), label));
+          }
+
         } else if(iDirection==Direction.IN || iDirection==Direction.BOTH){
           String clazz = m.getFromClass();
           properties = m.getFromProperties();
@@ -187,17 +191,19 @@ public class OMDMVertex extends OrientVertex {
 
           Iterable<OrientVertex> iterable = g.command(new OCommandSQL(sqlTo.toString())).execute(joinValues);
           resultVertices.add(iterable);
+
+          for (OrientVertex v : resultVertices) {
+            result.add(new OMDMEdge(g, v.getIdentity(), getIdentity(), label));
+          }
         }
-        for (OrientVertex v : resultVertices) {
-          result.add(new OMDMEdge(g, getIdentity(), v.getIdentity(), label));
-        }
+
       }
       return result;
     }
     return null;
   }
 
-  private Iterable<Edge> getEdgesByLabel(final String label) {
+  /*private Iterable<Edge> getEdgesByLabel(final String label) {
     final OMDMGraphNoTx g = (OMDMGraphNoTx) getGraph();
     final OConfiguredEdgeClass cls = g.getConfiguration().getEdgeClass(g.getRawGraph().getName(), label);
     if (cls != null && cls.isLogical()) {
@@ -226,6 +232,6 @@ public class OMDMVertex extends OrientVertex {
       return result;
     }
     return null;
-  }
+  }*/
 
 }
