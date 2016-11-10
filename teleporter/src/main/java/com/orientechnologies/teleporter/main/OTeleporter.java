@@ -506,6 +506,10 @@ public class OTeleporter extends OServerPluginAbstract {
         return new OMDMGraphNoTx(mdmConfiguration, database);
       }
     });
+
+    // REGISTER THE MDM RECORD SERIALIZER TO SUPPORT ANY OF THE EXTERNAL FIELDS
+    ORecordSerializerFactory.instance().register(OMDMSerializer.NAME, new OMDMSerializer(mdmConfiguration));
+
   }
 
   @Override

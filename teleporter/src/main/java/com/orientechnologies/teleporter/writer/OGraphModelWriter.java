@@ -513,31 +513,32 @@ public class OGraphModelWriter {
 
     // checking from model properties
     Iterator<OModelProperty> it1 = currentElementType.getProperties().iterator();
-    OModelProperty currentProperty;
+    OModelProperty currentModelProperty;
     while(it1.hasNext()) {
-      currentProperty = it1.next();
-      orientSchemaProperty = orientElementType.getProperty(currentProperty.getName());
-      if(currentProperty.getOrientdbType() != null) {
-        newResolvedType = this.resolveOrientDBType(currentProperty.getOrientdbType());
-      }
-      else {
-        newResolvedType = handler.resolveType(currentProperty.getOriginalType().toLowerCase(Locale.ENGLISH));
-      }
+      currentModelProperty = it1.next();
 
-      if(orientSchemaProperty != null) {
-        // property present in orientdb schema, check if is it equal (type check), in case it's modified
-        actualOrientType = orientSchemaProperty.getType();
-
-        // if types are not equal the property will be dropped and added again with the correct type
-        if(!actualOrientType.toString().equalsIgnoreCase(newResolvedType.toString())) {
-          orientElementType.dropProperty(currentProperty.getName());
-          orientElementType.createProperty(currentProperty.getName(), newResolvedType);
+      if(currentModelProperty.isIncludedInMigration()) {
+        orientSchemaProperty = orientElementType.getProperty(currentModelProperty.getName());
+        if (currentModelProperty.getOrientdbType() != null) {
+          newResolvedType = this.resolveOrientDBType(currentModelProperty.getOrientdbType());
+        } else {
+          newResolvedType = handler.resolveType(currentModelProperty.getOriginalType().toLowerCase(Locale.ENGLISH));
         }
-      }
-      else {
-        // property not present in orientdb schema, then it's added (if type allows it)
-        orientElementType.createProperty(currentProperty.getName(), newResolvedType);
-        updated = true;
+
+        if (orientSchemaProperty != null) {
+          // property present in orientdb schema, check if is it equal (type check), in case it's modified
+          actualOrientType = orientSchemaProperty.getType();
+
+          // if types are not equal the property will be dropped and added again with the correct type
+          if (!actualOrientType.toString().equalsIgnoreCase(newResolvedType.toString())) {
+            orientElementType.dropProperty(currentModelProperty.getName());
+            orientElementType.createProperty(currentModelProperty.getName(), newResolvedType);
+          }
+        } else {
+          // property not present in orientdb schema, then it's added (if type allows it)
+          orientElementType.createProperty(currentModelProperty.getName(), newResolvedType);
+          updated = true;
+        }
       }
     }
 
