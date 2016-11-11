@@ -20,6 +20,7 @@ package com.orientechnologies.teleporter.util;
 
 import com.orientechnologies.teleporter.context.OTeleporterContext;
 import com.orientechnologies.teleporter.exception.OTeleporterRuntimeException;
+import com.orientechnologies.teleporter.main.OTeleporter;
 import com.orientechnologies.teleporter.persistence.util.ODBSourceConnection;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
@@ -191,7 +192,11 @@ public class ODriverConfigurator {
 
         if (driverName.equalsIgnoreCase("SQLServer")) {
           OFileManager.extractAll(driverPath, this.driverClassPath);
-          OFileManager.deleteFile(driverPath);
+          try {
+            OFileManager.deleteFile(driverPath);
+          } catch(IOException e) {
+            OTeleporterContext.getInstance().getOutputManager().info("The %s package file was not correctly deleted from the %s path.", driverPath, this.driverClassPath);
+          }
           String[] split = driverPath.split(".jar");
           driverPath = split[0] + ".jar";
         }
