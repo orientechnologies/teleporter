@@ -84,31 +84,69 @@ public class OEdgeMappingInformation {
   }
 
   public String getFromClass() {
-    if(this.fromVertexClass == null) {
-      this.fromVertexClass = belongingEdge.getGlobalConfiguration().getVertexClassByTableName(this.fromTableName);
+    OConfiguredVertexClass fromVertexClass = null;
+    if(this.direction.equals("direct")) {
+      if (this.fromVertexClass == null) {
+        this.fromVertexClass = belongingEdge.getGlobalConfiguration().getVertexClassByTableName(this.fromTableName);
+      }
+      fromVertexClass = this.fromVertexClass;
     }
-    return this.fromVertexClass.getName();
+    else if(this.direction.equals("inverse")) {
+      if (this.toVertexClass == null) {
+        this.toVertexClass = belongingEdge.getGlobalConfiguration().getVertexClassByTableName(this.toTableName);
+      }
+      fromVertexClass = this.toVertexClass;
+    }
+    return fromVertexClass.getName();
   }
 
   public String getToClass() {
-    if(this.toVertexClass == null) {
-      this.toVertexClass = belongingEdge.getGlobalConfiguration().getVertexClassByTableName(this.toTableName);
+    OConfiguredVertexClass toVertexClass = null;
+    if(this.direction.equals("direct")) {
+      if (this.toVertexClass == null) {
+        this.toVertexClass = belongingEdge.getGlobalConfiguration().getVertexClassByTableName(this.toTableName);
+      }
+      toVertexClass = this.toVertexClass;
     }
-    return this.toVertexClass.getName();
+    else if(this.direction.equals("inverse")) {
+      if (this.fromVertexClass == null) {
+        this.fromVertexClass = belongingEdge.getGlobalConfiguration().getVertexClassByTableName(this.fromTableName);
+      }
+      toVertexClass = this.fromVertexClass;
+    }
+    return toVertexClass.getName();
   }
 
   public String[] getFromProperties() {
-    if(this.fromVertexClass == null) {
-      this.fromVertexClass = belongingEdge.getGlobalConfiguration().getVertexClassByTableName(this.toTableName);
+    if(this.direction.equals("direct")) {
+      if (this.fromVertexClass == null) {
+        this.fromVertexClass = belongingEdge.getGlobalConfiguration().getVertexClassByTableName(this.fromTableName);
+      }
+      return this.fromVertexClass.getPropertiesByColumns(this.fromColumns);
     }
-    return this.fromVertexClass.getPropertiesByColumns(this.fromColumns);
+    else if(this.direction.equals("inverse")) {
+      if (this.toVertexClass == null) {
+        this.toVertexClass = belongingEdge.getGlobalConfiguration().getVertexClassByTableName(this.toTableName);
+      }
+      return this.toVertexClass.getPropertiesByColumns(this.toColumns);
+    }
+    return null;
   }
 
   public String[] getToProperties() {
-    if(this.toVertexClass == null) {
-      this.toVertexClass = belongingEdge.getGlobalConfiguration().getVertexClassByTableName(this.toTableName);
+    if(this.direction.equals("direct")) {
+      if (this.toVertexClass == null) {
+        this.toVertexClass = belongingEdge.getGlobalConfiguration().getVertexClassByTableName(this.toTableName);
+      }
+      return this.toVertexClass.getPropertiesByColumns(this.toColumns);
     }
-    return this.toVertexClass.getPropertiesByColumns(this.toColumns);
+    else if(this.direction.equals("inverse")) {
+      if(this.fromVertexClass == null) {
+        this.fromVertexClass = belongingEdge.getGlobalConfiguration().getVertexClassByTableName(this.fromTableName);
+      }
+      return this.fromVertexClass.getPropertiesByColumns(this.fromColumns);
+    }
+    return null;
   }
 
   public String getDirection() {
