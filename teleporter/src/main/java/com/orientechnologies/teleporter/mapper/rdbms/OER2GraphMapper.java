@@ -1281,17 +1281,35 @@ public class OER2GraphMapper extends OSource2GraphMapper {
     OEntity currentForeignEntity = currentRelationship.getForeignEntity();
 
     // retrieving edge type, if not present is created from scratch
-    boolean edgeTypeAlreadyPresent = true;
     OEdgeType currentEdgeType = this.relationship2edgeType.get(currentRelationship);
-    if(currentEdgeType == null) {
-      edgeTypeAlreadyPresent = false;
+    boolean edgeTypeAlreadyPresent = false;
+
+    if(foreignEntityIsJoinTableToAggregate) {
+      if (currentEdgeType != null) {
+        // decreasing the number of relationship represented by the retrieved edge, because a new ad-hoc edge type will be built according to the configuration
+        currentEdgeType.setNumberRelationshipsRepresented(currentEdgeType.getNumberRelationshipsRepresented() - 1);
+      }
+
+      // building a new edge type according to the configuration
       currentEdgeType = new OEdgeType(edgeName, null, null);
       this.graphModel.getEdgesType().add(currentEdgeType);
       OTeleporterContext.getInstance().getOutputManager().debug("\nEdge-type %s built.\n", currentEdgeType.getName());
       statistics.builtModelEdgeTypes++;
       statistics.totalNumberOfModelEdges++;
     }
-    currentEdgeType.setName(edgeName);
+    else {
+      if (currentEdgeType == null) {
+        currentEdgeType = new OEdgeType(edgeName, null, null);
+        this.graphModel.getEdgesType().add(currentEdgeType);
+        OTeleporterContext.getInstance().getOutputManager().debug("\nEdge-type %s built.\n", currentEdgeType.getName());
+        statistics.builtModelEdgeTypes++;
+        statistics.totalNumberOfModelEdges++;
+      }
+      else {
+        edgeTypeAlreadyPresent = true;
+        currentEdgeType.setName(edgeName);
+      }
+    }
 
     // extracting properties info if present and adding them to the current edge-type
     Collection<OConfiguredProperty> properties = currentEdgeClass.getConfiguredProperties();
@@ -1351,7 +1369,7 @@ public class OER2GraphMapper extends OSource2GraphMapper {
       }
     }
 
-    // new references with in-vertex and out-vertex are added and the old
+    // new references with in-vertex and out-vertex are added
     else {
 
       /**
@@ -1371,6 +1389,25 @@ public class OER2GraphMapper extends OSource2GraphMapper {
         if (foreignEntityIsJoinTableToAggregate) {
           currentInVertexType = this.getVertexTypeByEntity(currentParentEntity);
           currentOutVertexType = this.getVertexTypeByEntity(currentForeignEntity);
+
+          // delete old edges correspondent to the relationship between "currentParentEntity" and "currentForeignEntity" (if present)
+          List<ORelationship> relationships = this.getRelationshipsByForeignAndParentTables(currentForeignEntity.getName(), currentParentEntity.getName());
+
+          for(ORelationship currRelationship: relationships) {
+            OEdgeType edgeTypeToDel = this.getRelationship2edgeType().get(currentRelationship);
+
+            // deleting the edgeType from the out and in vertices-type (if present)
+            currentOutVertexType.getOutEdgesType().remove(edgeTypeToDel);
+            if(edgeTypeToDel != null && edgeTypeToDel.getNumberRelationshipsRepresented() == 0) {
+              // delete the edge from the in edges of the in-vertex type, because the edge is not involved in other relationship of course.
+              currentInVertexType.getInEdgesType().remove(edgeTypeToDel);
+                this.graphModel.getEdgesType().remove(edgeTypeToDel);
+                this.edgeType2relationships.remove(edgeTypeToDel);
+                statistics.builtModelEdgeTypes--;
+                statistics.totalNumberOfModelEdges--;
+            }
+          }
+
         } else {
 
           // edge direction chosen according to the value of the parameter direction
@@ -1678,6 +1715,19 @@ public class OER2GraphMapper extends OSource2GraphMapper {
       }
     }
     return null;
+  }
+
+  public List<ORelationship> getRelationshipsByForeignAndParentTables(String currentForeignEntity, String currentParentEntity) {
+
+    List<ORelationship> relationships = new LinkedList<ORelationship>();
+
+    for(ORelationship currentRelationship: this.dataBaseSchema.getCanonicalRelationships()) {
+      if(currentRelationship.getForeignEntity().getName().equals(currentForeignEntity) &&
+              currentRelationship.getParentEntity().getName().equals(currentParentEntity)) {
+        relationships.add(currentRelationship);
+      }
+    }
+    return relationships;
   }
 
   public Map<ORelationship, OEdgeType> getRelationship2edgeType() {

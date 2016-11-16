@@ -127,7 +127,6 @@ public class OGraphModelWriter {
 
         OTeleporterContext.getInstance().getOutputManager().debug("\nWriting vertex-types on OrientDB Schema...\n");
 
-        OrientVertexType newVertexType;
         String statement;
         OCommandSQL sqlCommand;
         OType type;
@@ -139,7 +138,7 @@ public class OGraphModelWriter {
                   .debug("\nWriting '%s' vertex-type  (%s/%s)...\n", currentVertexType.getName(), iteration, numberOfVertices);
 
           // check if vertex type is already present in the orient schema
-          newVertexType = orientGraph.getVertexType(currentVertexType.getName());
+          OrientVertexType newVertexType = orientGraph.getVertexType(currentVertexType.getName());
 
           if(newVertexType == null) {
 
@@ -566,11 +565,9 @@ public class OGraphModelWriter {
 
   public boolean inheritanceChangesPresent(OGraphModel graphModel, OrientBaseGraph orientGraph) {
 
-    OrientVertexType orientCorrespondentVertexType;
-
     for(OVertexType currentVertexType: graphModel.getVerticesType()) {
 
-      orientCorrespondentVertexType = orientGraph.getVertexType(currentVertexType.getName());
+      OrientVertexType orientCorrespondentVertexType = orientGraph.getVertexType(currentVertexType.getName());
 
       // check for changes if vertex type is already present in the orient schema
       if(currentVertexType != null && orientCorrespondentVertexType != null) {
