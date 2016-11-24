@@ -411,11 +411,13 @@ public class OTeleporter extends OServerPluginAbstract {
     } finally {
       timer.cancel();
 
-      // REGISTER THE MDM RECORD SERIALIZER TO SUPPORT ANY OF THE EXTERNAL FIELDS
-      ORecordSerializerFactory.instance().register(OMDMSerializer.NAME, new OMDMSerializer(mdmConfiguration));
 
       // MDMConfiguration re-initialization
       mdmConfiguration = new OMDMConfiguration();
+
+      // REGISTER THE MDM RECORD SERIALIZER TO SUPPORT ANY OF THE EXTERNAL FIELDS
+      ORecordSerializerFactory.instance().register(OMDMSerializer.NAME, new OMDMSerializer(mdmConfiguration));
+
 
     }
     return executionResult;
