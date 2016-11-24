@@ -124,7 +124,7 @@ public class OMigrationConfigManager {
 
     String jsonSourcesInfo = migrationConfig.toJSON("prettyPrint");
     try {
-      OFileManager.writeFileFromText(jsonSourcesInfo, outDBConfigPath);
+      OFileManager.writeFileFromText(jsonSourcesInfo, outDBConfigPath, false);
     }catch(IOException e) {
       String mess = "";
       OTeleporterContext.getInstance().printExceptionMessage(e, mess, "error");
@@ -215,7 +215,7 @@ public class OMigrationConfigManager {
 
     String jsonSourcesInfo = sourcesInfoDoc.toJSON("prettyPrint");
     try {
-      OFileManager.writeFileFromText(jsonSourcesInfo, outDBConfigPath);
+      OFileManager.writeFileFromText(jsonSourcesInfo, outDBConfigPath, false);
     }catch(IOException e) {
       String mess = "";
       OTeleporterContext.getInstance().printExceptionMessage(e, mess, "error");

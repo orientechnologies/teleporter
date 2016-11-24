@@ -135,12 +135,12 @@ public class OFileManager {
   }
 
 
-  public static void writeFileFromText(String text, String outFilePath) throws IOException {
+  public static void writeFileFromText(String text, String outFilePath, boolean append) throws IOException {
 
     File outFile = new File(outFilePath);
     outFile.getParentFile().mkdirs();
     outFile.createNewFile();
-    PrintWriter out = new PrintWriter(outFile);
+    PrintWriter out = new PrintWriter(new FileWriter(outFile, append));
     out.println(text);
     out.close();
   }

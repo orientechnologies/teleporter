@@ -19,8 +19,6 @@
 package com.orientechnologies.teleporter.main;
 
 import com.orientechnologies.orient.core.config.OGlobalConfiguration;
-import com.orientechnologies.orient.core.db.ODatabaseDocumentInternal;
-import com.orientechnologies.orient.core.db.OPartitionedDatabasePool;
 import com.orientechnologies.orient.core.exception.OConfigurationException;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.orient.core.serialization.serializer.record.ORecordSerializerFactory;
@@ -36,18 +34,11 @@ import com.orientechnologies.teleporter.exception.OTeleporterIOException;
 import com.orientechnologies.teleporter.factory.OStrategyFactory;
 import com.orientechnologies.teleporter.http.OServerCommandTeleporter;
 import com.orientechnologies.teleporter.importengine.rdbms.dbengine.ODBQueryEngine;
-import com.orientechnologies.teleporter.mdm.OMDMConfiguration;
-import com.orientechnologies.teleporter.mdm.OMDMGraphNoTx;
-import com.orientechnologies.teleporter.mdm.OMDMGraphTx;
-import com.orientechnologies.teleporter.mdm.OMDMSerializer;
 import com.orientechnologies.teleporter.model.dbschema.OSourceDatabaseInfo;
 import com.orientechnologies.teleporter.strategy.OWorkflowStrategy;
 import com.orientechnologies.teleporter.ui.OProgressMonitor;
 import com.orientechnologies.teleporter.util.ODriverConfigurator;
 import com.orientechnologies.teleporter.util.OMigrationConfigManager;
-import com.tinkerpop.blueprints.impls.orient.OrientBaseGraph;
-import com.tinkerpop.blueprints.impls.orient.OrientConfigurableGraph;
-import com.tinkerpop.blueprints.impls.orient.OrientGraphFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -79,7 +70,6 @@ public class OTeleporter extends OServerPluginAbstract {
           + " /_/    /_____/  /_____/_____/  /_/     \\____/ /_/ |_| /_/    /_____/  /_/ |_|  \n" + "\n"
           + "                                                  http://orientdb.com/teleporter";
   private OServer           server;
-  private static OMDMConfiguration mdmConfiguration;
 
   public static void main(String[] args) throws Exception {
 
@@ -411,14 +401,6 @@ public class OTeleporter extends OServerPluginAbstract {
     } finally {
       timer.cancel();
 
-
-      // MDMConfiguration re-initialization
-      mdmConfiguration = new OMDMConfiguration();
-
-      // REGISTER THE MDM RECORD SERIALIZER TO SUPPORT ANY OF THE EXTERNAL FIELDS
-      ORecordSerializerFactory.instance().register(OMDMSerializer.NAME, new OMDMSerializer(mdmConfiguration));
-
-
     }
     return executionResult;
   }
@@ -444,78 +426,6 @@ public class OTeleporter extends OServerPluginAbstract {
       throw new OConfigurationException("HTTP listener not found");
 
     listener.registerStatelessCommand(new OServerCommandTeleporter());
-
-    mdmConfiguration = new OMDMConfiguration();
-
-    OrientGraphFactory.setNoTxGraphImplFactory(new OrientGraphFactory.OrientGraphImplFactory() {
-      @Override
-      public OrientBaseGraph getGraph(String url) {
-        return new OMDMGraphTx(mdmConfiguration, url);
-      }
-
-      @Override
-      public OrientBaseGraph getGraph(String url, String user, String password) {
-        return new OMDMGraphTx(mdmConfiguration, url, user, password);
-      }
-
-      @Override
-      public OrientBaseGraph getGraph(ODatabaseDocumentInternal database) {
-        return new OMDMGraphTx(mdmConfiguration, database);
-      }
-
-      @Override
-      public OrientBaseGraph getGraph(ODatabaseDocumentInternal database, String user, String password,
-          OrientConfigurableGraph.Settings settings) {
-        return new OMDMGraphTx(mdmConfiguration, database, user, password, settings);
-      }
-
-      @Override
-      public OrientBaseGraph getGraph(OPartitionedDatabasePool pool, OrientConfigurableGraph.Settings settings) {
-        return new OMDMGraphTx(mdmConfiguration, pool, settings);
-      }
-
-      @Override
-      public OrientBaseGraph getGraph(ODatabaseDocumentInternal database, boolean autoCreateTx) {
-        return new OMDMGraphTx(mdmConfiguration, database);
-      }
-    });
-
-    OrientGraphFactory.setNoTxGraphImplFactory(new OrientGraphFactory.OrientGraphImplFactory() {
-      @Override
-      public OrientBaseGraph getGraph(String url) {
-        return new OMDMGraphNoTx(mdmConfiguration, url);
-      }
-
-      @Override
-      public OrientBaseGraph getGraph(String url, String user, String password) {
-        return new OMDMGraphNoTx(mdmConfiguration, url, user, password);
-      }
-
-      @Override
-      public OrientBaseGraph getGraph(ODatabaseDocumentInternal database) {
-        return new OMDMGraphNoTx(mdmConfiguration, database);
-      }
-
-      @Override
-      public OrientBaseGraph getGraph(ODatabaseDocumentInternal database, String user, String password,
-          OrientConfigurableGraph.Settings settings) {
-        return new OMDMGraphNoTx(mdmConfiguration, database, user, password, settings);
-      }
-
-      @Override
-      public OrientBaseGraph getGraph(OPartitionedDatabasePool pool, OrientConfigurableGraph.Settings settings) {
-        return new OMDMGraphNoTx(mdmConfiguration, pool, settings);
-      }
-
-      @Override
-      public OrientBaseGraph getGraph(ODatabaseDocumentInternal database, boolean autoCreateTx) {
-        return new OMDMGraphNoTx(mdmConfiguration, database);
-      }
-    });
-
-    // REGISTER THE MDM RECORD SERIALIZER TO SUPPORT ANY OF THE EXTERNAL FIELDS
-    ORecordSerializerFactory.instance().register(OMDMSerializer.NAME, new OMDMSerializer(mdmConfiguration));
-
   }
 
   @Override

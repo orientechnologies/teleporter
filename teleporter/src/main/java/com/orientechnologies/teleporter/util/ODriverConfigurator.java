@@ -247,16 +247,17 @@ public class ODriverConfigurator {
       URL urlObj = new URL(url);
       URLConnection urlConn = urlObj.openConnection();
       urlConn.setRequestProperty("User-Agent", "Teleporter");
+      boolean downloadedNewJsonDrivers = true;
 
       try {
         is = urlConn.getInputStream();
       } catch (IOException e1) {
-
+        downloadedNewJsonDrivers = false;
         try {
           // read json from the file in the ORIENTDB_HOME/config path
           is = new FileInputStream(new File(this.localJsonPath));
         } catch (IOException e2) {
-          String mess = "The jdbc-drivers migrationConfigDoc cannot be found. The connection to orientdb.com did not succeed and the migrationConfigDoc file \"jdbc-drivers.json\" is not present in ORIENTDB_HOME/config.\n";
+          String mess = "The jdbc-drivers json cannot be found. The connection to http://orientdb.com/jdbc-drivers.json did not succeed, and the \"jdbc-drivers.json\" file is not present in ORIENTDB_HOME/config neither.\n";
           OTeleporterContext.getInstance().printExceptionMessage(e2, mess, "error");
           OTeleporterContext.getInstance().printExceptionStackTrace(e2, "error");
           throw new OTeleporterRuntimeException(e2);
@@ -268,6 +269,11 @@ public class ODriverConfigurator {
       BufferedReader rd = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF-8")));
       String jsonText = OFileManager.readAllTextFile(rd);
       json.fromJSON(jsonText, "noMap");
+
+      // writing the just downloaded json into /config
+      if(downloadedNewJsonDrivers) {
+        OFileManager.writeFileFromText(jsonText, this.localJsonPath, false);
+      }
 
     } catch (Exception e) {
       String mess = "";

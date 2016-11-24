@@ -105,11 +105,11 @@ public abstract class ODBMSImportStrategy implements OWorkflowStrategy {
     OTeleporterContext.getInstance().getOutputManager().info(OTeleporterContext.getInstance().getStatistics().toString());
 
     // Building Graph Model mapping (for graph rendering too)
+    // It must remain until the config will follow a delta definition approach, and not a full definition approach
     OConfiguration configuredGraph = configurationHandler.buildConfigurationFromMapper(this.mapper);
     ODocument configuredGraphDoc = configurationHandler.buildJSONDocFromConfiguration(configuredGraph);
 
     return configuredGraphDoc;
-
   }
 
   protected abstract OConfigurationHandler buildConfigurationHandler();
