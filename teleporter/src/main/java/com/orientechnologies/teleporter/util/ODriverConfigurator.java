@@ -192,17 +192,18 @@ public class ODriverConfigurator {
       URL urlObj = new URL(url);
       URLConnection urlConn = urlObj.openConnection();
       urlConn.setRequestProperty("User-Agent", "Teleporter");
+      boolean downloadedNewJsonDrivers = true;
 
       try {
         is = urlConn.getInputStream();
       } catch (IOException e1) {
 
+        downloadedNewJsonDrivers = false;
         try {
           // read json from the file in the ORIENTDB_HOME/config path
           is = new FileInputStream(new File(this.localJsonPath));
         } catch (IOException e2) {
-          String mess = "The jdbc-drivers configuration cannot be found. The connection to orientdb.com did not succeed and the configuration file \"jdbc-drivers.json\" is not present in ORIENTDB_HOME/config.\n";
-          context.printExceptionMessage(e2, mess, "error");
+          String mess = "The jdbc-drivers json cannot be found. The connection to http://orientdb.com/jdbc-drivers.json did not succeed, and the \"jdbc-drivers.json\" file is not present in ORIENTDB_HOME/config neither.\n";          context.printExceptionMessage(e2, mess, "error");
           context.printExceptionStackTrace(e2, "error");
           throw new OTeleporterRuntimeException(e2);
         }
@@ -213,6 +214,11 @@ public class ODriverConfigurator {
       BufferedReader rd = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF-8")));
       String jsonText = OFileManager.readAllTextFile(rd);
       json.fromJSON(jsonText, "noMap");
+
+      // writing the just downloaded json into /config
+      if(downloadedNewJsonDrivers) {
+        OFileManager.writeFileFromText(jsonText, this.localJsonPath, false);
+      }
 
     } catch (Exception e) {
       String mess = "";
@@ -233,7 +239,7 @@ public class ODriverConfigurator {
   }
 
   public void checkConnection(String driver, String uri, String username, String password, OTeleporterContext context)
-      throws Exception {
+          throws Exception {
 
     String driverName = checkConfiguration(driver, context);
 
