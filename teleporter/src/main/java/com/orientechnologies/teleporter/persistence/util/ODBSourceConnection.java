@@ -32,14 +32,14 @@ import java.sql.DriverManager;
  * Utility class to which connection with source DB is delegated.
  * 
  * @author Gabriele Ponzi
- * @email  <gabriele.ponzi--at--gmail.com>
+ * @email  <g.ponzi--at--orientdb.com>
  * 
  */
 
 public class ODBSourceConnection {
 
 
-  public static Connection getConnection(OSourceDatabaseInfo sourceDBInfo, OTeleporterContext context) {
+  public static Connection getConnection(OSourceDatabaseInfo sourceDBInfo) {
 
     Connection connection = null;
     String driver = sourceDBInfo.getDriverName();
@@ -48,7 +48,7 @@ public class ODBSourceConnection {
     String password = sourceDBInfo.getPassword();
 
     try {
-      URL u = new URL("jar:file:" + context.getDriverDependencyPath() + "!/");
+      URL u = new URL("jar:file:" + OTeleporterContext.getInstance().getDriverDependencyPath() + "!/");
       URLClassLoader ucl = new URLClassLoader(new URL[] { u });
       Driver d = (Driver) Class.forName(driver, true, ucl).newInstance();
       DriverManager.registerDriver(new ODriverShim(d));
@@ -56,19 +56,19 @@ public class ODBSourceConnection {
 
     } catch (Exception e) {
       String mess = "";
-      context.printExceptionMessage(e, mess, "error");
-      context.printExceptionStackTrace(e, "error");
+      OTeleporterContext.getInstance().printExceptionMessage(e, mess, "error");
+      OTeleporterContext.getInstance().printExceptionStackTrace(e, "error");
       throw new OTeleporterRuntimeException(e);
     }
     return connection;
   }
 
-  public static Connection getConnection(String driver, String uri, String username, String password, OTeleporterContext context) {
+  public static Connection getConnection(String driver, String uri, String username, String password) {
 
     Connection connection = null;
 
     try {
-      URL u = new URL("jar:file:" + context.getDriverDependencyPath() + "!/");
+      URL u = new URL("jar:file:" + OTeleporterContext.getInstance().getDriverDependencyPath() + "!/");
       URLClassLoader ucl = new URLClassLoader(new URL[] { u });
       Driver d = (Driver) Class.forName(driver, true, ucl).newInstance();
       DriverManager.registerDriver(new ODriverShim(d));
@@ -76,8 +76,8 @@ public class ODBSourceConnection {
 
     } catch (Exception e) {
       String mess = "";
-      context.printExceptionMessage(e, mess, "error");
-      context.printExceptionStackTrace(e, "error");
+      OTeleporterContext.getInstance().printExceptionMessage(e, mess, "error");
+      OTeleporterContext.getInstance().printExceptionStackTrace(e, "error");
       throw new OTeleporterRuntimeException(e);
     }
     return connection;

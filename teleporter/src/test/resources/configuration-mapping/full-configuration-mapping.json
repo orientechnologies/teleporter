@@ -6,15 +6,17 @@
         "sourceTables": [
           {
             "name": "sourceTable1",
-            "dataSource": "mysql",
+            "dataSource": "hsqldb",
             "tableName": "PERSON",
-            "aggregationColumns" : ["ID"]
+            "aggregationColumns" : ["ID"],
+            "primaryKey" : ["ID"]
           },
           {
             "name": "sourceTable2",
-            "dataSource": "mysql",
+            "dataSource": "hsqldb",
             "tableName": "VAT_PROFILE",
-            "aggregationColumns" : ["ID"]
+            "aggregationColumns" : ["ID"],
+            "primaryKey" : ["ID"]
           }
         ],
         "aggregationFunction": "equality"
@@ -22,7 +24,8 @@
       "properties": {
         "extKey1": {
           "include": true,
-          "type": "string",
+          "type": "STRING",
+          "ordinalPosition": 1,
           "mandatory": false,
           "readOnly": false,
           "notNull": false,
@@ -34,7 +37,8 @@
         },
         "firstName": {
           "include": true,
-          "type": "string",
+          "type": "STRING",
+          "ordinalPosition": 2,
           "mandatory": true,
           "readOnly": false,
           "notNull": true,
@@ -46,7 +50,8 @@
         },
         "lastName": {
           "include": true,
-          "type": "string",
+          "type": "STRING",
+          "ordinalPosition": 3,
           "mandatory": true,
           "readOnly": false,
           "notNull": true,
@@ -58,7 +63,8 @@
         },
         "depId": {
           "include": false,
-          "type": "string",
+          "type": "STRING",
+          "ordinalPosition": 4,
           "mandatory": false,
           "readOnly": false,
           "notNull": false,
@@ -70,7 +76,8 @@
         },
         "extKey2": {
           "include": true,
-          "type": "string",
+          "type": "STRING",
+          "ordinalPosition": 5,
           "mandatory": false,
           "readOnly": false,
           "notNull": false,
@@ -82,7 +89,8 @@
         },
         "VAT": {
           "include": true,
-          "type": "string",
+          "type": "STRING",
+          "ordinalPosition": 6,
           "mandatory": true,
           "readOnly": false,
           "notNull": true,
@@ -94,7 +102,8 @@
         },
         "updatedOn": {
           "include": false,
-          "type": "date",
+          "type": "DATE",
+          "ordinalPosition": 7,
           "mandatory": true,
           "readOnly": false,
           "notNull": true,
@@ -113,14 +122,16 @@
           {
             "name": "sourceTable1",
             "dataSource": "mysql",
-            "tableName": "DEPARTMENT"
+            "tableName": "DEPARTMENT",
+            "primaryKey" : ["ID"]
           }
         ]
       },
       "properties": {
         "id": {
           "include": true,
-          "type": "string",
+          "type": "STRING",
+          "ordinalPosition": 1,
           "mandatory": false,
           "readOnly": false,
           "notNull": false,
@@ -132,7 +143,8 @@
         },
         "departmentName": {
           "include": true,
-          "type": "string",
+          "type": "STRING",
+          "ordinalPosition": 2,
           "mandatory": true,
           "readOnly": false,
           "notNull": true,
@@ -144,7 +156,8 @@
         },
         "location": {
           "include": true,
-          "type": "string",
+          "type": "STRING",
+          "ordinalPosition": 3,
           "mandatory": true,
           "readOnly": false,
           "notNull": true,
@@ -156,7 +169,8 @@
         },
         "updatedOn": {
           "include": false,
-          "type": "date",
+          "type": "DATE",
+          "ordinalPosition": 4,
           "mandatory": true,
           "readOnly": false,
           "notNull": true,
@@ -172,6 +186,7 @@
   "edges": [
     {
       "WorksAt": {
+        "isLogical": false,
         "mapping": [{
           "fromTable": "PERSON",
           "fromColumns": ["DEP_ID"],
@@ -182,7 +197,8 @@
         "properties": {
           "since": {
             "include": true,
-            "type": "date",
+            "type": "DATE",
+            "ordinalPosition": 1,
             "mandatory": true,
             "readOnly": false,
             "notNull": false

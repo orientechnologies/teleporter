@@ -31,7 +31,7 @@ import java.util.Map;
  *  - each property of the vertex type -> correspondent attribute of the entity
  *
  * @author Gabriele Ponzi
- * @email  <gabriele.ponzi--at--gmail.com>
+ * @email  <g.ponzi--at--orientdb.com>
  *
  */
 

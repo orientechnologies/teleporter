@@ -28,7 +28,7 @@ import com.orientechnologies.orient.core.metadata.schema.OType;
  * No Geospatial implemented.
  * 
  * @author Gabriele Ponzi
- * @email  <gabriele.ponzi--at--gmail.com>
+ * @email  <g.ponzi--at--orientdb.com>
  *
  */
 

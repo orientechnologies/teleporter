@@ -121,6 +121,10 @@ public class OFileManager {
     }
 
     File jsonFile = new File(filePath);
+    if(!jsonFile.exists()) {
+      return null;
+    }
+
     FileInputStream is = new FileInputStream(jsonFile);
     BufferedReader rd = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF-8")));
     ODocument json = new ODocument();
@@ -130,4 +134,14 @@ public class OFileManager {
 
   }
 
+
+  public static void writeFileFromText(String text, String outFilePath) throws IOException {
+
+    File outFile = new File(outFilePath);
+    outFile.getParentFile().mkdirs();
+    outFile.createNewFile();
+    PrintWriter out = new PrintWriter(outFile);
+    out.println(text);
+    out.close();
+  }
 }

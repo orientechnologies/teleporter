@@ -18,6 +18,7 @@
 
 package com.orientechnologies.teleporter.test.rdbms.configuration.importing;
 
+import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.teleporter.context.OOutputStreamManager;
 import com.orientechnologies.teleporter.context.OTeleporterContext;
 import com.orientechnologies.teleporter.importengine.rdbms.dbengine.ODBQueryEngine;
@@ -27,6 +28,7 @@ import com.orientechnologies.teleporter.persistence.handler.OHSQLDBDataTypeHandl
 import com.orientechnologies.teleporter.strategy.rdbms.ODBMSNaiveAggregationStrategy;
 import com.orientechnologies.teleporter.strategy.rdbms.ODBMSNaiveStrategy;
 import com.orientechnologies.teleporter.util.OFileManager;
+import com.orientechnologies.teleporter.util.OMigrationConfigManager;
 import com.tinkerpop.blueprints.Direction;
 import com.tinkerpop.blueprints.Edge;
 import com.tinkerpop.blueprints.Vertex;
@@ -63,14 +65,14 @@ public class ImportWithInputRelationshipConfigurationTest {
   private String jurl = "jdbc:hsqldb:mem:mydb";
   private String username = "SA";
   private String password = "";
-  private String outOrientGraphUri = "memory:testOrientDB";
+  private String outOrientGraphUri;
   private OSourceDatabaseInfo sourceDBInfo;
 
 
   @Before
   public void init() {
-    this.context = new OTeleporterContext();
-    this.dbQueryEngine = new ODBQueryEngine(this.driver, this.context);
+    this.context = OTeleporterContext.newInstance();
+    this.dbQueryEngine = new ODBQueryEngine(this.driver);
     this.context.setDbQueryEngine(this.dbQueryEngine);
     this.context.setOutputManager(new OOutputStreamManager(0));
     this.context.setNameResolver(new OJavaConventionNameResolver());
@@ -136,8 +138,10 @@ public class ImportWithInputRelationshipConfigurationTest {
               + "('P002','Contracts Update','E005'))";
       st.execute(projectFilling);
 
+      ODocument config = OMigrationConfigManager.loadMigrationConfigFromFile(this.configDirectEdgesPath);
+
       this.naiveStrategy
-              .executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "basicDBMapper", null, "java", null, null, this.configDirectEdgesPath, context);
+              .executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "basicDBMapper", null, "java", null, null, config);
 
 
       /*
@@ -391,7 +395,7 @@ public class ImportWithInputRelationshipConfigurationTest {
   @Test
 
   /*
-   *  Two tables: 2 relationships declared through foreign keys but the first one is overridden through a jsonConfiguration.
+   *  Two tables: 2 relationships declared through foreign keys but the first one is overridden through a migrationConfigDoc.
    *  Changes on the final edge:
    *  - name
    *  - direction inverted
@@ -405,7 +409,7 @@ public class ImportWithInputRelationshipConfigurationTest {
    *  EMPLOYEE --[HasProject]--> PROJECT
    *  PROJECT --[HasProjectManager]--> EMPLOYEE
    *
-   *  But through jsonConfiguration we obtain:
+   *  But through migrationConfigDoc we obtain:
    *
    *  PROJECT --[HasEmployee]--> EMPLOYEE
    *  PROJECT --[HasProjectManager]--> EMPLOYEE
@@ -458,8 +462,10 @@ public class ImportWithInputRelationshipConfigurationTest {
       st = connection.createStatement();
       st.execute(parentTableBuilding);
 
+      ODocument config = OMigrationConfigManager.loadMigrationConfigFromFile(this.configInverseEdgesPath);
+
       this.naiveStrategy
-              .executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "basicDBMapper", null, "java", null, null, this.configInverseEdgesPath, context);
+              .executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "basicDBMapper", null, "java", null, null, config);
 
 
       /*
@@ -715,14 +721,14 @@ public class ImportWithInputRelationshipConfigurationTest {
 
   /*
    *  Three tables: 1  N-N relationship, no foreign keys declared for the join table in the db.
-   *  Through the jsonConfiguration we obtain the following schema:
+   *  Through the migrationConfigDoc we obtain the following schema:
    *
    *  ACTOR
    *  FILM
    *  ACTOR2FILM: foreign key (ACTOR_ID) references ACTOR(ID)
    *              foreign key (FILM_ID) references FILM(ID)
    *
-   *  With "direct" direction in the jsonConfiguration we obtain:
+   *  With "direct" direction in the migrationConfigDoc we obtain:
    *
    *  ACTOR --[Performs]--> FILM
    *
@@ -789,8 +795,10 @@ public class ImportWithInputRelationshipConfigurationTest {
               + "('A008','F003','15000000'))";
       st.execute(film2actorFilling);
 
+      ODocument config = OMigrationConfigManager.loadMigrationConfigFromFile(this.configJoinTableDirectEdgesPath);
+
       this.naiveAggregationStrategy
-              .executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "basicDBMapper", null, "java", null, null, this.configJoinTableDirectEdgesPath, context);
+              .executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "basicDBMapper", null, "java", null, null, config);
 
       /*
        *  Testing context information
@@ -1119,14 +1127,14 @@ public class ImportWithInputRelationshipConfigurationTest {
 
   /*
    *  Three tables: 1  N-N relationship, no foreign keys declared for the join table in the db.
-   *  Through the jsonConfiguration we obtain the following schema:
+   *  Through the migrationConfigDoc we obtain the following schema:
    *
    *  ACTOR
    *  FILM
    *  ACTOR2FILM: foreign key (ACTOR_ID) references ACTOR(ID)
    *              foreign key (FILM_ID) references FILM(ID)
    *
-   *  With "direct" direction in the jsonConfiguration we would obtain:
+   *  With "direct" direction in the migrationConfigDoc we would obtain:
    *
    *  FILM --[Performs]--> ACTOR
    *
@@ -1195,8 +1203,10 @@ public class ImportWithInputRelationshipConfigurationTest {
               + "('F003','A008','15000000'))";
       st.execute(film2actorFilling);
 
+      ODocument config = OMigrationConfigManager.loadMigrationConfigFromFile(this.configJoinTableInverseEdgesPath);
+
       this.naiveAggregationStrategy
-              .executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "basicDBMapper", null, "java", null, null, this.configJoinTableInverseEdgesPath, context);
+              .executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "basicDBMapper", null, "java", null, null, config);
 
       /*
        *  Testing context information
@@ -1530,8 +1540,8 @@ public class ImportWithInputRelationshipConfigurationTest {
    *  ACTOR2FILM: foreign key (ACTOR_ID) references ACTOR(ID)
    *              foreign key (FILM_ID) references FILM(ID)
    *
-   *  Through the jsonConfiguration we want name the relationship "Performs".
-   *  With "direct" direction in the jsonConfiguration we obtain:
+   *  Through the migrationConfigDoc we want name the relationship "Performs".
+   *  With "direct" direction in the migrationConfigDoc we obtain:
    *
    *  ACTOR --[Performs]--> FILM
    *
@@ -1599,7 +1609,9 @@ public class ImportWithInputRelationshipConfigurationTest {
               + "('A008','F003','15000000'))";
       st.execute(film2actorFilling);
 
-      this.naiveAggregationStrategy.executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "basicDBMapper", null, "java", null, null, this.configJoinTableDirectEdgesPath, context);
+      ODocument config = OMigrationConfigManager.loadMigrationConfigFromFile(this.configJoinTableDirectEdgesPath);
+
+      this.naiveAggregationStrategy.executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "basicDBMapper", null, "java", null, null, config);
 
       /*
        *  Testing context information
@@ -1933,8 +1945,8 @@ public class ImportWithInputRelationshipConfigurationTest {
    *  ACTOR2FILM: foreign key (ACTOR_ID) references ACTOR(ID)
    *              foreign key (FILM_ID) references FILM(ID)
    *
-   *  Through the jsonConfiguration we want name the relationship "Performs".
-   *  With "direct" direction in the jsonConfiguration we would obtain:
+   *  Through the migrationConfigDoc we want name the relationship "Performs".
+   *  With "direct" direction in the migrationConfigDoc we would obtain:
    *
    *  ACTOR --[Features]--> FILM
    *
@@ -2004,7 +2016,9 @@ public class ImportWithInputRelationshipConfigurationTest {
               + "('F003','A008','15000000'))";
       st.execute(film2actorFilling);
 
-      this.naiveAggregationStrategy.executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "basicDBMapper", null, "java", null, null, this.configJoinTableInverseEdgesPath2, context);
+      ODocument config = OMigrationConfigManager.loadMigrationConfigFromFile(this.configJoinTableInverseEdgesPath2);
+
+      this.naiveAggregationStrategy.executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "basicDBMapper", null, "java", null, null, config);
 
       /*
        *  Testing context information

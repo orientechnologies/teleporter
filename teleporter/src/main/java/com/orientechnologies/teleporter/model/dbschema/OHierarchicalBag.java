@@ -30,7 +30,7 @@ import java.util.Set;
  * meta-data useful for records importing.
  *
  * @author Gabriele Ponzi
- * @email  <gabriele.ponzi--at--gmail.com>
+ * @email  <g.ponzi--at--orientdb.com>
  *
  */
 

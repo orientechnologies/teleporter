@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 /**
  * Created by Enrico Risa on 27/11/15.
@@ -38,12 +39,12 @@ public class OTeleporterHandler {
 
   /**
    * Execute import with jsonConfiguration;
-   * 
-   * @param cfg
+   *
+   * @param args
    */
-  public void executeImport(ODocument cfg) {
+  public ODocument execute(ODocument args) {
 
-    OTeleporterJob job = new OTeleporterJob(cfg, new OTeleporterListener() {
+    OTeleporterJob job = new OTeleporterJob(args, new OTeleporterListener() {
       @Override
       public void onEnd(OTeleporterJob oTeleporterJob) {
         currentJob = null;
@@ -53,32 +54,41 @@ public class OTeleporterHandler {
     job.validate();
 
     currentJob = job;
-    pool.execute(job);
+    Future<ODocument> future = pool.submit(job);
+    ODocument executionResult = null;
 
+    try {
+      //print the return value of Future, notice the output delay in console
+      // because Future.get() waits for task to get completed
+      executionResult = future.get();
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+
+    return executionResult;
   }
 
   /**
    * Check If the connection with given parameters is alive
-   * 
-   * @param cfg
+   *
+   * @param args
    * @throws Exception
    */
-  public void checkConnection(ODocument cfg) throws Exception {
+  public void checkConnection(ODocument args) throws Exception {
 
     ODriverConfigurator configurator = new ODriverConfigurator();
 
-    final String driver = cfg.field("driver");
-    final String jurl = cfg.field("jurl");
-    final String username = cfg.field("username");
-    final String password = cfg.field("password");
-    OTeleporterContext oTeleporterContext = new OTeleporterContext();
-    oTeleporterContext.setOutputManager(new OOutputStreamManager(2));
-    configurator.checkConnection(driver, jurl, username, password, oTeleporterContext);
+    final String driver = args.field("driver");
+    final String jurl = args.field("jurl");
+    final String username = args.field("username");
+    final String password = args.field("password");
+    OTeleporterContext.getInstance().setOutputManager(new OOutputStreamManager(2));
+    configurator.checkConnection(driver, jurl, username, password);
   }
 
   /**
    * Status of the Running Jobs
-   * 
+   *
    * @return ODocument
    */
   public ODocument status() {

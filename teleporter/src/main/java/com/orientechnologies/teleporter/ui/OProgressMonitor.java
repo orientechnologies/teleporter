@@ -37,29 +37,28 @@ import java.util.Date;
  * OrientDB importing:         90% [...........................................       ] Elapsed: 00:00:00 Remaining: 00:00:00 Warnings: 5
  *
  * @author Gabriele Ponzi
- * @email  <gabriele.ponzi--at--gmail.com>
+ * @email  <g.ponzi--at--orientdb.com>
  *
  */
 
 public class OProgressMonitor implements OStatisticsListener {
 
-  private OTeleporterContext context;
-
   private final String work1Title;
   private final String work2Title;
   private final String work3Title;
   private final String work4Title;
+  private final String work5Title;
   private boolean firstPrint;
 
   /**
    * initialize progress bar properties.
    */
-  public OProgressMonitor(OTeleporterContext context) {
+  public OProgressMonitor() {
     this.work1Title = String.format("%-35s","(1/4) Source DB Schema building:");
     this.work2Title = String.format("%-35s","(2/4) Graph Model building:");
     this.work3Title = String.format("%-35s","(3/4) OrientDB Schema writing:");
     this.work4Title = String.format("%-35s","(4/4) OrientDB importing:");
-    this.context = context;
+    this.work5Title = String.format("%-35s","Building accessory edges in OrientDB:");
     this.firstPrint = true;
   }
 
@@ -74,21 +73,23 @@ public class OProgressMonitor implements OStatisticsListener {
   public String updateOnEvent(OTeleporterStatistics statistics) {
 
     if(firstPrint) {
-      System.out.println("");
+      OTeleporterContext.getInstance().getOutputManager().info("\n");
       this.firstPrint = false;
     }
 
     String message = null;
 
     switch(statistics.runningStepNumber) {
-    case 1: message = this.updateWork1OnEvent(statistics);
-      break;
-    case 2: message = this.updateWork2OnEvent(statistics);
-      break;
-    case 3: message = this.updateWork3OnEvent(statistics);
-      break;
-    case 4: message = this.updateWork4OnEvent(statistics);
-      break;
+      case 1: message = this.updateWork1OnEvent(statistics);
+        break;
+      case 2: message = this.updateWork2OnEvent(statistics);
+        break;
+      case 3: message = this.updateWork3OnEvent(statistics);
+        break;
+      case 4: message = this.updateWork4OnEvent(statistics);
+        break;
+      case 5: message = this.updateWork5OnEvent(statistics);
+        break;
     }
     return message;
   }
@@ -103,7 +104,7 @@ public class OProgressMonitor implements OStatisticsListener {
     Date currentTime = new Date();
 
     int work1DonePercentage = (int)( (((double)statistics.builtEntities/(double)statistics.totalNumberOfEntities) * 0.25 * 100) +
-        (((double)statistics.entitiesAnalyzedForRelationship /(double)statistics.totalNumberOfEntities) * 0.75 * 100) );
+            (((double)statistics.entitiesAnalyzedForRelationship /(double)statistics.totalNumberOfEntities) * 0.75 * 100) );
 
     String progressBarWork1 = this.getProgressBar(work1DonePercentage);
 
@@ -199,7 +200,7 @@ public class OProgressMonitor implements OStatisticsListener {
       work4DonePercentage = 0;
     }
 
-    String progressBarWork4 = this.getProgressBar(work4DonePercentage);;
+    String progressBarWork4 = this.getProgressBar(work4DonePercentage);
 
     // Time
     long elapsedTime = (currentTime.getTime() - statistics.startWork4Time.getTime());
@@ -207,9 +208,54 @@ public class OProgressMonitor implements OStatisticsListener {
     return this.printProgressBar(this.work4Title, work4DonePercentage, progressBarWork4, elapsedTime, statistics.warningMessages.size(), statistics.analyzedRecords, statistics.totalNumberOfRecords);
   }
 
+  /**
+   * Work5: Building edges on join attributes
+   */
+
+  public String updateWork5OnEvent(OTeleporterStatistics statistics) {
+
+    Date currentTime = new Date();
+    int numberOfLogicalRelationships = statistics.totalNumberOfLogicalRelationships;
+
+    // TO CHECK
+
+    int work5DonePercentage;
+    if(numberOfLogicalRelationships > 0) {
+
+      int work5percentage1;
+      if(statistics.leftVerticesCurrentLogicalRelationship > 0) {
+        work5percentage1 = statistics.doneLeftVerticesCurrentLogicalRelationship / statistics.leftVerticesCurrentLogicalRelationship;
+      }
+      else {
+        work5percentage1 = 0;
+
+      }
+      int work5percentage2 = statistics.doneLogicalRelationships / statistics.totalNumberOfLogicalRelationships;
+
+
+      if(work5percentage2 == 1) {
+        work5DonePercentage = 100;
+      }
+      else {
+        work5DonePercentage = (work5percentage2 + (work5percentage1 / numberOfLogicalRelationships)) * 100;
+      }
+
+    }
+    else {
+      work5DonePercentage = 0;
+    }
+
+    String progressBarWork5 = this.getProgressBar(work5DonePercentage);
+
+    // Time
+    long elapsedTime = (currentTime.getTime() - statistics.startWork5Time.getTime());
+
+    return this.printProgressBar(this.work5Title, work5DonePercentage, progressBarWork5, elapsedTime, statistics.warningMessages.size(), -1, -1);
+  }
+
 
   public void initialize() {
-    context.getStatistics().registerListener(this);
+    OTeleporterContext.getInstance().getStatistics().registerListener(this);
   }
 
   public String printProgressBar(String workTitle, int workDonePercentage, String progressBarWork, long elapsedTime, int occurredWarnings, int importedRecords, int totalRecords) {
@@ -232,7 +278,11 @@ public class OProgressMonitor implements OStatisticsListener {
     String remainingHMSTime = OFunctionsHandler.getHMSFormat(remainingTime);
 
     String message = String.format(format, workTitle, workDonePercentage, progressBarWork, " Elapsed:", elapsedHMSTime, " Remaining:", remainingHMSTime, " Warnings:", occurredWarnings, " Records:", importedRecords + "/" + totalRecords);
-    context.getOutputManager().info(message);
+    OTeleporterContext.getInstance().getOutputManager().info(message);
+
+    if(message.length() > 500) {
+      System.out.println();
+    }
 
     return message;
   }

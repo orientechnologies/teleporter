@@ -59,17 +59,18 @@ public class OrientDBSchemaWritingTest {
   private String jurl = "jdbc:hsqldb:mem:mydb";
   private String username = "SA";
   private String password = "";
-  private String outOrientGraphUri = "memory:testOrientDB";
+  private String outOrientGraphUri;
   private OSourceDatabaseInfo sourceDBInfo;
 
   @Before
   public void init() {
-    this.context = new OTeleporterContext();
-    this.dbQueryEngine = new ODBQueryEngine(this.driver, this.context);
+    this.context = OTeleporterContext.newInstance();
+    this.dbQueryEngine = new ODBQueryEngine(this.driver);
     this.context.setDbQueryEngine(this.dbQueryEngine);
     this.context.setOutputManager(new OOutputStreamManager(0));
+    this.context.setDataTypeHandler(new OHSQLDBDataTypeHandler());
     this.modelWriter = new OGraphModelWriter();
-    this.outOrientGraphUri = "memory:testOrientDB";
+    this.outOrientGraphUri = "plocal:target/testOrientDB";
     this.sourceDBInfo = new OSourceDatabaseInfo("source", this.driver, this.jurl, this.username, this.password);
   }
 
@@ -101,9 +102,9 @@ public class OrientDBSchemaWritingTest {
       st.execute(foreignTableBuilding);
 
       this.mapper = new OER2GraphMapper(this.sourceDBInfo, null, null, null);
-      mapper.buildSourceDatabaseSchema(this.context);
-      mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
-      modelWriter.writeModelOnOrient(mapper.getGraphModel(), new OHSQLDBDataTypeHandler(), this.outOrientGraphUri, context);
+      mapper.buildSourceDatabaseSchema();
+      mapper.buildGraphModel(new OJavaConventionNameResolver());
+      modelWriter.writeModelOnOrient(mapper, new OHSQLDBDataTypeHandler(), this.outOrientGraphUri);
 
 
       /*
@@ -220,9 +221,9 @@ public class OrientDBSchemaWritingTest {
       st.execute(itemTableBuilding);
 
       this.mapper = new OER2GraphMapper(this.sourceDBInfo, null, null, null);
-      mapper.buildSourceDatabaseSchema(this.context);
-      mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
-      modelWriter.writeModelOnOrient(mapper.getGraphModel(), new OHSQLDBDataTypeHandler(), this.outOrientGraphUri, context);
+      mapper.buildSourceDatabaseSchema();
+      mapper.buildGraphModel(new OJavaConventionNameResolver());
+      modelWriter.writeModelOnOrient(mapper, new OHSQLDBDataTypeHandler(), this.outOrientGraphUri);
 
 
       /*
@@ -360,9 +361,9 @@ public class OrientDBSchemaWritingTest {
       st.execute(articleTableBuilding);
 
       this.mapper = new OER2GraphMapper(this.sourceDBInfo, null, null, null);
-      mapper.buildSourceDatabaseSchema(this.context);
-      mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
-      modelWriter.writeModelOnOrient(mapper.getGraphModel(), new OHSQLDBDataTypeHandler(), this.outOrientGraphUri, context);
+      mapper.buildSourceDatabaseSchema();
+      mapper.buildGraphModel(new OJavaConventionNameResolver());
+      modelWriter.writeModelOnOrient(mapper, new OHSQLDBDataTypeHandler(), this.outOrientGraphUri);
 
 
       /*
@@ -498,9 +499,9 @@ public class OrientDBSchemaWritingTest {
       st.execute(bookTableBuilding);
 
       this.mapper = new OER2GraphMapper(this.sourceDBInfo, null, null, null);
-      mapper.buildSourceDatabaseSchema(this.context);
-      mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
-      modelWriter.writeModelOnOrient(mapper.getGraphModel(), new OHSQLDBDataTypeHandler(), this.outOrientGraphUri, context);
+      mapper.buildSourceDatabaseSchema();
+      mapper.buildGraphModel(new OJavaConventionNameResolver());
+      modelWriter.writeModelOnOrient(mapper, new OHSQLDBDataTypeHandler(), this.outOrientGraphUri);
 
 
       /*
@@ -622,9 +623,9 @@ public class OrientDBSchemaWritingTest {
       st.execute(film2actorTableBuilding);
 
       this.mapper = new OER2GraphMapper(this.sourceDBInfo, null, null, null);
-      mapper.buildSourceDatabaseSchema(this.context);
-      mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
-      modelWriter.writeModelOnOrient(mapper.getGraphModel(), new OHSQLDBDataTypeHandler(), this.outOrientGraphUri, context);
+      mapper.buildSourceDatabaseSchema();
+      mapper.buildGraphModel(new OJavaConventionNameResolver());
+      modelWriter.writeModelOnOrient(mapper, new OHSQLDBDataTypeHandler(), this.outOrientGraphUri);
 
 
       /*
@@ -757,9 +758,9 @@ public class OrientDBSchemaWritingTest {
       st.execute(foreignTableBuilding);
 
       this.mapper = new OER2GraphMapper(this.sourceDBInfo, null, null, null);
-      mapper.buildSourceDatabaseSchema(this.context);
-      mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
-      modelWriter.writeModelOnOrient(mapper.getGraphModel(), new OHSQLDBDataTypeHandler(), this.outOrientGraphUri, context);
+      mapper.buildSourceDatabaseSchema();
+      mapper.buildGraphModel(new OJavaConventionNameResolver());
+      modelWriter.writeModelOnOrient(mapper, new OHSQLDBDataTypeHandler(), this.outOrientGraphUri);
 
 
       /*
@@ -880,9 +881,9 @@ public class OrientDBSchemaWritingTest {
       st.execute(articleTableBuilding);
 
       this.mapper = new OER2GraphMapper(this.sourceDBInfo, null, null, null);
-      mapper.buildSourceDatabaseSchema(this.context);
-      mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
-      modelWriter.writeModelOnOrient(mapper.getGraphModel(), new OHSQLDBDataTypeHandler(), this.outOrientGraphUri, context);
+      mapper.buildSourceDatabaseSchema();
+      mapper.buildGraphModel(new OJavaConventionNameResolver());
+      modelWriter.writeModelOnOrient(mapper, new OHSQLDBDataTypeHandler(), this.outOrientGraphUri);
 
 
       // dropping property from OrientDB Schema (from Author)
@@ -904,7 +905,7 @@ public class OrientDBSchemaWritingTest {
       assertEquals(true, props.contains("name"));
       assertEquals(true, props.contains("surname"));
 
-      modelWriter.writeModelOnOrient(mapper.getGraphModel(), new OHSQLDBDataTypeHandler(), this.outOrientGraphUri, context);
+      modelWriter.writeModelOnOrient(mapper, new OHSQLDBDataTypeHandler(), this.outOrientGraphUri);
       authorVertexType =  orientGraph.getVertexType("Author");
       assertEquals(3, authorVertexType.properties().size());
       it = authorVertexType.properties().iterator();
@@ -940,7 +941,7 @@ public class OrientDBSchemaWritingTest {
       assertEquals(true, props.contains("authorId"));
       assertEquals(true, props.contains("date"));
 
-      modelWriter.writeModelOnOrient(mapper.getGraphModel(), new OHSQLDBDataTypeHandler(), this.outOrientGraphUri, context);
+      modelWriter.writeModelOnOrient(mapper, new OHSQLDBDataTypeHandler(), this.outOrientGraphUri);
       assertEquals(3, articleVertexType.properties().size());
       articleVertexType = orientGraph.getVertexType("Article");
       it = articleVertexType.properties().iterator();
@@ -962,7 +963,7 @@ public class OrientDBSchemaWritingTest {
       assertEquals("date", it.next().getName());
       assertFalse(it.hasNext());
 
-      modelWriter.writeModelOnOrient(mapper.getGraphModel(), new OHSQLDBDataTypeHandler(), this.outOrientGraphUri, context);
+      modelWriter.writeModelOnOrient(mapper, new OHSQLDBDataTypeHandler(), this.outOrientGraphUri);
       authorEdgeType = orientGraph.getEdgeType("HasAuthor");
       assertEquals(0, authorEdgeType.properties().size());
 

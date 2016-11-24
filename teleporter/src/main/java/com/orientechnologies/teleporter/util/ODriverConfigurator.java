@@ -20,7 +20,7 @@ package com.orientechnologies.teleporter.util;
 
 import com.orientechnologies.teleporter.context.OTeleporterContext;
 import com.orientechnologies.teleporter.exception.OTeleporterRuntimeException;
-import com.orientechnologies.teleporter.model.dbschema.OSourceDatabaseInfo;
+import com.orientechnologies.teleporter.main.OTeleporter;
 import com.orientechnologies.teleporter.persistence.util.ODBSourceConnection;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
@@ -38,10 +38,10 @@ import java.util.Map;
 
 
 /**
- * Executes an automatic jsonConfiguration of the chosen driver JDBC.
+ * Executes an automatic migrationConfigDoc of the chosen driver JDBC.
  *
  * @author Gabriele Ponzi
- * @email <gabriele.ponzi--at--gmail.com>
+ * @email <g.ponzi--at--orientdb.com>
  *
  */
 
@@ -49,6 +49,8 @@ public class ODriverConfigurator {
 
   public static final String DRIVERS = "http://orientdb.com/jdbc-drivers.json";
   private final String localJsonPath = "../config/jdbc-drivers.json";
+  private final String driverClassPath = "../lib/";
+  private ODocument driverInfo;
   private Map<String, List<String>> driver2filesIdentifier;
 
   public ODriverConfigurator() {
@@ -89,44 +91,93 @@ public class ODriverConfigurator {
 
   }
 
-  /*
-   * It Checks if the requested driver is already present in the classpath, if not present it downloads the last available driver
-   * version. Moreover it gets the driver class name corresponding to the chosen DBMS.
+  /**
+   * It performs a fetching of the driver class name from the driver name (corresponding to the chosen DBMS)
+   * Connection to the 'http://orientdb.com/jdbc-drivers.json' resource if needed.
+   *
+   * @param driverName (case insensitive)
+   * @return driverClassName
    */
-  public String checkConfiguration(String driverName, OTeleporterContext context) {
+  public String fetchDriverClassName(String driverName) {
 
-    String classPath = "../lib/";
     String driverClassName = null;
     driverName = driverName.toLowerCase();
 
     try {
 
-      // fetching online JSON
-      ODocument json = readJsonFromUrl(DRIVERS, context);
+      if (this.driverInfo == null) {
+        // fetching online JSON
+        this.driverInfo = readJsonFromUrl(DRIVERS);
+      }
 
       ODocument fields = null;
 
       // recovering driver class name
       if (driverName.equals("oracle")) {
-        fields = json.field("Oracle");
+        fields = this.driverInfo.field("Oracle");
       }
       if (driverName.equals("sqlserver")) {
-        fields = json.field("SQLServer");
+        fields = this.driverInfo.field("SQLServer");
       } else if (driverName.equals("mysql")) {
-        fields = json.field("MySQL");
+        fields = this.driverInfo.field("MySQL");
       } else if (driverName.equals("postgresql")) {
-        fields = json.field("PostgreSQL");
+        fields = this.driverInfo.field("PostgreSQL");
       } else if (driverName.equals("hypersql")) {
-        fields = json.field("HyperSQL");
+        fields = this.driverInfo.field("HyperSQL");
       }
       driverClassName = (String) fields.field("className");
+    }catch (Exception e) {
+      String mess = "";
+      OTeleporterContext.getInstance().printExceptionMessage(e, mess, "error");
+      OTeleporterContext.getInstance().printExceptionStackTrace(e, "error");
+      throw new OTeleporterRuntimeException(e);
+    }
+
+    return driverClassName;
+  }
+
+
+  /**
+   * It Checks if the requested driver is already present in the classpath, if not present it downloads the last available driver
+   * version.
+   * Connection to the 'http://orientdb.com/jdbc-drivers.json' resource if needed.
+   *
+   * @param driverName (case insensitive)
+   */
+
+  public void checkDriverConfiguration(String driverName) {
+
+    driverName = driverName.toLowerCase();
+
+    try {
+
+      if(this.driverInfo == null) {
+        // fetching online JSON
+        this.driverInfo = readJsonFromUrl(DRIVERS);
+      }
+
+      ODocument fields = null;
+
+      // recovering driver class name
+      if (driverName.equals("oracle")) {
+        fields = this.driverInfo.field("Oracle");
+      }
+      if (driverName.equals("sqlserver")) {
+        fields = this.driverInfo.field("SQLServer");
+      } else if (driverName.equals("mysql")) {
+        fields = this.driverInfo.field("MySQL");
+      } else if (driverName.equals("postgresql")) {
+        fields = this.driverInfo.field("PostgreSQL");
+      } else if (driverName.equals("hypersql")) {
+        fields = this.driverInfo.field("HyperSQL");
+      }
 
       // if the driver is not present, it will be downloaded
-      String driverPath = isDriverAlreadyPresent(driverName, classPath);
+      String driverPath = isDriverAlreadyPresent(driverName, this.driverClassPath);
 
       if (driverPath == null) {
 
-        context.getOutputManager().info("\nDownloading the necessary JDBC driver in ORIENTDB_HOME/lib ...\n");
+        OTeleporterContext.getInstance().getOutputManager().info("\nDownloading the necessary JDBC driver in ORIENTDB_HOME/lib ...\n");
 
         // download last available jdbc driver version
         String driverDownldUrl = (String) fields.field("url");
@@ -134,32 +185,35 @@ public class ODriverConfigurator {
         String fileName = driverDownldUrl.substring(driverDownldUrl.lastIndexOf('/') + 1, driverDownldUrl.length());
         ReadableByteChannel rbc = Channels.newChannel(website.openStream());
         @SuppressWarnings("resource")
-        FileOutputStream fos = new FileOutputStream(classPath + fileName);
+        FileOutputStream fos = new FileOutputStream(this.driverClassPath + fileName);
         fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
 
-        driverPath = classPath + fileName;
+        driverPath = this.driverClassPath + fileName;
 
         if (driverName.equalsIgnoreCase("SQLServer")) {
-          OFileManager.extractAll(driverPath, classPath);
-          OFileManager.deleteFile(driverPath);
+          OFileManager.extractAll(driverPath, this.driverClassPath);
+          try {
+            OFileManager.deleteFile(driverPath);
+          } catch(IOException e) {
+            OTeleporterContext.getInstance().getOutputManager().info("The %s package file was not correctly deleted from the %s path.", driverPath, this.driverClassPath);
+          }
           String[] split = driverPath.split(".jar");
           driverPath = split[0] + ".jar";
         }
 
-        context.getOutputManager().info("Driver JDBC downloaded.\n");
+        OTeleporterContext.getInstance().getOutputManager().info("Driver JDBC downloaded.\n");
       }
 
       // saving driver
-      context.setDriverDependencyPath(driverPath);
+      OTeleporterContext.getInstance().setDriverDependencyPath(driverPath);
 
     } catch (Exception e) {
       String mess = "";
-      context.printExceptionMessage(e, mess, "error");
-      context.printExceptionStackTrace(e, "error");
+      OTeleporterContext.getInstance().printExceptionMessage(e, mess, "error");
+      OTeleporterContext.getInstance().printExceptionStackTrace(e, "error");
       throw new OTeleporterRuntimeException(e);
     }
 
-    return driverClassName;
   }
 
   /**
@@ -183,7 +237,7 @@ public class ODriverConfigurator {
     return null;
   }
 
-  public ODocument readJsonFromUrl(String url, OTeleporterContext context) {
+  public ODocument readJsonFromUrl(String url) {
 
     InputStream is = null;
     ODocument json = null;
@@ -202,9 +256,9 @@ public class ODriverConfigurator {
           // read json from the file in the ORIENTDB_HOME/config path
           is = new FileInputStream(new File(this.localJsonPath));
         } catch (IOException e2) {
-          String mess = "The jdbc-drivers jsonConfiguration cannot be found. The connection to orientdb.com did not succeed and the jsonConfiguration file \"jdbc-drivers.json\" is not present in ORIENTDB_HOME/config.\n";
-          context.printExceptionMessage(e2, mess, "error");
-          context.printExceptionStackTrace(e2, "error");
+          String mess = "The jdbc-drivers migrationConfigDoc cannot be found. The connection to orientdb.com did not succeed and the migrationConfigDoc file \"jdbc-drivers.json\" is not present in ORIENTDB_HOME/config.\n";
+          OTeleporterContext.getInstance().printExceptionMessage(e2, mess, "error");
+          OTeleporterContext.getInstance().printExceptionStackTrace(e2, "error");
           throw new OTeleporterRuntimeException(e2);
         }
       }
@@ -217,29 +271,30 @@ public class ODriverConfigurator {
 
     } catch (Exception e) {
       String mess = "";
-      context.printExceptionMessage(e, mess, "error");
-      context.printExceptionStackTrace(e, "error");
+      OTeleporterContext.getInstance().printExceptionMessage(e, mess, "error");
+      OTeleporterContext.getInstance().printExceptionStackTrace(e, "error");
       throw new OTeleporterRuntimeException(e);
     } finally {
       try {
         is.close();
       } catch (Exception e) {
         String mess = "";
-        context.printExceptionMessage(e, mess, "error");
-        context.printExceptionStackTrace(e, "error");
+        OTeleporterContext.getInstance().printExceptionMessage(e, mess, "error");
+        OTeleporterContext.getInstance().printExceptionStackTrace(e, "error");
         throw new OTeleporterRuntimeException(e);
       }
     }
     return json;
   }
 
-  public void checkConnection(String driver, String uri, String username, String password, OTeleporterContext context)
-      throws Exception {
+  public void checkConnection(String driver, String uri, String username, String password)
+          throws Exception {
 
-    String driverName = checkConfiguration(driver, context);
+    String driverName = this.fetchDriverClassName(driver);
+    this.checkDriverConfiguration(driver);
     Connection connection = null;
     try {
-      connection = ODBSourceConnection.getConnection(driverName, uri, username, password, context);
+      connection = ODBSourceConnection.getConnection(driverName, uri, username, password);
     } finally {
       if (connection != null) {
         connection.close();

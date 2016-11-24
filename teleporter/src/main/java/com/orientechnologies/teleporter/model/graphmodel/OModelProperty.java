@@ -23,7 +23,7 @@ package com.orientechnologies.teleporter.model.graphmodel;
  * the transformation of an attribute belonging to an entity of the source DB schema.
  * 
  * @author Gabriele Ponzi
- * @email  <gabriele.ponzi--at--gmail.com>
+ * @email  <g.ponzi--at--orientdb.com>
  *
  */
 
@@ -167,7 +167,7 @@ public class OModelProperty {
 
   public String toString() {
     String s = "";
-    s += this.ordinalPosition + ": " + this.name + " ( " + this.originalType + " )";
+    s += this.ordinalPosition + ": " + this.name + " ( " + this.orientdbType + " )";
     return s;
   }
 

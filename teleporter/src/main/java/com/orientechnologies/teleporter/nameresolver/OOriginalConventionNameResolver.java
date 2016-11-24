@@ -18,13 +18,13 @@
 
 package com.orientechnologies.teleporter.nameresolver;
 
-import com.orientechnologies.teleporter.model.dbschema.ORelationship;
+import com.orientechnologies.teleporter.model.dbschema.OCanonicalRelationship;
 
 /**
  * Implementation of ONameResolver that maintains the original name convention.
  * 
  * @author Gabriele Ponzi
- * @email  <gabriele.ponzi--at--gmail.com>
+ * @email  <g.ponzi--at--orientdb.com>
  *
  */
 
@@ -48,13 +48,13 @@ public class OOriginalConventionNameResolver implements ONameResolver {
 
 
   @Override
-  public String resolveEdgeName(ORelationship relationship) {
+  public String resolveEdgeName(OCanonicalRelationship relationship) {
 
     String finalName;
 
     // Foreign Key composed of 1 attribute
-    if(relationship.getForeignKey().getInvolvedAttributes().size() == 1) {
-      String columnName = relationship.getForeignKey().getInvolvedAttributes().get(0).getName();
+    if(relationship.getFromColumns().size() == 1) {
+      String columnName = relationship.getFromColumns().get(0).getName();
       columnName = columnName.replace("_id", "");
       columnName = columnName.replace("_ID", "");
       columnName = columnName.replace("_oid", "");

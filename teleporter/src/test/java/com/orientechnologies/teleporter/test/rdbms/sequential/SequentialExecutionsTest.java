@@ -47,7 +47,7 @@ import static org.junit.Assert.*;
 
 /**
  * @author Gabriele Ponzi
- * @email  <gabriele.ponzi--at--gmail.com>
+ * @email  <g.ponzi--at--orientdb.com>
  *
  */
 
@@ -61,21 +61,21 @@ public class SequentialExecutionsTest {
   private String jurl = "jdbc:hsqldb:mem:mydb";
   private String username = "SA";
   private String password = "";
-  private String outOrientGraphUri = "memory:testOrientDB";
+  private String outOrientGraphUri;
   private OSourceDatabaseInfo sourceDBInfo;
 
 
   @Before
   public void init() {
-    this.context = new OTeleporterContext();
-    this.dbQueryEngine = new ODBQueryEngine(this.driver, this.context);
+    this.outOrientGraphUri = "plocal:target/testOrientDB";
+    this.context = OTeleporterContext.newInstance();
+    this.dbQueryEngine = new ODBQueryEngine(this.driver);
     this.context.setDbQueryEngine(this.dbQueryEngine);
     this.context.setOutputManager(new OOutputStreamManager(0));
     this.context.setNameResolver(new OJavaConventionNameResolver());
     this.context.setDataTypeHandler(new OHSQLDBDataTypeHandler());
     this.naiveImportStrategy = new ODBMSNaiveStrategy();
     this.naiveAggregationImportStrategy = new ODBMSNaiveAggregationStrategy();
-    this.outOrientGraphUri = "memory:testOrientDB";
     this.sourceDBInfo = new OSourceDatabaseInfo("source", this.driver, this.jurl, this.username, this.password);
   }
 
@@ -104,7 +104,7 @@ public class SequentialExecutionsTest {
       st = connection.createStatement();
       st.execute(actorTableBuilding);
 
-      this.naiveImportStrategy.executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "basicDBMapper",  null, "java", null, null, null, context);
+      this.naiveImportStrategy.executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "basicDBMapper",  null, "java", null, null, null);
 
 
       /*
@@ -148,7 +148,7 @@ public class SequentialExecutionsTest {
           + "add BIRTHDAY date";
       st.execute(addColumn);
 
-      this.naiveImportStrategy.executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "basicDBMapper",  null, "java", null, null, null, context);
+      this.naiveImportStrategy.executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "basicDBMapper",  null, "java", null, null, null);
 
 
       /*
@@ -234,7 +234,7 @@ public class SequentialExecutionsTest {
       st = connection.createStatement();
       st.execute(actorTableBuilding);
 
-      this.naiveImportStrategy.executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "basicDBMapper",  null, "java", null, null, null, context);
+      this.naiveImportStrategy.executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "basicDBMapper",  null, "java", null, null, null);
 
 
       /*
@@ -281,7 +281,7 @@ public class SequentialExecutionsTest {
           + "drop column BIRTHDAY";
       st.execute(removeColumn);
 
-      this.naiveImportStrategy.executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "basicDBMapper",  null, "java", null, null, null, context);
+      this.naiveImportStrategy.executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "basicDBMapper",  null, "java", null, null, null);
 
 
       /*
@@ -362,7 +362,7 @@ public class SequentialExecutionsTest {
       st = connection.createStatement();
       st.execute(actorTableBuilding);
 
-      this.naiveImportStrategy.executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "basicDBMapper",  null, "java", null, null, null, context);
+      this.naiveImportStrategy.executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "basicDBMapper",  null, "java", null, null, null);
 
 
       /*
@@ -413,7 +413,7 @@ public class SequentialExecutionsTest {
           + "alter column BIRTHDAY rename to ANNIVERSARY";
       st.execute(modifyColumn);
 
-      this.naiveImportStrategy.executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "basicDBMapper",  null, "java", null, null, null, context);
+      this.naiveImportStrategy.executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "basicDBMapper",  null, "java", null, null, null);
 
 
       /*
@@ -516,7 +516,7 @@ public class SequentialExecutionsTest {
           + "('F002','Shutter Island','D002'))";
       st.execute(filmFilling);
 
-      this.naiveImportStrategy.executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "basicDBMapper",  null, "java", null, null, null, context);
+      this.naiveImportStrategy.executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "basicDBMapper",  null, "java", null, null, null);
 
 
       /*
@@ -575,7 +575,7 @@ public class SequentialExecutionsTest {
       String addNewForeignKey = "alter table DIRECTOR add foreign key (BESTFILM) references FILM(ID)";
       st.execute(addNewForeignKey);
 
-      this.naiveImportStrategy.executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "basicDBMapper",  null, "java", null, null, null, context);
+      this.naiveImportStrategy.executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "basicDBMapper",  null, "java", null, null, null);
 
 
       /*
@@ -614,13 +614,6 @@ public class SequentialExecutionsTest {
         assertNotNull(e.getId());
         count++;
       }
-      assertEquals(4, count);
-
-      count = 0;
-      for(Edge e: orientGraph.getEdgesOfClass("HasDirector")) {
-        assertNotNull(e.getId());
-        count++;
-      }
       assertEquals(2, count);
 
       count = 0;
@@ -630,8 +623,7 @@ public class SequentialExecutionsTest {
       }
       assertEquals(2, count);
 
-
-
+      assertNull(orientGraph.getEdgeType("HasDirector"));
 
     }catch(Exception e) {
       e.printStackTrace();
@@ -654,9 +646,6 @@ public class SequentialExecutionsTest {
     }  
 
   }
-
-
-
 
 
   @Test
@@ -683,7 +672,7 @@ public class SequentialExecutionsTest {
       st = connection.createStatement();
       st.execute(actorTableBuilding);
 
-      this.naiveImportStrategy.executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "basicDBMapper",  null, "java", null, null, null, context);
+      this.naiveImportStrategy.executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "basicDBMapper",  null, "java", null, null, null);
 
 
       /*
@@ -730,7 +719,7 @@ public class SequentialExecutionsTest {
           "TITLE varchar(256) not null, DIRECTOR varchar(256) not null, primary key (ID))";
       st.execute(addTable);
 
-      this.naiveImportStrategy.executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "basicDBMapper",  null, "java", null, null, null, context);
+      this.naiveImportStrategy.executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "basicDBMapper",  null, "java", null, null, null);
 
 
       /*
@@ -858,7 +847,7 @@ public class SequentialExecutionsTest {
           + "('F002','Shutter Island','D002'))";
       st.execute(filmFilling);
 
-      this.naiveImportStrategy.executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "basicDBMapper",  null, "java", null, null, null, context);
+      this.naiveImportStrategy.executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "basicDBMapper",  null, "java", null, null, null);
 
 
       /*
@@ -907,7 +896,7 @@ public class SequentialExecutionsTest {
       String addNewForeignKey = "alter table FILM add foreign key (DIRECTOR) references DIRECTOR(ID)";
       st.execute(addNewForeignKey);
 
-      this.naiveImportStrategy.executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "basicDBMapper",  null, "java", null, null, null, context);
+      this.naiveImportStrategy.executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "basicDBMapper",  null, "java", null, null, null);
 
 
       /*
@@ -1006,7 +995,7 @@ public class SequentialExecutionsTest {
           " TITLE varchar(256) not null, DIRECTOR varchar(256) not null, primary key (ID))";
       st.execute(filmTableBuilding);
 
-      this.naiveImportStrategy.executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "basicDBMapper",  null, "java", null, null, null, context);
+      this.naiveImportStrategy.executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "basicDBMapper",  null, "java", null, null, null);
 
 
       /*
@@ -1078,7 +1067,7 @@ public class SequentialExecutionsTest {
       String removeTable = "drop table FILM";
       st.execute(removeTable);
 
-      this.naiveImportStrategy.executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "basicDBMapper",  null, "java", null, null, null, context);
+      this.naiveImportStrategy.executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "basicDBMapper",  null, "java", null, null, null);
 
 
       /*
@@ -1186,7 +1175,7 @@ public class SequentialExecutionsTest {
           + "('F002','Shutter Island','D002'))";
       st.execute(filmFilling);
 
-      this.naiveImportStrategy.executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "basicDBMapper",  null, "java", null, null, null, context);
+      this.naiveImportStrategy.executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "basicDBMapper",  null, "java", null, null, null);
 
 
       /*
@@ -1242,7 +1231,7 @@ public class SequentialExecutionsTest {
       String dropForeignKey = "alter table FILM drop constraint director";
       st.execute(dropForeignKey);
 
-      this.naiveImportStrategy.executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "basicDBMapper",  null, "java", null, null, null, context);
+      this.naiveImportStrategy.executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "basicDBMapper",  null, "java", null, null, null);
 
 
       /*
@@ -1281,15 +1270,9 @@ public class SequentialExecutionsTest {
         assertNotNull(e.getId());
         count++;
       }
-      assertEquals(2, count);
+      assertEquals(0, count);
 
-      count = 0;
-      for(Edge e: orientGraph.getEdgesOfClass("HasDirector")) {
-        assertNotNull(e.getId());
-        count++;
-      }
-      assertEquals(2, count);
-
+      assertNull(orientGraph.getEdgeType("HasDirector"));
 
     }catch(Exception e) {
       e.printStackTrace();
@@ -1353,7 +1336,7 @@ public class SequentialExecutionsTest {
           + "('A008','Matt','Damon'))";
       st.execute(actorFilling);
 
-      this.naiveImportStrategy.executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "basicDBMapper",  null, "java", null, null, null, context);
+      this.naiveImportStrategy.executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "basicDBMapper",  null, "java", null, null, null);
 
 
       /*
@@ -1397,7 +1380,7 @@ public class SequentialExecutionsTest {
           + "('A010','Hugh','Jackman'))";
       st.executeQuery(actorFilling);
 
-      this.naiveImportStrategy.executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "basicDBMapper",  null, "java", null, null, null, context);
+      this.naiveImportStrategy.executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "basicDBMapper",  null, "java", null, null, null);
 
 
       /*
@@ -1513,7 +1496,7 @@ public class SequentialExecutionsTest {
           + "('F003','A006'))";
       st.execute(film2actorFilling);
 
-      this.naiveAggregationImportStrategy.executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "basicDBMapper",  null, "java", null, null, null, context);
+      this.naiveAggregationImportStrategy.executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "basicDBMapper",  null, "java", null, null, null);
 
 
       /*
@@ -1579,7 +1562,7 @@ public class SequentialExecutionsTest {
           + "('F004','A007'))";
       st.executeQuery(film2actorFilling);
 
-      this.naiveAggregationImportStrategy.executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "basicDBMapper",  null, "java", null, null, null, context);
+      this.naiveAggregationImportStrategy.executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "basicDBMapper",  null, "java", null, null, null);
 
 
       /*
@@ -1680,7 +1663,7 @@ public class SequentialExecutionsTest {
           + "('D002','Martin','Scorsese'))";
       st.execute(directorFilling);    
 
-      this.naiveImportStrategy.executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "basicDBMapper",  null, "java", null, null, null, context);
+      this.naiveImportStrategy.executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "basicDBMapper",  null, "java", null, null, null);
 
 
       /*
@@ -1722,7 +1705,7 @@ public class SequentialExecutionsTest {
           + "('F003','The Departed','D002'))";
       st.execute(filmFilling);
 
-      this.naiveImportStrategy.executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "basicDBMapper",  null, "java", null, null, null, context);
+      this.naiveImportStrategy.executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "basicDBMapper",  null, "java", null, null, null);
 
 
       /*
@@ -1838,7 +1821,7 @@ public class SequentialExecutionsTest {
           + "('A006','Matt','Damon'))";
       st.execute(actorFilling);
 
-      this.naiveAggregationImportStrategy.executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "basicDBMapper",  null, "java", null, null, null, context);
+      this.naiveAggregationImportStrategy.executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "basicDBMapper",  null, "java", null, null, null);
 
 
       /*
@@ -1899,7 +1882,7 @@ public class SequentialExecutionsTest {
           + "('F003','A006'))";
       st.execute(film2actorFilling);
 
-      this.naiveAggregationImportStrategy.executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "basicDBMapper",  null, "java", null, null, null, context);
+      this.naiveAggregationImportStrategy.executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "basicDBMapper",  null, "java", null, null, null);
 
 
       /*
@@ -2008,7 +1991,7 @@ public class SequentialExecutionsTest {
           + "('A008','Matto','Demone'))";
       st.execute(actorFilling);
 
-      this.naiveImportStrategy.executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "basicDBMapper",  null, "java", null, null, null, context);
+      this.naiveImportStrategy.executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "basicDBMapper",  null, "java", null, null, null);
 
 
       /*
@@ -2072,7 +2055,7 @@ public class SequentialExecutionsTest {
       update = "update ACTOR set name='Matt', surname='Damon' where id='A008'";
       st.executeQuery(update);
 
-      this.naiveImportStrategy.executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "basicDBMapper",  null, "java", null, null, null, context);
+      this.naiveImportStrategy.executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "basicDBMapper",  null, "java", null, null, null);
 
 
       /*

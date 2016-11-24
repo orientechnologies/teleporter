@@ -37,7 +37,7 @@ import java.util.List;
  * Implementation of ODataSourceQueryEngine. It executes the necessary queries for the source DB records fetching.
  *
  * @author Gabriele Ponzi
- * @email  <gabriele.ponzi--at--gmail.com>
+ * @email  <g.ponzi--at--orientdb.com>
  *
  */
 
@@ -47,69 +47,68 @@ public class ODBQueryEngine implements ODataSourceQueryEngine {
   private OQueryBuilder       queryBuilder;
 
 
-  public ODBQueryEngine(String driver, OTeleporterContext context) {
+  public ODBQueryEngine(String driver) {
     this.queryBuilderFactory = new OQueryBuilderFactory();
-    this.queryBuilder = this.queryBuilderFactory.buildQueryBuilder(driver, context);
+    this.queryBuilder = this.queryBuilderFactory.buildQueryBuilder(driver);
   }
 
 
-  public OQueryResult countTableRecords(OSourceDatabaseInfo sourceDBInfo, String currentTableName, String currentTableSchema, OTeleporterContext context) {
+  public OQueryResult countTableRecords(OSourceDatabaseInfo sourceDBInfo, String currentTableName, String currentTableSchema) {
 
-    String query = queryBuilder.countTableRecords(currentTableName, currentTableSchema, context);
-    return this.executeQuery(query, sourceDBInfo, context);
+    String query = queryBuilder.countTableRecords(currentTableName, currentTableSchema);
+    return this.executeQuery(query, sourceDBInfo);
   }
 
   /**
    * @param entity
    * @param propertyOfKey
    * @param valueOfKey
-   * @param context
    * @return
    */
-  public OQueryResult getRecordById(OEntity entity, String[] propertyOfKey, String[] valueOfKey, OTeleporterContext context) {
+  public OQueryResult getRecordById(OEntity entity, String[] propertyOfKey, String[] valueOfKey) {
 
     OSourceDatabaseInfo sourceDBInfo = entity.getSourceDataseInfo();
     // TODO: queryBuilder fetching
-    String query = queryBuilder.getRecordById(entity, propertyOfKey, valueOfKey, context);
-    return this.executeQuery(query, sourceDBInfo, context);
+    String query = queryBuilder.getRecordById(entity, propertyOfKey, valueOfKey);
+    return this.executeQuery(query, sourceDBInfo);
   }
 
 
-  public OQueryResult getRecordsByEntity(OEntity entity, OTeleporterContext context) {
+  public OQueryResult getRecordsByEntity(OEntity entity) {
 
     OSourceDatabaseInfo sourceDBInfo = entity.getSourceDataseInfo();
     // TODO: queryBuilder fetching
-    String query = queryBuilder.getRecordsByEntity(entity, context);
-    return this.executeQuery(query, sourceDBInfo, context);
+    String query = queryBuilder.getRecordsByEntity(entity);
+    return this.executeQuery(query, sourceDBInfo);
   }
 
-  public OQueryResult getRecordsFromMultipleEntities(List<OEntity> mappedEntities, String[][] columns, OTeleporterContext context) {
+  public OQueryResult getRecordsFromMultipleEntities(List<OEntity> mappedEntities, String[][] columns) {
 
     OSourceDatabaseInfo sourceDBInfo = mappedEntities.get(0).getSourceDataseInfo();   // all the entities belong to the same source database
     // TODO: queryBuilder fetching
-    String query = queryBuilder.getRecordsFromMultipleEntities(mappedEntities, columns, context);
-    return this.executeQuery(query, sourceDBInfo, context);
+    String query = queryBuilder.getRecordsFromMultipleEntities(mappedEntities, columns);
+    return this.executeQuery(query, sourceDBInfo);
   }
 
 
   /**
    * @param currentDiscriminatorValue
    */
-  public OQueryResult getRecordsFromSingleTableByDiscriminatorValue(String discriminatorColumn, String currentDiscriminatorValue, OEntity entity, OTeleporterContext context) {
+  public OQueryResult getRecordsFromSingleTableByDiscriminatorValue(String discriminatorColumn, String currentDiscriminatorValue, OEntity entity) {
 
     OSourceDatabaseInfo sourceDBInfo = entity.getSourceDataseInfo();
     // TODO: queryBuilder fetching
-    String query = queryBuilder.getRecordsFromSingleTableByDiscriminatorValue(discriminatorColumn, currentDiscriminatorValue, entity, context);
-    return this.executeQuery(query, sourceDBInfo, context);
+    String query = queryBuilder.getRecordsFromSingleTableByDiscriminatorValue(discriminatorColumn, currentDiscriminatorValue, entity);
+    return this.executeQuery(query, sourceDBInfo);
   }
 
 
-  public OQueryResult getEntityTypeFromSingleTable(String discriminatorColumn, OEntity entity, String[] propertyOfKey, String[] valueOfKey, OTeleporterContext context) {
+  public OQueryResult getEntityTypeFromSingleTable(String discriminatorColumn, OEntity entity, String[] propertyOfKey, String[] valueOfKey) {
 
     OSourceDatabaseInfo sourceDBInfo = entity.getSourceDataseInfo();
     // TODO: queryBuilder fetching
-    String query = queryBuilder.getEntityTypeFromSingleTable(discriminatorColumn, entity, propertyOfKey, valueOfKey, context);
-    return this.executeQuery(query, sourceDBInfo, context);
+    String query = queryBuilder.getEntityTypeFromSingleTable(discriminatorColumn, entity, propertyOfKey, valueOfKey);
+    return this.executeQuery(query, sourceDBInfo);
   }
 
 
@@ -117,15 +116,15 @@ public class ODBQueryEngine implements ODataSourceQueryEngine {
    * @param bag
    * @return
    */
-  public OQueryResult buildAggregateTableFromHierarchicalBag(OHierarchicalBag bag, OTeleporterContext context) {
+  public OQueryResult buildAggregateTableFromHierarchicalBag(OHierarchicalBag bag) {
 
     OSourceDatabaseInfo sourceDBInfo = bag.getSourceDataseInfo();
     // TODO: queryBuilder fetching
-    String query = queryBuilder.buildAggregateTableFromHierarchicalBag(bag, context);
-    return this.executeQuery(query, sourceDBInfo, context);
+    String query = queryBuilder.buildAggregateTableFromHierarchicalBag(bag);
+    return this.executeQuery(query, sourceDBInfo);
   }
 
-  public OQueryResult executeQuery(String query, OSourceDatabaseInfo sourceDBInfo, OTeleporterContext context) {
+  public OQueryResult executeQuery(String query, OSourceDatabaseInfo sourceDBInfo) {
 
     ResultSet result = null;
     Connection dbConnection = null;
@@ -133,19 +132,19 @@ public class ODBQueryEngine implements ODataSourceQueryEngine {
 
     try {
       try {
-        dbConnection = ODBSourceConnection.getConnection(sourceDBInfo, context);
+        dbConnection = ODBSourceConnection.getConnection(sourceDBInfo);
       } catch (Exception e) {
         String mess = "";
-        context.printExceptionMessage(e, mess, "error");
-        context.printExceptionStackTrace(e, "debug");
+        OTeleporterContext.getInstance().printExceptionMessage(e, mess, "error");
+        OTeleporterContext.getInstance().printExceptionStackTrace(e, "debug");
       }
       statement = dbConnection.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
       result = statement.executeQuery(query);
 
     } catch (SQLException e) {
       String mess = "";
-      context.printExceptionMessage(e, mess, "error");
-      context.printExceptionStackTrace(e, "debug");
+      OTeleporterContext.getInstance().printExceptionMessage(e, mess, "error");
+      OTeleporterContext.getInstance().printExceptionStackTrace(e, "debug");
     }
 
     OQueryResult queryResult = new OQueryResult(dbConnection, statement, result);

@@ -38,7 +38,7 @@ import static org.junit.Assert.fail;
 
 /**
  * @author Gabriele Ponzi
- * @email  <gabriele.ponzi--at--gmail.com>
+ * @email  <g.ponzi--at--orientdb.com>
  *
  */
 
@@ -58,8 +58,8 @@ public class DateTypeTest {
 
   @Before
   public void init() {
-    this.context = new OTeleporterContext();
-    this.dbQueryEngine = new ODBQueryEngine(this.driver, this.context);
+    this.context = OTeleporterContext.newInstance();
+    this.dbQueryEngine = new ODBQueryEngine(this.driver);
     this.sourceDBInfo = new OSourceDatabaseInfo("source", this.driver, this.jurl, this.username, this.password);
     this.context.setDbQueryEngine(this.dbQueryEngine);
     this.context.setOutputManager(new OOutputStreamManager(0));
@@ -102,7 +102,7 @@ public class DateTypeTest {
           + "('F003','The Departed','2006'))";
       st.execute(filmFilling);
 
-      this.importStrategy.executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "basicDBMapper", null, "java", null, null, null, context);
+      this.importStrategy.executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "basicDBMapper", null, "java", null, null, null);
 
 
       /*
@@ -165,7 +165,7 @@ public class DateTypeTest {
           + "('F003','The Departed','2006-09-26'))";
       st.execute(filmFilling);
 
-      this.importStrategy.executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "basicDBMapper", null, "java", null, null, null, context);
+      this.importStrategy.executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "basicDBMapper", null, "java", null, null, null);
 
 
       /*
@@ -229,7 +229,7 @@ public class DateTypeTest {
           + "('F003','The Departed','2006-09-26','2012-08-08 20:08:08'))";
       st.execute(filmFilling);
 
-      this.importStrategy.executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "basicDBMapper", null, "java", null, null, null, context);
+      this.importStrategy.executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "basicDBMapper", null, "java", null, null, null);
 
 
       /*
@@ -294,7 +294,7 @@ public class DateTypeTest {
           + "('F003','The Departed','2006-09-26','2012-08-08 20:08:08+8:00'))";
       st.execute(filmFilling);
 
-      this.importStrategy.executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "basicDBMapper", null, "java", null, null, null, context);
+      this.importStrategy.executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "basicDBMapper", null, "java", null, null, null);
 
 
       /*
@@ -359,7 +359,7 @@ public class DateTypeTest {
           + "('F003','The Departed','2006-09-26','20:08:08.034900'))";
       st.execute(filmFilling);
 
-      this.importStrategy.executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "basicDBMapper", null, "java", null, null, null, context);
+      this.importStrategy.executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "basicDBMapper", null, "java", null, null, null);
 
 
       /*
@@ -423,7 +423,7 @@ public class DateTypeTest {
           + "('F003','The Departed','2006-09-26','20:08:08.034900-8:00'))";
       st.execute(filmFilling);
 
-      this.importStrategy.executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "basicDBMapper", null, "java", null, null, null, context);
+      this.importStrategy.executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "basicDBMapper", null, "java", null, null, null);
 
 
       /*

@@ -32,7 +32,7 @@ import static org.junit.Assert.fail;
 
 /**
  * @author Gabriele Ponzi
- * @email <gabriele.ponzi--at--gmail.com>
+ * @email <g.ponzi--at--orientdb.com>
  *
  */
 
@@ -46,12 +46,12 @@ public class DriverConfiguratorTest {
 
   @Before
   public void init() {
-    this.context = new OTeleporterContext();
+    this.context = OTeleporterContext.newInstance();
     this.driverConfigurator = new ODriverConfigurator();
     this.outputManager = new OOutputStreamManager(2);
     this.context.setOutputManager(outputManager);
 
-    ODocument driversParams = this.driverConfigurator.readJsonFromUrl(DRIVERS, this.context);
+    ODocument driversParams = this.driverConfigurator.readJsonFromUrl(DRIVERS);
     ODocument hsqldbConfig = driversParams.field("HyperSQL");
     this.fileName = hsqldbConfig.field("url");
     fileName = fileName.substring(fileName.lastIndexOf("/")+1);
@@ -68,7 +68,8 @@ public class DriverConfiguratorTest {
         System.out.println("Driver not present in '../lib/' path.");
       }
 
-      String driverName = this.driverConfigurator.checkConfiguration("hypersql", this.context);
+      String driverName = this.driverConfigurator.fetchDriverClassName("hypersql");
+      this.driverConfigurator.checkDriverConfiguration("hypersql");
       OFileManager.deleteFile("../lib/" + fileName);
 
     }catch(Exception e) {
@@ -90,7 +91,7 @@ public class DriverConfiguratorTest {
 
     try {
 
-      driverConfigurator.checkConnection("HyperSQL", "jdbc:hsqldb:mem:mydb", "SA", "", this.context);
+      driverConfigurator.checkConnection("HyperSQL", "jdbc:hsqldb:mem:mydb", "SA", "");
       OFileManager.deleteFile("../lib/" + fileName);
     } catch (Exception e) {
       e.printStackTrace();

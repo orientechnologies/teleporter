@@ -29,7 +29,7 @@ import com.orientechnologies.orient.core.metadata.schema.OType;
  * No Geospatial implemented.
  * 
  * @author Gabriele Ponzi
- * @email  <gabriele.ponzi--at--gmail.com>
+ * @email  <g.ponzi--at--orientdb.com>
  *
  */
 
@@ -43,7 +43,7 @@ public class OSQLServerDataTypeHandler extends ODBMSDataTypeHandler {
   }
 
   @Override
-  public OType resolveType(String type, OTeleporterContext context) {
+  public OType resolveType(String type) {
 
     // dropping "identity" sqlserver property
     type = type.replace("identity", "").trim();
@@ -54,7 +54,9 @@ public class OSQLServerDataTypeHandler extends ODBMSDataTypeHandler {
 
     // Undefined Types
     else {
-      context.getStatistics().warningMessages.add("The original type '" + type + "' is not convertible into any OrientDB type thus, in order to prevent data loss, it will be converted to the OrientDB Type String.");
+      OTeleporterContext.getInstance().getStatistics()
+              .warningMessages.add("The original type '" + type + "' is not convertible into any OrientDB type thus, in order to prevent data loss, " +
+              "it will be converted to the OrientDB Type String.");
       return OType.STRING;
     }
   }

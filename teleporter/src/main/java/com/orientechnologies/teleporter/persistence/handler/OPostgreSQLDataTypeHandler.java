@@ -30,7 +30,7 @@ import com.orientechnologies.orient.core.metadata.schema.OType;
  * Geospatial implemented (PostGis).
  * 
  * @author Gabriele Ponzi
- * @email  <gabriele.ponzi--at--gmail.com>
+ * @email  <g.ponzi--at--orientdb.com>
  *
  */
 

@@ -20,7 +20,7 @@ package com.orientechnologies.teleporter.persistence.util;
 
 /**
  * @author Gabriele Ponzi
- * @email  <gabriele.ponzi--at--gmail.com>
+ * @email  <g.ponzi--at--orientdb.com>
  *
  */
 

@@ -2,6 +2,7 @@
   "vertices": [],
   "edges": [{
     "WorksAtProject": {
+      "isLogical": false,
       "mapping": [{
         "fromTable": "EMPLOYEE",
         "fromColumns": ["PROJECT"],
@@ -13,14 +14,14 @@
         "updatedOn": {
           "include": true,
           "type": "DATE",
-          "value": "$from.date",
+          "ordinalPosition": 1,
           "mandatory": true,
           "readOnly": false,
           "notNull": false
         },
         "propWithoutTypeField": {
           "include": true,
-          "value": "$from.date",
+          "ordinalPosition": 2,
           "mandatory": true,
           "readOnly": false,
           "notNull": false
@@ -29,6 +30,7 @@
     }
   }, {
     "HasManager": {
+      "isLogical": false,
       "mapping": [{
         "fromTable": "PROJECT",
         "fromColumns": ["PROJECT_MANAGER"],
@@ -40,7 +42,7 @@
         "updatedOn": {
           "include": true,
           "type": "DATE",
-          "value": "$from.date",
+          "ordinalPosition": 1,
           "mandatory": false,
           "readOnly": false,
           "notNull": false

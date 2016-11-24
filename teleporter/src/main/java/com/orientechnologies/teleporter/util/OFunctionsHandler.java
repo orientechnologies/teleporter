@@ -27,7 +27,7 @@ import java.util.concurrent.TimeUnit;
  * Static class which manages time's format offering different methods.
  * 
  * @author Gabriele Ponzi
- * @email  <gabriele.ponzi--at--gmail.com>
+ * @email  <g.ponzi--at--orientdb.com>
  *
  */
 

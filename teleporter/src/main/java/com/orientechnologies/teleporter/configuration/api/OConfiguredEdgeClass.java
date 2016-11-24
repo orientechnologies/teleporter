@@ -23,16 +23,18 @@ import java.util.List;
 /**
  *
  * @author Gabriele Ponzi
- * @email <gabriele.ponzi--at--gmail.com>
+ * @email <g.ponzi--at--orientdb.com>
  *
  */
 
 public class OConfiguredEdgeClass extends OConfiguredClass {
 
     private List<OEdgeMappingInformation> mappings;                  // mandatory
+    private boolean isLogical;                                       // optional
 
-    public OConfiguredEdgeClass(String edgeName) {
-        super(edgeName);
+    public OConfiguredEdgeClass(String edgeName, OConfiguration globalConfiguration) {
+        super(edgeName, globalConfiguration);
+        this.isLogical = false;
     }
 
     public List<OEdgeMappingInformation> getMappings() {
@@ -43,4 +45,11 @@ public class OConfiguredEdgeClass extends OConfiguredClass {
         this.mappings = mappings;
     }
 
+    public boolean isLogical() {
+        return this.isLogical;
+    }
+
+    public void setLogical(boolean logical) {
+        this.isLogical = logical;
+    }
 }

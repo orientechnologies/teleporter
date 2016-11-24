@@ -26,13 +26,13 @@ import com.orientechnologies.teleporter.importengine.rdbms.dbengine.OQueryBuilde
 
 /**
  * @author Gabriele Ponzi
- * @email  <gabriele.ponzi--at--gmail.com>
+ * @email  <g.ponzi--at--orientdb.com>
  *
  */
 
 public class OQueryBuilderFactory {
 
-  public OQueryBuilder buildQueryBuilder(String driver, OTeleporterContext context) {
+  public OQueryBuilder buildQueryBuilder(String driver) {
     OQueryBuilder queryBuilder;
 
     switch(driver) {
@@ -53,7 +53,7 @@ public class OQueryBuilderFactory {
         break;
 
       default :  queryBuilder = new OCommonQueryBuilder();
-        context.getStatistics().warningMessages.add("Driver " + driver + " is not completely supported, the common query builder will be adopted for the case-sensitive queries. "
+        OTeleporterContext.getInstance().getStatistics().warningMessages.add("Driver " + driver + " is not completely supported, the common query builder will be adopted for the case-sensitive queries. "
                 + "Thus problems may occur during the querying.");
         break;
     }

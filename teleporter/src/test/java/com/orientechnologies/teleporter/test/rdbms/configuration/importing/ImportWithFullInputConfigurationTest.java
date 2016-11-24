@@ -18,21 +18,21 @@
 
 package com.orientechnologies.teleporter.test.rdbms.configuration.importing;
 
+import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.teleporter.context.OOutputStreamManager;
 import com.orientechnologies.teleporter.context.OTeleporterContext;
 import com.orientechnologies.teleporter.importengine.rdbms.dbengine.ODBQueryEngine;
 import com.orientechnologies.teleporter.model.dbschema.OSourceDatabaseInfo;
 import com.orientechnologies.teleporter.nameresolver.OJavaConventionNameResolver;
 import com.orientechnologies.teleporter.persistence.handler.OHSQLDBDataTypeHandler;
-import com.orientechnologies.teleporter.strategy.rdbms.ODBMSNaiveAggregationStrategy;
 import com.orientechnologies.teleporter.strategy.rdbms.ODBMSNaiveStrategy;
 import com.orientechnologies.teleporter.util.OFileManager;
+import com.orientechnologies.teleporter.util.OMigrationConfigManager;
 import com.tinkerpop.blueprints.Direction;
 import com.tinkerpop.blueprints.Edge;
 import com.tinkerpop.blueprints.Vertex;
 import com.tinkerpop.blueprints.impls.orient.OrientGraphNoTx;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.sql.Connection;
@@ -41,11 +41,10 @@ import java.sql.Statement;
 import java.util.Iterator;
 
 import static org.junit.Assert.*;
-import static org.junit.Assert.fail;
 
 /**
  * @author Gabriele Ponzi
- * @email  <gabriele.ponzi--at--gmail.com>
+ * @email  <g.ponzi--at--orientdb.com>
  *
  */
 
@@ -54,20 +53,20 @@ public class ImportWithFullInputConfigurationTest {
     private OTeleporterContext context;
     private ODBMSNaiveStrategy naiveStrategy;
     private String dbParentDirectoryPath;
-    private final String config = "src/test/resources/configuration-mapping/full-configuration-mapping.json";
+    private final String configPathJson = "src/test/resources/configuration-mapping/full-configuration-mapping.json";
     private ODBQueryEngine dbQueryEngine;
     private String driver = "org.hsqldb.jdbc.JDBCDriver";
     private String jurl = "jdbc:hsqldb:mem:mydb";
     private String username = "SA";
     private String password = "";
-    private String outOrientGraphUri = "memory:testOrientDB";
+    private String outOrientGraphUri;
     private OSourceDatabaseInfo sourceDBInfo;
 
 
     @Before
     public void init() {
-        this.context = new OTeleporterContext();
-        this.dbQueryEngine = new ODBQueryEngine(this.driver, this.context);
+        this.context = OTeleporterContext.newInstance();
+        this.dbQueryEngine = new ODBQueryEngine(this.driver);
         this.context.setDbQueryEngine(this.dbQueryEngine);
         this.context.setOutputManager(new OOutputStreamManager(0));
         this.context.setNameResolver(new OJavaConventionNameResolver());
@@ -152,8 +151,10 @@ public class ImportWithFullInputConfigurationTest {
                     + "('D002','Contracts Update','Glasgow','2016-05-10'))";
             st.execute(departmentFilling);
 
+            ODocument configDoc = OMigrationConfigManager.loadMigrationConfigFromFile(this.configPathJson);
+
             this.naiveStrategy
-                    .executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "basicDBMapper", null, "java", null, null, this.config, context);
+                    .executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "basicDBMapper", null, "java", null, null, configDoc);
 
 
             /**

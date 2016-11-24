@@ -31,7 +31,7 @@ import java.util.*;
  * 4. OrientDB importing
  * 
  * @author Gabriele Ponzi
- * @email  <gabriele.ponzi--at--gmail.com>
+ * @email  <g.ponzi--at--orientdb.com>
  *
  */
 
@@ -71,6 +71,13 @@ public class OTeleporterStatistics {
   public volatile int orientUpdatedVertices;
   public volatile int orientAddedEdges;
   public volatile Date startWork4Time;
+
+  // Logical Relationships
+  public volatile int totalNumberOfLogicalRelationships;
+  public volatile int doneLogicalRelationships;
+  public volatile int leftVerticesCurrentLogicalRelationship;
+  public volatile int doneLeftVerticesCurrentLogicalRelationship;
+  public volatile Date startWork5Time;
 
   // Warnings and Error Messages
   public volatile Set<String> warningMessages;
@@ -113,6 +120,11 @@ public class OTeleporterStatistics {
     this.analyzedRecords = 0;
     this.orientAddedVertices = 0;
     this.orientAddedEdges = 0;
+
+    this.totalNumberOfLogicalRelationships = 0;
+    this.doneLogicalRelationships = 0;
+    this.leftVerticesCurrentLogicalRelationship = 0;
+    this.doneLeftVerticesCurrentLogicalRelationship = 0;
 
   }
 

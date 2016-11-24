@@ -26,12 +26,12 @@ import com.orientechnologies.orient.core.metadata.schema.OType;
  * to the specific driver of the source DB.
  * 
  * @author Gabriele Ponzi
- * @email  <gabriele.ponzi--at--gmail.com>
+ * @email  <g.ponzi--at--orientdb.com>
  *
  */
 
 public interface ODriverDataTypeHandler {
 
-  public OType resolveType(String type, OTeleporterContext context);
+  public OType resolveType(String type);
 
 }

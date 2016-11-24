@@ -24,9 +24,9 @@ import com.orientechnologies.teleporter.importengine.rdbms.dbengine.ODBQueryEngi
 import com.orientechnologies.teleporter.mapper.rdbms.OER2GraphMapper;
 import com.orientechnologies.teleporter.mapper.rdbms.OHibernate2GraphMapper;
 import com.orientechnologies.teleporter.mapper.rdbms.classmapper.OClassMapper;
+import com.orientechnologies.teleporter.model.dbschema.OCanonicalRelationship;
 import com.orientechnologies.teleporter.model.dbschema.OEntity;
 import com.orientechnologies.teleporter.model.dbschema.OHierarchicalBag;
-import com.orientechnologies.teleporter.model.dbschema.ORelationship;
 import com.orientechnologies.teleporter.model.dbschema.OSourceDatabaseInfo;
 import com.orientechnologies.teleporter.model.graphmodel.OEdgeType;
 import com.orientechnologies.teleporter.model.graphmodel.OVertexType;
@@ -47,7 +47,7 @@ import static org.junit.Assert.*;
 
 /**
  * @author Gabriele Ponzi
- * @email  <gabriele.ponzi--at--gmail.com>
+ * @email  <g.ponzi--at--orientdb.com>
  *
  */
 
@@ -69,8 +69,8 @@ public class FilterTableMappingTest {
 
   @Before
   public void init() {
-    this.context = new OTeleporterContext();
-    this.dbQueryEngine = new ODBQueryEngine(this.driver, this.context);
+    this.context = OTeleporterContext.newInstance();
+    this.dbQueryEngine = new ODBQueryEngine(this.driver);
     this.context.setDbQueryEngine(this.dbQueryEngine);
     this.context.setOutputManager(new OOutputStreamManager(0));
     this.context.setNameResolver(new OJavaConventionNameResolver());
@@ -136,8 +136,8 @@ public class FilterTableMappingTest {
       includedTables.add("EMPLOYEE");
 
       this.mapper = new OER2GraphMapper(this.sourceDBInfo, includedTables, null, null);
-      mapper.buildSourceDatabaseSchema(this.context);
-      mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
+      mapper.buildSourceDatabaseSchema();
+      mapper.buildGraphModel(new OJavaConventionNameResolver());
 
 
       /*
@@ -167,7 +167,7 @@ public class FilterTableMappingTest {
 
       // entities check
       Assert.assertEquals(3, mapper.getDataBaseSchema().getEntities().size());
-      Assert.assertEquals(1, mapper.getDataBaseSchema().getRelationships().size());
+      Assert.assertEquals(1, mapper.getDataBaseSchema().getCanonicalRelationships().size());
       assertNotNull(employeeEntity);
       assertNotNull(countryEntity);
       assertNotNull(managerEntity);
@@ -249,24 +249,24 @@ public class FilterTableMappingTest {
 
 
       // relationship, primary and foreign key check
-      assertEquals(1, employeeEntity.getOutRelationships().size());
-      assertEquals(0, managerEntity.getOutRelationships().size());
-      assertEquals(0, countryEntity.getOutRelationships().size());
-      assertEquals(0, employeeEntity.getInRelationships().size());
-      assertEquals(1, managerEntity.getInRelationships().size());
-      assertEquals(0, countryEntity.getOutRelationships().size());
+      assertEquals(1, employeeEntity.getOutCanonicalRelationships().size());
+      assertEquals(0, managerEntity.getOutCanonicalRelationships().size());
+      assertEquals(0, countryEntity.getOutCanonicalRelationships().size());
+      assertEquals(0, employeeEntity.getInCanonicalRelationships().size());
+      assertEquals(1, managerEntity.getInCanonicalRelationships().size());
+      assertEquals(0, countryEntity.getOutCanonicalRelationships().size());
       assertEquals(1, employeeEntity.getForeignKeys().size());
 
-      Iterator<ORelationship> itEmp = employeeEntity.getOutRelationships().iterator();
-      ORelationship currentEmpRel = itEmp.next();
+      Iterator<OCanonicalRelationship> itEmp = employeeEntity.getOutCanonicalRelationships().iterator();
+      OCanonicalRelationship currentEmpRel = itEmp.next();
       assertEquals("MANAGER", currentEmpRel.getParentEntity().getName());
       assertEquals("EMPLOYEE", currentEmpRel.getForeignEntity().getName());
       assertEquals(managerEntity.getPrimaryKey(), currentEmpRel.getPrimaryKey());
       assertEquals(employeeEntity.getForeignKeys().get(0), currentEmpRel.getForeignKey());
       assertFalse(itEmp.hasNext());
 
-      Iterator<ORelationship> itManager = managerEntity.getInRelationships().iterator();
-      ORelationship currentManRel = itManager.next();
+      Iterator<OCanonicalRelationship> itManager = managerEntity.getInCanonicalRelationships().iterator();
+      OCanonicalRelationship currentManRel = itManager.next();
       assertEquals(currentEmpRel, currentManRel);
 
 
@@ -434,8 +434,8 @@ public class FilterTableMappingTest {
 
       // Relationships-Edges Mapping
 
-      Iterator<ORelationship> it = employeeEntity.getOutRelationships().iterator();
-      ORelationship hasManagerRelationship = it.next();
+      Iterator<OCanonicalRelationship> it = employeeEntity.getOutCanonicalRelationships().iterator();
+      OCanonicalRelationship hasManagerRelationship = it.next();
       assertFalse(it.hasNext());
 
       OEdgeType hasManagerEdgeType = mapper.getGraphModel().getEdgeTypeByName("HasManager");
@@ -525,8 +525,8 @@ public class FilterTableMappingTest {
       excludedTables.add("RESIDENCE");
 
       this.mapper = new OER2GraphMapper(this.sourceDBInfo, null, excludedTables, null);
-      mapper.buildSourceDatabaseSchema(this.context);
-      mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
+      mapper.buildSourceDatabaseSchema();
+      mapper.buildGraphModel(new OJavaConventionNameResolver());
 
 
       /*
@@ -556,7 +556,7 @@ public class FilterTableMappingTest {
 
       // entities check
       Assert.assertEquals(3, mapper.getDataBaseSchema().getEntities().size());
-      Assert.assertEquals(1, mapper.getDataBaseSchema().getRelationships().size());
+      Assert.assertEquals(1, mapper.getDataBaseSchema().getCanonicalRelationships().size());
       assertNotNull(employeeEntity);
       assertNotNull(countryEntity);
       assertNotNull(managerEntity);
@@ -638,22 +638,22 @@ public class FilterTableMappingTest {
 
 
       // relationship, primary and foreign key check
-      assertEquals(1, employeeEntity.getOutRelationships().size());
-      assertEquals(0, managerEntity.getOutRelationships().size());
-      assertEquals(0, employeeEntity.getInRelationships().size());
-      assertEquals(1, managerEntity.getInRelationships().size());
+      assertEquals(1, employeeEntity.getOutCanonicalRelationships().size());
+      assertEquals(0, managerEntity.getOutCanonicalRelationships().size());
+      assertEquals(0, employeeEntity.getInCanonicalRelationships().size());
+      assertEquals(1, managerEntity.getInCanonicalRelationships().size());
       assertEquals(1, employeeEntity.getForeignKeys().size());
 
-      Iterator<ORelationship> itEmp = employeeEntity.getOutRelationships().iterator();
-      ORelationship currentEmpRel = itEmp.next();
+      Iterator<OCanonicalRelationship> itEmp = employeeEntity.getOutCanonicalRelationships().iterator();
+      OCanonicalRelationship currentEmpRel = itEmp.next();
       assertEquals("MANAGER", currentEmpRel.getParentEntity().getName());
       assertEquals("EMPLOYEE", currentEmpRel.getForeignEntity().getName());
       assertEquals(managerEntity.getPrimaryKey(), currentEmpRel.getPrimaryKey());
       assertEquals(employeeEntity.getForeignKeys().get(0), currentEmpRel.getForeignKey());
       assertFalse(itEmp.hasNext());
 
-      Iterator<ORelationship> itManager = managerEntity.getInRelationships().iterator();
-      ORelationship currentManRel = itManager.next();
+      Iterator<OCanonicalRelationship> itManager = managerEntity.getInCanonicalRelationships().iterator();
+      OCanonicalRelationship currentManRel = itManager.next();
       assertEquals(currentEmpRel, currentManRel);
 
 
@@ -821,8 +821,8 @@ public class FilterTableMappingTest {
 
       // Relationships-Edges Mapping
 
-      Iterator<ORelationship> it = employeeEntity.getOutRelationships().iterator();
-      ORelationship hasManagerRelationship = it.next();
+      Iterator<OCanonicalRelationship> it = employeeEntity.getOutCanonicalRelationships().iterator();
+      OCanonicalRelationship hasManagerRelationship = it.next();
       assertFalse(it.hasNext());
 
       OEdgeType hasManagerEdgeType = mapper.getGraphModel().getEdgeTypeByName("HasManager");
@@ -916,8 +916,8 @@ public class FilterTableMappingTest {
       includedTables.add("EMPLOYEE");
 
       this.mapper = new OHibernate2GraphMapper(this.sourceDBInfo, FilterTableMappingTest.XML_TABLE_PER_CLASS, includedTables, null, null);
-      mapper.buildSourceDatabaseSchema(this.context);
-      mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
+      mapper.buildSourceDatabaseSchema();
+      mapper.buildGraphModel(new OJavaConventionNameResolver());
 
 
       /*
@@ -950,7 +950,7 @@ public class FilterTableMappingTest {
 
       // entities check
       Assert.assertEquals(6, mapper.getDataBaseSchema().getEntities().size());
-      Assert.assertEquals(1, mapper.getDataBaseSchema().getRelationships().size());
+      Assert.assertEquals(1, mapper.getDataBaseSchema().getCanonicalRelationships().size());
       assertNotNull(employeeEntity);
       assertNotNull(regularEmployeeEntity);
       assertNotNull(contractEmployeeEntity);
@@ -1147,16 +1147,16 @@ public class FilterTableMappingTest {
       assertEquals("MANAGER", projectManagerEntity.getPrimaryKey().getInvolvedAttributes().get(0).getBelongingEntity().getName());
 
       // relationship, primary and foreign key check
-      assertEquals(0, regularEmployeeEntity.getOutRelationships().size());
-      assertEquals(0, contractEmployeeEntity.getOutRelationships().size());
-      assertEquals(1, employeeEntity.getOutRelationships().size());
-      assertEquals(0, countryEntity.getOutRelationships().size());
-      assertEquals(0, managerEntity.getOutRelationships().size());
-      assertEquals(0, regularEmployeeEntity.getInRelationships().size());
-      assertEquals(0, contractEmployeeEntity.getInRelationships().size());
-      assertEquals(0, employeeEntity.getInRelationships().size());
-      assertEquals(0, countryEntity.getInRelationships().size());
-      assertEquals(1, managerEntity.getInRelationships().size());
+      assertEquals(0, regularEmployeeEntity.getOutCanonicalRelationships().size());
+      assertEquals(0, contractEmployeeEntity.getOutCanonicalRelationships().size());
+      assertEquals(1, employeeEntity.getOutCanonicalRelationships().size());
+      assertEquals(0, countryEntity.getOutCanonicalRelationships().size());
+      assertEquals(0, managerEntity.getOutCanonicalRelationships().size());
+      assertEquals(0, regularEmployeeEntity.getInCanonicalRelationships().size());
+      assertEquals(0, contractEmployeeEntity.getInCanonicalRelationships().size());
+      assertEquals(0, employeeEntity.getInCanonicalRelationships().size());
+      assertEquals(0, countryEntity.getInCanonicalRelationships().size());
+      assertEquals(1, managerEntity.getInCanonicalRelationships().size());
 
       assertEquals(0, regularEmployeeEntity.getForeignKeys().size());
       assertEquals(0, contractEmployeeEntity.getForeignKeys().size());
@@ -1164,37 +1164,37 @@ public class FilterTableMappingTest {
       assertEquals(0, countryEntity.getForeignKeys().size());
       assertEquals(0, managerEntity.getForeignKeys().size());
 
-      Iterator<ORelationship> itEmp = employeeEntity.getOutRelationships().iterator();
-      ORelationship currentEmpRel = itEmp.next();
+      Iterator<OCanonicalRelationship> itEmp = employeeEntity.getOutCanonicalRelationships().iterator();
+      OCanonicalRelationship currentEmpRel = itEmp.next();
       assertEquals("MANAGER", currentEmpRel.getParentEntity().getName());
       assertEquals("EMPLOYEE", currentEmpRel.getForeignEntity().getName());
       assertEquals(managerEntity.getPrimaryKey(), currentEmpRel.getPrimaryKey());
       assertEquals(employeeEntity.getForeignKeys().get(0), currentEmpRel.getForeignKey());
       assertFalse(itEmp.hasNext());
 
-      Iterator<ORelationship> itManager = managerEntity.getInRelationships().iterator();
-      ORelationship currentManRel = itManager.next();
+      Iterator<OCanonicalRelationship> itManager = managerEntity.getInCanonicalRelationships().iterator();
+      OCanonicalRelationship currentManRel = itManager.next();
       assertEquals(currentEmpRel, currentManRel);
 
       // inherited relationships check
-      assertEquals(1, regularEmployeeEntity.getInheritedOutRelationships().size());
-      assertEquals(1, contractEmployeeEntity.getInheritedOutRelationships().size());
-      assertEquals(0, employeeEntity.getInheritedOutRelationships().size());
+      assertEquals(1, regularEmployeeEntity.getInheritedOutCanonicalRelationships().size());
+      assertEquals(1, contractEmployeeEntity.getInheritedOutCanonicalRelationships().size());
+      assertEquals(0, employeeEntity.getInheritedOutCanonicalRelationships().size());
 
-      Iterator<ORelationship> itRegEmp = regularEmployeeEntity.getInheritedOutRelationships().iterator();
-      Iterator<ORelationship> itContEmp = contractEmployeeEntity.getInheritedOutRelationships().iterator();
-      ORelationship currentRegEmpRel = itRegEmp.next();
-      ORelationship currentContEmpRel = itContEmp.next();
+      Iterator<OCanonicalRelationship> itRegEmp = regularEmployeeEntity.getInheritedOutCanonicalRelationships().iterator();
+      Iterator<OCanonicalRelationship> itContEmp = contractEmployeeEntity.getInheritedOutCanonicalRelationships().iterator();
+      OCanonicalRelationship currentRegEmpRel = itRegEmp.next();
+      OCanonicalRelationship currentContEmpRel = itContEmp.next();
       assertEquals("MANAGER", currentRegEmpRel.getParentEntity().getName());
       assertEquals("EMPLOYEE", currentRegEmpRel.getForeignEntity().getName());
       assertEquals("MANAGER", currentContEmpRel.getParentEntity().getName());
       assertEquals("EMPLOYEE", currentContEmpRel.getForeignEntity().getName());
       assertEquals(managerEntity.getPrimaryKey(), currentRegEmpRel.getPrimaryKey());
-      assertEquals(1, currentRegEmpRel.getForeignKey().getInvolvedAttributes().size());
-      assertEquals("MANAGER", currentRegEmpRel.getForeignKey().getInvolvedAttributes().get(0).getName());
+      assertEquals(1, currentRegEmpRel.getFromColumns().size());
+      assertEquals("MANAGER", currentRegEmpRel.getFromColumns().get(0).getName());
       assertEquals(managerEntity.getPrimaryKey(), currentContEmpRel.getPrimaryKey());
-      assertEquals(1, currentContEmpRel.getForeignKey().getInvolvedAttributes().size());
-      assertEquals("MANAGER", currentContEmpRel.getForeignKey().getInvolvedAttributes().get(0).getName());
+      assertEquals(1, currentContEmpRel.getFromColumns().size());
+      assertEquals("MANAGER", currentContEmpRel.getFromColumns().get(0).getName());
       assertFalse(itRegEmp.hasNext());
       assertFalse(itContEmp.hasNext());
 
@@ -1571,8 +1571,8 @@ public class FilterTableMappingTest {
 
       // Relationships-Edges Mapping
 
-      Iterator<ORelationship> itRelationships = employeeEntity.getOutRelationships().iterator();
-      ORelationship hasManagerRelationship = itRelationships.next();
+      Iterator<OCanonicalRelationship> itRelationships = employeeEntity.getOutCanonicalRelationships().iterator();
+      OCanonicalRelationship hasManagerRelationship = itRelationships.next();
       assertFalse(itRelationships.hasNext());
 
       OEdgeType hasManagerEdgeType = mapper.getGraphModel().getEdgeTypeByName("HasManager");
@@ -1689,8 +1689,8 @@ public class FilterTableMappingTest {
       includedTables.add("CONTRACT_EMPLOYEE");
 
       this.mapper = new OHibernate2GraphMapper(this.sourceDBInfo, FilterTableMappingTest.XML_TABLE_PER_SUBCLASS1, includedTables, null, null);
-      mapper.buildSourceDatabaseSchema(this.context);
-      mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
+      mapper.buildSourceDatabaseSchema();
+      mapper.buildGraphModel(new OJavaConventionNameResolver());
 
 
       /*
@@ -1723,7 +1723,7 @@ public class FilterTableMappingTest {
 
       // entities check
       Assert.assertEquals(6, mapper.getDataBaseSchema().getEntities().size());
-      Assert.assertEquals(4, mapper.getDataBaseSchema().getRelationships().size());
+      Assert.assertEquals(4, mapper.getDataBaseSchema().getCanonicalRelationships().size());
       assertNotNull(employeeEntity);
       assertNotNull(regularEmployeeEntity);
       assertNotNull(contractEmployeeEntity);
@@ -1921,18 +1921,18 @@ public class FilterTableMappingTest {
 
 
       // relationship, primary and foreign key check
-      assertEquals(1, regularEmployeeEntity.getOutRelationships().size());
-      assertEquals(1, contractEmployeeEntity.getOutRelationships().size());
-      assertEquals(1, employeeEntity.getOutRelationships().size());
-      assertEquals(1, projectManagerEntity.getOutRelationships().size());
-      assertEquals(0, managerEntity.getOutRelationships().size());
-      assertEquals(0, countryEntity.getOutRelationships().size());
-      assertEquals(0, regularEmployeeEntity.getInRelationships().size());
-      assertEquals(0, contractEmployeeEntity.getInRelationships().size());
-      assertEquals(2, employeeEntity.getInRelationships().size());
-      assertEquals(0, projectManagerEntity.getInRelationships().size());
-      assertEquals(2, managerEntity.getInRelationships().size());
-      assertEquals(0, countryEntity.getInRelationships().size());
+      assertEquals(1, regularEmployeeEntity.getOutCanonicalRelationships().size());
+      assertEquals(1, contractEmployeeEntity.getOutCanonicalRelationships().size());
+      assertEquals(1, employeeEntity.getOutCanonicalRelationships().size());
+      assertEquals(1, projectManagerEntity.getOutCanonicalRelationships().size());
+      assertEquals(0, managerEntity.getOutCanonicalRelationships().size());
+      assertEquals(0, countryEntity.getOutCanonicalRelationships().size());
+      assertEquals(0, regularEmployeeEntity.getInCanonicalRelationships().size());
+      assertEquals(0, contractEmployeeEntity.getInCanonicalRelationships().size());
+      assertEquals(2, employeeEntity.getInCanonicalRelationships().size());
+      assertEquals(0, projectManagerEntity.getInCanonicalRelationships().size());
+      assertEquals(2, managerEntity.getInCanonicalRelationships().size());
+      assertEquals(0, countryEntity.getInCanonicalRelationships().size());
 
       assertEquals(1, regularEmployeeEntity.getForeignKeys().size());
       assertEquals(1, contractEmployeeEntity.getForeignKeys().size());
@@ -1941,37 +1941,37 @@ public class FilterTableMappingTest {
       assertEquals(0, managerEntity.getForeignKeys().size());
       assertEquals(0, countryEntity.getForeignKeys().size());
 
-      Iterator<ORelationship> itEmp = employeeEntity.getOutRelationships().iterator();
-      ORelationship currentEmpRel = itEmp.next();
+      Iterator<OCanonicalRelationship> itEmp = employeeEntity.getOutCanonicalRelationships().iterator();
+      OCanonicalRelationship currentEmpRel = itEmp.next();
       assertEquals("MANAGER", currentEmpRel.getParentEntity().getName());
       assertEquals("EMPLOYEE", currentEmpRel.getForeignEntity().getName());
       assertEquals(managerEntity.getPrimaryKey(), currentEmpRel.getPrimaryKey());
       assertEquals(employeeEntity.getForeignKeys().get(0), currentEmpRel.getForeignKey());
       assertFalse(itEmp.hasNext());
 
-      Iterator<ORelationship> itManager = managerEntity.getInRelationships().iterator();
-      ORelationship currentManRel = itManager.next();
+      Iterator<OCanonicalRelationship> itManager = managerEntity.getInCanonicalRelationships().iterator();
+      OCanonicalRelationship currentManRel = itManager.next();
       assertEquals(currentEmpRel, currentManRel);
 
-      Iterator<ORelationship> itContEmp = contractEmployeeEntity.getOutRelationships().iterator();
-      ORelationship currentContEmpRel = itContEmp.next();
-      itEmp = employeeEntity.getInRelationships().iterator();
+      Iterator<OCanonicalRelationship> itContEmp = contractEmployeeEntity.getOutCanonicalRelationships().iterator();
+      OCanonicalRelationship currentContEmpRel = itContEmp.next();
+      itEmp = employeeEntity.getInCanonicalRelationships().iterator();
       currentEmpRel = itEmp.next();
       assertEquals(currentContEmpRel, currentEmpRel);
 
-      Iterator<ORelationship> itRegEmp = regularEmployeeEntity.getOutRelationships().iterator();
-      ORelationship currentRegEmpRel = itRegEmp.next();
+      Iterator<OCanonicalRelationship> itRegEmp = regularEmployeeEntity.getOutCanonicalRelationships().iterator();
+      OCanonicalRelationship currentRegEmpRel = itRegEmp.next();
       currentEmpRel = itEmp.next();
       assertEquals(currentRegEmpRel, currentEmpRel);
 
 
       // inherited relationships check
-      assertEquals(1, regularEmployeeEntity.getInheritedOutRelationships().size());
-      assertEquals(1, contractEmployeeEntity.getInheritedOutRelationships().size());
-      assertEquals(0, employeeEntity.getInheritedOutRelationships().size());
+      assertEquals(1, regularEmployeeEntity.getInheritedOutCanonicalRelationships().size());
+      assertEquals(1, contractEmployeeEntity.getInheritedOutCanonicalRelationships().size());
+      assertEquals(0, employeeEntity.getInheritedOutCanonicalRelationships().size());
 
-      itRegEmp = regularEmployeeEntity.getInheritedOutRelationships().iterator();
-      itContEmp = contractEmployeeEntity.getInheritedOutRelationships().iterator();
+      itRegEmp = regularEmployeeEntity.getInheritedOutCanonicalRelationships().iterator();
+      itContEmp = contractEmployeeEntity.getInheritedOutCanonicalRelationships().iterator();
       currentRegEmpRel = itRegEmp.next();
       currentContEmpRel = itContEmp.next();
       assertEquals("MANAGER", currentRegEmpRel.getParentEntity().getName());
@@ -1979,11 +1979,11 @@ public class FilterTableMappingTest {
       assertEquals("MANAGER", currentContEmpRel.getParentEntity().getName());
       assertEquals("EMPLOYEE", currentContEmpRel.getForeignEntity().getName());
       assertEquals(managerEntity.getPrimaryKey(), currentRegEmpRel.getPrimaryKey());
-      assertEquals(1, currentRegEmpRel.getForeignKey().getInvolvedAttributes().size());
-      assertEquals("MANAGER", currentRegEmpRel.getForeignKey().getInvolvedAttributes().get(0).getName());
+      assertEquals(1, currentRegEmpRel.getFromColumns().size());
+      assertEquals("MANAGER", currentRegEmpRel.getFromColumns().get(0).getName());
       assertEquals(managerEntity.getPrimaryKey(), currentContEmpRel.getPrimaryKey());
-      assertEquals(1, currentContEmpRel.getForeignKey().getInvolvedAttributes().size());
-      assertEquals("MANAGER", currentContEmpRel.getForeignKey().getInvolvedAttributes().get(0).getName());
+      assertEquals(1, currentContEmpRel.getFromColumns().size());
+      assertEquals("MANAGER", currentContEmpRel.getFromColumns().get(0).getName());
       assertFalse(itRegEmp.hasNext());
       assertFalse(itContEmp.hasNext());
 
@@ -2349,8 +2349,8 @@ public class FilterTableMappingTest {
 
       // Relationships-Edges Mapping
 
-      Iterator<ORelationship> itRelationships = employeeEntity.getOutRelationships().iterator();
-      ORelationship hasManagerRelationship = itRelationships.next();
+      Iterator<OCanonicalRelationship> itRelationships = employeeEntity.getOutCanonicalRelationships().iterator();
+      OCanonicalRelationship hasManagerRelationship = itRelationships.next();
       assertFalse(itRelationships.hasNext());
 
       OEdgeType hasManagerEdgeType = mapper.getGraphModel().getEdgeTypeByName("HasManager");
@@ -2463,8 +2463,8 @@ public class FilterTableMappingTest {
       excludedTables.add("RESIDENCE");
 
       this.mapper = new OHibernate2GraphMapper(this.sourceDBInfo, FilterTableMappingTest.XML_TABLE_PER_SUBCLASS2, null, excludedTables, null);
-      mapper.buildSourceDatabaseSchema(this.context);
-      mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
+      mapper.buildSourceDatabaseSchema();
+      mapper.buildGraphModel(new OJavaConventionNameResolver());
 
 
       /*
@@ -2497,7 +2497,7 @@ public class FilterTableMappingTest {
 
       // entities check
       Assert.assertEquals(6, mapper.getDataBaseSchema().getEntities().size());
-      Assert.assertEquals(4, mapper.getDataBaseSchema().getRelationships().size());
+      Assert.assertEquals(4, mapper.getDataBaseSchema().getCanonicalRelationships().size());
       assertNotNull(employeeEntity);
       assertNotNull(regularEmployeeEntity);
       assertNotNull(contractEmployeeEntity);
@@ -2694,18 +2694,18 @@ public class FilterTableMappingTest {
       assertEquals("PROJECT_MANAGER", projectManagerEntity.getPrimaryKey().getInvolvedAttributes().get(0).getBelongingEntity().getName());
 
       // relationship, primary and foreign key check
-      assertEquals(1, regularEmployeeEntity.getOutRelationships().size());
-      assertEquals(1, contractEmployeeEntity.getOutRelationships().size());
-      assertEquals(1, employeeEntity.getOutRelationships().size());
-      assertEquals(1, projectManagerEntity.getOutRelationships().size());
-      assertEquals(0, managerEntity.getOutRelationships().size());
-      assertEquals(0, countryEntity.getOutRelationships().size());
-      assertEquals(0, regularEmployeeEntity.getInRelationships().size());
-      assertEquals(0, contractEmployeeEntity.getInRelationships().size());
-      assertEquals(2, employeeEntity.getInRelationships().size());
-      assertEquals(0, projectManagerEntity.getInRelationships().size());
-      assertEquals(2, managerEntity.getInRelationships().size());
-      assertEquals(0, countryEntity.getInRelationships().size());
+      assertEquals(1, regularEmployeeEntity.getOutCanonicalRelationships().size());
+      assertEquals(1, contractEmployeeEntity.getOutCanonicalRelationships().size());
+      assertEquals(1, employeeEntity.getOutCanonicalRelationships().size());
+      assertEquals(1, projectManagerEntity.getOutCanonicalRelationships().size());
+      assertEquals(0, managerEntity.getOutCanonicalRelationships().size());
+      assertEquals(0, countryEntity.getOutCanonicalRelationships().size());
+      assertEquals(0, regularEmployeeEntity.getInCanonicalRelationships().size());
+      assertEquals(0, contractEmployeeEntity.getInCanonicalRelationships().size());
+      assertEquals(2, employeeEntity.getInCanonicalRelationships().size());
+      assertEquals(0, projectManagerEntity.getInCanonicalRelationships().size());
+      assertEquals(2, managerEntity.getInCanonicalRelationships().size());
+      assertEquals(0, countryEntity.getInCanonicalRelationships().size());
 
       assertEquals(1, regularEmployeeEntity.getForeignKeys().size());
       assertEquals(1, contractEmployeeEntity.getForeignKeys().size());
@@ -2714,37 +2714,37 @@ public class FilterTableMappingTest {
       assertEquals(0, managerEntity.getForeignKeys().size());
       assertEquals(0, countryEntity.getForeignKeys().size());
 
-      Iterator<ORelationship> itEmp = employeeEntity.getOutRelationships().iterator();
-      ORelationship currentEmpRel = itEmp.next();
+      Iterator<OCanonicalRelationship> itEmp = employeeEntity.getOutCanonicalRelationships().iterator();
+      OCanonicalRelationship currentEmpRel = itEmp.next();
       assertEquals("MANAGER", currentEmpRel.getParentEntity().getName());
       assertEquals("EMPLOYEE", currentEmpRel.getForeignEntity().getName());
       assertEquals(managerEntity.getPrimaryKey(), currentEmpRel.getPrimaryKey());
       assertEquals(employeeEntity.getForeignKeys().get(0), currentEmpRel.getForeignKey());
       assertFalse(itEmp.hasNext());
 
-      Iterator<ORelationship> itManager = managerEntity.getInRelationships().iterator();
-      ORelationship currentManRel = itManager.next();
+      Iterator<OCanonicalRelationship> itManager = managerEntity.getInCanonicalRelationships().iterator();
+      OCanonicalRelationship currentManRel = itManager.next();
       assertEquals(currentEmpRel, currentManRel);
 
-      Iterator<ORelationship> itContEmp = contractEmployeeEntity.getOutRelationships().iterator();
-      ORelationship currentContEmpRel = itContEmp.next();
-      itEmp = employeeEntity.getInRelationships().iterator();
+      Iterator<OCanonicalRelationship> itContEmp = contractEmployeeEntity.getOutCanonicalRelationships().iterator();
+      OCanonicalRelationship currentContEmpRel = itContEmp.next();
+      itEmp = employeeEntity.getInCanonicalRelationships().iterator();
       currentEmpRel = itEmp.next();
       assertEquals(currentContEmpRel, currentEmpRel);
 
-      Iterator<ORelationship> itRegEmp = regularEmployeeEntity.getOutRelationships().iterator();
-      ORelationship currentRegEmpRel = itRegEmp.next();
+      Iterator<OCanonicalRelationship> itRegEmp = regularEmployeeEntity.getOutCanonicalRelationships().iterator();
+      OCanonicalRelationship currentRegEmpRel = itRegEmp.next();
       currentEmpRel = itEmp.next();
       assertEquals(currentRegEmpRel, currentEmpRel);
 
 
       // inherited relationships check
-      assertEquals(1, regularEmployeeEntity.getInheritedOutRelationships().size());
-      assertEquals(1, contractEmployeeEntity.getInheritedOutRelationships().size());
-      assertEquals(0, employeeEntity.getInheritedOutRelationships().size());
+      assertEquals(1, regularEmployeeEntity.getInheritedOutCanonicalRelationships().size());
+      assertEquals(1, contractEmployeeEntity.getInheritedOutCanonicalRelationships().size());
+      assertEquals(0, employeeEntity.getInheritedOutCanonicalRelationships().size());
 
-      itRegEmp = regularEmployeeEntity.getInheritedOutRelationships().iterator();
-      itContEmp = contractEmployeeEntity.getInheritedOutRelationships().iterator();
+      itRegEmp = regularEmployeeEntity.getInheritedOutCanonicalRelationships().iterator();
+      itContEmp = contractEmployeeEntity.getInheritedOutCanonicalRelationships().iterator();
       currentRegEmpRel = itRegEmp.next();
       currentContEmpRel = itContEmp.next();
       assertEquals("MANAGER", currentRegEmpRel.getParentEntity().getName());
@@ -2752,11 +2752,11 @@ public class FilterTableMappingTest {
       assertEquals("MANAGER", currentContEmpRel.getParentEntity().getName());
       assertEquals("EMPLOYEE", currentContEmpRel.getForeignEntity().getName());
       assertEquals(managerEntity.getPrimaryKey(), currentRegEmpRel.getPrimaryKey());
-      assertEquals(1, currentRegEmpRel.getForeignKey().getInvolvedAttributes().size());
-      assertEquals("MANAGER", currentRegEmpRel.getForeignKey().getInvolvedAttributes().get(0).getName());
+      assertEquals(1, currentRegEmpRel.getFromColumns().size());
+      assertEquals("MANAGER", currentRegEmpRel.getFromColumns().get(0).getName());
       assertEquals(managerEntity.getPrimaryKey(), currentContEmpRel.getPrimaryKey());
-      assertEquals(1, currentContEmpRel.getForeignKey().getInvolvedAttributes().size());
-      assertEquals("MANAGER", currentContEmpRel.getForeignKey().getInvolvedAttributes().get(0).getName());
+      assertEquals(1, currentContEmpRel.getFromColumns().size());
+      assertEquals("MANAGER", currentContEmpRel.getFromColumns().get(0).getName());
       assertFalse(itRegEmp.hasNext());
       assertFalse(itContEmp.hasNext());
 
@@ -3122,8 +3122,8 @@ public class FilterTableMappingTest {
 
       // Relationships-Edges Mapping
 
-      Iterator<ORelationship> itRelationships = employeeEntity.getOutRelationships().iterator();
-      ORelationship hasManagerRelationship = itRelationships.next();
+      Iterator<OCanonicalRelationship> itRelationships = employeeEntity.getOutCanonicalRelationships().iterator();
+      OCanonicalRelationship hasManagerRelationship = itRelationships.next();
       assertFalse(itRelationships.hasNext());
 
       OEdgeType hasManagerEdgeType = mapper.getGraphModel().getEdgeTypeByName("HasManager");
@@ -3244,8 +3244,8 @@ public class FilterTableMappingTest {
       includedTables.add("CONTRACT_EMPLOYEE");
 
       this.mapper = new OHibernate2GraphMapper(this.sourceDBInfo, FilterTableMappingTest.XML_TABLE_PER_CONCRETE_CLASS, includedTables, null, null);
-      mapper.buildSourceDatabaseSchema(this.context);
-      mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
+      mapper.buildSourceDatabaseSchema();
+      mapper.buildGraphModel(new OJavaConventionNameResolver());
 
 
       /*
@@ -3278,7 +3278,7 @@ public class FilterTableMappingTest {
 
       // entities check
       Assert.assertEquals(6, mapper.getDataBaseSchema().getEntities().size());
-      Assert.assertEquals(1, mapper.getDataBaseSchema().getRelationships().size());
+      Assert.assertEquals(1, mapper.getDataBaseSchema().getCanonicalRelationships().size());
       assertNotNull(employeeEntity);
       assertNotNull(regularEmployeeEntity);
       assertNotNull(contractEmployeeEntity);
@@ -3475,18 +3475,18 @@ public class FilterTableMappingTest {
       assertEquals("PROJECT_MANAGER", projectManagerEntity.getPrimaryKey().getInvolvedAttributes().get(0).getBelongingEntity().getName());
 
       // relationship, primary and foreign key check
-      assertEquals(0, regularEmployeeEntity.getOutRelationships().size());
-      assertEquals(0, contractEmployeeEntity.getOutRelationships().size());
-      assertEquals(1, employeeEntity.getOutRelationships().size());
-      assertEquals(0, projectManagerEntity.getOutRelationships().size());
-      assertEquals(0, managerEntity.getOutRelationships().size());
-      assertEquals(0, countryEntity.getOutRelationships().size());
-      assertEquals(0, regularEmployeeEntity.getInRelationships().size());
-      assertEquals(0, contractEmployeeEntity.getInRelationships().size());
-      assertEquals(0, employeeEntity.getInRelationships().size());
-      assertEquals(0, projectManagerEntity.getInRelationships().size());
-      assertEquals(1, managerEntity.getInRelationships().size());
-      assertEquals(0, countryEntity.getInRelationships().size());
+      assertEquals(0, regularEmployeeEntity.getOutCanonicalRelationships().size());
+      assertEquals(0, contractEmployeeEntity.getOutCanonicalRelationships().size());
+      assertEquals(1, employeeEntity.getOutCanonicalRelationships().size());
+      assertEquals(0, projectManagerEntity.getOutCanonicalRelationships().size());
+      assertEquals(0, managerEntity.getOutCanonicalRelationships().size());
+      assertEquals(0, countryEntity.getOutCanonicalRelationships().size());
+      assertEquals(0, regularEmployeeEntity.getInCanonicalRelationships().size());
+      assertEquals(0, contractEmployeeEntity.getInCanonicalRelationships().size());
+      assertEquals(0, employeeEntity.getInCanonicalRelationships().size());
+      assertEquals(0, projectManagerEntity.getInCanonicalRelationships().size());
+      assertEquals(1, managerEntity.getInCanonicalRelationships().size());
+      assertEquals(0, countryEntity.getInCanonicalRelationships().size());
 
       assertEquals(0, regularEmployeeEntity.getForeignKeys().size());
       assertEquals(0, contractEmployeeEntity.getForeignKeys().size());
@@ -3495,38 +3495,38 @@ public class FilterTableMappingTest {
       assertEquals(0, managerEntity.getForeignKeys().size());
       assertEquals(0, countryEntity.getForeignKeys().size());
 
-      Iterator<ORelationship> itEmp = employeeEntity.getOutRelationships().iterator();
-      ORelationship currentEmpRel = itEmp.next();
+      Iterator<OCanonicalRelationship> itEmp = employeeEntity.getOutCanonicalRelationships().iterator();
+      OCanonicalRelationship currentEmpRel = itEmp.next();
       assertEquals("MANAGER", currentEmpRel.getParentEntity().getName());
       assertEquals("EMPLOYEE", currentEmpRel.getForeignEntity().getName());
       assertEquals(managerEntity.getPrimaryKey(), currentEmpRel.getPrimaryKey());
       assertEquals(employeeEntity.getForeignKeys().get(0), currentEmpRel.getForeignKey());
       assertFalse(itEmp.hasNext());
 
-      Iterator<ORelationship> itManager = managerEntity.getInRelationships().iterator();
-      ORelationship currentManRel = itManager.next();
+      Iterator<OCanonicalRelationship> itManager = managerEntity.getInCanonicalRelationships().iterator();
+      OCanonicalRelationship currentManRel = itManager.next();
       assertEquals(currentEmpRel, currentManRel);
 
 
       // inherited relationships check
-      assertEquals(1, regularEmployeeEntity.getInheritedOutRelationships().size());
-      assertEquals(1, contractEmployeeEntity.getInheritedOutRelationships().size());
-      assertEquals(0, employeeEntity.getInheritedOutRelationships().size());
+      assertEquals(1, regularEmployeeEntity.getInheritedOutCanonicalRelationships().size());
+      assertEquals(1, contractEmployeeEntity.getInheritedOutCanonicalRelationships().size());
+      assertEquals(0, employeeEntity.getInheritedOutCanonicalRelationships().size());
 
-      Iterator<ORelationship> itRegEmp = regularEmployeeEntity.getInheritedOutRelationships().iterator();
-      Iterator<ORelationship> itContEmp = contractEmployeeEntity.getInheritedOutRelationships().iterator();
-      ORelationship currentRegEmpRel = itRegEmp.next();
-      ORelationship currentContEmpRel = itContEmp.next();
+      Iterator<OCanonicalRelationship> itRegEmp = regularEmployeeEntity.getInheritedOutCanonicalRelationships().iterator();
+      Iterator<OCanonicalRelationship> itContEmp = contractEmployeeEntity.getInheritedOutCanonicalRelationships().iterator();
+      OCanonicalRelationship currentRegEmpRel = itRegEmp.next();
+      OCanonicalRelationship currentContEmpRel = itContEmp.next();
       assertEquals("MANAGER", currentRegEmpRel.getParentEntity().getName());
       assertEquals("EMPLOYEE", currentRegEmpRel.getForeignEntity().getName());
       assertEquals("MANAGER", currentContEmpRel.getParentEntity().getName());
       assertEquals("EMPLOYEE", currentContEmpRel.getForeignEntity().getName());
       assertEquals(managerEntity.getPrimaryKey(), currentRegEmpRel.getPrimaryKey());
-      assertEquals(1, currentRegEmpRel.getForeignKey().getInvolvedAttributes().size());
-      assertEquals("MANAGER", currentRegEmpRel.getForeignKey().getInvolvedAttributes().get(0).getName());
+      assertEquals(1, currentRegEmpRel.getFromColumns().size());
+      assertEquals("MANAGER", currentRegEmpRel.getFromColumns().get(0).getName());
       assertEquals(managerEntity.getPrimaryKey(), currentContEmpRel.getPrimaryKey());
-      assertEquals(1, currentContEmpRel.getForeignKey().getInvolvedAttributes().size());
-      assertEquals("MANAGER", currentContEmpRel.getForeignKey().getInvolvedAttributes().get(0).getName());
+      assertEquals(1, currentContEmpRel.getFromColumns().size());
+      assertEquals("MANAGER", currentContEmpRel.getFromColumns().get(0).getName());
       assertFalse(itRegEmp.hasNext());
       assertFalse(itContEmp.hasNext());
 
@@ -3892,8 +3892,8 @@ public class FilterTableMappingTest {
 
       // Relationships-Edges Mapping
 
-      Iterator<ORelationship> itRelationships = employeeEntity.getOutRelationships().iterator();
-      ORelationship hasManagerRelationship = itRelationships.next();
+      Iterator<OCanonicalRelationship> itRelationships = employeeEntity.getOutCanonicalRelationships().iterator();
+      OCanonicalRelationship hasManagerRelationship = itRelationships.next();
       assertFalse(itRelationships.hasNext());
 
       OEdgeType hasManagerEdgeType = mapper.getGraphModel().getEdgeTypeByName("HasManager");

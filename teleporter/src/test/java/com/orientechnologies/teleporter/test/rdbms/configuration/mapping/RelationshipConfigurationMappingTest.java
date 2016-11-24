@@ -18,13 +18,15 @@
 
 package com.orientechnologies.teleporter.test.rdbms.configuration.mapping;
 
+import com.orientechnologies.teleporter.configuration.OConfigurationHandler;
+import com.orientechnologies.teleporter.configuration.api.OConfiguration;
 import com.orientechnologies.teleporter.context.OOutputStreamManager;
 import com.orientechnologies.teleporter.context.OTeleporterContext;
 import com.orientechnologies.teleporter.importengine.rdbms.dbengine.ODBQueryEngine;
 import com.orientechnologies.teleporter.mapper.rdbms.OER2GraphMapper;
 import com.orientechnologies.teleporter.mapper.rdbms.classmapper.OClassMapper;
+import com.orientechnologies.teleporter.model.dbschema.OCanonicalRelationship;
 import com.orientechnologies.teleporter.model.dbschema.OEntity;
-import com.orientechnologies.teleporter.model.dbschema.ORelationship;
 import com.orientechnologies.teleporter.model.dbschema.OSourceDatabaseInfo;
 import com.orientechnologies.teleporter.model.graphmodel.OEdgeType;
 import com.orientechnologies.teleporter.model.graphmodel.OModelProperty;
@@ -45,7 +47,7 @@ import static org.junit.Assert.*;
 
 /**
  * @author Gabriele Ponzi
- * @email  <gabriele.ponzi--at--gmail.com>
+ * @email  <g.ponzi--at--orientdb.com>
  *
  */
 
@@ -68,8 +70,8 @@ public class RelationshipConfigurationMappingTest {
 
   @Before
   public void init() {
-    this.context = new OTeleporterContext();
-    this.dbQueryEngine = new ODBQueryEngine(this.driver, this.context);
+    this.context = OTeleporterContext.newInstance();
+    this.dbQueryEngine = new ODBQueryEngine(this.driver);
     this.context.setDbQueryEngine(this.dbQueryEngine);
     this.context.setOutputManager(new OOutputStreamManager(0));
     this.context.setNameResolver(new OJavaConventionNameResolver());
@@ -114,11 +116,13 @@ public class RelationshipConfigurationMappingTest {
       st.execute(foreignTableBuilding);
 
       ODocument config = OFileManager.buildJsonFromFile(this.configDirectEdgesPath);
+      OConfigurationHandler configHandler = new OConfigurationHandler(false);
+      OConfiguration migrationConfig = configHandler.buildConfigurationFromJSONDoc(config);
 
-      this.mapper = new OER2GraphMapper(this.sourceDBInfo, null, null, config);
-      mapper.buildSourceDatabaseSchema(this.context);
-      mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
-      mapper.applyImportConfiguration(this.context);
+      this.mapper = new OER2GraphMapper(this.sourceDBInfo, null, null, migrationConfig);
+      mapper.buildSourceDatabaseSchema();
+      mapper.buildGraphModel(new OJavaConventionNameResolver());
+      mapper.applyImportConfiguration();
 
 
       /*
@@ -144,7 +148,7 @@ public class RelationshipConfigurationMappingTest {
 
       // entities check
       assertEquals(2, mapper.getDataBaseSchema().getEntities().size());
-      assertEquals(2, mapper.getDataBaseSchema().getRelationships().size());
+      assertEquals(2, mapper.getDataBaseSchema().getCanonicalRelationships().size());
       assertNotNull(employeeEntity);
       assertNotNull(projectEntity);
 
@@ -196,23 +200,23 @@ public class RelationshipConfigurationMappingTest {
       assertEquals("PROJECT", projectEntity.getAttributeByName("PROJECT_MANAGER").getBelongingEntity().getName());
 
       // relationship, primary and foreign key check
-      assertEquals(2, mapper.getDataBaseSchema().getRelationships().size());
-      assertEquals(1, projectEntity.getOutRelationships().size());
-      assertEquals(1, employeeEntity.getOutRelationships().size());
-      assertEquals(1, projectEntity.getInRelationships().size());
-      assertEquals(1, employeeEntity.getInRelationships().size());
+      assertEquals(2, mapper.getDataBaseSchema().getCanonicalRelationships().size());
+      assertEquals(1, projectEntity.getOutCanonicalRelationships().size());
+      assertEquals(1, employeeEntity.getOutCanonicalRelationships().size());
+      assertEquals(1, projectEntity.getInCanonicalRelationships().size());
+      assertEquals(1, employeeEntity.getInCanonicalRelationships().size());
       assertEquals(1, employeeEntity.getForeignKeys().size());
       assertEquals(1, projectEntity.getForeignKeys().size());
 
-      Iterator<ORelationship> it = projectEntity.getOutRelationships().iterator();
-      ORelationship currentRelationship = it.next();
+      Iterator<OCanonicalRelationship> it = projectEntity.getOutCanonicalRelationships().iterator();
+      OCanonicalRelationship currentRelationship = it.next();
       assertEquals("EMPLOYEE", currentRelationship.getParentEntity().getName());
       assertEquals("PROJECT", currentRelationship.getForeignEntity().getName());
       assertEquals(employeeEntity.getPrimaryKey(), currentRelationship.getPrimaryKey());
       assertEquals(projectEntity.getForeignKeys().get(0), currentRelationship.getForeignKey());
 
-      Iterator<ORelationship> it2 = employeeEntity.getInRelationships().iterator();
-      ORelationship currentRelationship2 = it2.next();
+      Iterator<OCanonicalRelationship> it2 = employeeEntity.getInCanonicalRelationships().iterator();
+      OCanonicalRelationship currentRelationship2 = it2.next();
       assertEquals(currentRelationship, currentRelationship2);
 
       assertEquals("PROJECT_MANAGER", projectEntity.getForeignKeys().get(0).getInvolvedAttributes().get(0).getName());
@@ -220,14 +224,14 @@ public class RelationshipConfigurationMappingTest {
 
       assertFalse(it.hasNext());
 
-      it = employeeEntity.getOutRelationships().iterator();
+      it = employeeEntity.getOutCanonicalRelationships().iterator();
       currentRelationship = it.next();
       assertEquals("PROJECT", currentRelationship.getParentEntity().getName());
       assertEquals("EMPLOYEE", currentRelationship.getForeignEntity().getName());
       assertEquals(projectEntity.getPrimaryKey(), currentRelationship.getPrimaryKey());
       assertEquals(employeeEntity.getForeignKeys().get(0), currentRelationship.getForeignKey());
 
-      it2 = projectEntity.getInRelationships().iterator();
+      it2 = projectEntity.getInCanonicalRelationships().iterator();
       currentRelationship2 = it2.next();
       assertEquals(currentRelationship, currentRelationship2);
 
@@ -390,12 +394,12 @@ public class RelationshipConfigurationMappingTest {
 
       // Relationships-Edges Mapping
 
-      Iterator<ORelationship> itRelationships = employeeEntity.getOutRelationships().iterator();
-      ORelationship worksAtRelationship = itRelationships.next();
+      Iterator<OCanonicalRelationship> itRelationships = employeeEntity.getOutCanonicalRelationships().iterator();
+      OCanonicalRelationship worksAtRelationship = itRelationships.next();
       assertFalse(itRelationships.hasNext());
 
-      itRelationships = projectEntity.getOutRelationships().iterator();
-      ORelationship hasManagerRelationship = itRelationships.next();
+      itRelationships = projectEntity.getOutCanonicalRelationships().iterator();
+      OCanonicalRelationship hasManagerRelationship = itRelationships.next();
       assertFalse(itRelationships.hasNext());
 
       assertEquals(2, mapper.getRelationship2edgeType().size());
@@ -434,7 +438,7 @@ public class RelationshipConfigurationMappingTest {
   @Test
 
   /*
-   *  Two tables: 2 relationships declared through foreign keys but the first one is overridden through a jsonConfiguration.
+   *  Two tables: 2 relationships declared through foreign keys but the first one is overridden through a migrationConfigDoc.
    *  Changes on the final edge:
    *  - name
    *  - direction inverted
@@ -448,7 +452,7 @@ public class RelationshipConfigurationMappingTest {
    *  EMPLOYEE --[HasProject]--> PROJECT
    *  PROJECT --[HasProjectManager]--> EMPLOYEE
    *
-   *  But through jsonConfiguration we obtain:
+   *  But through migrationConfigDoc we obtain:
    *
    *  PROJECT --[HasEmployee]--> EMPLOYEE
    *  PROJECT --[HasProjectManager]--> EMPLOYEE
@@ -485,11 +489,13 @@ public class RelationshipConfigurationMappingTest {
       st.execute(parentTableBuilding);
 
       ODocument config = OFileManager.buildJsonFromFile(this.configInverseEdgesPath);
+      OConfigurationHandler configHandler = new OConfigurationHandler(false);
+      OConfiguration migrationConfig = configHandler.buildConfigurationFromJSONDoc(config);
 
-      this.mapper = new OER2GraphMapper(this.sourceDBInfo, null, null, config);
-      mapper.buildSourceDatabaseSchema(this.context);
-      mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
-      mapper.applyImportConfiguration(this.context);
+      this.mapper = new OER2GraphMapper(this.sourceDBInfo, null, null, migrationConfig);
+      mapper.buildSourceDatabaseSchema();
+      mapper.buildGraphModel(new OJavaConventionNameResolver());
+      mapper.applyImportConfiguration();
 
 
       /*
@@ -515,7 +521,7 @@ public class RelationshipConfigurationMappingTest {
 
       // entities check
       assertEquals(2, mapper.getDataBaseSchema().getEntities().size());
-      assertEquals(2, mapper.getDataBaseSchema().getRelationships().size());
+      assertEquals(2, mapper.getDataBaseSchema().getCanonicalRelationships().size());
       assertNotNull(employeeEntity);
       assertNotNull(projectEntity);
 
@@ -567,23 +573,23 @@ public class RelationshipConfigurationMappingTest {
       assertEquals("PROJECT", projectEntity.getAttributeByName("PROJECT_MANAGER").getBelongingEntity().getName());
 
       // relationship, primary and foreign key check
-      assertEquals(2, mapper.getDataBaseSchema().getRelationships().size());
-      assertEquals(1, projectEntity.getOutRelationships().size());
-      assertEquals(1, employeeEntity.getOutRelationships().size());
-      assertEquals(1, projectEntity.getInRelationships().size());
-      assertEquals(1, employeeEntity.getInRelationships().size());
+      assertEquals(2, mapper.getDataBaseSchema().getCanonicalRelationships().size());
+      assertEquals(1, projectEntity.getOutCanonicalRelationships().size());
+      assertEquals(1, employeeEntity.getOutCanonicalRelationships().size());
+      assertEquals(1, projectEntity.getInCanonicalRelationships().size());
+      assertEquals(1, employeeEntity.getInCanonicalRelationships().size());
       assertEquals(1, employeeEntity.getForeignKeys().size());
       assertEquals(1, projectEntity.getForeignKeys().size());
 
-      Iterator<ORelationship> it = projectEntity.getOutRelationships().iterator();
-      ORelationship currentRelationship = it.next();
+      Iterator<OCanonicalRelationship> it = projectEntity.getOutCanonicalRelationships().iterator();
+      OCanonicalRelationship currentRelationship = it.next();
       assertEquals("EMPLOYEE", currentRelationship.getParentEntity().getName());
       assertEquals("PROJECT", currentRelationship.getForeignEntity().getName());
       assertEquals(employeeEntity.getPrimaryKey(), currentRelationship.getPrimaryKey());
       assertEquals(projectEntity.getForeignKeys().get(0), currentRelationship.getForeignKey());
 
-      Iterator<ORelationship> it2 = employeeEntity.getInRelationships().iterator();
-      ORelationship currentRelationship2 = it2.next();
+      Iterator<OCanonicalRelationship> it2 = employeeEntity.getInCanonicalRelationships().iterator();
+      OCanonicalRelationship currentRelationship2 = it2.next();
       assertEquals(currentRelationship, currentRelationship2);
 
       assertEquals("PROJECT_MANAGER", projectEntity.getForeignKeys().get(0).getInvolvedAttributes().get(0).getName());
@@ -591,14 +597,14 @@ public class RelationshipConfigurationMappingTest {
 
       assertFalse(it.hasNext());
 
-      it = employeeEntity.getOutRelationships().iterator();
+      it = employeeEntity.getOutCanonicalRelationships().iterator();
       currentRelationship = it.next();
       assertEquals("PROJECT", currentRelationship.getParentEntity().getName());
       assertEquals("EMPLOYEE", currentRelationship.getForeignEntity().getName());
       assertEquals(projectEntity.getPrimaryKey(), currentRelationship.getPrimaryKey());
       assertEquals(employeeEntity.getForeignKeys().get(0), currentRelationship.getForeignKey());
 
-      it2 = projectEntity.getInRelationships().iterator();
+      it2 = projectEntity.getInCanonicalRelationships().iterator();
       currentRelationship2 = it2.next();
       assertEquals(currentRelationship, currentRelationship2);
 
@@ -751,12 +757,12 @@ public class RelationshipConfigurationMappingTest {
 
       // Relationships-Edges Mapping
 
-      Iterator<ORelationship> itRelationships = employeeEntity.getOutRelationships().iterator();
-      ORelationship projectRelationship = itRelationships.next();
+      Iterator<OCanonicalRelationship> itRelationships = employeeEntity.getOutCanonicalRelationships().iterator();
+      OCanonicalRelationship projectRelationship = itRelationships.next();
       assertFalse(itRelationships.hasNext());
 
-      itRelationships = projectEntity.getOutRelationships().iterator();
-      ORelationship hasProjectManagerRelationship = itRelationships.next();
+      itRelationships = projectEntity.getOutCanonicalRelationships().iterator();
+      OCanonicalRelationship hasProjectManagerRelationship = itRelationships.next();
       assertFalse(itRelationships.hasNext());
 
       assertEquals(2, mapper.getRelationship2edgeType().size());
@@ -795,14 +801,14 @@ public class RelationshipConfigurationMappingTest {
 
   /*
    *  Three tables: 1  N-N relationship, no foreign keys declared for the join table in the db.
-   *  Through the jsonConfiguration we obtain the following schema:
+   *  Through the migrationConfigDoc we obtain the following schema:
    *
    *  ACTOR
    *  FILM
    *  ACTOR2FILM: foreign key (ACTOR_ID) references ACTOR(ID)
    *              foreign key (FILM_ID) references FILM(ID)
    *
-   *  With "direct" direction in the jsonConfiguration we obtain:
+   *  With "direct" direction in the migrationConfigDoc we obtain:
    *
    *  ACTOR --[Performs]--> FILM
    *
@@ -837,11 +843,13 @@ public class RelationshipConfigurationMappingTest {
       st.execute(actorFilmTableBuilding);
 
       ODocument config = OFileManager.buildJsonFromFile(this.configJoinTableDirectEdgesPath);
+      OConfigurationHandler configHandler = new OConfigurationHandler(true);
+      OConfiguration migrationConfig = configHandler.buildConfigurationFromJSONDoc(config);
 
-      this.mapper = new OER2GraphMapper(this.sourceDBInfo, null, null, config);
-      mapper.buildSourceDatabaseSchema(this.context);
-      mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
-      mapper.applyImportConfiguration(this.context);
+      this.mapper = new OER2GraphMapper(this.sourceDBInfo, null, null, migrationConfig);
+      mapper.buildSourceDatabaseSchema();
+      mapper.buildGraphModel(new OJavaConventionNameResolver());
+      mapper.applyImportConfiguration();
 
 
       /*
@@ -868,7 +876,7 @@ public class RelationshipConfigurationMappingTest {
 
       // entities check
       assertEquals(3, mapper.getDataBaseSchema().getEntities().size());
-      assertEquals(2, mapper.getDataBaseSchema().getRelationships().size());
+      assertEquals(2, mapper.getDataBaseSchema().getCanonicalRelationships().size());
       assertNotNull(actorEntity);
       assertNotNull(filmEntity);
       assertNotNull(actorFilmEntity);
@@ -935,26 +943,26 @@ public class RelationshipConfigurationMappingTest {
       assertEquals("ACTOR_FILM", actorFilmEntity.getAttributeByName("PAYMENT").getBelongingEntity().getName());
 
       // relationship, primary and foreign key check
-      assertEquals(2, mapper.getDataBaseSchema().getRelationships().size());
-      assertEquals(0, filmEntity.getOutRelationships().size());
-      assertEquals(0, actorEntity.getOutRelationships().size());
-      assertEquals(2, actorFilmEntity.getOutRelationships().size());
-      assertEquals(1, filmEntity.getInRelationships().size());
-      assertEquals(1, actorEntity.getInRelationships().size());
-      assertEquals(0, actorFilmEntity.getInRelationships().size());
+      assertEquals(2, mapper.getDataBaseSchema().getCanonicalRelationships().size());
+      assertEquals(0, filmEntity.getOutCanonicalRelationships().size());
+      assertEquals(0, actorEntity.getOutCanonicalRelationships().size());
+      assertEquals(2, actorFilmEntity.getOutCanonicalRelationships().size());
+      assertEquals(1, filmEntity.getInCanonicalRelationships().size());
+      assertEquals(1, actorEntity.getInCanonicalRelationships().size());
+      assertEquals(0, actorFilmEntity.getInCanonicalRelationships().size());
       assertEquals(0, actorEntity.getForeignKeys().size());
       assertEquals(0, filmEntity.getForeignKeys().size());
       assertEquals(2, actorFilmEntity.getForeignKeys().size());
 
-      Iterator<ORelationship> it = actorFilmEntity.getOutRelationships().iterator();
-      ORelationship currentRelationship = it.next();
+      Iterator<OCanonicalRelationship> it = actorFilmEntity.getOutCanonicalRelationships().iterator();
+      OCanonicalRelationship currentRelationship = it.next();
       assertEquals("ACTOR", currentRelationship.getParentEntity().getName());
       assertEquals("ACTOR_FILM", currentRelationship.getForeignEntity().getName());
       assertEquals(actorEntity.getPrimaryKey(), currentRelationship.getPrimaryKey());
       assertEquals(actorFilmEntity.getForeignKeys().get(0), currentRelationship.getForeignKey());
 
-      Iterator<ORelationship> it2 = actorEntity.getInRelationships().iterator();
-      ORelationship currentRelationship2 = it2.next();
+      Iterator<OCanonicalRelationship> it2 = actorEntity.getInCanonicalRelationships().iterator();
+      OCanonicalRelationship currentRelationship2 = it2.next();
       assertEquals(currentRelationship, currentRelationship2);
 
       assertEquals("ACTOR_ID", actorFilmEntity.getForeignKeys().get(0).getInvolvedAttributes().get(0).getName());
@@ -966,7 +974,7 @@ public class RelationshipConfigurationMappingTest {
       assertEquals(filmEntity.getPrimaryKey(), currentRelationship.getPrimaryKey());
       assertEquals(actorFilmEntity.getForeignKeys().get(1), currentRelationship.getForeignKey());
 
-      it2 = filmEntity.getInRelationships().iterator();
+      it2 = filmEntity.getInCanonicalRelationships().iterator();
       currentRelationship2 = it2.next();
       assertEquals(currentRelationship, currentRelationship2);
 
@@ -1160,9 +1168,9 @@ public class RelationshipConfigurationMappingTest {
 
       // Relationships-Edges Mapping
 
-      Iterator<ORelationship> itRelationships = actorFilmEntity.getOutRelationships().iterator();
-      ORelationship performsLeftRelationship = itRelationships.next();
-      ORelationship performsRightRelationship = itRelationships.next();
+      Iterator<OCanonicalRelationship> itRelationships = actorFilmEntity.getOutCanonicalRelationships().iterator();
+      OCanonicalRelationship performsLeftRelationship = itRelationships.next();
+      OCanonicalRelationship performsRightRelationship = itRelationships.next();
       assertFalse(itRelationships.hasNext());
 
       assertEquals(2, mapper.getRelationship2edgeType().size());
@@ -1183,7 +1191,7 @@ public class RelationshipConfigurationMappingTest {
       /**
        * performing aggregation
        */
-      mapper.performAggregations(this.context);
+      mapper.performAggregations();
 
 
       /*
@@ -1350,7 +1358,7 @@ public class RelationshipConfigurationMappingTest {
 
       // Relationships-Edges Mapping
 
-      itRelationships = actorFilmEntity.getOutRelationships().iterator();
+      itRelationships = actorFilmEntity.getOutCanonicalRelationships().iterator();
       performsLeftRelationship = itRelationships.next();
       performsRightRelationship = itRelationships.next();
       assertFalse(itRelationships.hasNext());
@@ -1396,14 +1404,14 @@ public class RelationshipConfigurationMappingTest {
 
   /*
    *  Three tables: 1  N-N relationship, no foreign keys declared for the join table in the db.
-   *  Through the jsonConfiguration we obtain the following schema:
+   *  Through the migrationConfigDoc we obtain the following schema:
    *
    *  ACTOR
    *  FILM
    *  ACTOR2FILM: foreign key (ACTOR_ID) references ACTOR(ID)
    *              foreign key (FILM_ID) references FILM(ID)
    *
-   *  With "direct" direction in the jsonConfiguration we would obtain:
+   *  With "direct" direction in the migrationConfigDoc we would obtain:
    *
    *  FILM --[Performs]--> ACTOR
    *
@@ -1440,11 +1448,13 @@ public class RelationshipConfigurationMappingTest {
       st.execute(actorFilmTableBuilding);
 
       ODocument config = OFileManager.buildJsonFromFile(this.configJoinTableInverseEdgesPath);
+      OConfigurationHandler configHandler = new OConfigurationHandler(true);
+      OConfiguration migrationConfig = configHandler.buildConfigurationFromJSONDoc(config);
 
-      this.mapper = new OER2GraphMapper(this.sourceDBInfo, null, null, config);
-      mapper.buildSourceDatabaseSchema(this.context);
-      mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
-      mapper.applyImportConfiguration(this.context);
+      this.mapper = new OER2GraphMapper(this.sourceDBInfo, null, null, migrationConfig);
+      mapper.buildSourceDatabaseSchema();
+      mapper.buildGraphModel(new OJavaConventionNameResolver());
+      mapper.applyImportConfiguration();
 
 
       /*
@@ -1471,7 +1481,7 @@ public class RelationshipConfigurationMappingTest {
 
       // entities check
       assertEquals(3, mapper.getDataBaseSchema().getEntities().size());
-      assertEquals(2, mapper.getDataBaseSchema().getRelationships().size());
+      assertEquals(2, mapper.getDataBaseSchema().getCanonicalRelationships().size());
       assertNotNull(actorEntity);
       assertNotNull(filmEntity);
       assertNotNull(filmActorEntity);
@@ -1538,26 +1548,26 @@ public class RelationshipConfigurationMappingTest {
       assertEquals("FILM_ACTOR", filmActorEntity.getAttributeByName("PAYMENT").getBelongingEntity().getName());
 
       // relationship, primary and foreign key check
-      assertEquals(2, mapper.getDataBaseSchema().getRelationships().size());
-      assertEquals(0, filmEntity.getOutRelationships().size());
-      assertEquals(0, actorEntity.getOutRelationships().size());
-      assertEquals(2, filmActorEntity.getOutRelationships().size());
-      assertEquals(1, filmEntity.getInRelationships().size());
-      assertEquals(1, actorEntity.getInRelationships().size());
-      assertEquals(0, filmActorEntity.getInRelationships().size());
+      assertEquals(2, mapper.getDataBaseSchema().getCanonicalRelationships().size());
+      assertEquals(0, filmEntity.getOutCanonicalRelationships().size());
+      assertEquals(0, actorEntity.getOutCanonicalRelationships().size());
+      assertEquals(2, filmActorEntity.getOutCanonicalRelationships().size());
+      assertEquals(1, filmEntity.getInCanonicalRelationships().size());
+      assertEquals(1, actorEntity.getInCanonicalRelationships().size());
+      assertEquals(0, filmActorEntity.getInCanonicalRelationships().size());
       assertEquals(0, actorEntity.getForeignKeys().size());
       assertEquals(0, filmEntity.getForeignKeys().size());
       assertEquals(2, filmActorEntity.getForeignKeys().size());
 
-      Iterator<ORelationship> it = filmActorEntity.getOutRelationships().iterator();
-      ORelationship currentRelationship = it.next();
+      Iterator<OCanonicalRelationship> it = filmActorEntity.getOutCanonicalRelationships().iterator();
+      OCanonicalRelationship currentRelationship = it.next();
       assertEquals("FILM", currentRelationship.getParentEntity().getName());
       assertEquals("FILM_ACTOR", currentRelationship.getForeignEntity().getName());
       assertEquals(filmEntity.getPrimaryKey(), currentRelationship.getPrimaryKey());
       assertEquals(filmActorEntity.getForeignKeys().get(0), currentRelationship.getForeignKey());
 
-      Iterator<ORelationship> it2 = filmEntity.getInRelationships().iterator();
-      ORelationship currentRelationship2 = it2.next();
+      Iterator<OCanonicalRelationship> it2 = filmEntity.getInCanonicalRelationships().iterator();
+      OCanonicalRelationship currentRelationship2 = it2.next();
       assertEquals(currentRelationship, currentRelationship2);
 
       assertEquals("FILM_ID", filmActorEntity.getForeignKeys().get(0).getInvolvedAttributes().get(0).getName());
@@ -1570,7 +1580,7 @@ public class RelationshipConfigurationMappingTest {
       assertEquals(actorEntity.getPrimaryKey(), currentRelationship.getPrimaryKey());
       assertEquals(filmActorEntity.getForeignKeys().get(1), currentRelationship.getForeignKey());
 
-      it2 = actorEntity.getInRelationships().iterator();
+      it2 = actorEntity.getInCanonicalRelationships().iterator();
       currentRelationship2 = it2.next();
       assertEquals(currentRelationship, currentRelationship2);
 
@@ -1764,9 +1774,9 @@ public class RelationshipConfigurationMappingTest {
 
       // Relationships-Edges Mapping
 
-      Iterator<ORelationship> itRelationships = filmActorEntity.getOutRelationships().iterator();
-      ORelationship performsLeftRelationship = itRelationships.next();
-      ORelationship performsRightRelationship = itRelationships.next();
+      Iterator<OCanonicalRelationship> itRelationships = filmActorEntity.getOutCanonicalRelationships().iterator();
+      OCanonicalRelationship performsLeftRelationship = itRelationships.next();
+      OCanonicalRelationship performsRightRelationship = itRelationships.next();
       assertFalse(itRelationships.hasNext());
 
       assertEquals(2, mapper.getRelationship2edgeType().size());
@@ -1787,7 +1797,7 @@ public class RelationshipConfigurationMappingTest {
       /**
        * performing aggregation
        */
-      mapper.performMany2ManyAggregation(this.context);
+      mapper.performMany2ManyAggregation();
 
 
       /*
@@ -1954,7 +1964,7 @@ public class RelationshipConfigurationMappingTest {
 
       // Relationships-Edges Mapping
 
-      itRelationships = filmActorEntity.getOutRelationships().iterator();
+      itRelationships = filmActorEntity.getOutCanonicalRelationships().iterator();
       performsLeftRelationship = itRelationships.next();
       performsRightRelationship = itRelationships.next();
       assertFalse(itRelationships.hasNext());
@@ -2006,8 +2016,8 @@ public class RelationshipConfigurationMappingTest {
    *  ACTOR2FILM: foreign key (ACTOR_ID) references ACTOR(ID)
    *              foreign key (FILM_ID) references FILM(ID)
    *
-   *  Through the jsonConfiguration we want name the relationship "Performs".
-   *  With "direct" direction in the jsonConfiguration we obtain:
+   *  Through the migrationConfigDoc we want name the relationship "Performs".
+   *  With "direct" direction in the migrationConfigDoc we obtain:
    *
    *  ACTOR --[Performs]--> FILM
    *
@@ -2043,11 +2053,13 @@ public class RelationshipConfigurationMappingTest {
       st.execute(actorFilmTableBuilding);
 
       ODocument config = OFileManager.buildJsonFromFile(this.configJoinTableDirectEdgesPath);
+      OConfigurationHandler configHandler = new OConfigurationHandler(true);
+      OConfiguration migrationConfig = configHandler.buildConfigurationFromJSONDoc(config);
 
-      this.mapper = new OER2GraphMapper(this.sourceDBInfo, null, null, config);
-      mapper.buildSourceDatabaseSchema(this.context);
-      mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
-      mapper.applyImportConfiguration(this.context);
+      this.mapper = new OER2GraphMapper(this.sourceDBInfo, null, null, migrationConfig);
+      mapper.buildSourceDatabaseSchema();
+      mapper.buildGraphModel(new OJavaConventionNameResolver());
+      mapper.applyImportConfiguration();
 
 
       /*
@@ -2074,7 +2086,7 @@ public class RelationshipConfigurationMappingTest {
 
       // entities check
       assertEquals(3, mapper.getDataBaseSchema().getEntities().size());
-      assertEquals(2, mapper.getDataBaseSchema().getRelationships().size());
+      assertEquals(2, mapper.getDataBaseSchema().getCanonicalRelationships().size());
       assertNotNull(actorEntity);
       assertNotNull(filmEntity);
       assertNotNull(actorFilmEntity);
@@ -2141,26 +2153,26 @@ public class RelationshipConfigurationMappingTest {
       assertEquals("ACTOR_FILM", actorFilmEntity.getAttributeByName("PAYMENT").getBelongingEntity().getName());
 
       // relationship, primary and foreign key check
-      assertEquals(2, mapper.getDataBaseSchema().getRelationships().size());
-      assertEquals(0, filmEntity.getOutRelationships().size());
-      assertEquals(0, actorEntity.getOutRelationships().size());
-      assertEquals(2, actorFilmEntity.getOutRelationships().size());
-      assertEquals(1, filmEntity.getInRelationships().size());
-      assertEquals(1, actorEntity.getInRelationships().size());
-      assertEquals(0, actorFilmEntity.getInRelationships().size());
+      assertEquals(2, mapper.getDataBaseSchema().getCanonicalRelationships().size());
+      assertEquals(0, filmEntity.getOutCanonicalRelationships().size());
+      assertEquals(0, actorEntity.getOutCanonicalRelationships().size());
+      assertEquals(2, actorFilmEntity.getOutCanonicalRelationships().size());
+      assertEquals(1, filmEntity.getInCanonicalRelationships().size());
+      assertEquals(1, actorEntity.getInCanonicalRelationships().size());
+      assertEquals(0, actorFilmEntity.getInCanonicalRelationships().size());
       assertEquals(0, actorEntity.getForeignKeys().size());
       assertEquals(0, filmEntity.getForeignKeys().size());
       assertEquals(2, actorFilmEntity.getForeignKeys().size());
 
-      Iterator<ORelationship> it = actorFilmEntity.getOutRelationships().iterator();
-      ORelationship currentRelationship = it.next();
+      Iterator<OCanonicalRelationship> it = actorFilmEntity.getOutCanonicalRelationships().iterator();
+      OCanonicalRelationship currentRelationship = it.next();
       assertEquals("ACTOR", currentRelationship.getParentEntity().getName());
       assertEquals("ACTOR_FILM", currentRelationship.getForeignEntity().getName());
       assertEquals(actorEntity.getPrimaryKey(), currentRelationship.getPrimaryKey());
       assertEquals(actorFilmEntity.getForeignKeys().get(0), currentRelationship.getForeignKey());
 
-      Iterator<ORelationship> it2 = actorEntity.getInRelationships().iterator();
-      ORelationship currentRelationship2 = it2.next();
+      Iterator<OCanonicalRelationship> it2 = actorEntity.getInCanonicalRelationships().iterator();
+      OCanonicalRelationship currentRelationship2 = it2.next();
       assertEquals(currentRelationship, currentRelationship2);
 
       assertEquals("ACTOR_ID", actorFilmEntity.getForeignKeys().get(0).getInvolvedAttributes().get(0).getName());
@@ -2172,7 +2184,7 @@ public class RelationshipConfigurationMappingTest {
       assertEquals(filmEntity.getPrimaryKey(), currentRelationship.getPrimaryKey());
       assertEquals(actorFilmEntity.getForeignKeys().get(1), currentRelationship.getForeignKey());
 
-      it2 = filmEntity.getInRelationships().iterator();
+      it2 = filmEntity.getInCanonicalRelationships().iterator();
       currentRelationship2 = it2.next();
       assertEquals(currentRelationship, currentRelationship2);
 
@@ -2366,9 +2378,9 @@ public class RelationshipConfigurationMappingTest {
 
       // Relationships-Edges Mapping
 
-      Iterator<ORelationship> itRelationships = actorFilmEntity.getOutRelationships().iterator();
-      ORelationship performsLeftRelationship = itRelationships.next();
-      ORelationship performsRightRelationship = itRelationships.next();
+      Iterator<OCanonicalRelationship> itRelationships = actorFilmEntity.getOutCanonicalRelationships().iterator();
+      OCanonicalRelationship performsLeftRelationship = itRelationships.next();
+      OCanonicalRelationship performsRightRelationship = itRelationships.next();
       assertFalse(itRelationships.hasNext());
 
       assertEquals(2, mapper.getRelationship2edgeType().size());
@@ -2389,7 +2401,7 @@ public class RelationshipConfigurationMappingTest {
       /**
        * performing aggregation
        */
-      mapper.performAggregations(this.context);
+      mapper.performAggregations();
 
 
       /*
@@ -2556,7 +2568,7 @@ public class RelationshipConfigurationMappingTest {
 
       // Relationships-Edges Mapping
 
-      itRelationships = actorFilmEntity.getOutRelationships().iterator();
+      itRelationships = actorFilmEntity.getOutCanonicalRelationships().iterator();
       performsLeftRelationship = itRelationships.next();
       performsRightRelationship = itRelationships.next();
       assertFalse(itRelationships.hasNext());
@@ -2606,8 +2618,8 @@ public class RelationshipConfigurationMappingTest {
    *  ACTOR2FILM: foreign key (ACTOR_ID) references ACTOR(ID)
    *              foreign key (FILM_ID) references FILM(ID)
    *
-   *  Through the jsonConfiguration we want name the relationship "Performs".
-   *  With "direct" direction in the jsonConfiguration we would obtain:
+   *  Through the migrationConfigDoc we want name the relationship "Performs".
+   *  With "direct" direction in the migrationConfigDoc we would obtain:
    *
    *  ACTOR --[Features]--> FILM
    *
@@ -2645,11 +2657,13 @@ public class RelationshipConfigurationMappingTest {
       st.execute(actorFilmTableBuilding);
 
       ODocument config = OFileManager.buildJsonFromFile(this.configJoinTableInverseEdgesPath2);
+      OConfigurationHandler configHandler = new OConfigurationHandler(true);
+      OConfiguration migrationConfig = configHandler.buildConfigurationFromJSONDoc(config);
 
-      this.mapper = new OER2GraphMapper(this.sourceDBInfo, null, null, config);
-      mapper.buildSourceDatabaseSchema(this.context);
-      mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
-      mapper.applyImportConfiguration(this.context);
+      this.mapper = new OER2GraphMapper(this.sourceDBInfo, null, null, migrationConfig);
+      mapper.buildSourceDatabaseSchema();
+      mapper.buildGraphModel(new OJavaConventionNameResolver());
+      mapper.applyImportConfiguration();
 
 
       /*
@@ -2676,7 +2690,7 @@ public class RelationshipConfigurationMappingTest {
 
       // entities check
       assertEquals(3, mapper.getDataBaseSchema().getEntities().size());
-      assertEquals(2, mapper.getDataBaseSchema().getRelationships().size());
+      assertEquals(2, mapper.getDataBaseSchema().getCanonicalRelationships().size());
       assertNotNull(actorEntity);
       assertNotNull(filmEntity);
       assertNotNull(filmActorEntity);
@@ -2743,26 +2757,26 @@ public class RelationshipConfigurationMappingTest {
       assertEquals("FILM_ACTOR", filmActorEntity.getAttributeByName("PAYMENT").getBelongingEntity().getName());
 
       // relationship, primary and foreign key check
-      assertEquals(2, mapper.getDataBaseSchema().getRelationships().size());
-      assertEquals(0, filmEntity.getOutRelationships().size());
-      assertEquals(0, actorEntity.getOutRelationships().size());
-      assertEquals(2, filmActorEntity.getOutRelationships().size());
-      assertEquals(1, filmEntity.getInRelationships().size());
-      assertEquals(1, actorEntity.getInRelationships().size());
-      assertEquals(0, filmActorEntity.getInRelationships().size());
+      assertEquals(2, mapper.getDataBaseSchema().getCanonicalRelationships().size());
+      assertEquals(0, filmEntity.getOutCanonicalRelationships().size());
+      assertEquals(0, actorEntity.getOutCanonicalRelationships().size());
+      assertEquals(2, filmActorEntity.getOutCanonicalRelationships().size());
+      assertEquals(1, filmEntity.getInCanonicalRelationships().size());
+      assertEquals(1, actorEntity.getInCanonicalRelationships().size());
+      assertEquals(0, filmActorEntity.getInCanonicalRelationships().size());
       assertEquals(0, actorEntity.getForeignKeys().size());
       assertEquals(0, filmEntity.getForeignKeys().size());
       assertEquals(2, filmActorEntity.getForeignKeys().size());
 
-      Iterator<ORelationship> it = filmActorEntity.getOutRelationships().iterator();
-      ORelationship currentRelationship = it.next();
+      Iterator<OCanonicalRelationship> it = filmActorEntity.getOutCanonicalRelationships().iterator();
+      OCanonicalRelationship currentRelationship = it.next();
       assertEquals("ACTOR", currentRelationship.getParentEntity().getName());
       assertEquals("FILM_ACTOR", currentRelationship.getForeignEntity().getName());
       assertEquals(actorEntity.getPrimaryKey(), currentRelationship.getPrimaryKey());
       assertEquals(filmActorEntity.getForeignKeys().get(0), currentRelationship.getForeignKey());
 
-      Iterator<ORelationship> it2 = actorEntity.getInRelationships().iterator();
-      ORelationship currentRelationship2 = it2.next();
+      Iterator<OCanonicalRelationship> it2 = actorEntity.getInCanonicalRelationships().iterator();
+      OCanonicalRelationship currentRelationship2 = it2.next();
       assertEquals(currentRelationship, currentRelationship2);
 
       assertEquals("ACTOR_ID", filmActorEntity.getForeignKeys().get(0).getInvolvedAttributes().get(0).getName());
@@ -2775,7 +2789,7 @@ public class RelationshipConfigurationMappingTest {
       assertEquals(filmEntity.getPrimaryKey(), currentRelationship.getPrimaryKey());
       assertEquals(filmActorEntity.getForeignKeys().get(1), currentRelationship.getForeignKey());
 
-      it2 = filmEntity.getInRelationships().iterator();
+      it2 = filmEntity.getInCanonicalRelationships().iterator();
       currentRelationship2 = it2.next();
       assertEquals(currentRelationship, currentRelationship2);
 
@@ -2969,9 +2983,9 @@ public class RelationshipConfigurationMappingTest {
 
       // Relationships-Edges Mapping
 
-      Iterator<ORelationship> itRelationships = filmActorEntity.getOutRelationships().iterator();
-      ORelationship performsLeftRelationship = itRelationships.next();
-      ORelationship performsRightRelationship = itRelationships.next();
+      Iterator<OCanonicalRelationship> itRelationships = filmActorEntity.getOutCanonicalRelationships().iterator();
+      OCanonicalRelationship performsLeftRelationship = itRelationships.next();
+      OCanonicalRelationship performsRightRelationship = itRelationships.next();
       assertFalse(itRelationships.hasNext());
 
       assertEquals(2, mapper.getRelationship2edgeType().size());
@@ -2991,7 +3005,7 @@ public class RelationshipConfigurationMappingTest {
       /**
        * performing aggregation
        */
-      mapper.performMany2ManyAggregation(this.context);
+      mapper.performMany2ManyAggregation();
 
 
       /*
@@ -3158,7 +3172,7 @@ public class RelationshipConfigurationMappingTest {
 
       // Relationships-Edges Mapping
 
-      itRelationships = filmActorEntity.getOutRelationships().iterator();
+      itRelationships = filmActorEntity.getOutCanonicalRelationships().iterator();
       performsLeftRelationship = itRelationships.next();
       performsRightRelationship = itRelationships.next();
       assertFalse(itRelationships.hasNext());

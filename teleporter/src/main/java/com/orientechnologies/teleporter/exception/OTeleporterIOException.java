@@ -24,7 +24,7 @@ import java.io.IOException;
  * It represents an IO Exception in Teleporter.
  * 
  * @author Gabriele Ponzi
- * @email  <gabriele.ponzi--at--gmail.com>
+ * @email  <g.ponzi--at--orientdb.com>
  *
  */
 

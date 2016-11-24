@@ -22,7 +22,7 @@ package com.orientechnologies.teleporter.importengine;
  * Interface that executes the necessary queries on the data source in order to import them. 
  * 
  * @author Gabriele Ponzi
- * @email  <gabriele.ponzi--at--gmail.com>
+ * @email  <g.ponzi--at--orientdb.com>
  *
  */
 

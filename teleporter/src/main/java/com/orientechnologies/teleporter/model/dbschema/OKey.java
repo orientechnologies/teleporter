@@ -26,7 +26,7 @@ import java.util.List;
  * and OForeignKey that differ each other only by their usage.
  * 
  * @author Gabriele Ponzi
- * @email  <gabriele.ponzi--at--gmail.com>
+ * @email  <g.ponzi--at--orientdb.com>
  * 
  */
 
@@ -117,19 +117,15 @@ public class OKey {
   }
 
   public String toString() {
-    String s = "[";
 
+    String s = "[";
     for(OAttribute attribute: this.involvedAttributes) {
       s += attribute.getName() + ",";
     }
-
     s = s.substring(0, s.length()-1);
-
     s += "]";
 
     return s;
   }
-
-
 
 }

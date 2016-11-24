@@ -20,6 +20,8 @@ package com.orientechnologies.teleporter.test.rdbms.configuration.orientWriter;
 
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.record.impl.ODocument;
+import com.orientechnologies.teleporter.configuration.OConfigurationHandler;
+import com.orientechnologies.teleporter.configuration.api.OConfiguration;
 import com.orientechnologies.teleporter.context.OOutputStreamManager;
 import com.orientechnologies.teleporter.context.OTeleporterContext;
 import com.orientechnologies.teleporter.importengine.rdbms.dbengine.ODBQueryEngine;
@@ -65,13 +67,14 @@ public class OrientDBSchemaWritingWithFullConfigTest {
 
     @Before
     public void init() {
-        this.context = new OTeleporterContext();
-        this.dbQueryEngine = new ODBQueryEngine(this.driver, this.context);
+        this.context = OTeleporterContext.newInstance();
+        this.dbQueryEngine = new ODBQueryEngine(this.driver);
         this.context.setDbQueryEngine(this.dbQueryEngine);
         this.context.setOutputManager(new OOutputStreamManager(0));
         this.context.setNameResolver(new OJavaConventionNameResolver());
+        this.context.setDataTypeHandler(new OHSQLDBDataTypeHandler());
         this.modelWriter = new OGraphModelWriter();
-        this.outOrientGraphUri = "memory:testOrientDB";
+        this.outOrientGraphUri = "plocal:target/testOrientDB";
         this.sourceDBInfo = new OSourceDatabaseInfo("source", this.driver, this.jurl, this.username, this.password);
     }
 
@@ -122,12 +125,14 @@ public class OrientDBSchemaWritingWithFullConfigTest {
             st.execute(departmentTableBuilding);
 
             ODocument config = OFileManager.buildJsonFromFile(this.config);
+            OConfigurationHandler configHandler = new OConfigurationHandler(true);
+            OConfiguration migrationConfig = configHandler.buildConfigurationFromJSONDoc(config);
 
-            this.mapper = new OER2GraphMapper(this.sourceDBInfo, null, null, config);
-            mapper.buildSourceDatabaseSchema(this.context);
-            mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
-            mapper.applyImportConfiguration(this.context);
-            modelWriter.writeModelOnOrient(mapper.getGraphModel(), new OHSQLDBDataTypeHandler(), this.outOrientGraphUri, context);
+            this.mapper = new OER2GraphMapper(this.sourceDBInfo, null, null, migrationConfig);
+            mapper.buildSourceDatabaseSchema();
+            mapper.buildGraphModel(new OJavaConventionNameResolver());
+            mapper.applyImportConfiguration();
+            modelWriter.writeModelOnOrient(mapper, new OHSQLDBDataTypeHandler(), this.outOrientGraphUri);
 
 
             /**

@@ -19,13 +19,15 @@
 package com.orientechnologies.teleporter.test.rdbms.configuration.mapping;
 
 import com.orientechnologies.orient.core.record.impl.ODocument;
+import com.orientechnologies.teleporter.configuration.OConfigurationHandler;
+import com.orientechnologies.teleporter.configuration.api.OConfiguration;
 import com.orientechnologies.teleporter.context.OOutputStreamManager;
 import com.orientechnologies.teleporter.context.OTeleporterContext;
 import com.orientechnologies.teleporter.importengine.rdbms.dbengine.ODBQueryEngine;
 import com.orientechnologies.teleporter.mapper.rdbms.OER2GraphMapper;
 import com.orientechnologies.teleporter.mapper.rdbms.classmapper.OClassMapper;
+import com.orientechnologies.teleporter.model.dbschema.OCanonicalRelationship;
 import com.orientechnologies.teleporter.model.dbschema.OEntity;
-import com.orientechnologies.teleporter.model.dbschema.ORelationship;
 import com.orientechnologies.teleporter.model.dbschema.OSourceDatabaseInfo;
 import com.orientechnologies.teleporter.model.graphmodel.OEdgeType;
 import com.orientechnologies.teleporter.model.graphmodel.OModelProperty;
@@ -46,7 +48,7 @@ import static org.junit.Assert.fail;
 
 /**
  * @author Gabriele Ponzi
- * @email  <gabriele.ponzi--at--gmail.com>
+ * @email  <g.ponzi--at--orientdb.com>
  *
  */
 
@@ -64,8 +66,8 @@ public class FullConfigurationMappingTest {
 
     @Before
     public void init() {
-        this.context = new OTeleporterContext();
-        this.dbQueryEngine = new ODBQueryEngine(this.driver, this.context);
+        this.context = OTeleporterContext.newInstance();
+        this.dbQueryEngine = new ODBQueryEngine(this.driver);
         this.context.setDbQueryEngine(this.dbQueryEngine);
         this.context.setOutputManager(new OOutputStreamManager(0));
         this.context.setNameResolver(new OJavaConventionNameResolver());
@@ -120,11 +122,13 @@ public class FullConfigurationMappingTest {
             st.execute(departmentTableBuilding);
 
             ODocument config = OFileManager.buildJsonFromFile(this.config);
+            OConfigurationHandler configHandler = new OConfigurationHandler(true);
+            OConfiguration migrationConfig = configHandler.buildConfigurationFromJSONDoc(config);
 
-            this.mapper = new OER2GraphMapper(this.sourceDBInfo, null, null, config);
-            this.mapper.buildSourceDatabaseSchema(this.context);
-            this.mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
-            this.mapper.applyImportConfiguration(this.context);
+            this.mapper = new OER2GraphMapper(this.sourceDBInfo, null, null, migrationConfig);
+            this.mapper.buildSourceDatabaseSchema();
+            this.mapper.buildGraphModel(new OJavaConventionNameResolver());
+            this.mapper.applyImportConfiguration();
 
 
             /*
@@ -151,7 +155,7 @@ public class FullConfigurationMappingTest {
 
             // entities check
             assertEquals(3, mapper.getDataBaseSchema().getEntities().size());
-            assertEquals(1, mapper.getDataBaseSchema().getRelationships().size());
+            assertEquals(1, mapper.getDataBaseSchema().getCanonicalRelationships().size());
             assertNotNull(personEntity);
             assertNotNull(vatProfileEntity);
             assertNotNull(departmentEntity);
@@ -231,26 +235,26 @@ public class FullConfigurationMappingTest {
 
 
             // relationship, primary and foreign key check
-            assertEquals(1, mapper.getDataBaseSchema().getRelationships().size());
-            assertEquals(0, vatProfileEntity.getOutRelationships().size());
-            assertEquals(1, personEntity.getOutRelationships().size());
-            assertEquals(0, departmentEntity.getOutRelationships().size());
-            assertEquals(0, vatProfileEntity.getInRelationships().size());
-            assertEquals(0, personEntity.getInRelationships().size());
-            assertEquals(1, departmentEntity.getInRelationships().size());
+            assertEquals(1, mapper.getDataBaseSchema().getCanonicalRelationships().size());
+            assertEquals(0, vatProfileEntity.getOutCanonicalRelationships().size());
+            assertEquals(1, personEntity.getOutCanonicalRelationships().size());
+            assertEquals(0, departmentEntity.getOutCanonicalRelationships().size());
+            assertEquals(0, vatProfileEntity.getInCanonicalRelationships().size());
+            assertEquals(0, personEntity.getInCanonicalRelationships().size());
+            assertEquals(1, departmentEntity.getInCanonicalRelationships().size());
             assertEquals(0, vatProfileEntity.getForeignKeys().size());
             assertEquals(1, personEntity.getForeignKeys().size());
             assertEquals(0, departmentEntity.getForeignKeys().size());
 
-            Iterator<ORelationship> it = personEntity.getOutRelationships().iterator();
-            ORelationship currentRelationship = it.next();
+            Iterator<OCanonicalRelationship> it = personEntity.getOutCanonicalRelationships().iterator();
+            OCanonicalRelationship currentRelationship = it.next();
             assertEquals("DEPARTMENT", currentRelationship.getParentEntity().getName());
             assertEquals("PERSON", currentRelationship.getForeignEntity().getName());
             assertEquals(departmentEntity.getPrimaryKey(), currentRelationship.getPrimaryKey());
             assertEquals(personEntity.getForeignKeys().get(0), currentRelationship.getForeignKey());
 
-            Iterator<ORelationship> it2 = departmentEntity.getInRelationships().iterator();
-            ORelationship currentRelationship2 = it2.next();
+            Iterator<OCanonicalRelationship> it2 = departmentEntity.getInCanonicalRelationships().iterator();
+            OCanonicalRelationship currentRelationship2 = it2.next();
             assertEquals(currentRelationship, currentRelationship2);
 
             assertEquals("DEP_ID", personEntity.getForeignKeys().get(0).getInvolvedAttributes().get(0).getName());
@@ -280,7 +284,7 @@ public class FullConfigurationMappingTest {
             assertNotNull(personVertexType.getPropertyByName("extKey1"));
             assertEquals("extKey1", personVertexType.getPropertyByName("extKey1").getName());
             assertEquals("VARCHAR", personVertexType.getPropertyByName("extKey1").getOriginalType());
-            assertEquals("string", personVertexType.getPropertyByName("extKey1").getOrientdbType());
+            assertEquals("STRING", personVertexType.getPropertyByName("extKey1").getOrientdbType());
             assertEquals(1, personVertexType.getPropertyByName("extKey1").getOrdinalPosition());
             assertEquals(true, personVertexType.getPropertyByName("extKey1").isFromPrimaryKey());
             assertEquals(true, personVertexType.getPropertyByName("extKey1").isIncludedInMigration());
@@ -288,7 +292,7 @@ public class FullConfigurationMappingTest {
             assertNotNull(personVertexType.getPropertyByName("firstName"));
             assertEquals("firstName", personVertexType.getPropertyByName("firstName").getName());
             assertEquals("VARCHAR", personVertexType.getPropertyByName("firstName").getOriginalType());
-            assertEquals("string", personVertexType.getPropertyByName("firstName").getOrientdbType());
+            assertEquals("STRING", personVertexType.getPropertyByName("firstName").getOrientdbType());
             assertEquals(2, personVertexType.getPropertyByName("firstName").getOrdinalPosition());
             assertEquals(false, personVertexType.getPropertyByName("firstName").isFromPrimaryKey());
             assertEquals(true, personVertexType.getPropertyByName("firstName").isIncludedInMigration());
@@ -296,7 +300,7 @@ public class FullConfigurationMappingTest {
             assertNotNull(personVertexType.getPropertyByName("lastName"));
             assertEquals("lastName", personVertexType.getPropertyByName("lastName").getName());
             assertEquals("VARCHAR", personVertexType.getPropertyByName("lastName").getOriginalType());
-            assertEquals("string", personVertexType.getPropertyByName("lastName").getOrientdbType());
+            assertEquals("STRING", personVertexType.getPropertyByName("lastName").getOrientdbType());
             assertEquals(3, personVertexType.getPropertyByName("lastName").getOrdinalPosition());
             assertEquals(false, personVertexType.getPropertyByName("lastName").isFromPrimaryKey());
             assertEquals(true, personVertexType.getPropertyByName("lastName").isIncludedInMigration());
@@ -304,7 +308,7 @@ public class FullConfigurationMappingTest {
             assertNotNull(personVertexType.getPropertyByName("depId"));
             assertEquals("depId", personVertexType.getPropertyByName("depId").getName());
             assertEquals("VARCHAR", personVertexType.getPropertyByName("depId").getOriginalType());
-            assertEquals("string", personVertexType.getPropertyByName("depId").getOrientdbType());
+            assertEquals("STRING", personVertexType.getPropertyByName("depId").getOrientdbType());
             assertEquals(4, personVertexType.getPropertyByName("depId").getOrdinalPosition());
             assertEquals(false, personVertexType.getPropertyByName("depId").isFromPrimaryKey());
             assertEquals(false, personVertexType.getPropertyByName("depId").isIncludedInMigration());
@@ -312,7 +316,7 @@ public class FullConfigurationMappingTest {
             assertNotNull(personVertexType.getPropertyByName("extKey2"));
             assertEquals("extKey2", personVertexType.getPropertyByName("extKey2").getName());
             assertEquals("VARCHAR", personVertexType.getPropertyByName("extKey2").getOriginalType());
-            assertEquals("string", personVertexType.getPropertyByName("extKey2").getOrientdbType());
+            assertEquals("STRING", personVertexType.getPropertyByName("extKey2").getOrientdbType());
             assertEquals(5, personVertexType.getPropertyByName("extKey2").getOrdinalPosition());
             assertEquals(true, personVertexType.getPropertyByName("extKey2").isFromPrimaryKey());
             assertEquals(true, personVertexType.getPropertyByName("extKey2").isIncludedInMigration());
@@ -320,7 +324,7 @@ public class FullConfigurationMappingTest {
             assertNotNull(personVertexType.getPropertyByName("VAT"));
             assertEquals("VAT", personVertexType.getPropertyByName("VAT").getName());
             assertEquals("VARCHAR", personVertexType.getPropertyByName("VAT").getOriginalType());
-            assertEquals("string", personVertexType.getPropertyByName("VAT").getOrientdbType());
+            assertEquals("STRING", personVertexType.getPropertyByName("VAT").getOrientdbType());
             assertEquals(6, personVertexType.getPropertyByName("VAT").getOrdinalPosition());
             assertEquals(false, personVertexType.getPropertyByName("VAT").isFromPrimaryKey());
             assertEquals(true, personVertexType.getPropertyByName("VAT").isIncludedInMigration());
@@ -328,7 +332,7 @@ public class FullConfigurationMappingTest {
             assertNotNull(personVertexType.getPropertyByName("updatedOn"));
             assertEquals("updatedOn", personVertexType.getPropertyByName("updatedOn").getName());
             assertEquals("DATE", personVertexType.getPropertyByName("updatedOn").getOriginalType());
-            assertEquals("date", personVertexType.getPropertyByName("updatedOn").getOrientdbType());
+            assertEquals("DATE", personVertexType.getPropertyByName("updatedOn").getOrientdbType());
             assertEquals(7, personVertexType.getPropertyByName("updatedOn").getOrdinalPosition());
             assertEquals(false, personVertexType.getPropertyByName("updatedOn").isFromPrimaryKey());
             assertEquals(false, personVertexType.getPropertyByName("updatedOn").isIncludedInMigration());
@@ -342,7 +346,7 @@ public class FullConfigurationMappingTest {
             assertNotNull(departmentVertexType.getPropertyByName("id"));
             assertEquals("id", departmentVertexType.getPropertyByName("id").getName());
             assertEquals("VARCHAR", departmentVertexType.getPropertyByName("id").getOriginalType());
-            assertEquals("string", departmentVertexType.getPropertyByName("id").getOrientdbType());
+            assertEquals("STRING", departmentVertexType.getPropertyByName("id").getOrientdbType());
             assertEquals(1, departmentVertexType.getPropertyByName("id").getOrdinalPosition());
             assertEquals(true, departmentVertexType.getPropertyByName("id").isFromPrimaryKey());
             assertEquals(true, departmentVertexType.getPropertyByName("id").isIncludedInMigration());
@@ -350,7 +354,7 @@ public class FullConfigurationMappingTest {
             assertNotNull(departmentVertexType.getPropertyByName("departmentName"));
             assertEquals("departmentName", departmentVertexType.getPropertyByName("departmentName").getName());
             assertEquals("VARCHAR", departmentVertexType.getPropertyByName("departmentName").getOriginalType());
-            assertEquals("string", departmentVertexType.getPropertyByName("departmentName").getOrientdbType());
+            assertEquals("STRING", departmentVertexType.getPropertyByName("departmentName").getOrientdbType());
             assertEquals(2, departmentVertexType.getPropertyByName("departmentName").getOrdinalPosition());
             assertEquals(false, departmentVertexType.getPropertyByName("departmentName").isFromPrimaryKey());
             assertEquals(true, departmentVertexType.getPropertyByName("departmentName").isIncludedInMigration());
@@ -358,7 +362,7 @@ public class FullConfigurationMappingTest {
             assertNotNull(departmentVertexType.getPropertyByName("location"));
             assertEquals("location", departmentVertexType.getPropertyByName("location").getName());
             assertEquals("VARCHAR", departmentVertexType.getPropertyByName("location").getOriginalType());
-            assertEquals("string", departmentVertexType.getPropertyByName("location").getOrientdbType());
+            assertEquals("STRING", departmentVertexType.getPropertyByName("location").getOrientdbType());
             assertEquals(3, departmentVertexType.getPropertyByName("location").getOrdinalPosition());
             assertEquals(false, departmentVertexType.getPropertyByName("location").isFromPrimaryKey());
             assertEquals(true, departmentVertexType.getPropertyByName("location").isIncludedInMigration());
@@ -366,7 +370,7 @@ public class FullConfigurationMappingTest {
             assertNotNull(departmentVertexType.getPropertyByName("updatedOn"));
             assertEquals("updatedOn", departmentVertexType.getPropertyByName("updatedOn").getName());
             assertEquals("DATE", departmentVertexType.getPropertyByName("updatedOn").getOriginalType());
-            assertEquals("date", departmentVertexType.getPropertyByName("updatedOn").getOrientdbType());
+            assertEquals("DATE", departmentVertexType.getPropertyByName("updatedOn").getOrientdbType());
             assertEquals(4, departmentVertexType.getPropertyByName("updatedOn").getOrdinalPosition());
             assertEquals(false, departmentVertexType.getPropertyByName("updatedOn").isFromPrimaryKey());
             assertEquals(false, departmentVertexType.getPropertyByName("updatedOn").isIncludedInMigration());
@@ -390,7 +394,7 @@ public class FullConfigurationMappingTest {
             assertEquals("since", sinceProperty.getName());
             assertEquals(1, sinceProperty.getOrdinalPosition());
             assertEquals(false, sinceProperty.isFromPrimaryKey());
-            assertEquals("date", sinceProperty.getOriginalType());
+            assertEquals("DATE", sinceProperty.getOriginalType());
             assertEquals(true, sinceProperty.isMandatory());
             assertEquals(false, sinceProperty.isReadOnly());
             assertEquals(false, sinceProperty.isNotNull());
@@ -413,14 +417,15 @@ public class FullConfigurationMappingTest {
             assertEquals(personClassMapper.getVertexType(), personVertexType);
 
             assertEquals(4, personClassMapper.attribute2property.size());
-            assertEquals(3, personClassMapper.property2attribute.size());
+            assertEquals(4, personClassMapper.property2attribute.size());
             assertEquals("extKey1", personClassMapper.attribute2property.get("ID"));
             assertEquals("firstName", personClassMapper.attribute2property.get("NAME"));
             assertEquals("lastName", personClassMapper.attribute2property.get("SURNAME"));
-            assertNull(personClassMapper.attribute2property.get("DEP_ID"));
+            assertEquals("depId", personClassMapper.attribute2property.get("DEP_ID"));
             assertEquals("ID", personClassMapper.property2attribute.get("extKey1"));
             assertEquals("NAME", personClassMapper.property2attribute.get("firstName"));
             assertEquals("SURNAME", personClassMapper.property2attribute.get("lastName"));
+            assertEquals("DEP_ID", personClassMapper.property2attribute.get("depId"));
 
             OClassMapper vatProfileClassMapper = mapper.getClassMappersByVertex(personVertexType).get(1);
             assertEquals(1, mapper.getClassMappersByEntity(vatProfileEntity).size());
@@ -429,12 +434,13 @@ public class FullConfigurationMappingTest {
             assertEquals(vatProfileClassMapper.getVertexType(), personVertexType);
 
             assertEquals(3, vatProfileClassMapper.attribute2property.size());
-            assertEquals(2, vatProfileClassMapper.property2attribute.size());
+            assertEquals(3, vatProfileClassMapper.property2attribute.size());
             assertEquals("extKey2", vatProfileClassMapper.attribute2property.get("ID"));
             assertEquals("VAT", vatProfileClassMapper.attribute2property.get("VAT"));
-            assertNull(vatProfileClassMapper.attribute2property.get("UPDATED_ON"));
+            assertEquals("updatedOn", vatProfileClassMapper.attribute2property.get("UPDATED_ON"));
             assertEquals("ID", vatProfileClassMapper.property2attribute.get("extKey2"));
             assertEquals("VAT", vatProfileClassMapper.property2attribute.get("VAT"));
+            assertEquals("UPDATED_ON", vatProfileClassMapper.property2attribute.get("updatedOn"));
 
             assertEquals(1, mapper.getClassMappersByVertex(departmentVertexType).size());
             OClassMapper departmentClassMapper = mapper.getClassMappersByVertex(departmentVertexType).get(0);
@@ -444,19 +450,20 @@ public class FullConfigurationMappingTest {
             assertEquals(departmentClassMapper.getVertexType(), departmentVertexType);
 
             assertEquals(4, departmentClassMapper.attribute2property.size());
-            assertEquals(3, departmentClassMapper.property2attribute.size());
+            assertEquals(4, departmentClassMapper.property2attribute.size());
             assertEquals("id", departmentClassMapper.attribute2property.get("ID"));
             assertEquals("departmentName", departmentClassMapper.attribute2property.get("NAME"));
             assertEquals("location", departmentClassMapper.attribute2property.get("LOCATION"));
-            assertNull(departmentClassMapper.attribute2property.get("UPDATED_ON"));
+            assertEquals("updatedOn", departmentClassMapper.attribute2property.get("UPDATED_ON"));
             assertEquals("ID", departmentClassMapper.property2attribute.get("id"));
             assertEquals("NAME", departmentClassMapper.property2attribute.get("departmentName"));
             assertEquals("LOCATION", departmentClassMapper.property2attribute.get("location"));
+            assertEquals("UPDATED_ON", departmentClassMapper.property2attribute.get("updatedOn"));
 
             // Relationships-Edges Mapping
 
-            Iterator<ORelationship> itRelationships = personEntity.getOutRelationships().iterator();
-            ORelationship worksAtRelationship = itRelationships.next();
+            Iterator<OCanonicalRelationship> itRelationships = personEntity.getOutCanonicalRelationships().iterator();
+            OCanonicalRelationship worksAtRelationship = itRelationships.next();
             assertFalse(itRelationships.hasNext());
 
             assertEquals(1, mapper.getRelationship2edgeType().size());

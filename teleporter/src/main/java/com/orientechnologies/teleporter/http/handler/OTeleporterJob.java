@@ -19,6 +19,7 @@
 package com.orientechnologies.teleporter.http.handler;
 
 import com.orientechnologies.teleporter.context.OOutputStreamManager;
+import com.orientechnologies.teleporter.exception.OTeleporterIOException;
 import com.orientechnologies.teleporter.main.OTeleporter;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
@@ -26,11 +27,12 @@ import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.Callable;
 
 /**
  * Created by Enrico Risa on 27/11/15.
  */
-public class OTeleporterJob implements Runnable {
+public class OTeleporterJob implements Callable<ODocument> {
 
   private final ODocument     cfg;
   private OTeleporterListener listener;
@@ -50,7 +52,7 @@ public class OTeleporterJob implements Runnable {
   }
 
   @Override
-  public void run() {
+  public ODocument call() {
 
     id = UUID.randomUUID().toString();
 
@@ -66,22 +68,51 @@ public class OTeleporterJob implements Runnable {
     final String outputLevel = cfg.field("level");
     final List<String> includedTables = cfg.field("includes");
     final List<String> excludedTable = cfg.field("excludes");
+    final String migrationConfig = cfg.field("migrationConfig");
     status = Status.RUNNING;
+
+    ODocument executionResult = null;
     try {
-      OTeleporter.execute(driver, jurl, username, password, outDbUrl, chosenStrategy, chosenMapper, xmlPath, nameResolver,
-          outputLevel, includedTables, excludedTable, new OOutputStreamManager(stream, 2));
+      if(chosenStrategy.equals("interactive") || chosenStrategy.equals("interactive-aggr")) {
+        executionResult = OTeleporter.executeJob(driver, jurl, username, password, outDbUrl, chosenStrategy, chosenMapper, xmlPath, nameResolver,
+                outputLevel, includedTables, excludedTable, migrationConfig, new OOutputStreamManager(stream, 2));
+
+        synchronized (listener) {
+          status = Status.FINISHED;
+          try {
+            listener.wait(5000);
+            listener.onEnd(this);
+          } catch (InterruptedException e) {
+          }
+        }
+      }
+      else {
+        new Thread(new Runnable() {
+          @Override
+          public void run() {
+            try {
+              OTeleporter.executeJob(driver, jurl, username, password, outDbUrl, chosenStrategy, chosenMapper, xmlPath, nameResolver,
+                      outputLevel, includedTables, excludedTable, migrationConfig, new OOutputStreamManager(stream, 2));
+            } catch (OTeleporterIOException e) {
+              e.printStackTrace();
+            }
+            synchronized (listener) {
+              status = Status.FINISHED;
+              try {
+                listener.wait(5000);
+                listener.onEnd(OTeleporterJob.this);
+              } catch (InterruptedException e) {
+              }
+            }
+          }
+        }).start();
+        executionResult = new ODocument();
+
+      }
     } catch (Exception e) {
     }
 
-    synchronized (listener) {
-      status = Status.FINISHED;
-      try {
-        listener.wait(5000);
-        listener.onEnd(this);
-      } catch (InterruptedException e) {
-      }
-    }
-
+    return executionResult;
   }
 
   public void validate() {
@@ -90,7 +121,7 @@ public class OTeleporterJob implements Runnable {
 
   /**
    * Single Job Status
-   * 
+   *
    * @return ODocument
    */
   public ODocument status() {

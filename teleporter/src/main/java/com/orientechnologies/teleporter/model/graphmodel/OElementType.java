@@ -29,7 +29,7 @@ import java.util.Set;
  * the graph model.
  * 
  * @author Gabriele Ponzi
- * @email <gabriele.ponzi--at--gmail.com>
+ * @email <g.ponzi--at--orientdb.com>
  *
  */
 
@@ -88,6 +88,15 @@ public class OElementType implements Comparable<OElementType> {
 
   public void setInheritanceLevel(int inheritanceLevel) {
     this.inheritanceLevel = inheritanceLevel;
+  }
+
+  public OModelProperty getPropertyByOrdinalPosition(int position) {
+    for (OModelProperty property : this.properties) {
+      if (property.getOrdinalPosition() == position) {
+        return property;
+      }
+    }
+    return null;
   }
 
   public void removePropertyByName(String toRemove) {

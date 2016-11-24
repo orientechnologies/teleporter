@@ -23,9 +23,9 @@ import com.orientechnologies.teleporter.context.OTeleporterContext;
 import com.orientechnologies.teleporter.importengine.rdbms.dbengine.ODBQueryEngine;
 import com.orientechnologies.teleporter.mapper.rdbms.OER2GraphMapper;
 import com.orientechnologies.teleporter.mapper.rdbms.OHibernate2GraphMapper;
+import com.orientechnologies.teleporter.model.dbschema.OCanonicalRelationship;
 import com.orientechnologies.teleporter.model.dbschema.OEntity;
 import com.orientechnologies.teleporter.model.dbschema.OHierarchicalBag;
-import com.orientechnologies.teleporter.model.dbschema.ORelationship;
 import com.orientechnologies.teleporter.model.dbschema.OSourceDatabaseInfo;
 import com.orientechnologies.teleporter.model.graphmodel.OVertexType;
 import com.orientechnologies.teleporter.nameresolver.OJavaConventionNameResolver;
@@ -43,7 +43,7 @@ import static org.junit.Assert.*;
 
 /**
  * @author Gabriele Ponzi
- * @email  <gabriele.ponzi--at--gmail.com>
+ * @email  <g.ponzi--at--orientdb.com>
  *
  */
 
@@ -65,8 +65,8 @@ public class HibernateMapperTest {
 
   @Before
   public void init() {
-    this.context = new OTeleporterContext();
-    this.dbQueryEngine = new ODBQueryEngine(this.driver, this.context);
+    this.context = OTeleporterContext.newInstance();
+    this.dbQueryEngine = new ODBQueryEngine(this.driver);
     this.context.setDbQueryEngine(this.dbQueryEngine);
     this.context.setOutputManager(new OOutputStreamManager(0));
     this.context.setNameResolver(new OJavaConventionNameResolver());
@@ -103,8 +103,8 @@ public class HibernateMapperTest {
       st.execute(employeeTableBuilding);
 
       this.mapper = new OHibernate2GraphMapper(this.sourceDBInfo, HibernateMapperTest.XML_TABLE_PER_CLASS, null, null, null);
-      mapper.buildSourceDatabaseSchema(this.context);
-      mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
+      mapper.buildSourceDatabaseSchema();
+      mapper.buildGraphModel(new OJavaConventionNameResolver());
 
 
       /*
@@ -133,7 +133,7 @@ public class HibernateMapperTest {
 
       // entities check
       Assert.assertEquals(4, mapper.getDataBaseSchema().getEntities().size());
-      Assert.assertEquals(1, mapper.getDataBaseSchema().getRelationships().size());
+      Assert.assertEquals(1, mapper.getDataBaseSchema().getCanonicalRelationships().size());
       assertNotNull(employeeEntity);
       assertNotNull(regularEmployeeEntity);
       assertNotNull(contractEmployeeEntity);
@@ -244,14 +244,14 @@ public class HibernateMapperTest {
       assertEquals("EMPLOYEE", contractEmployeeEntity.getPrimaryKey().getInvolvedAttributes().get(0).getBelongingEntity().getName());
 
       // relationship, primary and foreign key check
-      assertEquals(0, regularEmployeeEntity.getOutRelationships().size());
-      assertEquals(0, contractEmployeeEntity.getOutRelationships().size());
-      assertEquals(1, employeeEntity.getOutRelationships().size());
-      assertEquals(0, residenceEntity.getOutRelationships().size());
-      assertEquals(0, regularEmployeeEntity.getInRelationships().size());
-      assertEquals(0, contractEmployeeEntity.getInRelationships().size());
-      assertEquals(0, employeeEntity.getInRelationships().size());
-      assertEquals(1, residenceEntity.getInRelationships().size());
+      assertEquals(0, regularEmployeeEntity.getOutCanonicalRelationships().size());
+      assertEquals(0, contractEmployeeEntity.getOutCanonicalRelationships().size());
+      assertEquals(1, employeeEntity.getOutCanonicalRelationships().size());
+      assertEquals(0, residenceEntity.getOutCanonicalRelationships().size());
+      assertEquals(0, regularEmployeeEntity.getInCanonicalRelationships().size());
+      assertEquals(0, contractEmployeeEntity.getInCanonicalRelationships().size());
+      assertEquals(0, employeeEntity.getInCanonicalRelationships().size());
+      assertEquals(1, residenceEntity.getInCanonicalRelationships().size());
 
       assertEquals(0, regularEmployeeEntity.getForeignKeys().size());
       assertEquals(0, contractEmployeeEntity.getForeignKeys().size());
@@ -259,38 +259,38 @@ public class HibernateMapperTest {
       assertEquals(0, residenceEntity.getForeignKeys().size());
 
 
-      Iterator<ORelationship> itEmp = employeeEntity.getOutRelationships().iterator();
-      ORelationship currentEmpRel = itEmp.next();
+      Iterator<OCanonicalRelationship> itEmp = employeeEntity.getOutCanonicalRelationships().iterator();
+      OCanonicalRelationship currentEmpRel = itEmp.next();
       assertEquals("RESIDENCE", currentEmpRel.getParentEntity().getName());
       assertEquals("EMPLOYEE", currentEmpRel.getForeignEntity().getName());
       assertEquals(residenceEntity.getPrimaryKey(), currentEmpRel.getPrimaryKey());
       assertEquals(employeeEntity.getForeignKeys().get(0), currentEmpRel.getForeignKey());
       assertFalse(itEmp.hasNext());
 
-      Iterator<ORelationship> itRes = residenceEntity.getInRelationships().iterator();
-      ORelationship currentResRel = itRes.next();
+      Iterator<OCanonicalRelationship> itRes = residenceEntity.getInCanonicalRelationships().iterator();
+      OCanonicalRelationship currentResRel = itRes.next();
       assertEquals(currentEmpRel, currentResRel);
 
       // inherited relationships check
-      assertEquals(1, regularEmployeeEntity.getInheritedOutRelationships().size());
-      assertEquals(1, contractEmployeeEntity.getInheritedOutRelationships().size());
-      assertEquals(0, employeeEntity.getInheritedOutRelationships().size());
-      assertEquals(0, residenceEntity.getInheritedOutRelationships().size());
+      assertEquals(1, regularEmployeeEntity.getInheritedOutCanonicalRelationships().size());
+      assertEquals(1, contractEmployeeEntity.getInheritedOutCanonicalRelationships().size());
+      assertEquals(0, employeeEntity.getInheritedOutCanonicalRelationships().size());
+      assertEquals(0, residenceEntity.getInheritedOutCanonicalRelationships().size());
 
-      Iterator<ORelationship> itRegEmp = regularEmployeeEntity.getInheritedOutRelationships().iterator();
-      Iterator<ORelationship> itContEmp = contractEmployeeEntity.getInheritedOutRelationships().iterator();
-      ORelationship currentRegEmpRel = itRegEmp.next();
-      ORelationship currentContEmpRel = itContEmp.next();
+      Iterator<OCanonicalRelationship> itRegEmp = regularEmployeeEntity.getInheritedOutCanonicalRelationships().iterator();
+      Iterator<OCanonicalRelationship> itContEmp = contractEmployeeEntity.getInheritedOutCanonicalRelationships().iterator();
+      OCanonicalRelationship currentRegEmpRel = itRegEmp.next();
+      OCanonicalRelationship currentContEmpRel = itContEmp.next();
       assertEquals("RESIDENCE", currentRegEmpRel.getParentEntity().getName());
       assertEquals("EMPLOYEE", currentRegEmpRel.getForeignEntity().getName());
       assertEquals("RESIDENCE", currentContEmpRel.getParentEntity().getName());
       assertEquals("EMPLOYEE", currentContEmpRel.getForeignEntity().getName());
       assertEquals(residenceEntity.getPrimaryKey(), currentRegEmpRel.getPrimaryKey());
-      assertEquals(1, currentRegEmpRel.getForeignKey().getInvolvedAttributes().size());
-      assertEquals("RESIDENCE", currentRegEmpRel.getForeignKey().getInvolvedAttributes().get(0).getName());
+      assertEquals(1, currentRegEmpRel.getFromColumns().size());
+      assertEquals("RESIDENCE", currentRegEmpRel.getFromColumns().get(0).getName());
       assertEquals(residenceEntity.getPrimaryKey(), currentContEmpRel.getPrimaryKey());
-      assertEquals(1, currentContEmpRel.getForeignKey().getInvolvedAttributes().size());
-      assertEquals("RESIDENCE", currentContEmpRel.getForeignKey().getInvolvedAttributes().get(0).getName());
+      assertEquals(1, currentContEmpRel.getFromColumns().size());
+      assertEquals("RESIDENCE", currentContEmpRel.getFromColumns().get(0).getName());
       assertFalse(itRegEmp.hasNext());
       assertFalse(itContEmp.hasNext());
 
@@ -546,8 +546,8 @@ public class HibernateMapperTest {
       st.execute(contractEmployeeTableBuilding);
 
       this.mapper = new OHibernate2GraphMapper(this.sourceDBInfo, HibernateMapperTest.XML_TABLE_PER_SUBCLASS1, null, null, null);
-      mapper.buildSourceDatabaseSchema(this.context);
-      mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
+      mapper.buildSourceDatabaseSchema();
+      mapper.buildGraphModel(new OJavaConventionNameResolver());
 
 
       /*
@@ -576,7 +576,7 @@ public class HibernateMapperTest {
 
       // entities check
       Assert.assertEquals(4, mapper.getDataBaseSchema().getEntities().size());
-      Assert.assertEquals(3, mapper.getDataBaseSchema().getRelationships().size());
+      Assert.assertEquals(3, mapper.getDataBaseSchema().getCanonicalRelationships().size());
       assertNotNull(employeeEntity);
       assertNotNull(regularEmployeeEntity);
       assertNotNull(contractEmployeeEntity);
@@ -688,26 +688,26 @@ public class HibernateMapperTest {
 
 
       // relationship, primary and foreign key check
-      assertEquals(1, regularEmployeeEntity.getOutRelationships().size());
-      assertEquals(1, contractEmployeeEntity.getOutRelationships().size());
-      assertEquals(1, employeeEntity.getOutRelationships().size());
-      assertEquals(0, residenceEntity.getOutRelationships().size());
-      assertEquals(0, regularEmployeeEntity.getInRelationships().size());
-      assertEquals(0, contractEmployeeEntity.getInRelationships().size());
-      assertEquals(2, employeeEntity.getInRelationships().size());
-      assertEquals(1, residenceEntity.getInRelationships().size());      
+      assertEquals(1, regularEmployeeEntity.getOutCanonicalRelationships().size());
+      assertEquals(1, contractEmployeeEntity.getOutCanonicalRelationships().size());
+      assertEquals(1, employeeEntity.getOutCanonicalRelationships().size());
+      assertEquals(0, residenceEntity.getOutCanonicalRelationships().size());
+      assertEquals(0, regularEmployeeEntity.getInCanonicalRelationships().size());
+      assertEquals(0, contractEmployeeEntity.getInCanonicalRelationships().size());
+      assertEquals(2, employeeEntity.getInCanonicalRelationships().size());
+      assertEquals(1, residenceEntity.getInCanonicalRelationships().size());
 
       assertEquals(1, regularEmployeeEntity.getForeignKeys().size());
       assertEquals(1, contractEmployeeEntity.getForeignKeys().size());
       assertEquals(1, employeeEntity.getForeignKeys().size());
       assertEquals(0, residenceEntity.getForeignKeys().size());
 
-      Iterator<ORelationship> itEmp = employeeEntity.getOutRelationships().iterator();
-      Iterator<ORelationship> itRegEmp = regularEmployeeEntity.getOutRelationships().iterator();
-      Iterator<ORelationship> itContEmp = contractEmployeeEntity.getOutRelationships().iterator();
-      ORelationship currentEmpRel = itEmp.next();
-      ORelationship currentRegEmpRel = itRegEmp.next();
-      ORelationship currentContEmpRel = itContEmp.next();
+      Iterator<OCanonicalRelationship> itEmp = employeeEntity.getOutCanonicalRelationships().iterator();
+      Iterator<OCanonicalRelationship> itRegEmp = regularEmployeeEntity.getOutCanonicalRelationships().iterator();
+      Iterator<OCanonicalRelationship> itContEmp = contractEmployeeEntity.getOutCanonicalRelationships().iterator();
+      OCanonicalRelationship currentEmpRel = itEmp.next();
+      OCanonicalRelationship currentRegEmpRel = itRegEmp.next();
+      OCanonicalRelationship currentContEmpRel = itContEmp.next();
       assertEquals("RESIDENCE", currentEmpRel.getParentEntity().getName());
       assertEquals("EMPLOYEE", currentEmpRel.getForeignEntity().getName());
       assertEquals("EMPLOYEE", currentRegEmpRel.getParentEntity().getName());
@@ -724,11 +724,11 @@ public class HibernateMapperTest {
       assertFalse(itRegEmp.hasNext());
       assertFalse(itContEmp.hasNext());
 
-      Iterator<ORelationship> itRes = residenceEntity.getInRelationships().iterator();
-      ORelationship currentResRel = itRes.next();
+      Iterator<OCanonicalRelationship> itRes = residenceEntity.getInCanonicalRelationships().iterator();
+      OCanonicalRelationship currentResRel = itRes.next();
       assertEquals(currentEmpRel, currentResRel);
 
-      itEmp = employeeEntity.getInRelationships().iterator();
+      itEmp = employeeEntity.getInCanonicalRelationships().iterator();
       currentEmpRel = itEmp.next();
       assertEquals(currentEmpRel, currentContEmpRel);
 
@@ -737,13 +737,13 @@ public class HibernateMapperTest {
 
 
       // inherited relationships check
-      assertEquals(1, regularEmployeeEntity.getInheritedOutRelationships().size());
-      assertEquals(1, contractEmployeeEntity.getInheritedOutRelationships().size());
-      assertEquals(0, employeeEntity.getInheritedOutRelationships().size());
-      assertEquals(0, residenceEntity.getInheritedOutRelationships().size());
+      assertEquals(1, regularEmployeeEntity.getInheritedOutCanonicalRelationships().size());
+      assertEquals(1, contractEmployeeEntity.getInheritedOutCanonicalRelationships().size());
+      assertEquals(0, employeeEntity.getInheritedOutCanonicalRelationships().size());
+      assertEquals(0, residenceEntity.getInheritedOutCanonicalRelationships().size());
 
-      itRegEmp = regularEmployeeEntity.getInheritedOutRelationships().iterator();
-      itContEmp = contractEmployeeEntity.getInheritedOutRelationships().iterator();
+      itRegEmp = regularEmployeeEntity.getInheritedOutCanonicalRelationships().iterator();
+      itContEmp = contractEmployeeEntity.getInheritedOutCanonicalRelationships().iterator();
       currentRegEmpRel = itRegEmp.next();
       currentContEmpRel = itContEmp.next();
       assertEquals("RESIDENCE", currentRegEmpRel.getParentEntity().getName());
@@ -751,16 +751,16 @@ public class HibernateMapperTest {
       assertEquals("RESIDENCE", currentContEmpRel.getParentEntity().getName());
       assertEquals("EMPLOYEE", currentContEmpRel.getForeignEntity().getName());
       assertEquals(residenceEntity.getPrimaryKey(), currentRegEmpRel.getPrimaryKey());
-      assertEquals(1, currentRegEmpRel.getForeignKey().getInvolvedAttributes().size());
-      assertEquals("RESIDENCE", currentRegEmpRel.getForeignKey().getInvolvedAttributes().get(0).getName());
+      assertEquals(1, currentRegEmpRel.getFromColumns().size());
+      assertEquals("RESIDENCE", currentRegEmpRel.getFromColumns().get(0).getName());
       assertEquals(residenceEntity.getPrimaryKey(), currentContEmpRel.getPrimaryKey());
-      assertEquals(1, currentContEmpRel.getForeignKey().getInvolvedAttributes().size());
-      assertEquals("RESIDENCE", currentContEmpRel.getForeignKey().getInvolvedAttributes().get(0).getName());
+      assertEquals(1, currentContEmpRel.getFromColumns().size());
+      assertEquals("RESIDENCE", currentContEmpRel.getFromColumns().get(0).getName());
       assertFalse(itRegEmp.hasNext());
       assertFalse(itContEmp.hasNext());
 
-      assertEquals(1, currentRegEmpRel.getForeignKey().getInvolvedAttributes().size());
-      assertEquals("RESIDENCE", currentRegEmpRel.getForeignKey().getInvolvedAttributes().get(0).getName());
+      assertEquals(1, currentRegEmpRel.getFromColumns().size());
+      assertEquals("RESIDENCE", currentRegEmpRel.getFromColumns().get(0).getName());
 
       // inheritance check
       assertEquals(employeeEntity, regularEmployeeEntity.getParentEntity());
@@ -1009,8 +1009,8 @@ public class HibernateMapperTest {
       st.execute(contractEmployeeTableBuilding);
 
       this.mapper = new OHibernate2GraphMapper(this.sourceDBInfo, HibernateMapperTest.XML_TABLE_PER_SUBCLASS2, null, null, null);
-      mapper.buildSourceDatabaseSchema(this.context);
-      mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
+      mapper.buildSourceDatabaseSchema();
+      mapper.buildGraphModel(new OJavaConventionNameResolver());
 
 
       /*
@@ -1039,7 +1039,7 @@ public class HibernateMapperTest {
 
       // entities check
       Assert.assertEquals(4, mapper.getDataBaseSchema().getEntities().size());
-      Assert.assertEquals(3, mapper.getDataBaseSchema().getRelationships().size());
+      Assert.assertEquals(3, mapper.getDataBaseSchema().getCanonicalRelationships().size());
       assertNotNull(employeeEntity);
       assertNotNull(regularEmployeeEntity);
       assertNotNull(contractEmployeeEntity);
@@ -1150,26 +1150,26 @@ public class HibernateMapperTest {
       assertEquals("CONTRACT_EMPLOYEE", contractEmployeeEntity.getPrimaryKey().getInvolvedAttributes().get(0).getBelongingEntity().getName());
 
       // relationship, primary and foreign key check
-      assertEquals(1, regularEmployeeEntity.getOutRelationships().size());
-      assertEquals(1, contractEmployeeEntity.getOutRelationships().size());
-      assertEquals(1, employeeEntity.getOutRelationships().size());
-      assertEquals(0, residenceEntity.getOutRelationships().size());
-      assertEquals(0, regularEmployeeEntity.getInRelationships().size());
-      assertEquals(0, contractEmployeeEntity.getInRelationships().size());
-      assertEquals(2, employeeEntity.getInRelationships().size());
-      assertEquals(1, residenceEntity.getInRelationships().size());      
+      assertEquals(1, regularEmployeeEntity.getOutCanonicalRelationships().size());
+      assertEquals(1, contractEmployeeEntity.getOutCanonicalRelationships().size());
+      assertEquals(1, employeeEntity.getOutCanonicalRelationships().size());
+      assertEquals(0, residenceEntity.getOutCanonicalRelationships().size());
+      assertEquals(0, regularEmployeeEntity.getInCanonicalRelationships().size());
+      assertEquals(0, contractEmployeeEntity.getInCanonicalRelationships().size());
+      assertEquals(2, employeeEntity.getInCanonicalRelationships().size());
+      assertEquals(1, residenceEntity.getInCanonicalRelationships().size());
 
       assertEquals(1, regularEmployeeEntity.getForeignKeys().size());
       assertEquals(1, contractEmployeeEntity.getForeignKeys().size());
       assertEquals(1, employeeEntity.getForeignKeys().size());
       assertEquals(0, residenceEntity.getForeignKeys().size());
 
-      Iterator<ORelationship> itEmp = employeeEntity.getOutRelationships().iterator();
-      Iterator<ORelationship> itRegEmp = regularEmployeeEntity.getOutRelationships().iterator();
-      Iterator<ORelationship> itContEmp = contractEmployeeEntity.getOutRelationships().iterator();
-      ORelationship currentEmpRel = itEmp.next();
-      ORelationship currentRegEmpRel = itRegEmp.next();
-      ORelationship currentContEmpRel = itContEmp.next();
+      Iterator<OCanonicalRelationship> itEmp = employeeEntity.getOutCanonicalRelationships().iterator();
+      Iterator<OCanonicalRelationship> itRegEmp = regularEmployeeEntity.getOutCanonicalRelationships().iterator();
+      Iterator<OCanonicalRelationship> itContEmp = contractEmployeeEntity.getOutCanonicalRelationships().iterator();
+      OCanonicalRelationship currentEmpRel = itEmp.next();
+      OCanonicalRelationship currentRegEmpRel = itRegEmp.next();
+      OCanonicalRelationship currentContEmpRel = itContEmp.next();
       assertEquals("RESIDENCE", currentEmpRel.getParentEntity().getName());
       assertEquals("EMPLOYEE", currentEmpRel.getForeignEntity().getName());
       assertEquals("EMPLOYEE", currentRegEmpRel.getParentEntity().getName());
@@ -1186,11 +1186,11 @@ public class HibernateMapperTest {
       assertFalse(itRegEmp.hasNext());
       assertFalse(itContEmp.hasNext());
 
-      Iterator<ORelationship> itRes = residenceEntity.getInRelationships().iterator();
-      ORelationship currentResRel = itRes.next();
+      Iterator<OCanonicalRelationship> itRes = residenceEntity.getInCanonicalRelationships().iterator();
+      OCanonicalRelationship currentResRel = itRes.next();
       assertEquals(currentEmpRel, currentResRel);
 
-      itEmp = employeeEntity.getInRelationships().iterator();
+      itEmp = employeeEntity.getInCanonicalRelationships().iterator();
       currentEmpRel = itEmp.next();
       assertEquals(currentEmpRel, currentContEmpRel);
 
@@ -1199,13 +1199,13 @@ public class HibernateMapperTest {
 
 
       // inherited relationships check
-      assertEquals(1, regularEmployeeEntity.getInheritedOutRelationships().size());
-      assertEquals(1, contractEmployeeEntity.getInheritedOutRelationships().size());
-      assertEquals(0, employeeEntity.getInheritedOutRelationships().size());
-      assertEquals(0, residenceEntity.getInheritedOutRelationships().size());
+      assertEquals(1, regularEmployeeEntity.getInheritedOutCanonicalRelationships().size());
+      assertEquals(1, contractEmployeeEntity.getInheritedOutCanonicalRelationships().size());
+      assertEquals(0, employeeEntity.getInheritedOutCanonicalRelationships().size());
+      assertEquals(0, residenceEntity.getInheritedOutCanonicalRelationships().size());
 
-      itRegEmp = regularEmployeeEntity.getInheritedOutRelationships().iterator();
-      itContEmp = contractEmployeeEntity.getInheritedOutRelationships().iterator();
+      itRegEmp = regularEmployeeEntity.getInheritedOutCanonicalRelationships().iterator();
+      itContEmp = contractEmployeeEntity.getInheritedOutCanonicalRelationships().iterator();
       currentRegEmpRel = itRegEmp.next();
       currentContEmpRel = itContEmp.next();
       assertEquals("RESIDENCE", currentRegEmpRel.getParentEntity().getName());
@@ -1213,11 +1213,11 @@ public class HibernateMapperTest {
       assertEquals("RESIDENCE", currentContEmpRel.getParentEntity().getName());
       assertEquals("EMPLOYEE", currentContEmpRel.getForeignEntity().getName());
       assertEquals(residenceEntity.getPrimaryKey(), currentRegEmpRel.getPrimaryKey());
-      assertEquals(1, currentRegEmpRel.getForeignKey().getInvolvedAttributes().size());
-      assertEquals("RESIDENCE", currentRegEmpRel.getForeignKey().getInvolvedAttributes().get(0).getName());
+      assertEquals(1, currentRegEmpRel.getFromColumns().size());
+      assertEquals("RESIDENCE", currentRegEmpRel.getFromColumns().get(0).getName());
       assertEquals(residenceEntity.getPrimaryKey(), currentContEmpRel.getPrimaryKey());
-      assertEquals(1, currentContEmpRel.getForeignKey().getInvolvedAttributes().size());
-      assertEquals("RESIDENCE", currentContEmpRel.getForeignKey().getInvolvedAttributes().get(0).getName());
+      assertEquals(1, currentContEmpRel.getFromColumns().size());
+      assertEquals("RESIDENCE", currentContEmpRel.getFromColumns().get(0).getName());
       assertFalse(itRegEmp.hasNext());
       assertFalse(itContEmp.hasNext());
 
@@ -1468,8 +1468,8 @@ public class HibernateMapperTest {
       st.execute(contractEmployeeTableBuilding);
 
       this.mapper = new OHibernate2GraphMapper(this.sourceDBInfo, HibernateMapperTest.XML_TABLE_PER_CONCRETE_CLASS, null, null, null);
-      mapper.buildSourceDatabaseSchema(this.context);
-      mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
+      mapper.buildSourceDatabaseSchema();
+      mapper.buildGraphModel(new OJavaConventionNameResolver());
 
 
       /*
@@ -1498,7 +1498,7 @@ public class HibernateMapperTest {
 
       // entities check
       Assert.assertEquals(4, mapper.getDataBaseSchema().getEntities().size());
-      Assert.assertEquals(1, mapper.getDataBaseSchema().getRelationships().size());
+      Assert.assertEquals(1, mapper.getDataBaseSchema().getCanonicalRelationships().size());
       assertNotNull(employeeEntity);
       assertNotNull(regularEmployeeEntity);
       assertNotNull(contractEmployeeEntity);
@@ -1610,53 +1610,53 @@ public class HibernateMapperTest {
 
 
       // relationship, primary and foreign key check
-      assertEquals(0, regularEmployeeEntity.getOutRelationships().size());
-      assertEquals(0, contractEmployeeEntity.getOutRelationships().size());
-      assertEquals(1, employeeEntity.getOutRelationships().size());
-      assertEquals(0, residenceEntity.getOutRelationships().size());
-      assertEquals(0, regularEmployeeEntity.getInRelationships().size());
-      assertEquals(0, contractEmployeeEntity.getInRelationships().size());
-      assertEquals(0, employeeEntity.getInRelationships().size());
-      assertEquals(1, residenceEntity.getInRelationships().size());      
+      assertEquals(0, regularEmployeeEntity.getOutCanonicalRelationships().size());
+      assertEquals(0, contractEmployeeEntity.getOutCanonicalRelationships().size());
+      assertEquals(1, employeeEntity.getOutCanonicalRelationships().size());
+      assertEquals(0, residenceEntity.getOutCanonicalRelationships().size());
+      assertEquals(0, regularEmployeeEntity.getInCanonicalRelationships().size());
+      assertEquals(0, contractEmployeeEntity.getInCanonicalRelationships().size());
+      assertEquals(0, employeeEntity.getInCanonicalRelationships().size());
+      assertEquals(1, residenceEntity.getInCanonicalRelationships().size());
 
       assertEquals(0, regularEmployeeEntity.getForeignKeys().size());
       assertEquals(0, contractEmployeeEntity.getForeignKeys().size());
       assertEquals(1, employeeEntity.getForeignKeys().size());
       assertEquals(0, residenceEntity.getForeignKeys().size());
 
-      Iterator<ORelationship> itEmp = employeeEntity.getOutRelationships().iterator();
-      ORelationship currentEmpRel = itEmp.next();
+      Iterator<OCanonicalRelationship> itEmp = employeeEntity.getOutCanonicalRelationships().iterator();
+      OCanonicalRelationship currentEmpRel = itEmp.next();
       assertEquals("RESIDENCE", currentEmpRel.getParentEntity().getName());
       assertEquals("EMPLOYEE", currentEmpRel.getForeignEntity().getName());
       assertEquals(residenceEntity.getPrimaryKey(), currentEmpRel.getPrimaryKey());
       assertEquals(employeeEntity.getForeignKeys().get(0), currentEmpRel.getForeignKey());
       assertFalse(itEmp.hasNext());
 
-      Iterator<ORelationship> itRes = residenceEntity.getInRelationships().iterator();
-      ORelationship currentResRel = itRes.next();
+      Iterator<OCanonicalRelationship> itRes = residenceEntity.getInCanonicalRelationships().iterator();
+      OCanonicalRelationship currentResRel = itRes.next();
       assertEquals(currentEmpRel, currentResRel);
 
 
       // inherited relationships check
-      assertEquals(1, regularEmployeeEntity.getInheritedOutRelationships().size());
-      assertEquals(1, contractEmployeeEntity.getInheritedOutRelationships().size());
-      assertEquals(0, employeeEntity.getInheritedOutRelationships().size());
-      assertEquals(0, residenceEntity.getInheritedOutRelationships().size());
+      assertEquals(1, regularEmployeeEntity.getInheritedOutCanonicalRelationships().size());
+      assertEquals(1, contractEmployeeEntity.getInheritedOutCanonicalRelationships().size());
+      assertEquals(0, employeeEntity.getInheritedOutCanonicalRelationships().size());
+      assertEquals(0, residenceEntity.getInheritedOutCanonicalRelationships().size());
 
-      Iterator<ORelationship> itRegEmp = regularEmployeeEntity.getInheritedOutRelationships().iterator();
-      Iterator<ORelationship> itContEmp = contractEmployeeEntity.getInheritedOutRelationships().iterator();
-      ORelationship currentRegEmpRel = itRegEmp.next();
-      ORelationship currentContEmpRel = itContEmp.next();
+      Iterator<OCanonicalRelationship> itRegEmp = regularEmployeeEntity.getInheritedOutCanonicalRelationships().iterator();
+      Iterator<OCanonicalRelationship> itContEmp = contractEmployeeEntity.getInheritedOutCanonicalRelationships().iterator();
+      OCanonicalRelationship currentRegEmpRel = itRegEmp.next();
+      OCanonicalRelationship currentContEmpRel = itContEmp.next();
       assertEquals("RESIDENCE", currentRegEmpRel.getParentEntity().getName());
       assertEquals("EMPLOYEE", currentRegEmpRel.getForeignEntity().getName());
       assertEquals("RESIDENCE", currentContEmpRel.getParentEntity().getName());
       assertEquals("EMPLOYEE", currentContEmpRel.getForeignEntity().getName());
       assertEquals(residenceEntity.getPrimaryKey(), currentRegEmpRel.getPrimaryKey());
-      assertEquals(1, currentRegEmpRel.getForeignKey().getInvolvedAttributes().size());
-      assertEquals("RESIDENCE", currentRegEmpRel.getForeignKey().getInvolvedAttributes().get(0).getName());
+      assertEquals(1, currentRegEmpRel.getFromColumns().size());
+      assertEquals("RESIDENCE", currentRegEmpRel.getFromColumns().get(0).getName());
       assertEquals(residenceEntity.getPrimaryKey(), currentContEmpRel.getPrimaryKey());
-      assertEquals(1, currentContEmpRel.getForeignKey().getInvolvedAttributes().size());
-      assertEquals("RESIDENCE", currentContEmpRel.getForeignKey().getInvolvedAttributes().get(0).getName());
+      assertEquals(1, currentContEmpRel.getFromColumns().size());
+      assertEquals("RESIDENCE", currentContEmpRel.getFromColumns().get(0).getName());
       assertFalse(itRegEmp.hasNext());
       assertFalse(itContEmp.hasNext());
 

@@ -43,7 +43,7 @@ import static org.junit.Assert.*;
 
 /**
  * @author Gabriele Ponzi
- * @email  <gabriele.ponzi--at--gmail.com>
+ * @email  <g.ponzi--at--orientdb.com>
  *
  */
 
@@ -56,7 +56,7 @@ public class HibernateImportTest {
   private String jurl = "jdbc:hsqldb:mem:mydb";
   private String username = "SA";
   private String password = "";
-  private String outOrientGraphUri = "memory:testOrientDB";
+  private String outOrientGraphUri;
   private OSourceDatabaseInfo sourceDBInfo;
 
 
@@ -68,8 +68,9 @@ public class HibernateImportTest {
 
   @Before
   public void init() {
-    this.context = new OTeleporterContext();
-    this.dbQueryEngine = new ODBQueryEngine(this.driver, this.context);
+    this.outOrientGraphUri = "plocal:target/testOrientDB";
+    this.context = OTeleporterContext.newInstance();
+    this.dbQueryEngine = new ODBQueryEngine(this.driver);
     this.context.setDbQueryEngine(this.dbQueryEngine);
     this.context.setOutputManager(new OOutputStreamManager(0));
     this.context.setNameResolver(new OJavaConventionNameResolver());
@@ -126,7 +127,7 @@ public class HibernateImportTest {
           + "('E003','cont_emp','Jack Johnson',NULL,NULL,'50.00','6','R002',NULL))";
       st.execute(employeeFilling);
 
-      this.importStrategy.executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "hibernate", HibernateImportTest.XML_TABLE_PER_CLASS, "java", null, null, null, context);
+      this.importStrategy.executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "hibernate", HibernateImportTest.XML_TABLE_PER_CLASS, "java", null, null, null);
 
       /*
        *  Testing context information
@@ -293,6 +294,7 @@ public class HibernateImportTest {
         assertEquals("E002", v.getProperty("id"));
         assertEquals("Andrew Brown", v.getProperty("name"));
         assertEquals("R001", v.getProperty("residence"));
+        Object o = v.getProperty("salary");
         assertEquals("1000.00", v.getProperty("salary").toString());
         assertEquals("10", v.getProperty("bonus").toString());
         assertNull(v.getProperty("payPerHour"));
@@ -479,7 +481,7 @@ public class HibernateImportTest {
           + "('E003','50.00','6'))";
       st.execute(contractEmployeeFilling);
 
-      this.importStrategy.executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "hibernate", HibernateImportTest.XML_TABLE_PER_SUBCLASS1, "java", null, null, null, context);
+      this.importStrategy.executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "hibernate", HibernateImportTest.XML_TABLE_PER_SUBCLASS1, "java", null, null, null);
 
       /*
        *  Testing context information
@@ -831,7 +833,7 @@ public class HibernateImportTest {
           + "('E003','50.00','6'))";
       st.execute(contractEmployeeFilling);
 
-      this.importStrategy.executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "hibernate", HibernateImportTest.XML_TABLE_PER_SUBCLASS2, "java", null, null, null, context);
+      this.importStrategy.executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "hibernate", HibernateImportTest.XML_TABLE_PER_SUBCLASS2, "java", null, null, null);
 
       /*
        *  Testing context information
@@ -1183,7 +1185,7 @@ public class HibernateImportTest {
           + "('E003','Jack Johnson','R002',NULL,'50.00','6'))";
       st.execute(contractEmployeeFilling);
 
-      this.importStrategy.executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "hibernate", HibernateImportTest.XML_TABLE_PER_CONCRETE_CLASS, "java", null, null, null, context);
+      this.importStrategy.executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "hibernate", HibernateImportTest.XML_TABLE_PER_CONCRETE_CLASS, "java", null, null, null);
 
       /*
        *  Testing context information

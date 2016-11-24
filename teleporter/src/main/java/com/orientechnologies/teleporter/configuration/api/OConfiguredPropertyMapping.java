@@ -21,41 +21,41 @@ package com.orientechnologies.teleporter.configuration.api;
 /**
  *
  * @author Gabriele Ponzi
- * @email <gabriele.ponzi--at--gmail.com>
+ * @email <g.ponzi--at--orientdb.com>
  *
  */
 
 public class OConfiguredPropertyMapping {
 
-    private String sourceName;      // mandatory
-    private String columnName;      // mandatory
-    private String type;            // mandatory
+  private String sourceName; // mandatory
+  private String columnName; // mandatory
+  private String type;       // mandatory
 
-    public OConfiguredPropertyMapping(String sourceName) {
-        this.sourceName = sourceName;
-    }
+  public OConfiguredPropertyMapping(final String sourceName) {
+    this.sourceName = sourceName;
+  }
 
-    public String getSourceName() {
-        return this.sourceName;
-    }
+  public String getSourceName() {
+    return this.sourceName;
+  }
 
-    public void setSourceName(String sourceName) {
-        this.sourceName = sourceName;
-    }
+  public void setSourceName(final String sourceName) {
+    this.sourceName = sourceName;
+  }
 
-    public String getColumnName() {
-        return this.columnName;
-    }
+  public String getColumnName() {
+    return this.columnName;
+  }
 
-    public void setColumnName(String columnName) {
-        this.columnName = columnName;
-    }
+  public void setColumnName(final String columnName) {
+    this.columnName = columnName;
+  }
 
-    public String getType() {
-        return this.type;
-    }
+  public String getType() {
+    return this.type;
+  }
 
-    public void setType(String type) {
-        this.type = type;
-    }
+  public void setType(String type) {
+    this.type = type;
+  }
 }

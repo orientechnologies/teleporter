@@ -28,13 +28,13 @@ import com.orientechnologies.teleporter.nameresolver.OOriginalConventionNameReso
  * If the name is not specified (null value) a JavaConventionNameResolver is instantiated.
  *  
  * @author Gabriele Ponzi
- * @email  <gabriele.ponzi--at--gmail.com>
+ * @email  <g.ponzi--at--orientdb.com>
  *
  */
 
 public class ONameResolverFactory {
 
-  public ONameResolver buildNameResolver(String nameResolverConvention, OTeleporterContext context) {
+  public ONameResolver buildNameResolver(String nameResolverConvention) {
     ONameResolver nameResolver = null;
 
 
@@ -51,13 +51,13 @@ public class ONameResolverFactory {
       break;
 
       default : nameResolver = new OOriginalConventionNameResolver();
-      context.getStatistics().warningMessages.add("Name resolver convention '" + nameResolverConvention + "' not found, the original name convention will be adopted.");
+        OTeleporterContext.getInstance().getStatistics().warningMessages.add("Name resolver convention '" + nameResolverConvention + "' not found, the original name convention will be adopted.");
       break;
 
       }
     }
 
-    context.setNameResolver(nameResolver);
+    OTeleporterContext.getInstance().setNameResolver(nameResolver);
 
     return nameResolver;
   }

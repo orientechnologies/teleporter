@@ -20,84 +20,105 @@ package com.orientechnologies.teleporter.model.dbschema;
 
 import com.orientechnologies.teleporter.model.OSourceInfo;
 
+import java.util.List;
+
 /**
  * Represents a source database with all its related info for accessing it.
  */
 
 public class OSourceDatabaseInfo implements OSourceInfo {
 
-    private String sourceIdName;
-    private String driverName;
-    private String url;
-    private String username;
-    private String password;
+  private String       sourceIdName;
+  private String       driverName;
+  private String       url;
+  private String       username;
+  private String       password;
+  private List<String> primaryKey;
 
-    public OSourceDatabaseInfo(String sourceIdName, String driverName, String url, String username, String password) {
-        this.sourceIdName = sourceIdName;
-        this.driverName = driverName;
-        this.url = url;
-        this.username = username;
-        this.password = password;
-    }
+  public OSourceDatabaseInfo(String sourceIdName, String driverName, String url, String username, String password) {
+    this(sourceIdName, driverName, url, username, password, null);
+  }
 
-    public String getSourceIdName() {
-        return this.sourceIdName;
-    }
+  public OSourceDatabaseInfo(String sourceIdName, String driverName, String url, String username, String password,
+      List<String> primaryKey) {
+    this.sourceIdName = sourceIdName;
+    this.driverName = driverName;
+    this.url = url;
+    this.username = username;
+    this.password = password;
+    this.primaryKey = primaryKey;
+  }
 
-    public void setSourceIdName(String sourceIdName) {
-        this.sourceIdName = sourceIdName;
-    }
+  public String getSourceIdName() {
+    return this.sourceIdName;
+  }
 
-    public String getDriverName() {
-        return this.driverName;
-    }
+  public void setSourceIdName(String sourceIdName) {
+    this.sourceIdName = sourceIdName;
+  }
 
-    public void setDriverName(String driverName) {
-        this.driverName = driverName;
-    }
+  public String getDriverName() {
+    return this.driverName;
+  }
 
-    public String getUrl() {
-        return this.url;
-    }
+  public void setDriverName(String driverName) {
+    this.driverName = driverName;
+  }
 
-    public void setUrl(String url) {
-        this.url = url;
-    }
+  public String getUrl() {
+    return this.url;
+  }
 
-    public String getUsername() {
-        return this.username;
-    }
+  public void setUrl(String url) {
+    this.url = url;
+  }
 
-    public void setUsername(String username) {
-        this.username = username;
-    }
+  public String getUsername() {
+    return this.username;
+  }
 
-    public String getPassword() {
-        return this.password;
-    }
+  public void setUsername(String username) {
+    this.username = username;
+  }
 
-    public void setPassword(String password) {
-        this.password = password;
-    }
+  public String getPassword() {
+    return this.password;
+  }
 
-    @Override
-    public int hashCode() {
-        int result = sourceIdName.hashCode();
-        result = 31 * result + driverName.hashCode();
-        result = 31 * result + url.hashCode();
-        return result;
-    }
+  public void setPassword(String password) {
+    this.password = password;
+  }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+  public void setPrimaryKey(List<String> primaryKey) {
+    this.primaryKey = primaryKey;
+  }
 
-        OSourceDatabaseInfo that = (OSourceDatabaseInfo) o;
+  @Override
+  public int hashCode() {
+    int result = sourceIdName.hashCode();
+    result = 31 * result + driverName.hashCode();
+    result = 31 * result + url.hashCode();
+    return result;
+  }
 
-        if (!sourceIdName.equals(that.sourceIdName)) return false;
-        if (!driverName.equals(that.driverName)) return false;
-        return url.equals(that.url);
+  @Override
+  public boolean equals(Object o) {
+    if (this == o)
+      return true;
+    if (o == null || getClass() != o.getClass())
+      return false;
 
-    }
+    OSourceDatabaseInfo that = (OSourceDatabaseInfo) o;
+
+    if (!sourceIdName.equals(that.sourceIdName))
+      return false;
+    if (!driverName.equals(that.driverName))
+      return false;
+    return url.equals(that.url);
+
+  }
+
+  public List<String> getPrimaryKey() {
+    return primaryKey;
+  }
 }

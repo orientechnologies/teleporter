@@ -23,12 +23,13 @@ import com.orientechnologies.teleporter.context.OTeleporterContext;
 import com.orientechnologies.teleporter.importengine.rdbms.dbengine.ODBQueryEngine;
 import com.orientechnologies.teleporter.mapper.rdbms.OER2GraphMapper;
 import com.orientechnologies.teleporter.mapper.rdbms.classmapper.OClassMapper;
+import com.orientechnologies.teleporter.model.dbschema.OCanonicalRelationship;
 import com.orientechnologies.teleporter.model.dbschema.OEntity;
-import com.orientechnologies.teleporter.model.dbschema.ORelationship;
 import com.orientechnologies.teleporter.model.dbschema.OSourceDatabaseInfo;
 import com.orientechnologies.teleporter.model.graphmodel.OEdgeType;
 import com.orientechnologies.teleporter.model.graphmodel.OVertexType;
 import com.orientechnologies.teleporter.nameresolver.OJavaConventionNameResolver;
+import com.orientechnologies.teleporter.persistence.handler.OHSQLDBDataTypeHandler;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -42,7 +43,7 @@ import static org.junit.Assert.*;
 
 /**
  * @author Gabriele Ponzi
- * @email  <gabriele.ponzi--at--gmail.com>
+ * @email  <g.ponzi--at--orientdb.com>
  *
  */
 
@@ -60,10 +61,11 @@ public class GraphModelBuildingTest {
 
   @Before
   public void init() {
-    this.context = new OTeleporterContext();
-    this.dbQueryEngine = new ODBQueryEngine(this.driver, this.context);
+    this.context = OTeleporterContext.newInstance();
+    this.dbQueryEngine = new ODBQueryEngine(this.driver);
     this.context.setDbQueryEngine(this.dbQueryEngine);
     this.context.setOutputManager(new OOutputStreamManager(0));
+    this.context.setDataTypeHandler(new OHSQLDBDataTypeHandler());
     this.sourceDBInfo = new OSourceDatabaseInfo("source", this.driver, this.jurl, this.username, this.password);
   }
 
@@ -95,8 +97,8 @@ public class GraphModelBuildingTest {
       st.execute(foreignTableBuilding);
 
       this.mapper = new OER2GraphMapper(this.sourceDBInfo, null, null, null);
-      mapper.buildSourceDatabaseSchema(this.context);
-      mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
+      mapper.buildSourceDatabaseSchema();
+      mapper.buildGraphModel(new OJavaConventionNameResolver());
 
 
       /*
@@ -216,8 +218,8 @@ public class GraphModelBuildingTest {
 
       // Relationships-Edges Mapping
 
-      Iterator<ORelationship> it = bookEntity.getOutRelationships().iterator();
-      ORelationship hasAuthorRelationship = it.next();
+      Iterator<OCanonicalRelationship> it = bookEntity.getOutCanonicalRelationships().iterator();
+      OCanonicalRelationship hasAuthorRelationship = it.next();
       assertFalse(it.hasNext());
 
       assertEquals(1, mapper.getRelationship2edgeType().size());
@@ -279,8 +281,8 @@ public class GraphModelBuildingTest {
       st.execute(itemTableBuilding);
 
       this.mapper = new OER2GraphMapper(this.sourceDBInfo, null, null, null);
-      mapper.buildSourceDatabaseSchema(this.context);
-      mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
+      mapper.buildSourceDatabaseSchema();
+      mapper.buildGraphModel(new OJavaConventionNameResolver());
 
 
       /*
@@ -446,11 +448,11 @@ public class GraphModelBuildingTest {
 
       // Relationships-Edges Mapping
 
-      Iterator<ORelationship> it = bookEntity.getOutRelationships().iterator();
-      ORelationship hasAuthorRelationship = it.next();
+      Iterator<OCanonicalRelationship> it = bookEntity.getOutCanonicalRelationships().iterator();
+      OCanonicalRelationship hasAuthorRelationship = it.next();
       assertFalse(it.hasNext());
-      it = itemEntity.getOutRelationships().iterator();
-      ORelationship hasBookRelationship = it.next();
+      it = itemEntity.getOutCanonicalRelationships().iterator();
+      OCanonicalRelationship hasBookRelationship = it.next();
       assertFalse(it.hasNext());
 
       assertEquals(2, mapper.getRelationship2edgeType().size());
@@ -515,8 +517,8 @@ public class GraphModelBuildingTest {
       st.execute(articleTableBuilding);
 
       this.mapper = new OER2GraphMapper(this.sourceDBInfo, null, null, null);
-      mapper.buildSourceDatabaseSchema(this.context);
-      mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
+      mapper.buildSourceDatabaseSchema();
+      mapper.buildGraphModel(new OJavaConventionNameResolver());
 
 
       /*
@@ -682,11 +684,11 @@ public class GraphModelBuildingTest {
 
       // Relationships-Edges Mapping
 
-      Iterator<ORelationship> it = bookEntity.getOutRelationships().iterator();
-      ORelationship hasAuthorRelationship1 = it.next();
+      Iterator<OCanonicalRelationship> it = bookEntity.getOutCanonicalRelationships().iterator();
+      OCanonicalRelationship hasAuthorRelationship1 = it.next();
       assertFalse(it.hasNext());
-      it = articleEntity.getOutRelationships().iterator();
-      ORelationship hasAuthorRelationship2 = it.next();
+      it = articleEntity.getOutCanonicalRelationships().iterator();
+      OCanonicalRelationship hasAuthorRelationship2 = it.next();
       assertFalse(it.hasNext());
 
       assertEquals(2, mapper.getRelationship2edgeType().size());
@@ -748,8 +750,8 @@ public class GraphModelBuildingTest {
       st.execute(bookTableBuilding);
 
       this.mapper = new OER2GraphMapper(this.sourceDBInfo, null, null, null);
-      mapper.buildSourceDatabaseSchema(this.context);
-      mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
+      mapper.buildSourceDatabaseSchema();
+      mapper.buildGraphModel(new OJavaConventionNameResolver());
 
 
       /*
@@ -877,8 +879,8 @@ public class GraphModelBuildingTest {
 
       // Relationships-Edges Mapping
 
-      Iterator<ORelationship> it = bookEntity.getOutRelationships().iterator();
-      ORelationship hasAuthorRelationship = it.next();
+      Iterator<OCanonicalRelationship> it = bookEntity.getOutCanonicalRelationships().iterator();
+      OCanonicalRelationship hasAuthorRelationship = it.next();
       assertFalse(it.hasNext());
 
       assertEquals(1, mapper.getRelationship2edgeType().size());
@@ -941,8 +943,8 @@ public class GraphModelBuildingTest {
       st.execute(film2actorTableBuilding);
 
       this.mapper = new OER2GraphMapper(this.sourceDBInfo, null, null, null);
-      mapper.buildSourceDatabaseSchema(this.context);
-      mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
+      mapper.buildSourceDatabaseSchema();
+      mapper.buildGraphModel(new OJavaConventionNameResolver());
 
 
       /*
@@ -1101,9 +1103,9 @@ public class GraphModelBuildingTest {
 
       // Relationships-Edges Mapping
 
-      Iterator<ORelationship> it = filmActorEntity.getOutRelationships().iterator();
-      ORelationship hasActorRelationship = it.next();
-      ORelationship hasFilmRelationship = it.next();
+      Iterator<OCanonicalRelationship> it = filmActorEntity.getOutCanonicalRelationships().iterator();
+      OCanonicalRelationship hasActorRelationship = it.next();
+      OCanonicalRelationship hasFilmRelationship = it.next();
       assertFalse(it.hasNext());
 
       assertEquals(2, mapper.getRelationship2edgeType().size());
@@ -1166,8 +1168,8 @@ public class GraphModelBuildingTest {
       st.execute(foreignTableBuilding);
 
       this.mapper = new OER2GraphMapper(this.sourceDBInfo, null, null, null);
-      mapper.buildSourceDatabaseSchema(this.context);
-      mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
+      mapper.buildSourceDatabaseSchema();
+      mapper.buildGraphModel(new OJavaConventionNameResolver());
 
 
       /*
@@ -1295,11 +1297,11 @@ public class GraphModelBuildingTest {
 
       // Relationships-Edges Mapping
 
-      Iterator<ORelationship> it = employeeEntity.getOutRelationships().iterator();
-      ORelationship hasManagerRelationship = it.next();
+      Iterator<OCanonicalRelationship> it = employeeEntity.getOutCanonicalRelationships().iterator();
+      OCanonicalRelationship hasManagerRelationship = it.next();
       assertFalse(it.hasNext());
-      it = projectEntity.getOutRelationships().iterator();
-      ORelationship hasProjectManagerRelationship = it.next();
+      it = projectEntity.getOutCanonicalRelationships().iterator();
+      OCanonicalRelationship hasProjectManagerRelationship = it.next();
       assertFalse(it.hasNext());
 
       assertEquals(2, mapper.getRelationship2edgeType().size());

@@ -2,6 +2,7 @@
   "vertices": [],
   "edges": [{
     "Features": {
+      "isLogical": false,
       "mapping": [{
         "fromTable": "ACTOR",
         "fromColumns": ["ID"],
@@ -18,7 +19,7 @@
         "year": {
           "include": true,
           "type": "DATE",
-          "value": "$from.date",
+          "ordinalPosition": 1,
           "mandatory": true,
           "readOnly": false,
           "notNull": false

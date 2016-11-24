@@ -23,8 +23,8 @@ import com.orientechnologies.teleporter.context.OTeleporterContext;
 import com.orientechnologies.teleporter.importengine.rdbms.dbengine.ODBQueryEngine;
 import com.orientechnologies.teleporter.mapper.rdbms.OER2GraphMapper;
 import com.orientechnologies.teleporter.mapper.rdbms.classmapper.OClassMapper;
+import com.orientechnologies.teleporter.model.dbschema.OCanonicalRelationship;
 import com.orientechnologies.teleporter.model.dbschema.OEntity;
-import com.orientechnologies.teleporter.model.dbschema.ORelationship;
 import com.orientechnologies.teleporter.model.dbschema.OSourceDatabaseInfo;
 import com.orientechnologies.teleporter.model.graphmodel.OEdgeType;
 import com.orientechnologies.teleporter.model.graphmodel.OVertexType;
@@ -47,7 +47,7 @@ import static org.junit.Assert.*;
 
 /**
  * @author Gabriele Ponzi
- * @email  <gabriele.ponzi--at--gmail.com>
+ * @email  <g.ponzi--at--orientdb.com>
  *
  */
 
@@ -60,15 +60,16 @@ public class AggregationStrategyTest {
   private String jurl = "jdbc:hsqldb:mem:mydb";
   private String username = "SA";
   private String password = "";
-  private String outOrientGraphUri = "memory:testOrientDB";
+  private String outOrientGraphUri;
   private OSourceDatabaseInfo sourceDBInfo;
 
 
   @Before
   public void init() {
+    this.outOrientGraphUri = "plocal:target/testOrientDB";
     this.importStrategy = new ODBMSNaiveAggregationStrategy();
-    this.context = new OTeleporterContext();
-    this.dbQueryEngine = new ODBQueryEngine(this.driver, this.context);
+    this.context = OTeleporterContext.newInstance();
+    this.dbQueryEngine = new ODBQueryEngine(this.driver);
     this.context.setDbQueryEngine(this.dbQueryEngine);
     this.context.setOutputManager(new OOutputStreamManager(0));
     this.context.setNameResolver(new OJavaConventionNameResolver());
@@ -115,8 +116,8 @@ public class AggregationStrategyTest {
 
 
       OER2GraphMapper mapper = new OER2GraphMapper(this.sourceDBInfo, null, null, null);
-      mapper.buildSourceDatabaseSchema(this.context);
-      mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
+      mapper.buildSourceDatabaseSchema();
+      mapper.buildGraphModel(new OJavaConventionNameResolver());
 
 
       /*
@@ -247,18 +248,18 @@ public class AggregationStrategyTest {
 
       // Relationships-Edges Mapping
 
-      Iterator<ORelationship> it = deptEmpEntity.getOutRelationships().iterator();
-      ORelationship hasDepartmentRelationship1 = it.next();
-      ORelationship hasEmployeeRelationship1 = it.next();
+      Iterator<OCanonicalRelationship> it = deptEmpEntity.getOutCanonicalRelationships().iterator();
+      OCanonicalRelationship hasDepartmentRelationship1 = it.next();
+      OCanonicalRelationship hasEmployeeRelationship1 = it.next();
       assertFalse(it.hasNext());
 
-      it = deptMgrEntity.getOutRelationships().iterator();
-      ORelationship hasDepartmentRelationship2 = it.next();
-      ORelationship hasEmployeeRelationship2 = it.next();
+      it = deptMgrEntity.getOutCanonicalRelationships().iterator();
+      OCanonicalRelationship hasDepartmentRelationship2 = it.next();
+      OCanonicalRelationship hasEmployeeRelationship2 = it.next();
       assertFalse(it.hasNext());
 
-      it = branchEntity.getOutRelationships().iterator();
-      ORelationship hasDepartmentRelationship3 = it.next();
+      it = branchEntity.getOutCanonicalRelationships().iterator();
+      OCanonicalRelationship hasDepartmentRelationship3 = it.next();
       assertFalse(it.hasNext());
 
       assertEquals(5, mapper.getRelationship2edgeType().size());
@@ -282,7 +283,7 @@ public class AggregationStrategyTest {
       /*
        * Aggregation of join tables
        */
-      mapper.performMany2ManyAggregation(context);
+      mapper.performMany2ManyAggregation();
       
       
       /*
@@ -419,17 +420,17 @@ public class AggregationStrategyTest {
 
       // Relationships-Edges Mapping
 
-      it = deptEmpEntity.getOutRelationships().iterator();
+      it = deptEmpEntity.getOutCanonicalRelationships().iterator();
       hasDepartmentRelationship1 = it.next();
       hasEmployeeRelationship1 = it.next();
       assertFalse(it.hasNext());
 
-      it = deptMgrEntity.getOutRelationships().iterator();
+      it = deptMgrEntity.getOutCanonicalRelationships().iterator();
       hasDepartmentRelationship2 = it.next();
       hasEmployeeRelationship2 = it.next();
       assertFalse(it.hasNext());
 
-      it = branchEntity.getOutRelationships().iterator();
+      it = branchEntity.getOutCanonicalRelationships().iterator();
       hasDepartmentRelationship3 = it.next();
       assertFalse(it.hasNext());
 
@@ -548,7 +549,7 @@ public class AggregationStrategyTest {
       st.execute(film2actorFilling);
 
 
-      this.importStrategy.executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "basicDBMapper", null, "java", null, null, null, context);
+      this.importStrategy.executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "basicDBMapper", null, "java", null, null, null);
 
 
       /*

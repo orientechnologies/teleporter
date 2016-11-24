@@ -21,7 +21,7 @@ package com.orientechnologies.teleporter.configuration.api;
 /**
  *
  * @author Gabriele Ponzi
- * @email <gabriele.ponzi--at--gmail.com>
+ * @email <g.ponzi--at--orientdb.com>
  *
  */
 
@@ -29,8 +29,8 @@ public class OConfiguredVertexClass extends OConfiguredClass {
 
     private OVertexMappingInformation mapping;                  // mandatory
 
-    public OConfiguredVertexClass(String vertexName) {
-        super(vertexName);
+    public OConfiguredVertexClass(String vertexName, OConfiguration globalConfiguration) {
+        super(vertexName, globalConfiguration);
     }
 
     public OVertexMappingInformation getMapping() {

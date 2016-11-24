@@ -20,13 +20,14 @@ package com.orientechnologies.teleporter.test.rdbms.main;
 
 import com.orientechnologies.teleporter.main.OTeleporter;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.junit.Assert.fail;
 
 /**
  * @author Gabriele Ponzi
- * @email <gabriele.ponzi--at--gmail.com>
+ * @email <g.ponzi--at--orientdb.com>
  *
  */
 

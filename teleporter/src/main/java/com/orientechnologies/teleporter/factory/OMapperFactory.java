@@ -19,6 +19,8 @@
 package com.orientechnologies.teleporter.factory;
 
 import com.orientechnologies.orient.core.record.impl.ODocument;
+import com.orientechnologies.teleporter.configuration.OConfigurationHandler;
+import com.orientechnologies.teleporter.configuration.api.OConfiguration;
 import com.orientechnologies.teleporter.context.OTeleporterContext;
 import com.orientechnologies.teleporter.mapper.OSource2GraphMapper;
 import com.orientechnologies.teleporter.mapper.rdbms.OER2GraphMapper;
@@ -32,7 +34,7 @@ import java.util.List;
  * Factory used to instantiate the chosen 'Mapper' which will be adopted for the source schema building.
  *
  * @author Gabriele Ponzi
- * @email  <gabriele.ponzi--at--gmail.com>
+ * @email  <g.ponzi--at--orientdb.com>
  *
  */
 
@@ -41,7 +43,7 @@ public class OMapperFactory {
   public OMapperFactory() {}
 
   public OSource2GraphMapper buildMapper(String chosenMapper, OSourceInfo sourceInfo, String xmlPath, List<String> includedTables, List<String> excludedTables,
-                                         ODocument configuration, OTeleporterContext context) {
+                                         OConfiguration configuration) {
 
     OSource2GraphMapper mapper = null;
 

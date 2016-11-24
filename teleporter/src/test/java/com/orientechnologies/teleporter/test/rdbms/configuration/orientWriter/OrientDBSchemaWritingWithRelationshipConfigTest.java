@@ -20,6 +20,8 @@ package com.orientechnologies.teleporter.test.rdbms.configuration.orientWriter;
 
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.record.impl.ODocument;
+import com.orientechnologies.teleporter.configuration.OConfigurationHandler;
+import com.orientechnologies.teleporter.configuration.api.OConfiguration;
 import com.orientechnologies.teleporter.context.OOutputStreamManager;
 import com.orientechnologies.teleporter.context.OTeleporterContext;
 import com.orientechnologies.teleporter.importengine.rdbms.dbengine.ODBQueryEngine;
@@ -68,14 +70,15 @@ public class OrientDBSchemaWritingWithRelationshipConfigTest {
 
   @Before
   public void init() {
-    this.context = new OTeleporterContext();
-    this.dbQueryEngine = new ODBQueryEngine(this.driver, this.context);
+    this.context = OTeleporterContext.newInstance();
+    this.dbQueryEngine = new ODBQueryEngine(this.driver);
     this.context.setDbQueryEngine(this.dbQueryEngine);
     this.context.setOutputManager(new OOutputStreamManager(0));
     this.context.setNameResolver(new OJavaConventionNameResolver());
+    this.context.setDataTypeHandler(new OHSQLDBDataTypeHandler());
     this.sourceDBInfo = new OSourceDatabaseInfo("source", this.driver, this.jurl, this.username, this.password);
     this.modelWriter = new OGraphModelWriter();
-    this.outOrientGraphUri = "memory:testOrientDB";
+    this.outOrientGraphUri = "plocal:target/testOrientDB";
   }
 
   @Test
@@ -115,12 +118,14 @@ public class OrientDBSchemaWritingWithRelationshipConfigTest {
       st.execute(foreignTableBuilding);
 
       ODocument config = OFileManager.buildJsonFromFile(this.configDirectEdgesPath);
+      OConfigurationHandler configHandler = new OConfigurationHandler(false);
+      OConfiguration migrationConfig = configHandler.buildConfigurationFromJSONDoc(config);
 
-      this.mapper = new OER2GraphMapper(this.sourceDBInfo, null, null, config);
-      mapper.buildSourceDatabaseSchema(this.context);
-      mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
-      mapper.applyImportConfiguration(this.context);
-      modelWriter.writeModelOnOrient(mapper.getGraphModel(), new OHSQLDBDataTypeHandler(), this.outOrientGraphUri, context);
+      this.mapper = new OER2GraphMapper(this.sourceDBInfo, null, null, migrationConfig);
+      mapper.buildSourceDatabaseSchema();
+      mapper.buildGraphModel(new OJavaConventionNameResolver());
+      mapper.applyImportConfiguration();
+      modelWriter.writeModelOnOrient(mapper, new OHSQLDBDataTypeHandler(), this.outOrientGraphUri);
 
 
       /*
@@ -252,7 +257,7 @@ public class OrientDBSchemaWritingWithRelationshipConfigTest {
   @Test
 
   /*
-   *  Two tables: 2 relationships declared through foreign keys but the first one is overridden through a jsonConfiguration.
+   *  Two tables: 2 relationships declared through foreign keys but the first one is overridden through a migrationConfigDoc.
    *  Changes on the final edge:
    *  - name
    *  - direction inverted
@@ -266,7 +271,7 @@ public class OrientDBSchemaWritingWithRelationshipConfigTest {
    *  EMPLOYEE --[HasProject]--> PROJECT
    *  PROJECT --[HasProjectManager]--> EMPLOYEE
    *
-   *  But through jsonConfiguration we obtain:
+   *  But through migrationConfigDoc we obtain:
    *
    *  PROJECT --[HasEmployee]--> EMPLOYEE
    *  PROJECT --[HasProjectManager]--> EMPLOYEE
@@ -304,12 +309,14 @@ public class OrientDBSchemaWritingWithRelationshipConfigTest {
       st.execute(parentTableBuilding);
 
       ODocument config = OFileManager.buildJsonFromFile(this.configInverseEdgesPath);
+      OConfigurationHandler configHandler = new OConfigurationHandler(false);
+      OConfiguration migrationConfig = configHandler.buildConfigurationFromJSONDoc(config);
 
-      this.mapper = new OER2GraphMapper(this.sourceDBInfo, null, null, config);
-      mapper.buildSourceDatabaseSchema(this.context);
-      mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
-      mapper.applyImportConfiguration(this.context);
-      modelWriter.writeModelOnOrient(mapper.getGraphModel(), new OHSQLDBDataTypeHandler(), this.outOrientGraphUri, context);
+      this.mapper = new OER2GraphMapper(this.sourceDBInfo, null, null, migrationConfig);
+      mapper.buildSourceDatabaseSchema();
+      mapper.buildGraphModel(new OJavaConventionNameResolver());
+      mapper.applyImportConfiguration();
+      modelWriter.writeModelOnOrient(mapper, new OHSQLDBDataTypeHandler(), this.outOrientGraphUri);
 
 
       /*
@@ -435,14 +442,14 @@ public class OrientDBSchemaWritingWithRelationshipConfigTest {
 
   /*
    *  Three tables: 1  N-N relationship, no foreign keys declared for the join table in the db.
-   *  Through the jsonConfiguration we obtain the following schema:
+   *  Through the migrationConfigDoc we obtain the following schema:
    *
    *  ACTOR
    *  FILM
    *  ACTOR2FILM: foreign key (ACTOR_ID) references ACTOR(ID)
    *              foreign key (FILM_ID) references FILM(ID)
    *
-   *  With "direct" direction in the jsonConfiguration we obtain:
+   *  With "direct" direction in the migrationConfigDoc we obtain:
    *
    *  ACTOR --[Performs]--> FILM
    *
@@ -478,13 +485,15 @@ public class OrientDBSchemaWritingWithRelationshipConfigTest {
       st.execute(actorFilmTableBuilding);
 
       ODocument config = OFileManager.buildJsonFromFile(this.configJoinTableDirectEdgesPath);
+      OConfigurationHandler configHandler = new OConfigurationHandler(true);
+      OConfiguration migrationConfig = configHandler.buildConfigurationFromJSONDoc(config);
 
-      this.mapper = new OER2GraphMapper(this.sourceDBInfo, null, null, config);
-      mapper.buildSourceDatabaseSchema(this.context);
-      mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
-      mapper.applyImportConfiguration(this.context);
-      mapper.performAggregations(this.context);
-      modelWriter.writeModelOnOrient(mapper.getGraphModel(), new OHSQLDBDataTypeHandler(), this.outOrientGraphUri, context);
+      this.mapper = new OER2GraphMapper(this.sourceDBInfo, null, null, migrationConfig);
+      mapper.buildSourceDatabaseSchema();
+      mapper.buildGraphModel(new OJavaConventionNameResolver());
+      mapper.applyImportConfiguration();
+      mapper.performAggregations();
+      modelWriter.writeModelOnOrient(mapper, new OHSQLDBDataTypeHandler(), this.outOrientGraphUri);
 
 
       /*
@@ -601,14 +610,14 @@ public class OrientDBSchemaWritingWithRelationshipConfigTest {
 
   /*
    *  Three tables: 1  N-N relationship, no foreign keys declared for the join table in the db.
-   *  Through the jsonConfiguration we obtain the following schema:
+   *  Through the migrationConfigDoc we obtain the following schema:
    *
    *  ACTOR
    *  FILM
    *  ACTOR2FILM: foreign key (ACTOR_ID) references ACTOR(ID)
    *              foreign key (FILM_ID) references FILM(ID)
    *
-   *  With "direct" direction in the jsonConfiguration we would obtain:
+   *  With "direct" direction in the migrationConfigDoc we would obtain:
    *
    *  FILM --[Performs]--> ACTOR
    *
@@ -646,13 +655,15 @@ public class OrientDBSchemaWritingWithRelationshipConfigTest {
       st.execute(actorFilmTableBuilding);
 
       ODocument config = OFileManager.buildJsonFromFile(this.configJoinTableInverseEdgesPath);
+      OConfigurationHandler configHandler = new OConfigurationHandler(true);
+      OConfiguration migrationConfig = configHandler.buildConfigurationFromJSONDoc(config);
 
-      this.mapper = new OER2GraphMapper(this.sourceDBInfo, null, null, config);
-      mapper.buildSourceDatabaseSchema(this.context);
-      mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
-      mapper.applyImportConfiguration(this.context);
-      mapper.performAggregations(this.context);
-      modelWriter.writeModelOnOrient(mapper.getGraphModel(), new OHSQLDBDataTypeHandler(), this.outOrientGraphUri, context);
+      this.mapper = new OER2GraphMapper(this.sourceDBInfo, null, null, migrationConfig);
+      mapper.buildSourceDatabaseSchema();
+      mapper.buildGraphModel(new OJavaConventionNameResolver());
+      mapper.applyImportConfiguration();
+      mapper.performAggregations();
+      modelWriter.writeModelOnOrient(mapper, new OHSQLDBDataTypeHandler(), this.outOrientGraphUri);
 
 
       /*
@@ -775,8 +786,8 @@ public class OrientDBSchemaWritingWithRelationshipConfigTest {
    *  ACTOR2FILM: foreign key (ACTOR_ID) references ACTOR(ID)
    *              foreign key (FILM_ID) references FILM(ID)
    *
-   *  Through the jsonConfiguration we want name the relationship "Performs".
-   *  With "direct" direction in the jsonConfiguration we obtain:
+   *  Through the migrationConfigDoc we want name the relationship "Performs".
+   *  With "direct" direction in the migrationConfigDoc we obtain:
    *
    *  ACTOR --[Performs]--> FILM
    *
@@ -813,13 +824,15 @@ public class OrientDBSchemaWritingWithRelationshipConfigTest {
       st.execute(actorFilmTableBuilding);
 
       ODocument config = OFileManager.buildJsonFromFile(this.configJoinTableDirectEdgesPath);
+      OConfigurationHandler configHandler = new OConfigurationHandler(true);
+      OConfiguration migrationConfig = configHandler.buildConfigurationFromJSONDoc(config);
 
-      this.mapper = new OER2GraphMapper(this.sourceDBInfo, null, null, config);
-      mapper.buildSourceDatabaseSchema(this.context);
-      mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
-      mapper.applyImportConfiguration(this.context);
-      mapper.performAggregations(this.context);
-      modelWriter.writeModelOnOrient(mapper.getGraphModel(), new OHSQLDBDataTypeHandler(), this.outOrientGraphUri, context);
+      this.mapper = new OER2GraphMapper(this.sourceDBInfo, null, null, migrationConfig);
+      mapper.buildSourceDatabaseSchema();
+      mapper.buildGraphModel(new OJavaConventionNameResolver());
+      mapper.applyImportConfiguration();
+      mapper.performAggregations();
+      modelWriter.writeModelOnOrient(mapper, new OHSQLDBDataTypeHandler(), this.outOrientGraphUri);
 
 
       /*
@@ -941,8 +954,8 @@ public class OrientDBSchemaWritingWithRelationshipConfigTest {
    *  ACTOR2FILM: foreign key (ACTOR_ID) references ACTOR(ID)
    *              foreign key (FILM_ID) references FILM(ID)
    *
-   *  Through the jsonConfiguration we want name the relationship "Performs".
-   *  With "direct" direction in the jsonConfiguration we would obtain:
+   *  Through the migrationConfigDoc we want name the relationship "Performs".
+   *  With "direct" direction in the migrationConfigDoc we would obtain:
    *
    *  ACTOR --[Features]--> FILM
    *
@@ -981,13 +994,15 @@ public class OrientDBSchemaWritingWithRelationshipConfigTest {
       st.execute(actorFilmTableBuilding);
 
       ODocument config = OFileManager.buildJsonFromFile(this.configJoinTableInverseEdgesPath2);
+      OConfigurationHandler configHandler = new OConfigurationHandler(true);
+      OConfiguration migrationConfig = configHandler.buildConfigurationFromJSONDoc(config);
 
-      this.mapper = new OER2GraphMapper(this.sourceDBInfo, null, null, config);
-      mapper.buildSourceDatabaseSchema(this.context);
-      mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
-      mapper.applyImportConfiguration(this.context);
-      mapper.performAggregations(this.context);
-      modelWriter.writeModelOnOrient(mapper.getGraphModel(), new OHSQLDBDataTypeHandler(), this.outOrientGraphUri, context);
+      this.mapper = new OER2GraphMapper(this.sourceDBInfo, null, null, migrationConfig);
+      mapper.buildSourceDatabaseSchema();
+      mapper.buildGraphModel(new OJavaConventionNameResolver());
+      mapper.applyImportConfiguration();
+      mapper.performAggregations();
+      modelWriter.writeModelOnOrient(mapper, new OHSQLDBDataTypeHandler(), this.outOrientGraphUri);
 
 
       /*
