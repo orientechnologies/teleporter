@@ -14,8 +14,9 @@ plugin
 .settings/
 *.prefs
 
-#IntelliJ IDEA files
+# IntelliJ IDEA files
 *.iml
 .idea/
 
 tests/src/test/java/com/orientechnologies/orient/test/database/auto/_*.xml
+.gitignore
