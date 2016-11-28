@@ -18,9 +18,5 @@ plugin
 *.iml
 .idea/
 
-# ORIENTDB_HOME directories
-*/config/*
-*/lib/*
-
 tests/src/test/java/com/orientechnologies/orient/test/database/auto/_*.xml
 .gitignore
