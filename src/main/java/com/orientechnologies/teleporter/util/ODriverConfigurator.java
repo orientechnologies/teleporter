@@ -170,6 +170,12 @@ public class ODriverConfigurator {
     File dir = new File(classPath);
     File[] files = dir.listFiles();
 
+    if(files == null) {
+      // ../lib does not exist yet, so create it.
+      dir.mkdirs();
+      files = dir.listFiles();
+    }
+
     for (String identifier : this.driver2filesIdentifier.get(driverName)) {
 
       for (int i = 0; i < files.length; i++) {
