@@ -218,12 +218,19 @@ public class ODriverConfigurator {
 
   /**
    * @param driverName
+   * @param classPath
    * @return the path of the driver
    */
   private String isDriverAlreadyPresent(String driverName, String classPath) {
 
     File dir = new File(classPath);
     File[] files = dir.listFiles();
+
+    if(files == null) {
+      // ../lib does not exist yet, so create it.
+      dir.mkdirs();
+      files = dir.listFiles();
+    }
 
     for (String identifier : this.driver2filesIdentifier.get(driverName)) {
 
