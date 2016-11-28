@@ -13,7 +13,7 @@ node("master") {
             try {
 
 
-                sh "${mvnHome}/bin/mvn  --batch-mode -V -U  clean deploy -Dmaven.test.failure.ignore=true -Dsurefire.useFile=false"
+                sh "${mvnHome}/bin/mvn  --batch-mode -V -U  clean install -Dmaven.test.failure.ignore=true -Dsurefire.useFile=false"
             } catch (e) {
                 currentBuild.result = 'FAILURE'
 
