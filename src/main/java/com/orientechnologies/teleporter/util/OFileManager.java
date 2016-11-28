@@ -27,13 +27,13 @@ import java.util.zip.ZipInputStream;
 
 public class OFileManager {
 
-  public static void deleteFile(String resourcePath) throws IOException {
+  public static void deleteResource(String resourcePath) throws IOException {
 
     File currentFile = new File(resourcePath);
     if(currentFile.isDirectory()) {
       File[] innerFiles = currentFile.listFiles();
       for(File file: innerFiles) {
-        deleteFile(file.getCanonicalPath());
+        deleteResource(file.getCanonicalPath());
       }
     }
     if(!currentFile.delete())

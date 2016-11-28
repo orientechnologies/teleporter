@@ -248,7 +248,7 @@ public abstract class TeleporterInvocationTest {
   private void purgeOrientdbServer() {
 
     try {
-      OFileManager.deleteFile(this.serverHome);
+      OFileManager.deleteResource(this.serverHome);
     }catch(Exception e) {
       e.printStackTrace();
       fail();

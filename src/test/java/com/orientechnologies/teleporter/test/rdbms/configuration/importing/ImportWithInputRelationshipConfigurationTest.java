@@ -380,7 +380,7 @@ public class ImportWithInputRelationshipConfigurationTest {
         String dbDropping = "drop schema public cascade";
         st.execute(dbDropping);
         connection.close();
-        OFileManager.deleteFile(this.dbParentDirectoryPath);
+        OFileManager.deleteResource(this.dbParentDirectoryPath);
       }catch(Exception e) {
         e.printStackTrace();
         fail();
@@ -704,7 +704,7 @@ public class ImportWithInputRelationshipConfigurationTest {
         String dbDropping = "drop schema public cascade";
         st.execute(dbDropping);
         connection.close();
-        OFileManager.deleteFile(this.dbParentDirectoryPath);
+        OFileManager.deleteResource(this.dbParentDirectoryPath);
       }catch(Exception e) {
         e.printStackTrace();
         fail();
@@ -1109,7 +1109,7 @@ public class ImportWithInputRelationshipConfigurationTest {
         String dbDropping = "drop schema public cascade";
         st.execute(dbDropping);
         connection.close();
-        OFileManager.deleteFile(this.dbParentDirectoryPath);
+        OFileManager.deleteResource(this.dbParentDirectoryPath);
       }catch(Exception e) {
         e.printStackTrace();
         fail();
@@ -1517,7 +1517,7 @@ public class ImportWithInputRelationshipConfigurationTest {
         String dbDropping = "drop schema public cascade";
         st.execute(dbDropping);
         connection.close();
-        OFileManager.deleteFile(this.dbParentDirectoryPath);
+        OFileManager.deleteResource(this.dbParentDirectoryPath);
       }catch(Exception e) {
         e.printStackTrace();
         fail();
@@ -1922,7 +1922,7 @@ public class ImportWithInputRelationshipConfigurationTest {
         String dbDropping = "drop schema public cascade";
         st.execute(dbDropping);
         connection.close();
-        OFileManager.deleteFile(this.dbParentDirectoryPath);
+        OFileManager.deleteResource(this.dbParentDirectoryPath);
       }catch(Exception e) {
         e.printStackTrace();
         fail();
@@ -2329,7 +2329,7 @@ public class ImportWithInputRelationshipConfigurationTest {
         String dbDropping = "drop schema public cascade";
         st.execute(dbDropping);
         connection.close();
-        OFileManager.deleteFile(this.dbParentDirectoryPath);
+        OFileManager.deleteResource(this.dbParentDirectoryPath);
       }catch(Exception e) {
         e.printStackTrace();
         fail();

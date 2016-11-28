@@ -63,14 +63,14 @@ public class DriverConfiguratorTest {
     try {
 
       try {
-        OFileManager.deleteFile("../lib/" + fileName);
+        OFileManager.deleteResource("../lib/" + fileName);
       }catch(IOException e) {
         System.out.println("Driver not present in '../lib/' path.");
       }
 
       String driverName = this.driverConfigurator.fetchDriverClassName("hypersql");
-      this.driverConfigurator.checkDriverConfiguration("hypersql");
-      OFileManager.deleteFile("../lib/" + fileName);
+      this.driverConfigurator.checkDriverConfiguration("hypersql", "lib/");
+      OFileManager.deleteResource("lib/");
 
     }catch(Exception e) {
       e.printStackTrace();
@@ -84,15 +84,15 @@ public class DriverConfiguratorTest {
   public void checkConnectionTest() {
 
     try {
-      OFileManager.deleteFile("../lib/" + fileName);
+      OFileManager.deleteResource("lib/" + fileName);
     }catch(IOException e) {
-      System.out.println("Driver not present in '../lib/' path.");
+      System.out.println("Driver not present in 'lib/' path.");
     }
 
     try {
 
-      driverConfigurator.checkConnection("HyperSQL", "jdbc:hsqldb:mem:mydb", "SA", "");
-      OFileManager.deleteFile("../lib/" + fileName);
+      driverConfigurator.checkConnection("HyperSQL", "jdbc:hsqldb:mem:mydb", "SA", "", "lib/");
+      OFileManager.deleteResource("lib/");
     } catch (Exception e) {
       e.printStackTrace();
       fail(e.getMessage());

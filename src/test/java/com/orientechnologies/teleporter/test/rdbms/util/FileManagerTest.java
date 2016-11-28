@@ -49,7 +49,7 @@ public class FileManagerTest {
       assertTrue(dir.exists());
       assertTrue(newFile.exists());
 
-      OFileManager.deleteFile(dir.getPath());
+      OFileManager.deleteResource(dir.getPath());
 
       assertFalse(dir.exists());
       assertFalse(newFile.exists());
@@ -73,7 +73,7 @@ public class FileManagerTest {
       assertTrue(dir.exists());
       assertTrue(file.exists());
 
-      OFileManager.deleteFile(dir.getPath());
+      OFileManager.deleteResource(dir.getPath());
 
     }catch(IOException e) {
       e.printStackTrace();
@@ -95,7 +95,7 @@ public class FileManagerTest {
 
       assertEquals("Hello, this is a sample file!\n", fileContent);
 
-      OFileManager.deleteFile(dir.getPath());
+      OFileManager.deleteResource(dir.getPath());
 
     }catch(IOException e) {
       e.printStackTrace();

@@ -20,7 +20,6 @@ package com.orientechnologies.teleporter.util;
 
 import com.orientechnologies.teleporter.context.OTeleporterContext;
 import com.orientechnologies.teleporter.exception.OTeleporterRuntimeException;
-import com.orientechnologies.teleporter.main.OTeleporter;
 import com.orientechnologies.teleporter.persistence.util.ODBSourceConnection;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
@@ -31,6 +30,7 @@ import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.charset.Charset;
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -147,6 +147,17 @@ public class ODriverConfigurator {
 
   public void checkDriverConfiguration(String driverName) {
 
+    this.checkDriverConfiguration(driverName, this.driverClassPath);
+  }
+
+  /**
+   *
+   * @param driverName
+   * @param driverClassPath
+   */
+
+  public void checkDriverConfiguration(String driverName, String driverClassPath) {
+
     driverName = driverName.toLowerCase();
 
     try {
@@ -173,7 +184,7 @@ public class ODriverConfigurator {
       }
 
       // if the driver is not present, it will be downloaded
-      String driverPath = isDriverAlreadyPresent(driverName, this.driverClassPath);
+      String driverPath = isDriverAlreadyPresent(driverName, driverClassPath);
 
       if (driverPath == null) {
 
@@ -185,17 +196,17 @@ public class ODriverConfigurator {
         String fileName = driverDownldUrl.substring(driverDownldUrl.lastIndexOf('/') + 1, driverDownldUrl.length());
         ReadableByteChannel rbc = Channels.newChannel(website.openStream());
         @SuppressWarnings("resource")
-        FileOutputStream fos = new FileOutputStream(this.driverClassPath + fileName);
+        FileOutputStream fos = new FileOutputStream(driverClassPath + fileName);
         fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
 
-        driverPath = this.driverClassPath + fileName;
+        driverPath = driverClassPath + fileName;
 
         if (driverName.equalsIgnoreCase("SQLServer")) {
-          OFileManager.extractAll(driverPath, this.driverClassPath);
+          OFileManager.extractAll(driverPath, driverClassPath);
           try {
-            OFileManager.deleteFile(driverPath);
+            OFileManager.deleteResource(driverPath);
           } catch(IOException e) {
-            OTeleporterContext.getInstance().getOutputManager().info("The %s package file was not correctly deleted from the %s path.", driverPath, this.driverClassPath);
+            OTeleporterContext.getInstance().getOutputManager().info("The %s package file was not correctly deleted from the %s path.", driverPath, driverClassPath);
           }
           String[] split = driverPath.split(".jar");
           driverPath = split[0] + ".jar";
@@ -300,11 +311,53 @@ public class ODriverConfigurator {
     return json;
   }
 
+  /**
+   * Checks connection to a source database identified through the 4 access parameters.
+   * The driver configuration is managed in the ../lib directory.
+   *
+   * @param driver
+   * @param uri
+   * @param username
+   * @param password
+   * @throws Exception
+   */
   public void checkConnection(String driver, String uri, String username, String password)
           throws Exception {
 
-    String driverName = this.fetchDriverClassName(driver);
     this.checkDriverConfiguration(driver);
+    checkConnectionSubRoutine(driver, uri, username, password);
+  }
+
+  /**
+   * Checks connection to a source database identified through the 4 access parameters.
+   * The driver configuration is managed in the directory specified as last argument.
+   *
+   * @param driver
+   * @param uri
+   * @param username
+   * @param password
+   * @param driverClassPath
+   * @throws Exception
+   */
+  public void checkConnection(String driver, String uri, String username, String password, String driverClassPath)
+          throws Exception {
+
+    this.checkDriverConfiguration(driver, driverClassPath);
+    checkConnectionSubRoutine(driver, uri, username, password);
+  }
+
+  /**
+   * Once the driver configuration is complete, it checks the connection to the source database.
+   *
+   * @param driver
+   * @param uri
+   * @param username
+   * @param password
+   * @throws SQLException
+   */
+  private void checkConnectionSubRoutine(String driver, String uri, String username, String password) throws SQLException {
+
+    String driverName = this.fetchDriverClassName(driver);
     Connection connection = null;
     try {
       connection = ODBSourceConnection.getConnection(driverName, uri, username, password);
