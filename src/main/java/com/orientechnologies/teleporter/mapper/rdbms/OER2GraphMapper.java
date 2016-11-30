@@ -146,6 +146,17 @@ public class OER2GraphMapper extends OSource2GraphMapper {
     return this.vertexType2classMappers;
   }
 
+  public String getAttributeByPropertyAboveMappers(String propertyName, List<OClassMapper> classMappers) {
+
+    for(OClassMapper currClassMapper: classMappers) {
+      String attributeName = currClassMapper.getAttributeByProperty(propertyName);
+      if(attributeName != null) {
+        return attributeName;
+      }
+    }
+    return null;
+  }
+
   /**
    * MACRO EXECUTION BLOCK: BUILD SOURCE DATABASE SCHEMA
    * Builds the database schema and the rules for the mapping with the graph model through 3 micro execution blocks:
