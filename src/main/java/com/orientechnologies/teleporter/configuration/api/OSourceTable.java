@@ -34,9 +34,11 @@ public class OSourceTable {
   private String       tableName;          // mandatory
   private List<String> aggregationColumns; // optional (not present when there is not any aggregation)
   private List<String> primaryKeyColumns;
+  private OVertexMappingInformation belongingMapping;
 
-  public OSourceTable(String sourceIdName) {
+  public OSourceTable(String sourceIdName, OVertexMappingInformation belongingMapping) {
     this.sourceIdName = sourceIdName;
+    this.belongingMapping = belongingMapping;
   }
 
   public String getSourceIdName() {
@@ -78,4 +80,13 @@ public class OSourceTable {
   public void setPrimaryKeyColumns(final List<String> primaryKeyColumns) {
     this.primaryKeyColumns = primaryKeyColumns;
   }
+
+  public OVertexMappingInformation getBelongingMapping() {
+    return belongingMapping;
+  }
+
+  public void setBelongingMapping(OVertexMappingInformation belongingMapping) {
+    this.belongingMapping = belongingMapping;
+  }
+
 }

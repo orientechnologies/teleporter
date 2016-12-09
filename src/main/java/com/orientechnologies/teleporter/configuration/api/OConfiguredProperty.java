@@ -30,7 +30,7 @@ public class OConfiguredProperty {
     private String propertyName;                // mandatory
     private boolean isIncludedInMigration;      // mandatory
     private String propertyType;                // mandatory
-    private int ordinalPosition;                // mandatory (just in POC)
+    private int ordinalPosition;                // mandatory
     private boolean isMandatory;                // mandatory
     private boolean isReadOnly;                 // mandatory
     private boolean isNotNull;                  // mandatory

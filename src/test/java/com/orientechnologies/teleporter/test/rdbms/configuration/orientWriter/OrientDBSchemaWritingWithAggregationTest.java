@@ -50,13 +50,13 @@ import static org.junit.Assert.*;
  *
  */
 
-public class OrientDBSchemaWritingWithFullConfigTest {
+public class OrientDBSchemaWritingWithAggregationTest {
 
     private OER2GraphMapper mapper;
     private OTeleporterContext context;
     private OGraphModelWriter modelWriter;
     private String             outOrientGraphUri;
-    private final String config = "src/test/resources/configuration-mapping/full-configuration-mapping.json";
+    private final String config = "src/test/resources/configuration-mapping/aggregation-from2tables-mapping.json";
     private ODBQueryEngine dbQueryEngine;
     private String driver = "org.hsqldb.jdbc.JDBCDriver";
     private String jurl = "jdbc:hsqldb:mem:mydb";

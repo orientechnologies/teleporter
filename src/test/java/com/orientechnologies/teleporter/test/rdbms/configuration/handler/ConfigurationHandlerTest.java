@@ -53,7 +53,7 @@ import com.orientechnologies.teleporter.util.OFileManager;
 
 public class ConfigurationHandlerTest {
 
-  private final String         config1  = "src/test/resources/configuration-mapping/full-configuration-mapping.json";
+  private final String         config1  = "src/test/resources/configuration-mapping/aggregation-from2tables-mapping.json";
   private final String         config2  = "src/test/resources/configuration-mapping/joint-table-relationships-mapping-direct-edges.json";
   private final String         config3  = "src/test/resources/configuration-mapping/config-handler-output.json";
   private OTeleporterContext   context;

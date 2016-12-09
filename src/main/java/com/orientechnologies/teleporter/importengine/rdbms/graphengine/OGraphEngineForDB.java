@@ -171,22 +171,7 @@ public class OGraphEngineForDB {
 
       OTeleporterStatistics statistics = OTeleporterContext.getInstance().getStatistics();
 
-      boolean toResolveNames = false;
-
       // building keys and values for the lookup
-
-      if(propertiesOfIndex == null) {
-        toResolveNames = true;
-        propertiesOfIndex = new LinkedHashSet<String>();
-
-        for(OModelProperty currentProperty: vertexType.getAllProperties()) {
-          // only attribute coming from the primary key are given
-          if(currentProperty.isFromPrimaryKey()) {
-            propertiesOfIndex.add(currentProperty.getName());
-          }
-        }
-      }
-
       propertyOfKey = new String[propertiesOfIndex.size()];
       valueOfKey = new String[propertiesOfIndex.size()];
       String currentValue;
@@ -194,13 +179,8 @@ public class OGraphEngineForDB {
       int cont = 0;
       for(String property: propertiesOfIndex) {
         propertyOfKey[cont] = property;
-        if(toResolveNames) {
-          String attributeName = this.mapper.getAttributeNameByVertexTypeAndProperty(vertexType, property);
-          currentValue = record.getString(attributeName);
-        }
-        else {
-          currentValue = record.getString(property);
-        }
+        String attributeName = this.mapper.getAttributeNameByVertexTypeAndProperty(vertexType, property);
+        currentValue = record.getString(attributeName);
 
         // converting eventual "t" or "f" values in "true" and "false"
         OModelProperty prop = vertexType.getPropertyByNameAmongAll(property);
@@ -644,8 +624,8 @@ public class OGraphEngineForDB {
    * @param currentOutVertex
    * @param currentOutVertexType
    * @param currentInVertexType
-     * @param edgeTypeName
-     */
+   * @param edgeTypeName
+   */
   public void connectVertexToRelatedVertices(OrientBaseGraph orientGraph, OLogicalRelationship relation, Vertex currentOutVertex, OVertexType currentOutVertexType,
                                              OVertexType currentInVertexType, String edgeTypeName) {
 
@@ -781,8 +761,8 @@ public class OGraphEngineForDB {
    * @param currentInVertex
    * @param edgeType
    * @param properties
-     * @param direction
-     */
+   * @param direction
+   */
   public void insertEdge(OrientBaseGraph orientGraph, OrientVertex currentOutVertex, OrientVertex currentInVertex, String edgeType, Map<String, Object> properties, String direction) {
 
     OTeleporterStatistics statistics = OTeleporterContext.getInstance().getStatistics();

@@ -29,7 +29,9 @@ import java.util.List;
 
 public class OConfiguredEdgeClass extends OConfiguredClass {
 
+    // mappings and splittingEdgeInfo are mutually exclusive
     private List<OEdgeMappingInformation> mappings;                  // mandatory
+    private OSplittingEdgeInformation splittingEdgeInfo;             // mandatory
     private boolean isLogical;                                       // optional
 
     public OConfiguredEdgeClass(String edgeName, OConfiguration globalConfiguration) {
@@ -43,6 +45,14 @@ public class OConfiguredEdgeClass extends OConfiguredClass {
 
     public void setMappings(List<OEdgeMappingInformation> mappings) {
         this.mappings = mappings;
+    }
+
+    public OSplittingEdgeInformation getSplittingEdgeInfo() {
+        return this.splittingEdgeInfo;
+    }
+
+    public void setSplittingEdgeInfo(OSplittingEdgeInformation splittingEdgeInfo) {
+        this.splittingEdgeInfo = splittingEdgeInfo;
     }
 
     public boolean isLogical() {

@@ -18,7 +18,6 @@
 
 package com.orientechnologies.teleporter.mapper.rdbms;
 
-import com.orientechnologies.orient.stresstest.OStressTester;
 import com.orientechnologies.teleporter.configuration.api.*;
 import com.orientechnologies.teleporter.context.OTeleporterContext;
 import com.orientechnologies.teleporter.context.OTeleporterStatistics;
@@ -628,6 +627,16 @@ public class OER2GraphMapper extends OSource2GraphMapper {
         // TODO: Adding inherited attributes and props to the maps?
       }
 
+      // setting externalKey
+      Set<String> externalKey = new LinkedHashSet<String>();
+      for (OModelProperty currentProperty : currentVertexType.getAllProperties()) {
+        // only attribute coming from the primary key are given
+        if (currentProperty.isFromPrimaryKey()) {
+          externalKey.add(currentProperty.getName());
+        }
+      }
+      currentVertexType.setExternalKey(externalKey);
+
       // adding parent vertex if the corresponding entity has a parent
       if(currentEntity.getParentEntity() != null) {
         OElementType currentParentElement = this.graphModel.getVertexTypeByNameIgnoreCase(currentEntity.getParentEntity().getName());
@@ -769,15 +778,19 @@ public class OER2GraphMapper extends OSource2GraphMapper {
 
     if(this.migrationConfig != null) {
 
+      /*
+     * Adding/updating relationships according to the manual migrationConfigDoc
+     * Executing this step before updating vertex classes because we need that all the configured edges are already defined before the next step.
+     * In fact in certain cases, as table splitting, we move edges according to the configuration.
+     */
+      this.upsertRelationshipsFromConfiguration();
+
     /*
      * Adding/updating classes according to the manual migrationConfigDoc
      */
       this.upsertClassesFromConfiguration();
 
-    /*
-     * Adding/updating relationships according to the manual migrationConfigDoc
-     */
-      this.upsertRelationshipsFromConfiguration();
+
     }
   }
 
@@ -791,266 +804,458 @@ public class OER2GraphMapper extends OSource2GraphMapper {
 
   private void upsertClassesFromConfiguration() {
 
-    OTeleporterStatistics statistics = OTeleporterContext.getInstance().getStatistics();
     List<OConfiguredVertexClass> configuredVertices = this.migrationConfig.getConfiguredVertices();
 
     // building the current-in-vertex and the current-out-vertex and adding the edge to them
     ONameResolver nameResolver = OTeleporterContext.getInstance().getNameResolver();
 
     for(OConfiguredVertexClass currentConfiguredVertexClass: configuredVertices) {
-      OVertexMappingInformation currentMapping = currentConfiguredVertexClass.getMapping();
-      List<OSourceTable> sourceTables = currentMapping.getSourceTables();
-      String aggregationFunction = currentMapping.getAggregationFunction();
 
-      Map<String,String> sourceId2tableName = new HashMap<String,String>();
+      if(!currentConfiguredVertexClass.isAlreadyAnalyzed()) {
 
-      for(OSourceTable currentSourceTable: sourceTables) {
-        sourceId2tableName.put(currentSourceTable.getSourceIdName(), currentSourceTable.getTableName());
+        OVertexMappingInformation currentMapping = currentConfiguredVertexClass.getMapping();
+        List<String> externalKeyProps = currentConfiguredVertexClass.getExternalKeyProps();
+        List<OSourceTable> sourceTables = currentMapping.getSourceTables();
+        String aggregationFunction = currentMapping.getAggregationFunction();  // !! Now is redundant because just the "equality" aggregation function is implemented. !!
+
+        Map<String, String> sourceId2tableName = new HashMap<String, String>();
+        Map<String, List<OConfiguredVertexClass>> tableName2mappedConfiguredVertices = this.migrationConfig.buildTableName2MappedConfiguredVertices();
+
+        for (OSourceTable currentSourceTable : sourceTables) {
+          String currSourceIdName = currentSourceTable.getSourceIdName();
+          String currTableName = currentSourceTable.getTableName();
+          sourceId2tableName.put(currSourceIdName, currTableName);
+        }
+
+        // no-aggregation case
+        if (sourceId2tableName.size() == 1) {
+
+          String tableName = sourceId2tableName.entrySet().iterator().next().getValue();
+
+          // one-to-one mapping case
+          if (tableName2mappedConfiguredVertices.get(tableName).size() == 1) {
+            performOne2OneMapping(sourceId2tableName, currentConfiguredVertexClass, externalKeyProps);
+          }
+          // splitting case
+          else if (tableName2mappedConfiguredVertices.get(tableName).size() > 1) {
+            performSplittingMapping(sourceId2tableName, tableName2mappedConfiguredVertices);
+          } else {
+            OTeleporterContext.getInstance().getOutputManager().error("Mapping error: No vertices are mapped with '%s' table.", tableName);
+            throw new OTeleporterRuntimeException();
+          }
+        }
+
+        // aggregation case
+        else if (sourceId2tableName.size() > 1) {
+          performAggregationMapping(sourceId2tableName, currentConfiguredVertexClass, externalKeyProps);
+        }
+
       }
-
-      // no-aggregation case
-      if(sourceId2tableName.size() == 1) {
-
-        String sourceTableName = sourceId2tableName.entrySet().iterator().next().getValue();
-        OClassMapper currentClassMapper = this.entity2classMappers.get(this.dataBaseSchema.getEntityByName(sourceTableName)).get(0);
-
-        // updating vertex and table mapping according to the migrationConfigDoc
-        OVertexType currentVertexType = currentClassMapper.getVertexType();
-        currentVertexType.setName(currentConfiguredVertexClass.getName());
-
-        List<OConfiguredProperty> configuredPropertiedToAdd = new LinkedList<OConfiguredProperty>();
-        for(OConfiguredProperty configuredProperty: currentConfiguredVertexClass.getConfiguredProperties()) {
-
-          OConfiguredPropertyMapping propertyMapping = configuredProperty.getPropertyMapping();
-          OModelProperty propertyToUpsert = null;
-          String originalPropertyName = null;
-          String columnName = null;
-          String originalType = null;
-
-          if (propertyMapping != null) {
-            // fetch the property by name
-            columnName = propertyMapping.getColumnName();
-            originalType = propertyMapping.getType();
-            originalPropertyName = currentClassMapper.getPropertyByAttribute(propertyMapping.getColumnName());
-            propertyToUpsert = currentVertexType.getPropertyByNameAmongAll(originalPropertyName);
-          }
-          else {
-            // fetch the property by ordinalPosition
-            propertyToUpsert = currentVertexType.getPropertyByOrdinalPosition(configuredProperty.getOrdinalPosition());
-          }
-
-          String orientdbType = configuredProperty.getPropertyType();
-          String actualPropertyName = configuredProperty.getPropertyName();
-
-          if(propertyToUpsert != null) {
-            if(originalPropertyName == null) {
-              originalPropertyName = propertyToUpsert.getName();
-            }
-            if (!originalPropertyName.equals(actualPropertyName)) {
-              propertyToUpsert.setName(actualPropertyName);
-
-              // updating properties mapping
-              currentClassMapper.getAttribute2property().put(columnName, actualPropertyName);
-              currentClassMapper.getProperty2attribute().remove(originalPropertyName);
-              currentClassMapper.getProperty2attribute().put(actualPropertyName, columnName);
-            }
-            propertyToUpsert.setIncludedInMigration(configuredProperty.isIncludedInMigration());
-            propertyToUpsert.setOrientdbType(configuredProperty.getPropertyType());
-            propertyToUpsert.setMandatory(configuredProperty.isMandatory());
-            propertyToUpsert.setReadOnly(configuredProperty.isReadOnly());
-            propertyToUpsert.setNotNull(configuredProperty.isNotNull());
-            propertyToUpsert.setOriginalType(originalType);
-            propertyToUpsert.setOrientdbType(orientdbType);
-          }
-          else {
-            configuredPropertiedToAdd.add(configuredProperty);
-          }
-        }
-
-        // adding new props
-        for(OConfiguredProperty configuredProperty: configuredPropertiedToAdd) {
-          String propertyName = configuredProperty.getPropertyName();
-          String originalType = null;
-          if(configuredProperty.getPropertyMapping() != null) {
-            originalType = configuredProperty.getPropertyMapping().getType();
-          }
-          String orientdbType = configuredProperty.getPropertyType();
-          int ordinalPosition = configuredProperty.getOrdinalPosition();
-          OModelProperty newProperty = new OModelProperty(propertyName, ordinalPosition, originalType, orientdbType, false, currentVertexType, false, false, false);
-          currentVertexType.getProperties().add(newProperty);
-
-          // updating properties mapping
-          currentClassMapper.getProperty2attribute().put(propertyName, null);
-        }
-      }
-
-      // aggregation case
-      else if(sourceId2tableName.size() > 1) {
-
-        List<OVertexType> verticesToMerge = new LinkedList<OVertexType>();
-        OVertexType newAggregatedVertexType = new OVertexType(currentConfiguredVertexClass.getName());
-
-        // merging vertices correspondent
-        for (String sourceTableName : sourceId2tableName.values()) {
-          List<OClassMapper> currentClassMappers = this.entity2classMappers.get(this.dataBaseSchema.getEntityByName(sourceTableName));
-          for (OClassMapper currentClassMapper : currentClassMappers) {
-            verticesToMerge.add(currentClassMapper.getVertexType());
-          }
-        }
-
-        /**
-         * checking the vertex types are aggregable:
-         * (i)  not coming from join tables
-         * (ii) if they belong tho hierarchical bag, merge is allowed iff vertices are all siblings (they all have the same parentType)
-         */
-
-        boolean aggregable = true;
-        OVertexType currentParentType = null;
-        String errorMsg = null;
-
-        // (i)
-        for (OVertexType v : verticesToMerge) {
-          if (v.isFromJoinTable()) {
-            aggregable = false;
-            errorMsg = "'" + v.getName() + "' comes from a join table, thus the requested aggregation will be skipped.";
-            break;
-          }
-        }
-
-        if (aggregable) {
-
-          // (ii)
-          OVertexType firstParentVertexType = (OVertexType) verticesToMerge.get(0).getParentType();
-          for (OVertexType v : verticesToMerge) {
-            OVertexType currentParentVertexType = (OVertexType) v.getParentType();
-            if (firstParentVertexType == null) {
-              if (currentParentVertexType != null) {
-                aggregable = false;
-                break;
-              }
-            } else if (!v.getParentType().equals(firstParentVertexType)) {
-              aggregable = false;
-              break;
-            }
-          }
-        }
-
-        if (aggregable) {
-
-          /**
-           *  merging in and out edges
-           */
-
-          for (OVertexType currentVertexType : verticesToMerge) {
-
-            // updating in edges
-            for (OEdgeType currentInEdgeType : currentVertexType.getInEdgesType()) {
-              currentInEdgeType.setInVertexType(newAggregatedVertexType);
-              newAggregatedVertexType.getInEdgesType().add(currentInEdgeType);
-            }
-
-            // updating out edges
-            for (OEdgeType currentOutEdgeType : currentVertexType.getOutEdgesType()) {
-              currentOutEdgeType.setOutVertexType(newAggregatedVertexType);
-              newAggregatedVertexType.getOutEdgesType().add(currentOutEdgeType);
-            }
-          }
-
-          /**
-           *  merging properties
-           */
-
-          int ordinalPosition = 1;
-          Map<String, List<OConfiguredProperty>> originalTable2configuredProperties = new LinkedHashMap<String, List<OConfiguredProperty>>();
-
-          for (OConfiguredProperty configuredProperty : currentConfiguredVertexClass.getConfiguredProperties()) {
-
-            // clustering configured properties by original table they are coming from
-            OConfiguredPropertyMapping propertyMapping = configuredProperty.getPropertyMapping();
-            String source = propertyMapping.getSourceName();
-            String tableName = sourceId2tableName.get(source);
-            List<OConfiguredProperty> configuredproperties = originalTable2configuredProperties.get(tableName);
-            if (configuredproperties == null) {
-              configuredproperties = new LinkedList<OConfiguredProperty>();
-            }
-            configuredproperties.add(configuredProperty);
-            originalTable2configuredProperties.put(tableName, configuredproperties);
-
-            String propertyName = configuredProperty.getPropertyName();
-            boolean include = configuredProperty.isIncludedInMigration();
-            String orientdbType = configuredProperty.getPropertyType();
-            boolean isMandatory = configuredProperty.isMandatory();
-            boolean isReadOnly = configuredProperty.isReadOnly();
-            boolean isNotNull = configuredProperty.isNotNull();
-
-            String columnName = propertyMapping.getColumnName();
-            String originalType = propertyMapping.getType();
-            String originalSource = propertyMapping.getSourceName();
-            String originalSourceTableName = sourceId2tableName.get(originalSource);
-
-            boolean fromPrimaryKey = false;
-            OClassMapper currentClassMapper = this.entity2classMappers.get(this.dataBaseSchema.getEntityByName(originalSourceTableName)).get(0);
-            OEntity currentEntity =  currentClassMapper.getEntity();
-            if (currentEntity.getPrimaryKey().getAttributeByName(columnName) != null) {
-              fromPrimaryKey = true;
-            }
-
-            OModelProperty property = new OModelProperty(propertyName, ordinalPosition, originalType, orientdbType, fromPrimaryKey, newAggregatedVertexType, isMandatory, isReadOnly, isNotNull);
-            property.setIncludedInMigration(include);
-
-            // adding the property to the new aggregated vertex type
-            newAggregatedVertexType.getProperties().add(property);
-            ordinalPosition++;
-          }
-
-
-          /**
-           *  updating rules
-           */
-
-          // removing old vertices' rules
-          for (OVertexType v : verticesToMerge) {
-            this.vertexType2classMappers.remove(v);
-          }
-
-          for (String tableName : originalTable2configuredProperties.keySet()) {
-            OEntity currentEntity = this.getDataBaseSchema().getEntityByName(tableName);
-            Map<String, String> attribute2property = new HashMap<String, String>();
-            Map<String, String> property2attribute = new HashMap<String, String>();
-
-            for(OConfiguredProperty prop: originalTable2configuredProperties.get(tableName)) {
-              String columnName = prop.getPropertyMapping().getColumnName();
-              String propertyName = prop.getPropertyName();
-              attribute2property.put(columnName, propertyName);
-              property2attribute.put(propertyName, columnName);
-            }
-
-            // removing old entities' rules
-            this.entity2classMappers.remove(currentEntity);
-            OClassMapper currentNewCM = new OClassMapper(currentEntity, newAggregatedVertexType, attribute2property, property2attribute);
-
-            // adding new rules
-            this.upsertClassMappingRules(currentEntity, newAggregatedVertexType, currentNewCM);
-          }
-
-          // deleting old vertices just aggregated into the new vertex type
-          for (OVertexType v : verticesToMerge) {
-            this.getGraphModel().getVerticesType().remove(v);
-            statistics.totalNumberOfModelVertices--;
-            statistics.builtModelVertexTypes--;
-          }
-
-          // adding the new aggregated vertex type
-          this.getGraphModel().getVerticesType().add(newAggregatedVertexType);
-          statistics.totalNumberOfModelVertices++;
-          statistics.builtModelVertexTypes++;
-        }
-      }
-
     }
   }
 
 
+  private void performOne2OneMapping(Map<String, String> sourceId2tableName, OConfiguredVertexClass currentConfiguredVertexClass, List<String> externalKeyProps) {
+
+    String sourceTableName = sourceId2tableName.entrySet().iterator().next().getValue();
+    OClassMapper currentClassMapper = this.entity2classMappers.get(this.dataBaseSchema.getEntityByName(sourceTableName)).get(0);
+
+    // updating vertex and table mapping according to the migrationConfigDoc
+    OVertexType currentVertexType = currentClassMapper.getVertexType();
+    currentVertexType.setName(currentConfiguredVertexClass.getName());
+
+    List<OConfiguredProperty> configuredPropertiedToAdd = new LinkedList<OConfiguredProperty>();
+    for(OConfiguredProperty configuredProperty: currentConfiguredVertexClass.getConfiguredProperties()) {
+
+      OConfiguredPropertyMapping propertyMapping = configuredProperty.getPropertyMapping();
+      OModelProperty propertyToUpsert = null;
+      String originalPropertyName = null;
+      String columnName = null;
+      String originalType = null;
+
+      if (propertyMapping != null) {
+        // fetch the property by name
+        columnName = propertyMapping.getColumnName();
+        originalType = propertyMapping.getType();
+        originalPropertyName = currentClassMapper.getPropertyByAttribute(propertyMapping.getColumnName());
+        propertyToUpsert = currentVertexType.getPropertyByNameAmongAll(originalPropertyName);
+      }
+      else {
+        // fetch the property by ordinalPosition
+        propertyToUpsert = currentVertexType.getPropertyByOrdinalPosition(configuredProperty.getOrdinalPosition());
+      }
+
+      String orientdbType = configuredProperty.getPropertyType();
+      String actualPropertyName = configuredProperty.getPropertyName();
+
+      if(propertyToUpsert != null) {
+        if(originalPropertyName == null) {
+          originalPropertyName = propertyToUpsert.getName();
+        }
+        if (!originalPropertyName.equals(actualPropertyName)) {
+          propertyToUpsert.setName(actualPropertyName);
+
+          // updating properties mapping
+          currentClassMapper.getAttribute2property().put(columnName, actualPropertyName);
+          currentClassMapper.getProperty2attribute().remove(originalPropertyName);
+          currentClassMapper.getProperty2attribute().put(actualPropertyName, columnName);
+        }
+        propertyToUpsert.setIncludedInMigration(configuredProperty.isIncludedInMigration());
+        propertyToUpsert.setOrientdbType(configuredProperty.getPropertyType());
+        propertyToUpsert.setMandatory(configuredProperty.isMandatory());
+        propertyToUpsert.setReadOnly(configuredProperty.isReadOnly());
+        propertyToUpsert.setNotNull(configuredProperty.isNotNull());
+        propertyToUpsert.setOriginalType(originalType);
+        propertyToUpsert.setOrientdbType(orientdbType);
+      }
+      else {
+        configuredPropertiedToAdd.add(configuredProperty);
+      }
+    }
+
+    // setting the external key
+    addExternalKeyToVertexType(externalKeyProps, currentVertexType);
+
+    // adding new props
+    for(OConfiguredProperty configuredProperty: configuredPropertiedToAdd) {
+      String propertyName = configuredProperty.getPropertyName();
+      String originalType = null;
+      if(configuredProperty.getPropertyMapping() != null) {
+        originalType = configuredProperty.getPropertyMapping().getType();
+      }
+      String orientdbType = configuredProperty.getPropertyType();
+      int ordinalPosition = configuredProperty.getOrdinalPosition();
+      OModelProperty newProperty = new OModelProperty(propertyName, ordinalPosition, originalType, orientdbType, false, currentVertexType, false, false, false);
+      currentVertexType.getProperties().add(newProperty);
+
+      // updating properties mapping
+      currentClassMapper.getProperty2attribute().put(propertyName, null);
+    }
+
+    // setting as analyzed and applied the current configured vertex class
+    currentConfiguredVertexClass.setAlreadyAnalyzed(true);
+  }
+
+
+  private void performAggregationMapping(Map<String, String> sourceId2tableName, OConfiguredVertexClass currentConfiguredVertexClass, List<String> externalKeyProps) {
+
+    OTeleporterStatistics statistics = OTeleporterContext.getInstance().getStatistics();
+    List<OVertexType> verticesToMerge = new LinkedList<OVertexType>();
+    OVertexType newAggregatedVertexType = new OVertexType(currentConfiguredVertexClass.getName());
+
+    // merging vertices correspondent
+    for (String sourceTableName : sourceId2tableName.values()) {
+      List<OClassMapper> currentClassMappers = this.entity2classMappers.get(this.dataBaseSchema.getEntityByName(sourceTableName));
+      for (OClassMapper currentClassMapper : currentClassMappers) {
+        verticesToMerge.add(currentClassMapper.getVertexType());
+      }
+    }
+
+    /**
+     * checking the vertex types are aggregable:
+     * (i)  not coming from join tables
+     * (ii) if they belong tho hierarchical bag, merge is allowed iff vertices are all siblings (they all have the same parentType)
+     */
+
+    boolean aggregable = true;
+    OVertexType currentParentType = null;
+    String errorMsg = null;
+
+    // (i)
+    for (OVertexType v : verticesToMerge) {
+      if (v.isFromJoinTable()) {
+        aggregable = false;
+        errorMsg = "'" + v.getName() + "' comes from a join table, thus the requested aggregation will be skipped.";
+        break;
+      }
+    }
+
+    if (aggregable) {
+
+      // (ii)
+      OVertexType firstParentVertexType = (OVertexType) verticesToMerge.get(0).getParentType();
+      for (OVertexType v : verticesToMerge) {
+        OVertexType currentParentVertexType = (OVertexType) v.getParentType();
+        if (firstParentVertexType == null) {
+          if (currentParentVertexType != null) {
+            aggregable = false;
+            break;
+          }
+        } else if (!v.getParentType().equals(firstParentVertexType)) {
+          aggregable = false;
+          break;
+        }
+      }
+    }
+
+    if (aggregable) {
+
+      /**
+       *  merging in and out edges
+       */
+
+      for (OVertexType currentVertexType : verticesToMerge) {
+
+        // updating in edges
+        for (OEdgeType currentInEdgeType : currentVertexType.getInEdgesType()) {
+          currentInEdgeType.setInVertexType(newAggregatedVertexType);
+          newAggregatedVertexType.getInEdgesType().add(currentInEdgeType);
+        }
+
+        // updating out edges
+        for (OEdgeType currentOutEdgeType : currentVertexType.getOutEdgesType()) {
+          currentOutEdgeType.setOutVertexType(newAggregatedVertexType);
+          newAggregatedVertexType.getOutEdgesType().add(currentOutEdgeType);
+        }
+      }
+
+      /**
+       *  merging properties
+       */
+
+      int ordinalPosition = 1;
+      Map<String, List<OConfiguredProperty>> originalTable2configuredProperties = new LinkedHashMap<String, List<OConfiguredProperty>>();
+
+      for (OConfiguredProperty configuredProperty : currentConfiguredVertexClass.getConfiguredProperties()) {
+
+        // clustering configured properties by original table they are coming from
+        OConfiguredPropertyMapping propertyMapping = configuredProperty.getPropertyMapping();
+        String source = propertyMapping.getSourceName();
+        String tableName = sourceId2tableName.get(source);
+        List<OConfiguredProperty> configuredproperties = originalTable2configuredProperties.get(tableName);
+        if (configuredproperties == null) {
+          configuredproperties = new LinkedList<OConfiguredProperty>();
+        }
+        configuredproperties.add(configuredProperty);
+        originalTable2configuredProperties.put(tableName, configuredproperties);
+
+        String propertyName = configuredProperty.getPropertyName();
+        boolean include = configuredProperty.isIncludedInMigration();
+        String orientdbType = configuredProperty.getPropertyType();
+        boolean isMandatory = configuredProperty.isMandatory();
+        boolean isReadOnly = configuredProperty.isReadOnly();
+        boolean isNotNull = configuredProperty.isNotNull();
+
+        String columnName = propertyMapping.getColumnName();
+        String originalType = propertyMapping.getType();
+        String originalSource = propertyMapping.getSourceName();
+        String originalSourceTableName = sourceId2tableName.get(originalSource);
+
+        boolean fromPrimaryKey = false;
+        OClassMapper currentClassMapper = this.entity2classMappers.get(this.dataBaseSchema.getEntityByName(originalSourceTableName)).get(0);
+        OEntity currentEntity =  currentClassMapper.getEntity();
+        if (currentEntity.getPrimaryKey().getAttributeByName(columnName) != null) {
+          fromPrimaryKey = true;
+        }
+
+        OModelProperty property = new OModelProperty(propertyName, ordinalPosition, originalType, orientdbType, fromPrimaryKey, newAggregatedVertexType, isMandatory, isReadOnly, isNotNull);
+        property.setIncludedInMigration(include);
+
+        // adding the property to the new aggregated vertex type
+        newAggregatedVertexType.getProperties().add(property);
+        ordinalPosition++;
+      }
+
+      // setting the external key
+      addExternalKeyToVertexType(externalKeyProps, newAggregatedVertexType);
+
+
+      /**
+       *  updating rules
+       */
+
+      // removing old vertices' rules
+      for (OVertexType v : verticesToMerge) {
+        this.vertexType2classMappers.remove(v);
+      }
+
+      for (String tableName : originalTable2configuredProperties.keySet()) {
+        OEntity currentEntity = this.getDataBaseSchema().getEntityByName(tableName);
+        Map<String, String> attribute2property = new HashMap<String, String>();
+        Map<String, String> property2attribute = new HashMap<String, String>();
+
+        for(OConfiguredProperty prop: originalTable2configuredProperties.get(tableName)) {
+          String columnName = prop.getPropertyMapping().getColumnName();
+          String propertyName = prop.getPropertyName();
+          attribute2property.put(columnName, propertyName);
+          property2attribute.put(propertyName, columnName);
+        }
+
+        // removing old entities' rules
+        this.entity2classMappers.remove(currentEntity);
+        OClassMapper currentNewCM = new OClassMapper(currentEntity, newAggregatedVertexType, attribute2property, property2attribute);
+
+        // adding new rules
+        this.upsertClassMappingRules(currentEntity, newAggregatedVertexType, currentNewCM);
+      }
+
+      // deleting old vertices just aggregated into the new vertex type
+      for (OVertexType v : verticesToMerge) {
+        this.getGraphModel().getVerticesType().remove(v);
+        statistics.totalNumberOfModelVertices--;
+        statistics.builtModelVertexTypes--;
+      }
+
+      // adding the new aggregated vertex type
+      this.getGraphModel().getVerticesType().add(newAggregatedVertexType);
+      statistics.totalNumberOfModelVertices++;
+      statistics.builtModelVertexTypes++;
+    }
+
+    // setting as analyzed and applied the current configured vertex class
+    currentConfiguredVertexClass.setAlreadyAnalyzed(true);
+  }
+
+
+  private void performSplittingMapping(Map<String, String> sourceId2tableName, Map<String, List<OConfiguredVertexClass>> tableName2mappedConfiguredVertices) {
+
+    OTeleporterStatistics statistics = OTeleporterContext.getInstance().getStatistics();
+    String sourceTableName = sourceId2tableName.entrySet().iterator().next().getValue();
+    OClassMapper currentClassMapper = this.entity2classMappers.get(this.dataBaseSchema.getEntityByName(sourceTableName)).get(0);
+
+    // removing old vertex-type and correspondent class mappers
+    OEntity entity = currentClassMapper.getEntity();
+    OVertexType vertexType = currentClassMapper.getVertexType();
+
+    // building a map with the in and out edges for each class
+    Map<String,List<OEdgeType>> vertexType2inEdges = this.splitEdgesForVertexAccordingToRelationships(entity.getInCanonicalRelationships(), entity.getName(), tableName2mappedConfiguredVertices);
+    Map<String,List<OEdgeType>> vertexType2outEdges = this.splitEdgesForVertexAccordingToRelationships(entity.getOutCanonicalRelationships(), entity.getName(), tableName2mappedConfiguredVertices);
+
+    // removing class mappers
+    this.vertexType2classMappers.remove(vertexType);
+    this.entity2classMappers.remove(entity);
+
+    // removing the not-split vertex type
+    graphModel.removeVertexTypeByName(vertexType.getName());
+    statistics.totalNumberOfModelVertices--;
+    statistics.builtModelVertexTypes--;
+
+    for(OConfiguredVertexClass currentConfiguredVertexClass: tableName2mappedConfiguredVertices.get(sourceTableName)) {
+
+      // updating vertex and table mapping according to the migrationConfigDoc
+      OVertexType currentVertexType = this.graphModel.getVertexTypeByName(currentConfiguredVertexClass.getName());    // vertex already present if exists a splitting edge already built in the previous step
+      if(currentVertexType == null) {
+        currentVertexType = new OVertexType(currentConfiguredVertexClass.getName());
+        this.graphModel.getVerticesType().add(currentVertexType);
+        statistics.totalNumberOfModelVertices++;
+        statistics.builtModelVertexTypes++;
+      }
+
+      // we have just a source table in case of splitting, so we can retrieve the original primary key from the first source table
+      List<String> primaryKeyColumns = currentConfiguredVertexClass.getMapping().getSourceTables().get(0).getPrimaryKeyColumns();
+
+      Map<String,String> attribute2property = new HashMap<String,String>();
+      Map<String,String> property2attribute = new HashMap<String,String>();
+
+      for(OConfiguredProperty configuredProperty: currentConfiguredVertexClass.getConfiguredProperties()) {
+
+        OConfiguredPropertyMapping propertyMapping = configuredProperty.getPropertyMapping();
+
+        String propertyName = configuredProperty.getPropertyName();
+        int ordinalPosition = configuredProperty.getOrdinalPosition();
+        String originalType =  propertyMapping.getType();
+        String orientdbType = configuredProperty.getPropertyType();
+        boolean isMandatory = configuredProperty.isMandatory();
+        boolean isReadOnly = configuredProperty.isReadOnly();
+        boolean isNotNull = configuredProperty.isNotNull();
+        boolean fromPrimaryKey = false;
+
+        String columnName = propertyMapping.getColumnName();
+        if(primaryKeyColumns.contains(columnName)) {
+          fromPrimaryKey = true;
+        }
+
+        OModelProperty currentProperty = new OModelProperty(propertyName, ordinalPosition, originalType, orientdbType, fromPrimaryKey, currentVertexType, isMandatory, isReadOnly, isNotNull);
+        currentVertexType.getProperties().add(currentProperty);
+
+        attribute2property.put(columnName, propertyName);
+        property2attribute.put(propertyName, columnName);
+      }
+
+      // setting the external key
+      addExternalKeyToVertexType(currentConfiguredVertexClass.getExternalKeyProps(), currentVertexType);
+
+      // updating model
+      List<OEdgeType> inEdgeTypes = vertexType2inEdges.get(currentVertexType.getName());
+      List<OEdgeType> outEdgeTypes = vertexType2outEdges.get(currentVertexType.getName());
+      if(inEdgeTypes != null) {
+        currentVertexType.getInEdgesType().addAll(inEdgeTypes);
+      }
+      if(outEdgeTypes != null) {
+        currentVertexType.getOutEdgesType().addAll(outEdgeTypes);
+      }
+
+      currentClassMapper = new OClassMapper(entity, currentVertexType, attribute2property, property2attribute);
+
+      // updating rules
+      this.upsertClassMappingRules(entity, currentVertexType, currentClassMapper);
+
+      // setting as analyzed and applied the current configured vertex class
+      currentConfiguredVertexClass.setAlreadyAnalyzed(true);
+    }
+  }
+
+  /**
+   * Builds a map where the key is a vertex type and the values is the list of in/out edges that are retrieved according to
+   * the correspondent relationships passed as parameter.
+   * The vertex types are inferred starting from the configured vertices.
+   *
+   * @param relationships
+   * @param entityName
+   * @param tableName2mappedConfiguredVertices
+   * @return
+   */
+  private Map<String, List<OEdgeType>> splitEdgesForVertexAccordingToRelationships(Set<? extends ORelationship> relationships, String entityName, Map<String, List<OConfiguredVertexClass>> tableName2mappedConfiguredVertices) {
+
+    Map<String, List<OEdgeType>> vertexType2edges = new HashMap<String,List<OEdgeType>>();
+    for(ORelationship currentRelationship: relationships) {
+      OEdgeType currOutEdge = this.getRelationship2edgeType().get(currentRelationship);
+      List<OAttribute> fromColumns = currentRelationship.getFromColumns();
+
+      for(OConfiguredVertexClass currConfiguredVertex: tableName2mappedConfiguredVertices.get(entityName)) {
+
+        boolean vertexDetected = true;
+        for(OAttribute currAttribute: fromColumns) {
+          if(currConfiguredVertex.getPropertyByAttribute(currAttribute.getName()) == null) {
+            vertexDetected = false;
+            break;
+          }
+        }
+
+        // if the current vertex type contains all the properties correspondent to the attributes involved in the relationship, then the edge is added to the edges referred to the edge
+        if(vertexDetected) {
+
+          // updating map
+          List<OEdgeType> outEdgeTypes = vertexType2edges.get(currConfiguredVertex.getName());
+          if(outEdgeTypes == null) {
+            outEdgeTypes = new LinkedList<OEdgeType>();
+          }
+          outEdgeTypes.add(currOutEdge);
+          vertexType2edges.put(currConfiguredVertex.getName(), outEdgeTypes);
+          break;
+        }
+      }
+    }
+
+    return vertexType2edges;
+  }
+
+  private void addExternalKeyToVertexType(List<String> externalKeyProps, OVertexType currentVertexType) {
+
+    // setting the external key
+    if(externalKeyProps != null) {
+      // setting from the config
+      currentVertexType.getExternalKey().addAll(externalKeyProps);
+    }
+    else {
+      // building the external key from the original primary keys
+      for(OModelProperty currProperty: currentVertexType.getAllProperties()) {
+        if(currProperty.isFromPrimaryKey()) {
+          currentVertexType.getExternalKey().add(currProperty.getName());
+        }
+      }
+    }
+  }
 
   /**
    * MICRO EXECUTION BLOCK: APPLY IMPORT CONFIGURATION - UPSERT RELATIONSHIPS FROM CONFIGURATION
@@ -1070,93 +1275,99 @@ public class OER2GraphMapper extends OSource2GraphMapper {
 
       String edgeName = currentEdgeClass.getName();
       List<OEdgeMappingInformation> edgeMappings = currentEdgeClass.getMappings();
+      OSplittingEdgeInformation splittingEdgeInfo = currentEdgeClass.getSplittingEdgeInfo();
 
-      for(OEdgeMappingInformation edgeMapping: edgeMappings) {
-        // building relationship
-        String currentForeignEntityName = edgeMapping.getFromTableName();
-        String currentParentEntityName = edgeMapping.getToTableName();
-        List<String> fromColumns = edgeMapping.getFromColumns();
-        List<String> toColumns = edgeMapping.getToColumns();
-        OAggregatedJoinTableMapping joinTableMapping = edgeMapping.getRepresentedJoinTableMapping();
-
-        // migrationConfigDoc errors managing (draconian approach)
-        if (currentForeignEntityName == null) {
-          OTeleporterContext.getInstance().getOutputManager()
-                  .error("Configuration error: 'fromTable' field not found in the '%s' edge-type definition.", edgeName);
-          throw new OTeleporterRuntimeException();
-        }
-        if (currentParentEntityName == null) {
-          OTeleporterContext.getInstance().getOutputManager()
-                  .error("Configuration error: 'toTable' field not found in the '%s' edge-type definition.", edgeName);
-          throw new OTeleporterRuntimeException();
-        }
-        if (fromColumns == null) {
-          OTeleporterContext.getInstance().getOutputManager()
-                  .error("Configuration error: 'fromColumns' field not found in the '%s' edge-type definition.", edgeName);
-          throw new OTeleporterRuntimeException();
-        }
-        if (toColumns == null) {
-          OTeleporterContext.getInstance().getOutputManager()
-                  .error("Configuration error: 'toColumns' field not found in the '%s' edge-type definition.", edgeName);
-          throw new OTeleporterRuntimeException();
-        }
-
-        String direction = edgeMapping.getDirection();
-
-        if (direction != null && !(direction.equals("direct") || direction.equals("inverse"))) {
-          OTeleporterContext.getInstance().getOutputManager()
-                  .error("Configuration error: direction for the edge %s cannot be '%s'. Allowed values: 'direct' or 'inverse' \n", edgeName, direction);
-          throw new OTeleporterRuntimeException();
-        }
-
-        boolean foreignEntityIsJoinTableToAggregate = false;
-
-        if (joinTableMapping == null) {
-
+      if(edgeMappings != null) {
+        for (OEdgeMappingInformation edgeMapping : edgeMappings) {
           // building relationship
-          ORelationship currentRelationship = buildRelationshipFromConfig(currentForeignEntityName, currentParentEntityName, fromColumns, toColumns, direction, foreignEntityIsJoinTableToAggregate);
+          String currentForeignEntityName = edgeMapping.getFromTableName();
+          String currentParentEntityName = edgeMapping.getToTableName();
+          List<String> fromColumns = edgeMapping.getFromColumns();
+          List<String> toColumns = edgeMapping.getToColumns();
+          OAggregatedJoinTableMapping joinTableMapping = edgeMapping.getRepresentedJoinTableMapping();
 
-          // building correspondent edgeType (check on inheritance not needed)
-          buildEdgeTypeFromConfiguredRelationship(currentRelationship, edgeName, currentEdgeClass, foreignEntityIsJoinTableToAggregate);
-
-        } else {
-
-          String joinTableName = joinTableMapping.getTableName();
-          foreignEntityIsJoinTableToAggregate = true;
-
-          if (OTeleporterContext.getInstance().getExecutionStrategy().equals("naive-aggregate")) { // strategy is aggregated
-            List<String> joinTableFromColumns = joinTableMapping.getFromColumns();
-            List<String> joinTableToColumns = joinTableMapping.getToColumns();
-
-            // building left relationship
-            ORelationship currentRelationship = buildRelationshipFromConfig(joinTableName, currentForeignEntityName, joinTableFromColumns, fromColumns, direction, foreignEntityIsJoinTableToAggregate);
-
-            // building correspondent edgeType (check on inheritance not needed)
-            buildEdgeTypeFromConfiguredRelationship(currentRelationship, edgeName + "-left", currentEdgeClass, foreignEntityIsJoinTableToAggregate);
-
-            // building right relationship
-            currentRelationship = buildRelationshipFromConfig(joinTableName, currentParentEntityName, joinTableToColumns, toColumns, direction, foreignEntityIsJoinTableToAggregate);
-
-            // building correspondent edgeType (check on inheritance not needed)
-            buildEdgeTypeFromConfiguredRelationship(currentRelationship, edgeName + "-right", currentEdgeClass, foreignEntityIsJoinTableToAggregate);
-
-            // setting attributes of the join table
-            OEntity joinTable = this.dataBaseSchema.getEntityByName(joinTableName);
-            joinTable.setIsAggregableJoinTable(true);
-            joinTable.setDirectionOfN2NRepresentedRelationship(direction);
-            joinTable.setNameOfN2NRepresentedRelationship(edgeName);
-
-            // setting attributes of the correspondent vertex type
-            OVertexType correspondentVertexType = this.getVertexTypeByEntity(joinTable);
-            correspondentVertexType.setIsFromJoinTable(true);
-
-          } else if (OTeleporterContext.getInstance().getExecutionStrategy().equals("naive")) {
+          // migrationConfigDoc errors managing (draconian approach)
+          if (currentForeignEntityName == null) {
             OTeleporterContext.getInstance().getOutputManager()
-                    .error("Configuration not compliant with the chosen strategy: you cannot perform the aggregation declared in the migrationConfigDoc for the "
-                            + "join table %s while executing migration with a not-aggregating strategy. Thus no aggregation will be performed.\n", joinTableName);
+                    .error("Configuration error: 'fromTable' field not found in the '%s' edge-type definition.", edgeName);
             throw new OTeleporterRuntimeException();
           }
+          if (currentParentEntityName == null) {
+            OTeleporterContext.getInstance().getOutputManager()
+                    .error("Configuration error: 'toTable' field not found in the '%s' edge-type definition.", edgeName);
+            throw new OTeleporterRuntimeException();
+          }
+          if (fromColumns == null) {
+            OTeleporterContext.getInstance().getOutputManager()
+                    .error("Configuration error: 'fromColumns' field not found in the '%s' edge-type definition.", edgeName);
+            throw new OTeleporterRuntimeException();
+          }
+          if (toColumns == null) {
+            OTeleporterContext.getInstance().getOutputManager()
+                    .error("Configuration error: 'toColumns' field not found in the '%s' edge-type definition.", edgeName);
+            throw new OTeleporterRuntimeException();
+          }
+
+          String direction = edgeMapping.getDirection();
+
+          if (direction != null && !(direction.equals("direct") || direction.equals("inverse"))) {
+            OTeleporterContext.getInstance().getOutputManager()
+                    .error("Configuration error: direction for the edge %s cannot be '%s'. Allowed values: 'direct' or 'inverse' \n", edgeName, direction);
+            throw new OTeleporterRuntimeException();
+          }
+
+          boolean foreignEntityIsJoinTableToAggregate = false;
+
+          if (joinTableMapping == null) {
+
+            // building relationship
+            ORelationship currentRelationship = buildRelationshipFromConfig(currentForeignEntityName, currentParentEntityName, fromColumns, toColumns, direction, foreignEntityIsJoinTableToAggregate);
+
+            // building correspondent edgeType (check on inheritance not needed)
+            this.buildEdgeTypeFromConfiguredRelationship(currentRelationship, edgeName, currentEdgeClass, foreignEntityIsJoinTableToAggregate);
+
+          } else {
+
+            String joinTableName = joinTableMapping.getTableName();
+            foreignEntityIsJoinTableToAggregate = true;
+
+            if (OTeleporterContext.getInstance().getExecutionStrategy().equals("naive-aggregate")) { // strategy is aggregated
+              List<String> joinTableFromColumns = joinTableMapping.getFromColumns();
+              List<String> joinTableToColumns = joinTableMapping.getToColumns();
+
+              // building left relationship
+              ORelationship currentRelationship = buildRelationshipFromConfig(joinTableName, currentForeignEntityName, joinTableFromColumns, fromColumns, direction, foreignEntityIsJoinTableToAggregate);
+
+              // building correspondent edgeType (check on inheritance not needed)
+              this.buildEdgeTypeFromConfiguredRelationship(currentRelationship, edgeName + "-left", currentEdgeClass, foreignEntityIsJoinTableToAggregate);
+
+              // building right relationship
+              currentRelationship = buildRelationshipFromConfig(joinTableName, currentParentEntityName, joinTableToColumns, toColumns, direction, foreignEntityIsJoinTableToAggregate);
+
+              // building correspondent edgeType (check on inheritance not needed)
+              this.buildEdgeTypeFromConfiguredRelationship(currentRelationship, edgeName + "-right", currentEdgeClass, foreignEntityIsJoinTableToAggregate);
+
+              // setting attributes of the join table
+              OEntity joinTable = this.dataBaseSchema.getEntityByName(joinTableName);
+              joinTable.setIsAggregableJoinTable(true);
+              joinTable.setDirectionOfN2NRepresentedRelationship(direction);
+              joinTable.setNameOfN2NRepresentedRelationship(edgeName);
+
+              // setting attributes of the correspondent vertex type
+              OVertexType correspondentVertexType = this.getVertexTypeByEntity(joinTable);
+              correspondentVertexType.setIsFromJoinTable(true);
+
+            } else if (OTeleporterContext.getInstance().getExecutionStrategy().equals("naive")) {
+              OTeleporterContext.getInstance().getOutputManager()
+                      .error("Configuration not compliant with the chosen strategy: you cannot perform the aggregation declared in the migrationConfigDoc for the "
+                              + "join table %s while executing migration with a not-aggregating strategy. Thus no aggregation will be performed.\n", joinTableName);
+              throw new OTeleporterRuntimeException();
+            }
+          }
         }
+      }
+      else if(splittingEdgeInfo != null) {
+        this.buildEdgeTypeFromConfiguredSplittingEdge(currentEdgeClass, splittingEdgeInfo);
       }
     }
   }
@@ -1322,39 +1533,8 @@ public class OER2GraphMapper extends OSource2GraphMapper {
       }
     }
 
-    // extracting properties info if present and adding them to the current edge-type
-    Collection<OConfiguredProperty> properties = currentEdgeClass.getConfiguredProperties();
-
-    // adding properties to the edge
-    if(properties != null) {
-
-      int ordinalPosition = currentEdgeType.getProperties().size() + 1;
-      for(OConfiguredProperty configuredProperty: properties) {
-        String propertyName = configuredProperty.getPropertyName();
-        String propertyType = configuredProperty.getPropertyType();
-
-        OModelProperty currentProperty = currentEdgeType.getPropertyByName(propertyName);
-        if(currentProperty == null) {
-          currentProperty = new OModelProperty(propertyName, ordinalPosition, propertyType, false, currentEdgeType);
-          ordinalPosition++;
-        }
-        currentProperty.setFromPrimaryKey(false);
-        Boolean mandatory = configuredProperty.isMandatory();
-        if(mandatory != null) {
-          currentProperty.setMandatory(mandatory);
-        }
-        Boolean readOnly = configuredProperty.isReadOnly();
-        if(readOnly != null) {
-          currentProperty.setReadOnly(readOnly);
-        }
-        Boolean notNull = configuredProperty.isNotNull();
-        if(notNull != null) {
-          currentProperty.setNotNull(notNull);
-        }
-        currentEdgeType.getProperties().add(currentProperty);
-      }
-
-    }
+    // adding properties
+    this.addPropertiesToEdgeTypeFromConfiguredClass(currentEdgeType, currentEdgeClass);
 
     String currentRelationshipDirection = currentRelationship.getDirection();
     OVertexType currentInVertexType;
@@ -1412,10 +1592,10 @@ public class OER2GraphMapper extends OSource2GraphMapper {
             if(edgeTypeToDel != null && edgeTypeToDel.getNumberRelationshipsRepresented() == 0) {
               // delete the edge from the in edges of the in-vertex type, because the edge is not involved in other relationship of course.
               currentInVertexType.getInEdgesType().remove(edgeTypeToDel);
-                this.graphModel.getEdgesType().remove(edgeTypeToDel);
-                this.edgeType2relationships.remove(edgeTypeToDel);
-                statistics.builtModelEdgeTypes--;
-                statistics.totalNumberOfModelEdges--;
+              this.graphModel.getEdgesType().remove(edgeTypeToDel);
+              this.edgeType2relationships.remove(edgeTypeToDel);
+              statistics.builtModelEdgeTypes--;
+              statistics.totalNumberOfModelEdges--;
             }
           }
 
@@ -1440,6 +1620,87 @@ public class OER2GraphMapper extends OSource2GraphMapper {
       upsertRelationshipEdgeRules(currentRelationship, currentEdgeType);
     }
 
+  }
+
+  /**
+   *
+   * @param currentEdgeClass
+   * @param splittingEdgeInfo
+   */
+  private void buildEdgeTypeFromConfiguredSplittingEdge(OConfiguredEdgeClass currentEdgeClass, OSplittingEdgeInformation splittingEdgeInfo) {
+
+    OTeleporterStatistics statistics = OTeleporterContext.getInstance().getStatistics();
+
+    OVertexType inVertexType = new OVertexType(splittingEdgeInfo.getToVertexClass());
+    this.graphModel.getVerticesType().add(inVertexType);
+    statistics.totalNumberOfModelVertices++;
+    statistics.builtModelVertexTypes++;
+
+    OVertexType outVertexType = new OVertexType(splittingEdgeInfo.getFromVertexClass());
+    this.graphModel.getVerticesType().add(outVertexType);
+    statistics.totalNumberOfModelVertices++;
+    statistics.builtModelVertexTypes++;
+
+    OEdgeType edgeType = new OEdgeType(currentEdgeClass.getName(), outVertexType, inVertexType, 0, true);
+    this.graphModel.getEdgesType().add(edgeType);
+
+    outVertexType.getOutEdgesType().add(edgeType);
+    inVertexType.getInEdgesType().add(edgeType);
+
+    // adding properties
+    this.addPropertiesToEdgeTypeFromConfiguredClass(edgeType, currentEdgeClass);
+
+    OTeleporterContext.getInstance().getOutputManager().debug("\nEdge-type %s built.\n", edgeType.getName());
+    statistics.builtModelEdgeTypes++;
+    statistics.totalNumberOfModelEdges++;
+  }
+
+
+  private void addPropertiesToEdgeTypeFromConfiguredClass(OEdgeType currentEdgeType, OConfiguredEdgeClass currentEdgeClass) {
+
+    // extracting properties info if present and adding them to the current edge-type
+    Collection<OConfiguredProperty> properties = currentEdgeClass.getConfiguredProperties();
+
+    // adding properties to the edge
+    if(properties != null) {
+
+      int ordinalPosition = currentEdgeType.getProperties().size() + 1;
+      for(OConfiguredProperty configuredProperty: properties) {
+
+        OConfiguredPropertyMapping propertyMapping = configuredProperty.getPropertyMapping();
+
+        String propertyName = configuredProperty.getPropertyName();
+        ordinalPosition = configuredProperty.getOrdinalPosition();
+        String originalType = null;
+        if(propertyMapping != null) {
+          originalType = propertyMapping.getType();
+        }
+        String orientdbType = configuredProperty.getPropertyType();
+
+        OModelProperty currentProperty = currentEdgeType.getPropertyByName(propertyName);
+        if(currentProperty == null) {
+          currentProperty = new OModelProperty(propertyName, ordinalPosition, originalType, false, currentEdgeType);
+          ordinalPosition++;
+        }
+        currentProperty.setFromPrimaryKey(false);
+        Boolean mandatory = configuredProperty.isMandatory();
+        if(mandatory != null) {
+          currentProperty.setMandatory(mandatory);
+        }
+        Boolean readOnly = configuredProperty.isReadOnly();
+        if(readOnly != null) {
+          currentProperty.setReadOnly(readOnly);
+        }
+        Boolean notNull = configuredProperty.isNotNull();
+        if(notNull != null) {
+          currentProperty.setNotNull(notNull);
+        }
+        currentProperty.setOrientdbType(orientdbType);
+
+        currentEdgeType.getProperties().add(currentProperty);
+      }
+
+    }
   }
 
 

@@ -19,6 +19,7 @@
 package com.orientechnologies.teleporter.model.graphmodel;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 
@@ -98,6 +99,41 @@ public class OGraphModel {
     return null;
   }
 
+  public boolean removeVertexTypeByName(String vertexName) {
+
+    Iterator<OVertexType> iterator = this.verticesType.iterator();
+
+    while(iterator.hasNext()) {
+      OVertexType currVertexType = iterator.next();
+      if(currVertexType.getName().equals(vertexName)) {
+
+        // removing references from the in edges
+        for(OEdgeType currInEdgeType: currVertexType.getInEdgesType()) {
+          currInEdgeType.setInVertexType(null);
+        }
+
+        // removing the vertex
+        iterator.remove();
+        return true;
+      }
+    }
+    return false;
+  }
+
+  public boolean removeEdgeTypeByName(String vertexName) {
+
+    Iterator<OEdgeType> iterator = this.edgesType.iterator();
+
+    while(iterator.hasNext()) {
+      OEdgeType currEdgeType = iterator.next();
+      if(currEdgeType.getName().equals(vertexName)) {
+        iterator.remove();
+        return true;
+      }
+    }
+    return false;
+  }
+
   public String toString() {
     String s = "\n\n\n------------------------------ MODEL GRAPH DESCRIPTION ------------------------------\n\n\n";
 
@@ -126,8 +162,5 @@ public class OGraphModel {
 
     return s; 
   }
-
-
-
 
 }

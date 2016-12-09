@@ -32,10 +32,12 @@ public class OEdgeType extends OElementType {
   private OVertexType inVertexType;
   private OVertexType outVertexType;
   private int numberRelationshipsRepresented;  // the number of relationships represented by the edge
+  private boolean isSplittingEdge;
 
   public OEdgeType(String edgeType) {
     super(edgeType);
-    numberRelationshipsRepresented = 1;
+    this.numberRelationshipsRepresented = 1;
+    this.isSplittingEdge = false;
   }
 
   public OEdgeType(String edgeType, OVertexType outVertexType, OVertexType inVertexType) {
@@ -43,6 +45,15 @@ public class OEdgeType extends OElementType {
     this.outVertexType = outVertexType;
     this.inVertexType = inVertexType;
     numberRelationshipsRepresented = 1;
+    this.isSplittingEdge = false;
+  }
+
+  public OEdgeType(String edgeType, OVertexType outVertexType, OVertexType inVertexType, int numberRelationshipsRepresented, boolean isSplittingEdge) {
+    super(edgeType);
+    this.outVertexType = outVertexType;
+    this.inVertexType = inVertexType;
+    this.numberRelationshipsRepresented = numberRelationshipsRepresented;
+    this.isSplittingEdge = isSplittingEdge;
   }
 
   public OVertexType getInVertexType() {
@@ -67,6 +78,14 @@ public class OEdgeType extends OElementType {
 
   public void setNumberRelationshipsRepresented(int numberRelationshipsRepresented) {
     this.numberRelationshipsRepresented = numberRelationshipsRepresented;
+  }
+
+  public boolean isSplittingEdge() {
+    return this.isSplittingEdge;
+  }
+
+  public void setSplittingEdge(boolean splittingEdge) {
+    isSplittingEdge = splittingEdge;
   }
 
   @Override

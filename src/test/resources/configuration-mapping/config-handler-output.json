@@ -12,6 +12,7 @@
           }
         ]
       },
+      "externalKey": ["id"],
       "properties": {
         "id": {
           "include": true,
@@ -92,6 +93,7 @@
           }
         ]
       },
+      "externalKey": ["id"],
       "properties": {
         "id": {
           "include": true,
@@ -146,6 +148,7 @@
           }
         ]
       },
+      "externalKey": ["id"],
       "properties": {
         "id": {
           "include": true,

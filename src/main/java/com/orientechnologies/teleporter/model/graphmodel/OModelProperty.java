@@ -159,15 +159,30 @@ public class OModelProperty {
   @Override
   public boolean equals(Object obj) {
     OModelProperty that = (OModelProperty) obj;
-    if(this.name.equals(that.getName()) && this.ordinalPosition == that.getOrdinalPosition() && 
-        this.originalType.equals(that.getOriginalType()) && this.isFromPrimaryKey() == that.isFromPrimaryKey())
-      return true;
-    return false;
+    if( ! (this.name.equals(that.getName()) && this.ordinalPosition == that.getOrdinalPosition() && this.isFromPrimaryKey() == that.isFromPrimaryKey()) ) {
+      return false;
+    }
+    if(this.originalType != null && that.originalType != null) {
+      if(!this.originalType.equals(that.originalType)) {
+        return false;
+      }
+    }
+    if(this.orientdbType != null && that.orientdbType != null) {
+      if(!this.orientdbType.equals(that.orientdbType)) {
+        return false;
+      }
+    }
+    return true;
   }
 
   public String toString() {
     String s = "";
-    s += this.ordinalPosition + ": " + this.name + " ( " + this.orientdbType + " )";
+    if(this.orientdbType != null) {
+      s += this.ordinalPosition + ": " + this.name + " ( " + this.orientdbType + " )";
+    }
+    else {
+      s += this.ordinalPosition + ": " + this.name;
+    }
     return s;
   }
 

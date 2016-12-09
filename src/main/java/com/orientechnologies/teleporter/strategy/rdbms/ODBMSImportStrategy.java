@@ -164,7 +164,8 @@ public abstract class ODBMSImportStrategy implements OWorkflowStrategy {
 
       // upsert of the vertex
       currentRecord = records;
-      currentOutVertex = (OrientVertex) graphEngine.upsertVisitedVertex(orientGraph, currentRecord, currentOutVertexType, null);
+      currentOutVertex = (OrientVertex) graphEngine.upsertVisitedVertex(orientGraph, currentRecord, currentOutVertexType, currentOutVertexType.getExternalKey());
+
 
       // for each attribute of the entity belonging to a foreign key, correspondent relationship is
       // built as edge and for the referenced record a new clean vertex is built (only id will be set)
@@ -334,7 +335,7 @@ public abstract class ODBMSImportStrategy implements OWorkflowStrategy {
 
             // upsert of the vertex
             currentRecord = records;
-            currentOutVertex = (OrientVertex) graphDBCommandEngine.upsertVisitedVertex(orientGraph, currentRecord, currentOutVertexType, null);
+            currentOutVertex = (OrientVertex) graphDBCommandEngine.upsertVisitedVertex(orientGraph, currentRecord, currentOutVertexType, currentOutVertexType.getExternalKey());
 
             // for each attribute of the entity belonging to the primary key, correspondent relationship is
             // built as edge and for the referenced record a vertex is built (only id)

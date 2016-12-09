@@ -51,7 +51,7 @@ import java.util.List;
 
 /**
  * A strategy that performs a "naive" import of the data source. The data source schema is
- * translated semi-directly in a correspondent and coherent graph model using an aggregation 
+ * translated semi-directly in a correspondent and coherent graph model using an aggregation
  * policy on the junction tables of dimension equals to 2.
  *
  * @author Gabriele Ponzi

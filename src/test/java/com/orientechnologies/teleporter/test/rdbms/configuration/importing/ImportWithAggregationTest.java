@@ -48,12 +48,12 @@ import static org.junit.Assert.*;
  *
  */
 
-public class ImportWithFullInputConfigurationTest {
+public class ImportWithAggregationTest {
 
     private OTeleporterContext context;
     private ODBMSNaiveStrategy naiveStrategy;
     private String dbParentDirectoryPath;
-    private final String configPathJson = "src/test/resources/configuration-mapping/full-configuration-mapping.json";
+    private final String configPathJson = "src/test/resources/configuration-mapping/aggregation-from2tables-mapping.json";
     private ODBQueryEngine dbQueryEngine;
     private String driver = "org.hsqldb.jdbc.JDBCDriver";
     private String jurl = "jdbc:hsqldb:mem:mydb";

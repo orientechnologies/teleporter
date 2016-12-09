@@ -1,0 +1,218 @@
+{
+  "vertices": [{
+    "name": "Employee",
+    "mapping": {
+      "sourceTables": [{
+        "name": "hsqldb_employee",
+        "dataSource": "hsqldb",
+        "tableName": "EMPLOYEE_PROJECT",
+        "primaryKey": ["FIRST_NAME", "LAST_NAME", "PROJECT"]
+      }]
+    },
+    "externalKey": ["firstName", "lastName"],
+    "properties": {
+      "firstName": {
+        "include": true,
+        "type": "STRING",
+        "ordinalPosition": 1,
+        "mandatory": false,
+        "readOnly": false,
+        "notNull": false,
+        "mapping": {
+          "source": "hsqldb_employee",
+          "columnName": "FIRST_NAME",
+          "type": "VARCHAR"
+        }
+      },
+      "lastName": {
+        "include": true,
+        "type": "STRING",
+        "ordinalPosition": 2,
+        "mandatory": false,
+        "readOnly": false,
+        "notNull": false,
+        "mapping": {
+          "source": "hsqldb_employee",
+          "columnName": "LAST_NAME",
+          "type": "VARCHAR"
+        }
+      },
+      "salary": {
+        "include": true,
+        "type": "DECIMAL",
+        "ordinalPosition": 3,
+        "mandatory": false,
+        "readOnly": false,
+        "notNull": false,
+        "mapping": {
+          "source": "hsqldb_employee",
+          "columnName": "SALARY",
+          "type": "INT2"
+        }
+      },
+      "department": {
+        "include": true,
+        "type": "STRING",
+        "ordinalPosition": 4,
+        "mandatory": false,
+        "readOnly": false,
+        "notNull": false,
+        "mapping": {
+          "source": "hsqldb_employee",
+          "columnName": "DEPARTMENT",
+          "type": "VARCHAR"
+        }
+      }
+    }
+  }, {
+    "name": "Project",
+    "mapping": {
+      "sourceTables": [{
+        "name": "hsqldb_employee",
+        "dataSource": "hsqldb",
+        "tableName": "EMPLOYEE_PROJECT",
+        "primaryKey": ["FIRST_NAME", "LAST_NAME", "PROJECT"]
+      }]
+    },
+    "externalKey": ["project"],
+    "properties": {
+      "project": {
+        "include": true,
+        "type": "STRING",
+        "ordinalPosition": 1,
+        "mandatory": false,
+        "readOnly": false,
+        "notNull": false,
+        "mapping": {
+          "source": "hsqldb_employee",
+          "columnName": "PROJECT",
+          "type": "VARCHAR"
+        }
+      },
+      "balance": {
+        "include": true,
+        "type": "DECIMAL",
+        "ordinalPosition": 2,
+        "mandatory": false,
+        "readOnly": false,
+        "notNull": false,
+        "mapping": {
+          "source": "hsqldb_employee",
+          "columnName": "BALANCE",
+          "type": "INT2"
+        }
+      }
+    }
+  }, {
+    "name": "Department",
+    "mapping": {
+      "sourceTables": [
+        {
+          "name": "hsqldb_department",
+          "dataSource": "hsqldb",
+          "tableName": "DEPARTMENT",
+          "primaryKey" : ["ID"]
+        }
+      ]
+    },
+    "properties": {
+      "id": {
+        "include": true,
+        "type": "STRING",
+        "ordinalPosition": 1,
+        "mandatory": false,
+        "readOnly": false,
+        "notNull": false,
+        "mapping": {
+          "source": "hsqldb_department",
+          "columnName": "ID",
+          "type": "VARCHAR"
+        }
+      },
+      "departmentName": {
+        "include": true,
+        "type": "STRING",
+        "ordinalPosition": 2,
+        "mandatory": true,
+        "readOnly": false,
+        "notNull": true,
+        "mapping": {
+          "source": "hsqldb_department",
+          "columnName": "NAME",
+          "type": "VARCHAR"
+        }
+      },
+      "location": {
+        "include": true,
+        "type": "STRING",
+        "ordinalPosition": 3,
+        "mandatory": true,
+        "readOnly": false,
+        "notNull": true,
+        "mapping": {
+          "source": "hsqldb_department",
+          "columnName": "LOCATION",
+          "type": "VARCHAR"
+        }
+      },
+      "updatedOn": {
+        "include": false,
+        "type": "DATE",
+        "ordinalPosition": 4,
+        "mandatory": true,
+        "readOnly": false,
+        "notNull": true,
+        "mapping": {
+          "source": "hsqldb_department",
+          "columnName": "UPDATED_ON",
+          "type": "DATE"
+        }
+      }
+    }
+  }],
+  "edges": [{
+    "HasProject": {
+      "splitting": {
+        "fromVertexClass": "Employee",
+        "toVertexClass": "Project"
+      },
+      "isLogical": false,
+      "properties": {
+        "role": {
+          "include": true,
+          "type": "STRING",
+          "ordinalPosition": 1,
+          "mandatory": false,
+          "readOnly": false,
+          "notNull": false,
+          "mapping": {
+            "source": "hsqldb_employee",
+            "columnName": "ROLE",
+            "type": "VARCHAR"
+          }
+        }
+      }
+    }
+  },{
+    "WorksAt": {
+      "isLogical": false,
+      "mapping": [{
+        "fromTable": "EMPLOYEE_PROJECT",
+        "fromColumns": ["DEPARTMENT"],
+        "toTable": "DEPARTMENT",
+        "toColumns": ["ID"],
+        "direction": "direct"
+      }],
+      "properties": {
+        "since": {
+          "include": true,
+          "type": "DATE",
+          "ordinalPosition": 1,
+          "mandatory": false,
+          "readOnly": false,
+          "notNull": false
+        }
+      }
+    }
+  }]
+}

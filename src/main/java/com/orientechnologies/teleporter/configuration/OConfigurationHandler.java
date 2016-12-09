@@ -92,6 +92,12 @@ public class OConfigurationHandler {
 
             OConfiguredVertexClass currentConfiguredVertex = new OConfiguredVertexClass(configuredVertexClassName, configuration);
             OVertexMappingInformation currentMapping = new OVertexMappingInformation(currentConfiguredVertex);
+
+            List<String> externalKeyProps = currentVertexDoc.field("externalKey");
+            if(externalKeyProps != null) {
+                currentConfiguredVertex.setExternalKeyProps(externalKeyProps);
+            }
+
             ODocument mappingDoc = currentVertexDoc.field("mapping");
 
             if(mappingDoc == null) {
@@ -151,7 +157,7 @@ public class OConfigurationHandler {
                     throw new OTeleporterRuntimeException();
                 }
 
-                OSourceTable currentSourceTable = new OSourceTable(sourceIdName);
+                OSourceTable currentSourceTable = new OSourceTable(sourceIdName, currentMapping);
                 currentSourceTable.setDataSource(dataSource);
                 currentSourceTable.setTableName(sourceTableName);
                 currentSourceTable.setPrimaryKeyColumns(primaryKey);
@@ -191,7 +197,7 @@ public class OConfigurationHandler {
         for(ODocument currentEdgeDoc: edgesDoc) {
 
             String[] edgeFields = currentEdgeDoc.fieldNames();
-            if(edgeFields.length != 1) {
+            if (edgeFields.length != 1) {
                 OTeleporterContext.getInstance().getOutputManager().error("Configuration error: wrong edge definition.");
             }
             String configuredEdgeClassName = edgeFields[0];
@@ -200,106 +206,132 @@ public class OConfigurationHandler {
             List<OEdgeMappingInformation> edgeMappings = new LinkedList<OEdgeMappingInformation>();
             ODocument currentEdgeInfo = currentEdgeDoc.field(configuredEdgeClassName);
             List<ODocument> mappingDocs = currentEdgeInfo.field("mapping");
+            ODocument splittingDoc = currentEdgeInfo.field("splitting");
 
             // building configured edges
-            if(mappingDocs == null) {
-                OTeleporterContext.getInstance().getOutputManager().error("Configuration error: 'mapping' field not found in the '%s' edge-type definition.",  configuredEdgeClassName);
+            if (mappingDocs == null && splittingDoc == null) {
+                OTeleporterContext.getInstance().getOutputManager().error("Configuration error: neither 'mapping' nor 'splitting' fields found in the '%s' edge-type definition.", configuredEdgeClassName);
                 throw new OTeleporterRuntimeException();
             }
 
-            // for each relationship represented by the edge a mapping is built
-            for(ODocument mappingDoc: mappingDocs) {
-
-                OEdgeMappingInformation currentMapping = new OEdgeMappingInformation(currentConfiguredEdge);
-                String currentForeignEntityName = mappingDoc.field("fromTable");
-                String currentParentEntityName = mappingDoc.field("toTable");
-                List<String> fromColumns = mappingDoc.field("fromColumns");
-                List<String> toColumns = mappingDoc.field("toColumns");
-
-                ODocument joinTableDoc = mappingDoc.field("joinTable");
-
-                // migrationConfigDoc errors managing (draconian approach)
-                if (currentForeignEntityName == null) {
-                    OTeleporterContext.getInstance().getOutputManager()
-                            .error("Configuration error: 'fromTable' field not found in the '%s' edge-type mapping.", configuredEdgeClassName);
-                    throw new OTeleporterRuntimeException();
-                }
-                if (currentParentEntityName == null) {
-                    OTeleporterContext.getInstance().getOutputManager()
-                            .error("Configuration error: 'toTable' field not found in the '%s' edge-type mapping.", configuredEdgeClassName);
-                    throw new OTeleporterRuntimeException();
-                }
-                if (fromColumns == null) {
-                    OTeleporterContext.getInstance().getOutputManager()
-                            .error("Configuration error: 'fromColumns' field not found in the '%s' edge-type mapping.", configuredEdgeClassName);
-                    throw new OTeleporterRuntimeException();
-                }
-                if (toColumns == null) {
-                    OTeleporterContext.getInstance().getOutputManager()
-                            .error("Configuration error: 'toColumns' field not found in the '%s' edge-type mapping.", configuredEdgeClassName);
-                    throw new OTeleporterRuntimeException();
-                }
-
-                String direction = mappingDoc.field("direction");
-
-                if (direction != null && !(direction.equals("direct") || direction.equals("inverse"))) {
-                    OTeleporterContext.getInstance().getOutputManager()
-                            .error("Configuration error: direction for the edge %s cannot be '%s'. Allowed values: 'direct' or 'inverse' \n", configuredEdgeClassName, direction);
-                    throw new OTeleporterRuntimeException();
-                }
-
-                boolean foreignEntityIsJoinTableToAggregate = false;
-
-                if (joinTableDoc != null) {
-
-                    String joinTableName = joinTableDoc.field("tableName");
-
-                    if (joinTableName == null) {
-                        OTeleporterContext.getInstance().getOutputManager()
-                                .error("Configuration error: 'tableName' field not found in the join table mapping with the '%s' edge-type.", configuredEdgeClassName);
-                        throw new OTeleporterRuntimeException();
-                    }
-
-                    joinTableMapping = new OAggregatedJoinTableMapping(joinTableName);
-
-                    if (this.runningAggregationStrategy) {
-                        // strategy is aggregated
-                        List<String> joinTableFromColumns = joinTableDoc.field("fromColumns");
-                        List<String> joinTableToColumns = joinTableDoc.field("toColumns");
-
-                        if (joinTableFromColumns == null) {
-                            OTeleporterContext.getInstance().getOutputManager()
-                                    .error("Configuration error: 'fromColumns' field not found in the join table mapping with the '%s' edge-type.", configuredEdgeClassName);
-                            throw new OTeleporterRuntimeException();
-                        }
-                        if (joinTableToColumns == null) {
-                            OTeleporterContext.getInstance().getOutputManager()
-                                    .error("Configuration error: 'toColumns' field not found in the join table mapping with the '%s' edge-type.", configuredEdgeClassName);
-                            throw new OTeleporterRuntimeException();
-                        }
-
-                        joinTableMapping.setFromColumns(joinTableFromColumns);
-                        joinTableMapping.setToColumns(joinTableToColumns);
-                    }
-                    else {
-                        OTeleporterContext.getInstance().getOutputManager()
-                                .error("Configuration not compliant with the chosen strategy: you cannot perform the aggregation declared in the migrationConfigDoc for the "
-                                        + "join table %s while executing migration with a not-aggregating strategy. Thus no aggregation will be performed.\n", joinTableName);
-                        throw new OTeleporterRuntimeException();
-                    }
-                }
-
-                // Updating edge's migrationConfigDoc
-                currentMapping.setFromTableName(currentForeignEntityName);
-                currentMapping.setToTableName(currentParentEntityName);
-                currentMapping.setFromColumns(fromColumns);
-                currentMapping.setToColumns(toColumns);
-                currentMapping.setDirection(direction);
-                currentMapping.setRepresentedJoinTableMapping(joinTableMapping);
-                edgeMappings.add(currentMapping);
+            // building configured edges
+            if (mappingDocs != null && splittingDoc != null) {
+                OTeleporterContext.getInstance().getOutputManager().error("Configuration error: both 'mapping' and 'splitting' fields found in the '%s' edge-type definition. " +
+                        "These fields are mutually exclusive.", configuredEdgeClassName);
+                throw new OTeleporterRuntimeException();
             }
 
-            ((OConfiguredEdgeClass)currentConfiguredEdge).setMappings(edgeMappings);
+            if (mappingDocs != null) {
+
+                // for each relationship represented by the edge a mapping is built
+                for (ODocument mappingDoc : mappingDocs) {
+
+                    OEdgeMappingInformation currentMapping = new OEdgeMappingInformation(currentConfiguredEdge);
+                    String currentForeignEntityName = mappingDoc.field("fromTable");
+                    String currentParentEntityName = mappingDoc.field("toTable");
+                    List<String> fromColumns = mappingDoc.field("fromColumns");
+                    List<String> toColumns = mappingDoc.field("toColumns");
+
+                    ODocument joinTableDoc = mappingDoc.field("joinTable");
+
+                    // migrationConfigDoc errors managing (draconian approach)
+                    if (currentForeignEntityName == null) {
+                        OTeleporterContext.getInstance().getOutputManager()
+                                .error("Configuration error: 'fromTable' field not found in the '%s' edge-type mapping.", configuredEdgeClassName);
+                        throw new OTeleporterRuntimeException();
+                    }
+                    if (currentParentEntityName == null) {
+                        OTeleporterContext.getInstance().getOutputManager()
+                                .error("Configuration error: 'toTable' field not found in the '%s' edge-type mapping.", configuredEdgeClassName);
+                        throw new OTeleporterRuntimeException();
+                    }
+                    if (fromColumns == null) {
+                        OTeleporterContext.getInstance().getOutputManager()
+                                .error("Configuration error: 'fromColumns' field not found in the '%s' edge-type mapping.", configuredEdgeClassName);
+                        throw new OTeleporterRuntimeException();
+                    }
+                    if (toColumns == null) {
+                        OTeleporterContext.getInstance().getOutputManager()
+                                .error("Configuration error: 'toColumns' field not found in the '%s' edge-type mapping.", configuredEdgeClassName);
+                        throw new OTeleporterRuntimeException();
+                    }
+
+                    String direction = mappingDoc.field("direction");
+
+                    if (direction != null && !(direction.equals("direct") || direction.equals("inverse"))) {
+                        OTeleporterContext.getInstance().getOutputManager()
+                                .error("Configuration error: direction for the edge %s cannot be '%s'. Allowed values: 'direct' or 'inverse' \n", configuredEdgeClassName, direction);
+                        throw new OTeleporterRuntimeException();
+                    }
+
+                    boolean foreignEntityIsJoinTableToAggregate = false;
+
+                    if (joinTableDoc != null) {
+
+                        String joinTableName = joinTableDoc.field("tableName");
+
+                        if (joinTableName == null) {
+                            OTeleporterContext.getInstance().getOutputManager()
+                                    .error("Configuration error: 'tableName' field not found in the join table mapping with the '%s' edge-type.", configuredEdgeClassName);
+                            throw new OTeleporterRuntimeException();
+                        }
+
+                        joinTableMapping = new OAggregatedJoinTableMapping(joinTableName);
+
+                        if (this.runningAggregationStrategy) {
+                            // strategy is aggregated
+                            List<String> joinTableFromColumns = joinTableDoc.field("fromColumns");
+                            List<String> joinTableToColumns = joinTableDoc.field("toColumns");
+
+                            if (joinTableFromColumns == null) {
+                                OTeleporterContext.getInstance().getOutputManager()
+                                        .error("Configuration error: 'fromColumns' field not found in the join table mapping with the '%s' edge-type.", configuredEdgeClassName);
+                                throw new OTeleporterRuntimeException();
+                            }
+                            if (joinTableToColumns == null) {
+                                OTeleporterContext.getInstance().getOutputManager()
+                                        .error("Configuration error: 'toColumns' field not found in the join table mapping with the '%s' edge-type.", configuredEdgeClassName);
+                                throw new OTeleporterRuntimeException();
+                            }
+
+                            joinTableMapping.setFromColumns(joinTableFromColumns);
+                            joinTableMapping.setToColumns(joinTableToColumns);
+                        } else {
+                            OTeleporterContext.getInstance().getOutputManager()
+                                    .error("Configuration not compliant with the chosen strategy: you cannot perform the aggregation declared in the migrationConfigDoc for the "
+                                            + "join table %s while executing migration with a not-aggregating strategy. Thus no aggregation will be performed.\n", joinTableName);
+                            throw new OTeleporterRuntimeException();
+                        }
+                    }
+
+                    // Updating edge's migrationConfigDoc
+                    currentMapping.setFromTableName(currentForeignEntityName);
+                    currentMapping.setToTableName(currentParentEntityName);
+                    currentMapping.setFromColumns(fromColumns);
+                    currentMapping.setToColumns(toColumns);
+                    currentMapping.setDirection(direction);
+                    currentMapping.setRepresentedJoinTableMapping(joinTableMapping);
+                    edgeMappings.add(currentMapping);
+                }
+
+                ((OConfiguredEdgeClass) currentConfiguredEdge).setMappings(edgeMappings);
+            }
+            else if(splittingDoc != null) {
+                String fromVertexClass = splittingDoc.field("fromVertexClass");
+                if(fromVertexClass == null) {
+                    OTeleporterContext.getInstance().getOutputManager()
+                            .error("Configuration error: 'fromVertexClass' field not found in the 'splitting' area in the '%s' edge-type definition.", configuredEdgeClassName);
+                    throw new OTeleporterRuntimeException();
+                }
+                String toVertexClass = splittingDoc.field("toVertexClass");
+                if(fromVertexClass == null) {
+                    OTeleporterContext.getInstance().getOutputManager()
+                            .error("Configuration error: 'toVertexClass' field not found in the 'splitting' area in the '%s' edge-type definition.", configuredEdgeClassName);
+                    throw new OTeleporterRuntimeException();
+                }
+                OSplittingEdgeInformation splittingEdgeInfo = new OSplittingEdgeInformation(fromVertexClass, toVertexClass);
+                currentConfiguredEdge.setSplittingEdgeInfo(splittingEdgeInfo);
+            }
 
             // TO DELETE after poc
             if(currentEdgeInfo.field("isLogical") != null) {
@@ -480,6 +512,11 @@ public class OConfigurationHandler {
             ODocument propertiesDoc = this.writeConfiguredProperties(currConfiguredVertex.getConfiguredProperties());
             currVertexDoc.field("properties", propertiesDoc);
 
+            // setting external key
+            if(currConfiguredVertex.getExternalKeyProps().size() > 0) {
+                currVertexDoc.field("externalKey", currConfiguredVertex.getExternalKeyProps());
+            }
+
             vertices.add(currVertexDoc);
         }
 
@@ -632,7 +669,7 @@ public class OConfigurationHandler {
             }
 
             String sourceIdName = currSourceDBInfo.getSourceIdName() + "_" + currentEntity.getName();
-            OSourceTable sourceTable = new OSourceTable(sourceIdName);
+            OSourceTable sourceTable = new OSourceTable(sourceIdName, vertexMappingInfo);
             sourceTable.setDataSource(currSourceDBInfo.getSourceIdName());
             sourceTable.setTableName(currentEntity.getName());
             sourceTable.setPrimaryKeyColumns(primaryKeyColumns);
@@ -665,6 +702,11 @@ public class OConfigurationHandler {
             }
             currConfiguredVertexClass.setConfiguredProperties(configuredProperties);
 
+            // setting external key
+            if(currVertexType.getExternalKey().size() > 0) {
+                currConfiguredVertexClass.getExternalKeyProps().addAll(currVertexType.getExternalKey());
+            }
+
             // adding configured vertex to the list
             configuredVertexClasses.add(currConfiguredVertexClass);
         }
@@ -679,93 +721,99 @@ public class OConfigurationHandler {
         for(OEdgeType currEdgeType: mapper.getGraphModel().getEdgesType()) {
 
             OConfiguredEdgeClass currConfiguredEdgeClass = new OConfiguredEdgeClass(currEdgeType.getName(), configuration);
-
-            // edge mapping info building
-            OEdgeMappingInformation currEdgeMappingInformation = new OEdgeMappingInformation(currConfiguredEdgeClass);
-            List<ORelationship> relationships = mapper.getEdgeType2relationships().get(currEdgeType);
-            List<OEdgeMappingInformation> edgeMappings = new LinkedList<OEdgeMappingInformation>();
-            OAggregatorEdge aggregatorEdge = mapper.getAggregatorEdgeByEdgeTypeName(currEdgeType.getName());
-
             OVertexType aggregatedVertexType = null;
             OEntity joinTable = null;
             boolean isLogicalEdge = false;
 
-            // the current edge type does not represent any join table
-            if (aggregatorEdge == null) {
+            if(!currEdgeType.isSplittingEdge()) {
 
-                // building the edge mappings
-                for (ORelationship currentRelationship : relationships) {
+                // edge mapping info building
+                OEdgeMappingInformation currEdgeMappingInformation = new OEdgeMappingInformation(currConfiguredEdgeClass);
+                List<ORelationship> relationships = mapper.getEdgeType2relationships().get(currEdgeType);
+                List<OEdgeMappingInformation> edgeMappings = new LinkedList<OEdgeMappingInformation>();
+                OAggregatorEdge aggregatorEdge = mapper.getAggregatorEdgeByEdgeTypeName(currEdgeType.getName());
 
-                    // TO DELETE after poc
-                    if(currentRelationship instanceof OLogicalRelationship) {
-                        isLogicalEdge = true;
+                // the current edge type does not represent any join table
+                if (aggregatorEdge == null) {
+
+                    // building the edge mappings
+                    for (ORelationship currentRelationship : relationships) {
+
+                        // TO DELETE after poc
+                        if (currentRelationship instanceof OLogicalRelationship) {
+                            isLogicalEdge = true;
+                        }
+
+                        // building the edge mapping info
+                        currEdgeMappingInformation.setFromTableName(currentRelationship.getForeignEntity().getName());
+                        currEdgeMappingInformation.setToTableName(currentRelationship.getParentEntity().getName());
+
+                        List<String> fromColumns = new LinkedList<String>();
+                        for (OAttribute attribute : currentRelationship.getFromColumns()) {
+                            fromColumns.add(attribute.getName());
+                        }
+                        List<String> toColumns = new LinkedList<String>();
+                        for (OAttribute attribute : currentRelationship.getToColumns()) {
+                            toColumns.add(attribute.getName());
+                        }
+                        currEdgeMappingInformation.setFromColumns(fromColumns);
+                        currEdgeMappingInformation.setToColumns(toColumns);
+                        currEdgeMappingInformation.setDirection(currentRelationship.getDirection());
+
+                        edgeMappings.add(currEdgeMappingInformation);
                     }
+                }
+                // the current edge type represents a join table
+                else {
 
-                    // building the edge mapping info
-                    currEdgeMappingInformation.setFromTableName(currentRelationship.getForeignEntity().getName());
-                    currEdgeMappingInformation.setToTableName(currentRelationship.getParentEntity().getName());
+                    OVertexType inVertexType = currEdgeType.getInVertexType();
+                    OVertexType outVertexType = currEdgeType.getOutVertexType();
+                    OEntity startingTable = mapper.getEntityByVertexType(outVertexType);
+                    OEntity arrivalTable = mapper.getEntityByVertexType(inVertexType);
+
+                    currEdgeMappingInformation.setFromTableName(startingTable.getName());
+                    currEdgeMappingInformation.setToTableName(arrivalTable.getName());
 
                     List<String> fromColumns = new LinkedList<String>();
-                    for (OAttribute attribute : currentRelationship.getFromColumns()) {
+                    for (OAttribute attribute : startingTable.getPrimaryKey().getInvolvedAttributes()) {
                         fromColumns.add(attribute.getName());
                     }
                     List<String> toColumns = new LinkedList<String>();
-                    for (OAttribute attribute : currentRelationship.getToColumns()) {
+                    for (OAttribute attribute : arrivalTable.getPrimaryKey().getInvolvedAttributes()) {
                         toColumns.add(attribute.getName());
                     }
                     currEdgeMappingInformation.setFromColumns(fromColumns);
                     currEdgeMappingInformation.setToColumns(toColumns);
-                    currEdgeMappingInformation.setDirection(currentRelationship.getDirection());
+                    currEdgeMappingInformation.setDirection("direct");
 
+                    // the edgeType corresponds to a join table, so the join table mapping will be built
+                    aggregatedVertexType = mapper.getJoinVertexTypeByAggregatorEdge(aggregatorEdge.getEdgeType().getName());
+                    joinTable = mapper.getEntityByVertexType(aggregatedVertexType);
+                    OAggregatedJoinTableMapping joinTableMappingInfo = new OAggregatedJoinTableMapping(joinTable.getName());
+
+                    Iterator<OCanonicalRelationship> outRelationshipsIterator = joinTable.getOutCanonicalRelationships().iterator();
+                    OCanonicalRelationship currRelationship = outRelationshipsIterator.next();
+                    fromColumns = new LinkedList<String>();
+                    for (OAttribute attribute : currRelationship.getFromColumns()) {
+                        fromColumns.add(attribute.getName());
+                    }
+                    currRelationship = outRelationshipsIterator.next();
+                    toColumns = new LinkedList<String>();
+                    for (OAttribute attribute : currRelationship.getFromColumns()) {
+                        toColumns.add(attribute.getName());
+                    }
+                    joinTableMappingInfo.setFromColumns(fromColumns);
+                    joinTableMappingInfo.setToColumns(toColumns);
+
+                    currEdgeMappingInformation.setRepresentedJoinTableMapping(joinTableMappingInfo);
                     edgeMappings.add(currEdgeMappingInformation);
                 }
+                currConfiguredEdgeClass.setMappings(edgeMappings);
             }
-            // the current edge type represents a join table
             else {
-
-                OVertexType inVertexType = currEdgeType.getInVertexType();
-                OVertexType outVertexType = currEdgeType.getOutVertexType();
-                OEntity startingTable = mapper.getEntityByVertexType(outVertexType);
-                OEntity arrivalTable = mapper.getEntityByVertexType(inVertexType);
-
-                currEdgeMappingInformation.setFromTableName(startingTable.getName());
-                currEdgeMappingInformation.setToTableName(arrivalTable.getName());
-
-                List<String> fromColumns = new LinkedList<String>();
-                for (OAttribute attribute : startingTable.getPrimaryKey().getInvolvedAttributes()) {
-                    fromColumns.add(attribute.getName());
-                }
-                List<String> toColumns = new LinkedList<String>();
-                for (OAttribute attribute : arrivalTable.getPrimaryKey().getInvolvedAttributes()) {
-                    toColumns.add(attribute.getName());
-                }
-                currEdgeMappingInformation.setFromColumns(fromColumns);
-                currEdgeMappingInformation.setToColumns(toColumns);
-                currEdgeMappingInformation.setDirection("direct");
-
-                // the edgeType corresponds to a join table, so the join table mapping will be built
-                aggregatedVertexType = mapper.getJoinVertexTypeByAggregatorEdge(aggregatorEdge.getEdgeType().getName());
-                joinTable = mapper.getEntityByVertexType(aggregatedVertexType);
-                OAggregatedJoinTableMapping joinTableMappingInfo = new OAggregatedJoinTableMapping(joinTable.getName());
-
-                Iterator<OCanonicalRelationship> outRelationshipsIterator = joinTable.getOutCanonicalRelationships().iterator();
-                OCanonicalRelationship currRelationship = outRelationshipsIterator.next();
-                fromColumns = new LinkedList<String>();
-                for (OAttribute attribute : currRelationship.getFromColumns()) {
-                    fromColumns.add(attribute.getName());
-                }
-                currRelationship = outRelationshipsIterator.next();
-                toColumns = new LinkedList<String>();
-                for (OAttribute attribute : currRelationship.getFromColumns()) {
-                    toColumns.add(attribute.getName());
-                }
-                joinTableMappingInfo.setFromColumns(fromColumns);
-                joinTableMappingInfo.setToColumns(toColumns);
-
-                currEdgeMappingInformation.setRepresentedJoinTableMapping(joinTableMappingInfo);
-                edgeMappings.add(currEdgeMappingInformation);
+                // TODO: add splitting field!
             }
-            currConfiguredEdgeClass.setMappings(edgeMappings);
+
             currConfiguredEdgeClass.setLogical(isLogicalEdge);
 
             // building configured properties

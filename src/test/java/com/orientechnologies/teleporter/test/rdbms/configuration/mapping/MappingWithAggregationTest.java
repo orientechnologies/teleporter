@@ -52,11 +52,11 @@ import static org.junit.Assert.fail;
  *
  */
 
-public class FullConfigurationMappingTest {
+public class MappingWithAggregationTest {
 
     private OER2GraphMapper mapper;
     private OTeleporterContext context;
-    private final String config = "src/test/resources/configuration-mapping/full-configuration-mapping.json";
+    private final String config = "src/test/resources/configuration-mapping/aggregation-from2tables-mapping.json";
     private ODBQueryEngine dbQueryEngine;
     private String driver = "org.hsqldb.jdbc.JDBCDriver";
     private String jurl = "jdbc:hsqldb:mem:mydb";
@@ -394,7 +394,7 @@ public class FullConfigurationMappingTest {
             assertEquals("since", sinceProperty.getName());
             assertEquals(1, sinceProperty.getOrdinalPosition());
             assertEquals(false, sinceProperty.isFromPrimaryKey());
-            assertEquals("DATE", sinceProperty.getOriginalType());
+            assertEquals("DATE", sinceProperty.getOrientdbType());
             assertEquals(true, sinceProperty.isMandatory());
             assertEquals(false, sinceProperty.isReadOnly());
             assertEquals(false, sinceProperty.isNotNull());

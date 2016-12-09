@@ -328,7 +328,7 @@ public class RelationshipConfigurationMappingTest {
       assertEquals("updatedOn", updatedOnProperty.getName());
       assertEquals(1, updatedOnProperty.getOrdinalPosition());
       assertEquals(false, updatedOnProperty.isFromPrimaryKey());
-      assertEquals("DATE", updatedOnProperty.getOriginalType());
+      assertEquals("DATE", updatedOnProperty.getOrientdbType());
       assertEquals(true, updatedOnProperty.isMandatory());
       assertEquals(false, updatedOnProperty.isReadOnly());
       assertEquals(false, updatedOnProperty.isNotNull());
@@ -344,7 +344,7 @@ public class RelationshipConfigurationMappingTest {
       assertEquals("updatedOn", updatedOnProperty.getName());
       assertEquals(1, updatedOnProperty.getOrdinalPosition());
       assertEquals(false, updatedOnProperty.isFromPrimaryKey());
-      assertEquals("DATE", updatedOnProperty.getOriginalType());
+      assertEquals("DATE", updatedOnProperty.getOrientdbType());
       assertEquals(false, updatedOnProperty.isMandatory());
       assertEquals(false, updatedOnProperty.isReadOnly());
       assertEquals(false, updatedOnProperty.isNotNull());
@@ -702,7 +702,7 @@ public class RelationshipConfigurationMappingTest {
       assertEquals("updatedOn", updatedOnProperty.getName());
       assertEquals(1, updatedOnProperty.getOrdinalPosition());
       assertEquals(false, updatedOnProperty.isFromPrimaryKey());
-      assertEquals("DATE", updatedOnProperty.getOriginalType());
+      assertEquals("DATE", updatedOnProperty.getOrientdbType());
       assertEquals(true, updatedOnProperty.isMandatory());
       assertEquals(false, updatedOnProperty.isReadOnly());
       assertEquals(false, updatedOnProperty.isNotNull());
@@ -1089,7 +1089,7 @@ public class RelationshipConfigurationMappingTest {
       assertEquals("year", yearProperty.getName());
       assertEquals(1, yearProperty.getOrdinalPosition());
       assertEquals(false, yearProperty.isFromPrimaryKey());
-      assertEquals("DATE", yearProperty.getOriginalType());
+      assertEquals("DATE", yearProperty.getOrientdbType());
       assertEquals(true, yearProperty.isMandatory());
       assertEquals(false, yearProperty.isReadOnly());
       assertEquals(false, yearProperty.isNotNull());
@@ -1104,7 +1104,7 @@ public class RelationshipConfigurationMappingTest {
       assertEquals("year", yearProperty.getName());
       assertEquals(1, yearProperty.getOrdinalPosition());
       assertEquals(false, yearProperty.isFromPrimaryKey());
-      assertEquals("DATE", yearProperty.getOriginalType());
+      assertEquals("DATE", yearProperty.getOrientdbType());
       assertEquals(true, yearProperty.isMandatory());
       assertEquals(false, yearProperty.isReadOnly());
       assertEquals(false, yearProperty.isNotNull());
@@ -1189,7 +1189,7 @@ public class RelationshipConfigurationMappingTest {
 
 
       /**
-       * performing aggregation
+       * performing aggregations
        */
       mapper.performAggregations();
 
@@ -1294,7 +1294,7 @@ public class RelationshipConfigurationMappingTest {
       assertEquals("year", yearProperty.getName());
       assertEquals(2, yearProperty.getOrdinalPosition());
       assertEquals(false, yearProperty.isFromPrimaryKey());
-      assertEquals("DATE", yearProperty.getOriginalType());
+      assertEquals("DATE", yearProperty.getOrientdbType());
       assertEquals(true, yearProperty.isMandatory());
       assertEquals(false, yearProperty.isReadOnly());
       assertEquals(false, yearProperty.isNotNull());
@@ -1695,7 +1695,7 @@ public class RelationshipConfigurationMappingTest {
       assertEquals("year", yearProperty.getName());
       assertEquals(1, yearProperty.getOrdinalPosition());
       assertEquals(false, yearProperty.isFromPrimaryKey());
-      assertEquals("DATE", yearProperty.getOriginalType());
+      assertEquals("DATE", yearProperty.getOrientdbType());
       assertEquals(true, yearProperty.isMandatory());
       assertEquals(false, yearProperty.isReadOnly());
       assertEquals(false, yearProperty.isNotNull());
@@ -1710,7 +1710,7 @@ public class RelationshipConfigurationMappingTest {
       assertEquals("year", yearProperty.getName());
       assertEquals(1, yearProperty.getOrdinalPosition());
       assertEquals(false, yearProperty.isFromPrimaryKey());
-      assertEquals("DATE", yearProperty.getOriginalType());
+      assertEquals("DATE", yearProperty.getOrientdbType());
       assertEquals(true, yearProperty.isMandatory());
       assertEquals(false, yearProperty.isReadOnly());
       assertEquals(false, yearProperty.isNotNull());
@@ -1795,9 +1795,9 @@ public class RelationshipConfigurationMappingTest {
 
 
       /**
-       * performing aggregation
+       * performing aggregations
        */
-      mapper.performMany2ManyAggregation();
+      mapper.performAggregations();
 
 
       /*
@@ -1900,7 +1900,7 @@ public class RelationshipConfigurationMappingTest {
       assertEquals("year", yearProperty.getName());
       assertEquals(2, yearProperty.getOrdinalPosition());
       assertEquals(false, yearProperty.isFromPrimaryKey());
-      assertEquals("DATE", yearProperty.getOriginalType());
+      assertEquals("DATE", yearProperty.getOrientdbType());
       assertEquals(true, yearProperty.isMandatory());
       assertEquals(false, yearProperty.isReadOnly());
       assertEquals(false, yearProperty.isNotNull());
@@ -2299,7 +2299,7 @@ public class RelationshipConfigurationMappingTest {
       assertEquals("year", yearProperty.getName());
       assertEquals(1, yearProperty.getOrdinalPosition());
       assertEquals(false, yearProperty.isFromPrimaryKey());
-      assertEquals("DATE", yearProperty.getOriginalType());
+      assertEquals("DATE", yearProperty.getOrientdbType());
       assertEquals(true, yearProperty.isMandatory());
       assertEquals(false, yearProperty.isReadOnly());
       assertEquals(false, yearProperty.isNotNull());
@@ -2314,7 +2314,7 @@ public class RelationshipConfigurationMappingTest {
       assertEquals("year", yearProperty.getName());
       assertEquals(1, yearProperty.getOrdinalPosition());
       assertEquals(false, yearProperty.isFromPrimaryKey());
-      assertEquals("DATE", yearProperty.getOriginalType());
+      assertEquals("DATE", yearProperty.getOrientdbType());
       assertEquals(true, yearProperty.isMandatory());
       assertEquals(false, yearProperty.isReadOnly());
       assertEquals(false, yearProperty.isNotNull());
@@ -2399,7 +2399,7 @@ public class RelationshipConfigurationMappingTest {
 
 
       /**
-       * performing aggregation
+       * performing aggregations
        */
       mapper.performAggregations();
 
@@ -2504,7 +2504,7 @@ public class RelationshipConfigurationMappingTest {
       assertEquals("year", yearProperty.getName());
       assertEquals(2, yearProperty.getOrdinalPosition());
       assertEquals(false, yearProperty.isFromPrimaryKey());
-      assertEquals("DATE", yearProperty.getOriginalType());
+      assertEquals("DATE", yearProperty.getOrientdbType());
       assertEquals(true, yearProperty.isMandatory());
       assertEquals(false, yearProperty.isReadOnly());
       assertEquals(false, yearProperty.isNotNull());
@@ -2904,7 +2904,7 @@ public class RelationshipConfigurationMappingTest {
       assertEquals("year", yearProperty.getName());
       assertEquals(1, yearProperty.getOrdinalPosition());
       assertEquals(false, yearProperty.isFromPrimaryKey());
-      assertEquals("DATE", yearProperty.getOriginalType());
+      assertEquals("DATE", yearProperty.getOrientdbType());
       assertEquals(true, yearProperty.isMandatory());
       assertEquals(false, yearProperty.isReadOnly());
       assertEquals(false, yearProperty.isNotNull());
@@ -2919,7 +2919,7 @@ public class RelationshipConfigurationMappingTest {
       assertEquals("year", yearProperty.getName());
       assertEquals(1, yearProperty.getOrdinalPosition());
       assertEquals(false, yearProperty.isFromPrimaryKey());
-      assertEquals("DATE", yearProperty.getOriginalType());
+      assertEquals("DATE", yearProperty.getOrientdbType());
       assertEquals(true, yearProperty.isMandatory());
       assertEquals(false, yearProperty.isReadOnly());
       assertEquals(false, yearProperty.isNotNull());
@@ -3003,9 +3003,9 @@ public class RelationshipConfigurationMappingTest {
       assertEquals(0, mapper.getJoinVertex2aggregatorEdges().size());
 
       /**
-       * performing aggregation
+       * performing aggregations
        */
-      mapper.performMany2ManyAggregation();
+      mapper.performAggregations();
 
 
       /*
@@ -3108,7 +3108,7 @@ public class RelationshipConfigurationMappingTest {
       assertEquals("year", yearProperty.getName());
       assertEquals(2, yearProperty.getOrdinalPosition());
       assertEquals(false, yearProperty.isFromPrimaryKey());
-      assertEquals("DATE", yearProperty.getOriginalType());
+      assertEquals("DATE", yearProperty.getOrientdbType());
       assertEquals(true, yearProperty.isMandatory());
       assertEquals(false, yearProperty.isReadOnly());
       assertEquals(false, yearProperty.isNotNull());

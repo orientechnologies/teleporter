@@ -21,8 +21,10 @@ package com.orientechnologies.teleporter.configuration.api;
 import com.orientechnologies.teleporter.context.OTeleporterContext;
 import com.orientechnologies.teleporter.model.dbschema.OEntity;
 
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * It collects all the information contained in the migrationConfigDoc submitted by the user.
@@ -132,5 +134,23 @@ public class OConfiguration {
             }
         }
         return null;
+    }
+
+    public Map<String,List<OConfiguredVertexClass>> buildTableName2MappedConfiguredVertices() {
+
+        Map<String,List<OConfiguredVertexClass>> tableName2mappedConfiguredVertices = new HashMap<String,List<OConfiguredVertexClass>>();
+
+        for(OConfiguredVertexClass currConfiguredVertexClass: this.configuredVertices) {
+            for(OSourceTable currSourceTable: currConfiguredVertexClass.getMapping().getSourceTables()) {
+                String tableName = currSourceTable.getTableName();
+                List<OConfiguredVertexClass> mappedVertices = tableName2mappedConfiguredVertices.get(tableName);
+                if(mappedVertices == null) {
+                    mappedVertices = new LinkedList<OConfiguredVertexClass>();
+                }
+                mappedVertices.add(currConfiguredVertexClass);
+                tableName2mappedConfiguredVertices.put(tableName, mappedVertices);
+            }
+        }
+        return tableName2mappedConfiguredVertices;
     }
 }

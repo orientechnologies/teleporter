@@ -16,7 +16,7 @@
  * For more information: http://www.orientdb.com
  */
 
-package com.orientechnologies.teleporter.test.rdbms.aggregation;
+package com.orientechnologies.teleporter.test.rdbms.jointableaggregation;
 
 import com.orientechnologies.teleporter.context.OOutputStreamManager;
 import com.orientechnologies.teleporter.context.OTeleporterContext;
