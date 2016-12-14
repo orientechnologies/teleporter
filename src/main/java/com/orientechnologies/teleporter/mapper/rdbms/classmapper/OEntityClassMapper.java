@@ -19,32 +19,28 @@
 package com.orientechnologies.teleporter.mapper.rdbms.classmapper;
 
 import com.orientechnologies.teleporter.model.dbschema.OEntity;
-import com.orientechnologies.teleporter.model.graphmodel.OVertexType;
 
 import java.util.Map;
 
 /**
- * This class is responsible to map 2 classes of objects: OEntity and OVertexType.
- * the following values are mapped:
- *  - name of the entity -> name of the vertex type
- *  - each attribute of the entity -> correspondent property of the vertex type
- *  - each property of the vertex type -> correspondent attribute of the entity
+ * This abstract class is extended by all the classes responsible to map 2 classes of objects where one of them is an Entity.
+ * Subclasses:
+ *  - OEVClassMapper: OEntity --> OVertexType
+ *  - OEEClassMapper: OEntity --> OEdgeType
  *
  * @author Gabriele Ponzi
  * @email  <g.ponzi--at--orientdb.com>
  *
  */
 
-public class OClassMapper {
+public abstract class OEntityClassMapper {
 
-    private OEntity entity;
-    private OVertexType vertexType;
-    public Map<String,String> attribute2property;
-    public Map<String,String> property2attribute;
+    protected OEntity entity;
+    protected Map<String,String> attribute2property;
+    protected Map<String,String> property2attribute;
 
-    public OClassMapper(OEntity entity, OVertexType vertexType, Map<String,String> attribute2property, Map<String,String> property2attribute) {
+    public OEntityClassMapper(OEntity entity, Map<String,String> attribute2property, Map<String,String> property2attribute) {
         this.entity = entity;
-        this.vertexType = vertexType;
         this.attribute2property = attribute2property;
         this.property2attribute = property2attribute;
     }
@@ -55,14 +51,6 @@ public class OClassMapper {
 
     public void setEntity(OEntity entity) {
         this.entity = entity;
-    }
-
-    public OVertexType getVertexType() {
-        return vertexType;
-    }
-
-    public void setVertexType(OVertexType vertexType) {
-        this.vertexType = vertexType;
     }
 
     public Map<String, String> getAttribute2property() {
@@ -98,36 +86,4 @@ public class OClassMapper {
     }
 
 
-    @Override
-    public int hashCode() {
-        int result = entity.hashCode();
-        result = 31 * result + vertexType.hashCode();
-        return result;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        OClassMapper that = (OClassMapper) o;
-
-        if (!entity.equals(that.entity)) return false;
-        if (!vertexType.equals(that.vertexType)) return false;
-        if (!attribute2property.equals(that.attribute2property)) return false;
-        return property2attribute.equals(that.property2attribute);
-    }
-
-    @Override
-    public String toString() {
-        String s = "{" + "Entity = " + entity.getName() + ", Vertex-Type = " + vertexType.getName() + ", attributes2properties: ";
-
-        s += "[";
-        for(String attribute: this.attribute2property.keySet()) {
-            s += attribute + " --> " + attribute2property.get(attribute) + ", ";
-        }
-        s = s.substring(0, s.length()-1);
-        s += "]}";
-        return s;
-    }
 }

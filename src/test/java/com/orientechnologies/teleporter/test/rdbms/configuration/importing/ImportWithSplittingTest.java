@@ -32,14 +32,16 @@ import com.tinkerpop.blueprints.Direction;
 import com.tinkerpop.blueprints.Edge;
 import com.tinkerpop.blueprints.Vertex;
 import com.tinkerpop.blueprints.impls.orient.OrientGraphNoTx;
+import com.tinkerpop.blueprints.impls.orient.OrientVertex;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.Statement;
-import java.util.Iterator;
+import java.util.*;
 
 import static org.junit.Assert.*;
 import static org.junit.Assert.fail;
@@ -64,7 +66,6 @@ public class ImportWithSplittingTest {
     private String outOrientGraphUri;
     private OSourceDatabaseInfo sourceDBInfo;
 
-
     @Before
     public void init() {
         this.context = OTeleporterContext.newInstance();
@@ -79,7 +80,7 @@ public class ImportWithSplittingTest {
         this.sourceDBInfo = new OSourceDatabaseInfo("source", this.driver, this.jurl, this.username, this.password);
     }
 
-    @Ignore
+    //@Ignore
     @Test
   /*
    *  Source DB schema:
@@ -128,7 +129,7 @@ public class ImportWithSplittingTest {
 
             // Records Inserting
 
-            String personFilling = "insert into EMPLOYEE (FIRST_NAME,LAST_NAME,SALARY,DEPARTMENT,PROJECT,BALANCE,ROLE) values ("
+            String personFilling = "insert into EMPLOYEE_PROJECT (FIRST_NAME,LAST_NAME,SALARY,DEPARTMENT,PROJECT,BALANCE,ROLE) values ("
                     + "('Joe','Black','20000','D001','Mars','12000','T'),"
                     + "('Thomas','Anderson','35000','D002','Venus','15000','T'),"
                     + "('Tyler','Durden','35000','D001','Iuppiter','20000','A'),"
@@ -164,10 +165,11 @@ public class ImportWithSplittingTest {
             orientGraph = new OrientGraphNoTx(this.outOrientGraphUri);
 
             // vertices check
-
+            Map<String, Vertex> vertices = new LinkedHashMap<String, Vertex>();
             int count = 0;
             for(Vertex v: orientGraph.getVertices()) {
                 assertNotNull(v.getId());
+                vertices.put(v.getId().toString(), v);
                 count++;
             }
             assertEquals(11, count);
@@ -232,8 +234,8 @@ public class ImportWithSplittingTest {
                 assertNull(v.getProperty("updatedOn"));
                 edgesIt = v.getEdges(Direction.IN, "WorksAt").iterator();
                 assertEquals("Black", edgesIt.next().getVertex(Direction.OUT).getProperty("lastName"));
-                assertEquals("Durden", edgesIt.next().getVertex(Direction.OUT).getProperty("lastName"));
                 assertEquals("McClanenei", edgesIt.next().getVertex(Direction.OUT).getProperty("lastName"));
+                assertEquals("Durden", edgesIt.next().getVertex(Direction.OUT).getProperty("lastName"));
                 assertEquals(false, edgesIt.hasNext());
             }
             else {
@@ -250,8 +252,8 @@ public class ImportWithSplittingTest {
                 assertEquals("Glasgow", v.getProperty("location"));
                 assertNull(v.getProperty("updatedOn"));
                 edgesIt = v.getEdges(Direction.IN, "WorksAt").iterator();
-                assertEquals("Anderson", edgesIt.next().getVertex(Direction.OUT).getProperty("lastName"));
                 assertEquals("McFly", edgesIt.next().getVertex(Direction.OUT).getProperty("lastName"));
+                assertEquals("Anderson", edgesIt.next().getVertex(Direction.OUT).getProperty("lastName"));
                 assertEquals(false, edgesIt.hasNext());
             }
             else {
@@ -266,9 +268,8 @@ public class ImportWithSplittingTest {
                 v = iterator.next();
                 assertEquals("Joe", v.getProperty("firstName"));
                 assertEquals("Black", v.getProperty("lastName"));
-                assertEquals(20000, v.getProperty("salary"));
+                assertEquals(20000, ((BigDecimal) v.getProperty("salary")).intValue());
                 assertEquals("D001", v.getProperty("department"));
-                assertNull(v.getProperty("updatedOn"));
                 edgesIt = v.getEdges(Direction.OUT, "WorksAt").iterator();
                 assertEquals("D001", edgesIt.next().getVertex(Direction.IN).getProperty("id"));
                 assertEquals(false, edgesIt.hasNext());
@@ -284,17 +285,14 @@ public class ImportWithSplittingTest {
 
             employeeValues[0] = "Thomas";
             employeeValues[1] = "Anderson";
-            iterator = orientGraph.getVertices("Person", employeeKeys, employeeValues).iterator();
+            iterator = orientGraph.getVertices("Employee", employeeKeys, employeeValues).iterator();
             assertTrue(iterator.hasNext());
             if(iterator.hasNext()) {
                 v = iterator.next();
-                assertEquals("P002", v.getProperty("extKey1"));
                 assertEquals("Thomas", v.getProperty("firstName"));
                 assertEquals("Anderson", v.getProperty("lastName"));
-                assertNull(v.getProperty("depId"));
-                assertEquals("P002", v.getProperty("extKey2"));
-                assertEquals("627390164", v.getProperty("VAT"));
-                assertNull(v.getProperty("updatedOn"));
+                assertEquals(35000, ((BigDecimal) v.getProperty("salary")).intValue());
+                assertEquals("D002", v.getProperty("department"));
                 edgesIt = v.getEdges(Direction.OUT, "WorksAt").iterator();
                 assertEquals("D002", edgesIt.next().getVertex(Direction.IN).getProperty("id"));
                 assertEquals(false, edgesIt.hasNext());
@@ -310,17 +308,14 @@ public class ImportWithSplittingTest {
 
             employeeValues[0] = "Tyler";
             employeeValues[1] = "Durden";
-            iterator = orientGraph.getVertices("Person", employeeKeys, employeeValues).iterator();
+            iterator = orientGraph.getVertices("Employee", employeeKeys, employeeValues).iterator();
             assertTrue(iterator.hasNext());
             if(iterator.hasNext()) {
                 v = iterator.next();
-                assertEquals("P003", v.getProperty("extKey1"));
                 assertEquals("Tyler", v.getProperty("firstName"));
                 assertEquals("Durden", v.getProperty("lastName"));
-                assertNull(v.getProperty("depId"));
-                assertEquals("P003", v.getProperty("extKey2"));
-                assertEquals("472889102", v.getProperty("VAT"));
-                assertNull(v.getProperty("updatedOn"));
+                assertEquals(35000, ((BigDecimal) v.getProperty("salary")).intValue());
+                assertEquals("D001", v.getProperty("department"));
                 edgesIt = v.getEdges(Direction.OUT, "WorksAt").iterator();
                 assertEquals("D001", edgesIt.next().getVertex(Direction.IN).getProperty("id"));
                 assertEquals(false, edgesIt.hasNext());
@@ -336,17 +331,14 @@ public class ImportWithSplittingTest {
 
             employeeValues[0] = "John";
             employeeValues[1] = "McClanenei";
-            iterator = orientGraph.getVertices("Person", employeeKeys, employeeValues).iterator();
+            iterator = orientGraph.getVertices("Employee", employeeKeys, employeeValues).iterator();
             assertTrue(iterator.hasNext());
             if(iterator.hasNext()) {
                 v = iterator.next();
-                assertEquals("P004", v.getProperty("extKey1"));
                 assertEquals("John", v.getProperty("firstName"));
                 assertEquals("McClanenei", v.getProperty("lastName"));
-                assertNull(v.getProperty("depId"));
-                assertEquals("P004", v.getProperty("extKey2"));
-                assertEquals("564856410", v.getProperty("VAT"));
-                assertNull(v.getProperty("updatedOn"));
+                assertEquals(25000, ((BigDecimal) v.getProperty("salary")).intValue());
+                assertEquals("D001", v.getProperty("department"));
                 edgesIt = v.getEdges(Direction.OUT, "WorksAt").iterator();
                 assertEquals("D001", edgesIt.next().getVertex(Direction.IN).getProperty("id"));
                 assertEquals(false, edgesIt.hasNext());
@@ -362,17 +354,14 @@ public class ImportWithSplittingTest {
 
             employeeValues[0] = "Marty";
             employeeValues[1] = "McFly";
-            iterator = orientGraph.getVertices("Person", employeeKeys, employeeValues).iterator();
+            iterator = orientGraph.getVertices("Employee", employeeKeys, employeeValues).iterator();
             assertTrue(iterator.hasNext());
             if(iterator.hasNext()) {
                 v = iterator.next();
-                assertEquals("P005", v.getProperty("extKey1"));
-                assertEquals("Ellen", v.getProperty("firstName"));
-                assertEquals("Ripley", v.getProperty("lastName"));
-                assertNull(v.getProperty("depId"));
-                assertEquals("P005", v.getProperty("extKey2"));
-                assertEquals("467280751", v.getProperty("VAT"));
-                assertNull(v.getProperty("updatedOn"));
+                assertEquals("Marty", v.getProperty("firstName"));
+                assertEquals("McFly", v.getProperty("lastName"));
+                assertEquals(40000, ((BigDecimal) v.getProperty("salary")).intValue());
+                assertEquals("D002", v.getProperty("department"));
                 edgesIt = v.getEdges(Direction.OUT, "WorksAt").iterator();
                 assertEquals("D002", edgesIt.next().getVertex(Direction.IN).getProperty("id"));
                 assertEquals(false, edgesIt.hasNext());
@@ -396,10 +385,7 @@ public class ImportWithSplittingTest {
             if(iterator.hasNext()) {
                 v = iterator.next();
                 assertEquals("Mars", v.getProperty("project"));
-                assertEquals(12000, v.getProperty("balance"));
-                edgesIt = v.getEdges(Direction.OUT, "WorksAt").iterator();
-                assertEquals("D001", edgesIt.next().getVertex(Direction.IN).getProperty("id"));
-                assertEquals(false, edgesIt.hasNext());
+                assertEquals(12000, ((BigDecimal) v.getProperty("balance")).intValue());
                 edgesIt = v.getEdges(Direction.IN, "HasProject").iterator();
                 Edge currentSplittingEdge = edgesIt.next();
                 assertEquals("Black", currentSplittingEdge.getVertex(Direction.OUT).getProperty("lastName"));
@@ -420,17 +406,15 @@ public class ImportWithSplittingTest {
             if(iterator.hasNext()) {
                 v = iterator.next();
                 assertEquals("Venus", v.getProperty("project"));
-                assertEquals(15000, v.getProperty("balance"));
-                edgesIt = v.getEdges(Direction.OUT, "WorksAt").iterator();
-                assertEquals("D001", edgesIt.next().getVertex(Direction.IN).getProperty("id"));
-                assertEquals(false, edgesIt.hasNext());
+                assertEquals(15000,  ((BigDecimal) v.getProperty("balance")).intValue());
                 edgesIt = v.getEdges(Direction.IN, "HasProject").iterator();
                 Edge currentSplittingEdge = edgesIt.next();
-                assertEquals("Anderson", currentSplittingEdge.getVertex(Direction.OUT).getProperty("lastName"));
-                assertEquals("T", currentSplittingEdge.getProperty("role"));
-                currentSplittingEdge = edgesIt.next();
                 assertEquals("McClanenei", currentSplittingEdge.getVertex(Direction.OUT).getProperty("lastName"));
                 assertEquals("S", currentSplittingEdge.getProperty("role"));
+                currentSplittingEdge = edgesIt.next();
+                assertEquals("Anderson", currentSplittingEdge.getVertex(Direction.OUT).getProperty("lastName"));
+                assertEquals("T", currentSplittingEdge.getProperty("role"));
+
                 assertEquals(false, edgesIt.hasNext());
             }
             else {
@@ -443,10 +427,7 @@ public class ImportWithSplittingTest {
             if(iterator.hasNext()) {
                 v = iterator.next();
                 assertEquals("Iuppiter", v.getProperty("project"));
-                assertEquals(20000, v.getProperty("balance"));
-                edgesIt = v.getEdges(Direction.OUT, "WorksAt").iterator();
-                assertEquals("D001", edgesIt.next().getVertex(Direction.IN).getProperty("id"));
-                assertEquals(false, edgesIt.hasNext());
+                assertEquals(20000, ((BigDecimal) v.getProperty("balance")).intValue());
                 edgesIt = v.getEdges(Direction.IN, "HasProject").iterator();
                 Edge currentSplittingEdge = edgesIt.next();
                 assertEquals("Durden", currentSplittingEdge.getVertex(Direction.OUT).getProperty("lastName"));
@@ -463,10 +444,7 @@ public class ImportWithSplittingTest {
             if(iterator.hasNext()) {
                 v = iterator.next();
                 assertEquals("Mercury", v.getProperty("project"));
-                assertEquals(5000, v.getProperty("balance"));
-                edgesIt = v.getEdges(Direction.OUT, "WorksAt").iterator();
-                assertEquals("D001", edgesIt.next().getVertex(Direction.IN).getProperty("id"));
-                assertEquals(false, edgesIt.hasNext());
+                assertEquals(5000, ((BigDecimal) v.getProperty("balance")).intValue());
                 edgesIt = v.getEdges(Direction.IN, "HasProject").iterator();
                 Edge currentSplittingEdge = edgesIt.next();
                 assertEquals("McFly", currentSplittingEdge.getVertex(Direction.OUT).getProperty("lastName"));

@@ -32,6 +32,7 @@ public class OConfiguredEdgeClass extends OConfiguredClass {
     // mappings and splittingEdgeInfo are mutually exclusive
     private List<OEdgeMappingInformation> mappings;                  // mandatory
     private OSplittingEdgeInformation splittingEdgeInfo;             // mandatory
+
     private boolean isLogical;                                       // optional
 
     public OConfiguredEdgeClass(String edgeName, OConfiguration globalConfiguration) {

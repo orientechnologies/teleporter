@@ -56,6 +56,7 @@ public class ConfigurationHandlerTest {
   private final String         config1  = "src/test/resources/configuration-mapping/aggregation-from2tables-mapping.json";
   private final String         config2  = "src/test/resources/configuration-mapping/joint-table-relationships-mapping-direct-edges.json";
   private final String         config3  = "src/test/resources/configuration-mapping/config-handler-output.json";
+  private final String         config4  = "src/test/resources/configuration-mapping/splitting-into2tables-mapping.json";
   private OTeleporterContext   context;
   private ODBMSDataTypeHandler dataTypeHandler;
 
@@ -85,6 +86,7 @@ public class ConfigurationHandlerTest {
   /**
    * Testing OConfiguration building from JSON (case 1)
    */
+
   public void test1() {
 
     OConfigurationHandler configurationHandler = new OConfigurationHandler(false);
@@ -368,6 +370,7 @@ public class ConfigurationHandlerTest {
   /**
    * Testing OConfiguration building from JSON (case 2)
    */
+
   public void test2() {
 
     OConfigurationHandler configurationHandler = new OConfigurationHandler(true);
@@ -445,6 +448,7 @@ public class ConfigurationHandlerTest {
   /**
    * Testing: - OConfiguration building from Graph Model (case 1)
    */
+
   public void test3() {
 
     OConfigurationHandler configurationHandler = new OConfigurationHandler(true);
@@ -825,6 +829,7 @@ public class ConfigurationHandlerTest {
   /**
    * Testing: - JSON building from OConfiguration (case 1)
    */
+
   public void test4() {
 
     OConfigurationHandler configurationHandler = new OConfigurationHandler(true);
@@ -841,23 +846,23 @@ public class ConfigurationHandlerTest {
       connection = DriverManager.getConnection(this.jurl, this.username, this.password);
 
       String departmentTableBuilding = "create memory table DEPARTMENT (ID varchar(256) not null, DEPARTMENT_NAME  varchar(256) not null,"
-          + " LOCATION varchar(256) not null, primary key (ID))";
+              + " LOCATION varchar(256) not null, primary key (ID))";
       st = connection.createStatement();
       st.execute(departmentTableBuilding);
 
       String employeeTableBuilding = "create memory table EMPLOYEE (ID varchar(256) not null,"
-          + " FIRST_NAME varchar(256) not null, LAST_NAME varchar(256) not null, SALARY double not null,"
-          + " EMAIL varchar(256) not null, DEPARTMENT varchar(256) not null, primary key (ID),"
-          + " foreign key (DEPARTMENT) references DEPARTMENT(ID))";
+              + " FIRST_NAME varchar(256) not null, LAST_NAME varchar(256) not null, SALARY double not null,"
+              + " EMAIL varchar(256) not null, DEPARTMENT varchar(256) not null, primary key (ID),"
+              + " foreign key (DEPARTMENT) references DEPARTMENT(ID))";
       st.execute(employeeTableBuilding);
 
       String projectTableBuilding = "create memory table PROJECT (ID varchar(256) not null, PROJECT_NAME  varchar(256),"
-          + " DESCRIPTION varchar(256) not null, START_DATE date not null, EXPECTED_END_DATE date not null, primary key (ID))";
+              + " DESCRIPTION varchar(256) not null, START_DATE date not null, EXPECTED_END_DATE date not null, primary key (ID))";
       st.execute(projectTableBuilding);
 
       String projectEmployeeTableBuilding = "create memory table EMPLOYEE_PROJECT (EMPLOYEE_ID  varchar(256)not null, PROJECT_ID varchar(256) not null,"
-          + " ROLE varchar(256) not null, primary key (EMPLOYEE_ID, PROJECT_ID), foreign key (EMPLOYEE_ID) references EMPLOYEE(ID),"
-          + " foreign key (PROJECT_ID) references PROJECT(ID))";
+              + " ROLE varchar(256) not null, primary key (EMPLOYEE_ID, PROJECT_ID), foreign key (EMPLOYEE_ID) references EMPLOYEE(ID),"
+              + " foreign key (PROJECT_ID) references PROJECT(ID))";
       st.execute(projectEmployeeTableBuilding);
 
       this.mapper = new OER2GraphMapper(this.sourceDBInfo, null, null, null);
@@ -880,6 +885,82 @@ public class ConfigurationHandlerTest {
       }
 
       ODocument configuredGraphDoc = configurationHandler.buildJSONDocFromConfiguration(configuredGraph);
+      assertTrue(ODocumentComparator.areEquals(inputConfigurationDoc, configuredGraphDoc));
+
+    } catch (Exception e) {
+      e.printStackTrace();
+      fail();
+    } finally {
+      try {
+
+        // Dropping Source DB Schema and OrientGraph
+        String dbDropping = "drop schema public cascade";
+        st.execute(dbDropping);
+        connection.close();
+      } catch (Exception e) {
+        e.printStackTrace();
+        fail();
+      }
+    }
+  }
+
+
+  @Test
+  /**
+   * Testing: - JSON building from OConfiguration (splitting case)
+   */
+
+  public void test5() {
+
+    OConfigurationHandler configurationHandler = new OConfigurationHandler(true);
+    Connection connection = null;
+    Statement st = null;
+
+    try {
+
+      /**
+       * Graph model building
+       */
+
+      Class.forName(this.driver);
+      connection = DriverManager.getConnection(this.jurl, this.username, this.password);
+
+      String employeeTableBuilding = "create memory table EMPLOYEE_PROJECT (FIRST_NAME varchar(256) not null," +
+              " LAST_NAME varchar(256) not null, SALARY double not null, DEPARTMENT varchar(256) not null," +
+              " PROJECT varchar(256) not null, BALANCE double not null, ROLE varchar(256), primary key (FIRST_NAME,LAST_NAME,PROJECT))";
+      st = connection.createStatement();
+      st.execute(employeeTableBuilding);
+
+      String departmentTableBuilding = "create memory table DEPARTMENT (ID varchar(256),"+
+              " NAME varchar(256) not null, LOCATION varchar(256) not null, UPDATED_ON date not null, primary key (ID))";
+      st.execute(departmentTableBuilding);
+
+      ODocument config = OFileManager.buildJsonFromFile(this.config4);
+      OConfiguration migrationConfig = configurationHandler.buildConfigurationFromJSONDoc(config);
+
+      this.mapper = new OER2GraphMapper(this.sourceDBInfo, null, null, migrationConfig);
+      this.mapper.buildSourceDatabaseSchema();
+      this.mapper.buildGraphModel(new OJavaConventionNameResolver());
+      this.mapper.applyImportConfiguration();
+      this.mapper.performMany2ManyAggregation();
+
+      OConfiguration configuredGraph = configurationHandler.buildConfigurationFromMapper(this.mapper);
+
+      /**
+       * Testing JSON building
+       */
+
+      ODocument inputConfigurationDoc = null;
+      try {
+        inputConfigurationDoc = OFileManager.buildJsonFromFile(this.config4);
+      } catch (IOException e) {
+        e.printStackTrace();
+        fail();
+      }
+
+      ODocument configuredGraphDoc = configurationHandler.buildJSONDocFromConfiguration(configuredGraph);
+      String input = inputConfigurationDoc.toJSON("");
+      String configured = configuredGraphDoc.toJSON("");
       assertTrue(ODocumentComparator.areEquals(inputConfigurationDoc, configuredGraphDoc));
 
     } catch (Exception e) {

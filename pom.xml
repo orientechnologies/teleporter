@@ -69,7 +69,7 @@
     </distributionManagement>
 
     <properties>
-        <maven.compiler.source>1.7</maven.compiler.source>
+        <maven.compiler.sourceTable>1.7</maven.compiler.sourceTable>
         <hsqldb.version>2.3.3</hsqldb.version>
     </properties>
 
@@ -136,6 +136,14 @@
                     <pushChanges>false</pushChanges>
                     <allowTimestampedSnapshots>true</allowTimestampedSnapshots>
                     <arguments>-Prelease</arguments>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.7</source>
+                    <target>1.7</target>
                 </configuration>
             </plugin>
         </plugins>

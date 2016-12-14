@@ -25,7 +25,7 @@ import com.orientechnologies.teleporter.context.OOutputStreamManager;
 import com.orientechnologies.teleporter.context.OTeleporterContext;
 import com.orientechnologies.teleporter.importengine.rdbms.dbengine.ODBQueryEngine;
 import com.orientechnologies.teleporter.mapper.rdbms.OER2GraphMapper;
-import com.orientechnologies.teleporter.mapper.rdbms.classmapper.OClassMapper;
+import com.orientechnologies.teleporter.mapper.rdbms.classmapper.OEVClassMapper;
 import com.orientechnologies.teleporter.model.dbschema.OCanonicalRelationship;
 import com.orientechnologies.teleporter.model.dbschema.OEntity;
 import com.orientechnologies.teleporter.model.dbschema.OSourceDatabaseInfo;
@@ -406,59 +406,59 @@ public class MappingWithAggregationTest {
 
             // Classes Mapping
 
-            assertEquals(2, mapper.getVertexType2classMappers().size());
-            assertEquals(3, mapper.getEntity2classMappers().size());
+            assertEquals(2, mapper.getVertexType2EVClassMappers().size());
+            assertEquals(3, mapper.getEntity2EVClassMappers().size());
 
-            assertEquals(2, mapper.getClassMappersByVertex(personVertexType).size());
-            OClassMapper personClassMapper = mapper.getClassMappersByVertex(personVertexType).get(0);
-            assertEquals(1, mapper.getClassMappersByEntity(personEntity).size());
-            assertEquals(personClassMapper, mapper.getClassMappersByEntity(personEntity).get(0));
+            assertEquals(2, mapper.getEVClassMappersByVertex(personVertexType).size());
+            OEVClassMapper personClassMapper = mapper.getEVClassMappersByVertex(personVertexType).get(0);
+            assertEquals(1, mapper.getEVClassMappersByEntity(personEntity).size());
+            assertEquals(personClassMapper, mapper.getEVClassMappersByEntity(personEntity).get(0));
             assertEquals(personClassMapper.getEntity(), personEntity);
             assertEquals(personClassMapper.getVertexType(), personVertexType);
 
-            assertEquals(4, personClassMapper.attribute2property.size());
-            assertEquals(4, personClassMapper.property2attribute.size());
-            assertEquals("extKey1", personClassMapper.attribute2property.get("ID"));
-            assertEquals("firstName", personClassMapper.attribute2property.get("NAME"));
-            assertEquals("lastName", personClassMapper.attribute2property.get("SURNAME"));
-            assertEquals("depId", personClassMapper.attribute2property.get("DEP_ID"));
-            assertEquals("ID", personClassMapper.property2attribute.get("extKey1"));
-            assertEquals("NAME", personClassMapper.property2attribute.get("firstName"));
-            assertEquals("SURNAME", personClassMapper.property2attribute.get("lastName"));
-            assertEquals("DEP_ID", personClassMapper.property2attribute.get("depId"));
+            assertEquals(4, personClassMapper.getAttribute2property().size());
+            assertEquals(4, personClassMapper.getProperty2attribute().size());
+            assertEquals("extKey1", personClassMapper.getAttribute2property().get("ID"));
+            assertEquals("firstName", personClassMapper.getAttribute2property().get("NAME"));
+            assertEquals("lastName", personClassMapper.getAttribute2property().get("SURNAME"));
+            assertEquals("depId", personClassMapper.getAttribute2property().get("DEP_ID"));
+            assertEquals("ID", personClassMapper.getProperty2attribute().get("extKey1"));
+            assertEquals("NAME", personClassMapper.getProperty2attribute().get("firstName"));
+            assertEquals("SURNAME", personClassMapper.getProperty2attribute().get("lastName"));
+            assertEquals("DEP_ID", personClassMapper.getProperty2attribute().get("depId"));
 
-            OClassMapper vatProfileClassMapper = mapper.getClassMappersByVertex(personVertexType).get(1);
-            assertEquals(1, mapper.getClassMappersByEntity(vatProfileEntity).size());
-            assertEquals(vatProfileClassMapper, mapper.getClassMappersByEntity(vatProfileEntity).get(0));
+            OEVClassMapper vatProfileClassMapper = mapper.getEVClassMappersByVertex(personVertexType).get(1);
+            assertEquals(1, mapper.getEVClassMappersByEntity(vatProfileEntity).size());
+            assertEquals(vatProfileClassMapper, mapper.getEVClassMappersByEntity(vatProfileEntity).get(0));
             assertEquals(vatProfileClassMapper.getEntity(), vatProfileEntity);
             assertEquals(vatProfileClassMapper.getVertexType(), personVertexType);
 
-            assertEquals(3, vatProfileClassMapper.attribute2property.size());
-            assertEquals(3, vatProfileClassMapper.property2attribute.size());
-            assertEquals("extKey2", vatProfileClassMapper.attribute2property.get("ID"));
-            assertEquals("VAT", vatProfileClassMapper.attribute2property.get("VAT"));
-            assertEquals("updatedOn", vatProfileClassMapper.attribute2property.get("UPDATED_ON"));
-            assertEquals("ID", vatProfileClassMapper.property2attribute.get("extKey2"));
-            assertEquals("VAT", vatProfileClassMapper.property2attribute.get("VAT"));
-            assertEquals("UPDATED_ON", vatProfileClassMapper.property2attribute.get("updatedOn"));
+            assertEquals(3, vatProfileClassMapper.getAttribute2property().size());
+            assertEquals(3, vatProfileClassMapper.getProperty2attribute().size());
+            assertEquals("extKey2", vatProfileClassMapper.getAttribute2property().get("ID"));
+            assertEquals("VAT", vatProfileClassMapper.getAttribute2property().get("VAT"));
+            assertEquals("updatedOn", vatProfileClassMapper.getAttribute2property().get("UPDATED_ON"));
+            assertEquals("ID", vatProfileClassMapper.getProperty2attribute().get("extKey2"));
+            assertEquals("VAT", vatProfileClassMapper.getProperty2attribute().get("VAT"));
+            assertEquals("UPDATED_ON", vatProfileClassMapper.getProperty2attribute().get("updatedOn"));
 
-            assertEquals(1, mapper.getClassMappersByVertex(departmentVertexType).size());
-            OClassMapper departmentClassMapper = mapper.getClassMappersByVertex(departmentVertexType).get(0);
-            assertEquals(1, mapper.getClassMappersByEntity(departmentEntity).size());
-            assertEquals(departmentClassMapper, mapper.getClassMappersByEntity(departmentEntity).get(0));
+            assertEquals(1, mapper.getEVClassMappersByVertex(departmentVertexType).size());
+            OEVClassMapper departmentClassMapper = mapper.getEVClassMappersByVertex(departmentVertexType).get(0);
+            assertEquals(1, mapper.getEVClassMappersByEntity(departmentEntity).size());
+            assertEquals(departmentClassMapper, mapper.getEVClassMappersByEntity(departmentEntity).get(0));
             assertEquals(departmentClassMapper.getEntity(), departmentEntity);
             assertEquals(departmentClassMapper.getVertexType(), departmentVertexType);
 
-            assertEquals(4, departmentClassMapper.attribute2property.size());
-            assertEquals(4, departmentClassMapper.property2attribute.size());
-            assertEquals("id", departmentClassMapper.attribute2property.get("ID"));
-            assertEquals("departmentName", departmentClassMapper.attribute2property.get("NAME"));
-            assertEquals("location", departmentClassMapper.attribute2property.get("LOCATION"));
-            assertEquals("updatedOn", departmentClassMapper.attribute2property.get("UPDATED_ON"));
-            assertEquals("ID", departmentClassMapper.property2attribute.get("id"));
-            assertEquals("NAME", departmentClassMapper.property2attribute.get("departmentName"));
-            assertEquals("LOCATION", departmentClassMapper.property2attribute.get("location"));
-            assertEquals("UPDATED_ON", departmentClassMapper.property2attribute.get("updatedOn"));
+            assertEquals(4, departmentClassMapper.getAttribute2property().size());
+            assertEquals(4, departmentClassMapper.getProperty2attribute().size());
+            assertEquals("id", departmentClassMapper.getAttribute2property().get("ID"));
+            assertEquals("departmentName", departmentClassMapper.getAttribute2property().get("NAME"));
+            assertEquals("location", departmentClassMapper.getAttribute2property().get("LOCATION"));
+            assertEquals("updatedOn", departmentClassMapper.getAttribute2property().get("UPDATED_ON"));
+            assertEquals("ID", departmentClassMapper.getProperty2attribute().get("id"));
+            assertEquals("NAME", departmentClassMapper.getProperty2attribute().get("departmentName"));
+            assertEquals("LOCATION", departmentClassMapper.getProperty2attribute().get("location"));
+            assertEquals("UPDATED_ON", departmentClassMapper.getProperty2attribute().get("updatedOn"));
 
             // Relationships-Edges Mapping
 

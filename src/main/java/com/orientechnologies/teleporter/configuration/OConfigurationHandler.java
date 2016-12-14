@@ -24,7 +24,8 @@ import com.orientechnologies.teleporter.context.OTeleporterContext;
 import com.orientechnologies.teleporter.exception.OTeleporterRuntimeException;
 import com.orientechnologies.teleporter.mapper.rdbms.OAggregatorEdge;
 import com.orientechnologies.teleporter.mapper.rdbms.OER2GraphMapper;
-import com.orientechnologies.teleporter.mapper.rdbms.classmapper.OClassMapper;
+import com.orientechnologies.teleporter.mapper.rdbms.classmapper.OEEClassMapper;
+import com.orientechnologies.teleporter.mapper.rdbms.classmapper.OEVClassMapper;
 import com.orientechnologies.teleporter.model.dbschema.*;
 import com.orientechnologies.teleporter.model.graphmodel.OEdgeType;
 import com.orientechnologies.teleporter.model.graphmodel.OModelProperty;
@@ -329,7 +330,17 @@ public class OConfigurationHandler {
                             .error("Configuration error: 'toVertexClass' field not found in the 'splitting' area in the '%s' edge-type definition.", configuredEdgeClassName);
                     throw new OTeleporterRuntimeException();
                 }
-                OSplittingEdgeInformation splittingEdgeInfo = new OSplittingEdgeInformation(fromVertexClass, toVertexClass);
+                String sourceTable = splittingDoc.field("sourceTable");
+                if(sourceTable == null) {
+                    OTeleporterContext.getInstance().getOutputManager()
+                            .error("Configuration error: 'sourceTable' field not found in the 'splitting' area in the '%s' edge-type definition.", configuredEdgeClassName);
+                    throw new OTeleporterRuntimeException();
+                }
+                String direction = splittingDoc.field("direction");
+                if(direction == null) {
+                    direction = "direct";
+                }
+                OSplittingEdgeInformation splittingEdgeInfo = new OSplittingEdgeInformation(fromVertexClass, toVertexClass, sourceTable);
                 currentConfiguredEdge.setSplittingEdgeInfo(splittingEdgeInfo);
             }
 
@@ -534,32 +545,42 @@ public class OConfigurationHandler {
             String edgeClassName = currConfiguredEdge.getName();
 
             /*
-             * Setting edge mapping
+             * Setting edge mapping or splitting edge info (they are mutually exclusive)
              */
 
             List<OEdgeMappingInformation> edgeMappings = currConfiguredEdge.getMappings();
-            List<ODocument> edgeMappingDocs = new LinkedList<ODocument>();
-            for(OEdgeMappingInformation currEdgeMapping: edgeMappings) {
-                ODocument currEdgeMappingDoc = new ODocument();
-                currEdgeMappingDoc.field("fromTable", currEdgeMapping.getFromTableName());
-                currEdgeMappingDoc.field("fromColumns", currEdgeMapping.getFromColumns());
-                currEdgeMappingDoc.field("toTable", currEdgeMapping.getToTableName());
-                currEdgeMappingDoc.field("toColumns", currEdgeMapping.getToColumns());
-                OAggregatedJoinTableMapping representedJoinTableMapping = currEdgeMapping.getRepresentedJoinTableMapping();
-                if (representedJoinTableMapping != null) {
-                    ODocument joinTableMapping = new ODocument();
-                    joinTableMapping.field("tableName", representedJoinTableMapping.getTableName());
-                    joinTableMapping.field("fromColumns", representedJoinTableMapping.getFromColumns());
-                    joinTableMapping.field("toColumns", representedJoinTableMapping.getToColumns());
-                    currEdgeMappingDoc.field("joinTable", joinTableMapping);
+            OSplittingEdgeInformation splittingEdgeInfo = currConfiguredEdge.getSplittingEdgeInfo();
+
+            if(edgeMappings != null) {
+                List<ODocument> edgeMappingDocs = new LinkedList<ODocument>();
+                for (OEdgeMappingInformation currEdgeMapping : edgeMappings) {
+                    ODocument currEdgeMappingDoc = new ODocument();
+                    currEdgeMappingDoc.field("fromTable", currEdgeMapping.getFromTableName());
+                    currEdgeMappingDoc.field("fromColumns", currEdgeMapping.getFromColumns());
+                    currEdgeMappingDoc.field("toTable", currEdgeMapping.getToTableName());
+                    currEdgeMappingDoc.field("toColumns", currEdgeMapping.getToColumns());
+                    OAggregatedJoinTableMapping representedJoinTableMapping = currEdgeMapping.getRepresentedJoinTableMapping();
+                    if (representedJoinTableMapping != null) {
+                        ODocument joinTableMapping = new ODocument();
+                        joinTableMapping.field("tableName", representedJoinTableMapping.getTableName());
+                        joinTableMapping.field("fromColumns", representedJoinTableMapping.getFromColumns());
+                        joinTableMapping.field("toColumns", representedJoinTableMapping.getToColumns());
+                        currEdgeMappingDoc.field("joinTable", joinTableMapping);
+                    }
+                    currEdgeMappingDoc.field("direction", currEdgeMapping.getDirection());
+                    edgeMappingDocs.add(currEdgeMappingDoc);
                 }
-                currEdgeMappingDoc.field("direction", currEdgeMapping.getDirection());
-                edgeMappingDocs.add(currEdgeMappingDoc);
+
+                currEdgeInfoDoc.field("mapping", edgeMappingDocs);
+            }
+            else if(splittingEdgeInfo != null) {
+                ODocument splittingInfoDoc = new ODocument();
+                splittingInfoDoc.field("fromVertexClass", splittingEdgeInfo.getFromVertexClass());
+                splittingInfoDoc.field("toVertexClass", splittingEdgeInfo.getToVertexClass());
+                splittingInfoDoc.field("sourceTable", splittingEdgeInfo.getSourceTable());
+                currEdgeInfoDoc.field("splitting", splittingInfoDoc);
             }
 
-            currEdgeInfoDoc.field("mapping", edgeMappingDocs);
-
-            // TO DELETE after poc
             currEdgeInfoDoc.field("isLogical", currConfiguredEdge.isLogical());
 
             /*
@@ -632,7 +653,7 @@ public class OConfigurationHandler {
         Map<String,String> tableName2SourceIdName = new HashMap<String,String>();
 
         // populating tableName2SourceIdName map with all the tables in every case (with aggregation or not)
-        for(OVertexType currVertexType: mapper.getVertexType2classMappers().keySet()) {
+        for(OVertexType currVertexType: mapper.getVertexType2EVClassMappers().keySet()) {
             OEntity currentEntity = mapper.getEntityByVertexType(currVertexType);
             OSourceDatabaseInfo currSourceDBInfo = currentEntity.getSourceDataseInfo();
             String sourceIdName = currSourceDBInfo.getSourceIdName() + "_" + currentEntity.getName();
@@ -641,7 +662,7 @@ public class OConfigurationHandler {
 
         List<OConfiguredVertexClass> configuredVertexClasses = new LinkedList<OConfiguredVertexClass>();
 
-        for(OVertexType currVertexType: mapper.getVertexType2classMappers().keySet()) {
+        for(OVertexType currVertexType: mapper.getVertexType2EVClassMappers().keySet()) {
 
             if(this.runningAggregationStrategy && currVertexType.isFromJoinTable()) {
                 // this vertex type does not belong to the final graph model, so it will jumped
@@ -650,7 +671,7 @@ public class OConfigurationHandler {
 
             OEntity currentEntity = mapper.getEntityByVertexType(currVertexType);
             OSourceDatabaseInfo currSourceDBInfo = currentEntity.getSourceDataseInfo();
-            List<OClassMapper> currClassMappers = mapper.getVertexType2classMappers().get(currVertexType);
+            List<OEVClassMapper> currClassMappers = mapper.getVertexType2EVClassMappers().get(currVertexType);
             if (currClassMappers.size() == 0) {
                 OTeleporterContext.getInstance().
                         getOutputManager().error("Error during the model building: the %s vertex class is not mapped to any table.", currVertexType.getName());
@@ -684,10 +705,15 @@ public class OConfigurationHandler {
                 currConfiguredProperty.setIncludedInMigration(currModelProperty.isIncludedInMigration());
                 currConfiguredProperty.setPropertyType(currModelProperty.getOrientdbType());
                 currConfiguredProperty.setOrdinalPosition(currModelProperty.getOrdinalPosition());
-                currConfiguredProperty.setMandatory(false);
-                currConfiguredProperty.setReadOnly(false);
-                currConfiguredProperty.setNotNull(false);
-
+                if(currModelProperty.isMandatory() != null) {
+                    currConfiguredProperty.setMandatory(currModelProperty.isMandatory());
+                }
+                if(currModelProperty.isReadOnly() != null) {
+                    currConfiguredProperty.setReadOnly(currModelProperty.isReadOnly());
+                }
+                if(currModelProperty.isNotNull() != null) {
+                    currConfiguredProperty.setNotNull(currModelProperty.isNotNull());
+                }
                 String correspondentAttributeName = mapper.getAttributeByPropertyAboveMappers(currModelProperty.getName(), currClassMappers);
                 OAttribute correspondentAttribute = currentEntity.getAttributeByName(correspondentAttributeName);
 
@@ -739,7 +765,6 @@ public class OConfigurationHandler {
                     // building the edge mappings
                     for (ORelationship currentRelationship : relationships) {
 
-                        // TO DELETE after poc
                         if (currentRelationship instanceof OLogicalRelationship) {
                             isLogicalEdge = true;
                         }
@@ -811,7 +836,12 @@ public class OConfigurationHandler {
                 currConfiguredEdgeClass.setMappings(edgeMappings);
             }
             else {
-                // TODO: add splitting field!
+                // Splitting edge information writing
+                OVertexType inVertexType = currEdgeType.getInVertexType();
+                OVertexType outVertexType = currEdgeType.getOutVertexType();
+                String sourceTable = mapper.getEEClassMappersByEdge(currEdgeType).get(0).getEntity().getName();     // we have just a class mapper in the splitting case
+                OSplittingEdgeInformation splittingInfo = new OSplittingEdgeInformation(outVertexType.getName(), inVertexType.getName(), sourceTable);
+                currConfiguredEdgeClass.setSplittingEdgeInfo(splittingInfo);
             }
 
             currConfiguredEdgeClass.setLogical(isLogicalEdge);
@@ -830,7 +860,7 @@ public class OConfigurationHandler {
                 // the property mapping is present iff it comes from a column of an aggregated join table
                 // => the property mapping is present if there was a join table aggregation but not always vice versa.
                 if(joinTable != null) {
-                    OClassMapper currClassMapper = mapper.getClassMappersByEntity(joinTable).get(0);  // join table is mapped with just a vertex class
+                    OEVClassMapper currClassMapper = mapper.getEVClassMappersByEntity(joinTable).get(0);  // join table is mapped with just a vertex class
                     String correspondentAttributeName = currClassMapper.getAttributeByProperty(currModelProperty.getName());
                     OAttribute correspondentAttribute = joinTable.getAttributeByName(correspondentAttributeName);
 
@@ -838,6 +868,25 @@ public class OConfigurationHandler {
                     // otherwise it was added, so there is not mapping with the source database.
                     if(correspondentAttribute != null) {
                         OConfiguredPropertyMapping propertyMappingInfo = new OConfiguredPropertyMapping(tableName2SourceIdName.get(joinTable.getName()));
+                        propertyMappingInfo.setColumnName(correspondentAttributeName);
+                        propertyMappingInfo.setType(correspondentAttribute.getDataType());
+                        currConfiguredProperty.setPropertyMapping(propertyMappingInfo);
+                    }
+                }
+                else if(currEdgeType.isSplittingEdge()) {
+                    OEEClassMapper currClassMapper = mapper.getEEClassMappersByEdge(currEdgeType).get(0);  // the edge type is mapped with just a table
+                    String correspondentAttributeName = currClassMapper.getAttributeByProperty(currModelProperty.getName());
+                    OEntity correspondentEntity = currClassMapper.getEntity();
+
+                    OAttribute correspondentAttribute = null;
+                    if(correspondentEntity != null) {
+                        correspondentAttribute = correspondentEntity.getAttributeByName(correspondentAttributeName);
+                    }
+
+                    // if correspondent attribute != null the property comes from a column of the split table
+                    // otherwise it was added, so there is not mapping with the source database.
+                    if(correspondentAttribute != null) {
+                        OConfiguredPropertyMapping propertyMappingInfo = new OConfiguredPropertyMapping(tableName2SourceIdName.get(correspondentEntity.getName()));
                         propertyMappingInfo.setColumnName(correspondentAttributeName);
                         propertyMappingInfo.setType(correspondentAttribute.getDataType());
                         currConfiguredProperty.setPropertyMapping(propertyMappingInfo);

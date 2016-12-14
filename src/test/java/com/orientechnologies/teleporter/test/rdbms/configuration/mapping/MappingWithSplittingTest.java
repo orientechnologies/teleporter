@@ -25,7 +25,7 @@ import com.orientechnologies.teleporter.context.OOutputStreamManager;
 import com.orientechnologies.teleporter.context.OTeleporterContext;
 import com.orientechnologies.teleporter.importengine.rdbms.dbengine.ODBQueryEngine;
 import com.orientechnologies.teleporter.mapper.rdbms.OER2GraphMapper;
-import com.orientechnologies.teleporter.mapper.rdbms.classmapper.OClassMapper;
+import com.orientechnologies.teleporter.mapper.rdbms.classmapper.OEVClassMapper;
 import com.orientechnologies.teleporter.model.dbschema.OCanonicalRelationship;
 import com.orientechnologies.teleporter.model.dbschema.OEntity;
 import com.orientechnologies.teleporter.model.dbschema.OSourceDatabaseInfo;
@@ -37,7 +37,6 @@ import com.orientechnologies.teleporter.persistence.handler.OHSQLDBDataTypeHandl
 import com.orientechnologies.teleporter.util.OFileManager;
 import com.tinkerpop.blueprints.Direction;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.sql.Connection;
@@ -298,7 +297,7 @@ public class MappingWithSplittingTest {
 
             assertNotNull(employeeVertexType.getPropertyByName("salary"));
             assertEquals("salary", employeeVertexType.getPropertyByName("salary").getName());
-            assertEquals("INT2", employeeVertexType.getPropertyByName("salary").getOriginalType());
+            assertEquals("DOUBLE", employeeVertexType.getPropertyByName("salary").getOriginalType());
             assertEquals("DECIMAL", employeeVertexType.getPropertyByName("salary").getOrientdbType());
             assertEquals(3, employeeVertexType.getPropertyByName("salary").getOrdinalPosition());
             assertEquals(false, employeeVertexType.getPropertyByName("salary").isFromPrimaryKey());
@@ -329,7 +328,7 @@ public class MappingWithSplittingTest {
 
             assertNotNull(projectVertexType.getPropertyByName("balance"));
             assertEquals("balance", projectVertexType.getPropertyByName("balance").getName());
-            assertEquals("INT2", projectVertexType.getPropertyByName("balance").getOriginalType());
+            assertEquals("DOUBLE", projectVertexType.getPropertyByName("balance").getOriginalType());
             assertEquals("DECIMAL", projectVertexType.getPropertyByName("balance").getOrientdbType());
             assertEquals(2, projectVertexType.getPropertyByName("balance").getOrdinalPosition());
             assertEquals(false, projectVertexType.getPropertyByName("balance").isFromPrimaryKey());
@@ -424,57 +423,57 @@ public class MappingWithSplittingTest {
 
             // Classes Mapping
 
-            assertEquals(3, mapper.getVertexType2classMappers().size());
-            assertEquals(2, mapper.getEntity2classMappers().size());
+            assertEquals(3, mapper.getVertexType2EVClassMappers().size());
+            assertEquals(2, mapper.getEntity2EVClassMappers().size());
 
-            assertEquals(1, mapper.getClassMappersByVertex(employeeVertexType).size());
-            OClassMapper employeeClassMapper = mapper.getClassMappersByVertex(employeeVertexType).get(0);
-            assertEquals(2, mapper.getClassMappersByEntity(employeeEntity).size());
-            assertEquals(employeeClassMapper, mapper.getClassMappersByEntity(employeeEntity).get(0));  //!!!
+            assertEquals(1, mapper.getEVClassMappersByVertex(employeeVertexType).size());
+            OEVClassMapper employeeClassMapper = mapper.getEVClassMappersByVertex(employeeVertexType).get(0);
+            assertEquals(2, mapper.getEVClassMappersByEntity(employeeEntity).size());
+            assertEquals(employeeClassMapper, mapper.getEVClassMappersByEntity(employeeEntity).get(0));  //!!!
             assertEquals(employeeClassMapper.getEntity(), employeeEntity);
             assertEquals(employeeClassMapper.getVertexType(), employeeVertexType);
 
-            assertEquals(4, employeeClassMapper.attribute2property.size());
-            assertEquals(4, employeeClassMapper.property2attribute.size());
-            assertEquals("firstName", employeeClassMapper.attribute2property.get("FIRST_NAME"));
-            assertEquals("lastName", employeeClassMapper.attribute2property.get("LAST_NAME"));
-            assertEquals("salary", employeeClassMapper.attribute2property.get("SALARY"));
-            assertEquals("department", employeeClassMapper.attribute2property.get("DEPARTMENT"));
-            assertEquals("FIRST_NAME", employeeClassMapper.property2attribute.get("firstName"));
-            assertEquals("LAST_NAME", employeeClassMapper.property2attribute.get("lastName"));
-            assertEquals("SALARY", employeeClassMapper.property2attribute.get("salary"));
-            assertEquals("DEPARTMENT", employeeClassMapper.property2attribute.get("department"));
+            assertEquals(4, employeeClassMapper.getAttribute2property().size());
+            assertEquals(4, employeeClassMapper.getProperty2attribute().size());
+            assertEquals("firstName", employeeClassMapper.getAttribute2property().get("FIRST_NAME"));
+            assertEquals("lastName", employeeClassMapper.getAttribute2property().get("LAST_NAME"));
+            assertEquals("salary", employeeClassMapper.getAttribute2property().get("SALARY"));
+            assertEquals("department", employeeClassMapper.getAttribute2property().get("DEPARTMENT"));
+            assertEquals("FIRST_NAME", employeeClassMapper.getProperty2attribute().get("firstName"));
+            assertEquals("LAST_NAME", employeeClassMapper.getProperty2attribute().get("lastName"));
+            assertEquals("SALARY", employeeClassMapper.getProperty2attribute().get("salary"));
+            assertEquals("DEPARTMENT", employeeClassMapper.getProperty2attribute().get("department"));
 
-            assertEquals(1, mapper.getClassMappersByVertex(projectVertexType).size());
-            OClassMapper projectClassMapper = mapper.getClassMappersByVertex(projectVertexType).get(0);
-            assertEquals(projectClassMapper, mapper.getClassMappersByEntity(employeeEntity).get(1));
+            assertEquals(1, mapper.getEVClassMappersByVertex(projectVertexType).size());
+            OEVClassMapper projectClassMapper = mapper.getEVClassMappersByVertex(projectVertexType).get(0);
+            assertEquals(projectClassMapper, mapper.getEVClassMappersByEntity(employeeEntity).get(1));
             assertEquals(projectClassMapper.getEntity(), employeeEntity);
             assertEquals(projectClassMapper.getVertexType(), projectVertexType);
 
-            assertEquals(2, projectClassMapper.attribute2property.size());
-            assertEquals(2, projectClassMapper.property2attribute.size());
-            assertEquals("project", projectClassMapper.attribute2property.get("PROJECT"));
-            assertEquals("balance", projectClassMapper.attribute2property.get("BALANCE"));
-            assertEquals("PROJECT", projectClassMapper.property2attribute.get("project"));
-            assertEquals("BALANCE", projectClassMapper.property2attribute.get("balance"));
+            assertEquals(2, projectClassMapper.getAttribute2property().size());
+            assertEquals(2, projectClassMapper.getProperty2attribute().size());
+            assertEquals("project", projectClassMapper.getAttribute2property().get("PROJECT"));
+            assertEquals("balance", projectClassMapper.getAttribute2property().get("BALANCE"));
+            assertEquals("PROJECT", projectClassMapper.getProperty2attribute().get("project"));
+            assertEquals("BALANCE", projectClassMapper.getProperty2attribute().get("balance"));
 
-            assertEquals(1, mapper.getClassMappersByVertex(departmentVertexType).size());
-            OClassMapper departmentClassMapper = mapper.getClassMappersByVertex(departmentVertexType).get(0);
-            assertEquals(1, mapper.getClassMappersByEntity(departmentEntity).size());
-            assertEquals(departmentClassMapper, mapper.getClassMappersByEntity(departmentEntity).get(0));
+            assertEquals(1, mapper.getEVClassMappersByVertex(departmentVertexType).size());
+            OEVClassMapper departmentClassMapper = mapper.getEVClassMappersByVertex(departmentVertexType).get(0);
+            assertEquals(1, mapper.getEVClassMappersByEntity(departmentEntity).size());
+            assertEquals(departmentClassMapper, mapper.getEVClassMappersByEntity(departmentEntity).get(0));
             assertEquals(departmentClassMapper.getEntity(), departmentEntity);
             assertEquals(departmentClassMapper.getVertexType(), departmentVertexType);
 
-            assertEquals(4, departmentClassMapper.attribute2property.size());
-            assertEquals(4, departmentClassMapper.property2attribute.size());
-            assertEquals("id", departmentClassMapper.attribute2property.get("ID"));
-            assertEquals("departmentName", departmentClassMapper.attribute2property.get("NAME"));
-            assertEquals("location", departmentClassMapper.attribute2property.get("LOCATION"));
-            assertEquals("updatedOn", departmentClassMapper.attribute2property.get("UPDATED_ON"));
-            assertEquals("ID", departmentClassMapper.property2attribute.get("id"));
-            assertEquals("NAME", departmentClassMapper.property2attribute.get("departmentName"));
-            assertEquals("LOCATION", departmentClassMapper.property2attribute.get("location"));
-            assertEquals("UPDATED_ON", departmentClassMapper.property2attribute.get("updatedOn"));
+            assertEquals(4, departmentClassMapper.getAttribute2property().size());
+            assertEquals(4, departmentClassMapper.getProperty2attribute().size());
+            assertEquals("id", departmentClassMapper.getAttribute2property().get("ID"));
+            assertEquals("departmentName", departmentClassMapper.getAttribute2property().get("NAME"));
+            assertEquals("location", departmentClassMapper.getAttribute2property().get("LOCATION"));
+            assertEquals("updatedOn", departmentClassMapper.getAttribute2property().get("UPDATED_ON"));
+            assertEquals("ID", departmentClassMapper.getProperty2attribute().get("id"));
+            assertEquals("NAME", departmentClassMapper.getProperty2attribute().get("departmentName"));
+            assertEquals("LOCATION", departmentClassMapper.getProperty2attribute().get("location"));
+            assertEquals("UPDATED_ON", departmentClassMapper.getProperty2attribute().get("updatedOn"));
 
             // Relationships-Edges Mapping
 

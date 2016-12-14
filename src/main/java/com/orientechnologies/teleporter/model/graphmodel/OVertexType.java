@@ -37,12 +37,14 @@ public class OVertexType extends OElementType {
   private List<OEdgeType> outEdgesType;
   private boolean isFromJoinTable;
   private Set<String> externalKey;
+  private boolean analyzedInLastMigration;
 
   public OVertexType(String vertexType) {
     super(vertexType);
     this.inEdgesType = new ArrayList<OEdgeType>();
     this.outEdgesType = new ArrayList<OEdgeType>();
     this.externalKey = new LinkedHashSet<String>();
+    this.analyzedInLastMigration = false;
   }
 
   public List<OEdgeType> getInEdgesType() {
@@ -61,12 +63,24 @@ public class OVertexType extends OElementType {
     this.outEdgesType = outEdgesType;
   }
 
+  public void setFromJoinTable(boolean fromJoinTable) {
+    isFromJoinTable = fromJoinTable;
+  }
+
   public Set<String> getExternalKey() {
     return this.externalKey;
   }
 
   public void setExternalKey(Set<String> externalKey) {
     this.externalKey = externalKey;
+  }
+
+  public boolean isAnalyzedInLastMigration() {
+    return this.analyzedInLastMigration;
+  }
+
+  public void setAnalyzedInLastMigration(boolean analyzedInLastMigration) {
+    this.analyzedInLastMigration = analyzedInLastMigration;
   }
 
   public OEdgeType getEdgeByName(String edgeName) {

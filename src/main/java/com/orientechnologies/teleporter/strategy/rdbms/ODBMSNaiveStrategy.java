@@ -19,11 +19,9 @@
 package com.orientechnologies.teleporter.strategy.rdbms;
 
 import com.orientechnologies.orient.core.intent.OIntentMassiveInsert;
-import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.teleporter.configuration.OConfigurationHandler;
 import com.orientechnologies.teleporter.configuration.api.OConfiguration;
 import com.orientechnologies.teleporter.configuration.api.OConfiguredVertexClass;
-import com.orientechnologies.teleporter.configuration.api.OSourceTable;
 import com.orientechnologies.teleporter.context.OTeleporterContext;
 import com.orientechnologies.teleporter.context.OTeleporterStatistics;
 import com.orientechnologies.teleporter.exception.OTeleporterRuntimeException;
@@ -32,7 +30,7 @@ import com.orientechnologies.teleporter.importengine.rdbms.dbengine.ODBQueryEngi
 import com.orientechnologies.teleporter.importengine.rdbms.graphengine.OGraphEngineForDB;
 import com.orientechnologies.teleporter.mapper.OSource2GraphMapper;
 import com.orientechnologies.teleporter.mapper.rdbms.OER2GraphMapper;
-import com.orientechnologies.teleporter.mapper.rdbms.classmapper.OClassMapper;
+import com.orientechnologies.teleporter.mapper.rdbms.classmapper.OEVClassMapper;
 import com.orientechnologies.teleporter.model.dbschema.OEntity;
 import com.orientechnologies.teleporter.model.dbschema.OSourceDatabaseInfo;
 import com.orientechnologies.teleporter.model.graphmodel.OGraphModel;
@@ -126,14 +124,14 @@ public class ODBMSNaiveStrategy extends ODBMSImportStrategy {
       super.importEntitiesBelongingToHierarchies(dbQueryEngine, graphEngine, orientGraph);
 
       // Importing from Entities NOT belonging to hierarchical bags
-      for (OVertexType currentOutVertexType : mapper.getVertexType2classMappers().keySet()) {
+      for (OVertexType currentOutVertexType : mapper.getVertexType2EVClassMappers().keySet()) {
 
-        List<OClassMapper> classMappers = ((OER2GraphMapper)super.mapper).getClassMappersByVertex(currentOutVertexType);
+        List<OEVClassMapper> classMappersByVertex = ((OER2GraphMapper) super.mapper).getEVClassMappersByVertex(currentOutVertexType);
         List<OEntity> mappedEntities = new LinkedList<OEntity>();
 
         // checking condition
         boolean allEntitiesNotBelongingToHierarchies = true;
-        for(OClassMapper classMapper: classMappers) {
+        for(OEVClassMapper classMapper: classMappersByVertex) {
           OEntity currentEntity = classMapper.getEntity();
           if(currentEntity.getHierarchicalBag() != null) {
             allEntitiesNotBelongingToHierarchies = false;
@@ -152,9 +150,32 @@ public class ODBMSNaiveStrategy extends ODBMSImportStrategy {
           if(mappedEntities.size() > 1) {
             OConfiguredVertexClass configuredVertex = mapper.getMigrationConfig().getVertexByMappedEntities(mappedEntities);
             aggregationColumns = super.buildAggregationColumnsFromAggregatedVertex(configuredVertex);
+            if(!currentOutVertexType.isAnalyzedInLastMigration()) {
+              super.importRecordsFromEntitiesIntoVertexClass(mappedEntities, aggregationColumns, currentOutVertexType, dbQueryEngine, graphEngine, orientGraph);
+            }
           }
+          else if(mappedEntities.size() == 1) {
 
-          super.importRecordsIntoVertexClass(mappedEntities, aggregationColumns, currentOutVertexType, dbQueryEngine, graphEngine, orientGraph);
+            List<OEVClassMapper> classMappersByEntity = ((OER2GraphMapper) super.mapper).getEVClassMappersByEntity(mappedEntities.get(0));
+
+            // 1-1 mapping
+            if(classMappersByEntity.size() == 1) {
+              if(!currentOutVertexType.isAnalyzedInLastMigration()) {
+                super.importRecordsFromEntitiesIntoVertexClass(mappedEntities, aggregationColumns, currentOutVertexType, dbQueryEngine, graphEngine, orientGraph);
+              }
+            }
+
+            // splitting case (1-N)
+            else if(classMappersByEntity.size() > 1) {
+              List<OVertexType> mappedVertices = new LinkedList<OVertexType>();
+              for(OEVClassMapper classMapper: classMappersByEntity) {
+                mappedVertices.add(classMapper.getVertexType());
+              }
+              if(!currentOutVertexType.isAnalyzedInLastMigration()) {
+                super.importRecordsFromSplitEntityIntoVertexClasses(mappedEntities, mappedVertices, dbQueryEngine, graphEngine, orientGraph);
+              }
+            }
+          }
         }
       }
 

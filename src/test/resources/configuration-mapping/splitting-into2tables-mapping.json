@@ -3,7 +3,7 @@
     "name": "Employee",
     "mapping": {
       "sourceTables": [{
-        "name": "hsqldb_employee",
+        "name": "hsqldb_EMPLOYEE_PROJECT",
         "dataSource": "hsqldb",
         "tableName": "EMPLOYEE_PROJECT",
         "primaryKey": ["FIRST_NAME", "LAST_NAME", "PROJECT"]
@@ -19,7 +19,7 @@
         "readOnly": false,
         "notNull": false,
         "mapping": {
-          "source": "hsqldb_employee",
+          "source": "hsqldb_EMPLOYEE_PROJECT",
           "columnName": "FIRST_NAME",
           "type": "VARCHAR"
         }
@@ -32,7 +32,7 @@
         "readOnly": false,
         "notNull": false,
         "mapping": {
-          "source": "hsqldb_employee",
+          "source": "hsqldb_EMPLOYEE_PROJECT",
           "columnName": "LAST_NAME",
           "type": "VARCHAR"
         }
@@ -45,9 +45,9 @@
         "readOnly": false,
         "notNull": false,
         "mapping": {
-          "source": "hsqldb_employee",
+          "source": "hsqldb_EMPLOYEE_PROJECT",
           "columnName": "SALARY",
-          "type": "INT2"
+          "type": "DOUBLE"
         }
       },
       "department": {
@@ -58,7 +58,7 @@
         "readOnly": false,
         "notNull": false,
         "mapping": {
-          "source": "hsqldb_employee",
+          "source": "hsqldb_EMPLOYEE_PROJECT",
           "columnName": "DEPARTMENT",
           "type": "VARCHAR"
         }
@@ -68,7 +68,7 @@
     "name": "Project",
     "mapping": {
       "sourceTables": [{
-        "name": "hsqldb_employee",
+        "name": "hsqldb_EMPLOYEE_PROJECT",
         "dataSource": "hsqldb",
         "tableName": "EMPLOYEE_PROJECT",
         "primaryKey": ["FIRST_NAME", "LAST_NAME", "PROJECT"]
@@ -84,7 +84,7 @@
         "readOnly": false,
         "notNull": false,
         "mapping": {
-          "source": "hsqldb_employee",
+          "source": "hsqldb_EMPLOYEE_PROJECT",
           "columnName": "PROJECT",
           "type": "VARCHAR"
         }
@@ -97,9 +97,9 @@
         "readOnly": false,
         "notNull": false,
         "mapping": {
-          "source": "hsqldb_employee",
+          "source": "hsqldb_EMPLOYEE_PROJECT",
           "columnName": "BALANCE",
-          "type": "INT2"
+          "type": "DOUBLE"
         }
       }
     }
@@ -108,13 +108,14 @@
     "mapping": {
       "sourceTables": [
         {
-          "name": "hsqldb_department",
+          "name": "hsqldb_DEPARTMENT",
           "dataSource": "hsqldb",
           "tableName": "DEPARTMENT",
           "primaryKey" : ["ID"]
         }
       ]
     },
+    "externalKey": ["id"],
     "properties": {
       "id": {
         "include": true,
@@ -124,7 +125,7 @@
         "readOnly": false,
         "notNull": false,
         "mapping": {
-          "source": "hsqldb_department",
+          "source": "hsqldb_DEPARTMENT",
           "columnName": "ID",
           "type": "VARCHAR"
         }
@@ -137,7 +138,7 @@
         "readOnly": false,
         "notNull": true,
         "mapping": {
-          "source": "hsqldb_department",
+          "source": "hsqldb_DEPARTMENT",
           "columnName": "NAME",
           "type": "VARCHAR"
         }
@@ -150,7 +151,7 @@
         "readOnly": false,
         "notNull": true,
         "mapping": {
-          "source": "hsqldb_department",
+          "source": "hsqldb_DEPARTMENT",
           "columnName": "LOCATION",
           "type": "VARCHAR"
         }
@@ -163,7 +164,7 @@
         "readOnly": false,
         "notNull": true,
         "mapping": {
-          "source": "hsqldb_department",
+          "source": "hsqldb_DEPARTMENT",
           "columnName": "UPDATED_ON",
           "type": "DATE"
         }
@@ -174,7 +175,8 @@
     "HasProject": {
       "splitting": {
         "fromVertexClass": "Employee",
-        "toVertexClass": "Project"
+        "toVertexClass": "Project",
+        "sourceTable": "EMPLOYEE_PROJECT"
       },
       "isLogical": false,
       "properties": {
@@ -186,7 +188,7 @@
           "readOnly": false,
           "notNull": false,
           "mapping": {
-            "source": "hsqldb_employee",
+            "source": "hsqldb_EMPLOYEE_PROJECT",
             "columnName": "ROLE",
             "type": "VARCHAR"
           }

@@ -226,7 +226,7 @@ public class OGraphEngineForDB {
           String currentOriginalType = currentProperty.getOriginalType();
 
           try {
-            extractPropertiesFromRecord(record, properties, currentPropertyType, currentPropertyName, currentOriginalType, vertexType);
+            extractPropertiesFromRecordIntoVertex(record, properties, currentPropertyType, currentPropertyName, currentOriginalType, vertexType);
           } catch (Exception e) {
             String mess = "Problem encountered during the extraction of the values from the records. Vertex Type: " + vertexType.getName() + ";\tProperty: " + currentPropertyName + ";\tRecord: " + propsAndValuesOfKey;
             OTeleporterContext.getInstance().printExceptionMessage(e, mess, "error");
@@ -340,7 +340,8 @@ public class OGraphEngineForDB {
     return vertex;
   }
 
-  private void extractPropertiesFromRecord(ResultSet record, Map<String, Object> properties, String currentPropertyType, String currentPropertyName, String currentOriginalType, OVertexType vertexType) throws SQLException {
+  public void extractPropertiesFromRecordIntoVertex(ResultSet record, Map<String, Object> properties, String currentPropertyType, String currentPropertyName,
+                                                     String currentOriginalType, OVertexType vertexType) throws SQLException {
 
     Date currentDateValue;
     byte[] currentBinaryValue;
@@ -393,6 +394,65 @@ public class OGraphEngineForDB {
 
     else {
       currentAttributeValue = record.getString(this.mapper.getAttributeNameByVertexTypeAndProperty(vertexType, currentPropertyName));
+      properties.put(currentPropertyName, currentAttributeValue);
+    }
+
+  }
+
+  public void extractPropertiesFromRecordIntoEdge(ResultSet record, Map<String, Object> properties, String currentPropertyType, String currentPropertyName,
+                                                    String currentOriginalType, OEdgeType edgeType) throws SQLException {
+
+    Date currentDateValue;
+    byte[] currentBinaryValue;
+    String currentAttributeValue;
+
+    // disambiguation on OrientDB Schema type
+
+    if(currentPropertyType.equals("DATE")) {
+      currentDateValue = record.getDate(this.mapper.getAttributeNameByEdgeTypeAndProperty(edgeType, currentPropertyName));
+      properties.put(currentPropertyName, currentDateValue);
+    }
+
+    else if(currentPropertyType.equals("DATETIME")) {
+      currentDateValue = record.getTimestamp(this.mapper.getAttributeNameByEdgeTypeAndProperty(edgeType, currentPropertyName));
+      properties.put(currentPropertyName, currentDateValue);
+    }
+
+    else if(currentPropertyType.equals("BINARY")) {
+      currentBinaryValue = record.getBytes(this.mapper.getAttributeNameByEdgeTypeAndProperty(edgeType, currentPropertyName));
+      properties.put(currentPropertyName, currentBinaryValue);
+    }
+
+    else if(currentPropertyType.equals("BOOLEAN")) {
+      currentAttributeValue = record.getString(this.mapper.getAttributeNameByEdgeTypeAndProperty(edgeType, currentPropertyName));
+
+      switch(currentAttributeValue) {
+
+        case "t": properties.put(currentPropertyName, "true");
+          break;
+        case "f": properties.put(currentPropertyName, "false");
+          break;
+        default: break;
+      }
+    }
+
+    // JSON
+    else if(handler.jsonImplemented && currentPropertyType.equals("EMBEDDED")) {
+      currentAttributeValue = record.getString(this.mapper.getAttributeNameByEdgeTypeAndProperty(edgeType, currentPropertyName));
+      ODocument currentEmbeddedValue = this.handler.convertJSONToDocument(currentPropertyName, currentAttributeValue);
+      properties.put(currentPropertyName, currentEmbeddedValue);
+    }
+
+    // GEOSPATIAL
+    else if(handler.geospatialImplemented && handler.isGeospatial(currentOriginalType)) {
+      currentAttributeValue = record.getString(this.mapper.getAttributeNameByEdgeTypeAndProperty(edgeType, currentPropertyName));
+      //						currentEmbeddedValue = OShapeFactory.INSTANCE.toDoc(currentAttributeValue);  // to change with transformation from wkt (currentAttrValue) into embedded
+      ODocument currentEmbeddedValue = null;
+      properties.put(currentPropertyName, currentEmbeddedValue);
+    }
+
+    else {
+      currentAttributeValue = record.getString(this.mapper.getAttributeNameByEdgeTypeAndProperty(edgeType, currentPropertyName));
       properties.put(currentPropertyName, currentAttributeValue);
     }
 
@@ -853,7 +913,7 @@ public class OGraphEngineForDB {
         OVertexType joinVertexType = this.mapper.getJoinVertexTypeByAggregatorEdge(edgeType.getName());
 
         try {
-          extractPropertiesFromRecord(jointTableRecord, properties, currentPropertyType, currentPropertyName, currentOriginalType, joinVertexType);
+          extractPropertiesFromRecordIntoVertex(jointTableRecord, properties, currentPropertyType, currentPropertyName, currentOriginalType, joinVertexType);
         } catch (Exception e) {
           String mess =  "Problem encountered during the extraction of the values from the records. Edge Type: " + edgeType.getName() + ";\tProperty: " + currentProperty.getName() + ";\tOriginal join table: " + joinTable.getName();
           OTeleporterContext.getInstance().printExceptionMessage(e, mess, "error");

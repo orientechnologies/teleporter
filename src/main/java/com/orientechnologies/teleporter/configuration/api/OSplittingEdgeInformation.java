@@ -27,12 +27,14 @@ package com.orientechnologies.teleporter.configuration.api;
 
 public class OSplittingEdgeInformation {
 
-    private String fromVertexClass;
-    private String toVertexClass;
+    private String fromVertexClass;     // mandatory
+    private String toVertexClass;       // mandatory
+    private String sourceTable;         // mandatory
 
-    public OSplittingEdgeInformation(String fromVertexClass, String toVertexClass) {
+    public OSplittingEdgeInformation(String fromVertexClass, String toVertexClass, String sourceTable) {
         this.fromVertexClass = fromVertexClass;
         this.toVertexClass = toVertexClass;
+        this.sourceTable = sourceTable;
     }
 
     public String getFromVertexClass() {
@@ -50,4 +52,13 @@ public class OSplittingEdgeInformation {
     public void setToVertexClass(String toVertexClass) {
         this.toVertexClass = toVertexClass;
     }
+
+    public String getSourceTable() {
+        return sourceTable;
+    }
+
+    public void setSourceTable(String sourceTable) {
+        this.sourceTable = sourceTable;
+    }
+
 }

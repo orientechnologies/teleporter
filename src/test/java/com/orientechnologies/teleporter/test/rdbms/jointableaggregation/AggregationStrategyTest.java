@@ -22,7 +22,7 @@ import com.orientechnologies.teleporter.context.OOutputStreamManager;
 import com.orientechnologies.teleporter.context.OTeleporterContext;
 import com.orientechnologies.teleporter.importengine.rdbms.dbengine.ODBQueryEngine;
 import com.orientechnologies.teleporter.mapper.rdbms.OER2GraphMapper;
-import com.orientechnologies.teleporter.mapper.rdbms.classmapper.OClassMapper;
+import com.orientechnologies.teleporter.mapper.rdbms.classmapper.OEVClassMapper;
 import com.orientechnologies.teleporter.model.dbschema.OCanonicalRelationship;
 import com.orientechnologies.teleporter.model.dbschema.OEntity;
 import com.orientechnologies.teleporter.model.dbschema.OSourceDatabaseInfo;
@@ -162,89 +162,89 @@ public class AggregationStrategyTest {
 
       // Classes Mapping
 
-      assertEquals(5, mapper.getVertexType2classMappers().size());
-      assertEquals(5, mapper.getEntity2classMappers().size());
+      assertEquals(5, mapper.getVertexType2EVClassMappers().size());
+      assertEquals(5, mapper.getEntity2EVClassMappers().size());
 
       OEntity employeeEntity = mapper.getDataBaseSchema().getEntityByName("EMPLOYEE");
-      assertEquals(1, mapper.getClassMappersByVertex(employeeVertexType).size());
-      OClassMapper employeeClassMapper = mapper.getClassMappersByVertex(employeeVertexType).get(0);
-      assertEquals(1, mapper.getClassMappersByEntity(employeeEntity).size());
-      assertEquals(employeeClassMapper, mapper.getClassMappersByEntity(employeeEntity).get(0));
+      assertEquals(1, mapper.getEVClassMappersByVertex(employeeVertexType).size());
+      OEVClassMapper employeeClassMapper = mapper.getEVClassMappersByVertex(employeeVertexType).get(0);
+      assertEquals(1, mapper.getEVClassMappersByEntity(employeeEntity).size());
+      assertEquals(employeeClassMapper, mapper.getEVClassMappersByEntity(employeeEntity).get(0));
       assertEquals(employeeClassMapper.getEntity(), employeeEntity);
       assertEquals(employeeClassMapper.getVertexType(), employeeVertexType);
 
-      assertEquals(3, employeeClassMapper.attribute2property.size());
-      assertEquals(3, employeeClassMapper.property2attribute.size());
-      assertEquals("id", employeeClassMapper.attribute2property.get("ID"));
-      assertEquals("firstName", employeeClassMapper.attribute2property.get("FIRST_NAME"));
-      assertEquals("lastName", employeeClassMapper.attribute2property.get("LAST_NAME"));
-      assertEquals("ID", employeeClassMapper.property2attribute.get("id"));
-      assertEquals("FIRST_NAME", employeeClassMapper.property2attribute.get("firstName"));
-      assertEquals("LAST_NAME", employeeClassMapper.property2attribute.get("lastName"));
+      assertEquals(3, employeeClassMapper.getAttribute2property().size());
+      assertEquals(3, employeeClassMapper.getProperty2attribute().size());
+      assertEquals("id", employeeClassMapper.getAttribute2property().get("ID"));
+      assertEquals("firstName", employeeClassMapper.getAttribute2property().get("FIRST_NAME"));
+      assertEquals("lastName", employeeClassMapper.getAttribute2property().get("LAST_NAME"));
+      assertEquals("ID", employeeClassMapper.getProperty2attribute().get("id"));
+      assertEquals("FIRST_NAME", employeeClassMapper.getProperty2attribute().get("firstName"));
+      assertEquals("LAST_NAME", employeeClassMapper.getProperty2attribute().get("lastName"));
 
       OEntity departmentEntity = mapper.getDataBaseSchema().getEntityByName("DEPARTMENT");
-      assertEquals(1, mapper.getClassMappersByVertex(departmentVertexType).size());
-      OClassMapper departmentClassMapper =  mapper.getClassMappersByVertex(departmentVertexType).get(0);
-      assertEquals(1, mapper.getClassMappersByEntity(departmentEntity).size());
-      assertEquals(departmentClassMapper, mapper.getClassMappersByEntity(departmentEntity).get(0));
+      assertEquals(1, mapper.getEVClassMappersByVertex(departmentVertexType).size());
+      OEVClassMapper departmentClassMapper =  mapper.getEVClassMappersByVertex(departmentVertexType).get(0);
+      assertEquals(1, mapper.getEVClassMappersByEntity(departmentEntity).size());
+      assertEquals(departmentClassMapper, mapper.getEVClassMappersByEntity(departmentEntity).get(0));
       assertEquals(departmentClassMapper.getEntity(), departmentEntity);
       assertEquals(departmentClassMapper.getVertexType(), departmentVertexType);
 
-      assertEquals(2, departmentClassMapper.attribute2property.size());
-      assertEquals(2, departmentClassMapper.property2attribute.size());
-      assertEquals("id", departmentClassMapper.attribute2property.get("ID"));
-      assertEquals("name", departmentClassMapper.attribute2property.get("NAME"));
-      assertEquals("ID", departmentClassMapper.property2attribute.get("id"));
-      assertEquals("NAME", departmentClassMapper.property2attribute.get("name"));
+      assertEquals(2, departmentClassMapper.getAttribute2property().size());
+      assertEquals(2, departmentClassMapper.getProperty2attribute().size());
+      assertEquals("id", departmentClassMapper.getAttribute2property().get("ID"));
+      assertEquals("name", departmentClassMapper.getAttribute2property().get("NAME"));
+      assertEquals("ID", departmentClassMapper.getProperty2attribute().get("id"));
+      assertEquals("NAME", departmentClassMapper.getProperty2attribute().get("name"));
 
       OEntity branchEntity = mapper.getDataBaseSchema().getEntityByName("BRANCH");
-      assertEquals(1, mapper.getClassMappersByVertex(branchVertexType).size());
-      OClassMapper branchClassMapper =  mapper.getClassMappersByVertex(branchVertexType).get(0);
-      assertEquals(1, mapper.getClassMappersByEntity(branchEntity).size());
-      assertEquals(branchClassMapper, mapper.getClassMappersByEntity(branchEntity).get(0));
+      assertEquals(1, mapper.getEVClassMappersByVertex(branchVertexType).size());
+      OEVClassMapper branchClassMapper =  mapper.getEVClassMappersByVertex(branchVertexType).get(0);
+      assertEquals(1, mapper.getEVClassMappersByEntity(branchEntity).size());
+      assertEquals(branchClassMapper, mapper.getEVClassMappersByEntity(branchEntity).get(0));
       assertEquals(branchClassMapper.getEntity(), branchEntity);
       assertEquals(branchClassMapper.getVertexType(), branchVertexType);
 
-      assertEquals(3, branchClassMapper.attribute2property.size());
-      assertEquals(3, branchClassMapper.property2attribute.size());
-      assertEquals("branchId", branchClassMapper.attribute2property.get("BRANCH_ID"));
-      assertEquals("location", branchClassMapper.attribute2property.get("LOCATION"));
-      assertEquals("dept", branchClassMapper.attribute2property.get("DEPT"));
-      assertEquals("BRANCH_ID", branchClassMapper.property2attribute.get("branchId"));
-      assertEquals("LOCATION", branchClassMapper.property2attribute.get("location"));
-      assertEquals("DEPT", branchClassMapper.property2attribute.get("dept"));
+      assertEquals(3, branchClassMapper.getAttribute2property().size());
+      assertEquals(3, branchClassMapper.getProperty2attribute().size());
+      assertEquals("branchId", branchClassMapper.getAttribute2property().get("BRANCH_ID"));
+      assertEquals("location", branchClassMapper.getAttribute2property().get("LOCATION"));
+      assertEquals("dept", branchClassMapper.getAttribute2property().get("DEPT"));
+      assertEquals("BRANCH_ID", branchClassMapper.getProperty2attribute().get("branchId"));
+      assertEquals("LOCATION", branchClassMapper.getProperty2attribute().get("location"));
+      assertEquals("DEPT", branchClassMapper.getProperty2attribute().get("dept"));
 
       OEntity deptEmpEntity = mapper.getDataBaseSchema().getEntityByName("DEPT_EMP");
-      assertEquals(1, mapper.getClassMappersByVertex(deptEmpVertexType).size());
-      OClassMapper deptEmpClassMapper =  mapper.getClassMappersByVertex(deptEmpVertexType).get(0);
-      assertEquals(1, mapper.getClassMappersByEntity(deptEmpEntity).size());
-      assertEquals(deptEmpClassMapper, mapper.getClassMappersByEntity(deptEmpEntity).get(0));
+      assertEquals(1, mapper.getEVClassMappersByVertex(deptEmpVertexType).size());
+      OEVClassMapper deptEmpClassMapper =  mapper.getEVClassMappersByVertex(deptEmpVertexType).get(0);
+      assertEquals(1, mapper.getEVClassMappersByEntity(deptEmpEntity).size());
+      assertEquals(deptEmpClassMapper, mapper.getEVClassMappersByEntity(deptEmpEntity).get(0));
       assertEquals(deptEmpClassMapper.getEntity(), deptEmpEntity);
       assertEquals(deptEmpClassMapper.getVertexType(), deptEmpVertexType);
 
-      assertEquals(3, deptEmpClassMapper.attribute2property.size());
-      assertEquals(3, deptEmpClassMapper.property2attribute.size());
-      assertEquals("deptId", deptEmpClassMapper.attribute2property.get("DEPT_ID"));
-      assertEquals("empId", deptEmpClassMapper.attribute2property.get("EMP_ID"));
-      assertEquals("hiringYear", deptEmpClassMapper.attribute2property.get("HIRING_YEAR"));
-      assertEquals("DEPT_ID", deptEmpClassMapper.property2attribute.get("deptId"));
-      assertEquals("EMP_ID", deptEmpClassMapper.property2attribute.get("empId"));
-      assertEquals("HIRING_YEAR", deptEmpClassMapper.property2attribute.get("hiringYear"));
+      assertEquals(3, deptEmpClassMapper.getAttribute2property().size());
+      assertEquals(3, deptEmpClassMapper.getProperty2attribute().size());
+      assertEquals("deptId", deptEmpClassMapper.getAttribute2property().get("DEPT_ID"));
+      assertEquals("empId", deptEmpClassMapper.getAttribute2property().get("EMP_ID"));
+      assertEquals("hiringYear", deptEmpClassMapper.getAttribute2property().get("HIRING_YEAR"));
+      assertEquals("DEPT_ID", deptEmpClassMapper.getProperty2attribute().get("deptId"));
+      assertEquals("EMP_ID", deptEmpClassMapper.getProperty2attribute().get("empId"));
+      assertEquals("HIRING_YEAR", deptEmpClassMapper.getProperty2attribute().get("hiringYear"));
 
       OEntity deptMgrEntity = mapper.getDataBaseSchema().getEntityByName("DEPT_MANAGER");
-      assertEquals(1, mapper.getClassMappersByVertex(deptManagerVertexType).size());
-      OClassMapper deptManagerClassMapper =  mapper.getClassMappersByVertex(deptManagerVertexType).get(0);
-      assertEquals(1, mapper.getClassMappersByEntity(deptMgrEntity).size());
-      assertEquals(deptManagerClassMapper, mapper.getClassMappersByEntity(deptMgrEntity).get(0));
+      assertEquals(1, mapper.getEVClassMappersByVertex(deptManagerVertexType).size());
+      OEVClassMapper deptManagerClassMapper =  mapper.getEVClassMappersByVertex(deptManagerVertexType).get(0);
+      assertEquals(1, mapper.getEVClassMappersByEntity(deptMgrEntity).size());
+      assertEquals(deptManagerClassMapper, mapper.getEVClassMappersByEntity(deptMgrEntity).get(0));
       assertEquals(deptManagerClassMapper.getEntity(), deptMgrEntity);
       assertEquals(deptManagerClassMapper.getVertexType(), deptManagerVertexType);
 
-      assertEquals(2, deptManagerClassMapper.attribute2property.size());
-      assertEquals(2, deptManagerClassMapper.property2attribute.size());
-      assertEquals("deptId", deptManagerClassMapper.attribute2property.get("DEPT_ID"));
-      assertEquals("empId", deptManagerClassMapper.attribute2property.get("EMP_ID"));
-      assertEquals("DEPT_ID", deptManagerClassMapper.property2attribute.get("deptId"));
-      assertEquals("EMP_ID", deptManagerClassMapper.property2attribute.get("empId"));
+      assertEquals(2, deptManagerClassMapper.getAttribute2property().size());
+      assertEquals(2, deptManagerClassMapper.getProperty2attribute().size());
+      assertEquals("deptId", deptManagerClassMapper.getAttribute2property().get("DEPT_ID"));
+      assertEquals("empId", deptManagerClassMapper.getAttribute2property().get("EMP_ID"));
+      assertEquals("DEPT_ID", deptManagerClassMapper.getProperty2attribute().get("deptId"));
+      assertEquals("EMP_ID", deptManagerClassMapper.getProperty2attribute().get("empId"));
 
       // Relationships-Edges Mapping
 
@@ -284,8 +284,8 @@ public class AggregationStrategyTest {
        * Aggregation of join tables
        */
       mapper.performMany2ManyAggregation();
-      
-      
+
+
       /*
        *  Testing context information
        */
@@ -334,89 +334,89 @@ public class AggregationStrategyTest {
 
       // Classes Mapping
 
-      assertEquals(5, mapper.getVertexType2classMappers().size());
-      assertEquals(5, mapper.getEntity2classMappers().size());
+      assertEquals(5, mapper.getVertexType2EVClassMappers().size());
+      assertEquals(5, mapper.getEntity2EVClassMappers().size());
 
       employeeEntity = mapper.getDataBaseSchema().getEntityByName("EMPLOYEE");
-      assertEquals(1, mapper.getClassMappersByVertex(employeeVertexType).size());
-      employeeClassMapper = mapper.getClassMappersByVertex(employeeVertexType).get(0);
-      assertEquals(1, mapper.getClassMappersByEntity(employeeEntity).size());
-      assertEquals(employeeClassMapper, mapper.getClassMappersByEntity(employeeEntity).get(0));
+      assertEquals(1, mapper.getEVClassMappersByVertex(employeeVertexType).size());
+      employeeClassMapper = mapper.getEVClassMappersByVertex(employeeVertexType).get(0);
+      assertEquals(1, mapper.getEVClassMappersByEntity(employeeEntity).size());
+      assertEquals(employeeClassMapper, mapper.getEVClassMappersByEntity(employeeEntity).get(0));
       assertEquals(employeeClassMapper.getEntity(), employeeEntity);
       assertEquals(employeeClassMapper.getVertexType(), employeeVertexType);
 
-      assertEquals(3, employeeClassMapper.attribute2property.size());
-      assertEquals(3, employeeClassMapper.property2attribute.size());
-      assertEquals("id", employeeClassMapper.attribute2property.get("ID"));
-      assertEquals("firstName", employeeClassMapper.attribute2property.get("FIRST_NAME"));
-      assertEquals("lastName", employeeClassMapper.attribute2property.get("LAST_NAME"));
-      assertEquals("ID", employeeClassMapper.property2attribute.get("id"));
-      assertEquals("FIRST_NAME", employeeClassMapper.property2attribute.get("firstName"));
-      assertEquals("LAST_NAME", employeeClassMapper.property2attribute.get("lastName"));
+      assertEquals(3, employeeClassMapper.getAttribute2property().size());
+      assertEquals(3, employeeClassMapper.getProperty2attribute().size());
+      assertEquals("id", employeeClassMapper.getAttribute2property().get("ID"));
+      assertEquals("firstName", employeeClassMapper.getAttribute2property().get("FIRST_NAME"));
+      assertEquals("lastName", employeeClassMapper.getAttribute2property().get("LAST_NAME"));
+      assertEquals("ID", employeeClassMapper.getProperty2attribute().get("id"));
+      assertEquals("FIRST_NAME", employeeClassMapper.getProperty2attribute().get("firstName"));
+      assertEquals("LAST_NAME", employeeClassMapper.getProperty2attribute().get("lastName"));
 
       departmentEntity = mapper.getDataBaseSchema().getEntityByName("DEPARTMENT");
-      assertEquals(1, mapper.getClassMappersByVertex(departmentVertexType).size());
-      departmentClassMapper =  mapper.getClassMappersByVertex(departmentVertexType).get(0);
-      assertEquals(1, mapper.getClassMappersByEntity(departmentEntity).size());
-      assertEquals(departmentClassMapper, mapper.getClassMappersByEntity(departmentEntity).get(0));
+      assertEquals(1, mapper.getEVClassMappersByVertex(departmentVertexType).size());
+      departmentClassMapper =  mapper.getEVClassMappersByVertex(departmentVertexType).get(0);
+      assertEquals(1, mapper.getEVClassMappersByEntity(departmentEntity).size());
+      assertEquals(departmentClassMapper, mapper.getEVClassMappersByEntity(departmentEntity).get(0));
       assertEquals(departmentClassMapper.getEntity(), departmentEntity);
       assertEquals(departmentClassMapper.getVertexType(), departmentVertexType);
 
-      assertEquals(2, departmentClassMapper.attribute2property.size());
-      assertEquals(2, departmentClassMapper.property2attribute.size());
-      assertEquals("id", departmentClassMapper.attribute2property.get("ID"));
-      assertEquals("name", departmentClassMapper.attribute2property.get("NAME"));
-      assertEquals("ID", departmentClassMapper.property2attribute.get("id"));
-      assertEquals("NAME", departmentClassMapper.property2attribute.get("name"));
+      assertEquals(2, departmentClassMapper.getAttribute2property().size());
+      assertEquals(2, departmentClassMapper.getProperty2attribute().size());
+      assertEquals("id", departmentClassMapper.getAttribute2property().get("ID"));
+      assertEquals("name", departmentClassMapper.getAttribute2property().get("NAME"));
+      assertEquals("ID", departmentClassMapper.getProperty2attribute().get("id"));
+      assertEquals("NAME", departmentClassMapper.getProperty2attribute().get("name"));
 
       branchEntity = mapper.getDataBaseSchema().getEntityByName("BRANCH");
-      assertEquals(1, mapper.getClassMappersByVertex(branchVertexType).size());
-      branchClassMapper =  mapper.getClassMappersByVertex(branchVertexType).get(0);
-      assertEquals(1, mapper.getClassMappersByEntity(branchEntity).size());
-      assertEquals(branchClassMapper, mapper.getClassMappersByEntity(branchEntity).get(0));
+      assertEquals(1, mapper.getEVClassMappersByVertex(branchVertexType).size());
+      branchClassMapper =  mapper.getEVClassMappersByVertex(branchVertexType).get(0);
+      assertEquals(1, mapper.getEVClassMappersByEntity(branchEntity).size());
+      assertEquals(branchClassMapper, mapper.getEVClassMappersByEntity(branchEntity).get(0));
       assertEquals(branchClassMapper.getEntity(), branchEntity);
       assertEquals(branchClassMapper.getVertexType(), branchVertexType);
 
-      assertEquals(3, branchClassMapper.attribute2property.size());
-      assertEquals(3, branchClassMapper.property2attribute.size());
-      assertEquals("branchId", branchClassMapper.attribute2property.get("BRANCH_ID"));
-      assertEquals("location", branchClassMapper.attribute2property.get("LOCATION"));
-      assertEquals("dept", branchClassMapper.attribute2property.get("DEPT"));
-      assertEquals("BRANCH_ID", branchClassMapper.property2attribute.get("branchId"));
-      assertEquals("LOCATION", branchClassMapper.property2attribute.get("location"));
-      assertEquals("DEPT", branchClassMapper.property2attribute.get("dept"));
+      assertEquals(3, branchClassMapper.getAttribute2property().size());
+      assertEquals(3, branchClassMapper.getProperty2attribute().size());
+      assertEquals("branchId", branchClassMapper.getAttribute2property().get("BRANCH_ID"));
+      assertEquals("location", branchClassMapper.getAttribute2property().get("LOCATION"));
+      assertEquals("dept", branchClassMapper.getAttribute2property().get("DEPT"));
+      assertEquals("BRANCH_ID", branchClassMapper.getProperty2attribute().get("branchId"));
+      assertEquals("LOCATION", branchClassMapper.getProperty2attribute().get("location"));
+      assertEquals("DEPT", branchClassMapper.getProperty2attribute().get("dept"));
 
       deptEmpEntity = mapper.getDataBaseSchema().getEntityByName("DEPT_EMP");
-      assertEquals(1, mapper.getClassMappersByVertex(deptEmpVertexType).size());
-      deptEmpClassMapper =  mapper.getClassMappersByVertex(deptEmpVertexType).get(0);
-      assertEquals(1, mapper.getClassMappersByEntity(deptEmpEntity).size());
-      assertEquals(deptEmpClassMapper, mapper.getClassMappersByEntity(deptEmpEntity).get(0));
+      assertEquals(1, mapper.getEVClassMappersByVertex(deptEmpVertexType).size());
+      deptEmpClassMapper =  mapper.getEVClassMappersByVertex(deptEmpVertexType).get(0);
+      assertEquals(1, mapper.getEVClassMappersByEntity(deptEmpEntity).size());
+      assertEquals(deptEmpClassMapper, mapper.getEVClassMappersByEntity(deptEmpEntity).get(0));
       assertEquals(deptEmpClassMapper.getEntity(), deptEmpEntity);
       assertEquals(deptEmpClassMapper.getVertexType(), deptEmpVertexType);
 
-      assertEquals(3, deptEmpClassMapper.attribute2property.size());
-      assertEquals(3, deptEmpClassMapper.property2attribute.size());
-      assertEquals("deptId", deptEmpClassMapper.attribute2property.get("DEPT_ID"));
-      assertEquals("empId", deptEmpClassMapper.attribute2property.get("EMP_ID"));
-      assertEquals("hiringYear", deptEmpClassMapper.attribute2property.get("HIRING_YEAR"));
-      assertEquals("DEPT_ID", deptEmpClassMapper.property2attribute.get("deptId"));
-      assertEquals("EMP_ID", deptEmpClassMapper.property2attribute.get("empId"));
-      assertEquals("HIRING_YEAR", deptEmpClassMapper.property2attribute.get("hiringYear"));
+      assertEquals(3, deptEmpClassMapper.getAttribute2property().size());
+      assertEquals(3, deptEmpClassMapper.getProperty2attribute().size());
+      assertEquals("deptId", deptEmpClassMapper.getAttribute2property().get("DEPT_ID"));
+      assertEquals("empId", deptEmpClassMapper.getAttribute2property().get("EMP_ID"));
+      assertEquals("hiringYear", deptEmpClassMapper.getAttribute2property().get("HIRING_YEAR"));
+      assertEquals("DEPT_ID", deptEmpClassMapper.getProperty2attribute().get("deptId"));
+      assertEquals("EMP_ID", deptEmpClassMapper.getProperty2attribute().get("empId"));
+      assertEquals("HIRING_YEAR", deptEmpClassMapper.getProperty2attribute().get("hiringYear"));
 
       deptMgrEntity = mapper.getDataBaseSchema().getEntityByName("DEPT_MANAGER");
-      assertEquals(1, mapper.getClassMappersByVertex(deptManagerVertexType).size());
-      deptManagerClassMapper =  mapper.getClassMappersByVertex(deptManagerVertexType).get(0);
-      assertEquals(1, mapper.getClassMappersByEntity(deptMgrEntity).size());
-      assertEquals(deptManagerClassMapper, mapper.getClassMappersByEntity(deptMgrEntity).get(0));
+      assertEquals(1, mapper.getEVClassMappersByVertex(deptManagerVertexType).size());
+      deptManagerClassMapper =  mapper.getEVClassMappersByVertex(deptManagerVertexType).get(0);
+      assertEquals(1, mapper.getEVClassMappersByEntity(deptMgrEntity).size());
+      assertEquals(deptManagerClassMapper, mapper.getEVClassMappersByEntity(deptMgrEntity).get(0));
       assertEquals(deptManagerClassMapper.getEntity(), deptMgrEntity);
       assertEquals(deptManagerClassMapper.getVertexType(), deptManagerVertexType);
 
-      assertEquals(2, deptManagerClassMapper.attribute2property.size());
-      assertEquals(2, deptManagerClassMapper.property2attribute.size());
-      assertEquals("deptId", deptManagerClassMapper.attribute2property.get("DEPT_ID"));
-      assertEquals("empId", deptManagerClassMapper.attribute2property.get("EMP_ID"));
-      assertEquals("DEPT_ID", deptManagerClassMapper.property2attribute.get("deptId"));
-      assertEquals("EMP_ID", deptManagerClassMapper.property2attribute.get("empId"));
+      assertEquals(2, deptManagerClassMapper.getAttribute2property().size());
+      assertEquals(2, deptManagerClassMapper.getProperty2attribute().size());
+      assertEquals("deptId", deptManagerClassMapper.getAttribute2property().get("DEPT_ID"));
+      assertEquals("empId", deptManagerClassMapper.getAttribute2property().get("EMP_ID"));
+      assertEquals("DEPT_ID", deptManagerClassMapper.getProperty2attribute().get("deptId"));
+      assertEquals("EMP_ID", deptManagerClassMapper.getProperty2attribute().get("empId"));
 
       // Relationships-Edges Mapping
 

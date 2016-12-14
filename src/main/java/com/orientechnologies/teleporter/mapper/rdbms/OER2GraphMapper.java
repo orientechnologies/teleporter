@@ -24,7 +24,8 @@ import com.orientechnologies.teleporter.context.OTeleporterStatistics;
 import com.orientechnologies.teleporter.exception.OTeleporterRuntimeException;
 import com.orientechnologies.teleporter.importengine.rdbms.dbengine.ODBQueryEngine;
 import com.orientechnologies.teleporter.mapper.OSource2GraphMapper;
-import com.orientechnologies.teleporter.mapper.rdbms.classmapper.OClassMapper;
+import com.orientechnologies.teleporter.mapper.rdbms.classmapper.OEEClassMapper;
+import com.orientechnologies.teleporter.mapper.rdbms.classmapper.OEVClassMapper;
 import com.orientechnologies.teleporter.model.dbschema.*;
 import com.orientechnologies.teleporter.model.graphmodel.*;
 import com.orientechnologies.teleporter.nameresolver.ONameResolver;
@@ -53,13 +54,16 @@ public class OER2GraphMapper extends OSource2GraphMapper {
   // source model
   protected ODataBaseSchema dataBaseSchema;
 
-  // New Rules
-  protected Map<OEntity,List<OClassMapper>> entity2classMappers;
-  protected Map<OVertexType,List<OClassMapper>> vertexType2classMappers;
+  // rules
+  protected Map<OEntity,List<OEVClassMapper>> entity2EVClassMappers;
+  protected Map<OVertexType,List<OEVClassMapper>> vertexType2EVClassMappers;
+  protected Map<String,List<OEEClassMapper>> entity2EEClassMappers;
+  protected Map<String,List<OEEClassMapper>> edgeType2EEClassMappers;
   protected Map<ORelationship,OEdgeType> relationship2edgeType;
   protected Map<OEdgeType,LinkedList<ORelationship>> edgeType2relationships;
   protected Map<String,Integer> edgeTypeName2count;
   protected Map<OVertexType,OAggregatorEdge> joinVertex2aggregatorEdges;
+
 
   // filters
   protected List<String> includedTables;
@@ -75,13 +79,15 @@ public class OER2GraphMapper extends OSource2GraphMapper {
     this.sourceDBInfo = sourceDatabaseInfo;
 
     // new maps
-    this.entity2classMappers = new IdentityHashMap<OEntity,List<OClassMapper>>();
-    this.vertexType2classMappers = new IdentityHashMap<OVertexType,List<OClassMapper>>();
+    this.entity2EVClassMappers = new IdentityHashMap<OEntity,List<OEVClassMapper>>();
+    this.vertexType2EVClassMappers = new IdentityHashMap<OVertexType,List<OEVClassMapper>>();
 
     this.relationship2edgeType = new IdentityHashMap<ORelationship,OEdgeType>();
     this.edgeType2relationships = new IdentityHashMap<OEdgeType,LinkedList<ORelationship>>();
     this.edgeTypeName2count = new TreeMap<String,Integer>();
     this.joinVertex2aggregatorEdges = new LinkedHashMap<OVertexType, OAggregatorEdge>();
+    this.entity2EEClassMappers = new LinkedHashMap<String,List<OEEClassMapper>>();
+    this.edgeType2EEClassMappers = new LinkedHashMap<String,List<OEEClassMapper>>();
 
     if(includedTables != null)
       this.includedTables = includedTables;
@@ -112,42 +118,75 @@ public class OER2GraphMapper extends OSource2GraphMapper {
     this.edgeType2relationships.put(currentEdgeType, representedRelationships);
   }
 
-  public void upsertClassMappingRules(OEntity currentEntity, OVertexType currentVertexType, OClassMapper classMapper) {
+  public void upsertEVClassMappingRules(OEntity currentEntity, OVertexType currentVertexType, OEVClassMapper classMapper) {
 
-    List<OClassMapper> classMappings = this.entity2classMappers.get(currentEntity);
+    List<OEVClassMapper> classMappings = this.entity2EVClassMappers.get(currentEntity);
     if(classMappings == null) {
-      classMappings = new LinkedList<OClassMapper>();
+      classMappings = new LinkedList<OEVClassMapper>();
     }
     classMappings.add(classMapper);
-    this.entity2classMappers.put(currentEntity, classMappings);
+    this.entity2EVClassMappers.put(currentEntity, classMappings);
 
-    classMappings = this.vertexType2classMappers.get(currentVertexType);
+    classMappings = this.vertexType2EVClassMappers.get(currentVertexType);
     if(classMappings == null) {
-      classMappings = new LinkedList<OClassMapper>();
+      classMappings = new LinkedList<OEVClassMapper>();
     }
     classMappings.add(classMapper);
-    this.vertexType2classMappers.put(currentVertexType, classMappings);
+    this.vertexType2EVClassMappers.put(currentVertexType, classMappings);
   }
 
-  public List<OClassMapper> getClassMappersByVertex(OVertexType vertexType) {
-    return this.vertexType2classMappers.get(vertexType);
+  public void upsertEEClassMappingRules(OEntity currentEntity, OEdgeType currentEdgeType, OEEClassMapper classMapper) {
+
+    List<OEEClassMapper> classMappings = this.entity2EEClassMappers.get(currentEntity.getName());
+    if(classMappings == null) {
+      classMappings = new LinkedList<OEEClassMapper>();
+    }
+    classMappings.add(classMapper);
+    this.entity2EEClassMappers.put(currentEntity.getName(), classMappings);
+
+    classMappings = this.edgeType2EEClassMappers.get(currentEdgeType.getName());
+    if(classMappings == null) {
+      classMappings = new LinkedList<OEEClassMapper>();
+    }
+    classMappings.add(classMapper);
+    this.edgeType2EEClassMappers.put(currentEdgeType.getName(), classMappings);
   }
 
-  public List<OClassMapper> getClassMappersByEntity(OEntity entity) {
-    return this.entity2classMappers.get(entity);
+  public List<OEVClassMapper> getEVClassMappersByVertex(OVertexType vertexType) {
+    return this.vertexType2EVClassMappers.get(vertexType);
   }
 
-  public Map<OEntity, List<OClassMapper>> getEntity2classMappers() {
-    return this.entity2classMappers;
+  public List<OEVClassMapper> getEVClassMappersByEntity(OEntity entity) {
+    return this.entity2EVClassMappers.get(entity);
   }
 
-  public Map<OVertexType, List<OClassMapper>> getVertexType2classMappers() {
-    return this.vertexType2classMappers;
+  public List<OEEClassMapper> getEEClassMappersByEntity(OEntity entity) {
+    return this.entity2EEClassMappers.get(entity.getName());
   }
 
-  public String getAttributeByPropertyAboveMappers(String propertyName, List<OClassMapper> classMappers) {
+  public List<OEEClassMapper> getEEClassMappersByEdge(OEdgeType edgeType) {
+    return this.edgeType2EEClassMappers.get(edgeType.getName());
+  }
 
-    for(OClassMapper currClassMapper: classMappers) {
+  public Map<OEntity, List<OEVClassMapper>> getEntity2EVClassMappers() {
+    return this.entity2EVClassMappers;
+  }
+
+  public Map<OVertexType, List<OEVClassMapper>> getVertexType2EVClassMappers() {
+    return this.vertexType2EVClassMappers;
+  }
+
+  public Map<String, List<OEEClassMapper>> getEntity2EEClassMappers() {
+    return entity2EEClassMappers;
+  }
+
+  public Map<String, List<OEEClassMapper>> getEdgeType2EEClassMappers() {
+    return edgeType2EEClassMappers;
+  }
+
+  public String getAttributeByPropertyAboveMappers(String propertyName, List<OEVClassMapper> classMappers) {
+
+    for(OEVClassMapper currClassMapper: classMappers) {
       String attributeName = currClassMapper.getAttributeByProperty(propertyName);
       if(attributeName != null) {
         return attributeName;
@@ -650,8 +689,8 @@ public class OER2GraphMapper extends OSource2GraphMapper {
       }
 
       // rules updating
-      OClassMapper classMapper = new OClassMapper(currentEntity, currentVertexType, attribute2property, property2attribute);
-      this.upsertClassMappingRules(currentEntity, currentVertexType, classMapper);
+      OEVClassMapper classMapper = new OEVClassMapper(currentEntity, currentVertexType, attribute2property, property2attribute);
+      this.upsertEVClassMappingRules(currentEntity, currentVertexType, classMapper);
 
       iteration++;
       OTeleporterContext.getInstance().getOutputManager().debug("\nVertex-type %s built.\n", currentVertexTypeName);
@@ -858,7 +897,7 @@ public class OER2GraphMapper extends OSource2GraphMapper {
   private void performOne2OneMapping(Map<String, String> sourceId2tableName, OConfiguredVertexClass currentConfiguredVertexClass, List<String> externalKeyProps) {
 
     String sourceTableName = sourceId2tableName.entrySet().iterator().next().getValue();
-    OClassMapper currentClassMapper = this.entity2classMappers.get(this.dataBaseSchema.getEntityByName(sourceTableName)).get(0);
+    OEVClassMapper currentClassMapper = this.entity2EVClassMappers.get(this.dataBaseSchema.getEntityByName(sourceTableName)).get(0);
 
     // updating vertex and table mapping according to the migrationConfigDoc
     OVertexType currentVertexType = currentClassMapper.getVertexType();
@@ -945,8 +984,8 @@ public class OER2GraphMapper extends OSource2GraphMapper {
 
     // merging vertices correspondent
     for (String sourceTableName : sourceId2tableName.values()) {
-      List<OClassMapper> currentClassMappers = this.entity2classMappers.get(this.dataBaseSchema.getEntityByName(sourceTableName));
-      for (OClassMapper currentClassMapper : currentClassMappers) {
+      List<OEVClassMapper> currentClassMappers = this.entity2EVClassMappers.get(this.dataBaseSchema.getEntityByName(sourceTableName));
+      for (OEVClassMapper currentClassMapper : currentClassMappers) {
         verticesToMerge.add(currentClassMapper.getVertexType());
       }
     }
@@ -1042,7 +1081,7 @@ public class OER2GraphMapper extends OSource2GraphMapper {
         String originalSourceTableName = sourceId2tableName.get(originalSource);
 
         boolean fromPrimaryKey = false;
-        OClassMapper currentClassMapper = this.entity2classMappers.get(this.dataBaseSchema.getEntityByName(originalSourceTableName)).get(0);
+        OEVClassMapper currentClassMapper = this.entity2EVClassMappers.get(this.dataBaseSchema.getEntityByName(originalSourceTableName)).get(0);
         OEntity currentEntity =  currentClassMapper.getEntity();
         if (currentEntity.getPrimaryKey().getAttributeByName(columnName) != null) {
           fromPrimaryKey = true;
@@ -1066,7 +1105,7 @@ public class OER2GraphMapper extends OSource2GraphMapper {
 
       // removing old vertices' rules
       for (OVertexType v : verticesToMerge) {
-        this.vertexType2classMappers.remove(v);
+        this.vertexType2EVClassMappers.remove(v);
       }
 
       for (String tableName : originalTable2configuredProperties.keySet()) {
@@ -1082,11 +1121,11 @@ public class OER2GraphMapper extends OSource2GraphMapper {
         }
 
         // removing old entities' rules
-        this.entity2classMappers.remove(currentEntity);
-        OClassMapper currentNewCM = new OClassMapper(currentEntity, newAggregatedVertexType, attribute2property, property2attribute);
+        this.entity2EVClassMappers.remove(currentEntity);
+        OEVClassMapper currentNewCM = new OEVClassMapper(currentEntity, newAggregatedVertexType, attribute2property, property2attribute);
 
         // adding new rules
-        this.upsertClassMappingRules(currentEntity, newAggregatedVertexType, currentNewCM);
+        this.upsertEVClassMappingRules(currentEntity, newAggregatedVertexType, currentNewCM);
       }
 
       // deleting old vertices just aggregated into the new vertex type
@@ -1111,7 +1150,7 @@ public class OER2GraphMapper extends OSource2GraphMapper {
 
     OTeleporterStatistics statistics = OTeleporterContext.getInstance().getStatistics();
     String sourceTableName = sourceId2tableName.entrySet().iterator().next().getValue();
-    OClassMapper currentClassMapper = this.entity2classMappers.get(this.dataBaseSchema.getEntityByName(sourceTableName)).get(0);
+    OEVClassMapper currentClassMapper = this.entity2EVClassMappers.get(this.dataBaseSchema.getEntityByName(sourceTableName)).get(0);
 
     // removing old vertex-type and correspondent class mappers
     OEntity entity = currentClassMapper.getEntity();
@@ -1122,8 +1161,8 @@ public class OER2GraphMapper extends OSource2GraphMapper {
     Map<String,List<OEdgeType>> vertexType2outEdges = this.splitEdgesForVertexAccordingToRelationships(entity.getOutCanonicalRelationships(), entity.getName(), tableName2mappedConfiguredVertices);
 
     // removing class mappers
-    this.vertexType2classMappers.remove(vertexType);
-    this.entity2classMappers.remove(entity);
+    this.vertexType2EVClassMappers.remove(vertexType);
+    this.entity2EVClassMappers.remove(entity);
 
     // removing the not-split vertex type
     graphModel.removeVertexTypeByName(vertexType.getName());
@@ -1142,7 +1181,8 @@ public class OER2GraphMapper extends OSource2GraphMapper {
       }
 
       // we have just a source table in case of splitting, so we can retrieve the original primary key from the first source table
-      List<String> primaryKeyColumns = currentConfiguredVertexClass.getMapping().getSourceTables().get(0).getPrimaryKeyColumns();
+      OSourceTable sourceTable = currentConfiguredVertexClass.getMapping().getSourceTables().get(0);
+      List<String> primaryKeyColumns = sourceTable.getPrimaryKeyColumns();
 
       Map<String,String> attribute2property = new HashMap<String,String>();
       Map<String,String> property2attribute = new HashMap<String,String>();
@@ -1185,10 +1225,10 @@ public class OER2GraphMapper extends OSource2GraphMapper {
         currentVertexType.getOutEdgesType().addAll(outEdgeTypes);
       }
 
-      currentClassMapper = new OClassMapper(entity, currentVertexType, attribute2property, property2attribute);
+      currentClassMapper = new OEVClassMapper(entity, currentVertexType, attribute2property, property2attribute);
 
       // updating rules
-      this.upsertClassMappingRules(entity, currentVertexType, currentClassMapper);
+      this.upsertEVClassMappingRules(entity, currentVertexType, currentClassMapper);
 
       // setting as analyzed and applied the current configured vertex class
       currentConfiguredVertexClass.setAlreadyAnalyzed(true);
@@ -1382,6 +1422,7 @@ public class OER2GraphMapper extends OSource2GraphMapper {
    * @param direction
    * @return
    */
+
   private ORelationship buildRelationshipFromConfig(String currentForeignEntityName, String currentParentEntityName, List<String> fromColumns,
                                                     List<String> toColumns, String direction, boolean foreignEntityIsJoinTableToAggregate) {
 
@@ -1490,7 +1531,7 @@ public class OER2GraphMapper extends OSource2GraphMapper {
 
 
   /**
-   *  @param currentRelationship
+   * @param currentRelationship
    * @param edgeName
    * @param currentEdgeClass
    * @param foreignEntityIsJoinTableToAggregate
@@ -1535,6 +1576,9 @@ public class OER2GraphMapper extends OSource2GraphMapper {
 
     // adding properties
     this.addPropertiesToEdgeTypeFromConfiguredClass(currentEdgeType, currentEdgeClass);
+
+
+    // setting correct edge direction
 
     String currentRelationshipDirection = currentRelationship.getDirection();
     OVertexType currentInVertexType;
@@ -1619,7 +1663,6 @@ public class OER2GraphMapper extends OSource2GraphMapper {
       // rules updating
       upsertRelationshipEdgeRules(currentRelationship, currentEdgeType);
     }
-
   }
 
   /**
@@ -1649,6 +1692,23 @@ public class OER2GraphMapper extends OSource2GraphMapper {
 
     // adding properties
     this.addPropertiesToEdgeTypeFromConfiguredClass(edgeType, currentEdgeClass);
+
+    // Rules updating for splitting edges
+    String sourceTableName = splittingEdgeInfo.getSourceTable();
+    OEntity entity = this.getDataBaseSchema().getEntityByName(sourceTableName);
+    Map<String,String> attribute2property = new LinkedHashMap<String,String>();   // map to maintain the mapping between the attributes of the current entity and the properties of the correspondent edge type
+    Map<String,String> property2attribute = new LinkedHashMap<String,String>();               // map to maintain the mapping between the properties of the current edge type and the attributes of the correspondent entity
+
+    // filling the 2 maps
+    for(OConfiguredProperty currConfiguredProperty: currentEdgeClass.getConfiguredProperties()) {
+      String propertyName = currConfiguredProperty.getPropertyName();
+      String attributeName = currConfiguredProperty.getPropertyMapping().getColumnName();
+      attribute2property.put(attributeName, propertyName);
+      property2attribute.put(propertyName, attributeName);
+    }
+
+    OEEClassMapper classMapper = new OEEClassMapper(entity, edgeType, attribute2property, property2attribute);
+    this.upsertEEClassMappingRules(entity, edgeType, classMapper);
 
     OTeleporterContext.getInstance().getOutputManager().debug("\nEdge-type %s built.\n", edgeType.getName());
     statistics.builtModelEdgeTypes++;
@@ -1872,7 +1932,7 @@ public class OER2GraphMapper extends OSource2GraphMapper {
   }
 
   public OEntity getEntityByVertexType(OVertexType vertexType, int classMapperIndex) {
-    return this.getClassMappersByVertex(vertexType).get(classMapperIndex).getEntity();
+    return this.getEVClassMappersByVertex(vertexType).get(classMapperIndex).getEntity();
   }
 
   public OVertexType getVertexTypeByEntity(OEntity entity) {
@@ -1880,14 +1940,14 @@ public class OER2GraphMapper extends OSource2GraphMapper {
   }
 
   public OVertexType getVertexTypeByEntity(OEntity entity, int classMapperIndex) {
-    return this.getClassMappersByEntity(entity).get(classMapperIndex).getVertexType();
+    return this.getEVClassMappersByEntity(entity).get(classMapperIndex).getVertexType();
   }
 
   public String getAttributeNameByVertexTypeAndProperty(OVertexType vertexType, String propertyName) {
 
     String attributeName = null;
 
-    for(OClassMapper cm: this.getClassMappersByVertex(vertexType)) {
+    for(OEVClassMapper cm: this.getEVClassMappersByVertex(vertexType)) {
       attributeName = cm.getAttributeByProperty(propertyName);
       if(attributeName != null) {
         break;
@@ -1906,10 +1966,10 @@ public class OER2GraphMapper extends OSource2GraphMapper {
 
   public String getPropertyNameByVertexTypeAndAttribute(OVertexType vertexType, String attributeName) {
 
-    List<OClassMapper> classMappers = this.getClassMappersByVertex(vertexType);
+    List<OEVClassMapper> classMappers = this.getEVClassMappersByVertex(vertexType);
 
     String propertyName = null;
-    for(OClassMapper currentClassMapper: classMappers) {
+    for(OEVClassMapper currentClassMapper: classMappers) {
       propertyName = currentClassMapper.getPropertyByAttribute(attributeName);
       if(propertyName != null) {
         // the right class mapper was found and the right property name with it
@@ -1927,12 +1987,33 @@ public class OER2GraphMapper extends OSource2GraphMapper {
     return propertyName;
   }
 
+  public String getAttributeNameByEdgeTypeAndProperty(OEdgeType edgeType, String propertyName) {
+
+    String attributeName = null;
+
+    for(OEEClassMapper cm: this.getEEClassMappersByEdge(edgeType)) {
+      attributeName = cm.getAttributeByProperty(propertyName);
+      if(attributeName != null) {
+        break;
+      }
+    }
+
+    if(attributeName == null) {
+      OVertexType parentType = (OVertexType) edgeType.getParentType();
+      if(parentType != null) {
+        return this.getAttributeNameByVertexTypeAndProperty(parentType, propertyName);
+      }
+    }
+
+    return attributeName;
+  }
+
   public String getPropertyNameByEntityAndAttribute(OEntity entity, String attributeName) {
 
-    List<OClassMapper> classMappers = this.getClassMappersByEntity(entity);
+    List<OEVClassMapper> classMappers = this.getEVClassMappersByEntity(entity);
 
     String propertyName = null;
-    for(OClassMapper currentClassMapper: classMappers) {
+    for(OEVClassMapper currentClassMapper: classMappers) {
       propertyName = currentClassMapper.getPropertyByAttribute(attributeName);
       if(propertyName != null) {
         // the right class mapper was found and the right property name with it
@@ -2035,7 +2116,6 @@ public class OER2GraphMapper extends OSource2GraphMapper {
     this.joinVertex2aggregatorEdges = joinVertex2aggregatorEdges;
   }
 
-
   public List<String> getIncludedTables() {
     return includedTables;
   }
@@ -2079,8 +2159,8 @@ public class OER2GraphMapper extends OSource2GraphMapper {
     String s = "\n\n\n------------------------------ MAPPER DESCRIPTION ------------------------------\n\n\n";
     s += "RULES\n\n";
     s += "- Class mappings:\n\n";
-    for(List<OClassMapper> classMappers: this.entity2classMappers.values()) {
-      for(OClassMapper classMapper: classMappers) {
+    for(List<OEVClassMapper> classMappers: this.entity2EVClassMappers.values()) {
+      for(OEVClassMapper classMapper: classMappers) {
         s += classMapper.toString() + "\n";
       }
     }
