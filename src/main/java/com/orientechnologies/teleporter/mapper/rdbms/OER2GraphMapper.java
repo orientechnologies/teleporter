@@ -1,18 +1,18 @@
 /*
  * Copyright 2015 OrientDB LTD (info--at--orientdb.com)
  * All Rights Reserved. Commercial License.
- * 
+ *
  * NOTICE:  All information contained herein is, and remains the property of
  * OrientDB LTD and its suppliers, if any.  The intellectual and
  * technical concepts contained herein are proprietary to
  * OrientDB LTD and its suppliers and may be covered by United
  * Kingdom and Foreign Patents, patents in process, and are protected by trade
  * secret or copyright law.
- * 
+ *
  * Dissemination of this information or reproduction of this material
  * is strictly forbidden unless prior written permission is obtained
  * from OrientDB LTD.
- * 
+ *
  * For more information: http://www.orientdb.com
  */
 
@@ -817,18 +817,17 @@ public class OER2GraphMapper extends OSource2GraphMapper {
 
     if(this.migrationConfig != null) {
 
-      /*
-     * Adding/updating relationships according to the manual migrationConfigDoc
-     * Executing this step before updating vertex classes because we need that all the configured edges are already defined before the next step.
-     * In fact in certain cases, as table splitting, we move edges according to the configuration.
-     */
-      this.upsertRelationshipsFromConfiguration();
-
     /*
      * Adding/updating classes according to the manual migrationConfigDoc
      */
       this.upsertClassesFromConfiguration();
 
+    /*
+     * Adding/updating relationships according to the manual migrationConfigDoc
+     * Executing this step before updating vertex classes because we need that all the configured edges are already defined before the next step.
+     * In fact in certain cases, as table splitting, we move edges according to the configuration.
+     */
+      this.upsertRelationshipsFromConfiguration();
 
     }
   }
@@ -1437,10 +1436,22 @@ public class OER2GraphMapper extends OSource2GraphMapper {
     // it's a canonical relationship iff the each column in toColumns corresponds to a column in the primary key of the parent entity
     boolean isCanonicalRelationship = true;
     OPrimaryKey primaryKey = currentParentEntity.getPrimaryKey();
-    for (String currColumnName : toColumns) {
-      if (primaryKey.getAttributeByName(currColumnName) == null) {
-        isCanonicalRelationship = false;
-        break;
+    List<OAttribute> keyAttributes;
+    if(true) {
+      keyAttributes = primaryKey.getInvolvedAttributes();
+    }
+    else {
+      //TODO
+    }
+    if (toColumns.size() != keyAttributes.size()) {
+      isCanonicalRelationship = false;
+    }
+    if(isCanonicalRelationship) {
+      for (String currColumnName : toColumns) {
+        if (primaryKey.getAttributeByName(currColumnName) == null) {
+          isCanonicalRelationship = false;
+          break;
+        }
       }
     }
 
@@ -1471,6 +1482,7 @@ public class OER2GraphMapper extends OSource2GraphMapper {
 
         // searching correspondent primary key
         OPrimaryKey currentPk = this.dataBaseSchema.getEntityByName(currentParentEntityName).getPrimaryKey();
+
         ((OCanonicalRelationship)currentRelationship).setPrimaryKey(currentPk);
         ((OCanonicalRelationship)currentRelationship).setForeignKey(currentFk);
 
@@ -1674,15 +1686,8 @@ public class OER2GraphMapper extends OSource2GraphMapper {
 
     OTeleporterStatistics statistics = OTeleporterContext.getInstance().getStatistics();
 
-    OVertexType inVertexType = new OVertexType(splittingEdgeInfo.getToVertexClass());
-    this.graphModel.getVerticesType().add(inVertexType);
-    statistics.totalNumberOfModelVertices++;
-    statistics.builtModelVertexTypes++;
-
-    OVertexType outVertexType = new OVertexType(splittingEdgeInfo.getFromVertexClass());
-    this.graphModel.getVerticesType().add(outVertexType);
-    statistics.totalNumberOfModelVertices++;
-    statistics.builtModelVertexTypes++;
+    OVertexType inVertexType = this.graphModel.getVertexTypeByName(splittingEdgeInfo.getToVertexClass());
+    OVertexType outVertexType = this.graphModel.getVertexTypeByName(splittingEdgeInfo.getFromVertexClass());
 
     OEdgeType edgeType = new OEdgeType(currentEdgeClass.getName(), outVertexType, inVertexType, 0, true);
     this.graphModel.getEdgesType().add(edgeType);
