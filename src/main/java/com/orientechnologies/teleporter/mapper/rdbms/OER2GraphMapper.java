@@ -1151,8 +1151,8 @@ public class OER2GraphMapper extends OSource2GraphMapper {
     String sourceTableName = sourceId2tableName.entrySet().iterator().next().getValue();
     OEVClassMapper currentClassMapper = this.entity2EVClassMappers.get(this.dataBaseSchema.getEntityByName(sourceTableName)).get(0);
 
-    // removing old vertex-type and correspondent class mappers
     OEntity entity = currentClassMapper.getEntity();
+    entity.setIsSplitEntity(true);
     OVertexType vertexType = currentClassMapper.getVertexType();
 
     // building a map with the in and out edges for each class
@@ -1436,13 +1436,19 @@ public class OER2GraphMapper extends OSource2GraphMapper {
     // it's a canonical relationship iff the each column in toColumns corresponds to a column in the primary key of the parent entity
     boolean isCanonicalRelationship = true;
     OPrimaryKey primaryKey = currentParentEntity.getPrimaryKey();
+
     List<OAttribute> keyAttributes;
-    if(true) {
+    if(!currentParentEntity.isSplitEntity()) {
       keyAttributes = primaryKey.getInvolvedAttributes();
     }
     else {
-      //TODO
+      keyAttributes = new LinkedList<OAttribute>();
+      List<OEVClassMapper> classMappers = this.getEVClassMappersByEntity(currentParentEntity);
+      for(String attributeName: toColumns) {
+        keyAttributes.add(currentParentEntity.getAttributeByName(attributeName));
+      }
     }
+
     if (toColumns.size() != keyAttributes.size()) {
       isCanonicalRelationship = false;
     }
@@ -1480,8 +1486,16 @@ public class OER2GraphMapper extends OSource2GraphMapper {
           currentFk.addAttribute(currentForeignEntity.getAttributeByName(column));
         }
 
-        // searching correspondent primary key
-        OPrimaryKey currentPk = this.dataBaseSchema.getEntityByName(currentParentEntityName).getPrimaryKey();
+        OPrimaryKey currentPk;
+        if(!currentParentEntity.isSplitEntity()) {
+          // searching correspondent primary key
+          currentPk = this.dataBaseSchema.getEntityByName(currentParentEntityName).getPrimaryKey();
+        }
+        else {
+          // the attributes of the primary key are retrieved from the attributes names in toColumns
+          currentPk = new OPrimaryKey(currentParentEntity);
+          currentPk.setInvolvedAttributes(keyAttributes);
+        }
 
         ((OCanonicalRelationship)currentRelationship).setPrimaryKey(currentPk);
         ((OCanonicalRelationship)currentRelationship).setForeignKey(currentFk);
@@ -1602,7 +1616,7 @@ public class OER2GraphMapper extends OSource2GraphMapper {
       // If the foreign table is a join table then the direction is referred to the aggregator edge and not to the left or right one. So direction field is always "direct"
       // as it is inferred from the left or right relationship.
       if(currentRelationshipDirection != null && currentRelationshipDirection.equals("inverse")) {
-        currentInVertexType = this.getVertexTypeByEntity(currentForeignEntity);
+        currentInVertexType = this.getVertexTypeByEntityAndRelationship(currentForeignEntity, (OCanonicalRelationship) currentRelationship);
         currentOutVertexType = this.getVertexTypeByEntity(currentParentEntity);
 
         // removing on vertices the old references to the edge type
@@ -1628,13 +1642,13 @@ public class OER2GraphMapper extends OSource2GraphMapper {
 
       // if direction is null the edge will be direct by default
       if (currentRelationshipDirection == null) {
-        currentInVertexType = this.getVertexTypeByEntity(currentParentEntity);
+        currentInVertexType = this.getVertexTypeByEntityAndRelationship(currentParentEntity, (OCanonicalRelationship) currentRelationship);
         currentOutVertexType = this.getVertexTypeByEntity(currentForeignEntity);
       } else {
 
         // if the current foreign entity is a join table we will aggregate then the edge will be direct
         if (foreignEntityIsJoinTableToAggregate) {
-          currentInVertexType = this.getVertexTypeByEntity(currentParentEntity);
+          currentInVertexType = this.getVertexTypeByEntityAndRelationship(currentParentEntity, (OCanonicalRelationship) currentRelationship);
           currentOutVertexType = this.getVertexTypeByEntity(currentForeignEntity);
 
           // delete old edges correspondent to the relationship between "currentParentEntity" and "currentForeignEntity" (if present)
@@ -1659,7 +1673,7 @@ public class OER2GraphMapper extends OSource2GraphMapper {
 
           // edge direction chosen according to the value of the parameter direction
           if (currentRelationshipDirection.equals("direct")) {
-            currentInVertexType = this.getVertexTypeByEntity(currentParentEntity);
+            currentInVertexType = this.getVertexTypeByEntityAndRelationship(currentParentEntity, (OCanonicalRelationship) currentRelationship);
             currentOutVertexType = this.getVertexTypeByEntity(currentForeignEntity);
           } else {
             currentInVertexType = this.getVertexTypeByEntity(currentForeignEntity);
@@ -1676,6 +1690,7 @@ public class OER2GraphMapper extends OSource2GraphMapper {
       upsertRelationshipEdgeRules(currentRelationship, currentEdgeType);
     }
   }
+
 
   /**
    *
@@ -1946,6 +1961,35 @@ public class OER2GraphMapper extends OSource2GraphMapper {
 
   public OVertexType getVertexTypeByEntity(OEntity entity, int classMapperIndex) {
     return this.getEVClassMappersByEntity(entity).get(classMapperIndex).getVertexType();
+  }
+
+  public OVertexType getVertexTypeByEntityAndRelationship(OEntity currentParentEntity, OCanonicalRelationship currentRelationship) {
+
+    List<OEVClassMapper> classMappers = this.getEVClassMappersByEntity(currentParentEntity);
+
+
+    if(classMappers.size() == 1) {
+      return this.getVertexTypeByEntity(currentParentEntity);
+    }
+    else {
+      List<OAttribute> pkAttributes = currentRelationship.getPrimaryKey().getInvolvedAttributes();
+      OVertexType correspondentVertexType = null;
+
+      for (OEVClassMapper classMapper : classMappers) {
+        boolean found = true;
+        for (OAttribute currAttribute : pkAttributes) {
+          if (classMapper.getAttribute2property().get(currAttribute.getName()) == null) {
+            found = false;
+            break;
+          }
+        }
+        if (found) {
+          correspondentVertexType = classMapper.getVertexType();
+          break;
+        }
+      }
+      return correspondentVertexType;
+    }
   }
 
   public String getAttributeNameByVertexTypeAndProperty(OVertexType vertexType, String propertyName) {

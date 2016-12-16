@@ -197,7 +197,7 @@ public abstract class ODBMSImportStrategy implements OWorkflowStrategy {
     for (OEntity entity : mappedEntities) {
       for (OCanonicalRelationship currentRelationship : entity.getOutCanonicalRelationships()) {
         OEntity currentParentEntity = mapper.getDataBaseSchema().getEntityByName(currentRelationship.getParentEntity().getName());
-        OVertexType currentInVertexType = mapper.getVertexTypeByEntity(currentParentEntity);
+        OVertexType currentInVertexType = mapper.getVertexTypeByEntityAndRelationship(currentParentEntity, currentRelationship);
         OEdgeType edgeType = mapper.getRelationship2edgeType().get(currentRelationship);
         graphEngine.upsertReachedVertexWithEdge(orientGraph, currentRecord, currentRelationship, outVertex, currentInVertexType, edgeType.getName());
       }

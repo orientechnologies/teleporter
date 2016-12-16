@@ -170,6 +170,58 @@
         }
       }
     }
+  }, {
+    "name": "ChiefOfficer",
+    "mapping": {
+      "sourceTables": [{
+        "name": "hsqldb_CHIEF_OFFICER",
+        "dataSource": "hsqldb",
+        "tableName": "CHIEF_OFFICER",
+        "primaryKey": ["FIRST_NAME", "LAST_NAME"]
+      }]
+    },
+    "externalKey": ["firstName", "lastName"],
+    "properties": {
+      "firstName": {
+        "include": true,
+        "type": "STRING",
+        "ordinalPosition": 1,
+        "mandatory": true,
+        "readOnly": false,
+        "notNull": true,
+        "mapping": {
+          "source": "hsqldb_CHIEF_OFFICER",
+          "columnName": "FIRST_NAME",
+          "type": "VARCHAR"
+        }
+      },
+      "lastName": {
+        "include": true,
+        "type": "STRING",
+        "ordinalPosition": 2,
+        "mandatory": true,
+        "readOnly": false,
+        "notNull": true,
+        "mapping": {
+          "source": "hsqldb_CHIEF_OFFICER",
+          "columnName": "LAST_NAME",
+          "type": "VARCHAR"
+        }
+      },
+      "project": {
+        "include": true,
+        "type": "STRING",
+        "ordinalPosition": 3,
+        "mandatory": false,
+        "readOnly": false,
+        "notNull": false,
+        "mapping": {
+          "source": "hsqldb_CHIEF_OFFICER",
+          "columnName": "PROJECT",
+          "type": "VARCHAR"
+        }
+      }
+    }
   }],
   "edges": [{
     "HasProject": {
@@ -215,6 +267,18 @@
           "notNull": false
         }
       }
+    }
+  }, {
+    "IsChiefForProject": {
+      "isLogical": false,
+      "mapping": [{
+        "fromTable": "CHIEF_OFFICER",
+        "fromColumns": ["PROJECT"],
+        "toTable": "EMPLOYEE_PROJECT",
+        "toColumns": ["PROJECT"],
+        "direction": "direct"
+      }],
+      "properties": {}
     }
   }]
 }

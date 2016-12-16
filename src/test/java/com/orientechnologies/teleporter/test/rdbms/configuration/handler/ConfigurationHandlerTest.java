@@ -935,6 +935,10 @@ public class ConfigurationHandlerTest {
               " NAME varchar(256) not null, LOCATION varchar(256) not null, UPDATED_ON date not null, primary key (ID))";
       st.execute(departmentTableBuilding);
 
+      String chiefTableBuilding = "create memory table CHIEF_OFFICER (FIRST_NAME varchar(256) not null, LAST_NAME varchar(256) not null, " +
+              "PROJECT varchar(256) not null, primary key (FIRST_NAME,LAST_NAME))";
+      st.execute(chiefTableBuilding);
+
       ODocument config = OFileManager.buildJsonFromFile(this.config4);
       OConfiguration migrationConfig = configurationHandler.buildConfigurationFromJSONDoc(config);
 

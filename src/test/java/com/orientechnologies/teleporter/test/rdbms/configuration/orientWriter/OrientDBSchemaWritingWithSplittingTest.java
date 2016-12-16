@@ -125,6 +125,10 @@ public class OrientDBSchemaWritingWithSplittingTest {
                     " NAME varchar(256) not null, LOCATION varchar(256) not null, UPDATED_ON date not null, primary key (ID))";
             st.execute(departmentTableBuilding);
 
+            String chiefTableBuilding = "create memory table CHIEF_OFFICER (FIRST_NAME varchar(256) not null, LAST_NAME varchar(256) not null, " +
+                    "PROJECT varchar(256) not null, primary key (FIRST_NAME,LAST_NAME))";
+            st.execute(chiefTableBuilding);
+
             ODocument config = OFileManager.buildJsonFromFile(this.config);
             OConfigurationHandler configHandler = new OConfigurationHandler(true);
             OConfiguration migrationConfig = configHandler.buildConfigurationFromJSONDoc(config);
@@ -140,12 +144,12 @@ public class OrientDBSchemaWritingWithSplittingTest {
              *  Testing context information
              */
 
-            assertEquals(3, context.getStatistics().totalNumberOfVertexTypes);
-            assertEquals(3, context.getStatistics().wroteVertexType);
-            assertEquals(2, context.getStatistics().totalNumberOfEdgeTypes);
-            assertEquals(2, context.getStatistics().wroteEdgeType);
-            assertEquals(3, context.getStatistics().totalNumberOfIndices);
-            assertEquals(3, context.getStatistics().wroteIndexes);
+            assertEquals(4, context.getStatistics().totalNumberOfVertexTypes);
+            assertEquals(4, context.getStatistics().wroteVertexType);
+            assertEquals(3, context.getStatistics().totalNumberOfEdgeTypes);
+            assertEquals(3, context.getStatistics().wroteEdgeType);
+            assertEquals(4, context.getStatistics().totalNumberOfIndices);
+            assertEquals(4, context.getStatistics().wroteIndexes);
 
             /**
              *  Testing built OrientDB schema
@@ -155,13 +159,16 @@ public class OrientDBSchemaWritingWithSplittingTest {
             OrientVertexType employeeVertexType =  orientGraph.getVertexType("Employee");
             OrientVertexType projectVertexType =  orientGraph.getVertexType("Project");
             OrientVertexType departmentVertexType = orientGraph.getVertexType("Department");
+            OrientVertexType chiefOfficerVertexType = orientGraph.getVertexType("ChiefOfficer");
             OrientEdgeType worksAtEdgeType = orientGraph.getEdgeType("WorksAt");
             OrientEdgeType hasProjectEdgeType = orientGraph.getEdgeType("HasProject");
+            OrientEdgeType isChiefForProjectEdgeType = orientGraph.getEdgeType("IsChiefForProject");
 
             // vertices check
             assertNotNull(employeeVertexType);
             assertNotNull(projectVertexType);
             assertNotNull(departmentVertexType);
+            assertNotNull(isChiefForProjectEdgeType);
 
             // properties check
 
@@ -230,9 +237,31 @@ public class OrientDBSchemaWritingWithSplittingTest {
 
             assertNull(departmentVertexType.getProperty("updatedOn"));
 
+            assertNotNull(chiefOfficerVertexType.getProperty("firstName"));
+            assertEquals("firstName", chiefOfficerVertexType.getProperty("firstName").getName());
+            assertEquals(OType.STRING, chiefOfficerVertexType.getProperty("firstName").getType());
+            assertEquals(true, chiefOfficerVertexType.getProperty("firstName").isMandatory());
+            assertEquals(false, chiefOfficerVertexType.getProperty("firstName").isReadonly());
+            assertEquals(true, chiefOfficerVertexType.getProperty("firstName").isNotNull());
+
+            assertNotNull(chiefOfficerVertexType.getProperty("lastName"));
+            assertEquals("lastName", chiefOfficerVertexType.getProperty("lastName").getName());
+            assertEquals(OType.STRING, chiefOfficerVertexType.getProperty("lastName").getType());
+            assertEquals(true, chiefOfficerVertexType.getProperty("lastName").isMandatory());
+            assertEquals(false, chiefOfficerVertexType.getProperty("lastName").isReadonly());
+            assertEquals(true, chiefOfficerVertexType.getProperty("lastName").isNotNull());
+
+            assertNotNull(chiefOfficerVertexType.getProperty("project"));
+            assertEquals("project", chiefOfficerVertexType.getProperty("project").getName());
+            assertEquals(OType.STRING, chiefOfficerVertexType.getProperty("project").getType());
+            assertEquals(false, chiefOfficerVertexType.getProperty("project").isMandatory());
+            assertEquals(false, chiefOfficerVertexType.getProperty("project").isReadonly());
+            assertEquals(false, chiefOfficerVertexType.getProperty("project").isNotNull());
+
             // edges check
             assertNotNull(worksAtEdgeType);
             assertNotNull(hasProjectEdgeType);
+            assertNotNull(isChiefForProjectEdgeType);
 
             assertEquals("WorksAt", worksAtEdgeType.getName());
             assertEquals(1, worksAtEdgeType.propertiesMap().size());
@@ -252,6 +281,9 @@ public class OrientDBSchemaWritingWithSplittingTest {
             assertEquals(false, hasProjectEdgeType.getProperty("role").isReadonly());
             assertEquals(false, hasProjectEdgeType.getProperty("role").isNotNull());
 
+            assertEquals("IsChiefForProject", isChiefForProjectEdgeType.getName());
+            assertEquals(0, isChiefForProjectEdgeType.propertiesMap().size());
+
 
             // Indices check
             assertEquals(true, orientGraph.getRawGraph().getMetadata().getIndexManager().existsIndex("Employee.pkey"));
@@ -262,6 +294,9 @@ public class OrientDBSchemaWritingWithSplittingTest {
 
             assertEquals(true, orientGraph.getRawGraph().getMetadata().getIndexManager().existsIndex("Department.pkey"));
             assertEquals(true, orientGraph.getRawGraph().getMetadata().getIndexManager().areIndexed("Department", "id"));
+
+            assertEquals(true, orientGraph.getRawGraph().getMetadata().getIndexManager().existsIndex("ChiefOfficer.pkey"));
+            assertEquals(true, orientGraph.getRawGraph().getMetadata().getIndexManager().areIndexed("ChiefOfficer", "firstName", "lastName"));
 
         }catch(Exception e) {
             e.printStackTrace();

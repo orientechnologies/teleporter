@@ -123,9 +123,9 @@ public class MappingWithSplittingTest {
                     " NAME varchar(256) not null, LOCATION varchar(256) not null, UPDATED_ON date not null, primary key (ID))";
             st.execute(departmentTableBuilding);
 
-            /*String chiefTableBuilding = "create memory table CHIEF_OFFICER (FIRST_NAME varchar(256) not null, LAST_NAME varchar(256) not null, " +
+            String chiefTableBuilding = "create memory table CHIEF_OFFICER (FIRST_NAME varchar(256) not null, LAST_NAME varchar(256) not null, " +
                     "PROJECT varchar(256) not null, primary key (FIRST_NAME,LAST_NAME))";
-            st.execute(chiefTableBuilding);*/
+            st.execute(chiefTableBuilding);
 
             ODocument config = OFileManager.buildJsonFromFile(this.config);
             OConfigurationHandler configHandler = new OConfigurationHandler(true);
@@ -141,23 +141,15 @@ public class MappingWithSplittingTest {
              *  Testing context information
              */
 
-            //assertEquals(3, context.getStatistics().totalNumberOfEntities);
-            assertEquals(2, context.getStatistics().totalNumberOfEntities);
-            //assertEquals(3, context.getStatistics().builtEntities);
-            assertEquals(2, context.getStatistics().builtEntities);
-            //assertEquals(2, context.getStatistics().totalNumberOfRelationships);
-            assertEquals(1, context.getStatistics().totalNumberOfRelationships);
-            //assertEquals(2, context.getStatistics().builtRelationships);
-            assertEquals(1, context.getStatistics().builtRelationships);
+            assertEquals(3, context.getStatistics().totalNumberOfEntities);
+            assertEquals(3, context.getStatistics().builtEntities);
+            assertEquals(2, context.getStatistics().totalNumberOfRelationships);
+            assertEquals(2, context.getStatistics().builtRelationships);
 
-            /*assertEquals(4, context.getStatistics().totalNumberOfModelVertices);
+            assertEquals(4, context.getStatistics().totalNumberOfModelVertices);
             assertEquals(4, context.getStatistics().builtModelVertexTypes);
             assertEquals(3, context.getStatistics().totalNumberOfModelEdges);
-            assertEquals(3, context.getStatistics().builtModelEdgeTypes);*/
-            assertEquals(3, context.getStatistics().totalNumberOfModelVertices);
-            assertEquals(3, context.getStatistics().builtModelVertexTypes);
-            assertEquals(2, context.getStatistics().totalNumberOfModelEdges);
-            assertEquals(2, context.getStatistics().builtModelEdgeTypes);
+            assertEquals(3, context.getStatistics().builtModelEdgeTypes);
 
 
             /*
@@ -166,16 +158,14 @@ public class MappingWithSplittingTest {
 
             OEntity employeeEntity = mapper.getDataBaseSchema().getEntityByName("EMPLOYEE_PROJECT");
             OEntity departmentEntity = mapper.getDataBaseSchema().getEntityByName("DEPARTMENT");
-            //OEntity chiefOfficerEntity = mapper.getDataBaseSchema().getEntityByName("CHIEF_OFFICER");
+            OEntity chiefOfficerEntity = mapper.getDataBaseSchema().getEntityByName("CHIEF_OFFICER");
 
             // entities check
-            /*assertEquals(3, mapper.getDataBaseSchema().getEntities().size());
-            assertEquals(2, mapper.getDataBaseSchema().getCanonicalRelationships().size());*/
-            assertEquals(2, mapper.getDataBaseSchema().getEntities().size());
-            assertEquals(1, mapper.getDataBaseSchema().getCanonicalRelationships().size());
+            assertEquals(3, mapper.getDataBaseSchema().getEntities().size());
+            assertEquals(2, mapper.getDataBaseSchema().getCanonicalRelationships().size());
             assertNotNull(employeeEntity);
             assertNotNull(departmentEntity);
-            //assertNotNull(chiefOfficerEntity);
+            assertNotNull(chiefOfficerEntity);
 
             // attributes check
             assertEquals(7, employeeEntity.getAttributes().size());
@@ -248,7 +238,7 @@ public class MappingWithSplittingTest {
             assertEquals(4, departmentEntity.getAttributeByName("UPDATED_ON").getOrdinalPosition());
             assertEquals("DEPARTMENT", departmentEntity.getAttributeByName("UPDATED_ON").getBelongingEntity().getName());
 
-            /*assertEquals(3, chiefOfficerEntity.getAttributes().size());
+            assertEquals(3, chiefOfficerEntity.getAttributes().size());
 
             assertNotNull(chiefOfficerEntity.getAttributeByName("FIRST_NAME"));
             assertEquals("FIRST_NAME", chiefOfficerEntity.getAttributeByName("FIRST_NAME").getName());
@@ -279,7 +269,7 @@ public class MappingWithSplittingTest {
             assertEquals(0, chiefOfficerEntity.getInCanonicalRelationships().size());
             assertEquals(1, employeeEntity.getForeignKeys().size());
             assertEquals(0, departmentEntity.getForeignKeys().size());
-            assertEquals(1, chiefOfficerEntity.getForeignKeys().size());*/
+            assertEquals(1, chiefOfficerEntity.getForeignKeys().size());
 
             // Relationship: EMPLOYEE_PROJECT --> DEPARTMENT
             Iterator<OCanonicalRelationship> it = employeeEntity.getOutCanonicalRelationships().iterator();
@@ -299,12 +289,13 @@ public class MappingWithSplittingTest {
             assertFalse(it.hasNext());
             assertFalse(it2.hasNext());
 
-            // Relationship: CHIEF_OFFICER --> EMPLOYEE_PROJECT
-            /*it = chiefOfficerEntity.getOutCanonicalRelationships().iterator();
+            // Relationship: CHIEF_OFFICER --> EMPLOYEE_PROJECT (Project)
+            it = chiefOfficerEntity.getOutCanonicalRelationships().iterator();
             currentRelationship = it.next();
             assertEquals("EMPLOYEE_PROJECT", currentRelationship.getParentEntity().getName());
             assertEquals("CHIEF_OFFICER", currentRelationship.getForeignEntity().getName());
-            assertEquals(employeeEntity.getPrimaryKey(), currentRelationship.getPrimaryKey());
+            assertEquals(1, currentRelationship.getPrimaryKey().getInvolvedAttributes().size());
+            assertEquals("PROJECT", currentRelationship.getPrimaryKey().getInvolvedAttributes().get(0).getName());
             assertEquals(chiefOfficerEntity.getForeignKeys().get(0), currentRelationship.getForeignKey());
 
             it2 = employeeEntity.getInCanonicalRelationships().iterator();
@@ -315,7 +306,7 @@ public class MappingWithSplittingTest {
             assertEquals("ID", departmentEntity.getPrimaryKey().getInvolvedAttributes().get(0).getName());
 
             assertFalse(it.hasNext());
-            assertFalse(it2.hasNext());*/
+            assertFalse(it2.hasNext());
 
 
             /*
@@ -325,19 +316,18 @@ public class MappingWithSplittingTest {
             OVertexType employeeVertexType = mapper.getGraphModel().getVertexTypeByName("Employee");
             OVertexType projectVertexType = mapper.getGraphModel().getVertexTypeByName("Project");
             OVertexType departmentVertexType = mapper.getGraphModel().getVertexTypeByName("Department");
-            //OVertexType chiefOfficerVertexType = mapper.getGraphModel().getVertexTypeByName("ChiefOfficer");
+            OVertexType chiefOfficerVertexType = mapper.getGraphModel().getVertexTypeByName("ChiefOfficer");
             OEdgeType worksAtEdgeType = mapper.getGraphModel().getEdgeTypeByName("WorksAt");
             OEdgeType hasProjectEdgeType = mapper.getGraphModel().getEdgeTypeByName("HasProject");
-           // OEdgeType isChiefForProjectEdgeType = mapper.getGraphModel().getEdgeTypeByName("IsChiefForProject");
+            OEdgeType isChiefForProjectEdgeType = mapper.getGraphModel().getEdgeTypeByName("IsChiefForProject");
 
 
             // vertices check
-            //assertEquals(4, mapper.getGraphModel().getVerticesType().size());
-            assertEquals(3, mapper.getGraphModel().getVerticesType().size());
+            assertEquals(4, mapper.getGraphModel().getVerticesType().size());
             assertNotNull(employeeVertexType);
             assertNotNull(projectVertexType);
             assertNotNull(departmentVertexType);
-            //assertNotNull(chiefOfficerVertexType);
+            assertNotNull(chiefOfficerVertexType);
 
             // properties check
             assertEquals(4, employeeVertexType.getProperties().size());
@@ -398,10 +388,9 @@ public class MappingWithSplittingTest {
             assertEquals(true, projectVertexType.getPropertyByName("balance").isIncludedInMigration());
 
             assertEquals(0, projectVertexType.getOutEdgesType().size());
-            //assertEquals(2, projectVertexType.getInEdgesType().size());
-            assertEquals(1, projectVertexType.getInEdgesType().size());
+            assertEquals(2, projectVertexType.getInEdgesType().size());
             assertEquals(hasProjectEdgeType, projectVertexType.getInEdgesType().get(0));
-            //assertEquals(isChiefForProjectEdgeType, projectVertexType.getInEdgesType().get(1));
+            assertEquals(isChiefForProjectEdgeType, projectVertexType.getInEdgesType().get(1));
 
             assertEquals(4, departmentVertexType.getProperties().size());
 
@@ -441,7 +430,7 @@ public class MappingWithSplittingTest {
             assertEquals(1, departmentVertexType.getInEdgesType().size());
             assertEquals(worksAtEdgeType, departmentVertexType.getInEdgesType().get(0));
 
-            /*assertEquals(4, chiefOfficerVertexType.getProperties().size());
+            assertEquals(3, chiefOfficerVertexType.getProperties().size());
 
             assertNotNull(chiefOfficerVertexType.getPropertyByName("firstName"));
             assertEquals("firstName", chiefOfficerVertexType.getPropertyByName("firstName").getName());
@@ -469,12 +458,13 @@ public class MappingWithSplittingTest {
 
             assertEquals(1, chiefOfficerVertexType.getOutEdgesType().size());
             assertEquals(0, chiefOfficerVertexType.getInEdgesType().size());
-            assertEquals(isChiefForProjectEdgeType, chiefOfficerVertexType.getOutEdgesType().get(0));*/
+            assertEquals(isChiefForProjectEdgeType, chiefOfficerVertexType.getOutEdgesType().get(0));
 
             // edges check
-            assertEquals(2, mapper.getGraphModel().getEdgesType().size());
+            assertEquals(3, mapper.getGraphModel().getEdgesType().size());
             assertNotNull(worksAtEdgeType);
             assertNotNull(hasProjectEdgeType);
+            assertNotNull(isChiefForProjectEdgeType);
 
             assertEquals("WorksAt", worksAtEdgeType.getName());
             assertEquals(1, worksAtEdgeType.getProperties().size());
@@ -510,13 +500,13 @@ public class MappingWithSplittingTest {
             assertEquals(false, roleProperty.isReadOnly());
             assertEquals(false, roleProperty.isNotNull());
 
-           /* assertEquals("IsChiefForProject", isChiefForProjectEdgeType.getName());
+            assertEquals("IsChiefForProject", isChiefForProjectEdgeType.getName());
             assertEquals(0, isChiefForProjectEdgeType.getProperties().size());
             assertEquals("Project", isChiefForProjectEdgeType.getInVertexType().getName());
             assertEquals(1, isChiefForProjectEdgeType.getNumberRelationshipsRepresented());
             assertFalse(isChiefForProjectEdgeType.isSplittingEdge());
 
-            assertEquals(0, isChiefForProjectEdgeType.getAllProperties().size());*/
+            assertEquals(0, isChiefForProjectEdgeType.getAllProperties().size());
 
 
             /*
@@ -525,8 +515,8 @@ public class MappingWithSplittingTest {
 
             // Classes Mapping
 
-            assertEquals(3, mapper.getVertexType2EVClassMappers().size());
-            assertEquals(2, mapper.getEntity2EVClassMappers().size());
+            assertEquals(4, mapper.getVertexType2EVClassMappers().size());
+            assertEquals(3, mapper.getEntity2EVClassMappers().size());
 
             assertEquals(1, mapper.getEVClassMappersByVertex(employeeVertexType).size());
             OEVClassMapper employeeClassMapper = mapper.getEVClassMappersByVertex(employeeVertexType).get(0);
@@ -598,15 +588,13 @@ public class MappingWithSplittingTest {
             OCanonicalRelationship worksAtRelationship = itRelationships.next();
             assertFalse(itRelationships.hasNext());
 
-            //assertEquals(2, mapper.getRelationship2edgeType().size());
-            assertEquals(1, mapper.getRelationship2edgeType().size());
+            assertEquals(2, mapper.getRelationship2edgeType().size());
             assertEquals(worksAtEdgeType, mapper.getRelationship2edgeType().get(worksAtRelationship));
-            //assertEquals(2, mapper.getEdgeType2relationships().size());
-            assertEquals(1, mapper.getEdgeType2relationships().size());
+            assertEquals(2, mapper.getEdgeType2relationships().size());
             assertEquals(1, mapper.getEdgeType2relationships().get(worksAtEdgeType).size());
             assertTrue(mapper.getEdgeType2relationships().get(worksAtEdgeType).contains(worksAtRelationship));
 
-            /*itRelationships = chiefOfficerEntity.getOutCanonicalRelationships().iterator();
+            itRelationships = chiefOfficerEntity.getOutCanonicalRelationships().iterator();
             OCanonicalRelationship isChiefForProjectRelationship = itRelationships.next();
             assertFalse(itRelationships.hasNext());
 
@@ -614,7 +602,7 @@ public class MappingWithSplittingTest {
             assertEquals(isChiefForProjectEdgeType, mapper.getRelationship2edgeType().get(isChiefForProjectRelationship));
             assertEquals(2, mapper.getEdgeType2relationships().size());
             assertEquals(1, mapper.getEdgeType2relationships().get(isChiefForProjectEdgeType).size());
-            assertTrue(mapper.getEdgeType2relationships().get(isChiefForProjectEdgeType).contains(isChiefForProjectRelationship));*/
+            assertTrue(mapper.getEdgeType2relationships().get(isChiefForProjectEdgeType).contains(isChiefForProjectRelationship));
 
             // JoinVertexes-AggregatorEdges Mapping
 

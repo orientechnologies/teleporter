@@ -52,6 +52,7 @@ public class OEntity implements Comparable<OEntity> {
   private Set<OLogicalRelationship>   inLogicalRelationships;
 
   private Boolean                     isAggregable;
+  private Boolean                     isSplitEntity;
   private String                      directionOfN2NRepresentedRelationship;      // when the entity corresponds to an aggregable
                                                                                   // join table it's 'direct' by default (at the
                                                                                   // first invocation of 'isAggregableJoinTable()')
@@ -84,6 +85,7 @@ public class OEntity implements Comparable<OEntity> {
     this.inLogicalRelationships = new LinkedHashSet<OLogicalRelationship>();
 
     this.isAggregable = null;
+    this.isSplitEntity = false;
     this.inheritanceLevel = 0;
   }
 
@@ -140,6 +142,14 @@ public class OEntity implements Comparable<OEntity> {
         isJunctionTable = false;
     }
     return isJunctionTable;
+  }
+
+  public Boolean isSplitEntity() {
+    return this.isSplitEntity;
+  }
+
+  public void setIsSplitEntity(Boolean splitEntity) {
+    isSplitEntity = splitEntity;
   }
 
   public void setIsAggregableJoinTable(boolean isAggregable) {
