@@ -22,21 +22,19 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-
 /**
  * It represents the model of the destination GraphDB.
- * 
+ *
  * @author Gabriele Ponzi
- * @email  <g.ponzi--at--orientdb.com>
- * 
+ * @email <g.ponzi--at--orientdb.com>
  */
 
 public class OGraphModel {
 
   private List<OVertexType> verticesType;
-  private List<OEdgeType> edgesType;
+  private List<OEdgeType>   edgesType;
 
-  public OGraphModel() {    
+  public OGraphModel() {
     this.verticesType = new ArrayList<OVertexType>();
     this.edgesType = new ArrayList<OEdgeType>();
   }
@@ -44,24 +42,24 @@ public class OGraphModel {
   public OVertexType getVertexTypeByName(String name) {
     OVertexType vertex = null;
 
-    for(OVertexType currentVertex: this.verticesType) {
-      if(currentVertex.getName().equals(name)) {
+    for (OVertexType currentVertex : this.verticesType) {
+      if (currentVertex.getName().equals(name)) {
         vertex = currentVertex;
         break;
       }
-    }    
+    }
     return vertex;
   }
 
   public OVertexType getVertexTypeByNameIgnoreCase(String name) {
     OVertexType vertex = null;
 
-    for(OVertexType currentVertex: this.verticesType) {
-      if(currentVertex.getName().equalsIgnoreCase(name)) {
+    for (OVertexType currentVertex : this.verticesType) {
+      if (currentVertex.getName().equalsIgnoreCase(name)) {
         vertex = currentVertex;
         break;
       }
-    }    
+    }
     return vertex;
   }
 
@@ -82,8 +80,8 @@ public class OGraphModel {
   }
 
   public OEdgeType getEdgeTypeByName(String name) {
-    for(OEdgeType currentEdgetype: this.edgesType) {
-      if(currentEdgetype.getName().equals(name)) {
+    for (OEdgeType currentEdgetype : this.edgesType) {
+      if (currentEdgetype.getName().equals(name)) {
         return currentEdgetype;
       }
     }
@@ -91,8 +89,8 @@ public class OGraphModel {
   }
 
   public OEdgeType getEdgeTypeByNameIgnoreCase(String name) {
-    for(OEdgeType currentEdgetype: this.edgesType) {
-      if(currentEdgetype.getName().equalsIgnoreCase(name)) {
+    for (OEdgeType currentEdgetype : this.edgesType) {
+      if (currentEdgetype.getName().equalsIgnoreCase(name)) {
         return currentEdgetype;
       }
     }
@@ -103,12 +101,12 @@ public class OGraphModel {
 
     Iterator<OVertexType> iterator = this.verticesType.iterator();
 
-    while(iterator.hasNext()) {
+    while (iterator.hasNext()) {
       OVertexType currVertexType = iterator.next();
-      if(currVertexType.getName().equals(vertexName)) {
+      if (currVertexType.getName().equals(vertexName)) {
 
         // removing references from the in edges
-        for(OEdgeType currInEdgeType: currVertexType.getInEdgesType()) {
+        for (OEdgeType currInEdgeType : currVertexType.getInEdgesType()) {
           currInEdgeType.setInVertexType(null);
         }
 
@@ -124,9 +122,9 @@ public class OGraphModel {
 
     Iterator<OEdgeType> iterator = this.edgesType.iterator();
 
-    while(iterator.hasNext()) {
+    while (iterator.hasNext()) {
       OEdgeType currEdgeType = iterator.next();
-      if(currEdgeType.getName().equals(vertexName)) {
+      if (currEdgeType.getName().equals(vertexName)) {
         iterator.remove();
         return true;
       }
@@ -141,26 +139,26 @@ public class OGraphModel {
 
     // info about vertices
     s += "Vertex-type:\n\n";
-    for(OVertexType v: this.verticesType)
+    for (OVertexType v : this.verticesType)
       s += v.toString() + "\n\n";
 
     s += "\n\n";
 
     // info about edges
     s += "Edge-type:\n\n";
-    for(OEdgeType e: this.edgesType)
+    for (OEdgeType e : this.edgesType)
       s += e.toString() + "\n";
 
     s += "\n\n";
 
     // graph structure
     s += "Graph structure:\n\n";
-    for(OVertexType v: this.verticesType) {
-      for(OEdgeType e: v.getOutEdgesType())
+    for (OVertexType v : this.verticesType) {
+      for (OEdgeType e : v.getOutEdgesType())
         s += v.getName() + " -----------[" + e.getName() + "]-----------> " + e.getInVertexType().getName() + "\n";
     }
 
-    return s; 
+    return s;
   }
 
 }

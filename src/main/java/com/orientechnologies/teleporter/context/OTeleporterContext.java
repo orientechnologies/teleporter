@@ -30,8 +30,7 @@ import java.io.Writer;
  * Context class for Drakkar execution.
  *
  * @author Gabriele Ponzi
- * @email  <g.ponzi--at--orientdb.com>
- *
+ * @email <g.ponzi--at--orientdb.com>
  */
 
 public class OTeleporterContext {
@@ -122,27 +121,33 @@ public class OTeleporterContext {
    * Prints the error message for a caught exception according to a level passed as argument. It's composed of:
    * - defined error message
    * - exception message
+   *
    * @param e
    * @param message
    * @param level
+   *
    * @return printedMessage
    */
   public String printExceptionMessage(Exception e, String message, String level) {
 
-    if(e.getMessage() != null)
+    if (e.getMessage() != null)
       message += "\n" + e.getClass().getName() + " - " + e.getMessage();
     else
       message += "\n" + e.getClass().getName();
 
-    switch(level) {
-      case "debug": this.outputManager.debug(message);
-        break;
-      case "info": this.outputManager.info(message);
-        break;
-      case "warn": this.outputManager.warn(message);
-        break;
-      case "error": this.outputManager.error(message);
-        break;
+    switch (level) {
+    case "debug":
+      this.outputManager.debug(message);
+      break;
+    case "info":
+      this.outputManager.info(message);
+      break;
+    case "warn":
+      this.outputManager.warn(message);
+      break;
+    case "error":
+      this.outputManager.error(message);
+      break;
     }
 
     return message;
@@ -150,8 +155,10 @@ public class OTeleporterContext {
 
   /**
    * Builds the exception stack trace and prints it according to a level passed as argument.
+   *
    * @param e
    * @param level
+   *
    * @return printedMessage
    */
   public String printExceptionStackTrace(Exception e, String level) {
@@ -161,15 +168,19 @@ public class OTeleporterContext {
     e.printStackTrace(new PrintWriter(writer));
     String s = writer.toString();
 
-    switch(level) {
-      case "debug": this.outputManager.debug("\n" + s + "\n");
-        break;
-      case "info": this.outputManager.info("\n" + s + "\n");
-        break;
-      case "warn": this.outputManager.warn("\n" + s + "\n");
-        break;
-      case "error": this.outputManager.error("\n" + s + "\n");
-        break;
+    switch (level) {
+    case "debug":
+      this.outputManager.debug("\n" + s + "\n");
+      break;
+    case "info":
+      this.outputManager.info("\n" + s + "\n");
+      break;
+    case "warn":
+      this.outputManager.warn("\n" + s + "\n");
+      break;
+    case "error":
+      this.outputManager.error("\n" + s + "\n");
+      break;
     }
 
     return s;

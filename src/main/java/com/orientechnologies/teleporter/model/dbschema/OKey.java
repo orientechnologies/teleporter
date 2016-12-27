@@ -24,15 +24,14 @@ import java.util.List;
 /**
  * It represents a generic key of the source DB. It's extended from OPrimaryKey
  * and OForeignKey that differ each other only by their usage.
- * 
+ *
  * @author Gabriele Ponzi
- * @email  <g.ponzi--at--orientdb.com>
- * 
+ * @email <g.ponzi--at--orientdb.com>
  */
 
 public class OKey {
 
-  protected OEntity belongingEntity;
+  protected OEntity          belongingEntity;
   protected List<OAttribute> involvedAttributes;
 
   public OKey() {
@@ -72,8 +71,8 @@ public class OKey {
 
     OAttribute toReturn = null;
 
-    for(OAttribute a: this.involvedAttributes) {
-      if(a.getName().equals(name)) {
+    for (OAttribute a : this.involvedAttributes) {
+      if (a.getName().equals(name)) {
         toReturn = a;
         break;
       }
@@ -85,8 +84,8 @@ public class OKey {
 
     OAttribute toReturn = null;
 
-    for(OAttribute a: this.involvedAttributes) {
-      if(a.getName().equalsIgnoreCase(name)) {
+    for (OAttribute a : this.involvedAttributes) {
+      if (a.getName().equalsIgnoreCase(name)) {
         toReturn = a;
         break;
       }
@@ -107,8 +106,8 @@ public class OKey {
   public boolean equals(Object obj) {
     OKey that = (OKey) obj;
 
-    if(this.belongingEntity.getName().equals(that.belongingEntity.getName())) {
-      if(this.involvedAttributes.equals(that.getInvolvedAttributes())) {
+    if (this.belongingEntity.getName().equals(that.belongingEntity.getName())) {
+      if (this.involvedAttributes.equals(that.getInvolvedAttributes())) {
         return true;
       }
     }
@@ -119,10 +118,10 @@ public class OKey {
   public String toString() {
 
     String s = "[";
-    for(OAttribute attribute: this.involvedAttributes) {
+    for (OAttribute attribute : this.involvedAttributes) {
       s += attribute.getName() + ",";
     }
-    s = s.substring(0, s.length()-1);
+    s = s.substring(0, s.length() - 1);
     s += "]";
 
     return s;

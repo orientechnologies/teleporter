@@ -30,46 +30,50 @@ import com.orientechnologies.teleporter.strategy.rdbms.ODBMSSimpleModelBuildingS
  * Factory used to instantiate the chosen strategy for the importing phase starting from its name.
  *
  * @author Gabriele Ponzi
- * @email  <g.ponzi--at--orientdb.com>
- *
+ * @email <g.ponzi--at--orientdb.com>
  */
 
 public class OStrategyFactory {
 
-  public OStrategyFactory() {}
+  public OStrategyFactory() {
+  }
 
-  public OWorkflowStrategy buildStrategy(String storageDriver, String chosenStrategy) throws
-          OTeleporterIOException {
+  public OWorkflowStrategy buildStrategy(String storageDriver, String chosenStrategy) throws OTeleporterIOException {
 
     OWorkflowStrategy strategy = null;
 
     // choosing strategy for migration from RDBSs
 
-    if(chosenStrategy == null)  {
+    if (chosenStrategy == null) {
       strategy = new ODBMSNaiveAggregationStrategy();
-    }
-    else {
-      switch(chosenStrategy) {
+    } else {
+      switch (chosenStrategy) {
 
-        case "naive":   strategy = new ODBMSNaiveStrategy();
-          break;
+      case "naive":
+        strategy = new ODBMSNaiveStrategy();
+        break;
 
-        case "naive-aggregate":   strategy = new ODBMSNaiveAggregationStrategy();
-          break;
+      case "naive-aggregate":
+        strategy = new ODBMSNaiveAggregationStrategy();
+        break;
 
-        case "interactive":   strategy = new ODBMSSimpleModelBuildingStrategy();
-          break;
+      case "interactive":
+        strategy = new ODBMSSimpleModelBuildingStrategy();
+        break;
 
-        case "interactive-aggr":   strategy = new ODBMSModelBuildingAggregationStrategy();
-          break;
+      case "interactive-aggr":
+        strategy = new ODBMSModelBuildingAggregationStrategy();
+        break;
 
-        default :  OTeleporterContext.getInstance().getOutputManager().error("The typed strategy doesn't exist for migration from the chosen RDBMS.\n");
+      default:
+        OTeleporterContext.getInstance().getOutputManager()
+            .error("The typed strategy doesn't exist for migration from the chosen RDBMS.\n");
       }
 
       OTeleporterContext.getInstance().setExecutionStrategy(chosenStrategy);
     }
 
-    if(strategy == null)
+    if (strategy == null)
       throw new OTeleporterIOException("Strategy not available for the chosen source.");
 
     return strategy;

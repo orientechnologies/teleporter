@@ -27,16 +27,14 @@ import com.orientechnologies.orient.core.metadata.schema.OType;
 /**
  * Handler that executes type conversions from SQLServer DBMS to the OrientDB types.
  * No Geospatial implemented.
- * 
- * @author Gabriele Ponzi
- * @email  <g.ponzi--at--orientdb.com>
  *
+ * @author Gabriele Ponzi
+ * @email <g.ponzi--at--orientdb.com>
  */
 
 public class OSQLServerDataTypeHandler extends ODBMSDataTypeHandler {
 
-
-  public OSQLServerDataTypeHandler(){
+  public OSQLServerDataTypeHandler() {
     this.dbmsType2OrientType = this.fillTypesMap();
     super.jsonImplemented = false;
     super.geospatialImplemented = false;
@@ -49,18 +47,17 @@ public class OSQLServerDataTypeHandler extends ODBMSDataTypeHandler {
     type = type.replace("identity", "").trim();
 
     // Defined Types
-    if(this.dbmsType2OrientType.keySet().contains(type))
+    if (this.dbmsType2OrientType.keySet().contains(type))
       return this.dbmsType2OrientType.get(type);
 
-    // Undefined Types
+      // Undefined Types
     else {
-      OTeleporterContext.getInstance().getStatistics()
-              .warningMessages.add("The original type '" + type + "' is not convertible into any OrientDB type thus, in order to prevent data loss, " +
-              "it will be converted to the OrientDB Type String.");
+      OTeleporterContext.getInstance().getStatistics().warningMessages.add(
+          "The original type '" + type + "' is not convertible into any OrientDB type thus, in order to prevent data loss, "
+              + "it will be converted to the OrientDB Type String.");
       return OType.STRING;
     }
   }
-
 
   private Map<String, OType> fillTypesMap() {
 
@@ -121,7 +118,7 @@ public class OSQLServerDataTypeHandler extends ODBMSDataTypeHandler {
      * Date/Time Types
      * (doc at https://msdn.microsoft.com/en-us/library/bb630352.aspx, https://msdn.microsoft.com/en-us/library/bb677243.aspx, https://msdn.microsoft.com/en-us/library/ms182418.aspx,
      *  https://msdn.microsoft.com/en-us/library/ms187819.aspx, https://msdn.microsoft.com/en-us/library/bb677335.aspx, https://msdn.microsoft.com/en-us/library/bb630289.aspx )
-     */    
+     */
     dbmsType2OrientType.put("date", OType.DATE);
     dbmsType2OrientType.put("time", OType.STRING);
     dbmsType2OrientType.put("smalldatetime", OType.DATETIME);
@@ -138,7 +135,6 @@ public class OSQLServerDataTypeHandler extends ODBMSDataTypeHandler {
     dbmsType2OrientType.put("varbinary", OType.BINARY);
     dbmsType2OrientType.put("binary varying", OType.BINARY);
     dbmsType2OrientType.put("image", OType.BINARY);
-
 
     return dbmsType2OrientType;
   }

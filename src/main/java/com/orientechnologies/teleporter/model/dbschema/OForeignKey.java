@@ -20,14 +20,12 @@ package com.orientechnologies.teleporter.model.dbschema;
 
 /**
  * It represents a foreign key for an entity.
- * 
- * @author Gabriele Ponzi
- * @email  <g.ponzi--at--orientdb.com>
  *
+ * @author Gabriele Ponzi
+ * @email <g.ponzi--at--orientdb.com>
  */
 
 public class OForeignKey extends OKey {
-
 
   public OForeignKey(OEntity belongingEntity) {
     super(belongingEntity);

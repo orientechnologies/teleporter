@@ -34,28 +34,31 @@ import java.util.List;
  * Factory used to instantiate the chosen 'Mapper' which will be adopted for the source schema building.
  *
  * @author Gabriele Ponzi
- * @email  <g.ponzi--at--orientdb.com>
- *
+ * @email <g.ponzi--at--orientdb.com>
  */
 
 public class OMapperFactory {
 
-  public OMapperFactory() {}
+  public OMapperFactory() {
+  }
 
-  public OSource2GraphMapper buildMapper(String chosenMapper, OSourceInfo sourceInfo, String xmlPath, List<String> includedTables, List<String> excludedTables,
-                                         OConfiguration configuration) {
+  public OSource2GraphMapper buildMapper(String chosenMapper, OSourceInfo sourceInfo, String xmlPath, List<String> includedTables,
+      List<String> excludedTables, OConfiguration configuration) {
 
     OSource2GraphMapper mapper = null;
 
-    switch(chosenMapper) {
+    switch (chosenMapper) {
 
-    case "basicDBMapper":   mapper = new OER2GraphMapper((OSourceDatabaseInfo) sourceInfo, includedTables, excludedTables, configuration);
+    case "basicDBMapper":
+      mapper = new OER2GraphMapper((OSourceDatabaseInfo) sourceInfo, includedTables, excludedTables, configuration);
       break;
 
-    case "hibernate":   mapper = new OHibernate2GraphMapper((OSourceDatabaseInfo) sourceInfo, xmlPath, includedTables, excludedTables, configuration);
+    case "hibernate":
+      mapper = new OHibernate2GraphMapper((OSourceDatabaseInfo) sourceInfo, xmlPath, includedTables, excludedTables, configuration);
       break;
 
-    default :  mapper = new OER2GraphMapper((OSourceDatabaseInfo) sourceInfo, includedTables, excludedTables, configuration);
+    default:
+      mapper = new OER2GraphMapper((OSourceDatabaseInfo) sourceInfo, includedTables, excludedTables, configuration);
     }
 
     return mapper;

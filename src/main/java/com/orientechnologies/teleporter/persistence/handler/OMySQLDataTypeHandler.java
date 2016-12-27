@@ -26,21 +26,18 @@ import com.orientechnologies.orient.core.metadata.schema.OType;
 /**
  * Handler that executes type conversions from MySQL DBMS to the OrientDB types.
  * No Geospatial implemented.
- * 
- * @author Gabriele Ponzi
- * @email  <g.ponzi--at--orientdb.com>
  *
+ * @author Gabriele Ponzi
+ * @email <g.ponzi--at--orientdb.com>
  */
 
 public class OMySQLDataTypeHandler extends ODBMSDataTypeHandler {
 
-
-  public OMySQLDataTypeHandler(){
+  public OMySQLDataTypeHandler() {
     this.dbmsType2OrientType = this.fillTypesMap();
     super.jsonImplemented = true;
     super.geospatialImplemented = false;
   }
-
 
   private Map<String, OType> fillTypesMap() {
 
@@ -77,7 +74,7 @@ public class OMySQLDataTypeHandler extends ODBMSDataTypeHandler {
     /*
      * Date/Time Types
      * (doc at http://dev.mysql.com/doc/refman/5.7/en/date-and-time-types.html )
-     */    
+     */
     dbmsType2OrientType.put("date", OType.DATE);
     dbmsType2OrientType.put("datetime", OType.DATETIME);
     dbmsType2OrientType.put("timestamp", OType.DATETIME);
@@ -103,7 +100,7 @@ public class OMySQLDataTypeHandler extends ODBMSDataTypeHandler {
      * Binary Data Types
      * (doc at http://dev.mysql.com/doc/refman/5.7/en/binary-varbinary.html
      *         http://dev.mysql.com/doc/refman/5.7/en/blob.html )
-     */    
+     */
     dbmsType2OrientType.put("binary", OType.BINARY);
     dbmsType2OrientType.put("varbinary", OType.BINARY);
     dbmsType2OrientType.put("tinyblob", OType.BINARY);

@@ -38,21 +38,19 @@ import static org.junit.Assert.*;
 
 /**
  * @author Gabriele Ponzi
- * @email  <g.ponzi--at--orientdb.com>
- *
+ * @email <g.ponzi--at--orientdb.com>
  */
 
 public class SourceSchemaBuildingTest {
 
   private OER2GraphMapper    mapper;
   private OTeleporterContext context;
-  private ODBQueryEngine dbQueryEngine;
-  private String driver = "org.hsqldb.jdbc.JDBCDriver";
-  private String jurl = "jdbc:hsqldb:mem:mydb";
+  private ODBQueryEngine     dbQueryEngine;
+  private String driver   = "org.hsqldb.jdbc.JDBCDriver";
+  private String jurl     = "jdbc:hsqldb:mem:mydb";
   private String username = "SA";
   private String password = "";
   private OSourceDatabaseInfo sourceDBInfo;
-
 
   @Before
   public void init() {
@@ -63,7 +61,6 @@ public class SourceSchemaBuildingTest {
     this.sourceDBInfo = new OSourceDatabaseInfo("source", this.driver, this.jurl, this.username, this.password);
     this.mapper = new OER2GraphMapper(sourceDBInfo, null, null, null);
   }
-
 
   @Test
 
@@ -81,14 +78,13 @@ public class SourceSchemaBuildingTest {
       Class.forName(this.driver);
       connection = DriverManager.getConnection(this.jurl, this.username, this.password);
 
-      String parentTableBuilding = "create memory table PARENT_AUTHOR (AUTHOR_ID varchar(256) not null,"+
-          " AUTHOR_NAME varchar(256) not null, primary key (AUTHOR_ID))";
+      String parentTableBuilding = "create memory table PARENT_AUTHOR (AUTHOR_ID varchar(256) not null,"
+          + " AUTHOR_NAME varchar(256) not null, primary key (AUTHOR_ID))";
       st = connection.createStatement();
       st.execute(parentTableBuilding);
 
-
-      String foreignTableBuilding = "create memory table FOREIGN_BOOK (BOOK_ID varchar(256) not null, TITLE  varchar(256),"+
-          " AUTHOR varchar(256) not null, primary key (BOOK_ID), foreign key (AUTHOR) references PARENT_AUTHOR(AUTHOR_ID))";
+      String foreignTableBuilding = "create memory table FOREIGN_BOOK (BOOK_ID varchar(256) not null, TITLE  varchar(256),"
+          + " AUTHOR varchar(256) not null, primary key (BOOK_ID), foreign key (AUTHOR) references PARENT_AUTHOR(AUTHOR_ID))";
       st.execute(foreignTableBuilding);
 
       this.mapper.buildSourceDatabaseSchema();
@@ -157,8 +153,8 @@ public class SourceSchemaBuildingTest {
       assertEquals(0, parentEntity.getOutCanonicalRelationships().size());
       assertEquals(0, foreignEntity.getInCanonicalRelationships().size());
       assertEquals(1, parentEntity.getInCanonicalRelationships().size());
-      assertEquals(0,parentEntity.getForeignKeys().size());
-      assertEquals(1,foreignEntity.getForeignKeys().size());
+      assertEquals(0, parentEntity.getForeignKeys().size());
+      assertEquals(1, foreignEntity.getForeignKeys().size());
 
       Iterator<OCanonicalRelationship> it = foreignEntity.getOutCanonicalRelationships().iterator();
       OCanonicalRelationship currentRelationship = it.next();
@@ -176,24 +172,22 @@ public class SourceSchemaBuildingTest {
 
       assertFalse(it.hasNext());
 
-    }catch(Exception e) {
+    } catch (Exception e) {
       e.printStackTrace();
       fail();
-    }finally {      
+    } finally {
       try {
 
         // Dropping Source DB Schema and OrientGraph
         String dbDropping = "drop schema public cascade";
         st.execute(dbDropping);
         connection.close();
-      }catch(Exception e) {
+      } catch (Exception e) {
         e.printStackTrace();
         fail();
       }
     }
   }
-
-
 
   @Test
 
@@ -211,15 +205,14 @@ public class SourceSchemaBuildingTest {
       Class.forName(this.driver);
       connection = DriverManager.getConnection(this.jurl, this.username, this.password);
 
-      String parentTableBuilding = "create memory table PARENT_AUTHOR (AUTHOR_NAME varchar(256) not null,"+
-          " AUTHOR_SURNAME varchar(256) not null, AGE INTEGER, primary key (AUTHOR_NAME,AUTHOR_SURNAME))";
+      String parentTableBuilding = "create memory table PARENT_AUTHOR (AUTHOR_NAME varchar(256) not null,"
+          + " AUTHOR_SURNAME varchar(256) not null, AGE INTEGER, primary key (AUTHOR_NAME,AUTHOR_SURNAME))";
       st = connection.createStatement();
       st.execute(parentTableBuilding);
 
-
-      String foreignTableBuilding = "create memory table FOREIGN_BOOK (TITLE  varchar(256),"+
-          " AUTHOR_NAME varchar(256) not null, AUTHOR_SURNAME varchar(256) not null, primary key (TITLE)," +
-          " foreign key (AUTHOR_NAME,AUTHOR_SURNAME) references PARENT_AUTHOR(AUTHOR_NAME,AUTHOR_SURNAME))";
+      String foreignTableBuilding = "create memory table FOREIGN_BOOK (TITLE  varchar(256),"
+          + " AUTHOR_NAME varchar(256) not null, AUTHOR_SURNAME varchar(256) not null, primary key (TITLE),"
+          + " foreign key (AUTHOR_NAME,AUTHOR_SURNAME) references PARENT_AUTHOR(AUTHOR_NAME,AUTHOR_SURNAME))";
       st.execute(foreignTableBuilding);
 
       mapper.buildSourceDatabaseSchema();
@@ -294,8 +287,8 @@ public class SourceSchemaBuildingTest {
       assertEquals(0, parentEntity.getOutCanonicalRelationships().size());
       assertEquals(0, foreignEntity.getInCanonicalRelationships().size());
       assertEquals(1, parentEntity.getInCanonicalRelationships().size());
-      assertEquals(0,parentEntity.getForeignKeys().size());
-      assertEquals(1,foreignEntity.getForeignKeys().size());
+      assertEquals(0, parentEntity.getForeignKeys().size());
+      assertEquals(1, foreignEntity.getForeignKeys().size());
 
       Iterator<OCanonicalRelationship> it = foreignEntity.getOutCanonicalRelationships().iterator();
       OCanonicalRelationship currentRelationship = it.next();
@@ -315,17 +308,17 @@ public class SourceSchemaBuildingTest {
 
       assertFalse(it.hasNext());
 
-    }catch(Exception e) {
+    } catch (Exception e) {
       e.printStackTrace();
       fail();
-    }finally {      
+    } finally {
       try {
 
         // Dropping Source DB Schema and OrientGraph
         String dbDropping = "drop schema public cascade";
         st.execute(dbDropping);
         connection.close();
-      }catch(Exception e) {
+      } catch (Exception e) {
         e.printStackTrace();
         fail();
       }
@@ -348,15 +341,15 @@ public class SourceSchemaBuildingTest {
       Class.forName(this.driver);
       connection = DriverManager.getConnection(this.jurl, this.username, this.password);
 
-      String parentTableBuilding = "create memory table PARENT_PERSON (PERSON_ID varchar(256) not null,"+
-          " NAME varchar(256) not null, primary key (PERSON_ID))";
+      String parentTableBuilding = "create memory table PARENT_PERSON (PERSON_ID varchar(256) not null,"
+          + " NAME varchar(256) not null, primary key (PERSON_ID))";
       st = connection.createStatement();
       st.execute(parentTableBuilding);
 
-      String foreignTableBuilding = "create memory table FOREIGN_ARTICLE (TITLE  varchar(256),"+
-          " AUTHOR varchar(256) not null, TRANSLATOR varchar(256) not null, primary key (TITLE)," +
-          " foreign key (AUTHOR) references PARENT_PERSON(PERSON_ID)," +
-          " foreign key (TRANSLATOR) references PARENT_PERSON(PERSON_ID))";
+      String foreignTableBuilding = "create memory table FOREIGN_ARTICLE (TITLE  varchar(256),"
+          + " AUTHOR varchar(256) not null, TRANSLATOR varchar(256) not null, primary key (TITLE),"
+          + " foreign key (AUTHOR) references PARENT_PERSON(PERSON_ID),"
+          + " foreign key (TRANSLATOR) references PARENT_PERSON(PERSON_ID))";
       st.execute(foreignTableBuilding);
 
       mapper.buildSourceDatabaseSchema();
@@ -425,8 +418,8 @@ public class SourceSchemaBuildingTest {
       assertEquals(0, parentEntity.getOutCanonicalRelationships().size());
       assertEquals(0, foreignEntity.getInCanonicalRelationships().size());
       assertEquals(2, parentEntity.getInCanonicalRelationships().size());
-      assertEquals(0,parentEntity.getForeignKeys().size());
-      assertEquals(2,foreignEntity.getForeignKeys().size());
+      assertEquals(0, parentEntity.getForeignKeys().size());
+      assertEquals(2, foreignEntity.getForeignKeys().size());
 
       // first relationship
       Iterator<OCanonicalRelationship> it = foreignEntity.getOutCanonicalRelationships().iterator();
@@ -458,17 +451,17 @@ public class SourceSchemaBuildingTest {
 
       assertFalse(it.hasNext());
 
-    }catch(Exception e) {
+    } catch (Exception e) {
       e.printStackTrace();
       fail();
-    }finally {      
+    } finally {
       try {
 
         // Dropping Source DB Schema and OrientGraph
         String dbDropping = "drop schema public cascade";
         st.execute(dbDropping);
         connection.close();
-      }catch(Exception e) {
+      } catch (Exception e) {
         e.printStackTrace();
         fail();
       }
@@ -491,17 +484,16 @@ public class SourceSchemaBuildingTest {
       Class.forName(this.driver);
       connection = DriverManager.getConnection(this.jurl, this.username, this.password);
 
-      String parentTableBuilding = "create memory table PARENT_PERSON (NAME varchar(256) not null,"+
-          " SURNAME varchar(256) not null, primary key (NAME,SURNAME))";
+      String parentTableBuilding = "create memory table PARENT_PERSON (NAME varchar(256) not null,"
+          + " SURNAME varchar(256) not null, primary key (NAME,SURNAME))";
       st = connection.createStatement();
       st.execute(parentTableBuilding);
 
-
-      String foreignTableBuilding = "create memory table FOREIGN_ARTICLE (TITLE  varchar(256),"+
-          " AUTHOR_NAME varchar(256) not null, AUTHOR_SURNAME varchar(256) not null, TRANSLATOR_NAME varchar(256) not null," + 
-          " TRANSLATOR_SURNAME varchar(256) not null, primary key (TITLE)," +
-          " foreign key (AUTHOR_NAME,AUTHOR_SURNAME) references PARENT_PERSON(NAME,SURNAME)," +
-          " foreign key (TRANSLATOR_NAME,TRANSLATOR_SURNAME) references PARENT_PERSON(NAME,SURNAME))";
+      String foreignTableBuilding = "create memory table FOREIGN_ARTICLE (TITLE  varchar(256),"
+          + " AUTHOR_NAME varchar(256) not null, AUTHOR_SURNAME varchar(256) not null, TRANSLATOR_NAME varchar(256) not null,"
+          + " TRANSLATOR_SURNAME varchar(256) not null, primary key (TITLE),"
+          + " foreign key (AUTHOR_NAME,AUTHOR_SURNAME) references PARENT_PERSON(NAME,SURNAME),"
+          + " foreign key (TRANSLATOR_NAME,TRANSLATOR_SURNAME) references PARENT_PERSON(NAME,SURNAME))";
       st.execute(foreignTableBuilding);
 
       mapper.buildSourceDatabaseSchema();
@@ -582,8 +574,8 @@ public class SourceSchemaBuildingTest {
       assertEquals(0, parentEntity.getOutCanonicalRelationships().size());
       assertEquals(0, foreignEntity.getInCanonicalRelationships().size());
       assertEquals(2, parentEntity.getInCanonicalRelationships().size());
-      assertEquals(0,parentEntity.getForeignKeys().size());
-      assertEquals(2,foreignEntity.getForeignKeys().size());
+      assertEquals(0, parentEntity.getForeignKeys().size());
+      assertEquals(2, foreignEntity.getForeignKeys().size());
 
       // first relationship
       Iterator<OCanonicalRelationship> it = foreignEntity.getOutCanonicalRelationships().iterator();
@@ -602,7 +594,6 @@ public class SourceSchemaBuildingTest {
       assertEquals("NAME", parentEntity.getPrimaryKey().getInvolvedAttributes().get(0).getName());
       assertEquals("SURNAME", parentEntity.getPrimaryKey().getInvolvedAttributes().get(1).getName());
 
-
       // second relationship
       currentRelationship = it.next();
       assertEquals("PARENT_PERSON", currentRelationship.getParentEntity().getName());
@@ -619,24 +610,22 @@ public class SourceSchemaBuildingTest {
       assertEquals("NAME", parentEntity.getPrimaryKey().getInvolvedAttributes().get(0).getName());
       assertEquals("SURNAME", parentEntity.getPrimaryKey().getInvolvedAttributes().get(1).getName());
 
-
-    }catch(Exception e) {
+    } catch (Exception e) {
       e.printStackTrace();
       fail();
-    }finally {      
+    } finally {
       try {
 
         // Dropping Source DB Schema and OrientGraph
         String dbDropping = "drop schema public cascade";
         st.execute(dbDropping);
         connection.close();
-      }catch(Exception e) {
+      } catch (Exception e) {
         e.printStackTrace();
         fail();
       }
     }
   }
-
 
   @Test
 
@@ -655,15 +644,15 @@ public class SourceSchemaBuildingTest {
       Class.forName(this.driver);
       connection = DriverManager.getConnection(this.jurl, this.username, this.password);
 
-      String parentTableBuilding = "create memory table PARENT_EMPLOYEE (EMP_ID varchar(256) not null,"+
-          " MGR_ID varchar(256) not null, NAME varchar(256) not null, primary key (EMP_ID), " + 
-          " foreign key (MGR_ID) references PARENT_EMPLOYEE(EMP_ID))";
+      String parentTableBuilding = "create memory table PARENT_EMPLOYEE (EMP_ID varchar(256) not null,"
+          + " MGR_ID varchar(256) not null, NAME varchar(256) not null, primary key (EMP_ID), "
+          + " foreign key (MGR_ID) references PARENT_EMPLOYEE(EMP_ID))";
       st = connection.createStatement();
       st.execute(parentTableBuilding);
 
-      String foreignTableBuilding = "create memory table FOREIGN_PROJECT (PROJECT_ID  varchar(256),"+
-          " TITLE varchar(256) not null, PROJECT_MANAGER varchar(256) not null, primary key (PROJECT_ID)," +
-          " foreign key (PROJECT_MANAGER) references PARENT_EMPLOYEE(EMP_ID))";
+      String foreignTableBuilding = "create memory table FOREIGN_PROJECT (PROJECT_ID  varchar(256),"
+          + " TITLE varchar(256) not null, PROJECT_MANAGER varchar(256) not null, primary key (PROJECT_ID),"
+          + " foreign key (PROJECT_MANAGER) references PARENT_EMPLOYEE(EMP_ID))";
       st.execute(foreignTableBuilding);
 
       mapper.buildSourceDatabaseSchema();
@@ -738,8 +727,8 @@ public class SourceSchemaBuildingTest {
       assertEquals(1, parentEntity.getOutCanonicalRelationships().size());
       assertEquals(0, foreignEntity.getInCanonicalRelationships().size());
       assertEquals(2, parentEntity.getInCanonicalRelationships().size());
-      assertEquals(1,parentEntity.getForeignKeys().size());
-      assertEquals(1,foreignEntity.getForeignKeys().size());
+      assertEquals(1, parentEntity.getForeignKeys().size());
+      assertEquals(1, foreignEntity.getForeignKeys().size());
 
       // first relationship
       Iterator<OCanonicalRelationship> it = foreignEntity.getOutCanonicalRelationships().iterator();
@@ -772,24 +761,22 @@ public class SourceSchemaBuildingTest {
 
       assertFalse(it.hasNext());
 
-    }catch(Exception e) {
+    } catch (Exception e) {
       e.printStackTrace();
       fail();
-    }finally {      
+    } finally {
       try {
 
         // Dropping Source DB Schema and OrientGraph
         String dbDropping = "drop schema public cascade";
         st.execute(dbDropping);
         connection.close();
-      }catch(Exception e) {
+      } catch (Exception e) {
         e.printStackTrace();
         fail();
       }
     }
   }
-
-
 
   @Test
 
@@ -807,21 +794,19 @@ public class SourceSchemaBuildingTest {
       Class.forName(this.driver);
       connection = DriverManager.getConnection(this.jurl, this.username, this.password);
 
-      String filmTableBuilding = "create memory table FILM (ID varchar(256) not null, TITLE varchar(256) not null,"+
-          " YEAR varchar(256) not null, DIRECTOR varchar(256) not null, primary key (ID))";
+      String filmTableBuilding = "create memory table FILM (ID varchar(256) not null, TITLE varchar(256) not null,"
+          + " YEAR varchar(256) not null, DIRECTOR varchar(256) not null, primary key (ID))";
       st = connection.createStatement();
       st.execute(filmTableBuilding);
 
-      String actorTableBuilding = "create memory table ACTOR (ID varchar(256) not null, NAME varchar(256) not null,"+
-          " SURNAME varchar(256) not null, primary key (ID))";
+      String actorTableBuilding = "create memory table ACTOR (ID varchar(256) not null, NAME varchar(256) not null,"
+          + " SURNAME varchar(256) not null, primary key (ID))";
       st = connection.createStatement();
       st.execute(actorTableBuilding);
 
-      String joinTableBuilding = "create memory table FILM2ACTOR (FILM_ID  varchar(256) not null,"+
-          " ACTOR_ID varchar(256) not null, SALARY varchar(256)," + 
-          " primary key (FILM_ID,ACTOR_ID)," +
-          " foreign key (FILM_ID) references FILM(ID)," + 
-          " foreign key (ACTOR_ID) references ACTOR(ID))";
+      String joinTableBuilding = "create memory table FILM2ACTOR (FILM_ID  varchar(256) not null,"
+          + " ACTOR_ID varchar(256) not null, SALARY varchar(256)," + " primary key (FILM_ID,ACTOR_ID),"
+          + " foreign key (FILM_ID) references FILM(ID)," + " foreign key (ACTOR_ID) references ACTOR(ID))";
       st.execute(joinTableBuilding);
 
       connection.commit();
@@ -859,7 +844,6 @@ public class SourceSchemaBuildingTest {
       assertEquals(3, actorEntity.getAttributes().size());
       assertEquals(3, film2actor.getAttributes().size());
 
-
       // relationship, primary and foreign key check
       assertEquals(0, filmEntity.getOutCanonicalRelationships().size());
       assertEquals(0, actorEntity.getOutCanonicalRelationships().size());
@@ -867,9 +851,9 @@ public class SourceSchemaBuildingTest {
       assertEquals(1, filmEntity.getInCanonicalRelationships().size());
       assertEquals(1, actorEntity.getInCanonicalRelationships().size());
       assertEquals(0, film2actor.getInCanonicalRelationships().size());
-      assertEquals(0,filmEntity.getForeignKeys().size());
-      assertEquals(0,actorEntity.getForeignKeys().size());
-      assertEquals(2,film2actor.getForeignKeys().size());
+      assertEquals(0, filmEntity.getForeignKeys().size());
+      assertEquals(0, actorEntity.getForeignKeys().size());
+      assertEquals(2, film2actor.getForeignKeys().size());
 
       // first relationship
       Iterator<OCanonicalRelationship> it = film2actor.getOutCanonicalRelationships().iterator();
@@ -885,7 +869,6 @@ public class SourceSchemaBuildingTest {
 
       assertEquals("ACTOR_ID", film2actor.getForeignKeys().get(0).getInvolvedAttributes().get(0).getName());
       assertEquals("ID", actorEntity.getPrimaryKey().getInvolvedAttributes().get(0).getName());
-
 
       // second relationship
       currentRelationship = it.next();
@@ -903,17 +886,17 @@ public class SourceSchemaBuildingTest {
 
       assertFalse(it.hasNext());
 
-    }catch(Exception e) {
+    } catch (Exception e) {
       e.printStackTrace();
       fail();
-    }finally {      
+    } finally {
       try {
 
         // Dropping Source DB Schema and OrientGraph
         String dbDropping = "drop schema public cascade";
         st.execute(dbDropping);
         connection.close();
-      }catch(Exception e) {
+      } catch (Exception e) {
         e.printStackTrace();
         fail();
       }

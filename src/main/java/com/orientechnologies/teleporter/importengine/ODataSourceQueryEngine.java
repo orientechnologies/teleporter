@@ -19,11 +19,10 @@
 package com.orientechnologies.teleporter.importengine;
 
 /**
- * Interface that executes the necessary queries on the data source in order to import them. 
- * 
- * @author Gabriele Ponzi
- * @email  <g.ponzi--at--orientdb.com>
+ * Interface that executes the necessary queries on the data source in order to import them.
  *
+ * @author Gabriele Ponzi
+ * @email <g.ponzi--at--orientdb.com>
  */
 
 public interface ODataSourceQueryEngine {

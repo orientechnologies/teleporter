@@ -29,10 +29,9 @@ import java.util.*;
  * 2. Graph Model building
  * 3. OrientDB Schema writing
  * 4. OrientDB importing
- * 
- * @author Gabriele Ponzi
- * @email  <g.ponzi--at--orientdb.com>
  *
+ * @author Gabriele Ponzi
+ * @email <g.ponzi--at--orientdb.com>
  */
 
 public class OTeleporterStatistics {
@@ -41,42 +40,42 @@ public class OTeleporterStatistics {
   public volatile int runningStepNumber;
 
   // Source DB Schema building statistics
-  public volatile int totalNumberOfEntities;
-  public volatile int builtEntities;
-  public volatile int entitiesAnalyzedForRelationship;  // used only for te progress monitor because we can't know the total number of relationships before all the entities are scanned.
-  public volatile int builtRelationships;
-  public volatile int totalNumberOfRelationships;
+  public volatile int  totalNumberOfEntities;
+  public volatile int  builtEntities;
+  public volatile int  entitiesAnalyzedForRelationship;  // used only for te progress monitor because we can't know the total number of relationships before all the entities are scanned.
+  public volatile int  builtRelationships;
+  public volatile int  totalNumberOfRelationships;
   public volatile Date startWork1Time;
 
   // Graph Model building statistics
-  public volatile int totalNumberOfModelVertices;
-  public volatile int builtModelVertexTypes;
-  public volatile int totalNumberOfModelEdges;
-  public volatile int builtModelEdgeTypes;
+  public volatile int  totalNumberOfModelVertices;
+  public volatile int  builtModelVertexTypes;
+  public volatile int  totalNumberOfModelEdges;
+  public volatile int  builtModelEdgeTypes;
   public volatile Date startWork2Time;
 
   // OrientDB Schema writing statistics
-  public volatile int totalNumberOfVertexTypes;
-  public volatile int wroteVertexType;
-  public volatile int totalNumberOfEdgeTypes;
-  public volatile int wroteEdgeType;
-  public volatile int totalNumberOfIndices;
-  public volatile int wroteIndexes;
+  public volatile int  totalNumberOfVertexTypes;
+  public volatile int  wroteVertexType;
+  public volatile int  totalNumberOfEdgeTypes;
+  public volatile int  wroteEdgeType;
+  public volatile int  totalNumberOfIndices;
+  public volatile int  wroteIndexes;
   public volatile Date startWork3Time;
 
   // OrientDB importing
-  public volatile int totalNumberOfRecords;
-  public volatile int analyzedRecords;
-  public volatile int orientAddedVertices;
-  public volatile int orientUpdatedVertices;
-  public volatile int orientAddedEdges;
+  public volatile int  totalNumberOfRecords;
+  public volatile int  analyzedRecords;
+  public volatile int  orientAddedVertices;
+  public volatile int  orientUpdatedVertices;
+  public volatile int  orientAddedEdges;
   public volatile Date startWork4Time;
 
   // Logical Relationships
-  public volatile int totalNumberOfLogicalRelationships;
-  public volatile int doneLogicalRelationships;
-  public volatile int leftVerticesCurrentLogicalRelationship;
-  public volatile int doneLeftVerticesCurrentLogicalRelationship;
+  public volatile int  totalNumberOfLogicalRelationships;
+  public volatile int  doneLogicalRelationships;
+  public volatile int  leftVerticesCurrentLogicalRelationship;
+  public volatile int  doneLeftVerticesCurrentLogicalRelationship;
   public volatile Date startWork5Time;
 
   // Warnings and Error Messages
@@ -92,7 +91,6 @@ public class OTeleporterStatistics {
     this.errorMessages = new HashSet<String>();
     this.listeners = new ArrayList<OStatisticsListener>();
   }
-
 
   private void init() {
 
@@ -141,7 +139,7 @@ public class OTeleporterStatistics {
   }
 
   public void notifyListeners() {
-    for(OStatisticsListener listener: this.listeners) {
+    for (OStatisticsListener listener : this.listeners) {
       listener.updateOnEvent(this);
     }
   }
@@ -152,21 +150,21 @@ public class OTeleporterStatistics {
    */
 
   public String sourceDbSchemaBuildingProgress() {
-    String s ="Source DB Schema\n";
+    String s = "Source DB Schema\n";
     s += "Entities: " + this.builtEntities;
     s += "\nRelationships: " + this.builtRelationships;
     return s;
   }
 
   public String graphModelBuildingProgress() {
-    String s ="Graph Model Building\n";
+    String s = "Graph Model Building\n";
     s += "Built Model Vertices: " + this.builtModelVertexTypes;
     s += "\nBuilt Model Edges: " + this.builtModelEdgeTypes;
     return s;
   }
 
   public String orientSchemaWritingProgress() {
-    String s ="OrientDB Schema\n";
+    String s = "OrientDB Schema\n";
     s += "Vertex Type: " + this.wroteVertexType;
     s += "\nEdge Type: " + this.wroteEdgeType;
     s += "\nIndexes: " + this.wroteIndexes;
@@ -174,7 +172,7 @@ public class OTeleporterStatistics {
   }
 
   public String importingProgress() {
-    String s ="OrientDB Importing\n";
+    String s = "OrientDB Importing\n";
     s += "Analyzed Records: " + this.analyzedRecords + "/" + this.totalNumberOfRecords;
     s += "\nAdded Vertices on OrientDB: " + this.orientAddedVertices;
     s += "\nUpdated Vertices on OrientDB: " + this.orientUpdatedVertices;
@@ -185,12 +183,13 @@ public class OTeleporterStatistics {
 
   public String toString() {
     String s = "\n\nSUMMARY\n\n";
-    s += this.sourceDbSchemaBuildingProgress() + "\n\n" + this.orientSchemaWritingProgress() + "\n\n" + this.importingProgress() + "\n\n";
+    s += this.sourceDbSchemaBuildingProgress() + "\n\n" + this.orientSchemaWritingProgress() + "\n\n" + this.importingProgress()
+        + "\n\n";
 
     // printing error messages
-    if(this.errorMessages.size() > 0) {
+    if (this.errorMessages.size() > 0) {
       s += "Error Messages:\n";
-      for(String message: this.errorMessages) {
+      for (String message : this.errorMessages) {
         s += message + "\n";
       }
     }
@@ -198,15 +197,13 @@ public class OTeleporterStatistics {
     s += "\n\n";
 
     // printing warning messages
-    if(this.warningMessages.size() > 0) {
+    if (this.warningMessages.size() > 0) {
       s += "Warning Messages:\n";
-      for(String message: this.warningMessages) {
+      for (String message : this.warningMessages) {
         s += message + "\n";
       }
     }
     return s;
   }
-
-
 
 }

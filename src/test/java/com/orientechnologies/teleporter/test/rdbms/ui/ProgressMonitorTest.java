@@ -33,7 +33,6 @@ import static org.junit.Assert.assertEquals;
 /**
  * @author Gabriele Ponzi
  * @email <g.ponzi--at--orientdb.com>
- *
  */
 
 public class ProgressMonitorTest {
@@ -41,7 +40,7 @@ public class ProgressMonitorTest {
   private OTeleporterContext    context;
   private OTeleporterStatistics statistics;
   private OOutputStreamManager  outputManager;
-  private OProgressMonitor progressMonitor;
+  private OProgressMonitor      progressMonitor;
 
   @Before
   public void init() {
@@ -57,7 +56,7 @@ public class ProgressMonitorTest {
   @Test
   public void firstPhaseBarTest() {
 
-    String work1Title = String.format("%-35s","(1/4) Source DB Schema building:");
+    String work1Title = String.format("%-35s", "(1/4) Source DB Schema building:");
     String format = "\r%s %3d%% %s %s %s %s %s %s %s";
     statistics.warningMessages = new HashSet<String>();
 
@@ -70,18 +69,18 @@ public class ProgressMonitorTest {
     // it must print 62%
     String messageFromProseeMonitor = this.progressMonitor.updateOnEvent(this.statistics);
     String progressBarWork = progressMonitor.getProgressBar(62);
-    String manuallyBuiltMessage = String.format(format, work1Title, 62, progressBarWork, " Elapsed:", "00:00:00", " Remaining:", "00:00:00", " Warnings:", "0");
+    String manuallyBuiltMessage = String
+        .format(format, work1Title, 62, progressBarWork, " Elapsed:", "00:00:00", " Remaining:", "00:00:00", " Warnings:", "0");
 
     assertEquals(messageFromProseeMonitor, manuallyBuiltMessage);
     System.out.println("\n");
 
   }
 
-
   @Test
   public void secondPhaseBarTest() {
 
-    String work2Title = String.format("%-35s","(2/4) Graph Model building:");
+    String work2Title = String.format("%-35s", "(2/4) Graph Model building:");
     String format = "\r%s %3d%% %s %s %s %s %s %s %s";
     statistics.warningMessages = new HashSet<String>();
 
@@ -95,7 +94,8 @@ public class ProgressMonitorTest {
     // it must print 50%
     String messageFromProseeMonitor = this.progressMonitor.updateOnEvent(this.statistics);
     String progressBarWork = progressMonitor.getProgressBar(50);
-    String manuallyBuiltMessage = String.format(format, work2Title, 50, progressBarWork, " Elapsed:", "00:00:00", " Remaining:", "00:00:00", " Warnings:", "0");
+    String manuallyBuiltMessage = String
+        .format(format, work2Title, 50, progressBarWork, " Elapsed:", "00:00:00", " Remaining:", "00:00:00", " Warnings:", "0");
 
     assertEquals(messageFromProseeMonitor, manuallyBuiltMessage);
     System.out.println();
@@ -109,7 +109,8 @@ public class ProgressMonitorTest {
     // it must print 25%
     messageFromProseeMonitor = this.progressMonitor.updateOnEvent(this.statistics);
     progressBarWork = progressMonitor.getProgressBar(25);
-    manuallyBuiltMessage = String.format(format, work2Title, 25, progressBarWork, " Elapsed:", "00:00:00", " Remaining:", "00:00:00", " Warnings:", "0");
+    manuallyBuiltMessage = String
+        .format(format, work2Title, 25, progressBarWork, " Elapsed:", "00:00:00", " Remaining:", "00:00:00", " Warnings:", "0");
 
     assertEquals(messageFromProseeMonitor, manuallyBuiltMessage);
     System.out.println();
@@ -123,18 +124,18 @@ public class ProgressMonitorTest {
     // it must print 0%
     messageFromProseeMonitor = this.progressMonitor.updateOnEvent(this.statistics);
     progressBarWork = progressMonitor.getProgressBar(0);
-    manuallyBuiltMessage = String.format(format, work2Title, 0, progressBarWork, " Elapsed:", "00:00:00", " Remaining:", "00:00:00", " Warnings:", "0");
+    manuallyBuiltMessage = String
+        .format(format, work2Title, 0, progressBarWork, " Elapsed:", "00:00:00", " Remaining:", "00:00:00", " Warnings:", "0");
 
     assertEquals(messageFromProseeMonitor, manuallyBuiltMessage);
     System.out.println("\n");
 
   }
 
-
   @Test
   public void thirdPhaseBarTest() {
 
-    String work3Title = String.format("%-35s","(3/4) OrientDB Schema writing:");
+    String work3Title = String.format("%-35s", "(3/4) OrientDB Schema writing:");
     String format = "\r%s %3d%% %s %s %s %s %s %s %s";
     statistics.warningMessages = new HashSet<String>();
 
@@ -151,11 +152,11 @@ public class ProgressMonitorTest {
     // it must print 75%
     String messageFromProseeMonitor = this.progressMonitor.updateOnEvent(this.statistics);
     String progressBarWork = progressMonitor.getProgressBar(75);
-    String manuallyBuiltMessage = String.format(format, work3Title, 75, progressBarWork, " Elapsed:", "00:00:00", " Remaining:", "00:00:00", " Warnings:", "0");
+    String manuallyBuiltMessage = String
+        .format(format, work3Title, 75, progressBarWork, " Elapsed:", "00:00:00", " Remaining:", "00:00:00", " Warnings:", "0");
 
     assertEquals(messageFromProseeMonitor, manuallyBuiltMessage);
     System.out.println();
-
 
     // statistics.totalNumberOfVertexTypes > 0 && statistics.totalNumberOfModelEdges == 0 && statistics.totalNumberOfIndices > 0
     statistics.wroteVertexType = 5;
@@ -169,7 +170,8 @@ public class ProgressMonitorTest {
     // it must print 70%
     messageFromProseeMonitor = this.progressMonitor.updateOnEvent(this.statistics);
     progressBarWork = progressMonitor.getProgressBar(70);
-    manuallyBuiltMessage = String.format(format, work3Title, 70, progressBarWork, " Elapsed:", "00:00:00", " Remaining:", "00:00:00", " Warnings:", "0");
+    manuallyBuiltMessage = String
+        .format(format, work3Title, 70, progressBarWork, " Elapsed:", "00:00:00", " Remaining:", "00:00:00", " Warnings:", "0");
 
     assertEquals(messageFromProseeMonitor, manuallyBuiltMessage);
     System.out.println();
@@ -186,7 +188,8 @@ public class ProgressMonitorTest {
     // it must print 85%
     messageFromProseeMonitor = this.progressMonitor.updateOnEvent(this.statistics);
     progressBarWork = progressMonitor.getProgressBar(85);
-    manuallyBuiltMessage = String.format(format, work3Title, 85, progressBarWork, " Elapsed:", "00:00:00", " Remaining:", "00:00:00", " Warnings:", "0");
+    manuallyBuiltMessage = String
+        .format(format, work3Title, 85, progressBarWork, " Elapsed:", "00:00:00", " Remaining:", "00:00:00", " Warnings:", "0");
 
     assertEquals(messageFromProseeMonitor, manuallyBuiltMessage);
     System.out.println();
@@ -203,7 +206,8 @@ public class ProgressMonitorTest {
     // it must print 60%
     messageFromProseeMonitor = this.progressMonitor.updateOnEvent(this.statistics);
     progressBarWork = progressMonitor.getProgressBar(60);
-    manuallyBuiltMessage = String.format(format, work3Title, 60, progressBarWork, " Elapsed:", "00:00:00", " Remaining:", "00:00:00", " Warnings:", "0");
+    manuallyBuiltMessage = String
+        .format(format, work3Title, 60, progressBarWork, " Elapsed:", "00:00:00", " Remaining:", "00:00:00", " Warnings:", "0");
 
     assertEquals(messageFromProseeMonitor, manuallyBuiltMessage);
     System.out.println();
@@ -220,17 +224,17 @@ public class ProgressMonitorTest {
     // it must print 0%
     messageFromProseeMonitor = this.progressMonitor.updateOnEvent(this.statistics);
     progressBarWork = progressMonitor.getProgressBar(0);
-    manuallyBuiltMessage = String.format(format, work3Title, 0, progressBarWork, " Elapsed:", "00:00:00", " Remaining:", "00:00:00", " Warnings:", "0");
+    manuallyBuiltMessage = String
+        .format(format, work3Title, 0, progressBarWork, " Elapsed:", "00:00:00", " Remaining:", "00:00:00", " Warnings:", "0");
 
     assertEquals(messageFromProseeMonitor, manuallyBuiltMessage);
     System.out.println("\n");
   }
 
-
   @Test
   public void fourthPhaseBarTest() {
 
-    String work4Title = String.format("%-35s","(4/4) OrientDB importing:");
+    String work4Title = String.format("%-35s", "(4/4) OrientDB importing:");
     String format = "\r%s %3d%% %s %s %s %s %s %s %s %s %s";
     statistics.warningMessages = new HashSet<String>();
 
@@ -244,7 +248,9 @@ public class ProgressMonitorTest {
     // it must print 50%
     String messageFromProseeMonitor = this.progressMonitor.updateOnEvent(this.statistics);
     String progressBarWork = progressMonitor.getProgressBar(50);
-    String manuallyBuiltMessage = String.format(format, work4Title, 50, progressBarWork, " Elapsed:", "00:00:00", " Remaining:", "00:00:00", " Warnings:", "0", " Records:", statistics.analyzedRecords + "/" + statistics.totalNumberOfRecords);
+    String manuallyBuiltMessage = String
+        .format(format, work4Title, 50, progressBarWork, " Elapsed:", "00:00:00", " Remaining:", "00:00:00", " Warnings:", "0",
+            " Records:", statistics.analyzedRecords + "/" + statistics.totalNumberOfRecords);
 
     assertEquals(messageFromProseeMonitor, manuallyBuiltMessage);
     System.out.println();
@@ -257,11 +263,12 @@ public class ProgressMonitorTest {
     // it must print 0%
     messageFromProseeMonitor = this.progressMonitor.updateOnEvent(this.statistics);
     progressBarWork = progressMonitor.getProgressBar(0);
-    manuallyBuiltMessage = String.format(format, work4Title, 0, progressBarWork, " Elapsed:", "00:00:00", " Remaining:", "00:00:00", " Warnings:", "0", " Records:", statistics.analyzedRecords + "/" + statistics.totalNumberOfRecords);
+    manuallyBuiltMessage = String
+        .format(format, work4Title, 0, progressBarWork, " Elapsed:", "00:00:00", " Remaining:", "00:00:00", " Warnings:", "0",
+            " Records:", statistics.analyzedRecords + "/" + statistics.totalNumberOfRecords);
     assertEquals(messageFromProseeMonitor, manuallyBuiltMessage);
     System.out.println("\n");
 
   }
-
 
 }

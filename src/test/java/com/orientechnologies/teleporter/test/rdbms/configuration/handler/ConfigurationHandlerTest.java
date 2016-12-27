@@ -48,25 +48,24 @@ import com.orientechnologies.teleporter.util.OFileManager;
 /**
  * @author Gabriele Ponzi
  * @email gabriele.ponzi--at--gmail.com
- *
  */
 
 public class ConfigurationHandlerTest {
 
-  private final String         config1  = "src/test/resources/configuration-mapping/aggregation-from2tables-mapping.json";
-  private final String         config2  = "src/test/resources/configuration-mapping/joint-table-relationships-mapping-direct-edges.json";
-  private final String         config3  = "src/test/resources/configuration-mapping/config-handler-output.json";
-  private final String         config4  = "src/test/resources/configuration-mapping/splitting-into2tables-mapping.json";
+  private final String config1 = "src/test/resources/configuration-mapping/aggregation-from2tables-mapping.json";
+  private final String config2 = "src/test/resources/configuration-mapping/joint-table-relationships-mapping-direct-edges.json";
+  private final String config3 = "src/test/resources/configuration-mapping/config-handler-output.json";
+  private final String config4 = "src/test/resources/configuration-mapping/splitting-into2tables-mapping.json";
   private OTeleporterContext   context;
   private ODBMSDataTypeHandler dataTypeHandler;
 
-  private OER2GraphMapper      mapper;
-  private ODBQueryEngine       dbQueryEngine;
-  private String               driver   = "org.hsqldb.jdbc.JDBCDriver";
-  private String               jurl     = "jdbc:hsqldb:mem:mydb";
-  private String               username = "SA";
-  private String               password = "";
-  private OSourceDatabaseInfo  sourceDBInfo;
+  private OER2GraphMapper mapper;
+  private ODBQueryEngine  dbQueryEngine;
+  private String driver   = "org.hsqldb.jdbc.JDBCDriver";
+  private String jurl     = "jdbc:hsqldb:mem:mydb";
+  private String username = "SA";
+  private String password = "";
+  private OSourceDatabaseInfo sourceDBInfo;
 
   @Before
   public void init() {
@@ -80,7 +79,6 @@ public class ConfigurationHandlerTest {
     this.context.setOutputManager(new OOutputStreamManager(0));
     this.sourceDBInfo = new OSourceDatabaseInfo("hsqldb", this.driver, this.jurl, this.username, this.password);
   }
-
 
   @Test
   /**
@@ -365,7 +363,6 @@ public class ConfigurationHandlerTest {
     assertTrue(ODocumentComparator.areEquals(inputConfigurationDoc, writtenJsonConfiguration));
   }
 
-
   @Test
   /**
    * Testing OConfiguration building from JSON (case 2)
@@ -443,7 +440,6 @@ public class ConfigurationHandlerTest {
 
   }
 
-
   @Test
   /**
    * Testing: - OConfiguration building from Graph Model (case 1)
@@ -464,8 +460,9 @@ public class ConfigurationHandlerTest {
       Class.forName(this.driver);
       connection = DriverManager.getConnection(this.jurl, this.username, this.password);
 
-      String departmentTableBuilding = "create memory table DEPARTMENT (ID varchar(256) not null, DEPARTMENT_NAME  varchar(256) not null,"
-          + " LOCATION varchar(256) not null, primary key (ID))";
+      String departmentTableBuilding =
+          "create memory table DEPARTMENT (ID varchar(256) not null, DEPARTMENT_NAME  varchar(256) not null,"
+              + " LOCATION varchar(256) not null, primary key (ID))";
       st = connection.createStatement();
       st.execute(departmentTableBuilding);
 
@@ -479,9 +476,10 @@ public class ConfigurationHandlerTest {
           + " DESCRIPTION varchar(256) not null, START_DATE date not null, EXPECTED_END_DATE date not null, primary key (ID))";
       st.execute(projectTableBuilding);
 
-      String projectEmployeeTableBuilding = "create memory table EMPLOYEE_PROJECT (EMPLOYEE_ID  varchar(256)not null, PROJECT_ID varchar(256) not null,"
-          + " ROLE varchar(256) not null, primary key (EMPLOYEE_ID, PROJECT_ID), foreign key (EMPLOYEE_ID) references EMPLOYEE(ID),"
-          + " foreign key (PROJECT_ID) references PROJECT(ID))";
+      String projectEmployeeTableBuilding =
+          "create memory table EMPLOYEE_PROJECT (EMPLOYEE_ID  varchar(256)not null, PROJECT_ID varchar(256) not null,"
+              + " ROLE varchar(256) not null, primary key (EMPLOYEE_ID, PROJECT_ID), foreign key (EMPLOYEE_ID) references EMPLOYEE(ID),"
+              + " foreign key (PROJECT_ID) references PROJECT(ID))";
       st.execute(projectEmployeeTableBuilding);
 
       this.mapper = new OER2GraphMapper(this.sourceDBInfo, null, null, null);
@@ -824,7 +822,6 @@ public class ConfigurationHandlerTest {
     }
   }
 
-
   @Test
   /**
    * Testing: - JSON building from OConfiguration (case 1)
@@ -845,22 +842,24 @@ public class ConfigurationHandlerTest {
       Class.forName(this.driver);
       connection = DriverManager.getConnection(this.jurl, this.username, this.password);
 
-      String departmentTableBuilding = "create memory table DEPARTMENT (ID varchar(256) not null, DEPARTMENT_NAME  varchar(256) not null,"
+      String departmentTableBuilding =
+          "create memory table DEPARTMENT (ID varchar(256) not null, DEPARTMENT_NAME  varchar(256) not null,"
               + " LOCATION varchar(256) not null, primary key (ID))";
       st = connection.createStatement();
       st.execute(departmentTableBuilding);
 
       String employeeTableBuilding = "create memory table EMPLOYEE (ID varchar(256) not null,"
-              + " FIRST_NAME varchar(256) not null, LAST_NAME varchar(256) not null, SALARY double not null,"
-              + " EMAIL varchar(256) not null, DEPARTMENT varchar(256) not null, primary key (ID),"
-              + " foreign key (DEPARTMENT) references DEPARTMENT(ID))";
+          + " FIRST_NAME varchar(256) not null, LAST_NAME varchar(256) not null, SALARY double not null,"
+          + " EMAIL varchar(256) not null, DEPARTMENT varchar(256) not null, primary key (ID),"
+          + " foreign key (DEPARTMENT) references DEPARTMENT(ID))";
       st.execute(employeeTableBuilding);
 
       String projectTableBuilding = "create memory table PROJECT (ID varchar(256) not null, PROJECT_NAME  varchar(256),"
-              + " DESCRIPTION varchar(256) not null, START_DATE date not null, EXPECTED_END_DATE date not null, primary key (ID))";
+          + " DESCRIPTION varchar(256) not null, START_DATE date not null, EXPECTED_END_DATE date not null, primary key (ID))";
       st.execute(projectTableBuilding);
 
-      String projectEmployeeTableBuilding = "create memory table EMPLOYEE_PROJECT (EMPLOYEE_ID  varchar(256)not null, PROJECT_ID varchar(256) not null,"
+      String projectEmployeeTableBuilding =
+          "create memory table EMPLOYEE_PROJECT (EMPLOYEE_ID  varchar(256)not null, PROJECT_ID varchar(256) not null,"
               + " ROLE varchar(256) not null, primary key (EMPLOYEE_ID, PROJECT_ID), foreign key (EMPLOYEE_ID) references EMPLOYEE(ID),"
               + " foreign key (PROJECT_ID) references PROJECT(ID))";
       st.execute(projectEmployeeTableBuilding);
@@ -904,7 +903,6 @@ public class ConfigurationHandlerTest {
     }
   }
 
-
   @Test
   /**
    * Testing: - JSON building from OConfiguration (splitting case)
@@ -925,18 +923,19 @@ public class ConfigurationHandlerTest {
       Class.forName(this.driver);
       connection = DriverManager.getConnection(this.jurl, this.username, this.password);
 
-      String employeeTableBuilding = "create memory table EMPLOYEE_PROJECT (FIRST_NAME varchar(256) not null," +
-              " LAST_NAME varchar(256) not null, SALARY double not null, DEPARTMENT varchar(256) not null," +
-              " PROJECT varchar(256) not null, BALANCE double not null, ROLE varchar(256), primary key (FIRST_NAME,LAST_NAME,PROJECT))";
+      String employeeTableBuilding = "create memory table EMPLOYEE_PROJECT (FIRST_NAME varchar(256) not null,"
+          + " LAST_NAME varchar(256) not null, SALARY double not null, DEPARTMENT varchar(256) not null,"
+          + " PROJECT varchar(256) not null, BALANCE double not null, ROLE varchar(256), primary key (FIRST_NAME,LAST_NAME,PROJECT))";
       st = connection.createStatement();
       st.execute(employeeTableBuilding);
 
-      String departmentTableBuilding = "create memory table DEPARTMENT (ID varchar(256),"+
-              " NAME varchar(256) not null, LOCATION varchar(256) not null, UPDATED_ON date not null, primary key (ID))";
+      String departmentTableBuilding = "create memory table DEPARTMENT (ID varchar(256),"
+          + " NAME varchar(256) not null, LOCATION varchar(256) not null, UPDATED_ON date not null, primary key (ID))";
       st.execute(departmentTableBuilding);
 
-      String chiefTableBuilding = "create memory table CHIEF_OFFICER (FIRST_NAME varchar(256) not null, LAST_NAME varchar(256) not null, " +
-              "PROJECT varchar(256) not null, primary key (FIRST_NAME,LAST_NAME))";
+      String chiefTableBuilding =
+          "create memory table CHIEF_OFFICER (FIRST_NAME varchar(256) not null, LAST_NAME varchar(256) not null, "
+              + "PROJECT varchar(256) not null, primary key (FIRST_NAME,LAST_NAME))";
       st.execute(chiefTableBuilding);
 
       ODocument config = OFileManager.buildJsonFromFile(this.config4);

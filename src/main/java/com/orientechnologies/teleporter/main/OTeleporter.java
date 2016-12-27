@@ -47,13 +47,11 @@ import java.util.*;
 /**
  * Main Class from which the importing process starts.
  *
- * @author Gabriele Ponzi
- *         <<<<<<< Updated upstream
+ * @author Gabriele Ponzi <<<<<<< Updated upstream
  * @email <g.ponzi--at--orientdb.com>
  * <p>
  * =======
- * @email <gabriele.ponzi--at--gmail.com>
- * >>>>>>> Stashed changes
+ * @email <gabriele.ponzi--at--gmail.com> >>>>>>> Stashed changes
  */
 
 public class OTeleporter extends OServerPluginAbstract {
@@ -69,7 +67,7 @@ public class OTeleporter extends OServerPluginAbstract {
           + " _  /   _  /___  _  /___  /___  _  ____// /_/ /_  _, _/_  /   _  /___  _  _, _/ \n"
           + " /_/    /_____/  /_____/_____/  /_/     \\____/ /_/ |_| /_/    /_____/  /_/ |_|  \n" + "\n"
           + "                                                  http://orientdb.com/teleporter";
-  private OServer           server;
+  private OServer server;
 
   public static void main(String[] args) throws Exception {
 
@@ -230,12 +228,13 @@ public class OTeleporter extends OServerPluginAbstract {
    * @param password          to access to the source DB
    * @param chosenStrategy    the execution approach adopted during the importing of data
    * @param outDbUrl          an absolute URI for the destination Orient Graph DB
-   * @param nameResolver      the name of the resolver which transforms the names of all the elements of the source DB according to a specific
-   *                          convention (if null Java convention is adopted)
+   * @param nameResolver      the name of the resolver which transforms the names of all the elements of the source DB according to
+   *                          a specific convention (if null Java convention is adopted)
    * @param outputLevel       the level of the logging messages that will be printed on the OutputStream during the execution
    * @param excludedTables
    * @param includedTables
    * @param configurationPath
+   *
    * @throws OTeleporterIOException
    */
 
@@ -270,12 +269,13 @@ public class OTeleporter extends OServerPluginAbstract {
    * @param password            to access to the source DB
    * @param chosenStrategy      the execution approach adopted during the importing of data
    * @param outDbUrl            an absolute URI for the destination Orient Graph DB
-   * @param nameResolver        the name of the resolver which transforms the names of all the elements of the source DB according to a specific
-   *                            convention (if null Java convention is adopted)
+   * @param nameResolver        the name of the resolver which transforms the names of all the elements of the source DB according
+   *                            to a specific convention (if null Java convention is adopted)
    * @param outputLevel         the level of the logging messages that will be printed on the OutputStream during the execution
    * @param excludedTables
    * @param includedTables
    * @param jsonMigrationConfig
+   *
    * @throws OTeleporterIOException
    */
 

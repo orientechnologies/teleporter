@@ -8,11 +8,15 @@
             "name": "hsqldb_PROJECT",
             "dataSource": "hsqldb",
             "tableName": "PROJECT",
-            "primaryKey" : ["ID"]
+            "primaryKey": [
+              "ID"
+            ]
           }
         ]
       },
-      "externalKey": ["id"],
+      "externalKey": [
+        "id"
+      ],
       "properties": {
         "id": {
           "include": true,
@@ -89,11 +93,15 @@
             "name": "hsqldb_DEPARTMENT",
             "dataSource": "hsqldb",
             "tableName": "DEPARTMENT",
-            "primaryKey" : ["ID"]
+            "primaryKey": [
+              "ID"
+            ]
           }
         ]
       },
-      "externalKey": ["id"],
+      "externalKey": [
+        "id"
+      ],
       "properties": {
         "id": {
           "include": true,
@@ -144,11 +152,15 @@
             "name": "hsqldb_EMPLOYEE",
             "dataSource": "hsqldb",
             "tableName": "EMPLOYEE",
-            "primaryKey" : ["ID"]
+            "primaryKey": [
+              "ID"
+            ]
           }
         ]
       },
-      "externalKey": ["id"],
+      "externalKey": [
+        "id"
+      ],
       "properties": {
         "id": {
           "include": true,
@@ -235,31 +247,47 @@
     {
       "HasDepartment": {
         "isLogical": false,
-        "mapping": [{
-          "fromTable": "EMPLOYEE",
-          "fromColumns": ["DEPARTMENT"],
-          "toTable": "DEPARTMENT",
-          "toColumns": ["ID"],
-          "direction": "direct"
-        }],
+        "mapping": [
+          {
+            "fromTable": "EMPLOYEE",
+            "fromColumns": [
+              "DEPARTMENT"
+            ],
+            "toTable": "DEPARTMENT",
+            "toColumns": [
+              "ID"
+            ],
+            "direction": "direct"
+          }
+        ],
         "properties": {}
       }
     },
     {
       "EmployeeProject": {
         "isLogical": false,
-        "mapping": [{
-          "fromTable": "EMPLOYEE",
-          "fromColumns": ["ID"],
-          "toTable": "PROJECT",
-          "toColumns": ["ID"],
-          "joinTable": {
-            "tableName": "EMPLOYEE_PROJECT",
-            "fromColumns": ["EMPLOYEE_ID"],
-            "toColumns": ["PROJECT_ID"]
-          },
-          "direction": "direct"
-        }],
+        "mapping": [
+          {
+            "fromTable": "EMPLOYEE",
+            "fromColumns": [
+              "ID"
+            ],
+            "toTable": "PROJECT",
+            "toColumns": [
+              "ID"
+            ],
+            "joinTable": {
+              "tableName": "EMPLOYEE_PROJECT",
+              "fromColumns": [
+                "EMPLOYEE_ID"
+              ],
+              "toColumns": [
+                "PROJECT_ID"
+              ]
+            },
+            "direction": "direct"
+          }
+        ],
         "properties": {
           "role": {
             "include": true,

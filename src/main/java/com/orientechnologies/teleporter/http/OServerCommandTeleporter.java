@@ -34,7 +34,7 @@ import java.io.IOException;
 public class OServerCommandTeleporter extends OServerCommandAuthenticatedServerAbstract {
 
   OTeleporterHandler handler = new OTeleporterHandler();
-  private static final String[] NAMES   = { "GET|teleporter/*", "POST|teleporter/*" };
+  private static final String[] NAMES = { "GET|teleporter/*", "POST|teleporter/*" };
 
   public OServerCommandTeleporter() {
     super("server.profiler");
@@ -76,12 +76,11 @@ public class OServerCommandTeleporter extends OServerCommandAuthenticatedServerA
       ODocument args = new ODocument().fromJSON(iRequest.content);
       ODocument executionResult = handler.execute(args);
 
-      if(executionResult != null) {
+      if (executionResult != null) {
         // the result corresponds to the graph model representation
-        String jsonGraphModel = ((ODocument)executionResult).toJSON("prettyPrint");
+        String jsonGraphModel = ((ODocument) executionResult).toJSON("prettyPrint");
         iResponse.send(OHttpUtils.STATUS_OK_CODE, "OK", OHttpUtils.CONTENT_JSON, jsonGraphModel, null);
-      }
-      else {
+      } else {
         iResponse.send(OHttpUtils.STATUS_OK_CODE, "OK", OHttpUtils.CONTENT_JSON, null, null);
       }
 

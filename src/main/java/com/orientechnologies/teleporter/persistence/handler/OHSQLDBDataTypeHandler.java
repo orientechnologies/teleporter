@@ -26,21 +26,18 @@ import com.orientechnologies.orient.core.metadata.schema.OType;
 /**
  * Handler that executes type conversions from HSQLDB DBMS to the OrientDB types.
  * No Geospatial implementable (HSQLDB doesn't support this feature).
- * 
- * @author Gabriele Ponzi
- * @email  <g.ponzi--at--orientdb.com>
  *
+ * @author Gabriele Ponzi
+ * @email <g.ponzi--at--orientdb.com>
  */
 
 public class OHSQLDBDataTypeHandler extends ODBMSDataTypeHandler {
-
 
   public OHSQLDBDataTypeHandler() {
     this.dbmsType2OrientType = this.fillTypesMap();
     super.jsonImplemented = false;
     super.geospatialImplemented = false;
   }
-
 
   private Map<String, OType> fillTypesMap() {
 
@@ -65,12 +62,12 @@ public class OHSQLDBDataTypeHandler extends ODBMSDataTypeHandler {
      * Numeric Types
      * (doc at http://hsqldb.org/doc/guide/guide.html#sgc_numeric_types )
      */
-    dbmsType2OrientType.put("tinyint", OType.SHORT); 
-    dbmsType2OrientType.put("smallint", OType.SHORT); 
-    dbmsType2OrientType.put("integer", OType.INTEGER); 
+    dbmsType2OrientType.put("tinyint", OType.SHORT);
+    dbmsType2OrientType.put("smallint", OType.SHORT);
+    dbmsType2OrientType.put("integer", OType.INTEGER);
     dbmsType2OrientType.put("bigint", OType.LONG);
-    dbmsType2OrientType.put("real", OType.DOUBLE); 
-    dbmsType2OrientType.put("float", OType.DOUBLE); 
+    dbmsType2OrientType.put("real", OType.DOUBLE);
+    dbmsType2OrientType.put("float", OType.DOUBLE);
     dbmsType2OrientType.put("double", OType.DOUBLE);
     dbmsType2OrientType.put("double precision", OType.DOUBLE);
     dbmsType2OrientType.put("numeric", OType.DECIMAL);
@@ -89,7 +86,7 @@ public class OHSQLDBDataTypeHandler extends ODBMSDataTypeHandler {
     /*
      * Date/Time Types
      * (doc at http://hsqldb.org/doc/guide/guide.html#sgc_datetime_types )
-     */    
+     */
     dbmsType2OrientType.put("date", OType.DATE);
     dbmsType2OrientType.put("time", OType.STRING);
     dbmsType2OrientType.put("time with time zone", OType.STRING);
@@ -120,7 +117,6 @@ public class OHSQLDBDataTypeHandler extends ODBMSDataTypeHandler {
      * User Defined Types  (Object data types and object views)
      */
     //    TODO! in EMBEDDED
-
 
     return dbmsType2OrientType;
   }

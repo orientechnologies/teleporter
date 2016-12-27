@@ -43,21 +43,19 @@ import static org.junit.Assert.*;
 
 /**
  * @author Gabriele Ponzi
- * @email  <g.ponzi--at--orientdb.com>
- *
+ * @email <g.ponzi--at--orientdb.com>
  */
 
 public class GraphModelBuildingTest {
 
   private OER2GraphMapper    mapper;
   private OTeleporterContext context;
-  private ODBQueryEngine dbQueryEngine;
-  private String driver = "org.hsqldb.jdbc.JDBCDriver";
-  private String jurl = "jdbc:hsqldb:mem:mydb";
+  private ODBQueryEngine     dbQueryEngine;
+  private String driver   = "org.hsqldb.jdbc.JDBCDriver";
+  private String jurl     = "jdbc:hsqldb:mem:mydb";
   private String username = "SA";
   private String password = "";
   private OSourceDatabaseInfo sourceDBInfo;
-
 
   @Before
   public void init() {
@@ -68,7 +66,6 @@ public class GraphModelBuildingTest {
     this.context.setDataTypeHandler(new OHSQLDBDataTypeHandler());
     this.sourceDBInfo = new OSourceDatabaseInfo("source", this.driver, this.jurl, this.username, this.password);
   }
-
 
   @Test
 
@@ -86,14 +83,13 @@ public class GraphModelBuildingTest {
       Class.forName(this.driver);
       connection = DriverManager.getConnection(this.jurl, this.username, this.password);
 
-      String parentTableBuilding = "create memory table BOOK_AUTHOR (ID varchar(256) not null,"+
-          " NAME varchar(256) not null, AGE integer not null, primary key (ID))";
+      String parentTableBuilding = "create memory table BOOK_AUTHOR (ID varchar(256) not null,"
+          + " NAME varchar(256) not null, AGE integer not null, primary key (ID))";
       st = connection.createStatement();
       st.execute(parentTableBuilding);
 
-
-      String foreignTableBuilding = "create memory table BOOK (ID varchar(256) not null, TITLE  varchar(256),"+
-          " AUTHOR_ID varchar(256) not null, primary key (ID), foreign key (AUTHOR_ID) references BOOK_AUTHOR(ID))";
+      String foreignTableBuilding = "create memory table BOOK (ID varchar(256) not null, TITLE  varchar(256),"
+          + " AUTHOR_ID varchar(256) not null, primary key (ID), foreign key (AUTHOR_ID) references BOOK_AUTHOR(ID))";
       st.execute(foreignTableBuilding);
 
       this.mapper = new OER2GraphMapper(this.sourceDBInfo, null, null, null);
@@ -201,7 +197,7 @@ public class GraphModelBuildingTest {
 
       OEntity bookAuthorEntity = mapper.getDataBaseSchema().getEntityByName("BOOK_AUTHOR");
       assertEquals(1, mapper.getEVClassMappersByVertex(authorVertexType).size());
-      OEVClassMapper bookAuthorClassMapper =  mapper.getEVClassMappersByVertex(authorVertexType).get(0);
+      OEVClassMapper bookAuthorClassMapper = mapper.getEVClassMappersByVertex(authorVertexType).get(0);
       assertEquals(1, mapper.getEVClassMappersByEntity(bookAuthorEntity).size());
       assertEquals(bookAuthorClassMapper, mapper.getEVClassMappersByEntity(bookAuthorEntity).get(0));
       assertEquals(bookAuthorClassMapper.getEntity(), bookAuthorEntity);
@@ -233,23 +229,22 @@ public class GraphModelBuildingTest {
 
       assertEquals(0, mapper.getJoinVertex2aggregatorEdges().size());
 
-    }catch(Exception e) {
+    } catch (Exception e) {
       e.printStackTrace();
       fail();
-    }finally {      
+    } finally {
       try {
 
         // Dropping Source DB Schema and OrientGraph
         String dbDropping = "drop schema public cascade";
         st.execute(dbDropping);
         connection.close();
-      }catch(Exception e) {
+      } catch (Exception e) {
         e.printStackTrace();
         fail();
       }
     }
   }
-
 
   @Test
 
@@ -267,17 +262,17 @@ public class GraphModelBuildingTest {
       Class.forName(this.driver);
       connection = DriverManager.getConnection(this.jurl, this.username, this.password);
 
-      String authorTableBuilding = "create memory table AUTHOR (ID varchar(256) not null,"+
-          " NAME varchar(256) not null, AGE integer not null, primary key (ID))";
+      String authorTableBuilding = "create memory table AUTHOR (ID varchar(256) not null,"
+          + " NAME varchar(256) not null, AGE integer not null, primary key (ID))";
       st = connection.createStatement();
       st.execute(authorTableBuilding);
 
-      String bookTableBuilding = "create memory table BOOK (ID varchar(256) not null, TITLE  varchar(256),"+
-          " AUTHOR_ID varchar(256) not null, primary key (ID), foreign key (AUTHOR_ID) references AUTHOR(ID))";
+      String bookTableBuilding = "create memory table BOOK (ID varchar(256) not null, TITLE  varchar(256),"
+          + " AUTHOR_ID varchar(256) not null, primary key (ID), foreign key (AUTHOR_ID) references AUTHOR(ID))";
       st.execute(bookTableBuilding);
 
-      String itemTableBuilding = "create memory table ITEM (ID varchar(256) not null, BOOK_ID  varchar(256),"+
-          " PRICE varchar(256) not null, primary key (ID), foreign key (BOOK_ID) references BOOK(ID))";
+      String itemTableBuilding = "create memory table ITEM (ID varchar(256) not null, BOOK_ID  varchar(256),"
+          + " PRICE varchar(256) not null, primary key (ID), foreign key (BOOK_ID) references BOOK(ID))";
       st.execute(itemTableBuilding);
 
       this.mapper = new OER2GraphMapper(this.sourceDBInfo, null, null, null);
@@ -370,7 +365,6 @@ public class GraphModelBuildingTest {
       assertEquals(3, itemVertexType.getPropertyByName("price").getOrdinalPosition());
       assertEquals(false, itemVertexType.getPropertyByName("price").isFromPrimaryKey());
 
-
       // edges check
       Assert.assertEquals(2, mapper.getGraphModel().getEdgesType().size());
       assertNotNull(authorEdgeType);
@@ -414,7 +408,7 @@ public class GraphModelBuildingTest {
 
       OEntity authorEntity = mapper.getDataBaseSchema().getEntityByName("AUTHOR");
       assertEquals(1, mapper.getEVClassMappersByVertex(authorVertexType).size());
-      OEVClassMapper authorClassMapper =  mapper.getEVClassMappersByVertex(authorVertexType).get(0);
+      OEVClassMapper authorClassMapper = mapper.getEVClassMappersByVertex(authorVertexType).get(0);
       assertEquals(1, mapper.getEVClassMappersByEntity(authorEntity).size());
       assertEquals(authorClassMapper, mapper.getEVClassMappersByEntity(authorEntity).get(0));
       assertEquals(authorClassMapper.getEntity(), authorEntity);
@@ -431,7 +425,7 @@ public class GraphModelBuildingTest {
 
       OEntity itemEntity = mapper.getDataBaseSchema().getEntityByName("ITEM");
       assertEquals(1, mapper.getEVClassMappersByVertex(itemVertexType).size());
-      OEVClassMapper itemClassMapper =  mapper.getEVClassMappersByVertex(itemVertexType).get(0);
+      OEVClassMapper itemClassMapper = mapper.getEVClassMappersByVertex(itemVertexType).get(0);
       assertEquals(1, mapper.getEVClassMappersByEntity(itemEntity).size());
       assertEquals(itemClassMapper, mapper.getEVClassMappersByEntity(itemEntity).get(0));
       assertEquals(itemClassMapper.getEntity(), itemEntity);
@@ -469,23 +463,22 @@ public class GraphModelBuildingTest {
 
       assertEquals(0, mapper.getJoinVertex2aggregatorEdges().size());
 
-    }catch(Exception e) {
+    } catch (Exception e) {
       e.printStackTrace();
       fail();
-    }finally {      
+    } finally {
       try {
 
         // Dropping Source DB Schema and OrientGraph
         String dbDropping = "drop schema public cascade";
         st.execute(dbDropping);
         connection.close();
-      }catch(Exception e) {
+      } catch (Exception e) {
         e.printStackTrace();
         fail();
       }
     }
   }
-
 
   @Test
 
@@ -503,17 +496,17 @@ public class GraphModelBuildingTest {
       Class.forName(this.driver);
       connection = DriverManager.getConnection(this.jurl, this.username, this.password);
 
-      String authorTableBuilding = "create memory table AUTHOR (ID varchar(256) not null,"+
-          " NAME varchar(256) not null, AGE integer not null, primary key (ID))";
+      String authorTableBuilding = "create memory table AUTHOR (ID varchar(256) not null,"
+          + " NAME varchar(256) not null, AGE integer not null, primary key (ID))";
       st = connection.createStatement();
       st.execute(authorTableBuilding);
 
-      String bookTableBuilding = "create memory table BOOK (ID varchar(256) not null, TITLE  varchar(256),"+
-          " AUTHOR_ID varchar(256) not null, primary key (ID), foreign key (AUTHOR_ID) references AUTHOR(ID))";
+      String bookTableBuilding = "create memory table BOOK (ID varchar(256) not null, TITLE  varchar(256),"
+          + " AUTHOR_ID varchar(256) not null, primary key (ID), foreign key (AUTHOR_ID) references AUTHOR(ID))";
       st.execute(bookTableBuilding);
 
-      String articleTableBuilding = "create memory table ARTICLE (ID varchar(256) not null, TITLE  varchar(256),"+
-          " DATE  date, AUTHOR_ID varchar(256) not null, primary key (ID), foreign key (AUTHOR_ID) references AUTHOR(ID))";
+      String articleTableBuilding = "create memory table ARTICLE (ID varchar(256) not null, TITLE  varchar(256),"
+          + " DATE  date, AUTHOR_ID varchar(256) not null, primary key (ID), foreign key (AUTHOR_ID) references AUTHOR(ID))";
       st.execute(articleTableBuilding);
 
       this.mapper = new OER2GraphMapper(this.sourceDBInfo, null, null, null);
@@ -648,7 +641,7 @@ public class GraphModelBuildingTest {
 
       OEntity authorEntity = mapper.getDataBaseSchema().getEntityByName("AUTHOR");
       assertEquals(1, mapper.getEVClassMappersByVertex(authorVertexType).size());
-      OEVClassMapper authorClassMapper =  mapper.getEVClassMappersByVertex(authorVertexType).get(0);
+      OEVClassMapper authorClassMapper = mapper.getEVClassMappersByVertex(authorVertexType).get(0);
       assertEquals(1, mapper.getEVClassMappersByEntity(authorEntity).size());
       assertEquals(authorClassMapper, mapper.getEVClassMappersByEntity(authorEntity).get(0));
       assertEquals(authorClassMapper.getEntity(), authorEntity);
@@ -665,7 +658,7 @@ public class GraphModelBuildingTest {
 
       OEntity articleEntity = mapper.getDataBaseSchema().getEntityByName("ARTICLE");
       assertEquals(1, mapper.getEVClassMappersByVertex(articleVertexType).size());
-      OEVClassMapper articleClassMapper =  mapper.getEVClassMappersByVertex(articleVertexType).get(0);
+      OEVClassMapper articleClassMapper = mapper.getEVClassMappersByVertex(articleVertexType).get(0);
       assertEquals(1, mapper.getEVClassMappersByEntity(articleEntity).size());
       assertEquals(articleClassMapper, mapper.getEVClassMappersByEntity(articleEntity).get(0));
       assertEquals(articleClassMapper.getEntity(), articleEntity);
@@ -704,24 +697,22 @@ public class GraphModelBuildingTest {
 
       assertEquals(0, mapper.getJoinVertex2aggregatorEdges().size());
 
-    }catch(Exception e) {
+    } catch (Exception e) {
       e.printStackTrace();
       fail();
-    }finally {      
+    } finally {
       try {
 
         // Dropping Source DB Schema and OrientGraph
         String dbDropping = "drop schema public cascade";
         st.execute(dbDropping);
         connection.close();
-      }catch(Exception e) {
+      } catch (Exception e) {
         e.printStackTrace();
         fail();
       }
     }
   }
-
-
 
   @Test
 
@@ -739,14 +730,14 @@ public class GraphModelBuildingTest {
       Class.forName(this.driver);
       connection = DriverManager.getConnection(this.jurl, this.username, this.password);
 
-      String authorTableBuilding = "create memory table AUTHOR (NAME varchar(256) not null," + 
-          " SURNAME varchar(256) not null, AGE integer, primary key (NAME,SURNAME))";
+      String authorTableBuilding = "create memory table AUTHOR (NAME varchar(256) not null,"
+          + " SURNAME varchar(256) not null, AGE integer, primary key (NAME,SURNAME))";
       st = connection.createStatement();
       st.execute(authorTableBuilding);
 
-      String bookTableBuilding = "create memory table BOOK (ID varchar(256) not null, TITLE  varchar(256),"+
-          " AUTHOR_NAME varchar(256) not null, AUTHOR_SURNAME varchar(256) not null, primary key (ID)," + 
-          " foreign key (AUTHOR_NAME,AUTHOR_SURNAME) references AUTHOR(NAME,SURNAME))";
+      String bookTableBuilding = "create memory table BOOK (ID varchar(256) not null, TITLE  varchar(256),"
+          + " AUTHOR_NAME varchar(256) not null, AUTHOR_SURNAME varchar(256) not null, primary key (ID),"
+          + " foreign key (AUTHOR_NAME,AUTHOR_SURNAME) references AUTHOR(NAME,SURNAME))";
       st.execute(bookTableBuilding);
 
       this.mapper = new OER2GraphMapper(this.sourceDBInfo, null, null, null);
@@ -862,7 +853,7 @@ public class GraphModelBuildingTest {
 
       OEntity authorEntity = mapper.getDataBaseSchema().getEntityByName("AUTHOR");
       assertEquals(1, mapper.getEVClassMappersByVertex(authorVertexType).size());
-      OEVClassMapper authorClassMapper =  mapper.getEVClassMappersByVertex(authorVertexType).get(0);
+      OEVClassMapper authorClassMapper = mapper.getEVClassMappersByVertex(authorVertexType).get(0);
       assertEquals(1, mapper.getEVClassMappersByEntity(authorEntity).size());
       assertEquals(authorClassMapper, mapper.getEVClassMappersByEntity(authorEntity).get(0));
       assertEquals(authorClassMapper.getEntity(), authorEntity);
@@ -894,17 +885,17 @@ public class GraphModelBuildingTest {
 
       assertEquals(0, mapper.getJoinVertex2aggregatorEdges().size());
 
-    }catch(Exception e) {
+    } catch (Exception e) {
       e.printStackTrace();
       fail();
-    }finally {      
+    } finally {
       try {
 
         // Dropping Source DB Schema and OrientGraph
         String dbDropping = "drop schema public cascade";
         st.execute(dbDropping);
         connection.close();
-      }catch(Exception e) {
+      } catch (Exception e) {
         e.printStackTrace();
         fail();
       }
@@ -927,19 +918,18 @@ public class GraphModelBuildingTest {
       Class.forName(this.driver);
       connection = DriverManager.getConnection(this.jurl, this.username, this.password);
 
-      String filmTableBuilding = "create memory table FILM (ID varchar(256) not null," + 
-          " TITLE varchar(256) not null, YEAR date, primary key (ID))";
+      String filmTableBuilding =
+          "create memory table FILM (ID varchar(256) not null," + " TITLE varchar(256) not null, YEAR date, primary key (ID))";
       st = connection.createStatement();
       st.execute(filmTableBuilding);
 
-      String actorTableBuilding = "create memory table ACTOR (ID varchar(256) not null,"+
-          " NAME varchar(256) not null, SURNAME varchar(256) not null, primary key (ID))";
+      String actorTableBuilding = "create memory table ACTOR (ID varchar(256) not null,"
+          + " NAME varchar(256) not null, SURNAME varchar(256) not null, primary key (ID))";
       st.execute(actorTableBuilding);
 
-      String film2actorTableBuilding = "create memory table FILM_ACTOR (FILM_ID varchar(256) not null," + 
-          " ACTOR_ID varchar(256) not null, primary key (FILM_ID,ACTOR_ID)," + 
-          " foreign key (FILM_ID) references FILM(ID)," + 
-          " foreign key (ACTOR_ID) references ACTOR(ID))";
+      String film2actorTableBuilding = "create memory table FILM_ACTOR (FILM_ID varchar(256) not null,"
+          + " ACTOR_ID varchar(256) not null, primary key (FILM_ID,ACTOR_ID)," + " foreign key (FILM_ID) references FILM(ID),"
+          + " foreign key (ACTOR_ID) references ACTOR(ID))";
       st.execute(film2actorTableBuilding);
 
       this.mapper = new OER2GraphMapper(this.sourceDBInfo, null, null, null);
@@ -965,7 +955,6 @@ public class GraphModelBuildingTest {
       OVertexType film2actorVertexType = mapper.getGraphModel().getVertexTypeByName("FilmActor");
       OEdgeType actorEdgeType = mapper.getGraphModel().getEdgeTypeByName("HasActor");
       OEdgeType filmEdgeType = mapper.getGraphModel().getEdgeTypeByName("HasFilm");
-
 
       // vertices check
       Assert.assertEquals(3, mapper.getGraphModel().getVerticesType().size());
@@ -1071,7 +1060,7 @@ public class GraphModelBuildingTest {
 
       OEntity actorEntity = mapper.getDataBaseSchema().getEntityByName("ACTOR");
       assertEquals(1, mapper.getEVClassMappersByVertex(actorVertexType).size());
-      OEVClassMapper actorClassMapper =  mapper.getEVClassMappersByVertex(actorVertexType).get(0);
+      OEVClassMapper actorClassMapper = mapper.getEVClassMappersByVertex(actorVertexType).get(0);
       assertEquals(1, mapper.getEVClassMappersByEntity(actorEntity).size());
       assertEquals(actorClassMapper, mapper.getEVClassMappersByEntity(actorEntity).get(0));
       assertEquals(actorClassMapper.getEntity(), actorEntity);
@@ -1088,7 +1077,7 @@ public class GraphModelBuildingTest {
 
       OEntity filmActorEntity = mapper.getDataBaseSchema().getEntityByName("FILM_ACTOR");
       assertEquals(1, mapper.getEVClassMappersByVertex(film2actorVertexType).size());
-      OEVClassMapper filmActorClassMapper =  mapper.getEVClassMappersByVertex(film2actorVertexType).get(0);
+      OEVClassMapper filmActorClassMapper = mapper.getEVClassMappersByVertex(film2actorVertexType).get(0);
       assertEquals(1, mapper.getEVClassMappersByEntity(filmActorEntity).size());
       assertEquals(filmActorClassMapper, mapper.getEVClassMappersByEntity(filmActorEntity).get(0));
       assertEquals(filmActorClassMapper.getEntity(), filmActorEntity);
@@ -1122,17 +1111,17 @@ public class GraphModelBuildingTest {
 
       assertEquals(0, mapper.getJoinVertex2aggregatorEdges().size());
 
-    }catch(Exception e) {
+    } catch (Exception e) {
       e.printStackTrace();
       fail();
-    }finally {      
+    } finally {
       try {
 
         // Dropping Source DB Schema and OrientGraph
         String dbDropping = "drop schema public cascade";
         st.execute(dbDropping);
         connection.close();
-      }catch(Exception e) {
+      } catch (Exception e) {
         e.printStackTrace();
         fail();
       }
@@ -1156,15 +1145,15 @@ public class GraphModelBuildingTest {
       Class.forName(this.driver);
       connection = DriverManager.getConnection(this.jurl, this.username, this.password);
 
-      String parentTableBuilding = "create memory table EMPLOYEE (EMP_ID varchar(256) not null,"+
-          " MGR_ID varchar(256) not null, NAME varchar(256) not null, primary key (EMP_ID), " + 
-          " foreign key (MGR_ID) references EMPLOYEE(EMP_ID))";
+      String parentTableBuilding = "create memory table EMPLOYEE (EMP_ID varchar(256) not null,"
+          + " MGR_ID varchar(256) not null, NAME varchar(256) not null, primary key (EMP_ID), "
+          + " foreign key (MGR_ID) references EMPLOYEE(EMP_ID))";
       st = connection.createStatement();
       st.execute(parentTableBuilding);
 
-      String foreignTableBuilding = "create memory table PROJECT (ID  varchar(256),"+
-          " TITLE varchar(256) not null, PROJECT_MANAGER varchar(256) not null, primary key (ID)," +
-          " foreign key (PROJECT_MANAGER) references EMPLOYEE(EMP_ID))";
+      String foreignTableBuilding = "create memory table PROJECT (ID  varchar(256),"
+          + " TITLE varchar(256) not null, PROJECT_MANAGER varchar(256) not null, primary key (ID),"
+          + " foreign key (PROJECT_MANAGER) references EMPLOYEE(EMP_ID))";
       st.execute(foreignTableBuilding);
 
       this.mapper = new OER2GraphMapper(this.sourceDBInfo, null, null, null);
@@ -1189,7 +1178,6 @@ public class GraphModelBuildingTest {
       OVertexType projectVertexType = mapper.getGraphModel().getVertexTypeByName("Project");
       OEdgeType projectManagerEdgeType = mapper.getGraphModel().getEdgeTypeByName("HasProjectManager");
       OEdgeType mgrEdgeType = mapper.getGraphModel().getEdgeTypeByName("HasMgr");
-
 
       // vertices check
       Assert.assertEquals(2, mapper.getGraphModel().getVerticesType().size());
@@ -1280,7 +1268,7 @@ public class GraphModelBuildingTest {
 
       OEntity projectEntity = mapper.getDataBaseSchema().getEntityByName("PROJECT");
       assertEquals(1, mapper.getEVClassMappersByVertex(projectVertexType).size());
-      OEVClassMapper projectClassMapper =  mapper.getEVClassMappersByVertex(projectVertexType).get(0);
+      OEVClassMapper projectClassMapper = mapper.getEVClassMappersByVertex(projectVertexType).get(0);
       assertEquals(1, mapper.getEVClassMappersByEntity(projectEntity).size());
       assertEquals(projectClassMapper, mapper.getEVClassMappersByEntity(projectEntity).get(0));
       assertEquals(projectClassMapper.getEntity(), projectEntity);
@@ -1318,17 +1306,17 @@ public class GraphModelBuildingTest {
 
       assertEquals(0, mapper.getJoinVertex2aggregatorEdges().size());
 
-    }catch(Exception e) {
+    } catch (Exception e) {
       e.printStackTrace();
       fail();
-    }finally {      
+    } finally {
       try {
 
         // Dropping Source DB Schema and OrientGraph
         String dbDropping = "drop schema public cascade";
         st.execute(dbDropping);
         connection.close();
-      }catch(Exception e) {
+      } catch (Exception e) {
         e.printStackTrace();
         fail();
       }

@@ -30,21 +30,19 @@ import java.sql.DriverManager;
 
 /**
  * Utility class to which connection with source DB is delegated.
- * 
+ *
  * @author Gabriele Ponzi
- * @email  <g.ponzi--at--orientdb.com>
- * 
+ * @email <g.ponzi--at--orientdb.com>
  */
 
 public class ODBSourceConnection {
-
 
   public static Connection getConnection(OSourceDatabaseInfo sourceDBInfo) {
 
     Connection connection = null;
     String driver = sourceDBInfo.getDriverName();
     String uri = sourceDBInfo.getUrl();
-    String username =  sourceDBInfo.getUsername();
+    String username = sourceDBInfo.getUsername();
     String password = sourceDBInfo.getPassword();
 
     try {
@@ -82,6 +80,5 @@ public class ODBSourceConnection {
     }
     return connection;
   }
-
 
 }

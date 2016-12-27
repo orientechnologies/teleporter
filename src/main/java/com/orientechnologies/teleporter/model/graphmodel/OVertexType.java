@@ -27,17 +27,16 @@ import com.tinkerpop.blueprints.Direction;
  * It's a simple vertex-type in the graph model.
  *
  * @author Gabriele Ponzi
- * @email  <g.ponzi--at--orientdb.com>
- *
+ * @email <g.ponzi--at--orientdb.com>
  */
 
 public class OVertexType extends OElementType {
 
   private List<OEdgeType> inEdgesType;
   private List<OEdgeType> outEdgesType;
-  private boolean isFromJoinTable;
-  private Set<String> externalKey;
-  private boolean analyzedInLastMigration;
+  private boolean         isFromJoinTable;
+  private Set<String>     externalKey;
+  private boolean         analyzedInLastMigration;
 
   public OVertexType(String vertexType) {
     super(vertexType);
@@ -85,13 +84,13 @@ public class OVertexType extends OElementType {
 
   public OEdgeType getEdgeByName(String edgeName) {
 
-    for(OEdgeType currentEdgeType: this.inEdgesType) {
-      if(currentEdgeType.getName().equals(edgeName))
+    for (OEdgeType currentEdgeType : this.inEdgesType) {
+      if (currentEdgeType.getName().equals(edgeName))
         return currentEdgeType;
     }
 
-    for(OEdgeType currentEdgeType: this.outEdgesType) {
-      if(currentEdgeType.getName().equals(edgeName))
+    for (OEdgeType currentEdgeType : this.outEdgesType) {
+      if (currentEdgeType.getName().equals(edgeName))
         return currentEdgeType;
     }
 
@@ -101,21 +100,17 @@ public class OVertexType extends OElementType {
 
   public OEdgeType getEdgeByName(String name, Direction direction) {
 
-    if(direction.equals(Direction.IN)) {
-      for(OEdgeType currentEdgeType: this.inEdgesType) {
-        if(currentEdgeType.getName().equals(name))
+    if (direction.equals(Direction.IN)) {
+      for (OEdgeType currentEdgeType : this.inEdgesType) {
+        if (currentEdgeType.getName().equals(name))
           return currentEdgeType;
       }
-    }
-
-    else if(direction.equals(Direction.OUT)) {
-      for(OEdgeType currentEdgeType: this.outEdgesType) {
-        if(currentEdgeType.getName().equals(name))
+    } else if (direction.equals(Direction.OUT)) {
+      for (OEdgeType currentEdgeType : this.outEdgesType) {
+        if (currentEdgeType.getName().equals(name))
           return currentEdgeType;
       }
-    }
-
-    else if (direction.equals(Direction.BOTH)) {
+    } else if (direction.equals(Direction.BOTH)) {
       return this.getEdgeByName(name);
     }
 
@@ -129,7 +124,6 @@ public class OVertexType extends OElementType {
   public void setIsFromJoinTable(boolean isFromJoinTable) {
     this.isFromJoinTable = isFromJoinTable;
   }
-
 
   @Override
   public int hashCode() {
@@ -145,28 +139,29 @@ public class OVertexType extends OElementType {
     OVertexType that = (OVertexType) obj;
 
     // check on type and many-to-many variables
-    if(!(super.name.equals(that.getName()) && this.isFromJoinTable == that.isFromJoinTable()))
+    if (!(super.name.equals(that.getName()) && this.isFromJoinTable == that.isFromJoinTable()))
       return false;
 
     // check on properties
-    if( !(this.properties.equals(that.getProperties())) )
+    if (!(this.properties.equals(that.getProperties())))
       return false;
 
     // in&out edges
-    if( !(this.inEdgesType.equals(that.getInEdgesType()) &&  this.outEdgesType.equals(that.getOutEdgesType())) )
+    if (!(this.inEdgesType.equals(that.getInEdgesType()) && this.outEdgesType.equals(that.getOutEdgesType())))
       return false;
 
     return true;
   }
 
   public String toString() {
-    String s = "Vertex-type [type = " + super.name + ", # attributes = " + this.properties.size() + ", # inEdges: "
-            + this.inEdgesType.size() + ", # outEdges: " + this.outEdgesType.size() + "]\nAttributes:\n";
+    String s =
+        "Vertex-type [type = " + super.name + ", # attributes = " + this.properties.size() + ", # inEdges: " + this.inEdgesType
+            .size() + ", # outEdges: " + this.outEdgesType.size() + "]\nAttributes:\n";
 
-    for(OModelProperty currentProperty: this.properties) {
+    for (OModelProperty currentProperty : this.properties) {
       s += currentProperty.getOrdinalPosition() + ": " + currentProperty.getName() + " --> " + currentProperty.toString();
 
-      if(currentProperty.isFromPrimaryKey())
+      if (currentProperty.isFromPrimaryKey())
         s += "(from PK)";
 
       s += "\t";

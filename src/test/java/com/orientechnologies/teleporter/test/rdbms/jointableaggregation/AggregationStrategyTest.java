@@ -47,22 +47,20 @@ import static org.junit.Assert.*;
 
 /**
  * @author Gabriele Ponzi
- * @email  <g.ponzi--at--orientdb.com>
- *
+ * @email <g.ponzi--at--orientdb.com>
  */
 
 public class AggregationStrategyTest {
 
-  private OTeleporterContext context;
+  private OTeleporterContext            context;
   private ODBMSNaiveAggregationStrategy importStrategy;
-  private ODBQueryEngine dbQueryEngine;
-  private String driver = "org.hsqldb.jdbc.JDBCDriver";
-  private String jurl = "jdbc:hsqldb:mem:mydb";
+  private ODBQueryEngine                dbQueryEngine;
+  private String driver   = "org.hsqldb.jdbc.JDBCDriver";
+  private String jurl     = "jdbc:hsqldb:mem:mydb";
   private String username = "SA";
   private String password = "";
-  private String outOrientGraphUri;
+  private String              outOrientGraphUri;
   private OSourceDatabaseInfo sourceDBInfo;
-
 
   @Before
   public void init() {
@@ -80,8 +78,7 @@ public class AggregationStrategyTest {
   @Test
   /*
    * Aggregation Strategy Test: executing mapping
-   */
-  public void test1() {
+   */ public void test1() {
 
     Connection connection = null;
     Statement st = null;
@@ -93,27 +90,27 @@ public class AggregationStrategyTest {
 
       // Tables Building
 
-      String employeeTableBuilding = "create memory table EMPLOYEE (ID varchar(256) not null,"+
-          " FIRST_NAME varchar(256) not null, LAST_NAME varchar(256) not null, primary key (ID))";
+      String employeeTableBuilding = "create memory table EMPLOYEE (ID varchar(256) not null,"
+          + " FIRST_NAME varchar(256) not null, LAST_NAME varchar(256) not null, primary key (ID))";
       st = connection.createStatement();
       st.execute(employeeTableBuilding);
 
-      String departmentTableBuilding = "create memory table DEPARTMENT (ID varchar(256) not null, NAME  varchar(256),"+
-          " primary key (ID))";
+      String departmentTableBuilding =
+          "create memory table DEPARTMENT (ID varchar(256) not null, NAME  varchar(256)," + " primary key (ID))";
       st.execute(departmentTableBuilding);
 
-      String dept2empTableBuilding = "create memory table DEPT_EMP (DEPT_ID varchar(256) not null, EMP_ID  varchar(256), HIRING_YEAR varchar(256),"+
-          " primary key (DEPT_ID,EMP_ID), foreign key (EMP_ID) references EMPLOYEE(ID), foreign key (DEPT_ID) references DEPARTMENT(ID))";
+      String dept2empTableBuilding =
+          "create memory table DEPT_EMP (DEPT_ID varchar(256) not null, EMP_ID  varchar(256), HIRING_YEAR varchar(256),"
+              + " primary key (DEPT_ID,EMP_ID), foreign key (EMP_ID) references EMPLOYEE(ID), foreign key (DEPT_ID) references DEPARTMENT(ID))";
       st.execute(dept2empTableBuilding);
 
-      String dept2managerTableBuilding = "create memory table DEPT_MANAGER (DEPT_ID varchar(256) not null, EMP_ID  varchar(256),"+
-          " primary key (DEPT_ID,EMP_ID), foreign key (EMP_ID) references EMPLOYEE(ID), foreign key (DEPT_ID) references DEPARTMENT(ID))";
+      String dept2managerTableBuilding = "create memory table DEPT_MANAGER (DEPT_ID varchar(256) not null, EMP_ID  varchar(256),"
+          + " primary key (DEPT_ID,EMP_ID), foreign key (EMP_ID) references EMPLOYEE(ID), foreign key (DEPT_ID) references DEPARTMENT(ID))";
       st.execute(dept2managerTableBuilding);
 
-      String branchTableBuilding = "create memory table BRANCH(BRANCH_ID varchar(256) not null, LOCATION  varchar(256),"+
-          "DEPT varchar(256) not null, primary key (BRANCH_ID), foreign key (DEPT) references DEPARTMENT(ID))";
+      String branchTableBuilding = "create memory table BRANCH(BRANCH_ID varchar(256) not null, LOCATION  varchar(256),"
+          + "DEPT varchar(256) not null, primary key (BRANCH_ID), foreign key (DEPT) references DEPARTMENT(ID))";
       st.execute(branchTableBuilding);
-
 
       OER2GraphMapper mapper = new OER2GraphMapper(this.sourceDBInfo, null, null, null);
       mapper.buildSourceDatabaseSchema();
@@ -184,7 +181,7 @@ public class AggregationStrategyTest {
 
       OEntity departmentEntity = mapper.getDataBaseSchema().getEntityByName("DEPARTMENT");
       assertEquals(1, mapper.getEVClassMappersByVertex(departmentVertexType).size());
-      OEVClassMapper departmentClassMapper =  mapper.getEVClassMappersByVertex(departmentVertexType).get(0);
+      OEVClassMapper departmentClassMapper = mapper.getEVClassMappersByVertex(departmentVertexType).get(0);
       assertEquals(1, mapper.getEVClassMappersByEntity(departmentEntity).size());
       assertEquals(departmentClassMapper, mapper.getEVClassMappersByEntity(departmentEntity).get(0));
       assertEquals(departmentClassMapper.getEntity(), departmentEntity);
@@ -199,7 +196,7 @@ public class AggregationStrategyTest {
 
       OEntity branchEntity = mapper.getDataBaseSchema().getEntityByName("BRANCH");
       assertEquals(1, mapper.getEVClassMappersByVertex(branchVertexType).size());
-      OEVClassMapper branchClassMapper =  mapper.getEVClassMappersByVertex(branchVertexType).get(0);
+      OEVClassMapper branchClassMapper = mapper.getEVClassMappersByVertex(branchVertexType).get(0);
       assertEquals(1, mapper.getEVClassMappersByEntity(branchEntity).size());
       assertEquals(branchClassMapper, mapper.getEVClassMappersByEntity(branchEntity).get(0));
       assertEquals(branchClassMapper.getEntity(), branchEntity);
@@ -216,7 +213,7 @@ public class AggregationStrategyTest {
 
       OEntity deptEmpEntity = mapper.getDataBaseSchema().getEntityByName("DEPT_EMP");
       assertEquals(1, mapper.getEVClassMappersByVertex(deptEmpVertexType).size());
-      OEVClassMapper deptEmpClassMapper =  mapper.getEVClassMappersByVertex(deptEmpVertexType).get(0);
+      OEVClassMapper deptEmpClassMapper = mapper.getEVClassMappersByVertex(deptEmpVertexType).get(0);
       assertEquals(1, mapper.getEVClassMappersByEntity(deptEmpEntity).size());
       assertEquals(deptEmpClassMapper, mapper.getEVClassMappersByEntity(deptEmpEntity).get(0));
       assertEquals(deptEmpClassMapper.getEntity(), deptEmpEntity);
@@ -233,7 +230,7 @@ public class AggregationStrategyTest {
 
       OEntity deptMgrEntity = mapper.getDataBaseSchema().getEntityByName("DEPT_MANAGER");
       assertEquals(1, mapper.getEVClassMappersByVertex(deptManagerVertexType).size());
-      OEVClassMapper deptManagerClassMapper =  mapper.getEVClassMappersByVertex(deptManagerVertexType).get(0);
+      OEVClassMapper deptManagerClassMapper = mapper.getEVClassMappersByVertex(deptManagerVertexType).get(0);
       assertEquals(1, mapper.getEVClassMappersByEntity(deptMgrEntity).size());
       assertEquals(deptManagerClassMapper, mapper.getEVClassMappersByEntity(deptMgrEntity).get(0));
       assertEquals(deptManagerClassMapper.getEntity(), deptMgrEntity);
@@ -356,7 +353,7 @@ public class AggregationStrategyTest {
 
       departmentEntity = mapper.getDataBaseSchema().getEntityByName("DEPARTMENT");
       assertEquals(1, mapper.getEVClassMappersByVertex(departmentVertexType).size());
-      departmentClassMapper =  mapper.getEVClassMappersByVertex(departmentVertexType).get(0);
+      departmentClassMapper = mapper.getEVClassMappersByVertex(departmentVertexType).get(0);
       assertEquals(1, mapper.getEVClassMappersByEntity(departmentEntity).size());
       assertEquals(departmentClassMapper, mapper.getEVClassMappersByEntity(departmentEntity).get(0));
       assertEquals(departmentClassMapper.getEntity(), departmentEntity);
@@ -371,7 +368,7 @@ public class AggregationStrategyTest {
 
       branchEntity = mapper.getDataBaseSchema().getEntityByName("BRANCH");
       assertEquals(1, mapper.getEVClassMappersByVertex(branchVertexType).size());
-      branchClassMapper =  mapper.getEVClassMappersByVertex(branchVertexType).get(0);
+      branchClassMapper = mapper.getEVClassMappersByVertex(branchVertexType).get(0);
       assertEquals(1, mapper.getEVClassMappersByEntity(branchEntity).size());
       assertEquals(branchClassMapper, mapper.getEVClassMappersByEntity(branchEntity).get(0));
       assertEquals(branchClassMapper.getEntity(), branchEntity);
@@ -388,7 +385,7 @@ public class AggregationStrategyTest {
 
       deptEmpEntity = mapper.getDataBaseSchema().getEntityByName("DEPT_EMP");
       assertEquals(1, mapper.getEVClassMappersByVertex(deptEmpVertexType).size());
-      deptEmpClassMapper =  mapper.getEVClassMappersByVertex(deptEmpVertexType).get(0);
+      deptEmpClassMapper = mapper.getEVClassMappersByVertex(deptEmpVertexType).get(0);
       assertEquals(1, mapper.getEVClassMappersByEntity(deptEmpEntity).size());
       assertEquals(deptEmpClassMapper, mapper.getEVClassMappersByEntity(deptEmpEntity).get(0));
       assertEquals(deptEmpClassMapper.getEntity(), deptEmpEntity);
@@ -405,7 +402,7 @@ public class AggregationStrategyTest {
 
       deptMgrEntity = mapper.getDataBaseSchema().getEntityByName("DEPT_MANAGER");
       assertEquals(1, mapper.getEVClassMappersByVertex(deptManagerVertexType).size());
-      deptManagerClassMapper =  mapper.getEVClassMappersByVertex(deptManagerVertexType).get(0);
+      deptManagerClassMapper = mapper.getEVClassMappersByVertex(deptManagerVertexType).get(0);
       assertEquals(1, mapper.getEVClassMappersByEntity(deptMgrEntity).size());
       assertEquals(deptManagerClassMapper, mapper.getEVClassMappersByEntity(deptMgrEntity).get(0));
       assertEquals(deptManagerClassMapper.getEntity(), deptMgrEntity);
@@ -467,18 +464,17 @@ public class AggregationStrategyTest {
       assertEquals("Department", mapper.getJoinVertex2aggregatorEdges().get(deptEmpVertexType).getOutVertexClassName());
       assertEquals("Employee", mapper.getJoinVertex2aggregatorEdges().get(deptEmpVertexType).getInVertexClassName());
 
-
-    } catch(Exception e) {
+    } catch (Exception e) {
       e.printStackTrace();
       fail();
-    }finally {
+    } finally {
       try {
 
         // Dropping Source DB Schema and OrientGraph
         String dbDropping = "drop schema public cascade";
         st.execute(dbDropping);
         connection.close();
-      }catch(Exception e) {
+      } catch (Exception e) {
         e.printStackTrace();
         fail();
       }
@@ -488,8 +484,7 @@ public class AggregationStrategyTest {
   @Test
   /*
    * Aggregation Strategy Test: executing import
-   */
-  public void test2() {
+   */ public void test2() {
 
     Connection connection = null;
     Statement st = null;
@@ -502,54 +497,41 @@ public class AggregationStrategyTest {
 
       // Tables Building
 
-      String filmTableBuilding = "create memory table film (id varchar(256) not null,"+
-              " title varchar(256) not null, primary key (id))";
+      String filmTableBuilding =
+          "create memory table film (id varchar(256) not null," + " title varchar(256) not null, primary key (id))";
       st = connection.createStatement();
       st.execute(filmTableBuilding);
 
-      String actorTableBuilding = "create memory table actor (id varchar(256) not null, name  varchar(256),"+
-              " surname varchar(256) not null, primary key (id))";
+      String actorTableBuilding = "create memory table actor (id varchar(256) not null, name  varchar(256),"
+          + " surname varchar(256) not null, primary key (id))";
       st.execute(actorTableBuilding);
 
-      String film2actorTableBuilding = "create memory table film_actor (film_id varchar(256) not null, actor_id  varchar(256), PAYMENT integer, "+
-              " primary key (film_id,actor_id), foreign key (film_id) references film(id), foreign key (actor_id) references actor(id))";
+      String film2actorTableBuilding =
+          "create memory table film_actor (film_id varchar(256) not null, actor_id  varchar(256), PAYMENT integer, "
+              + " primary key (film_id,actor_id), foreign key (film_id) references film(id), foreign key (actor_id) references actor(id))";
       st.execute(film2actorTableBuilding);
-
 
       // Records Inserting
 
-      String filmFilling = "insert into film(id,title) values ("
-              + "('F001','The Wolf Of Wall Street'),"
-              + "('F002','Shutter Island'),"
-              + "('F003','The Departed'),"
-              + "('F004','Inception'))";
+      String filmFilling =
+          "insert into film(id,title) values (" + "('F001','The Wolf Of Wall Street')," + "('F002','Shutter Island'),"
+              + "('F003','The Departed')," + "('F004','Inception'))";
       st.execute(filmFilling);
 
-      String actorFilling = "insert into actor (id,name,surname) values ("
-              + "('A001','Leonardo','Di Caprio'),"
-              + "('A002','Matthew', 'McConaughey'),"
-              + "('A003','Ben','Kingsley'),"
-              + "('A004','Mark','Ruffalo'),"
-              + "('A005','Jack','Nicholson'),"
-              + "('A006','Matt','Damon'),"
-              + "('A007','Michael','Caine'))";
+      String actorFilling =
+          "insert into actor (id,name,surname) values (" + "('A001','Leonardo','Di Caprio')," + "('A002','Matthew', 'McConaughey'),"
+              + "('A003','Ben','Kingsley')," + "('A004','Mark','Ruffalo')," + "('A005','Jack','Nicholson'),"
+              + "('A006','Matt','Damon')," + "('A007','Michael','Caine'))";
       st.execute(actorFilling);
 
-      String film2actorFilling = "insert into film_actor (film_id,actor_id,payment) values ("
-              + "('F001','A001','32000000'),"
-              + "('F001','A002','20000000'),"
-              + "('F002','A001','28000000'),"
-              + "('F002','A003','18000000'),"
-              + "('F002','A004','6000000'),"
-              + "('F003','A001','25000000'),"
-              + "('F003','A005','27000000'),"
-              + "('F003','A006','14000000'),"
-              + "('F004','A001','30000000'),"
-              + "('F004','A007','12000000'))";
+      String film2actorFilling = "insert into film_actor (film_id,actor_id,payment) values (" + "('F001','A001','32000000'),"
+          + "('F001','A002','20000000')," + "('F002','A001','28000000')," + "('F002','A003','18000000'),"
+          + "('F002','A004','6000000')," + "('F003','A001','25000000')," + "('F003','A005','27000000'),"
+          + "('F003','A006','14000000')," + "('F004','A001','30000000')," + "('F004','A007','12000000'))";
       st.execute(film2actorFilling);
 
-
-      this.importStrategy.executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "basicDBMapper", null, "java", null, null, null);
+      this.importStrategy
+          .executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "basicDBMapper", null, "java", null, null, null);
 
 
       /*
@@ -569,53 +551,51 @@ public class AggregationStrategyTest {
       // vertices check
 
       int count = 0;
-      for(Vertex v: orientGraph.getVertices()) {
+      for (Vertex v : orientGraph.getVertices()) {
         assertNotNull(v.getId());
         count++;
       }
       assertEquals(11, count);
 
       count = 0;
-      for(Vertex v: orientGraph.getVerticesOfClass("Film")) {
+      for (Vertex v : orientGraph.getVerticesOfClass("Film")) {
         assertNotNull(v.getId());
         count++;
       }
       assertEquals(4, count);
 
       count = 0;
-      for(Vertex v: orientGraph.getVerticesOfClass("Actor")) {
+      for (Vertex v : orientGraph.getVerticesOfClass("Actor")) {
         assertNotNull(v.getId());
         count++;
       }
       assertEquals(7, count);
 
-
       // edges check
       count = 0;
-      for(Edge e: orientGraph.getEdges()) {
+      for (Edge e : orientGraph.getEdges()) {
         assertNotNull(e.getId());
         count++;
       }
       assertEquals(10, count);
 
       count = 0;
-      for(Edge e: orientGraph.getEdgesOfClass("FilmActor")) {
+      for (Edge e : orientGraph.getEdgesOfClass("FilmActor")) {
         assertNotNull(e.getId());
         count++;
       }
       assertEquals(10, count);
-
 
       // vertex properties and connections check
       Iterator<Edge> edgesIt = null;
-      String[] keys = {"id"};
-      String[] values = {"F001"};
+      String[] keys = { "id" };
+      String[] values = { "F001" };
 
       Vertex v = null;
       Edge currentEdge;
       Iterator<Vertex> iterator = orientGraph.getVertices("Film", keys, values).iterator();
       assertTrue(iterator.hasNext());
-      if(iterator.hasNext()) {
+      if (iterator.hasNext()) {
         v = iterator.next();
         assertEquals("F001", v.getProperty("id"));
         assertEquals("The Wolf Of Wall Street", v.getProperty("title"));
@@ -627,15 +607,14 @@ public class AggregationStrategyTest {
         assertEquals("A002", currentEdge.getVertex(Direction.OUT).getProperty("id"));
         assertEquals(20000000, currentEdge.getProperty("payment"));
         assertEquals(false, edgesIt.hasNext());
-      }
-      else {
+      } else {
         fail("Query fail!");
       }
 
       values[0] = "F002";
       iterator = orientGraph.getVertices("Film", keys, values).iterator();
       assertTrue(iterator.hasNext());
-      if(iterator.hasNext()) {
+      if (iterator.hasNext()) {
         v = iterator.next();
         assertEquals("F002", v.getProperty("id"));
         assertEquals("Shutter Island", v.getProperty("title"));
@@ -650,15 +629,14 @@ public class AggregationStrategyTest {
         assertEquals("A004", currentEdge.getVertex(Direction.OUT).getProperty("id"));
         assertEquals(6000000, currentEdge.getProperty("payment"));
         assertEquals(false, edgesIt.hasNext());
-      }
-      else {
+      } else {
         fail("Query fail!");
       }
 
       values[0] = "F003";
       iterator = orientGraph.getVertices("Film", keys, values).iterator();
       assertTrue(iterator.hasNext());
-      if(iterator.hasNext()) {
+      if (iterator.hasNext()) {
         v = iterator.next();
         assertEquals("F003", v.getProperty("id"));
         assertEquals("The Departed", v.getProperty("title"));
@@ -673,15 +651,14 @@ public class AggregationStrategyTest {
         assertEquals("A006", currentEdge.getVertex(Direction.OUT).getProperty("id"));
         assertEquals(14000000, currentEdge.getProperty("payment"));
         assertEquals(false, edgesIt.hasNext());
-      }
-      else {
+      } else {
         fail("Query fail!");
       }
 
       values[0] = "F004";
       iterator = orientGraph.getVertices("Film", keys, values).iterator();
       assertTrue(iterator.hasNext());
-      if(iterator.hasNext()) {
+      if (iterator.hasNext()) {
         v = iterator.next();
         assertEquals("F004", v.getProperty("id"));
         assertEquals("Inception", v.getProperty("title"));
@@ -693,15 +670,14 @@ public class AggregationStrategyTest {
         assertEquals("A007", currentEdge.getVertex(Direction.OUT).getProperty("id"));
         assertEquals(12000000, currentEdge.getProperty("payment"));
         assertEquals(false, edgesIt.hasNext());
-      }
-      else {
+      } else {
         fail("Query fail!");
       }
 
       values[0] = "A001";
       iterator = orientGraph.getVertices("Actor", keys, values).iterator();
       assertTrue(iterator.hasNext());
-      if(iterator.hasNext()) {
+      if (iterator.hasNext()) {
         v = iterator.next();
         assertEquals("A001", v.getProperty("id"));
         assertEquals("Leonardo", v.getProperty("name"));
@@ -712,15 +688,14 @@ public class AggregationStrategyTest {
         assertEquals("F003", edgesIt.next().getVertex(Direction.IN).getProperty("id"));
         assertEquals("F004", edgesIt.next().getVertex(Direction.IN).getProperty("id"));
         assertEquals(false, edgesIt.hasNext());
-      }
-      else {
+      } else {
         fail("Query fail!");
       }
 
       values[0] = "A002";
-      iterator =  orientGraph.getVertices("Actor", keys, values).iterator();
+      iterator = orientGraph.getVertices("Actor", keys, values).iterator();
       assertTrue(iterator.hasNext());
-      if(iterator.hasNext()) {
+      if (iterator.hasNext()) {
         v = iterator.next();
         assertEquals("A002", v.getProperty("id"));
         assertEquals("Matthew", v.getProperty("name"));
@@ -728,15 +703,14 @@ public class AggregationStrategyTest {
         edgesIt = v.getEdges(Direction.OUT, "FilmActor").iterator();
         assertEquals("F001", edgesIt.next().getVertex(Direction.IN).getProperty("id"));
         assertEquals(false, edgesIt.hasNext());
-      }
-      else {
+      } else {
         fail("Query fail!");
       }
 
       values[0] = "A003";
       iterator = orientGraph.getVertices("Actor", keys, values).iterator();
       assertTrue(iterator.hasNext());
-      if(iterator.hasNext()) {
+      if (iterator.hasNext()) {
         v = iterator.next();
         assertEquals("A003", v.getProperty("id"));
         assertEquals("Ben", v.getProperty("name"));
@@ -744,15 +718,14 @@ public class AggregationStrategyTest {
         edgesIt = v.getEdges(Direction.OUT, "FilmActor").iterator();
         assertEquals("F002", edgesIt.next().getVertex(Direction.IN).getProperty("id"));
         assertEquals(false, edgesIt.hasNext());
-      }
-      else {
+      } else {
         fail("Query fail!");
       }
 
       values[0] = "A004";
-      iterator =  orientGraph.getVertices("Actor", keys, values).iterator();
+      iterator = orientGraph.getVertices("Actor", keys, values).iterator();
       assertTrue(iterator.hasNext());
-      if(iterator.hasNext()) {
+      if (iterator.hasNext()) {
         v = iterator.next();
         assertEquals("A004", v.getProperty("id"));
         assertEquals("Mark", v.getProperty("name"));
@@ -760,15 +733,14 @@ public class AggregationStrategyTest {
         edgesIt = v.getEdges(Direction.OUT, "FilmActor").iterator();
         assertEquals("F002", edgesIt.next().getVertex(Direction.IN).getProperty("id"));
         assertEquals(false, edgesIt.hasNext());
-      }
-      else {
+      } else {
         fail("Query fail!");
       }
 
       values[0] = "A005";
       iterator = orientGraph.getVertices("Actor", keys, values).iterator();
       assertTrue(iterator.hasNext());
-      if(iterator.hasNext()) {
+      if (iterator.hasNext()) {
         v = iterator.next();
         assertEquals("A005", v.getProperty("id"));
         assertEquals("Jack", v.getProperty("name"));
@@ -776,15 +748,14 @@ public class AggregationStrategyTest {
         edgesIt = v.getEdges(Direction.OUT, "FilmActor").iterator();
         assertEquals("F003", edgesIt.next().getVertex(Direction.IN).getProperty("id"));
         assertEquals(false, edgesIt.hasNext());
-      }
-      else {
+      } else {
         fail("Query fail!");
       }
 
       values[0] = "A006";
       iterator = orientGraph.getVertices("Actor", keys, values).iterator();
       assertTrue(iterator.hasNext());
-      if(iterator.hasNext()) {
+      if (iterator.hasNext()) {
         v = iterator.next();
         assertEquals("A006", v.getProperty("id"));
         assertEquals("Matt", v.getProperty("name"));
@@ -792,15 +763,14 @@ public class AggregationStrategyTest {
         edgesIt = v.getEdges(Direction.OUT, "FilmActor").iterator();
         assertEquals("F003", edgesIt.next().getVertex(Direction.IN).getProperty("id"));
         assertEquals(false, edgesIt.hasNext());
-      }
-      else {
+      } else {
         fail("Query fail!");
       }
 
       values[0] = "A007";
       iterator = orientGraph.getVertices("Actor", keys, values).iterator();
       assertTrue(iterator.hasNext());
-      if(iterator.hasNext()) {
+      if (iterator.hasNext()) {
         v = iterator.next();
         assertEquals("A007", v.getProperty("id"));
         assertEquals("Michael", v.getProperty("name"));
@@ -808,26 +778,25 @@ public class AggregationStrategyTest {
         edgesIt = v.getEdges(Direction.OUT, "FilmActor").iterator();
         assertEquals("F004", edgesIt.next().getVertex(Direction.IN).getProperty("id"));
         assertEquals(false, edgesIt.hasNext());
-      }
-      else {
+      } else {
         fail("Query fail!");
       }
 
-    } catch(Exception e) {
+    } catch (Exception e) {
       e.printStackTrace();
       fail();
-    }finally {
+    } finally {
       try {
 
         // Dropping Source DB Schema and OrientGraph
         String dbDropping = "drop schema public cascade";
         st.execute(dbDropping);
         connection.close();
-      }catch(Exception e) {
+      } catch (Exception e) {
         e.printStackTrace();
         fail();
       }
-      if(orientGraph != null) {
+      if (orientGraph != null) {
         orientGraph.drop();
         orientGraph.shutdown();
       }

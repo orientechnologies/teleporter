@@ -27,21 +27,19 @@ import java.util.Set;
 /**
  * It represents an Orient class. It could be a Vertex-Type or an Edge-Type in
  * the graph model.
- * 
+ *
  * @author Gabriele Ponzi
  * @email <g.ponzi--at--orientdb.com>
- *
  */
 
 public class OElementType implements Comparable<OElementType> {
 
-  protected String name;
+  protected String               name;
   protected List<OModelProperty> properties;
   protected List<OModelProperty> inheritedProperties;
-  protected Set<OModelProperty> allProperties;
-  protected OElementType parentType;
-  protected int inheritanceLevel;
-
+  protected Set<OModelProperty>  allProperties;
+  protected OElementType         parentType;
+  protected int                  inheritanceLevel;
 
   public OElementType(String type) {
     this.name = type;
@@ -136,7 +134,6 @@ public class OElementType implements Comparable<OElementType> {
     }
     return null;
   }
-
 
   // Returns properties and inherited properties
   public Set<OModelProperty> getAllProperties() {

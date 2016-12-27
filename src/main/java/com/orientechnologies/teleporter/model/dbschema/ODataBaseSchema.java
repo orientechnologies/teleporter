@@ -25,26 +25,26 @@ import java.util.List;
 
 /**
  * It represents the schema of a source DB with all its elements.
- * 
+ *
  * @author Gabriele Ponzi
- * @email  <g.ponzi--at--orientdb.com>
- * 
+ * @email <g.ponzi--at--orientdb.com>
  */
 
 public class ODataBaseSchema implements ODataSourceSchemaInfo {
 
-  private int majorVersion;
-  private int minorVersion;	
-  private int driverMajorVersion;
-  private int driverMinorVersion;
-  private String productName;
-  private String productVersion;
-  private List<OEntity> entities;
+  private int                          majorVersion;
+  private int                          minorVersion;
+  private int                          driverMajorVersion;
+  private int                          driverMinorVersion;
+  private String                       productName;
+  private String                       productVersion;
+  private List<OEntity>                entities;
   private List<OCanonicalRelationship> canonicalRelationships;
-  private List<OLogicalRelationship> logicalRelationships;
-  private List<OHierarchicalBag> hierarchicalBags;
+  private List<OLogicalRelationship>   logicalRelationships;
+  private List<OHierarchicalBag>       hierarchicalBags;
 
-  public ODataBaseSchema(int majorVersion, int minorVersion, int driverMajorVersion, int driverMinorVersion, String productName, String productVersion) {		
+  public ODataBaseSchema(int majorVersion, int minorVersion, int driverMajorVersion, int driverMinorVersion, String productName,
+      String productVersion) {
     this.majorVersion = majorVersion;
     this.minorVersion = minorVersion;
     this.driverMajorVersion = driverMajorVersion;
@@ -146,8 +146,8 @@ public class ODataBaseSchema implements ODataSourceSchemaInfo {
 
   public OEntity getEntityByName(String entityName) {
 
-    for(OEntity currentEntity: this.entities) {
-      if(currentEntity.getName().equals(entityName))
+    for (OEntity currentEntity : this.entities) {
+      if (currentEntity.getName().equals(entityName))
         return currentEntity;
     }
 
@@ -156,8 +156,8 @@ public class ODataBaseSchema implements ODataSourceSchemaInfo {
 
   public OEntity getEntityByNameIgnoreCase(String entityName) {
 
-    for(OEntity currentEntity: this.entities) {
-      if(currentEntity.getName().equalsIgnoreCase(entityName))
+    for (OEntity currentEntity : this.entities) {
+      if (currentEntity.getName().equalsIgnoreCase(entityName))
         return currentEntity;
     }
 
@@ -165,11 +165,13 @@ public class ODataBaseSchema implements ODataSourceSchemaInfo {
   }
 
   public ORelationship getRelationshipByInvolvedEntitiesAndAttributes(OEntity currentForeignEntity, OEntity currentParentEntity,
-                                                                               List<String> fromColumns, List<String> toColumns) {
+      List<String> fromColumns, List<String> toColumns) {
 
-    for(ORelationship currentRelationship: this.canonicalRelationships) {
-      if(currentRelationship.getForeignEntity().getName().equals(currentForeignEntity.getName()) && currentRelationship.getParentEntity().getName().equals(currentParentEntity.getName())) {
-        if(sameAttributesInvolved(currentRelationship.getFromColumns(), fromColumns) && sameAttributesInvolved(currentRelationship.getToColumns(), toColumns)) {
+    for (ORelationship currentRelationship : this.canonicalRelationships) {
+      if (currentRelationship.getForeignEntity().getName().equals(currentForeignEntity.getName()) && currentRelationship
+          .getParentEntity().getName().equals(currentParentEntity.getName())) {
+        if (sameAttributesInvolved(currentRelationship.getFromColumns(), fromColumns) && sameAttributesInvolved(
+            currentRelationship.getToColumns(), toColumns)) {
           return currentRelationship;
         }
       }
@@ -183,24 +185,25 @@ public class ODataBaseSchema implements ODataSourceSchemaInfo {
    *
    * @param columns
    * @param columnsName
+   *
    * @return
    */
   private boolean sameAttributesInvolved(List<OAttribute> columns, List<String> columnsName) {
 
-    if(columns.size() != columnsName.size()) {
+    if (columns.size() != columnsName.size()) {
       return false;
     }
 
-    for(String column: columnsName) {
+    for (String column : columnsName) {
 
       boolean present = false;
-      for(OAttribute attribute: columns) {
-        if(attribute.getName().equals(column)) {
+      for (OAttribute attribute : columns) {
+        if (attribute.getName().equals(column)) {
           present = true;
           break;
         }
       }
-      if(!present) {
+      if (!present) {
         return false;
       }
     }
@@ -209,17 +212,17 @@ public class ODataBaseSchema implements ODataSourceSchemaInfo {
   }
 
   public String toString() {
-    String s = "\n\n\n------------------------------ DB SCHEMA DESCRIPTION ------------------------------\n\n" + 
-        "\nProduct name: " + this.productName + "\tProduct version: " + this.productVersion +
-        "\nMajor version: " + this.majorVersion + "\tMinor Version: " + this.minorVersion + 
-        "\nDriver major version: " + this.driverMajorVersion + "\tDriver minor version: " + this.driverMinorVersion + "\n\n\n";
+    String s = "\n\n\n------------------------------ DB SCHEMA DESCRIPTION ------------------------------\n\n" + "\nProduct name: "
+        + this.productName + "\tProduct version: " + this.productVersion + "\nMajor version: " + this.majorVersion
+        + "\tMinor Version: " + this.minorVersion + "\nDriver major version: " + this.driverMajorVersion
+        + "\tDriver minor version: " + this.driverMinorVersion + "\n\n\n";
 
-    s += "Number of Entities: " + this.entities.size() + ".\n"
-        + "Number of Relationship: " + this.canonicalRelationships.size() + ".\n\n\n";
+    s += "Number of Entities: " + this.entities.size() + ".\n" + "Number of Relationship: " + this.canonicalRelationships.size()
+        + ".\n\n\n";
 
-    for(OEntity e: this.entities)
+    for (OEntity e : this.entities)
       s += e.toString();
-    return s;		
+    return s;
   }
 
 }

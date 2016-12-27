@@ -22,47 +22,45 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- *
  * @author Gabriele Ponzi
  * @email <g.ponzi--at--orientdb.com>
- *
  */
 
 public class OConfiguredVertexClass extends OConfiguredClass {
 
-    private List<String> externalKeyProps;
-    private OVertexMappingInformation mapping;                  // mandatory
+  private List<String>              externalKeyProps;
+  private OVertexMappingInformation mapping;                  // mandatory
 
-    // boolean value used to specify if the configured vertex was already analyzed and applied to the graph model
-    private boolean alreadyAnalyzed;
+  // boolean value used to specify if the configured vertex was already analyzed and applied to the graph model
+  private boolean alreadyAnalyzed;
 
-    public OConfiguredVertexClass(String vertexName, OConfiguration globalConfiguration) {
-        super(vertexName, globalConfiguration);
-        this.externalKeyProps = new LinkedList<String>();
-        this.alreadyAnalyzed = false;
-    }
+  public OConfiguredVertexClass(String vertexName, OConfiguration globalConfiguration) {
+    super(vertexName, globalConfiguration);
+    this.externalKeyProps = new LinkedList<String>();
+    this.alreadyAnalyzed = false;
+  }
 
-    public OVertexMappingInformation getMapping() {
-        return this.mapping;
-    }
+  public OVertexMappingInformation getMapping() {
+    return this.mapping;
+  }
 
-    public void setMapping(OVertexMappingInformation mapping) {
-        this.mapping = mapping;
-    }
+  public void setMapping(OVertexMappingInformation mapping) {
+    this.mapping = mapping;
+  }
 
-    public List<String> getExternalKeyProps() {
-        return externalKeyProps;
-    }
+  public List<String> getExternalKeyProps() {
+    return externalKeyProps;
+  }
 
-    public void setExternalKeyProps(List<String> externalKeyProps) {
-        this.externalKeyProps = externalKeyProps;
-    }
+  public void setExternalKeyProps(List<String> externalKeyProps) {
+    this.externalKeyProps = externalKeyProps;
+  }
 
-    public boolean isAlreadyAnalyzed() {
-        return alreadyAnalyzed;
-    }
+  public boolean isAlreadyAnalyzed() {
+    return alreadyAnalyzed;
+  }
 
-    public void setAlreadyAnalyzed(boolean alreadyAnalyzed) {
-        this.alreadyAnalyzed = alreadyAnalyzed;
-    }
+  public void setAlreadyAnalyzed(boolean alreadyAnalyzed) {
+    this.alreadyAnalyzed = alreadyAnalyzed;
+  }
 }

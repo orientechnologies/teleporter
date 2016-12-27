@@ -24,18 +24,15 @@ import java.util.List;
 import java.util.Map;
 
 /**
- *
  * @author Gabriele Ponzi
  * @email <g.ponzi--at--orientdb.com>
- *
  */
 
 public class OConfiguredClass {
 
-  protected String                                 name;                                                  // mandatory
+  protected String name;                                                  // mandatory
   protected final Map<String, OConfiguredProperty> configuredProperties = new LinkedHashMap<String, OConfiguredProperty>();         // mandatory
   protected OConfiguration globalConfiguration;
-
 
   public OConfiguredClass(String elementName, OConfiguration globalConfiguration) {
     this.name = elementName;
@@ -73,10 +70,10 @@ public class OConfiguredClass {
 
   public OConfiguredProperty getPropertyByAttribute(String attributeName) {
 
-    for(Map.Entry<String, OConfiguredProperty> entry: configuredProperties.entrySet()) {
+    for (Map.Entry<String, OConfiguredProperty> entry : configuredProperties.entrySet()) {
       OConfiguredPropertyMapping mapping = entry.getValue().getPropertyMapping();
-      if(mapping != null) {
-        if(mapping.getColumnName().equals(attributeName)) {
+      if (mapping != null) {
+        if (mapping.getColumnName().equals(attributeName)) {
           return entry.getValue();
         }
       }
@@ -90,14 +87,14 @@ public class OConfiguredClass {
     int j = 0;
 
     // maintains properties order (otherwise index does not work)
-    for(Map.Entry entry: this.configuredProperties.entrySet()) {
+    for (Map.Entry entry : this.configuredProperties.entrySet()) {
       OConfiguredProperty currConfiguredProperty = (OConfiguredProperty) entry.getValue();
-      if(columns.contains(currConfiguredProperty.getPropertyMapping().getColumnName())) {
+      if (columns.contains(currConfiguredProperty.getPropertyMapping().getColumnName())) {
         properties[j] = currConfiguredProperty.getPropertyName();
         j++;
       }
       i++;
-      if(j >= columns.size()) {
+      if (j >= columns.size()) {
         break;
       }
     }

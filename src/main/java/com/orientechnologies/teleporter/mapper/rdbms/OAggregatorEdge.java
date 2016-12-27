@@ -22,8 +22,7 @@ import com.orientechnologies.teleporter.model.graphmodel.OEdgeType;
 
 /**
  * @author Gabriele Ponzi
- * @email  <g.ponzi--at--orientdb.com>
- *
+ * @email <g.ponzi--at--orientdb.com>
  */
 
 public class OAggregatorEdge {

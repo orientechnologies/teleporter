@@ -1,33 +1,40 @@
 {
-	"vertices": [],
-	"edges": [{
-		"HasEmployee": {
-			"isLogical": false,
-			"mapping": [{
-				"fromTable": "EMPLOYEE",
-				"fromColumns": ["PROJECT"],
-				"toTable": "PROJECT",
-				"toColumns": ["ID"],
-				"direction": "inverse"
-			}],
-			"properties": {
-				"updatedOn": {
-					"include": true,
-					"type": "DATE",
-					"ordinalPosition": 1,
-					"mandatory": true,
-					"readOnly": false,
-					"notNull": false
-				},
-				"propWithoutTypeField": {
-					"include": true,
-					"ordinalPosition": 2,
-					"mandatory": true,
-					"readOnly": false,
-					"notNull": false
-				}
-			}
-		}
-	}]
-
+  "vertices": [],
+  "edges": [
+    {
+      "HasEmployee": {
+        "isLogical": false,
+        "mapping": [
+          {
+            "fromTable": "EMPLOYEE",
+            "fromColumns": [
+              "PROJECT"
+            ],
+            "toTable": "PROJECT",
+            "toColumns": [
+              "ID"
+            ],
+            "direction": "inverse"
+          }
+        ],
+        "properties": {
+          "updatedOn": {
+            "include": true,
+            "type": "DATE",
+            "ordinalPosition": 1,
+            "mandatory": true,
+            "readOnly": false,
+            "notNull": false
+          },
+          "propWithoutTypeField": {
+            "include": true,
+            "ordinalPosition": 2,
+            "mandatory": true,
+            "readOnly": false,
+            "notNull": false
+          }
+        }
+      }
+    }
+  ]
 }

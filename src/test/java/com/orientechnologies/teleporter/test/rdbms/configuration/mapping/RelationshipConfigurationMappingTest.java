@@ -47,26 +47,24 @@ import static org.junit.Assert.*;
 
 /**
  * @author Gabriele Ponzi
- * @email  <g.ponzi--at--orientdb.com>
- *
+ * @email <g.ponzi--at--orientdb.com>
  */
 
 public class RelationshipConfigurationMappingTest {
 
   private OER2GraphMapper    mapper;
-  private  OTeleporterContext context;
-  private final String configDirectEdgesPath = "src/test/resources/configuration-mapping/relationships-mapping-direct-edges.json";
-  private final String configInverseEdgesPath = "src/test/resources/configuration-mapping/relationships-mapping-inverted-edges.json";
-  private final String configJoinTableDirectEdgesPath = "src/test/resources/configuration-mapping/joint-table-relationships-mapping-direct-edges.json";
-  private final String configJoinTableInverseEdgesPath = "src/test/resources/configuration-mapping/joint-table-relationships-mapping-inverted-edges.json";
+  private OTeleporterContext context;
+  private final String configDirectEdgesPath            = "src/test/resources/configuration-mapping/relationships-mapping-direct-edges.json";
+  private final String configInverseEdgesPath           = "src/test/resources/configuration-mapping/relationships-mapping-inverted-edges.json";
+  private final String configJoinTableDirectEdgesPath   = "src/test/resources/configuration-mapping/joint-table-relationships-mapping-direct-edges.json";
+  private final String configJoinTableInverseEdgesPath  = "src/test/resources/configuration-mapping/joint-table-relationships-mapping-inverted-edges.json";
   private final String configJoinTableInverseEdgesPath2 = "src/test/resources/configuration-mapping/join-table-relationship-mapping-inverted-edges2.json";
   private ODBQueryEngine dbQueryEngine;
-  private String driver = "org.hsqldb.jdbc.JDBCDriver";
-  private String jurl = "jdbc:hsqldb:mem:mydb";
+  private String driver   = "org.hsqldb.jdbc.JDBCDriver";
+  private String jurl     = "jdbc:hsqldb:mem:mydb";
   private String username = "SA";
   private String password = "";
   private OSourceDatabaseInfo sourceDBInfo;
-
 
   @Before
   public void init() {
@@ -106,13 +104,13 @@ public class RelationshipConfigurationMappingTest {
       Class.forName(this.driver);
       connection = DriverManager.getConnection(this.jurl, this.username, this.password);
 
-      String parentTableBuilding = "create memory table EMPLOYEE (EMP_ID varchar(256) not null,"+
-          " FIRST_NAME varchar(256) not null, LAST_NAME varchar(256) not null, PROJECT varchar(256) not null, primary key (EMP_ID))";
+      String parentTableBuilding = "create memory table EMPLOYEE (EMP_ID varchar(256) not null,"
+          + " FIRST_NAME varchar(256) not null, LAST_NAME varchar(256) not null, PROJECT varchar(256) not null, primary key (EMP_ID))";
       st = connection.createStatement();
       st.execute(parentTableBuilding);
 
-      String foreignTableBuilding = "create memory table PROJECT (ID  varchar(256),"+
-          " TITLE varchar(256) not null, PROJECT_MANAGER varchar(256) not null, primary key (ID))";
+      String foreignTableBuilding = "create memory table PROJECT (ID  varchar(256),"
+          + " TITLE varchar(256) not null, PROJECT_MANAGER varchar(256) not null, primary key (ID))";
       st.execute(foreignTableBuilding);
 
       ODocument config = OFileManager.buildJsonFromFile(this.configDirectEdgesPath);
@@ -248,7 +246,6 @@ public class RelationshipConfigurationMappingTest {
       OVertexType projectVertexType = mapper.getGraphModel().getVertexTypeByName("Project");
       OEdgeType worksAtProjectEdgeType = mapper.getGraphModel().getEdgeTypeByName("WorksAtProject");
       OEdgeType hasManagerEdgeType = mapper.getGraphModel().getEdgeTypeByName("HasManager");
-
 
       // vertices check
       assertEquals(2, mapper.getGraphModel().getVerticesType().size());
@@ -416,24 +413,22 @@ public class RelationshipConfigurationMappingTest {
 
       assertEquals(0, mapper.getJoinVertex2aggregatorEdges().size());
 
-
-    }catch(Exception e) {
+    } catch (Exception e) {
       e.printStackTrace();
       fail();
-    }finally {
+    } finally {
       try {
 
         // Dropping Source DB Schema and OrientGraph
         String dbDropping = "drop schema public cascade";
         st.execute(dbDropping);
         connection.close();
-      }catch(Exception e) {
+      } catch (Exception e) {
         e.printStackTrace();
         fail();
       }
     }
   }
-
 
   @Test
 
@@ -474,13 +469,13 @@ public class RelationshipConfigurationMappingTest {
       Class.forName(this.driver);
       connection = DriverManager.getConnection(this.jurl, this.username, this.password);
 
-      String parentTableBuilding = "create memory table EMPLOYEE (EMP_ID varchar(256) not null,"+
-          " FIRST_NAME varchar(256) not null, LAST_NAME varchar(256) not null, PROJECT varchar(256) not null, primary key (EMP_ID))";
+      String parentTableBuilding = "create memory table EMPLOYEE (EMP_ID varchar(256) not null,"
+          + " FIRST_NAME varchar(256) not null, LAST_NAME varchar(256) not null, PROJECT varchar(256) not null, primary key (EMP_ID))";
       st = connection.createStatement();
       st.execute(parentTableBuilding);
 
-      String foreignTableBuilding = "create memory table PROJECT (ID  varchar(256),"+
-          " TITLE varchar(256) not null, PROJECT_MANAGER varchar(256) not null, primary key (ID), "
+      String foreignTableBuilding = "create memory table PROJECT (ID  varchar(256),"
+          + " TITLE varchar(256) not null, PROJECT_MANAGER varchar(256) not null, primary key (ID), "
           + "foreign key (PROJECT_MANAGER) references EMPLOYEE(EMP_ID))";
       st.execute(foreignTableBuilding);
 
@@ -622,7 +617,6 @@ public class RelationshipConfigurationMappingTest {
       OVertexType projectVertexType = mapper.getGraphModel().getVertexTypeByName("Project");
       OEdgeType hasEmployeeEdgeType = mapper.getGraphModel().getEdgeTypeByName("HasEmployee");
       OEdgeType hasProjectManagerEdgeType = mapper.getGraphModel().getEdgeTypeByName("HasProjectManager");
-
 
       // vertices check
       assertEquals(2, mapper.getGraphModel().getVerticesType().size());
@@ -779,23 +773,22 @@ public class RelationshipConfigurationMappingTest {
 
       assertEquals(0, mapper.getJoinVertex2aggregatorEdges().size());
 
-    }catch(Exception e) {
+    } catch (Exception e) {
       e.printStackTrace();
       fail();
-    }finally {
+    } finally {
       try {
 
         // Dropping Source DB Schema and OrientGraph
         String dbDropping = "drop schema public cascade";
         st.execute(dbDropping);
         connection.close();
-      }catch(Exception e) {
+      } catch (Exception e) {
         e.printStackTrace();
         fail();
       }
     }
   }
-
 
   @Test
 
@@ -829,17 +822,17 @@ public class RelationshipConfigurationMappingTest {
       Class.forName(this.driver);
       connection = DriverManager.getConnection(this.jurl, this.username, this.password);
 
-      String parentTableBuilding = "create memory table ACTOR (ID varchar(256) not null,"+
-          " FIRST_NAME varchar(256) not null, LAST_NAME varchar(256) not null, primary key (ID))";
+      String parentTableBuilding = "create memory table ACTOR (ID varchar(256) not null,"
+          + " FIRST_NAME varchar(256) not null, LAST_NAME varchar(256) not null, primary key (ID))";
       st = connection.createStatement();
       st.execute(parentTableBuilding);
 
-      String foreignTableBuilding = "create memory table FILM (ID varchar(256),"+
-          " TITLE varchar(256) not null, CATEGORY varchar(256), primary key (ID))";
+      String foreignTableBuilding =
+          "create memory table FILM (ID varchar(256)," + " TITLE varchar(256) not null, CATEGORY varchar(256), primary key (ID))";
       st.execute(foreignTableBuilding);
 
-      String actorFilmTableBuilding = "create memory table ACTOR_FILM (ACTOR_ID  varchar(256),"+
-          " FILM_ID varchar(256) not null, PAYMENT integer, primary key (ACTOR_ID, FILM_ID))";
+      String actorFilmTableBuilding = "create memory table ACTOR_FILM (ACTOR_ID  varchar(256),"
+          + " FILM_ID varchar(256) not null, PAYMENT integer, primary key (ACTOR_ID, FILM_ID))";
       st.execute(actorFilmTableBuilding);
 
       ODocument config = OFileManager.buildJsonFromFile(this.configJoinTableDirectEdgesPath);
@@ -993,7 +986,6 @@ public class RelationshipConfigurationMappingTest {
       OEdgeType performsLeftEdgeType = mapper.getGraphModel().getEdgeTypeByName("Performs-left");
       OEdgeType performsRightEdgeType = mapper.getGraphModel().getEdgeTypeByName("Performs-right");
 
-
       // vertices check
       assertEquals(3, mapper.getGraphModel().getVerticesType().size());
       assertNotNull(actorVertexType);
@@ -1135,7 +1127,7 @@ public class RelationshipConfigurationMappingTest {
       assertEquals("LAST_NAME", actorClassMapper.getProperty2attribute().get("lastName"));
 
       assertEquals(1, mapper.getEVClassMappersByVertex(filmVertexType).size());
-      OEVClassMapper filmClassMapper =  mapper.getEVClassMappersByVertex(filmVertexType).get(0);
+      OEVClassMapper filmClassMapper = mapper.getEVClassMappersByVertex(filmVertexType).get(0);
       assertEquals(1, mapper.getEVClassMappersByEntity(filmEntity).size());
       assertEquals(filmClassMapper, mapper.getEVClassMappersByEntity(filmEntity).get(0));
       assertEquals(filmClassMapper.getEntity(), filmEntity);
@@ -1151,7 +1143,7 @@ public class RelationshipConfigurationMappingTest {
       assertEquals("CATEGORY", filmClassMapper.getProperty2attribute().get("category"));
 
       assertEquals(1, mapper.getEVClassMappersByVertex(actorFilmVertexType).size());
-      OEVClassMapper actorFilmClassMapper =  mapper.getEVClassMappersByVertex(actorFilmVertexType).get(0);
+      OEVClassMapper actorFilmClassMapper = mapper.getEVClassMappersByVertex(actorFilmVertexType).get(0);
       assertEquals(1, mapper.getEVClassMappersByEntity(actorFilmEntity).size());
       assertEquals(actorFilmClassMapper, mapper.getEVClassMappersByEntity(actorFilmEntity).get(0));
       assertEquals(actorFilmClassMapper.getEntity(), actorFilmEntity);
@@ -1186,7 +1178,6 @@ public class RelationshipConfigurationMappingTest {
       // JoinVertexes-AggregatorEdges Mapping
 
       assertEquals(0, mapper.getJoinVertex2aggregatorEdges().size());
-
 
       /**
        * performing aggregations
@@ -1325,7 +1316,7 @@ public class RelationshipConfigurationMappingTest {
       assertEquals("LAST_NAME", actorClassMapper.getProperty2attribute().get("lastName"));
 
       assertEquals(1, mapper.getEVClassMappersByVertex(filmVertexType).size());
-      filmClassMapper =  mapper.getEVClassMappersByVertex(filmVertexType).get(0);
+      filmClassMapper = mapper.getEVClassMappersByVertex(filmVertexType).get(0);
       assertEquals(1, mapper.getEVClassMappersByEntity(filmEntity).size());
       assertEquals(filmClassMapper, mapper.getEVClassMappersByEntity(filmEntity).get(0));
       assertEquals(filmClassMapper.getEntity(), filmEntity);
@@ -1341,7 +1332,7 @@ public class RelationshipConfigurationMappingTest {
       assertEquals("CATEGORY", filmClassMapper.getProperty2attribute().get("category"));
 
       assertEquals(1, mapper.getEVClassMappersByVertex(actorFilmVertexType).size());
-      actorFilmClassMapper =  mapper.getEVClassMappersByVertex(actorFilmVertexType).get(0);
+      actorFilmClassMapper = mapper.getEVClassMappersByVertex(actorFilmVertexType).get(0);
       assertEquals(1, mapper.getEVClassMappersByEntity(actorFilmEntity).size());
       assertEquals(actorFilmClassMapper, mapper.getEVClassMappersByEntity(actorFilmEntity).get(0));
       assertEquals(actorFilmClassMapper.getEntity(), actorFilmEntity);
@@ -1381,24 +1372,22 @@ public class RelationshipConfigurationMappingTest {
       assertEquals("Actor", mapper.getJoinVertex2aggregatorEdges().get(actorFilmVertexType).getOutVertexClassName());
       assertEquals("Film", mapper.getJoinVertex2aggregatorEdges().get(actorFilmVertexType).getInVertexClassName());
 
-
-    }catch(Exception e) {
+    } catch (Exception e) {
       e.printStackTrace();
       fail();
-    }finally {
+    } finally {
       try {
 
         // Dropping Source DB Schema and OrientGraph
         String dbDropping = "drop schema public cascade";
         st.execute(dbDropping);
         connection.close();
-      }catch(Exception e) {
+      } catch (Exception e) {
         e.printStackTrace();
         fail();
       }
     }
   }
-
 
   @Test
 
@@ -1434,17 +1423,17 @@ public class RelationshipConfigurationMappingTest {
       Class.forName(this.driver);
       connection = DriverManager.getConnection(this.jurl, this.username, this.password);
 
-      String parentTableBuilding = "create memory table ACTOR (ID varchar(256) not null,"+
-          " FIRST_NAME varchar(256) not null, LAST_NAME varchar(256) not null, primary key (ID))";
+      String parentTableBuilding = "create memory table ACTOR (ID varchar(256) not null,"
+          + " FIRST_NAME varchar(256) not null, LAST_NAME varchar(256) not null, primary key (ID))";
       st = connection.createStatement();
       st.execute(parentTableBuilding);
 
-      String foreignTableBuilding = "create memory table FILM (ID varchar(256),"+
-          " TITLE varchar(256) not null, CATEGORY varchar(256), primary key (ID))";
+      String foreignTableBuilding =
+          "create memory table FILM (ID varchar(256)," + " TITLE varchar(256) not null, CATEGORY varchar(256), primary key (ID))";
       st.execute(foreignTableBuilding);
 
-      String actorFilmTableBuilding = "create memory table FILM_ACTOR (ACTOR_ID  varchar(256),"+
-          " FILM_ID varchar(256) not null, PAYMENT integer, primary key (ACTOR_ID, FILM_ID))";
+      String actorFilmTableBuilding = "create memory table FILM_ACTOR (ACTOR_ID  varchar(256),"
+          + " FILM_ID varchar(256) not null, PAYMENT integer, primary key (ACTOR_ID, FILM_ID))";
       st.execute(actorFilmTableBuilding);
 
       ODocument config = OFileManager.buildJsonFromFile(this.configJoinTableInverseEdgesPath);
@@ -1599,7 +1588,6 @@ public class RelationshipConfigurationMappingTest {
       OEdgeType performsLeftEdgeType = mapper.getGraphModel().getEdgeTypeByName("Performs-left");
       OEdgeType performsRightEdgeType = mapper.getGraphModel().getEdgeTypeByName("Performs-right");
 
-
       // vertices check
       assertEquals(3, mapper.getGraphModel().getVerticesType().size());
       assertNotNull(actorVertexType);
@@ -1741,7 +1729,7 @@ public class RelationshipConfigurationMappingTest {
       assertEquals("LAST_NAME", actorClassMapper.getProperty2attribute().get("lastName"));
 
       assertEquals(1, mapper.getEVClassMappersByVertex(filmVertexType).size());
-      OEVClassMapper filmClassMapper =  mapper.getEVClassMappersByVertex(filmVertexType).get(0);
+      OEVClassMapper filmClassMapper = mapper.getEVClassMappersByVertex(filmVertexType).get(0);
       assertEquals(1, mapper.getEVClassMappersByEntity(filmEntity).size());
       assertEquals(filmClassMapper, mapper.getEVClassMappersByEntity(filmEntity).get(0));
       assertEquals(filmClassMapper.getEntity(), filmEntity);
@@ -1757,7 +1745,7 @@ public class RelationshipConfigurationMappingTest {
       assertEquals("CATEGORY", filmClassMapper.getProperty2attribute().get("category"));
 
       assertEquals(1, mapper.getEVClassMappersByVertex(filmActorVertexType).size());
-      OEVClassMapper filmActorClassMapper =  mapper.getEVClassMappersByVertex(filmActorVertexType).get(0);
+      OEVClassMapper filmActorClassMapper = mapper.getEVClassMappersByVertex(filmActorVertexType).get(0);
       assertEquals(1, mapper.getEVClassMappersByEntity(filmActorEntity).size());
       assertEquals(filmActorClassMapper, mapper.getEVClassMappersByEntity(filmActorEntity).get(0));
       assertEquals(filmActorClassMapper.getEntity(), filmActorEntity);
@@ -1792,7 +1780,6 @@ public class RelationshipConfigurationMappingTest {
       // JoinVertexes-AggregatorEdges Mapping
 
       assertEquals(0, mapper.getJoinVertex2aggregatorEdges().size());
-
 
       /**
        * performing aggregations
@@ -1931,7 +1918,7 @@ public class RelationshipConfigurationMappingTest {
       assertEquals("LAST_NAME", actorClassMapper.getProperty2attribute().get("lastName"));
 
       assertEquals(1, mapper.getEVClassMappersByVertex(filmVertexType).size());
-      filmClassMapper =  mapper.getEVClassMappersByVertex(filmVertexType).get(0);
+      filmClassMapper = mapper.getEVClassMappersByVertex(filmVertexType).get(0);
       assertEquals(1, mapper.getEVClassMappersByEntity(filmEntity).size());
       assertEquals(filmClassMapper, mapper.getEVClassMappersByEntity(filmEntity).get(0));
       assertEquals(filmClassMapper.getEntity(), filmEntity);
@@ -1947,7 +1934,7 @@ public class RelationshipConfigurationMappingTest {
       assertEquals("CATEGORY", filmClassMapper.getProperty2attribute().get("category"));
 
       assertEquals(1, mapper.getEVClassMappersByVertex(filmActorVertexType).size());
-      filmActorClassMapper =  mapper.getEVClassMappersByVertex(filmActorVertexType).get(0);
+      filmActorClassMapper = mapper.getEVClassMappersByVertex(filmActorVertexType).get(0);
 
       assertEquals(filmActorClassMapper, mapper.getEVClassMappersByEntity(filmActorEntity).get(0));
       assertEquals(filmActorClassMapper.getEntity(), filmActorEntity);
@@ -1987,24 +1974,22 @@ public class RelationshipConfigurationMappingTest {
       assertEquals("Actor", mapper.getJoinVertex2aggregatorEdges().get(filmActorVertexType).getOutVertexClassName());
       assertEquals("Film", mapper.getJoinVertex2aggregatorEdges().get(filmActorVertexType).getInVertexClassName());
 
-
-    }catch(Exception e) {
+    } catch (Exception e) {
       e.printStackTrace();
       fail();
-    }finally {
+    } finally {
       try {
 
         // Dropping Source DB Schema and OrientGraph
         String dbDropping = "drop schema public cascade";
         st.execute(dbDropping);
         connection.close();
-      }catch(Exception e) {
+      } catch (Exception e) {
         e.printStackTrace();
         fail();
       }
     }
   }
-
 
   @Test
 
@@ -2038,18 +2023,18 @@ public class RelationshipConfigurationMappingTest {
       Class.forName(this.driver);
       connection = DriverManager.getConnection(this.jurl, this.username, this.password);
 
-      String parentTableBuilding = "create memory table ACTOR (ID varchar(256) not null,"+
-              " FIRST_NAME varchar(256) not null, LAST_NAME varchar(256) not null, primary key (ID))";
+      String parentTableBuilding = "create memory table ACTOR (ID varchar(256) not null,"
+          + " FIRST_NAME varchar(256) not null, LAST_NAME varchar(256) not null, primary key (ID))";
       st = connection.createStatement();
       st.execute(parentTableBuilding);
 
-      String foreignTableBuilding = "create memory table FILM (ID varchar(256),"+
-              " TITLE varchar(256) not null, CATEGORY varchar(256), primary key (ID))";
+      String foreignTableBuilding =
+          "create memory table FILM (ID varchar(256)," + " TITLE varchar(256) not null, CATEGORY varchar(256), primary key (ID))";
       st.execute(foreignTableBuilding);
 
-      String actorFilmTableBuilding = "create memory table ACTOR_FILM (ACTOR_ID  varchar(256),"+
-              " FILM_ID varchar(256) not null, PAYMENT integer, primary key (ACTOR_ID, FILM_ID)," +
-              " foreign key (ACTOR_ID) references ACTOR(ID), foreign key (FILM_ID) references FILM(ID))";
+      String actorFilmTableBuilding = "create memory table ACTOR_FILM (ACTOR_ID  varchar(256),"
+          + " FILM_ID varchar(256) not null, PAYMENT integer, primary key (ACTOR_ID, FILM_ID),"
+          + " foreign key (ACTOR_ID) references ACTOR(ID), foreign key (FILM_ID) references FILM(ID))";
       st.execute(actorFilmTableBuilding);
 
       ODocument config = OFileManager.buildJsonFromFile(this.configJoinTableDirectEdgesPath);
@@ -2203,7 +2188,6 @@ public class RelationshipConfigurationMappingTest {
       OEdgeType performsLeftEdgeType = mapper.getGraphModel().getEdgeTypeByName("Performs-left");
       OEdgeType performsRightEdgeType = mapper.getGraphModel().getEdgeTypeByName("Performs-right");
 
-
       // vertices check
       assertEquals(3, mapper.getGraphModel().getVerticesType().size());
       assertNotNull(actorVertexType);
@@ -2345,7 +2329,7 @@ public class RelationshipConfigurationMappingTest {
       assertEquals("LAST_NAME", actorClassMapper.getProperty2attribute().get("lastName"));
 
       assertEquals(1, mapper.getEVClassMappersByVertex(filmVertexType).size());
-      OEVClassMapper filmClassMapper =  mapper.getEVClassMappersByVertex(filmVertexType).get(0);
+      OEVClassMapper filmClassMapper = mapper.getEVClassMappersByVertex(filmVertexType).get(0);
       assertEquals(1, mapper.getEVClassMappersByEntity(filmEntity).size());
       assertEquals(filmClassMapper, mapper.getEVClassMappersByEntity(filmEntity).get(0));
       assertEquals(filmClassMapper.getEntity(), filmEntity);
@@ -2361,7 +2345,7 @@ public class RelationshipConfigurationMappingTest {
       assertEquals("CATEGORY", filmClassMapper.getProperty2attribute().get("category"));
 
       assertEquals(1, mapper.getEVClassMappersByVertex(actorFilmVertexType).size());
-      OEVClassMapper actorFilmClassMapper =  mapper.getEVClassMappersByVertex(actorFilmVertexType).get(0);
+      OEVClassMapper actorFilmClassMapper = mapper.getEVClassMappersByVertex(actorFilmVertexType).get(0);
       assertEquals(1, mapper.getEVClassMappersByEntity(actorFilmEntity).size());
       assertEquals(actorFilmClassMapper, mapper.getEVClassMappersByEntity(actorFilmEntity).get(0));
       assertEquals(actorFilmClassMapper.getEntity(), actorFilmEntity);
@@ -2396,7 +2380,6 @@ public class RelationshipConfigurationMappingTest {
       // JoinVertexes-AggregatorEdges Mapping
 
       assertEquals(0, mapper.getJoinVertex2aggregatorEdges().size());
-
 
       /**
        * performing aggregations
@@ -2535,7 +2518,7 @@ public class RelationshipConfigurationMappingTest {
       assertEquals("LAST_NAME", actorClassMapper.getProperty2attribute().get("lastName"));
 
       assertEquals(1, mapper.getEVClassMappersByVertex(filmVertexType).size());
-      filmClassMapper =  mapper.getEVClassMappersByVertex(filmVertexType).get(0);
+      filmClassMapper = mapper.getEVClassMappersByVertex(filmVertexType).get(0);
       assertEquals(1, mapper.getEVClassMappersByEntity(filmEntity).size());
       assertEquals(filmClassMapper, mapper.getEVClassMappersByEntity(filmEntity).get(0));
       assertEquals(filmClassMapper.getEntity(), filmEntity);
@@ -2551,7 +2534,7 @@ public class RelationshipConfigurationMappingTest {
       assertEquals("CATEGORY", filmClassMapper.getProperty2attribute().get("category"));
 
       assertEquals(1, mapper.getEVClassMappersByVertex(actorFilmVertexType).size());
-      actorFilmClassMapper =  mapper.getEVClassMappersByVertex(actorFilmVertexType).get(0);
+      actorFilmClassMapper = mapper.getEVClassMappersByVertex(actorFilmVertexType).get(0);
       assertEquals(1, mapper.getEVClassMappersByEntity(actorFilmEntity).size());
       assertEquals(actorFilmClassMapper, mapper.getEVClassMappersByEntity(actorFilmEntity).get(0));
       assertEquals(actorFilmClassMapper.getEntity(), actorFilmEntity);
@@ -2591,17 +2574,17 @@ public class RelationshipConfigurationMappingTest {
       assertEquals("Actor", mapper.getJoinVertex2aggregatorEdges().get(actorFilmVertexType).getOutVertexClassName());
       assertEquals("Film", mapper.getJoinVertex2aggregatorEdges().get(actorFilmVertexType).getInVertexClassName());
 
-    }catch(Exception e) {
+    } catch (Exception e) {
       e.printStackTrace();
       fail();
-    }finally {
+    } finally {
       try {
 
         // Dropping Source DB Schema and OrientGraph
         String dbDropping = "drop schema public cascade";
         st.execute(dbDropping);
         connection.close();
-      }catch(Exception e) {
+      } catch (Exception e) {
         e.printStackTrace();
         fail();
       }
@@ -2642,18 +2625,18 @@ public class RelationshipConfigurationMappingTest {
       Class.forName(this.driver);
       connection = DriverManager.getConnection(this.jurl, this.username, this.password);
 
-      String parentTableBuilding = "create memory table ACTOR (ID varchar(256) not null,"+
-              " FIRST_NAME varchar(256) not null, LAST_NAME varchar(256) not null, primary key (ID))";
+      String parentTableBuilding = "create memory table ACTOR (ID varchar(256) not null,"
+          + " FIRST_NAME varchar(256) not null, LAST_NAME varchar(256) not null, primary key (ID))";
       st = connection.createStatement();
       st.execute(parentTableBuilding);
 
-      String foreignTableBuilding = "create memory table FILM (ID varchar(256),"+
-              " TITLE varchar(256) not null, CATEGORY varchar(256), primary key (ID))";
+      String foreignTableBuilding =
+          "create memory table FILM (ID varchar(256)," + " TITLE varchar(256) not null, CATEGORY varchar(256), primary key (ID))";
       st.execute(foreignTableBuilding);
 
-      String actorFilmTableBuilding = "create memory table FILM_ACTOR (ACTOR_ID  varchar(256),"+
-              " FILM_ID varchar(256) not null, PAYMENT integer, primary key (ACTOR_ID, FILM_ID)," +
-              " foreign key (ACTOR_ID) references ACTOR(ID), foreign key (FILM_ID) references FILM(ID))";
+      String actorFilmTableBuilding = "create memory table FILM_ACTOR (ACTOR_ID  varchar(256),"
+          + " FILM_ID varchar(256) not null, PAYMENT integer, primary key (ACTOR_ID, FILM_ID),"
+          + " foreign key (ACTOR_ID) references ACTOR(ID), foreign key (FILM_ID) references FILM(ID))";
       st.execute(actorFilmTableBuilding);
 
       ODocument config = OFileManager.buildJsonFromFile(this.configJoinTableInverseEdgesPath2);
@@ -2808,7 +2791,6 @@ public class RelationshipConfigurationMappingTest {
       OEdgeType featuresLeftEdgeType = mapper.getGraphModel().getEdgeTypeByName("Features-left");
       OEdgeType featuresRightEdgeType = mapper.getGraphModel().getEdgeTypeByName("Features-right");
 
-
       // vertices check
       assertEquals(3, mapper.getGraphModel().getVerticesType().size());
       assertNotNull(actorVertexType);
@@ -2950,7 +2932,7 @@ public class RelationshipConfigurationMappingTest {
       assertEquals("LAST_NAME", actorClassMapper.getProperty2attribute().get("lastName"));
 
       assertEquals(1, mapper.getEVClassMappersByVertex(filmVertexType).size());
-      OEVClassMapper filmClassMapper =  mapper.getEVClassMappersByVertex(filmVertexType).get(0);
+      OEVClassMapper filmClassMapper = mapper.getEVClassMappersByVertex(filmVertexType).get(0);
       assertEquals(1, mapper.getEVClassMappersByEntity(filmEntity).size());
       assertEquals(filmClassMapper, mapper.getEVClassMappersByEntity(filmEntity).get(0));
       assertEquals(filmClassMapper.getEntity(), filmEntity);
@@ -2966,7 +2948,7 @@ public class RelationshipConfigurationMappingTest {
       assertEquals("CATEGORY", filmClassMapper.getProperty2attribute().get("category"));
 
       assertEquals(1, mapper.getEVClassMappersByVertex(filmActorVertexType).size());
-      OEVClassMapper actorFilmClassMapper =  mapper.getEVClassMappersByVertex(filmActorVertexType).get(0);
+      OEVClassMapper actorFilmClassMapper = mapper.getEVClassMappersByVertex(filmActorVertexType).get(0);
       assertEquals(1, mapper.getEVClassMappersByEntity(filmActorEntity).size());
       assertEquals(actorFilmClassMapper, mapper.getEVClassMappersByEntity(filmActorEntity).get(0));
       assertEquals(actorFilmClassMapper.getEntity(), filmActorEntity);
@@ -3139,7 +3121,7 @@ public class RelationshipConfigurationMappingTest {
       assertEquals("LAST_NAME", actorClassMapper.getProperty2attribute().get("lastName"));
 
       assertEquals(1, mapper.getEVClassMappersByVertex(filmVertexType).size());
-      filmClassMapper =  mapper.getEVClassMappersByVertex(filmVertexType).get(0);
+      filmClassMapper = mapper.getEVClassMappersByVertex(filmVertexType).get(0);
       assertEquals(1, mapper.getEVClassMappersByEntity(filmEntity).size());
       assertEquals(filmClassMapper, mapper.getEVClassMappersByEntity(filmEntity).get(0));
       assertEquals(filmClassMapper.getEntity(), filmEntity);
@@ -3155,7 +3137,7 @@ public class RelationshipConfigurationMappingTest {
       assertEquals("CATEGORY", filmClassMapper.getProperty2attribute().get("category"));
 
       assertEquals(1, mapper.getEVClassMappersByVertex(filmActorVertexType).size());
-      actorFilmClassMapper =  mapper.getEVClassMappersByVertex(filmActorVertexType).get(0);
+      actorFilmClassMapper = mapper.getEVClassMappersByVertex(filmActorVertexType).get(0);
       assertEquals(1, mapper.getEVClassMappersByEntity(filmActorEntity).size());
       assertEquals(actorFilmClassMapper, mapper.getEVClassMappersByEntity(filmActorEntity).get(0));
       assertEquals(actorFilmClassMapper.getEntity(), filmActorEntity);
@@ -3195,18 +3177,17 @@ public class RelationshipConfigurationMappingTest {
       assertEquals("Film", mapper.getJoinVertex2aggregatorEdges().get(filmActorVertexType).getOutVertexClassName());
       assertEquals("Actor", mapper.getJoinVertex2aggregatorEdges().get(filmActorVertexType).getInVertexClassName());
 
-
-    }catch(Exception e) {
+    } catch (Exception e) {
       e.printStackTrace();
       fail();
-    }finally {
+    } finally {
       try {
 
         // Dropping Source DB Schema and OrientGraph
         String dbDropping = "drop schema public cascade";
         st.execute(dbDropping);
         connection.close();
-      }catch(Exception e) {
+      } catch (Exception e) {
         e.printStackTrace();
         fail();
       }

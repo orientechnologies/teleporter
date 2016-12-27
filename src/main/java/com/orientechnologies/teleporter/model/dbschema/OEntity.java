@@ -25,19 +25,18 @@ import java.util.*;
  *
  * @author Gabriele Ponzi
  * @email <g.ponzi--at--orientdb.com>
- *
  */
 
 public class OEntity implements Comparable<OEntity> {
 
-  private String                      name;
-  private OSourceDatabaseInfo         sourceDbInfo;
-  private String                      schemaName;
-  private Set<OAttribute>             attributes;
-  private Set<OAttribute>             inheritedAttributes;
-  private boolean                     inheritedAttributesRecovered;
-  private OPrimaryKey                 primaryKey;
-  private List<OForeignKey>           foreignKeys;
+  private String              name;
+  private OSourceDatabaseInfo sourceDbInfo;
+  private String              schemaName;
+  private Set<OAttribute>     attributes;
+  private Set<OAttribute>     inheritedAttributes;
+  private boolean             inheritedAttributesRecovered;
+  private OPrimaryKey         primaryKey;
+  private List<OForeignKey>   foreignKeys;
 
   // Canonical relationships
   private Set<OCanonicalRelationship> outCanonicalRelationships;
@@ -48,20 +47,20 @@ public class OEntity implements Comparable<OEntity> {
   private boolean                     inheritedInCanonicalRelationshipsRecovered;
 
   // Logical relationships
-  private Set<OLogicalRelationship>   outLogicalRelationships;
-  private Set<OLogicalRelationship>   inLogicalRelationships;
+  private Set<OLogicalRelationship> outLogicalRelationships;
+  private Set<OLogicalRelationship> inLogicalRelationships;
 
-  private Boolean                     isAggregable;
-  private Boolean                     isSplitEntity;
-  private String                      directionOfN2NRepresentedRelationship;      // when the entity corresponds to an aggregable
-                                                                                  // join table it's 'direct' by default (at the
-                                                                                  // first invocation of 'isAggregableJoinTable()')
-  private String                      nameOfN2NRepresentedRelationship;           // we can have this parameter only in a join table
-                                                                                  // and with the manual migrationConfigDoc of its
-                                                                                  // represented relationship
-  private OEntity                     parentEntity;
-  private int                         inheritanceLevel;
-  private OHierarchicalBag            hierarchicalBag;
+  private Boolean          isAggregable;
+  private Boolean          isSplitEntity;
+  private String           directionOfN2NRepresentedRelationship;      // when the entity corresponds to an aggregable
+  // join table it's 'direct' by default (at the
+  // first invocation of 'isAggregableJoinTable()')
+  private String           nameOfN2NRepresentedRelationship;           // we can have this parameter only in a join table
+  // and with the manual migrationConfigDoc of its
+  // represented relationship
+  private OEntity          parentEntity;
+  private int              inheritanceLevel;
+  private OHierarchicalBag hierarchicalBag;
 
   public OEntity(String name, String schemaName, OSourceDatabaseInfo sourceDbInfo) {
     this.name = name;
@@ -98,9 +97,7 @@ public class OEntity implements Comparable<OEntity> {
     // if already known, just retrieve the info
     if (this.isAggregable != null) {
       return this.isAggregable;
-    }
-
-    else {
+    } else {
 
       // (i) preliminar check
       if (this.foreignKeys.size() != 2)
@@ -525,9 +522,9 @@ public class OEntity implements Comparable<OEntity> {
 
       for (OCanonicalRelationship relationship : this.outCanonicalRelationships) {
         s += index + ".  ";
-        s += "Foreign Entity: " + relationship.getForeignEntity().getName() + ", Foreign Key: "
-            + relationship.getForeignKey().toString() + "\t||\t" + "Parent Entity: " + relationship.getParentEntity().getName()
-            + ", Primary Key: " + relationship.getForeignKey().toString() + "\n";
+        s += "Foreign Entity: " + relationship.getForeignEntity().getName() + ", Foreign Key: " + relationship.getForeignKey()
+            .toString() + "\t||\t" + "Parent Entity: " + relationship.getParentEntity().getName() + ", Primary Key: " + relationship
+            .getForeignKey().toString() + "\n";
         index++;
       }
 

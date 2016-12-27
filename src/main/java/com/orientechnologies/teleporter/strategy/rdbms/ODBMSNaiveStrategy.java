@@ -50,31 +50,32 @@ import java.util.List;
  * translated semi-directly in a correspondent and coherent graph model.
  *
  * @author Gabriele Ponzi
- * @email  <g.ponzi--at--orientdb.com>
- *
+ * @email <g.ponzi--at--orientdb.com>
  */
 
 public class ODBMSNaiveStrategy extends ODBMSImportStrategy {
 
-  public ODBMSNaiveStrategy() {}
+  public ODBMSNaiveStrategy() {
+  }
 
   @Override
   protected OConfigurationHandler buildConfigurationHandler() {
     return new OConfigurationHandler(false);
   }
 
-
-  public OER2GraphMapper createSchemaMapper(OSourceDatabaseInfo sourceDBInfo, String outOrientGraphUri, String chosenMapper, String xmlPath, ONameResolver nameResolver,
-                                            ODBMSDataTypeHandler handler, List<String> includedTables, List<String> excludedTables, OConfiguration migrationConfig) {
+  public OER2GraphMapper createSchemaMapper(OSourceDatabaseInfo sourceDBInfo, String outOrientGraphUri, String chosenMapper,
+      String xmlPath, ONameResolver nameResolver, ODBMSDataTypeHandler handler, List<String> includedTables,
+      List<String> excludedTables, OConfiguration migrationConfig) {
 
     OMapperFactory mapperFactory = new OMapperFactory();
-    OER2GraphMapper mapper = (OER2GraphMapper) mapperFactory.buildMapper(chosenMapper, sourceDBInfo, xmlPath, includedTables, excludedTables, migrationConfig);
+    OER2GraphMapper mapper = (OER2GraphMapper) mapperFactory
+        .buildMapper(chosenMapper, sourceDBInfo, xmlPath, includedTables, excludedTables, migrationConfig);
 
     // Step 1: DataBase schema building
     mapper.buildSourceDatabaseSchema();
     OTeleporterContext.getInstance().getStatistics().notifyListeners();
     OTeleporterContext.getInstance().getOutputManager().info("\n");
-    OTeleporterContext.getInstance().getOutputManager().debug("\n%s\n", ((OER2GraphMapper)mapper).getDataBaseSchema().toString());
+    OTeleporterContext.getInstance().getOutputManager().debug("\n%s\n", ((OER2GraphMapper) mapper).getDataBaseSchema().toString());
 
     // Step 2: Graph model building
     mapper.buildGraphModel(nameResolver);
@@ -87,9 +88,9 @@ public class ODBMSNaiveStrategy extends ODBMSImportStrategy {
 
     // Step 4: Writing schema on OrientDB
     OGraphModelWriter graphModelWriter = new OGraphModelWriter(migrationConfig);
-    OGraphModel graphModel = ((OER2GraphMapper)mapper).getGraphModel();
+    OGraphModel graphModel = ((OER2GraphMapper) mapper).getGraphModel();
     boolean success = graphModelWriter.writeModelOnOrient(mapper, handler, outOrientGraphUri);
-    if(!success) {
+    if (!success) {
       OTeleporterContext.getInstance().getOutputManager().error("Writing not complete. Something gone wrong.\n");
       throw new OTeleporterRuntimeException();
     }
@@ -100,8 +101,8 @@ public class ODBMSNaiveStrategy extends ODBMSImportStrategy {
     return mapper;
   }
 
-
-  public void executeImport(OSourceDatabaseInfo sourceDBInfo, String outOrientGraphUri, OSource2GraphMapper genericMapper, ODBMSDataTypeHandler handler) {
+  public void executeImport(OSourceDatabaseInfo sourceDBInfo, String outOrientGraphUri, OSource2GraphMapper genericMapper,
+      ODBMSDataTypeHandler handler) {
 
     try {
 
@@ -126,18 +127,18 @@ public class ODBMSNaiveStrategy extends ODBMSImportStrategy {
       // Importing from Entities NOT belonging to hierarchical bags
       for (OVertexType currentOutVertexType : mapper.getVertexType2EVClassMappers().keySet()) {
 
-        List<OEVClassMapper> classMappersByVertex = ((OER2GraphMapper) super.mapper).getEVClassMappersByVertex(currentOutVertexType);
+        List<OEVClassMapper> classMappersByVertex = ((OER2GraphMapper) super.mapper)
+            .getEVClassMappersByVertex(currentOutVertexType);
         List<OEntity> mappedEntities = new LinkedList<OEntity>();
 
         // checking condition
         boolean allEntitiesNotBelongingToHierarchies = true;
-        for(OEVClassMapper classMapper: classMappersByVertex) {
+        for (OEVClassMapper classMapper : classMappersByVertex) {
           OEntity currentEntity = classMapper.getEntity();
-          if(currentEntity.getHierarchicalBag() != null) {
+          if (currentEntity.getHierarchicalBag() != null) {
             allEntitiesNotBelongingToHierarchies = false;
             break;
-          }
-          else {
+          } else {
             mappedEntities.add(currentEntity);
           }
         }
@@ -147,32 +148,36 @@ public class ODBMSNaiveStrategy extends ODBMSImportStrategy {
           String aggregationColumns[][] = null;
 
           //  classes' aggregation case
-          if(mappedEntities.size() > 1) {
+          if (mappedEntities.size() > 1) {
             OConfiguredVertexClass configuredVertex = mapper.getMigrationConfig().getVertexByMappedEntities(mappedEntities);
             aggregationColumns = super.buildAggregationColumnsFromAggregatedVertex(configuredVertex);
-            if(!currentOutVertexType.isAnalyzedInLastMigration()) {
-              super.importRecordsFromEntitiesIntoVertexClass(mappedEntities, aggregationColumns, currentOutVertexType, dbQueryEngine, graphEngine, orientGraph);
+            if (!currentOutVertexType.isAnalyzedInLastMigration()) {
+              super
+                  .importRecordsFromEntitiesIntoVertexClass(mappedEntities, aggregationColumns, currentOutVertexType, dbQueryEngine,
+                      graphEngine, orientGraph);
             }
-          }
-          else if(mappedEntities.size() == 1) {
+          } else if (mappedEntities.size() == 1) {
 
-            List<OEVClassMapper> classMappersByEntity = ((OER2GraphMapper) super.mapper).getEVClassMappersByEntity(mappedEntities.get(0));
+            List<OEVClassMapper> classMappersByEntity = ((OER2GraphMapper) super.mapper)
+                .getEVClassMappersByEntity(mappedEntities.get(0));
 
             // 1-1 mapping
-            if(classMappersByEntity.size() == 1) {
-              if(!currentOutVertexType.isAnalyzedInLastMigration()) {
-                super.importRecordsFromEntitiesIntoVertexClass(mappedEntities, aggregationColumns, currentOutVertexType, dbQueryEngine, graphEngine, orientGraph);
+            if (classMappersByEntity.size() == 1) {
+              if (!currentOutVertexType.isAnalyzedInLastMigration()) {
+                super.importRecordsFromEntitiesIntoVertexClass(mappedEntities, aggregationColumns, currentOutVertexType,
+                    dbQueryEngine, graphEngine, orientGraph);
               }
             }
 
             // splitting case (1-N)
-            else if(classMappersByEntity.size() > 1) {
+            else if (classMappersByEntity.size() > 1) {
               List<OVertexType> mappedVertices = new LinkedList<OVertexType>();
-              for(OEVClassMapper classMapper: classMappersByEntity) {
+              for (OEVClassMapper classMapper : classMappersByEntity) {
                 mappedVertices.add(classMapper.getVertexType());
               }
-              if(!currentOutVertexType.isAnalyzedInLastMigration()) {
-                super.importRecordsFromSplitEntityIntoVertexClasses(mappedEntities, mappedVertices, dbQueryEngine, graphEngine, orientGraph);
+              if (!currentOutVertexType.isAnalyzedInLastMigration()) {
+                super.importRecordsFromSplitEntityIntoVertexClasses(mappedEntities, mappedVertices, dbQueryEngine, graphEngine,
+                    orientGraph);
               }
             }
           }

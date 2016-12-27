@@ -30,36 +30,33 @@ import java.util.List;
 
 /**
  * @author Gabriele Ponzi
- * @email  <g.ponzi--at--orientdb.com>
- *
+ * @email <g.ponzi--at--orientdb.com>
  */
 
 public class OMigrationConfigManager {
 
-
   // config info
   private final static String configurationDirectoryName = "teleporter-config/";
-  private final static String configFileName = "migration-config.json";           // path ORIENTDB_HOME/<db-name>/teleporter-config/migration-config.json
-  private final static String sourceInfoFileName = "sources-access-info.json";    // path ORIENTDB_HOME/<db-name>/teleporter-config/sources-access-info.json
+  private final static String configFileName             = "migration-config.json";           // path ORIENTDB_HOME/<db-name>/teleporter-config/migration-config.json
+  private final static String sourceInfoFileName         = "sources-access-info.json";    // path ORIENTDB_HOME/<db-name>/teleporter-config/sources-access-info.json
   private static boolean configPresentInDB;
-
 
   /**
    * Loading eventual migrationConfigDoc from an external configuration file.
    * Look for the config in the <db-path>/teleporter-config/ path:
    * (i)  - if the external config path is available then load the config and use it for the steps 1,2,3
-   *               in the <db-path>/teleporter-config/ path (migrationConfigDoc.json)
+   * in the <db-path>/teleporter-config/ path (migrationConfigDoc.json)
    * (ii) - else execute strategy without migration config
    **/
   public static ODocument loadMigrationConfigFromFile(String configurationPath) {
 
     ODocument config = null;
     try {
-        config = OFileManager.buildJsonFromFile(configurationPath);
-        // (i)
-        if (config != null) {
-          OTeleporterContext.getInstance().getOutputManager().info("Configuration correctly loaded from %s.\n", configurationPath);
-        }
+      config = OFileManager.buildJsonFromFile(configurationPath);
+      // (i)
+      if (config != null) {
+        OTeleporterContext.getInstance().getOutputManager().info("Configuration correctly loaded from %s.\n", configurationPath);
+      }
     } catch (Exception e) {
       String mess = "";
       OTeleporterContext.getInstance().printExceptionMessage(e, mess, "error");
@@ -71,8 +68,8 @@ public class OMigrationConfigManager {
   }
 
   public static String buildConfigurationFilePath(String outOrientGraphUri, String configFileName) {
-    if(outOrientGraphUri.contains("\\")) {
-      outOrientGraphUri = outOrientGraphUri.replace("\\","/");
+    if (outOrientGraphUri.contains("\\")) {
+      outOrientGraphUri = outOrientGraphUri.replace("\\", "/");
     }
 
     // checking the presence of the migrationConfigDoc in the target db
@@ -112,7 +109,6 @@ public class OMigrationConfigManager {
     out.transferFrom(in, 0, in.size());
   }*/
 
-
   public static void writeConfigurationInTargetDB(ODocument migrationConfig, String outOrientGraphUri) {
 
     String outDBConfigPath = buildConfigurationFilePath(outOrientGraphUri, configFileName);
@@ -125,7 +121,7 @@ public class OMigrationConfigManager {
     String jsonSourcesInfo = migrationConfig.toJSON("prettyPrint");
     try {
       OFileManager.writeFileFromText(jsonSourcesInfo, outDBConfigPath, false);
-    }catch(IOException e) {
+    } catch (IOException e) {
       String mess = "";
       OTeleporterContext.getInstance().printExceptionMessage(e, mess, "error");
       OTeleporterContext.getInstance().printExceptionStackTrace(e, "error");
@@ -136,7 +132,7 @@ public class OMigrationConfigManager {
   /**
    * Loading eventual sourceAccessInfoDoc.
    * Look for the config in the <db-path>/teleporter-config/ path:
-   *  (i) - if db and sourceAccessInfoDoc are present use the default config
+   * (i) - if db and sourceAccessInfoDoc are present use the default config
    * (ii) - else execute strategy without sourceAccessInfoConfigDoc
    **/
   public static ODocument loadSourceInfo(String outOrientGraphUri) {
@@ -154,7 +150,8 @@ public class OMigrationConfigManager {
     try {
       if (configPresentInDB) {
         sourcesAccessInfo = OFileManager.buildJsonFromFile(outDBConfigPath);
-        OTeleporterContext.getInstance().getOutputManager().info("Sources' access info correctly loaded from %s.\n", outDBConfigPath);
+        OTeleporterContext.getInstance().getOutputManager()
+            .info("Sources' access info correctly loaded from %s.\n", outDBConfigPath);
       } else {
         // (iii)
         OTeleporterContext.getInstance().getOutputManager().info("No sources' access info file was found.\n");
@@ -173,7 +170,7 @@ public class OMigrationConfigManager {
 
     List<OSourceDatabaseInfo> sourcesInfo = new LinkedList<OSourceDatabaseInfo>();
     List<ODocument> sources = sourcesInfoDoc.field("sources");
-    for(ODocument currSourceInfo: sources) {
+    for (ODocument currSourceInfo : sources) {
       String[] fieldNames = currSourceInfo.fieldNames();
       String sourceIdName = fieldNames[0];
       ODocument info = currSourceInfo.field(sourceIdName);
@@ -182,7 +179,7 @@ public class OMigrationConfigManager {
       String user = info.field("username");
       String passwd = info.field("password");
       List<String> primaryKey = info.field("primaryKey");
-      OSourceDatabaseInfo sourceInfo = new OSourceDatabaseInfo(sourceIdName, driverName, url, user, passwd,primaryKey);
+      OSourceDatabaseInfo sourceInfo = new OSourceDatabaseInfo(sourceIdName, driverName, url, user, passwd, primaryKey);
       sourcesInfo.add(sourceInfo);
     }
     return sourcesInfo;
@@ -201,22 +198,22 @@ public class OMigrationConfigManager {
     ODocument sourcesInfoDoc = new ODocument();
     List<ODocument> sources = new LinkedList<ODocument>();
 
-    for(OSourceDatabaseInfo currSourceInfo: sourcesInfo) {
+    for (OSourceDatabaseInfo currSourceInfo : sourcesInfo) {
       ODocument source = new ODocument();
       ODocument sourceInfo = new ODocument();
-      sourceInfo.field("driverName",currSourceInfo.getDriverName());
-      sourceInfo.field("url",currSourceInfo.getUrl());
-      sourceInfo.field("username",currSourceInfo.getUsername());
-      sourceInfo.field("password",currSourceInfo.getPassword());
+      sourceInfo.field("driverName", currSourceInfo.getDriverName());
+      sourceInfo.field("url", currSourceInfo.getUrl());
+      sourceInfo.field("username", currSourceInfo.getUsername());
+      sourceInfo.field("password", currSourceInfo.getPassword());
       source.field(currSourceInfo.getSourceIdName(), sourceInfo);
       sources.add(source);
     }
-    sourcesInfoDoc.field("sources",sources);
+    sourcesInfoDoc.field("sources", sources);
 
     String jsonSourcesInfo = sourcesInfoDoc.toJSON("prettyPrint");
     try {
       OFileManager.writeFileFromText(jsonSourcesInfo, outDBConfigPath, false);
-    }catch(IOException e) {
+    } catch (IOException e) {
       String mess = "";
       OTeleporterContext.getInstance().printExceptionMessage(e, mess, "error");
       OTeleporterContext.getInstance().printExceptionStackTrace(e, "error");

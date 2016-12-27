@@ -1,39 +1,39 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <!DOCTYPE hibernate-mapping PUBLIC
-   "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
-   "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+        "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+        "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
 
 <hibernate-mapping>
-	<class name="Employee" table="EMPLOYEE" discriminator-value="emp">
-		<id name="id" column="id">
-			<generator class="increment"></generator>
-		</id>
+    <class name="Employee" table="EMPLOYEE" discriminator-value="emp">
+        <id name="id" column="id">
+            <generator class="increment"></generator>
+        </id>
 
-		<discriminator column="TYPE" type="string"></discriminator>
-		<property name="name" column="name"></property>
+        <discriminator column="TYPE" type="string"></discriminator>
+        <property name="name" column="name"></property>
 
-		<subclass name="Regular_Employee" discriminator-value="reg_emp">
-			<property name="salary" column="salary"></property>
-			<property name="bonus" column="bonus"></property>
-		</subclass>
+        <subclass name="Regular_Employee" discriminator-value="reg_emp">
+            <property name="salary" column="salary"></property>
+            <property name="bonus" column="bonus"></property>
+        </subclass>
 
-		<subclass name="Contract_Employee" discriminator-value="cont_emp">
-			<property name="payPerHour" column="pay_per_hour"></property>
-			<property name="contractDuration" column="contract_duration"></property>
-		</subclass>
-	</class>
+        <subclass name="Contract_Employee" discriminator-value="cont_emp">
+            <property name="payPerHour" column="pay_per_hour"></property>
+            <property name="contractDuration" column="contract_duration"></property>
+        </subclass>
+    </class>
 
-	<class name="Manager" table="MANAGER" discriminator-value="mgr">
-		<id name="id" column="id">
-			<generator class="increment"></generator>
-		</id>
+    <class name="Manager" table="MANAGER" discriminator-value="mgr">
+        <id name="id" column="id">
+            <generator class="increment"></generator>
+        </id>
 
-		<discriminator column="TYPE" type="string"></discriminator>
-		<property name="name" column="name"></property>
+        <discriminator column="TYPE" type="string"></discriminator>
+        <property name="name" column="name"></property>
 
-		<subclass name="Project_Manager" discriminator-value="prj_mgr">
-			<property name="project" column="project"></property>
-		</subclass>
-	</class>
+        <subclass name="Project_Manager" discriminator-value="prj_mgr">
+            <property name="project" column="project"></property>
+        </subclass>
+    </class>
 
 </hibernate-mapping>

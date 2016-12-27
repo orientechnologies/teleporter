@@ -1,238 +1,27 @@
 {
-  "vertices": [{
-    "name": "Employee",
-    "mapping": {
-      "sourceTables": [{
-        "name": "hsqldb_EMPLOYEE_PROJECT",
-        "dataSource": "hsqldb",
-        "tableName": "EMPLOYEE_PROJECT",
-        "primaryKey": ["FIRST_NAME", "LAST_NAME", "PROJECT"]
-      }]
-    },
-    "externalKey": ["firstName", "lastName"],
-    "properties": {
-      "firstName": {
-        "include": true,
-        "type": "STRING",
-        "ordinalPosition": 1,
-        "mandatory": false,
-        "readOnly": false,
-        "notNull": false,
-        "mapping": {
-          "source": "hsqldb_EMPLOYEE_PROJECT",
-          "columnName": "FIRST_NAME",
-          "type": "VARCHAR"
-        }
+  "vertices": [
+    {
+      "name": "Employee",
+      "mapping": {
+        "sourceTables": [
+          {
+            "name": "hsqldb_EMPLOYEE_PROJECT",
+            "dataSource": "hsqldb",
+            "tableName": "EMPLOYEE_PROJECT",
+            "primaryKey": [
+              "FIRST_NAME",
+              "LAST_NAME",
+              "PROJECT"
+            ]
+          }
+        ]
       },
-      "lastName": {
-        "include": true,
-        "type": "STRING",
-        "ordinalPosition": 2,
-        "mandatory": false,
-        "readOnly": false,
-        "notNull": false,
-        "mapping": {
-          "source": "hsqldb_EMPLOYEE_PROJECT",
-          "columnName": "LAST_NAME",
-          "type": "VARCHAR"
-        }
-      },
-      "salary": {
-        "include": true,
-        "type": "DECIMAL",
-        "ordinalPosition": 3,
-        "mandatory": false,
-        "readOnly": false,
-        "notNull": false,
-        "mapping": {
-          "source": "hsqldb_EMPLOYEE_PROJECT",
-          "columnName": "SALARY",
-          "type": "DOUBLE"
-        }
-      },
-      "department": {
-        "include": true,
-        "type": "STRING",
-        "ordinalPosition": 4,
-        "mandatory": false,
-        "readOnly": false,
-        "notNull": false,
-        "mapping": {
-          "source": "hsqldb_EMPLOYEE_PROJECT",
-          "columnName": "DEPARTMENT",
-          "type": "VARCHAR"
-        }
-      }
-    }
-  }, {
-    "name": "Project",
-    "mapping": {
-      "sourceTables": [{
-        "name": "hsqldb_EMPLOYEE_PROJECT",
-        "dataSource": "hsqldb",
-        "tableName": "EMPLOYEE_PROJECT",
-        "primaryKey": ["FIRST_NAME", "LAST_NAME", "PROJECT"]
-      }]
-    },
-    "externalKey": ["project"],
-    "properties": {
-      "project": {
-        "include": true,
-        "type": "STRING",
-        "ordinalPosition": 1,
-        "mandatory": false,
-        "readOnly": false,
-        "notNull": false,
-        "mapping": {
-          "source": "hsqldb_EMPLOYEE_PROJECT",
-          "columnName": "PROJECT",
-          "type": "VARCHAR"
-        }
-      },
-      "balance": {
-        "include": true,
-        "type": "DECIMAL",
-        "ordinalPosition": 2,
-        "mandatory": false,
-        "readOnly": false,
-        "notNull": false,
-        "mapping": {
-          "source": "hsqldb_EMPLOYEE_PROJECT",
-          "columnName": "BALANCE",
-          "type": "DOUBLE"
-        }
-      }
-    }
-  }, {
-    "name": "Department",
-    "mapping": {
-      "sourceTables": [
-        {
-          "name": "hsqldb_DEPARTMENT",
-          "dataSource": "hsqldb",
-          "tableName": "DEPARTMENT",
-          "primaryKey" : ["ID"]
-        }
-      ]
-    },
-    "externalKey": ["id"],
-    "properties": {
-      "id": {
-        "include": true,
-        "type": "STRING",
-        "ordinalPosition": 1,
-        "mandatory": false,
-        "readOnly": false,
-        "notNull": false,
-        "mapping": {
-          "source": "hsqldb_DEPARTMENT",
-          "columnName": "ID",
-          "type": "VARCHAR"
-        }
-      },
-      "departmentName": {
-        "include": true,
-        "type": "STRING",
-        "ordinalPosition": 2,
-        "mandatory": true,
-        "readOnly": false,
-        "notNull": true,
-        "mapping": {
-          "source": "hsqldb_DEPARTMENT",
-          "columnName": "NAME",
-          "type": "VARCHAR"
-        }
-      },
-      "location": {
-        "include": true,
-        "type": "STRING",
-        "ordinalPosition": 3,
-        "mandatory": true,
-        "readOnly": false,
-        "notNull": true,
-        "mapping": {
-          "source": "hsqldb_DEPARTMENT",
-          "columnName": "LOCATION",
-          "type": "VARCHAR"
-        }
-      },
-      "updatedOn": {
-        "include": false,
-        "type": "DATE",
-        "ordinalPosition": 4,
-        "mandatory": true,
-        "readOnly": false,
-        "notNull": true,
-        "mapping": {
-          "source": "hsqldb_DEPARTMENT",
-          "columnName": "UPDATED_ON",
-          "type": "DATE"
-        }
-      }
-    }
-  }, {
-    "name": "ChiefOfficer",
-    "mapping": {
-      "sourceTables": [{
-        "name": "hsqldb_CHIEF_OFFICER",
-        "dataSource": "hsqldb",
-        "tableName": "CHIEF_OFFICER",
-        "primaryKey": ["FIRST_NAME", "LAST_NAME"]
-      }]
-    },
-    "externalKey": ["firstName", "lastName"],
-    "properties": {
-      "firstName": {
-        "include": true,
-        "type": "STRING",
-        "ordinalPosition": 1,
-        "mandatory": true,
-        "readOnly": false,
-        "notNull": true,
-        "mapping": {
-          "source": "hsqldb_CHIEF_OFFICER",
-          "columnName": "FIRST_NAME",
-          "type": "VARCHAR"
-        }
-      },
-      "lastName": {
-        "include": true,
-        "type": "STRING",
-        "ordinalPosition": 2,
-        "mandatory": true,
-        "readOnly": false,
-        "notNull": true,
-        "mapping": {
-          "source": "hsqldb_CHIEF_OFFICER",
-          "columnName": "LAST_NAME",
-          "type": "VARCHAR"
-        }
-      },
-      "project": {
-        "include": true,
-        "type": "STRING",
-        "ordinalPosition": 3,
-        "mandatory": false,
-        "readOnly": false,
-        "notNull": false,
-        "mapping": {
-          "source": "hsqldb_CHIEF_OFFICER",
-          "columnName": "PROJECT",
-          "type": "VARCHAR"
-        }
-      }
-    }
-  }],
-  "edges": [{
-    "HasProject": {
-      "splitting": {
-        "fromVertexClass": "Employee",
-        "toVertexClass": "Project",
-        "sourceTable": "EMPLOYEE_PROJECT"
-      },
-      "isLogical": false,
+      "externalKey": [
+        "firstName",
+        "lastName"
+      ],
       "properties": {
-        "role": {
+        "firstName": {
           "include": true,
           "type": "STRING",
           "ordinalPosition": 1,
@@ -241,44 +30,305 @@
           "notNull": false,
           "mapping": {
             "source": "hsqldb_EMPLOYEE_PROJECT",
-            "columnName": "ROLE",
+            "columnName": "FIRST_NAME",
+            "type": "VARCHAR"
+          }
+        },
+        "lastName": {
+          "include": true,
+          "type": "STRING",
+          "ordinalPosition": 2,
+          "mandatory": false,
+          "readOnly": false,
+          "notNull": false,
+          "mapping": {
+            "source": "hsqldb_EMPLOYEE_PROJECT",
+            "columnName": "LAST_NAME",
+            "type": "VARCHAR"
+          }
+        },
+        "salary": {
+          "include": true,
+          "type": "DECIMAL",
+          "ordinalPosition": 3,
+          "mandatory": false,
+          "readOnly": false,
+          "notNull": false,
+          "mapping": {
+            "source": "hsqldb_EMPLOYEE_PROJECT",
+            "columnName": "SALARY",
+            "type": "DOUBLE"
+          }
+        },
+        "department": {
+          "include": true,
+          "type": "STRING",
+          "ordinalPosition": 4,
+          "mandatory": false,
+          "readOnly": false,
+          "notNull": false,
+          "mapping": {
+            "source": "hsqldb_EMPLOYEE_PROJECT",
+            "columnName": "DEPARTMENT",
+            "type": "VARCHAR"
+          }
+        }
+      }
+    },
+    {
+      "name": "Project",
+      "mapping": {
+        "sourceTables": [
+          {
+            "name": "hsqldb_EMPLOYEE_PROJECT",
+            "dataSource": "hsqldb",
+            "tableName": "EMPLOYEE_PROJECT",
+            "primaryKey": [
+              "FIRST_NAME",
+              "LAST_NAME",
+              "PROJECT"
+            ]
+          }
+        ]
+      },
+      "externalKey": [
+        "project"
+      ],
+      "properties": {
+        "project": {
+          "include": true,
+          "type": "STRING",
+          "ordinalPosition": 1,
+          "mandatory": false,
+          "readOnly": false,
+          "notNull": false,
+          "mapping": {
+            "source": "hsqldb_EMPLOYEE_PROJECT",
+            "columnName": "PROJECT",
+            "type": "VARCHAR"
+          }
+        },
+        "balance": {
+          "include": true,
+          "type": "DECIMAL",
+          "ordinalPosition": 2,
+          "mandatory": false,
+          "readOnly": false,
+          "notNull": false,
+          "mapping": {
+            "source": "hsqldb_EMPLOYEE_PROJECT",
+            "columnName": "BALANCE",
+            "type": "DOUBLE"
+          }
+        }
+      }
+    },
+    {
+      "name": "Department",
+      "mapping": {
+        "sourceTables": [
+          {
+            "name": "hsqldb_DEPARTMENT",
+            "dataSource": "hsqldb",
+            "tableName": "DEPARTMENT",
+            "primaryKey": [
+              "ID"
+            ]
+          }
+        ]
+      },
+      "externalKey": [
+        "id"
+      ],
+      "properties": {
+        "id": {
+          "include": true,
+          "type": "STRING",
+          "ordinalPosition": 1,
+          "mandatory": false,
+          "readOnly": false,
+          "notNull": false,
+          "mapping": {
+            "source": "hsqldb_DEPARTMENT",
+            "columnName": "ID",
+            "type": "VARCHAR"
+          }
+        },
+        "departmentName": {
+          "include": true,
+          "type": "STRING",
+          "ordinalPosition": 2,
+          "mandatory": true,
+          "readOnly": false,
+          "notNull": true,
+          "mapping": {
+            "source": "hsqldb_DEPARTMENT",
+            "columnName": "NAME",
+            "type": "VARCHAR"
+          }
+        },
+        "location": {
+          "include": true,
+          "type": "STRING",
+          "ordinalPosition": 3,
+          "mandatory": true,
+          "readOnly": false,
+          "notNull": true,
+          "mapping": {
+            "source": "hsqldb_DEPARTMENT",
+            "columnName": "LOCATION",
+            "type": "VARCHAR"
+          }
+        },
+        "updatedOn": {
+          "include": false,
+          "type": "DATE",
+          "ordinalPosition": 4,
+          "mandatory": true,
+          "readOnly": false,
+          "notNull": true,
+          "mapping": {
+            "source": "hsqldb_DEPARTMENT",
+            "columnName": "UPDATED_ON",
+            "type": "DATE"
+          }
+        }
+      }
+    },
+    {
+      "name": "ChiefOfficer",
+      "mapping": {
+        "sourceTables": [
+          {
+            "name": "hsqldb_CHIEF_OFFICER",
+            "dataSource": "hsqldb",
+            "tableName": "CHIEF_OFFICER",
+            "primaryKey": [
+              "FIRST_NAME",
+              "LAST_NAME"
+            ]
+          }
+        ]
+      },
+      "externalKey": [
+        "firstName",
+        "lastName"
+      ],
+      "properties": {
+        "firstName": {
+          "include": true,
+          "type": "STRING",
+          "ordinalPosition": 1,
+          "mandatory": true,
+          "readOnly": false,
+          "notNull": true,
+          "mapping": {
+            "source": "hsqldb_CHIEF_OFFICER",
+            "columnName": "FIRST_NAME",
+            "type": "VARCHAR"
+          }
+        },
+        "lastName": {
+          "include": true,
+          "type": "STRING",
+          "ordinalPosition": 2,
+          "mandatory": true,
+          "readOnly": false,
+          "notNull": true,
+          "mapping": {
+            "source": "hsqldb_CHIEF_OFFICER",
+            "columnName": "LAST_NAME",
+            "type": "VARCHAR"
+          }
+        },
+        "project": {
+          "include": true,
+          "type": "STRING",
+          "ordinalPosition": 3,
+          "mandatory": false,
+          "readOnly": false,
+          "notNull": false,
+          "mapping": {
+            "source": "hsqldb_CHIEF_OFFICER",
+            "columnName": "PROJECT",
             "type": "VARCHAR"
           }
         }
       }
     }
-  },{
-    "WorksAt": {
-      "isLogical": false,
-      "mapping": [{
-        "fromTable": "EMPLOYEE_PROJECT",
-        "fromColumns": ["DEPARTMENT"],
-        "toTable": "DEPARTMENT",
-        "toColumns": ["ID"],
-        "direction": "direct"
-      }],
-      "properties": {
-        "since": {
-          "include": true,
-          "type": "DATE",
-          "ordinalPosition": 1,
-          "mandatory": false,
-          "readOnly": false,
-          "notNull": false
+  ],
+  "edges": [
+    {
+      "HasProject": {
+        "splitting": {
+          "fromVertexClass": "Employee",
+          "toVertexClass": "Project",
+          "sourceTable": "EMPLOYEE_PROJECT"
+        },
+        "isLogical": false,
+        "properties": {
+          "role": {
+            "include": true,
+            "type": "STRING",
+            "ordinalPosition": 1,
+            "mandatory": false,
+            "readOnly": false,
+            "notNull": false,
+            "mapping": {
+              "source": "hsqldb_EMPLOYEE_PROJECT",
+              "columnName": "ROLE",
+              "type": "VARCHAR"
+            }
+          }
         }
       }
+    },
+    {
+      "WorksAt": {
+        "isLogical": false,
+        "mapping": [
+          {
+            "fromTable": "EMPLOYEE_PROJECT",
+            "fromColumns": [
+              "DEPARTMENT"
+            ],
+            "toTable": "DEPARTMENT",
+            "toColumns": [
+              "ID"
+            ],
+            "direction": "direct"
+          }
+        ],
+        "properties": {
+          "since": {
+            "include": true,
+            "type": "DATE",
+            "ordinalPosition": 1,
+            "mandatory": false,
+            "readOnly": false,
+            "notNull": false
+          }
+        }
+      }
+    },
+    {
+      "IsChiefForProject": {
+        "isLogical": false,
+        "mapping": [
+          {
+            "fromTable": "CHIEF_OFFICER",
+            "fromColumns": [
+              "PROJECT"
+            ],
+            "toTable": "EMPLOYEE_PROJECT",
+            "toColumns": [
+              "PROJECT"
+            ],
+            "direction": "direct"
+          }
+        ],
+        "properties": {}
+      }
     }
-  }, {
-    "IsChiefForProject": {
-      "isLogical": false,
-      "mapping": [{
-        "fromTable": "CHIEF_OFFICER",
-        "fromColumns": ["PROJECT"],
-        "toTable": "EMPLOYEE_PROJECT",
-        "toColumns": ["PROJECT"],
-        "direction": "direct"
-      }],
-      "properties": {}
-    }
-  }]
+  ]
 }

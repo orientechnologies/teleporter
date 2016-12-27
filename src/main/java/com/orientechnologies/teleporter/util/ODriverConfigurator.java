@@ -36,21 +36,19 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-
 /**
  * Executes an automatic migrationConfigDoc of the chosen driver JDBC.
  *
  * @author Gabriele Ponzi
  * @email <g.ponzi--at--orientdb.com>
- *
  */
 
 public class ODriverConfigurator {
 
-  public static final String DRIVERS = "http://orientdb.com/jdbc-drivers.json";
-  private final String localJsonPath = "../config/jdbc-drivers.json";
-  private final String driverClassPath = "../lib/";
-  private ODocument driverInfo;
+  public static final String DRIVERS         = "http://orientdb.com/jdbc-drivers.json";
+  private final       String localJsonPath   = "../config/jdbc-drivers.json";
+  private final       String driverClassPath = "../lib/";
+  private ODocument                 driverInfo;
   private Map<String, List<String>> driver2filesIdentifier;
 
   public ODriverConfigurator() {
@@ -96,6 +94,7 @@ public class ODriverConfigurator {
    * Connection to the 'http://orientdb.com/jdbc-drivers.json' resource if needed.
    *
    * @param driverName (case insensitive)
+   *
    * @return driverClassName
    */
   public String fetchDriverClassName(String driverName) {
@@ -126,7 +125,7 @@ public class ODriverConfigurator {
         fields = this.driverInfo.field("HyperSQL");
       }
       driverClassName = (String) fields.field("className");
-    }catch (Exception e) {
+    } catch (Exception e) {
       String mess = "";
       OTeleporterContext.getInstance().printExceptionMessage(e, mess, "error");
       OTeleporterContext.getInstance().printExceptionStackTrace(e, "error");
@@ -135,7 +134,6 @@ public class ODriverConfigurator {
 
     return driverClassName;
   }
-
 
   /**
    * It Checks if the requested driver is already present in the classpath, if not present it downloads the last available driver
@@ -151,7 +149,6 @@ public class ODriverConfigurator {
   }
 
   /**
-   *
    * @param driverName
    * @param driverClassPath
    */
@@ -162,7 +159,7 @@ public class ODriverConfigurator {
 
     try {
 
-      if(this.driverInfo == null) {
+      if (this.driverInfo == null) {
         // fetching online JSON
         this.driverInfo = readJsonFromUrl(DRIVERS);
       }
@@ -188,7 +185,8 @@ public class ODriverConfigurator {
 
       if (driverPath == null) {
 
-        OTeleporterContext.getInstance().getOutputManager().info("\nDownloading the necessary JDBC driver in ORIENTDB_HOME/lib ...\n");
+        OTeleporterContext.getInstance().getOutputManager()
+            .info("\nDownloading the necessary JDBC driver in ORIENTDB_HOME/lib ...\n");
 
         // download last available jdbc driver version
         String driverDownldUrl = (String) fields.field("url");
@@ -205,8 +203,9 @@ public class ODriverConfigurator {
           OFileManager.extractAll(driverPath, driverClassPath);
           try {
             OFileManager.deleteResource(driverPath);
-          } catch(IOException e) {
-            OTeleporterContext.getInstance().getOutputManager().info("The %s package file was not correctly deleted from the %s path.", driverPath, driverClassPath);
+          } catch (IOException e) {
+            OTeleporterContext.getInstance().getOutputManager()
+                .info("The %s package file was not correctly deleted from the %s path.", driverPath, driverClassPath);
           }
           String[] split = driverPath.split(".jar");
           driverPath = split[0] + ".jar";
@@ -230,6 +229,7 @@ public class ODriverConfigurator {
   /**
    * @param driverName
    * @param classPath
+   *
    * @return the path of the driver
    */
   private String isDriverAlreadyPresent(String driverName, String classPath) {
@@ -237,7 +237,7 @@ public class ODriverConfigurator {
     File dir = new File(classPath);
     File[] files = dir.listFiles();
 
-    if(files == null) {
+    if (files == null) {
       // ../lib does not exist yet, so create it.
       dir.mkdirs();
       files = dir.listFiles();
@@ -289,7 +289,7 @@ public class ODriverConfigurator {
       json.fromJSON(jsonText, "noMap");
 
       // writing the just downloaded json into /config
-      if(downloadedNewJsonDrivers) {
+      if (downloadedNewJsonDrivers) {
         OFileManager.writeFileFromText(jsonText, this.localJsonPath, false);
       }
 
@@ -319,10 +319,10 @@ public class ODriverConfigurator {
    * @param uri
    * @param username
    * @param password
+   *
    * @throws Exception
    */
-  public void checkConnection(String driver, String uri, String username, String password)
-          throws Exception {
+  public void checkConnection(String driver, String uri, String username, String password) throws Exception {
 
     this.checkDriverConfiguration(driver);
     checkConnectionSubRoutine(driver, uri, username, password);
@@ -337,10 +337,11 @@ public class ODriverConfigurator {
    * @param username
    * @param password
    * @param driverClassPath
+   *
    * @throws Exception
    */
   public void checkConnection(String driver, String uri, String username, String password, String driverClassPath)
-          throws Exception {
+      throws Exception {
 
     this.checkDriverConfiguration(driver, driverClassPath);
     checkConnectionSubRoutine(driver, uri, username, password);
@@ -353,6 +354,7 @@ public class ODriverConfigurator {
    * @param uri
    * @param username
    * @param password
+   *
    * @throws SQLException
    */
   private void checkConnectionSubRoutine(String driver, String uri, String username, String password) throws SQLException {

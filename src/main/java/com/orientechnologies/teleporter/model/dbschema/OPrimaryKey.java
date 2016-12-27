@@ -20,14 +20,12 @@ package com.orientechnologies.teleporter.model.dbschema;
 
 /**
  * It represents a primary key for an entity.
- * 
- * @author Gabriele Ponzi
- * @email  <g.ponzi--at--orientdb.com>
  *
+ * @author Gabriele Ponzi
+ * @email <g.ponzi--at--orientdb.com>
  */
 
 public class OPrimaryKey extends OKey {
-
 
   public OPrimaryKey(OEntity belongingEntity) {
     super(belongingEntity);
@@ -36,11 +34,11 @@ public class OPrimaryKey extends OKey {
   public OAttribute getAttributeByOrdinalPosition(int ordinalPosition) {
 
     // overflow
-    if(ordinalPosition > super.getInvolvedAttributes().size())
+    if (ordinalPosition > super.getInvolvedAttributes().size())
       return null;
 
-    for(OAttribute attribute: super.involvedAttributes) {
-      if(attribute.getOrdinalPosition() == ordinalPosition)
+    for (OAttribute attribute : super.involvedAttributes) {
+      if (attribute.getOrdinalPosition() == ordinalPosition)
         return attribute;
     }
     return null;

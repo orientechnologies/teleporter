@@ -46,39 +46,37 @@ import static org.junit.Assert.*;
 
 /**
  * @author Gabriele Ponzi
- * @email  gabriele.ponzi--at--gmail.com
- *
+ * @email gabriele.ponzi--at--gmail.com
  */
 
 public class OrientDBSchemaWritingWithAggregationTest {
 
-    private OER2GraphMapper mapper;
-    private OTeleporterContext context;
-    private OGraphModelWriter modelWriter;
-    private String             outOrientGraphUri;
-    private final String config = "src/test/resources/configuration-mapping/aggregation-from2tables-mapping.json";
-    private ODBQueryEngine dbQueryEngine;
-    private String driver = "org.hsqldb.jdbc.JDBCDriver";
-    private String jurl = "jdbc:hsqldb:mem:mydb";
-    private String username = "SA";
-    private String password = "";
-    private OSourceDatabaseInfo sourceDBInfo;
+  private OER2GraphMapper    mapper;
+  private OTeleporterContext context;
+  private OGraphModelWriter  modelWriter;
+  private String             outOrientGraphUri;
+  private final String config = "src/test/resources/configuration-mapping/aggregation-from2tables-mapping.json";
+  private ODBQueryEngine dbQueryEngine;
+  private String driver   = "org.hsqldb.jdbc.JDBCDriver";
+  private String jurl     = "jdbc:hsqldb:mem:mydb";
+  private String username = "SA";
+  private String password = "";
+  private OSourceDatabaseInfo sourceDBInfo;
 
+  @Before
+  public void init() {
+    this.context = OTeleporterContext.newInstance();
+    this.dbQueryEngine = new ODBQueryEngine(this.driver);
+    this.context.setDbQueryEngine(this.dbQueryEngine);
+    this.context.setOutputManager(new OOutputStreamManager(0));
+    this.context.setNameResolver(new OJavaConventionNameResolver());
+    this.context.setDataTypeHandler(new OHSQLDBDataTypeHandler());
+    this.modelWriter = new OGraphModelWriter();
+    this.outOrientGraphUri = "plocal:target/testOrientDB";
+    this.sourceDBInfo = new OSourceDatabaseInfo("source", this.driver, this.jurl, this.username, this.password);
+  }
 
-    @Before
-    public void init() {
-        this.context = OTeleporterContext.newInstance();
-        this.dbQueryEngine = new ODBQueryEngine(this.driver);
-        this.context.setDbQueryEngine(this.dbQueryEngine);
-        this.context.setOutputManager(new OOutputStreamManager(0));
-        this.context.setNameResolver(new OJavaConventionNameResolver());
-        this.context.setDataTypeHandler(new OHSQLDBDataTypeHandler());
-        this.modelWriter = new OGraphModelWriter();
-        this.outOrientGraphUri = "plocal:target/testOrientDB";
-        this.sourceDBInfo = new OSourceDatabaseInfo("source", this.driver, this.jurl, this.username, this.password);
-    }
-
-    @Test
+  @Test
 
   /*
    *  Source DB schema:
@@ -100,168 +98,167 @@ public class OrientDBSchemaWritingWithAggregationTest {
    *  Department(id, departmentName, location)
    */
 
-    public void test1() {
+  public void test1() {
 
-        Connection connection = null;
-        Statement st = null;
-        OrientGraphNoTx orientGraph = null;
+    Connection connection = null;
+    Statement st = null;
+    OrientGraphNoTx orientGraph = null;
 
-        try {
+    try {
 
-            Class.forName(this.driver);
-            connection = DriverManager.getConnection(this.jurl, this.username, this.password);
+      Class.forName(this.driver);
+      connection = DriverManager.getConnection(this.jurl, this.username, this.password);
 
-            String personTableBuilding = "create memory table PERSON (ID varchar(256) not null,"+
-                    " NAME varchar(256) not null, SURNAME varchar(256) not null, DEP_ID varchar(256) not null, primary key (ID))";
-            st = connection.createStatement();
-            st.execute(personTableBuilding);
+      String personTableBuilding = "create memory table PERSON (ID varchar(256) not null,"
+          + " NAME varchar(256) not null, SURNAME varchar(256) not null, DEP_ID varchar(256) not null, primary key (ID))";
+      st = connection.createStatement();
+      st.execute(personTableBuilding);
 
-            String vatProfileTableBuilding = "create memory table VAT_PROFILE (ID varchar(256),"+
-                    " VAT varchar(256) not null, UPDATED_ON date not null, primary key (ID))";
-            st.execute(vatProfileTableBuilding);
+      String vatProfileTableBuilding = "create memory table VAT_PROFILE (ID varchar(256),"
+          + " VAT varchar(256) not null, UPDATED_ON date not null, primary key (ID))";
+      st.execute(vatProfileTableBuilding);
 
-            String departmentTableBuilding = "create memory table DEPARTMENT (ID  varchar(256),"+
-                    " NAME varchar(256) not null, LOCATION varchar(256) not null, UPDATED_ON date not null, primary key (ID))";
-            st.execute(departmentTableBuilding);
+      String departmentTableBuilding = "create memory table DEPARTMENT (ID  varchar(256),"
+          + " NAME varchar(256) not null, LOCATION varchar(256) not null, UPDATED_ON date not null, primary key (ID))";
+      st.execute(departmentTableBuilding);
 
-            ODocument config = OFileManager.buildJsonFromFile(this.config);
-            OConfigurationHandler configHandler = new OConfigurationHandler(true);
-            OConfiguration migrationConfig = configHandler.buildConfigurationFromJSONDoc(config);
+      ODocument config = OFileManager.buildJsonFromFile(this.config);
+      OConfigurationHandler configHandler = new OConfigurationHandler(true);
+      OConfiguration migrationConfig = configHandler.buildConfigurationFromJSONDoc(config);
 
-            this.mapper = new OER2GraphMapper(this.sourceDBInfo, null, null, migrationConfig);
-            mapper.buildSourceDatabaseSchema();
-            mapper.buildGraphModel(new OJavaConventionNameResolver());
-            mapper.applyImportConfiguration();
-            modelWriter.writeModelOnOrient(mapper, new OHSQLDBDataTypeHandler(), this.outOrientGraphUri);
+      this.mapper = new OER2GraphMapper(this.sourceDBInfo, null, null, migrationConfig);
+      mapper.buildSourceDatabaseSchema();
+      mapper.buildGraphModel(new OJavaConventionNameResolver());
+      mapper.applyImportConfiguration();
+      modelWriter.writeModelOnOrient(mapper, new OHSQLDBDataTypeHandler(), this.outOrientGraphUri);
 
+      /**
+       *  Testing context information
+       */
 
-            /**
-             *  Testing context information
-             */
+      assertEquals(2, context.getStatistics().totalNumberOfVertexTypes);
+      assertEquals(2, context.getStatistics().wroteVertexType);
+      assertEquals(1, context.getStatistics().totalNumberOfEdgeTypes);
+      assertEquals(1, context.getStatistics().wroteEdgeType);
+      assertEquals(2, context.getStatistics().totalNumberOfIndices);
+      assertEquals(2, context.getStatistics().wroteIndexes);
 
-            assertEquals(2, context.getStatistics().totalNumberOfVertexTypes);
-            assertEquals(2, context.getStatistics().wroteVertexType);
-            assertEquals(1, context.getStatistics().totalNumberOfEdgeTypes);
-            assertEquals(1, context.getStatistics().wroteEdgeType);
-            assertEquals(2, context.getStatistics().totalNumberOfIndices);
-            assertEquals(2, context.getStatistics().wroteIndexes);
+      /**
+       *  Testing built OrientDB schema
+       */
 
-            /**
-             *  Testing built OrientDB schema
-             */
+      orientGraph = new OrientGraphNoTx(this.outOrientGraphUri);
+      OrientVertexType personVertexType = orientGraph.getVertexType("Person");
+      OrientVertexType departmentVertexType = orientGraph.getVertexType("Department");
+      OrientEdgeType worksAtEdgeType = orientGraph.getEdgeType("WorksAt");
 
-            orientGraph = new OrientGraphNoTx(this.outOrientGraphUri);
-            OrientVertexType personVertexType =  orientGraph.getVertexType("Person");
-            OrientVertexType departmentVertexType = orientGraph.getVertexType("Department");
-            OrientEdgeType worksAtEdgeType = orientGraph.getEdgeType("WorksAt");
+      // vertices check
+      assertNotNull(personVertexType);
+      assertNotNull(departmentVertexType);
 
-            // vertices check
-            assertNotNull(personVertexType);
-            assertNotNull(departmentVertexType);
+      // properties check
 
-            // properties check
+      assertNotNull(personVertexType.getProperty("extKey1"));
+      assertEquals("extKey1", personVertexType.getProperty("extKey1").getName());
+      assertEquals(OType.STRING, personVertexType.getProperty("extKey1").getType());
+      assertEquals(false, personVertexType.getProperty("extKey1").isMandatory());
+      assertEquals(false, personVertexType.getProperty("extKey1").isReadonly());
+      assertEquals(false, personVertexType.getProperty("extKey1").isNotNull());
 
-            assertNotNull(personVertexType.getProperty("extKey1"));
-            assertEquals("extKey1", personVertexType.getProperty("extKey1").getName());
-            assertEquals(OType.STRING, personVertexType.getProperty("extKey1").getType());
-            assertEquals(false, personVertexType.getProperty("extKey1").isMandatory());
-            assertEquals(false, personVertexType.getProperty("extKey1").isReadonly());
-            assertEquals(false, personVertexType.getProperty("extKey1").isNotNull());
+      assertNotNull(personVertexType.getProperty("firstName"));
+      assertEquals("firstName", personVertexType.getProperty("firstName").getName());
+      assertEquals(OType.STRING, personVertexType.getProperty("firstName").getType());
+      assertEquals(true, personVertexType.getProperty("firstName").isMandatory());
+      assertEquals(false, personVertexType.getProperty("firstName").isReadonly());
+      assertEquals(true, personVertexType.getProperty("firstName").isNotNull());
 
-            assertNotNull(personVertexType.getProperty("firstName"));
-            assertEquals("firstName", personVertexType.getProperty("firstName").getName());
-            assertEquals(OType.STRING, personVertexType.getProperty("firstName").getType());
-            assertEquals(true, personVertexType.getProperty("firstName").isMandatory());
-            assertEquals(false, personVertexType.getProperty("firstName").isReadonly());
-            assertEquals(true, personVertexType.getProperty("firstName").isNotNull());
+      assertNotNull(personVertexType.getProperty("lastName"));
+      assertEquals("lastName", personVertexType.getProperty("lastName").getName());
+      assertEquals(OType.STRING, personVertexType.getProperty("lastName").getType());
+      assertEquals(true, personVertexType.getProperty("lastName").isMandatory());
+      assertEquals(false, personVertexType.getProperty("lastName").isReadonly());
+      assertEquals(true, personVertexType.getProperty("lastName").isNotNull());
 
-            assertNotNull(personVertexType.getProperty("lastName"));
-            assertEquals("lastName", personVertexType.getProperty("lastName").getName());
-            assertEquals(OType.STRING, personVertexType.getProperty("lastName").getType());
-            assertEquals(true, personVertexType.getProperty("lastName").isMandatory());
-            assertEquals(false, personVertexType.getProperty("lastName").isReadonly());
-            assertEquals(true, personVertexType.getProperty("lastName").isNotNull());
+      assertNull(personVertexType.getProperty("depId"));
 
-            assertNull(personVertexType.getProperty("depId"));
+      assertNotNull(personVertexType.getProperty("extKey2"));
+      assertEquals("extKey2", personVertexType.getProperty("extKey2").getName());
+      assertEquals(OType.STRING, personVertexType.getProperty("extKey2").getType());
+      assertEquals(false, personVertexType.getProperty("extKey2").isMandatory());
+      assertEquals(false, personVertexType.getProperty("extKey2").isReadonly());
+      assertEquals(false, personVertexType.getProperty("extKey2").isNotNull());
 
-            assertNotNull(personVertexType.getProperty("extKey2"));
-            assertEquals("extKey2", personVertexType.getProperty("extKey2").getName());
-            assertEquals(OType.STRING, personVertexType.getProperty("extKey2").getType());
-            assertEquals(false, personVertexType.getProperty("extKey2").isMandatory());
-            assertEquals(false, personVertexType.getProperty("extKey2").isReadonly());
-            assertEquals(false, personVertexType.getProperty("extKey2").isNotNull());
+      assertNotNull(personVertexType.getProperty("VAT"));
+      assertEquals("VAT", personVertexType.getProperty("VAT").getName());
+      assertEquals(OType.STRING, personVertexType.getProperty("VAT").getType());
+      assertEquals(true, personVertexType.getProperty("VAT").isMandatory());
+      assertEquals(false, personVertexType.getProperty("VAT").isReadonly());
+      assertEquals(true, personVertexType.getProperty("VAT").isNotNull());
 
-            assertNotNull(personVertexType.getProperty("VAT"));
-            assertEquals("VAT", personVertexType.getProperty("VAT").getName());
-            assertEquals(OType.STRING, personVertexType.getProperty("VAT").getType());
-            assertEquals(true, personVertexType.getProperty("VAT").isMandatory());
-            assertEquals(false, personVertexType.getProperty("VAT").isReadonly());
-            assertEquals(true, personVertexType.getProperty("VAT").isNotNull());
+      assertNull(personVertexType.getProperty("updatedOn"));
 
-            assertNull(personVertexType.getProperty("updatedOn"));
+      assertNotNull(departmentVertexType.getProperty("id"));
+      assertEquals("id", departmentVertexType.getProperty("id").getName());
+      assertEquals(OType.STRING, departmentVertexType.getProperty("id").getType());
+      assertEquals(false, departmentVertexType.getProperty("id").isMandatory());
+      assertEquals(false, departmentVertexType.getProperty("id").isReadonly());
+      assertEquals(false, departmentVertexType.getProperty("id").isNotNull());
 
-            assertNotNull(departmentVertexType.getProperty("id"));
-            assertEquals("id", departmentVertexType.getProperty("id").getName());
-            assertEquals(OType.STRING, departmentVertexType.getProperty("id").getType());
-            assertEquals(false, departmentVertexType.getProperty("id").isMandatory());
-            assertEquals(false, departmentVertexType.getProperty("id").isReadonly());
-            assertEquals(false, departmentVertexType.getProperty("id").isNotNull());
+      assertNotNull(departmentVertexType.getProperty("departmentName"));
+      assertEquals("departmentName", departmentVertexType.getProperty("departmentName").getName());
+      assertEquals(OType.STRING, departmentVertexType.getProperty("departmentName").getType());
+      assertEquals(true, departmentVertexType.getProperty("departmentName").isMandatory());
+      assertEquals(false, departmentVertexType.getProperty("departmentName").isReadonly());
+      assertEquals(true, departmentVertexType.getProperty("departmentName").isNotNull());
 
-            assertNotNull(departmentVertexType.getProperty("departmentName"));
-            assertEquals("departmentName", departmentVertexType.getProperty("departmentName").getName());
-            assertEquals(OType.STRING, departmentVertexType.getProperty("departmentName").getType());
-            assertEquals(true, departmentVertexType.getProperty("departmentName").isMandatory());
-            assertEquals(false, departmentVertexType.getProperty("departmentName").isReadonly());
-            assertEquals(true, departmentVertexType.getProperty("departmentName").isNotNull());
+      assertNotNull(departmentVertexType.getProperty("location"));
+      assertEquals("location", departmentVertexType.getProperty("location").getName());
+      assertEquals(OType.STRING, departmentVertexType.getProperty("location").getType());
+      assertEquals(true, departmentVertexType.getProperty("location").isMandatory());
+      assertEquals(false, departmentVertexType.getProperty("location").isReadonly());
+      assertEquals(true, departmentVertexType.getProperty("location").isNotNull());
 
-            assertNotNull(departmentVertexType.getProperty("location"));
-            assertEquals("location", departmentVertexType.getProperty("location").getName());
-            assertEquals(OType.STRING, departmentVertexType.getProperty("location").getType());
-            assertEquals(true, departmentVertexType.getProperty("location").isMandatory());
-            assertEquals(false, departmentVertexType.getProperty("location").isReadonly());
-            assertEquals(true, departmentVertexType.getProperty("location").isNotNull());
+      assertNull(departmentVertexType.getProperty("updatedOn"));
 
-            assertNull(departmentVertexType.getProperty("updatedOn"));
+      // edges check
+      assertNotNull(worksAtEdgeType);
 
-            // edges check
-            assertNotNull(worksAtEdgeType);
+      assertEquals("WorksAt", worksAtEdgeType.getName());
+      assertEquals(1, worksAtEdgeType.propertiesMap().size());
 
-            assertEquals("WorksAt", worksAtEdgeType.getName());
-            assertEquals(1, worksAtEdgeType.propertiesMap().size());
+      assertEquals("since", worksAtEdgeType.getProperty("since").getName());
+      assertEquals(OType.DATE, worksAtEdgeType.getProperty("since").getType());
+      assertEquals(true, worksAtEdgeType.getProperty("since").isMandatory());
+      assertEquals(false, worksAtEdgeType.getProperty("since").isReadonly());
+      assertEquals(false, worksAtEdgeType.getProperty("since").isNotNull());
 
-            assertEquals("since", worksAtEdgeType.getProperty("since").getName());
-            assertEquals(OType.DATE, worksAtEdgeType.getProperty("since").getType());
-            assertEquals(true, worksAtEdgeType.getProperty("since").isMandatory());
-            assertEquals(false, worksAtEdgeType.getProperty("since").isReadonly());
-            assertEquals(false, worksAtEdgeType.getProperty("since").isNotNull());
+      // Indices check
+      assertEquals(true, orientGraph.getRawGraph().getMetadata().getIndexManager().existsIndex("Person.pkey"));
+      assertEquals(true, orientGraph.getRawGraph().getMetadata().getIndexManager().areIndexed("Person", "extKey1", "extKey2"));
 
-            // Indices check
-            assertEquals(true, orientGraph.getRawGraph().getMetadata().getIndexManager().existsIndex("Person.pkey"));
-            assertEquals(true, orientGraph.getRawGraph().getMetadata().getIndexManager().areIndexed("Person", "extKey1", "extKey2"));
+      assertEquals(true, orientGraph.getRawGraph().getMetadata().getIndexManager().existsIndex("Department.pkey"));
+      assertEquals(true, orientGraph.getRawGraph().getMetadata().getIndexManager().areIndexed("Department", "id"));
 
-            assertEquals(true, orientGraph.getRawGraph().getMetadata().getIndexManager().existsIndex("Department.pkey"));
-            assertEquals(true, orientGraph.getRawGraph().getMetadata().getIndexManager().areIndexed("Department", "id"));
+    } catch (Exception e) {
+      e.printStackTrace();
+      fail();
+    } finally {
+      try {
 
-        }catch(Exception e) {
-            e.printStackTrace();
-            fail();
-        }finally {
-            try {
-
-                // Dropping Source DB Schema and OrientGraph
-                String dbDropping = "drop schema public cascade";
-                st.execute(dbDropping);
-                connection.close();
-            }catch(Exception e) {
-                e.printStackTrace();
-                fail();
-            }
-            if(orientGraph != null) {
-                orientGraph.drop();
-                orientGraph.shutdown();
-            }
-        }
-
+        // Dropping Source DB Schema and OrientGraph
+        String dbDropping = "drop schema public cascade";
+        st.execute(dbDropping);
+        connection.close();
+      } catch (Exception e) {
+        e.printStackTrace();
+        fail();
+      }
+      if (orientGraph != null) {
+        orientGraph.drop();
+        orientGraph.shutdown();
+      }
     }
+
+  }
 
 }

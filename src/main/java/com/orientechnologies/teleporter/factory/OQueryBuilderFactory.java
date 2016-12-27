@@ -26,8 +26,7 @@ import com.orientechnologies.teleporter.importengine.rdbms.dbengine.OQueryBuilde
 
 /**
  * @author Gabriele Ponzi
- * @email  <g.ponzi--at--orientdb.com>
- *
+ * @email <g.ponzi--at--orientdb.com>
  */
 
 public class OQueryBuilderFactory {
@@ -35,27 +34,34 @@ public class OQueryBuilderFactory {
   public OQueryBuilder buildQueryBuilder(String driver) {
     OQueryBuilder queryBuilder;
 
-    switch(driver) {
+    switch (driver) {
 
-      case "oracle.jdbc.driver.OracleDriver": queryBuilder = new OCommonQueryBuilder();
-        break;
+    case "oracle.jdbc.driver.OracleDriver":
+      queryBuilder = new OCommonQueryBuilder();
+      break;
 
-      case "com.microsoft.sqlserver.jdbc.SQLServerDriver": queryBuilder = new OCommonQueryBuilder();
-        break;
+    case "com.microsoft.sqlserver.jdbc.SQLServerDriver":
+      queryBuilder = new OCommonQueryBuilder();
+      break;
 
-      case "com.mysql.jdbc.Driver":   queryBuilder = new OMysqlQueryBuilder();
-        break;
+    case "com.mysql.jdbc.Driver":
+      queryBuilder = new OMysqlQueryBuilder();
+      break;
 
-      case "org.postgresql.Driver":   queryBuilder = new OPostgreSQLQueryBuilder();
-        break;
+    case "org.postgresql.Driver":
+      queryBuilder = new OPostgreSQLQueryBuilder();
+      break;
 
-      case "org.hsqldb.jdbc.JDBCDriver": queryBuilder = new OCommonQueryBuilder();
-        break;
+    case "org.hsqldb.jdbc.JDBCDriver":
+      queryBuilder = new OCommonQueryBuilder();
+      break;
 
-      default :  queryBuilder = new OCommonQueryBuilder();
-        OTeleporterContext.getInstance().getStatistics().warningMessages.add("Driver " + driver + " is not completely supported, the common query builder will be adopted for the case-sensitive queries. "
-                + "Thus problems may occur during the querying.");
-        break;
+    default:
+      queryBuilder = new OCommonQueryBuilder();
+      OTeleporterContext.getInstance().getStatistics().warningMessages.add("Driver " + driver
+          + " is not completely supported, the common query builder will be adopted for the case-sensitive queries. "
+          + "Thus problems may occur during the querying.");
+      break;
     }
 
     return queryBuilder;

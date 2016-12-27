@@ -30,54 +30,47 @@ import java.util.Set;
  * meta-data useful for records importing.
  *
  * @author Gabriele Ponzi
- * @email  <g.ponzi--at--orientdb.com>
- *
+ * @email <g.ponzi--at--orientdb.com>
  */
 
 public class OHierarchicalBag {
 
-  private Map<Integer,Set<OEntity>> depth2entities;
-  private String inheritancePattern;
+  private Map<Integer, Set<OEntity>> depth2entities;
+  private String                     inheritancePattern;
 
-  private String discriminatorColumn;
-  private Map<String,String> entityName2discriminatorValue;
+  private String              discriminatorColumn;
+  private Map<String, String> entityName2discriminatorValue;
 
   public OHierarchicalBag() {
-    this.depth2entities = new LinkedHashMap<Integer,Set<OEntity>>();
-    this.entityName2discriminatorValue = new HashMap<String,String>();
+    this.depth2entities = new LinkedHashMap<Integer, Set<OEntity>>();
+    this.entityName2discriminatorValue = new HashMap<String, String>();
   }
 
   public OHierarchicalBag(String inheritancePattern) {
     this.inheritancePattern = inheritancePattern;
-    this.depth2entities = new HashMap<Integer,Set<OEntity>>();
-    this.entityName2discriminatorValue = new HashMap<String,String>();
+    this.depth2entities = new HashMap<Integer, Set<OEntity>>();
+    this.entityName2discriminatorValue = new HashMap<String, String>();
   }
-
 
   public Map<Integer, Set<OEntity>> getDepth2entities() {
     return this.depth2entities;
   }
 
-
   public void setDepth2entities(Map<Integer, Set<OEntity>> depth2entities) {
     this.depth2entities = depth2entities;
   }
-
 
   public String getInheritancePattern() {
     return this.inheritancePattern;
   }
 
-
   public void setInheritancePattern(String inheritancePattern) {
     this.inheritancePattern = inheritancePattern;
   }
 
-
   public String getDiscriminatorColumn() {
     return this.discriminatorColumn;
   }
-
 
   public void setDiscriminatorColumn(String discriminatorColumn) {
     this.discriminatorColumn = discriminatorColumn;
@@ -90,7 +83,6 @@ public class OHierarchicalBag {
   public void setEntityName2discriminatorValue(Map<String, String> entityName2discriminatorValue) {
     this.entityName2discriminatorValue = entityName2discriminatorValue;
   }
-
 
   @Override
   public int hashCode() {
@@ -116,18 +108,17 @@ public class OHierarchicalBag {
     it = that.getDepth2entities().get(0).iterator();
     OEntity thatRootEntity = it.next();
 
-    if(this.inheritancePattern.equals(that.getInheritancePattern()) && rootEntity.getName().equals(thatRootEntity.getName())) {
+    if (this.inheritancePattern.equals(that.getInheritancePattern()) && rootEntity.getName().equals(thatRootEntity.getName())) {
       return true;
     }
     return false;
   }
 
-
   public OSourceDatabaseInfo getSourceDataseInfo() {
 
     Set<OEntity> entities = this.getDepth2entities().get(0);
     Iterator<OEntity> it = entities.iterator();
-    if(it.hasNext()) {
+    if (it.hasNext()) {
       return it.next().getSourceDataseInfo();
     }
     return null;

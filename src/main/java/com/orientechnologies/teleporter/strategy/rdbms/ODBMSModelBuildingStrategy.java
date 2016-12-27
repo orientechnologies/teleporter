@@ -38,61 +38,63 @@ import java.util.List;
 
 /**
  * @author Gabriele Ponzi
- * @email  <g.ponzi--at--orientdb.com>
- *
+ * @email <g.ponzi--at--orientdb.com>
  */
 
 public abstract class ODBMSModelBuildingStrategy implements OWorkflowStrategy {
 
-    protected OER2GraphMapper mapper;
+  protected OER2GraphMapper mapper;
 
-    public ODBMSModelBuildingStrategy() {}
+  public ODBMSModelBuildingStrategy() {
+  }
 
-    @Override
-    public ODocument executeStrategy(OSourceInfo sourceInfo, String outOrientGraphUri, String chosenMapper, String xmlPath, String nameResolverConvention,
-                                     List<String> includedTables, List<String> excludedTables, ODocument migrationConfigDoc) {
+  @Override
+  public ODocument executeStrategy(OSourceInfo sourceInfo, String outOrientGraphUri, String chosenMapper, String xmlPath,
+      String nameResolverConvention, List<String> includedTables, List<String> excludedTables, ODocument migrationConfigDoc) {
 
-        OSourceDatabaseInfo sourceDBInfo = (OSourceDatabaseInfo) sourceInfo;
-        Date globalStart = new Date();
+    OSourceDatabaseInfo sourceDBInfo = (OSourceDatabaseInfo) sourceInfo;
+    Date globalStart = new Date();
 
-        ODataTypeHandlerFactory dataTypeHandlerFactory = new ODataTypeHandlerFactory();
-        ODBMSDataTypeHandler handler = (ODBMSDataTypeHandler) dataTypeHandlerFactory.buildDataTypeHandler(sourceDBInfo.getDriverName());
-        OConfigurationHandler configurationHandler = this.buildConfigurationHandler();
+    ODataTypeHandlerFactory dataTypeHandlerFactory = new ODataTypeHandlerFactory();
+    ODBMSDataTypeHandler handler = (ODBMSDataTypeHandler) dataTypeHandlerFactory.buildDataTypeHandler(sourceDBInfo.getDriverName());
+    OConfigurationHandler configurationHandler = this.buildConfigurationHandler();
 
-        /**
-         *     building configuration
-         */
-        OConfiguration migrationConfig = null;
-        if(migrationConfigDoc != null) {
-            migrationConfig = configurationHandler.buildConfigurationFromJSONDoc(migrationConfigDoc);
-        }
+    /**
+     *     building configuration
+     */
+    OConfiguration migrationConfig = null;
+    if (migrationConfigDoc != null) {
+      migrationConfig = configurationHandler.buildConfigurationFromJSONDoc(migrationConfigDoc);
+    }
 
         /*
          * Step 1,2
          */
-        ONameResolverFactory nameResolverFactory = new ONameResolverFactory();
-        ONameResolver nameResolver = nameResolverFactory.buildNameResolver(nameResolverConvention);
-        OTeleporterContext.getInstance().getStatistics().runningStepNumber = -1;
+    ONameResolverFactory nameResolverFactory = new ONameResolverFactory();
+    ONameResolver nameResolver = nameResolverFactory.buildNameResolver(nameResolverConvention);
+    OTeleporterContext.getInstance().getStatistics().runningStepNumber = -1;
 
-        this.mapper = this.createSchemaMapper(sourceDBInfo, outOrientGraphUri, chosenMapper, xmlPath, nameResolver, handler,
-                includedTables, excludedTables, migrationConfig);
+    this.mapper = this
+        .createSchemaMapper(sourceDBInfo, outOrientGraphUri, chosenMapper, xmlPath, nameResolver, handler, includedTables,
+            excludedTables, migrationConfig);
 
-        Date globalEnd = new Date();
+    Date globalEnd = new Date();
 
-        OTeleporterContext.getInstance().getOutputManager().info("\n\nGraph model building complete in %s\n", OFunctionsHandler.getHMSFormat(globalStart, globalEnd));
-        OTeleporterContext.getInstance().getOutputManager().info(OTeleporterContext.getInstance().getStatistics().toString());
+    OTeleporterContext.getInstance().getOutputManager()
+        .info("\n\nGraph model building complete in %s\n", OFunctionsHandler.getHMSFormat(globalStart, globalEnd));
+    OTeleporterContext.getInstance().getOutputManager().info(OTeleporterContext.getInstance().getStatistics().toString());
 
-        // Building Graph Model mapping (for graph rendering too)
-        OConfiguration configuredGraph = configurationHandler.buildConfigurationFromMapper(this.mapper);
-        ODocument configuredGraphDoc = configurationHandler.buildJSONDocFromConfiguration(configuredGraph);
+    // Building Graph Model mapping (for graph rendering too)
+    OConfiguration configuredGraph = configurationHandler.buildConfigurationFromMapper(this.mapper);
+    ODocument configuredGraphDoc = configurationHandler.buildJSONDocFromConfiguration(configuredGraph);
 
-        return configuredGraphDoc;
-    }
+    return configuredGraphDoc;
+  }
 
-    public abstract OER2GraphMapper createSchemaMapper(OSourceDatabaseInfo sourceDBInfo, String outOrientGraphUri, String chosenMapper,
-                                                       String xmlPath, ONameResolver nameResolver, ODBMSDataTypeHandler handler, List<String> includedTables, List<String> excludedTables,
-                                                       OConfiguration migrationConfig);
+  public abstract OER2GraphMapper createSchemaMapper(OSourceDatabaseInfo sourceDBInfo, String outOrientGraphUri,
+      String chosenMapper, String xmlPath, ONameResolver nameResolver, ODBMSDataTypeHandler handler, List<String> includedTables,
+      List<String> excludedTables, OConfiguration migrationConfig);
 
-    protected abstract OConfigurationHandler buildConfigurationHandler();
+  protected abstract OConfigurationHandler buildConfigurationHandler();
 
 }

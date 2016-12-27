@@ -32,41 +32,44 @@ import java.util.List;
 
 /**
  * @author Gabriele Ponzi
- * @email  <g.ponzi--at--orientdb.com>
- *
+ * @email <g.ponzi--at--orientdb.com>
  */
 
 public class ODBMSSimpleModelBuildingStrategy extends ODBMSModelBuildingStrategy {
 
-    public ODBMSSimpleModelBuildingStrategy() {}
+  public ODBMSSimpleModelBuildingStrategy() {
+  }
 
-    @Override
-    protected OConfigurationHandler buildConfigurationHandler() {
-        return new OConfigurationHandler(false);
-    }
+  @Override
+  protected OConfigurationHandler buildConfigurationHandler() {
+    return new OConfigurationHandler(false);
+  }
 
-    @Override
-    public OER2GraphMapper createSchemaMapper(OSourceDatabaseInfo sourceDBInfo, String outOrientGraphUri, String chosenMapper, String xmlPath, ONameResolver nameResolver, ODBMSDataTypeHandler handler, List<String> includedTables, List<String> excludedTables, OConfiguration migrationConfig) {
+  @Override
+  public OER2GraphMapper createSchemaMapper(OSourceDatabaseInfo sourceDBInfo, String outOrientGraphUri, String chosenMapper,
+      String xmlPath, ONameResolver nameResolver, ODBMSDataTypeHandler handler, List<String> includedTables,
+      List<String> excludedTables, OConfiguration migrationConfig) {
 
-        OMapperFactory mapperFactory = new OMapperFactory();
-        OER2GraphMapper mapper = (OER2GraphMapper) mapperFactory.buildMapper(chosenMapper, sourceDBInfo, xmlPath, includedTables, excludedTables, migrationConfig);
+    OMapperFactory mapperFactory = new OMapperFactory();
+    OER2GraphMapper mapper = (OER2GraphMapper) mapperFactory
+        .buildMapper(chosenMapper, sourceDBInfo, xmlPath, includedTables, excludedTables, migrationConfig);
 
-        // Step 1: DataBase schema building
-        mapper.buildSourceDatabaseSchema();
-        OTeleporterContext.getInstance().getStatistics().notifyListeners();
-        OTeleporterContext.getInstance().getOutputManager().info("\n");
-        OTeleporterContext.getInstance().getOutputManager().debug("\n%s\n", ((OER2GraphMapper)mapper).getDataBaseSchema().toString());
+    // Step 1: DataBase schema building
+    mapper.buildSourceDatabaseSchema();
+    OTeleporterContext.getInstance().getStatistics().notifyListeners();
+    OTeleporterContext.getInstance().getOutputManager().info("\n");
+    OTeleporterContext.getInstance().getOutputManager().debug("\n%s\n", ((OER2GraphMapper) mapper).getDataBaseSchema().toString());
 
-        // Step 2: Graph model building
-        mapper.buildGraphModel(nameResolver);
-        OTeleporterContext.getInstance().getStatistics().notifyListeners();
-        OTeleporterContext.getInstance().getOutputManager().info("\n");
-        OTeleporterContext.getInstance().getOutputManager().debug("\n%s\n", mapper.getGraphModel().toString());
+    // Step 2: Graph model building
+    mapper.buildGraphModel(nameResolver);
+    OTeleporterContext.getInstance().getStatistics().notifyListeners();
+    OTeleporterContext.getInstance().getOutputManager().info("\n");
+    OTeleporterContext.getInstance().getOutputManager().debug("\n%s\n", mapper.getGraphModel().toString());
 
-        // Step 3: eventual migrationConfigDoc applying
-        mapper.applyImportConfiguration();
+    // Step 3: eventual migrationConfigDoc applying
+    mapper.applyImportConfiguration();
 
-        return mapper;
-    }
+    return mapper;
+  }
 
 }

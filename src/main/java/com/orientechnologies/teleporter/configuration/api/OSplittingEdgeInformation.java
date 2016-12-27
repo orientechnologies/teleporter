@@ -19,46 +19,44 @@
 package com.orientechnologies.teleporter.configuration.api;
 
 /**
- *
  * @author Gabriele Ponzi
  * @email <g.ponzi--at--orientdb.com>
- *
  */
 
 public class OSplittingEdgeInformation {
 
-    private String fromVertexClass;     // mandatory
-    private String toVertexClass;       // mandatory
-    private String sourceTable;         // mandatory
+  private String fromVertexClass;     // mandatory
+  private String toVertexClass;       // mandatory
+  private String sourceTable;         // mandatory
 
-    public OSplittingEdgeInformation(String fromVertexClass, String toVertexClass, String sourceTable) {
-        this.fromVertexClass = fromVertexClass;
-        this.toVertexClass = toVertexClass;
-        this.sourceTable = sourceTable;
-    }
+  public OSplittingEdgeInformation(String fromVertexClass, String toVertexClass, String sourceTable) {
+    this.fromVertexClass = fromVertexClass;
+    this.toVertexClass = toVertexClass;
+    this.sourceTable = sourceTable;
+  }
 
-    public String getFromVertexClass() {
-        return this.fromVertexClass;
-    }
+  public String getFromVertexClass() {
+    return this.fromVertexClass;
+  }
 
-    public void setFromVertexClass(String fromVertexClass) {
-        this.fromVertexClass = fromVertexClass;
-    }
+  public void setFromVertexClass(String fromVertexClass) {
+    this.fromVertexClass = fromVertexClass;
+  }
 
-    public String getToVertexClass() {
-        return this.toVertexClass;
-    }
+  public String getToVertexClass() {
+    return this.toVertexClass;
+  }
 
-    public void setToVertexClass(String toVertexClass) {
-        this.toVertexClass = toVertexClass;
-    }
+  public void setToVertexClass(String toVertexClass) {
+    this.toVertexClass = toVertexClass;
+  }
 
-    public String getSourceTable() {
-        return sourceTable;
-    }
+  public String getSourceTable() {
+    return sourceTable;
+  }
 
-    public void setSourceTable(String sourceTable) {
-        this.sourceTable = sourceTable;
-    }
+  public void setSourceTable(String sourceTable) {
+    this.sourceTable = sourceTable;
+  }
 
 }

@@ -45,8 +45,7 @@ import static org.junit.Assert.*;
 
 /**
  * @author Gabriele Ponzi
- * @email  gabriele.ponzi--at--gmail.com
- *
+ * @email gabriele.ponzi--at--gmail.com
  */
 
 public class OrientDBSchemaWritingWithRelationshipConfigTest {
@@ -55,18 +54,17 @@ public class OrientDBSchemaWritingWithRelationshipConfigTest {
   private OTeleporterContext context;
   private OGraphModelWriter  modelWriter;
   private String             outOrientGraphUri;
-  private final String configDirectEdgesPath = "src/test/resources/configuration-mapping/relationships-mapping-direct-edges.json";
-  private final String configInverseEdgesPath = "src/test/resources/configuration-mapping/relationships-mapping-inverted-edges.json";
-  private final String configJoinTableDirectEdgesPath = "src/test/resources/configuration-mapping/joint-table-relationships-mapping-direct-edges.json";
-  private final String configJoinTableInverseEdgesPath = "src/test/resources/configuration-mapping/joint-table-relationships-mapping-inverted-edges.json";
+  private final String configDirectEdgesPath            = "src/test/resources/configuration-mapping/relationships-mapping-direct-edges.json";
+  private final String configInverseEdgesPath           = "src/test/resources/configuration-mapping/relationships-mapping-inverted-edges.json";
+  private final String configJoinTableDirectEdgesPath   = "src/test/resources/configuration-mapping/joint-table-relationships-mapping-direct-edges.json";
+  private final String configJoinTableInverseEdgesPath  = "src/test/resources/configuration-mapping/joint-table-relationships-mapping-inverted-edges.json";
   private final String configJoinTableInverseEdgesPath2 = "src/test/resources/configuration-mapping/join-table-relationship-mapping-inverted-edges2.json";
   private ODBQueryEngine dbQueryEngine;
-  private String driver = "org.hsqldb.jdbc.JDBCDriver";
-  private String jurl = "jdbc:hsqldb:mem:mydb";
+  private String driver   = "org.hsqldb.jdbc.JDBCDriver";
+  private String jurl     = "jdbc:hsqldb:mem:mydb";
   private String username = "SA";
   private String password = "";
   private OSourceDatabaseInfo sourceDBInfo;
-
 
   @Before
   public void init() {
@@ -108,13 +106,13 @@ public class OrientDBSchemaWritingWithRelationshipConfigTest {
       Class.forName(this.driver);
       connection = DriverManager.getConnection(this.jurl, this.username, this.password);
 
-      String parentTableBuilding = "create memory table EMPLOYEE (EMP_ID varchar(256) not null,"+
-          " FIRST_NAME varchar(256) not null, LAST_NAME varchar(256) not null, PROJECT varchar(256) not null, primary key (EMP_ID))";
+      String parentTableBuilding = "create memory table EMPLOYEE (EMP_ID varchar(256) not null,"
+          + " FIRST_NAME varchar(256) not null, LAST_NAME varchar(256) not null, PROJECT varchar(256) not null, primary key (EMP_ID))";
       st = connection.createStatement();
       st.execute(parentTableBuilding);
 
-      String foreignTableBuilding = "create memory table PROJECT (ID  varchar(256),"+
-          " TITLE varchar(256) not null, PROJECT_MANAGER varchar(256) not null, primary key (ID))";
+      String foreignTableBuilding = "create memory table PROJECT (ID  varchar(256),"
+          + " TITLE varchar(256) not null, PROJECT_MANAGER varchar(256) not null, primary key (ID))";
       st.execute(foreignTableBuilding);
 
       ODocument config = OFileManager.buildJsonFromFile(this.configDirectEdgesPath);
@@ -144,7 +142,7 @@ public class OrientDBSchemaWritingWithRelationshipConfigTest {
        */
 
       orientGraph = new OrientGraphNoTx(this.outOrientGraphUri);
-      OrientVertexType employeeVertexType =  orientGraph.getVertexType("Employee");
+      OrientVertexType employeeVertexType = orientGraph.getVertexType("Employee");
       OrientVertexType projectVertexType = orientGraph.getVertexType("Project");
       OrientEdgeType worksAtProjectEdgeType = orientGraph.getEdgeType("WorksAtProject");
       OrientEdgeType hasManagerEdgeType = orientGraph.getEdgeType("HasManager");
@@ -232,21 +230,21 @@ public class OrientDBSchemaWritingWithRelationshipConfigTest {
       assertEquals(true, orientGraph.getRawGraph().getMetadata().getIndexManager().existsIndex("Project.pkey"));
       assertEquals(true, orientGraph.getRawGraph().getMetadata().getIndexManager().areIndexed("Project", "id"));
 
-    }catch(Exception e) {
+    } catch (Exception e) {
       e.printStackTrace();
       fail();
-    }finally {
+    } finally {
       try {
 
         // Dropping Source DB Schema and OrientGraph
         String dbDropping = "drop schema public cascade";
         st.execute(dbDropping);
         connection.close();
-      }catch(Exception e) {
+      } catch (Exception e) {
         e.printStackTrace();
         fail();
       }
-      if(orientGraph != null) {
+      if (orientGraph != null) {
         orientGraph.drop();
         orientGraph.shutdown();
       }
@@ -294,13 +292,13 @@ public class OrientDBSchemaWritingWithRelationshipConfigTest {
       Class.forName(this.driver);
       connection = DriverManager.getConnection(this.jurl, this.username, this.password);
 
-      String parentTableBuilding = "create memory table EMPLOYEE (EMP_ID varchar(256) not null,"+
-          " FIRST_NAME varchar(256) not null, LAST_NAME varchar(256) not null, PROJECT varchar(256) not null, primary key (EMP_ID))";
+      String parentTableBuilding = "create memory table EMPLOYEE (EMP_ID varchar(256) not null,"
+          + " FIRST_NAME varchar(256) not null, LAST_NAME varchar(256) not null, PROJECT varchar(256) not null, primary key (EMP_ID))";
       st = connection.createStatement();
       st.execute(parentTableBuilding);
 
-      String foreignTableBuilding = "create memory table PROJECT (ID  varchar(256),"+
-          " TITLE varchar(256) not null, PROJECT_MANAGER varchar(256) not null, primary key (ID), "
+      String foreignTableBuilding = "create memory table PROJECT (ID  varchar(256),"
+          + " TITLE varchar(256) not null, PROJECT_MANAGER varchar(256) not null, primary key (ID), "
           + "foreign key (PROJECT_MANAGER) references EMPLOYEE(EMP_ID))";
       st.execute(foreignTableBuilding);
 
@@ -335,7 +333,7 @@ public class OrientDBSchemaWritingWithRelationshipConfigTest {
        */
 
       orientGraph = new OrientGraphNoTx(this.outOrientGraphUri);
-      OrientVertexType employeeVertexType =  orientGraph.getVertexType("Employee");
+      OrientVertexType employeeVertexType = orientGraph.getVertexType("Employee");
       OrientVertexType projectVertexType = orientGraph.getVertexType("Project");
       OrientEdgeType hasEmployeeEdgeType = orientGraph.getEdgeType("HasEmployee");
       OrientEdgeType hasProjectManagerEdgeType = orientGraph.getEdgeType("HasProjectManager");
@@ -417,21 +415,21 @@ public class OrientDBSchemaWritingWithRelationshipConfigTest {
       assertEquals(true, orientGraph.getRawGraph().getMetadata().getIndexManager().existsIndex("Project.pkey"));
       assertEquals(true, orientGraph.getRawGraph().getMetadata().getIndexManager().areIndexed("Project", "id"));
 
-    }catch(Exception e) {
+    } catch (Exception e) {
       e.printStackTrace();
       fail();
-    }finally {
+    } finally {
       try {
 
         // Dropping Source DB Schema and OrientGraph
         String dbDropping = "drop schema public cascade";
         st.execute(dbDropping);
         connection.close();
-      }catch(Exception e) {
+      } catch (Exception e) {
         e.printStackTrace();
         fail();
       }
-      if(orientGraph != null) {
+      if (orientGraph != null) {
         orientGraph.drop();
         orientGraph.shutdown();
       }
@@ -471,17 +469,17 @@ public class OrientDBSchemaWritingWithRelationshipConfigTest {
       Class.forName(this.driver);
       connection = DriverManager.getConnection(this.jurl, this.username, this.password);
 
-      String parentTableBuilding = "create memory table ACTOR (ID varchar(256) not null,"+
-          " FIRST_NAME varchar(256) not null, LAST_NAME varchar(256) not null, primary key (ID))";
+      String parentTableBuilding = "create memory table ACTOR (ID varchar(256) not null,"
+          + " FIRST_NAME varchar(256) not null, LAST_NAME varchar(256) not null, primary key (ID))";
       st = connection.createStatement();
       st.execute(parentTableBuilding);
 
-      String foreignTableBuilding = "create memory table FILM (ID varchar(256),"+
-          " TITLE varchar(256) not null, CATEGORY varchar(256), primary key (ID))";
+      String foreignTableBuilding =
+          "create memory table FILM (ID varchar(256)," + " TITLE varchar(256) not null, CATEGORY varchar(256), primary key (ID))";
       st.execute(foreignTableBuilding);
 
-      String actorFilmTableBuilding = "create memory table ACTOR_FILM (ACTOR_ID  varchar(256),"+
-          " FILM_ID varchar(256) not null, PAYMENT integer, primary key (ACTOR_ID, FILM_ID))";
+      String actorFilmTableBuilding = "create memory table ACTOR_FILM (ACTOR_ID  varchar(256),"
+          + " FILM_ID varchar(256) not null, PAYMENT integer, primary key (ACTOR_ID, FILM_ID))";
       st.execute(actorFilmTableBuilding);
 
       ODocument config = OFileManager.buildJsonFromFile(this.configJoinTableDirectEdgesPath);
@@ -512,7 +510,7 @@ public class OrientDBSchemaWritingWithRelationshipConfigTest {
        */
 
       orientGraph = new OrientGraphNoTx(this.outOrientGraphUri);
-      OrientVertexType actorVertexType =  orientGraph.getVertexType("Actor");
+      OrientVertexType actorVertexType = orientGraph.getVertexType("Actor");
       OrientVertexType filmVertexType = orientGraph.getVertexType("Film");
       OrientEdgeType performsEdgeType = orientGraph.getEdgeType("Performs");
 
@@ -588,23 +586,22 @@ public class OrientDBSchemaWritingWithRelationshipConfigTest {
       assertEquals(true, orientGraph.getRawGraph().getMetadata().getIndexManager().existsIndex("Film.pkey"));
       assertEquals(true, orientGraph.getRawGraph().getMetadata().getIndexManager().areIndexed("Film", "id"));
 
-    }catch(Exception e) {
+    } catch (Exception e) {
       e.printStackTrace();
       fail();
-    }finally {
+    } finally {
       try {
 
         // Dropping Source DB Schema and OrientGraph
         String dbDropping = "drop schema public cascade";
         st.execute(dbDropping);
         connection.close();
-      }catch(Exception e) {
+      } catch (Exception e) {
         e.printStackTrace();
         fail();
       }
     }
   }
-
 
   @Test
 
@@ -641,17 +638,17 @@ public class OrientDBSchemaWritingWithRelationshipConfigTest {
       Class.forName(this.driver);
       connection = DriverManager.getConnection(this.jurl, this.username, this.password);
 
-      String parentTableBuilding = "create memory table ACTOR (ID varchar(256) not null,"+
-          " FIRST_NAME varchar(256) not null, LAST_NAME varchar(256) not null, primary key (ID))";
+      String parentTableBuilding = "create memory table ACTOR (ID varchar(256) not null,"
+          + " FIRST_NAME varchar(256) not null, LAST_NAME varchar(256) not null, primary key (ID))";
       st = connection.createStatement();
       st.execute(parentTableBuilding);
 
-      String foreignTableBuilding = "create memory table FILM (ID varchar(256),"+
-          " TITLE varchar(256) not null, CATEGORY varchar(256), primary key (ID))";
+      String foreignTableBuilding =
+          "create memory table FILM (ID varchar(256)," + " TITLE varchar(256) not null, CATEGORY varchar(256), primary key (ID))";
       st.execute(foreignTableBuilding);
 
-      String actorFilmTableBuilding = "create memory table FILM_ACTOR (ACTOR_ID  varchar(256),"+
-          " FILM_ID varchar(256) not null, PAYMENT integer, primary key (ACTOR_ID, FILM_ID))";
+      String actorFilmTableBuilding = "create memory table FILM_ACTOR (ACTOR_ID  varchar(256),"
+          + " FILM_ID varchar(256) not null, PAYMENT integer, primary key (ACTOR_ID, FILM_ID))";
       st.execute(actorFilmTableBuilding);
 
       ODocument config = OFileManager.buildJsonFromFile(this.configJoinTableInverseEdgesPath);
@@ -682,7 +679,7 @@ public class OrientDBSchemaWritingWithRelationshipConfigTest {
        */
 
       orientGraph = new OrientGraphNoTx(this.outOrientGraphUri);
-      OrientVertexType actorVertexType =  orientGraph.getVertexType("Actor");
+      OrientVertexType actorVertexType = orientGraph.getVertexType("Actor");
       OrientVertexType filmVertexType = orientGraph.getVertexType("Film");
       OrientEdgeType performsEdgeType = orientGraph.getEdgeType("Performs");
 
@@ -758,23 +755,22 @@ public class OrientDBSchemaWritingWithRelationshipConfigTest {
       assertEquals(true, orientGraph.getRawGraph().getMetadata().getIndexManager().existsIndex("Film.pkey"));
       assertEquals(true, orientGraph.getRawGraph().getMetadata().getIndexManager().areIndexed("Film", "id"));
 
-    }catch(Exception e) {
+    } catch (Exception e) {
       e.printStackTrace();
       fail();
-    }finally {
+    } finally {
       try {
 
         // Dropping Source DB Schema and OrientGraph
         String dbDropping = "drop schema public cascade";
         st.execute(dbDropping);
         connection.close();
-      }catch(Exception e) {
+      } catch (Exception e) {
         e.printStackTrace();
         fail();
       }
     }
   }
-
 
   @Test
 
@@ -809,18 +805,18 @@ public class OrientDBSchemaWritingWithRelationshipConfigTest {
       Class.forName(this.driver);
       connection = DriverManager.getConnection(this.jurl, this.username, this.password);
 
-      String parentTableBuilding = "create memory table ACTOR (ID varchar(256) not null,"+
-              " FIRST_NAME varchar(256) not null, LAST_NAME varchar(256) not null, primary key (ID))";
+      String parentTableBuilding = "create memory table ACTOR (ID varchar(256) not null,"
+          + " FIRST_NAME varchar(256) not null, LAST_NAME varchar(256) not null, primary key (ID))";
       st = connection.createStatement();
       st.execute(parentTableBuilding);
 
-      String foreignTableBuilding = "create memory table FILM (ID varchar(256),"+
-              " TITLE varchar(256) not null, CATEGORY varchar(256), primary key (ID))";
+      String foreignTableBuilding =
+          "create memory table FILM (ID varchar(256)," + " TITLE varchar(256) not null, CATEGORY varchar(256), primary key (ID))";
       st.execute(foreignTableBuilding);
 
-      String actorFilmTableBuilding = "create memory table ACTOR_FILM (ACTOR_ID  varchar(256),"+
-              " FILM_ID varchar(256) not null, PAYMENT integer, primary key (ACTOR_ID, FILM_ID)," +
-              " foreign key (ACTOR_ID) references ACTOR(ID), foreign key (FILM_ID) references FILM(ID))";
+      String actorFilmTableBuilding = "create memory table ACTOR_FILM (ACTOR_ID  varchar(256),"
+          + " FILM_ID varchar(256) not null, PAYMENT integer, primary key (ACTOR_ID, FILM_ID),"
+          + " foreign key (ACTOR_ID) references ACTOR(ID), foreign key (FILM_ID) references FILM(ID))";
       st.execute(actorFilmTableBuilding);
 
       ODocument config = OFileManager.buildJsonFromFile(this.configJoinTableDirectEdgesPath);
@@ -851,7 +847,7 @@ public class OrientDBSchemaWritingWithRelationshipConfigTest {
        */
 
       orientGraph = new OrientGraphNoTx(this.outOrientGraphUri);
-      OrientVertexType actorVertexType =  orientGraph.getVertexType("Actor");
+      OrientVertexType actorVertexType = orientGraph.getVertexType("Actor");
       OrientVertexType filmVertexType = orientGraph.getVertexType("Film");
       OrientEdgeType performsEdgeType = orientGraph.getEdgeType("Performs");
 
@@ -927,17 +923,17 @@ public class OrientDBSchemaWritingWithRelationshipConfigTest {
       assertEquals(true, orientGraph.getRawGraph().getMetadata().getIndexManager().existsIndex("Film.pkey"));
       assertEquals(true, orientGraph.getRawGraph().getMetadata().getIndexManager().areIndexed("Film", "id"));
 
-    }catch(Exception e) {
+    } catch (Exception e) {
       e.printStackTrace();
       fail();
-    }finally {
+    } finally {
       try {
 
         // Dropping Source DB Schema and OrientGraph
         String dbDropping = "drop schema public cascade";
         st.execute(dbDropping);
         connection.close();
-      }catch(Exception e) {
+      } catch (Exception e) {
         e.printStackTrace();
         fail();
       }
@@ -979,18 +975,18 @@ public class OrientDBSchemaWritingWithRelationshipConfigTest {
       Class.forName(this.driver);
       connection = DriverManager.getConnection(this.jurl, this.username, this.password);
 
-      String parentTableBuilding = "create memory table ACTOR (ID varchar(256) not null,"+
-              " FIRST_NAME varchar(256) not null, LAST_NAME varchar(256) not null, primary key (ID))";
+      String parentTableBuilding = "create memory table ACTOR (ID varchar(256) not null,"
+          + " FIRST_NAME varchar(256) not null, LAST_NAME varchar(256) not null, primary key (ID))";
       st = connection.createStatement();
       st.execute(parentTableBuilding);
 
-      String foreignTableBuilding = "create memory table FILM (ID varchar(256),"+
-              " TITLE varchar(256) not null, CATEGORY varchar(256), primary key (ID))";
+      String foreignTableBuilding =
+          "create memory table FILM (ID varchar(256)," + " TITLE varchar(256) not null, CATEGORY varchar(256), primary key (ID))";
       st.execute(foreignTableBuilding);
 
-      String actorFilmTableBuilding = "create memory table FILM_ACTOR (ACTOR_ID  varchar(256),"+
-              " FILM_ID varchar(256) not null, PAYMENT integer, primary key (ACTOR_ID, FILM_ID)," +
-              " foreign key (ACTOR_ID) references ACTOR(ID), foreign key (FILM_ID) references FILM(ID))";
+      String actorFilmTableBuilding = "create memory table FILM_ACTOR (ACTOR_ID  varchar(256),"
+          + " FILM_ID varchar(256) not null, PAYMENT integer, primary key (ACTOR_ID, FILM_ID),"
+          + " foreign key (ACTOR_ID) references ACTOR(ID), foreign key (FILM_ID) references FILM(ID))";
       st.execute(actorFilmTableBuilding);
 
       ODocument config = OFileManager.buildJsonFromFile(this.configJoinTableInverseEdgesPath2);
@@ -1021,7 +1017,7 @@ public class OrientDBSchemaWritingWithRelationshipConfigTest {
        */
 
       orientGraph = new OrientGraphNoTx(this.outOrientGraphUri);
-      OrientVertexType actorVertexType =  orientGraph.getVertexType("Actor");
+      OrientVertexType actorVertexType = orientGraph.getVertexType("Actor");
       OrientVertexType filmVertexType = orientGraph.getVertexType("Film");
       OrientEdgeType featuresEdgeType = orientGraph.getEdgeType("Features");
 
@@ -1097,17 +1093,17 @@ public class OrientDBSchemaWritingWithRelationshipConfigTest {
       assertEquals(true, orientGraph.getRawGraph().getMetadata().getIndexManager().existsIndex("Film.pkey"));
       assertEquals(true, orientGraph.getRawGraph().getMetadata().getIndexManager().areIndexed("Film", "id"));
 
-    }catch(Exception e) {
+    } catch (Exception e) {
       e.printStackTrace();
       fail();
-    }finally {
+    } finally {
       try {
 
         // Dropping Source DB Schema and OrientGraph
         String dbDropping = "drop schema public cascade";
         st.execute(dbDropping);
         connection.close();
-      }catch(Exception e) {
+      } catch (Exception e) {
         e.printStackTrace();
         fail();
       }

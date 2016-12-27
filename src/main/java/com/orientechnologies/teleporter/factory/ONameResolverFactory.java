@@ -26,10 +26,9 @@ import com.orientechnologies.teleporter.nameresolver.OOriginalConventionNameReso
 /**
  * Factory used to instantiate a specific NameResolver starting from its name.
  * If the name is not specified (null value) a JavaConventionNameResolver is instantiated.
- *  
- * @author Gabriele Ponzi
- * @email  <g.ponzi--at--orientdb.com>
  *
+ * @author Gabriele Ponzi
+ * @email <g.ponzi--at--orientdb.com>
  */
 
 public class ONameResolverFactory {
@@ -37,22 +36,24 @@ public class ONameResolverFactory {
   public ONameResolver buildNameResolver(String nameResolverConvention) {
     ONameResolver nameResolver = null;
 
-
-    if(nameResolverConvention == null)  {
+    if (nameResolverConvention == null) {
       nameResolver = new OOriginalConventionNameResolver();
-    }
-    else {
-      switch(nameResolverConvention) {
+    } else {
+      switch (nameResolverConvention) {
 
-      case "java": nameResolver = new OJavaConventionNameResolver();
-      break;
+      case "java":
+        nameResolver = new OJavaConventionNameResolver();
+        break;
 
-      case "original": nameResolver = new OOriginalConventionNameResolver();
-      break;
+      case "original":
+        nameResolver = new OOriginalConventionNameResolver();
+        break;
 
-      default : nameResolver = new OOriginalConventionNameResolver();
-        OTeleporterContext.getInstance().getStatistics().warningMessages.add("Name resolver convention '" + nameResolverConvention + "' not found, the original name convention will be adopted.");
-      break;
+      default:
+        nameResolver = new OOriginalConventionNameResolver();
+        OTeleporterContext.getInstance().getStatistics().warningMessages.add(
+            "Name resolver convention '" + nameResolverConvention + "' not found, the original name convention will be adopted.");
+        break;
 
       }
     }

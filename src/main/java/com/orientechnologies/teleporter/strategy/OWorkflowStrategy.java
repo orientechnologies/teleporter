@@ -26,15 +26,14 @@ import java.util.List;
 
 /**
  * Interface that represents a specific approach of data importing.
- * 
+ *
  * @author Gabriele Ponzi
- * @email  <g.ponzi--at--orientdb.com>
- * 
+ * @email <g.ponzi--at--orientdb.com>
  */
 
 public interface OWorkflowStrategy {
 
-  ODocument executeStrategy(OSourceInfo sourceInfo, String outOrientGraphUri, String chosenMapper, String xmlPath, String nameResolverConvention,
-                            List<String> includedTables, List<String> excludedTables, ODocument migrationConfig);
+  ODocument executeStrategy(OSourceInfo sourceInfo, String outOrientGraphUri, String chosenMapper, String xmlPath,
+      String nameResolverConvention, List<String> includedTables, List<String> excludedTables, ODocument migrationConfig);
 
 }

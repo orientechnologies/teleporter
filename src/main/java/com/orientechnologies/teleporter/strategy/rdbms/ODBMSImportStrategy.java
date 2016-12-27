@@ -52,20 +52,19 @@ import java.util.*;
 
 /**
  * @author Gabriele Ponzi
- * @email  <g.ponzi--at--orientdb.com>
- *
+ * @email <g.ponzi--at--orientdb.com>
  */
 
 public abstract class ODBMSImportStrategy implements OWorkflowStrategy {
 
   protected OER2GraphMapper mapper;
 
-
-  public ODBMSImportStrategy() {}
+  public ODBMSImportStrategy() {
+  }
 
   @Override
-  public ODocument executeStrategy(OSourceInfo sourceInfo, String outOrientGraphUri, String chosenMapper, String xmlPath, String nameResolverConvention,
-                                   List<String> includedTables, List<String> excludedTables, ODocument migrationConfigDoc) {
+  public ODocument executeStrategy(OSourceInfo sourceInfo, String outOrientGraphUri, String chosenMapper, String xmlPath,
+      String nameResolverConvention, List<String> includedTables, List<String> excludedTables, ODocument migrationConfigDoc) {
 
     OSourceDatabaseInfo sourceDBInfo = (OSourceDatabaseInfo) sourceInfo;
     Date globalStart = new Date();
@@ -78,7 +77,7 @@ public abstract class ODBMSImportStrategy implements OWorkflowStrategy {
      *     building configuration
      */
     OConfiguration migrationConfig = null;
-    if(migrationConfigDoc != null) {
+    if (migrationConfigDoc != null) {
       migrationConfig = configurationHandler.buildConfigurationFromJSONDoc(migrationConfigDoc);
     }
 
@@ -89,8 +88,9 @@ public abstract class ODBMSImportStrategy implements OWorkflowStrategy {
     ONameResolver nameResolver = nameResolverFactory.buildNameResolver(nameResolverConvention);
     OTeleporterContext.getInstance().getStatistics().runningStepNumber = -1;
 
-    this.mapper = this.createSchemaMapper(sourceDBInfo, outOrientGraphUri, chosenMapper, xmlPath, nameResolver, handler,
-            includedTables, excludedTables, migrationConfig);
+    this.mapper = this
+        .createSchemaMapper(sourceDBInfo, outOrientGraphUri, chosenMapper, xmlPath, nameResolver, handler, includedTables,
+            excludedTables, migrationConfig);
 
     // Step 4: Import
     this.executeImport(sourceDBInfo, outOrientGraphUri, mapper, handler);
@@ -100,7 +100,8 @@ public abstract class ODBMSImportStrategy implements OWorkflowStrategy {
 
     Date globalEnd = new Date();
 
-    OTeleporterContext.getInstance().getOutputManager().info("\n\nImporting complete in %s\n", OFunctionsHandler.getHMSFormat(globalStart, globalEnd));
+    OTeleporterContext.getInstance().getOutputManager()
+        .info("\n\nImporting complete in %s\n", OFunctionsHandler.getHMSFormat(globalStart, globalEnd));
     OTeleporterContext.getInstance().getOutputManager().info(OTeleporterContext.getInstance().getStatistics().toString());
 
     // Building Graph Model mapping (for graph rendering too)
@@ -113,13 +114,12 @@ public abstract class ODBMSImportStrategy implements OWorkflowStrategy {
 
   protected abstract OConfigurationHandler buildConfigurationHandler();
 
-  public abstract OER2GraphMapper createSchemaMapper(OSourceDatabaseInfo sourceDBInfo, String outOrientGraphUri, String chosenMapper,
-                                                     String xmlPath, ONameResolver nameResolver, ODBMSDataTypeHandler handler, List<String> includedTables, List<String> excludedTables,
-                                                     OConfiguration migrationConfig);
+  public abstract OER2GraphMapper createSchemaMapper(OSourceDatabaseInfo sourceDBInfo, String outOrientGraphUri,
+      String chosenMapper, String xmlPath, ONameResolver nameResolver, ODBMSDataTypeHandler handler, List<String> includedTables,
+      List<String> excludedTables, OConfiguration migrationConfig);
 
-
-  public abstract void executeImport(OSourceDatabaseInfo sourceDBInfo, String outOrientGraphUri, OSource2GraphMapper mapper, ODBMSDataTypeHandler handler);
-
+  public abstract void executeImport(OSourceDatabaseInfo sourceDBInfo, String outOrientGraphUri, OSource2GraphMapper mapper,
+      ODBMSDataTypeHandler handler);
 
   /**
    * It imports all vertices into a Vertex Class (so 1 or more mapped entities). It's used to import all the vertices and the edges
@@ -133,8 +133,9 @@ public abstract class ODBMSImportStrategy implements OWorkflowStrategy {
    * @param orientGraph
    */
 
-  protected void importRecordsFromEntitiesIntoVertexClass(List<OEntity> mappedEntities, String[][] aggregationColumns, OVertexType currentOutVertexType, ODBQueryEngine dbQueryEngine,
-                                                          OGraphEngineForDB graphEngine, OrientBaseGraph orientGraph) throws SQLException {
+  protected void importRecordsFromEntitiesIntoVertexClass(List<OEntity> mappedEntities, String[][] aggregationColumns,
+      OVertexType currentOutVertexType, ODBQueryEngine dbQueryEngine, OGraphEngineForDB graphEngine, OrientBaseGraph orientGraph)
+      throws SQLException {
 
     OTeleporterStatistics statistics = OTeleporterContext.getInstance().getStatistics();
     OQueryResult queryResult;
@@ -161,11 +162,13 @@ public abstract class ODBMSImportStrategy implements OWorkflowStrategy {
 
       // upsert of the vertex
       currentRecord = records;
-      OrientVertex currentOutVertex = (OrientVertex) graphEngine.upsertVisitedVertex(orientGraph, currentRecord, currentOutVertexType, currentOutVertexType.getExternalKey());
+      OrientVertex currentOutVertex = (OrientVertex) graphEngine
+          .upsertVisitedVertex(orientGraph, currentRecord, currentOutVertexType, currentOutVertexType.getExternalKey());
 
       // navigating relationships outgoing from the current mapped entities and for each of them all the correspondent edges are built
       // and all the in-vertices are upserted in the graph database
-      this.navigateRelationshipsAndInsertReachableVertices(orientGraph, graphEngine, mappedEntities, currentRecord, currentOutVertexType, currentOutVertex);
+      this.navigateRelationshipsAndInsertReachableVertices(orientGraph, graphEngine, mappedEntities, currentRecord,
+          currentOutVertexType, currentOutVertex);
 
       // Statistics updated
       statistics.analyzedRecords += 1 * numberOfAggregatedClasses;
@@ -187,10 +190,12 @@ public abstract class ODBMSImportStrategy implements OWorkflowStrategy {
    * @param mappedEntities
    * @param currentRecord
    * @param outVertex
+   *
    * @throws SQLException
    */
-  private void navigateRelationshipsAndInsertReachableVertices(OrientBaseGraph orientGraph, OGraphEngineForDB graphEngine, List<OEntity> mappedEntities,
-                                                               ResultSet currentRecord, OVertexType outVertexType, OrientVertex outVertex) throws SQLException {
+  private void navigateRelationshipsAndInsertReachableVertices(OrientBaseGraph orientGraph, OGraphEngineForDB graphEngine,
+      List<OEntity> mappedEntities, ResultSet currentRecord, OVertexType outVertexType, OrientVertex outVertex)
+      throws SQLException {
 
     // for each attribute of the entity belonging to a foreign key, correspondent relationship is
     // built as edge and for the referenced record a new clean vertex is built (only id will be set)
@@ -199,15 +204,16 @@ public abstract class ODBMSImportStrategy implements OWorkflowStrategy {
         OEntity currentParentEntity = mapper.getDataBaseSchema().getEntityByName(currentRelationship.getParentEntity().getName());
         OVertexType currentInVertexType = mapper.getVertexTypeByEntityAndRelationship(currentParentEntity, currentRelationship);
         OEdgeType edgeType = mapper.getRelationship2edgeType().get(currentRelationship);
-        graphEngine.upsertReachedVertexWithEdge(orientGraph, currentRecord, currentRelationship, outVertex, currentInVertexType, edgeType.getName());
+        graphEngine.upsertReachedVertexWithEdge(orientGraph, currentRecord, currentRelationship, outVertex, currentInVertexType,
+            edgeType.getName());
       }
     }
   }
 
-
   /**
-   * It imports all the records from a split entity into all the Vertex Classes mapped with it (so 1 entity mapped with several vertex classes).
-   * It's used to import all the vertices and all the "splitting-edges" belonging to an Edge Class that connects those vertices coming from the same record.
+   * It imports all the records from a split entity into all the Vertex Classes mapped with it (so 1 entity mapped with several
+   * vertex classes). It's used to import all the vertices and all the "splitting-edges" belonging to an Edge Class that connects
+   * those vertices coming from the same record.
    *
    * @param mappedVertices
    * @param dbQueryEngine
@@ -215,8 +221,8 @@ public abstract class ODBMSImportStrategy implements OWorkflowStrategy {
    * @param orientGraph
    */
 
-  public void importRecordsFromSplitEntityIntoVertexClasses(List<OEntity> mappedEntities, List<OVertexType> mappedVertices, ODBQueryEngine dbQueryEngine,
-                                                            OGraphEngineForDB graphEngine, OrientBaseGraph orientGraph) throws SQLException {
+  public void importRecordsFromSplitEntityIntoVertexClasses(List<OEntity> mappedEntities, List<OVertexType> mappedVertices,
+      ODBQueryEngine dbQueryEngine, OGraphEngineForDB graphEngine, OrientBaseGraph orientGraph) throws SQLException {
 
     OTeleporterStatistics statistics = OTeleporterContext.getInstance().getStatistics();
     OEntity entity = mappedEntities.get(0);     // we have just a mapped entity in the splitting case
@@ -228,24 +234,25 @@ public abstract class ODBMSImportStrategy implements OWorkflowStrategy {
     ResultSet currentRecord = null;
 
     // each record is imported as many vertices in the orient graph
-    while(records.next()) {
+    while (records.next()) {
 
       currentRecord = records;
 
       // building vertices from the record
-      Map<String,OrientVertex> className2insertedVertex = new LinkedHashMap<String,OrientVertex>();
-      for(OVertexType currentVertexType: mappedVertices) {
-        OrientVertex currentOutVertex = (OrientVertex) graphEngine.upsertVisitedVertex(orientGraph, currentRecord, currentVertexType, currentVertexType.getExternalKey());
+      Map<String, OrientVertex> className2insertedVertex = new LinkedHashMap<String, OrientVertex>();
+      for (OVertexType currentVertexType : mappedVertices) {
+        OrientVertex currentOutVertex = (OrientVertex) graphEngine
+            .upsertVisitedVertex(orientGraph, currentRecord, currentVertexType, currentVertexType.getExternalKey());
 
-        boolean navigate =  false;
-        for(ORelationship currentRelationship: entity.getAllOutCanonicalRelationships()) {
+        boolean navigate = false;
+        for (ORelationship currentRelationship : entity.getAllOutCanonicalRelationships()) {
           OEdgeType currEdgeType = mapper.getRelationship2edgeType().get(currentRelationship);
-          if(currEdgeType != null) {
-            if(currentRelationship.getDirection().equals("direct") && currentVertexType.getOutEdgesType().contains(currEdgeType)) {
+          if (currEdgeType != null) {
+            if (currentRelationship.getDirection().equals("direct") && currentVertexType.getOutEdgesType().contains(currEdgeType)) {
               navigate = true;
               break;
-            }
-            else if(currentRelationship.getDirection().equals("inverse") && currentVertexType.getInEdgesType().contains(currEdgeType)) {
+            } else if (currentRelationship.getDirection().equals("inverse") && currentVertexType.getInEdgesType()
+                .contains(currEdgeType)) {
               navigate = true;
               break;
             }
@@ -254,8 +261,9 @@ public abstract class ODBMSImportStrategy implements OWorkflowStrategy {
 
         // navigating relationships outgoing from the current mapped entities and for each of them all the correspondent edges are built
         // and all the in-vertices are upserted in the graph database
-        if(navigate) {
-          this.navigateRelationshipsAndInsertReachableVertices(orientGraph, graphEngine, mappedEntities, currentRecord, currentVertexType, currentOutVertex);
+        if (navigate) {
+          this.navigateRelationshipsAndInsertReachableVertices(orientGraph, graphEngine, mappedEntities, currentRecord,
+              currentVertexType, currentOutVertex);
         }
 
         className2insertedVertex.put(currentVertexType.getName(), currentOutVertex);
@@ -270,33 +278,38 @@ public abstract class ODBMSImportStrategy implements OWorkflowStrategy {
       // checking that: total number of edges = number of mapped vertices -1
       int numberOfEdges = classMappers.size();
       int numberOfVertices = mappedVertices.size();
-      if(numberOfEdges != numberOfVertices -1) {
-        OTeleporterContext.getInstance().getOutputManager()
-                .error("There are %s edges-type and %s vertices-type detected for the split entity %s. " +
-                        "For a correct splitting you must have: total number of edges = number of mapped vertices -1.", numberOfEdges, numberOfVertices, entity.getName());
+      if (numberOfEdges != numberOfVertices - 1) {
+        OTeleporterContext.getInstance().getOutputManager().error(
+            "There are %s edges-type and %s vertices-type detected for the split entity %s. "
+                + "For a correct splitting you must have: total number of edges = number of mapped vertices -1.", numberOfEdges,
+            numberOfVertices, entity.getName());
         throw new OTeleporterRuntimeException();
       }
 
-      for(OEEClassMapper classMapper: classMappers) {
+      for (OEEClassMapper classMapper : classMappers) {
         OEdgeType currentEdgeType = classMapper.getEdgeType();
         String currentOutVertexName = currentEdgeType.getOutVertexType().getName();
         String currentInVertexName = currentEdgeType.getInVertexType().getName();
         OrientVertex currentOutVertex = className2insertedVertex.get(currentOutVertexName);
         OrientVertex currentInVertex = className2insertedVertex.get(currentInVertexName);
 
-        Map<String,Object> properties = new LinkedHashMap<String,Object>();
+        Map<String, Object> properties = new LinkedHashMap<String, Object>();
 
         // filling properties
-        for(OModelProperty currentProperty: currentEdgeType.getAllProperties()) {
+        for (OModelProperty currentProperty : currentEdgeType.getAllProperties()) {
           if (currentProperty.isIncludedInMigration()) {
             String currentPropertyName = currentProperty.getName();
-            String currentPropertyType = OTeleporterContext.getInstance().getDataTypeHandler().resolveType(currentProperty.getOriginalType().toLowerCase(Locale.ENGLISH)).toString();
+            String currentPropertyType = OTeleporterContext.getInstance().getDataTypeHandler()
+                .resolveType(currentProperty.getOriginalType().toLowerCase(Locale.ENGLISH)).toString();
             String currentOriginalType = currentProperty.getOriginalType();
 
             try {
-              graphEngine.extractPropertiesFromRecordIntoEdge(currentRecord, properties, currentPropertyType, currentPropertyName, currentOriginalType, currentEdgeType);
+              graphEngine.extractPropertiesFromRecordIntoEdge(currentRecord, properties, currentPropertyType, currentPropertyName,
+                  currentOriginalType, currentEdgeType);
             } catch (Exception e) {
-              String mess = "Problem encountered during the extraction of the values from the records. Edge Type: " + currentEdgeType.getName() + ";\tProperty: " + currentPropertyName;
+              String mess =
+                  "Problem encountered during the extraction of the values from the records. Edge Type: " + currentEdgeType
+                      .getName() + ";\tProperty: " + currentPropertyName;
               OTeleporterContext.getInstance().printExceptionMessage(e, mess, "error");
               OTeleporterContext.getInstance().printExceptionStackTrace(e, "debug");
             }
@@ -313,37 +326,36 @@ public abstract class ODBMSImportStrategy implements OWorkflowStrategy {
     queryResult.closeAll();
 
     // setting the vertex type as 'analyzed'
-    for(OVertexType currentVertexType: mappedVertices) {
+    for (OVertexType currentVertexType : mappedVertices) {
       currentVertexType.setAnalyzedInLastMigration(true);
     }
 
   }
 
-
   /**
-   *
    * @param dbQueryEngine
    * @param graphEngine
    * @param orientGraph
    */
 
-  protected void importEntitiesBelongingToHierarchies(ODBQueryEngine dbQueryEngine, OGraphEngineForDB graphEngine, OrientBaseGraph orientGraph) {
+  protected void importEntitiesBelongingToHierarchies(ODBQueryEngine dbQueryEngine, OGraphEngineForDB graphEngine,
+      OrientBaseGraph orientGraph) {
 
     for (OHierarchicalBag bag : this.mapper.getDataBaseSchema().getHierarchicalBags()) {
 
       switch (bag.getInheritancePattern()) {
 
-        case "table-per-hierarchy":
-          this.tablePerHierarchyImport(bag, this.mapper, dbQueryEngine, graphEngine, orientGraph);
-          break;
+      case "table-per-hierarchy":
+        this.tablePerHierarchyImport(bag, this.mapper, dbQueryEngine, graphEngine, orientGraph);
+        break;
 
-        case "table-per-type":
-          this.tablePerTypeImport(bag, this.mapper, dbQueryEngine, graphEngine, orientGraph);
-          break;
+      case "table-per-type":
+        this.tablePerTypeImport(bag, this.mapper, dbQueryEngine, graphEngine, orientGraph);
+        break;
 
-        case "table-per-concrete-type":
-          this.tablePerConcreteTypeImport(bag, this.mapper, dbQueryEngine, graphEngine, orientGraph);
-          break;
+      case "table-per-concrete-type":
+        this.tablePerConcreteTypeImport(bag, this.mapper, dbQueryEngine, graphEngine, orientGraph);
+        break;
 
       }
     }
@@ -352,10 +364,12 @@ public abstract class ODBMSImportStrategy implements OWorkflowStrategy {
   /**
    * Performs import of all records of the entities contained in the hierarchical bag passed as parameter.
    * Adopted in case of "Table per Hierarchy" inheritance strategy.
+   *
    * @param bag
    * @param orientGraph
    */
-  protected void tablePerHierarchyImport(OHierarchicalBag bag, OER2GraphMapper mapper, ODBQueryEngine dbQueryEngine, OGraphEngineForDB graphDBCommandEngine, OrientBaseGraph orientGraph) {
+  protected void tablePerHierarchyImport(OHierarchicalBag bag, OER2GraphMapper mapper, ODBQueryEngine dbQueryEngine,
+      OGraphEngineForDB graphDBCommandEngine, OrientBaseGraph orientGraph) {
 
     try {
 
@@ -375,32 +389,36 @@ public abstract class ODBMSImportStrategy implements OWorkflowStrategy {
       OQueryResult queryResult = null;
       ResultSet records = null;
 
-      for(int i=bag.getDepth2entities().size()-1; i>=0; i--) {
-        for(OEntity currentEntity: bag.getDepth2entities().get(i)) {
+      for (int i = bag.getDepth2entities().size() - 1; i >= 0; i--) {
+        for (OEntity currentEntity : bag.getDepth2entities().get(i)) {
           currentDiscriminatorValue = bag.getEntityName2discriminatorValue().get(currentEntity.getName());
 
           // for each entity in dbSchema all records are retrieved
-          queryResult = dbQueryEngine.getRecordsFromSingleTableByDiscriminatorValue(bag.getDiscriminatorColumn(), currentDiscriminatorValue, physicalCurrentEntity);
+          queryResult = dbQueryEngine
+              .getRecordsFromSingleTableByDiscriminatorValue(bag.getDiscriminatorColumn(), currentDiscriminatorValue,
+                  physicalCurrentEntity);
           records = queryResult.getResult();
           ResultSet currentRecord = null;
 
           currentOutVertexType = mapper.getVertexTypeByEntity(currentEntity);
 
           // each record is imported as vertex in the orient graph
-          while(records.next()) {
+          while (records.next()) {
 
             // upsert of the vertex
             currentRecord = records;
-            currentOutVertex = (OrientVertex) graphDBCommandEngine.upsertVisitedVertex(orientGraph, currentRecord, currentOutVertexType, currentOutVertexType.getExternalKey());
+            currentOutVertex = (OrientVertex) graphDBCommandEngine
+                .upsertVisitedVertex(orientGraph, currentRecord, currentOutVertexType, currentOutVertexType.getExternalKey());
 
             // for each attribute of the entity belonging to the primary key, correspondent relationship is
             // built as edge and for the referenced record a vertex is built (only id)
-            for(OCanonicalRelationship currentRelation: currentEntity.getAllOutCanonicalRelationships()) {
+            for (OCanonicalRelationship currentRelation : currentEntity.getAllOutCanonicalRelationships()) {
 
-              currentParentEntity = mapper.getDataBaseSchema().getEntityByNameIgnoreCase(currentRelation.getParentEntity().getName());
+              currentParentEntity = mapper.getDataBaseSchema()
+                  .getEntityByNameIgnoreCase(currentRelation.getParentEntity().getName());
 
               // checking if parent table belongs to a hierarchical bag
-              if(currentParentEntity.getHierarchicalBag() == null) {
+              if (currentParentEntity.getHierarchicalBag() == null) {
                 currentInVertexType = mapper.getVertexTypeByEntity(currentRelation.getParentEntity());
               }
 
@@ -410,7 +428,7 @@ public abstract class ODBMSImportStrategy implements OWorkflowStrategy {
                 String[] valueOfKey = new String[currentRelation.getFromColumns().size()];
 
                 int index = 0;
-                for(OAttribute foreignAttribute: currentRelation.getFromColumns())  {
+                for (OAttribute foreignAttribute : currentRelation.getFromColumns()) {
                   propertyOfKey[index] = currentRelation.getToColumns().get(index).getName();
                   valueOfKey[index] = currentRecord.getString((foreignAttribute.getName()));
                   index++;
@@ -419,25 +437,28 @@ public abstract class ODBMSImportStrategy implements OWorkflowStrategy {
                 // search is performed only if all the values in the foreign key are different from null (the relationship is inherited and is also consistent)
                 boolean ok = true;
 
-                for(int j=0; j<valueOfKey.length; j++) {
-                  if(valueOfKey[j] == null) {
+                for (int j = 0; j < valueOfKey.length; j++) {
+                  if (valueOfKey[j] == null) {
                     ok = false;
                     break;
                   }
                 }
-                if(ok) {
+                if (ok) {
                   it = currentParentEntity.getHierarchicalBag().getDepth2entities().get(0).iterator();
                   OEntity physicalArrivalEntity = it.next();
-                  String currentArrivalEntityName = searchParentEntityType(currentParentEntity, propertyOfKey, valueOfKey, physicalArrivalEntity, dbQueryEngine);
+                  String currentArrivalEntityName = searchParentEntityType(currentParentEntity, propertyOfKey, valueOfKey,
+                      physicalArrivalEntity, dbQueryEngine);
                   OEntity currentArrivalEntity = mapper.getDataBaseSchema().getEntityByName(currentArrivalEntityName);
                   currentInVertexType = mapper.getVertexTypeByEntity(currentArrivalEntity);
                 }
               }
 
               // if currentInVertexType is null then there isn't a relationship between to records, thus the edge will not be added.
-              if(currentInVertexType != null) {
+              if (currentInVertexType != null) {
                 edgeType = mapper.getRelationship2edgeType().get(currentRelation);
-                graphDBCommandEngine.upsertReachedVertexWithEdge(orientGraph, currentRecord, currentRelation, currentOutVertex, currentInVertexType, edgeType.getName());
+                graphDBCommandEngine
+                    .upsertReachedVertexWithEdge(orientGraph, currentRecord, currentRelation, currentOutVertex, currentInVertexType,
+                        edgeType.getName());
               }
             }
 
@@ -464,17 +485,18 @@ public abstract class ODBMSImportStrategy implements OWorkflowStrategy {
 
   }
 
-
   /**
    * Performs import of all records of the entities contained in the hierarchical bag passed as parameter.
    * Adopted in case of "Table per Type" inheritance strategy.
+   *
    * @param bag
    * @param mapper
    * @param dbQueryEngine
    * @param graphDBCommandEngine
    * @param orientGraph
    */
-  protected void tablePerTypeImport(OHierarchicalBag bag, OER2GraphMapper mapper, ODBQueryEngine dbQueryEngine, OGraphEngineForDB graphDBCommandEngine, OrientBaseGraph orientGraph) {
+  protected void tablePerTypeImport(OHierarchicalBag bag, OER2GraphMapper mapper, ODBQueryEngine dbQueryEngine,
+      OGraphEngineForDB graphDBCommandEngine, OrientBaseGraph orientGraph) {
 
     try {
 
@@ -498,8 +520,8 @@ public abstract class ODBMSImportStrategy implements OWorkflowStrategy {
       Iterator<OEntity> it = bag.getDepth2entities().get(0).iterator();
       OEntity rootEntity = it.next();
 
-      for(int i=bag.getDepth2entities().size()-1; i>=0; i--) {
-        for(OEntity currentEntity: bag.getDepth2entities().get(i)) {
+      for (int i = bag.getDepth2entities().size() - 1; i >= 0; i--) {
+        for (OEntity currentEntity : bag.getDepth2entities().get(i)) {
 
           // for each entity in dbSchema all records are retrieved
           queryResult1 = dbQueryEngine.getRecordsByEntity(currentEntity);
@@ -509,7 +531,7 @@ public abstract class ODBMSImportStrategy implements OWorkflowStrategy {
           currentOutVertexType = mapper.getVertexTypeByEntity(currentEntity);
 
           // each record is imported as vertex in the orient graph
-          while(records.next()) {
+          while (records.next()) {
             queryResult2 = dbQueryEngine.buildAggregateTableFromHierarchicalBag(bag);
             aggregateTableRecords = queryResult2.getResult();
 
@@ -521,15 +543,15 @@ public abstract class ODBMSImportStrategy implements OWorkflowStrategy {
             String[] valueOfKey = new String[rootEntity.getPrimaryKey().getInvolvedAttributes().size()];
             String[] aggregateTablePropertyOfKey = new String[rootEntity.getPrimaryKey().getInvolvedAttributes().size()];
 
-            for(int k=0; k<propertyOfKey.length; k++) {
+            for (int k = 0; k < propertyOfKey.length; k++) {
               propertyOfKey[k] = currentEntity.getPrimaryKey().getInvolvedAttributes().get(k).getName();
             }
 
-            for(int k=0; k<propertyOfKey.length; k++) {
+            for (int k = 0; k < propertyOfKey.length; k++) {
               valueOfKey[k] = currentRecord.getString(propertyOfKey[k]);
             }
 
-            for(int k=0; k<aggregateTablePropertyOfKey.length; k++) {
+            for (int k = 0; k < aggregateTablePropertyOfKey.length; k++) {
               aggregateTablePropertyOfKey[k] = rootEntity.getPrimaryKey().getInvolvedAttributes().get(k).getName();
             }
             // lookup
@@ -538,29 +560,32 @@ public abstract class ODBMSImportStrategy implements OWorkflowStrategy {
             // record imported if is not present in OrientDB
             Set<String> propertiesOfIndex = this.transformAggregateTablePropertyOfKey(aggregateTablePropertyOfKey, currentEntity);
 
-            if(!graphDBCommandEngine.alreadyFullImportedInOrient(orientGraph, fullRecord, currentOutVertexType, propertiesOfIndex)) {
+            if (!graphDBCommandEngine
+                .alreadyFullImportedInOrient(orientGraph, fullRecord, currentOutVertexType, propertiesOfIndex)) {
 
-              currentOutVertex = (OrientVertex) graphDBCommandEngine.upsertVisitedVertex(orientGraph, fullRecord, currentOutVertexType, propertiesOfIndex);
+              currentOutVertex = (OrientVertex) graphDBCommandEngine
+                  .upsertVisitedVertex(orientGraph, fullRecord, currentOutVertexType, propertiesOfIndex);
 
               // for each attribute of the entity belonging to the primary key, correspondent relationship is
               // built as edge and for the referenced record a vertex is built (only id)
-              for(OCanonicalRelationship currentRelation: currentEntity.getAllOutCanonicalRelationships()) {
+              for (OCanonicalRelationship currentRelation : currentEntity.getAllOutCanonicalRelationships()) {
 
-                currentParentEntity = mapper.getDataBaseSchema().getEntityByNameIgnoreCase(currentRelation.getParentEntity().getName());
+                currentParentEntity = mapper.getDataBaseSchema()
+                    .getEntityByNameIgnoreCase(currentRelation.getParentEntity().getName());
                 currentInVertexType = null; // reset for the current iteration
 
                 // checking if parent table belongs to a hierarchical bag
-                if(currentParentEntity.getHierarchicalBag() == null) {
+                if (currentParentEntity.getHierarchicalBag() == null) {
                   currentInVertexType = mapper.getVertexTypeByEntity(currentRelation.getParentEntity());
                 }
 
                 // if the parent entity belongs to hierarchical bag, we need to know which is it the more stringent subclass of the record with a certain id
-                else if(!currentEntity.getHierarchicalBag().equals(currentParentEntity.getHierarchicalBag())){
+                else if (!currentEntity.getHierarchicalBag().equals(currentParentEntity.getHierarchicalBag())) {
                   propertyOfKey = new String[currentRelation.getFromColumns().size()];
                   valueOfKey = new String[currentRelation.getFromColumns().size()];
 
                   int index = 0;
-                  for(OAttribute foreignAttribute: currentRelation.getFromColumns())  {
+                  for (OAttribute foreignAttribute : currentRelation.getFromColumns()) {
                     propertyOfKey[index] = currentRelation.getToColumns().get(index).getName();
                     valueOfKey[index] = fullRecord.getString((foreignAttribute.getName()));
                     index++;
@@ -569,23 +594,26 @@ public abstract class ODBMSImportStrategy implements OWorkflowStrategy {
                   // search is performed only if all the values in the foreign key are different from null (the relationship is inherited and is also consistent)
                   boolean ok = true;
 
-                  for(int j=0; j<valueOfKey.length; j++) {
-                    if(valueOfKey[j] == null) {
+                  for (int j = 0; j < valueOfKey.length; j++) {
+                    if (valueOfKey[j] == null) {
                       ok = false;
                       break;
                     }
                   }
-                  if(ok) {
-                    String currentArrivalEntityName = searchParentEntityType(currentParentEntity, propertyOfKey, valueOfKey, null, dbQueryEngine);
+                  if (ok) {
+                    String currentArrivalEntityName = searchParentEntityType(currentParentEntity, propertyOfKey, valueOfKey, null,
+                        dbQueryEngine);
                     OEntity currentArrivalEntity = mapper.getDataBaseSchema().getEntityByName(currentArrivalEntityName);
                     currentInVertexType = mapper.getVertexTypeByEntity(currentArrivalEntity);
                   }
                 }
 
                 // if currentInVertexType is null then there isn't a relationship between to records, thus the edge will not be added.
-                if(currentInVertexType != null) {
+                if (currentInVertexType != null) {
                   edgeType = mapper.getRelationship2edgeType().get(currentRelation);
-                  graphDBCommandEngine.upsertReachedVertexWithEdge(orientGraph, fullRecord, currentRelation, currentOutVertex, currentInVertexType, edgeType.getName());
+                  graphDBCommandEngine
+                      .upsertReachedVertexWithEdge(orientGraph, fullRecord, currentRelation, currentOutVertex, currentInVertexType,
+                          edgeType.getName());
                 }
               }
             }
@@ -616,15 +644,16 @@ public abstract class ODBMSImportStrategy implements OWorkflowStrategy {
     }
   }
 
-
   /**
    * Performs import of all records of the entities contained in the hierarchical bag passed as parameter.
    * Adopted in case of "Table per Concrete Type" inheritance strategy.
+   *
    * @param bag
    * @param dbQueryEngine
    * @param orientGraph
    */
-  protected void tablePerConcreteTypeImport(OHierarchicalBag bag, OER2GraphMapper mapper, ODBQueryEngine dbQueryEngine, OGraphEngineForDB graphDBCommandEngine, OrientBaseGraph orientGraph) {
+  protected void tablePerConcreteTypeImport(OHierarchicalBag bag, OER2GraphMapper mapper, ODBQueryEngine dbQueryEngine,
+      OGraphEngineForDB graphDBCommandEngine, OrientBaseGraph orientGraph) {
 
     try {
 
@@ -641,8 +670,8 @@ public abstract class ODBMSImportStrategy implements OWorkflowStrategy {
 
       OQueryResult queryResult = null;
 
-      for(int i=bag.getDepth2entities().size()-1; i>=0; i--) {
-        for(OEntity currentEntity: bag.getDepth2entities().get(i)) {
+      for (int i = bag.getDepth2entities().size() - 1; i >= 0; i--) {
+        for (OEntity currentEntity : bag.getDepth2entities().get(i)) {
 
           // for each entity in dbSchema all records are retrieved
           queryResult = dbQueryEngine.getRecordsByEntity(currentEntity);
@@ -652,7 +681,7 @@ public abstract class ODBMSImportStrategy implements OWorkflowStrategy {
           currentOutVertexType = mapper.getVertexTypeByEntity(currentEntity);
 
           // each record is imported as vertex in the orient graph
-          while(records.next()) {
+          while (records.next()) {
 
             // upsert of the vertex
             currentRecord = records;
@@ -660,35 +689,39 @@ public abstract class ODBMSImportStrategy implements OWorkflowStrategy {
             // record imported if is not present in OrientDB
             String[] propertyOfKey = new String[currentEntity.getPrimaryKey().getInvolvedAttributes().size()];
 
-            for(int k=0; k<propertyOfKey.length; k++) {
+            for (int k = 0; k < propertyOfKey.length; k++) {
               propertyOfKey[k] = currentEntity.getPrimaryKey().getInvolvedAttributes().get(k).getName();
             }
 
-            Set<String> propertiesOfIndex = this.transformAggregateTablePropertyOfKey(propertyOfKey, currentEntity);  // we need the key of original table, because we are working on it
+            Set<String> propertiesOfIndex = this.transformAggregateTablePropertyOfKey(propertyOfKey,
+                currentEntity);  // we need the key of original table, because we are working on it
 
-            if(!graphDBCommandEngine.alreadyFullImportedInOrient(orientGraph, currentRecord, currentOutVertexType, propertiesOfIndex)) {
+            if (!graphDBCommandEngine
+                .alreadyFullImportedInOrient(orientGraph, currentRecord, currentOutVertexType, propertiesOfIndex)) {
 
-              currentOutVertex = (OrientVertex) graphDBCommandEngine.upsertVisitedVertex(orientGraph, currentRecord, currentOutVertexType, propertiesOfIndex);
+              currentOutVertex = (OrientVertex) graphDBCommandEngine
+                  .upsertVisitedVertex(orientGraph, currentRecord, currentOutVertexType, propertiesOfIndex);
 
               // for each attribute of the entity belonging to the primary key, correspondent relationship is
               // built as edge and for the referenced record a vertex is built (only id)
-              for(OCanonicalRelationship currentRelation: currentEntity.getAllOutCanonicalRelationships()) {
+              for (OCanonicalRelationship currentRelation : currentEntity.getAllOutCanonicalRelationships()) {
 
-                currentParentEntity = mapper.getDataBaseSchema().getEntityByNameIgnoreCase(currentRelation.getParentEntity().getName());
+                currentParentEntity = mapper.getDataBaseSchema()
+                    .getEntityByNameIgnoreCase(currentRelation.getParentEntity().getName());
                 currentInVertexType = null; // reset for the current iteration
 
                 // checking if parent table belongs to a hierarchical bag
-                if(currentParentEntity.getHierarchicalBag() == null) {
+                if (currentParentEntity.getHierarchicalBag() == null) {
                   currentInVertexType = mapper.getVertexTypeByEntity(currentRelation.getParentEntity());
                 }
 
                 // if the parent entity belongs to hierarchical bag, we need to know which is it the more stringent subclass of the record with a certain id
-                else if(!currentEntity.getHierarchicalBag().equals(currentParentEntity.getHierarchicalBag())) {
+                else if (!currentEntity.getHierarchicalBag().equals(currentParentEntity.getHierarchicalBag())) {
                   propertyOfKey = new String[currentRelation.getFromColumns().size()];
                   String[] valueOfKey = new String[currentRelation.getFromColumns().size()];
 
                   int index = 0;
-                  for(OAttribute foreignAttribute: currentRelation.getFromColumns())  {
+                  for (OAttribute foreignAttribute : currentRelation.getFromColumns()) {
                     propertyOfKey[index] = currentRelation.getToColumns().get(index).getName();
                     valueOfKey[index] = currentRecord.getString((foreignAttribute.getName()));
                     index++;
@@ -697,23 +730,25 @@ public abstract class ODBMSImportStrategy implements OWorkflowStrategy {
                   // search is performed only if all the values in the foreign key are different from null (the relationship is inherited and is also consistent)
                   boolean ok = true;
 
-                  for(int j=0; j<valueOfKey.length; j++) {
-                    if(valueOfKey[j] == null) {
+                  for (int j = 0; j < valueOfKey.length; j++) {
+                    if (valueOfKey[j] == null) {
                       ok = false;
                       break;
                     }
                   }
-                  if(ok) {
-                    String currentArrivalEntityName = searchParentEntityType(currentParentEntity, propertyOfKey, valueOfKey, null, dbQueryEngine);
+                  if (ok) {
+                    String currentArrivalEntityName = searchParentEntityType(currentParentEntity, propertyOfKey, valueOfKey, null,
+                        dbQueryEngine);
                     OEntity currentArrivalEntity = mapper.getDataBaseSchema().getEntityByName(currentArrivalEntityName);
                     currentInVertexType = mapper.getVertexTypeByEntity(currentArrivalEntity);
                   }
                 }
 
                 // if currentInVertexType is null then there isn't a relationship between to records, thus the edge will not be added.
-                if(currentInVertexType != null) {
+                if (currentInVertexType != null) {
                   edgeType = mapper.getRelationship2edgeType().get(currentRelation);
-                  graphDBCommandEngine.upsertReachedVertexWithEdge(orientGraph, currentRecord, currentRelation, currentOutVertex, currentInVertexType, edgeType.getName());
+                  graphDBCommandEngine.upsertReachedVertexWithEdge(orientGraph, currentRecord, currentRelation, currentOutVertex,
+                      currentInVertexType, edgeType.getName());
                 }
               }
             }
@@ -743,8 +778,8 @@ public abstract class ODBMSImportStrategy implements OWorkflowStrategy {
   private Set<String> transformAggregateTablePropertyOfKey(String[] aggregateTablePropertyOfKey, OEntity currentEntity) {
     Set<String> propertiesOfKey = new LinkedHashSet<String>();
 
-    for(String tableKey: aggregateTablePropertyOfKey) {
-      String correspondentProperty = ((OER2GraphMapper)this.mapper).getPropertyNameByEntityAndAttribute(currentEntity, tableKey);
+    for (String tableKey : aggregateTablePropertyOfKey) {
+      String correspondentProperty = ((OER2GraphMapper) this.mapper).getPropertyNameByEntityAndAttribute(currentEntity, tableKey);
       propertiesOfKey.add(correspondentProperty);
     }
 
@@ -757,24 +792,28 @@ public abstract class ODBMSImportStrategy implements OWorkflowStrategy {
    * @param valueOfKey
    * @param physicalArrivalEntity
    * @param dbQueryEngine
+   *
    * @return
    */
-  private String searchParentEntityType(OEntity currentParentEntity, String[] propertyOfKey, String[] valueOfKey, OEntity physicalArrivalEntity, ODBQueryEngine dbQueryEngine) {
+  private String searchParentEntityType(OEntity currentParentEntity, String[] propertyOfKey, String[] valueOfKey,
+      OEntity physicalArrivalEntity, ODBQueryEngine dbQueryEngine) {
 
-    switch(currentParentEntity.getHierarchicalBag().getInheritancePattern()) {
+    switch (currentParentEntity.getHierarchicalBag().getInheritancePattern()) {
 
-      case "table-per-hierarchy": return searchParentEntityTypeFromSingleTable(currentParentEntity, propertyOfKey, valueOfKey, physicalArrivalEntity, dbQueryEngine);
+    case "table-per-hierarchy":
+      return searchParentEntityTypeFromSingleTable(currentParentEntity, propertyOfKey, valueOfKey, physicalArrivalEntity,
+          dbQueryEngine);
 
-      case "table-per-type": return searchParentEntityTypeFromSubclassTable(currentParentEntity, propertyOfKey, valueOfKey, dbQueryEngine);
+    case "table-per-type":
+      return searchParentEntityTypeFromSubclassTable(currentParentEntity, propertyOfKey, valueOfKey, dbQueryEngine);
 
-      case "table-per-concrete-type": return searchParentEntityTypeFromConcreteTable(currentParentEntity, propertyOfKey, valueOfKey, dbQueryEngine);
+    case "table-per-concrete-type":
+      return searchParentEntityTypeFromConcreteTable(currentParentEntity, propertyOfKey, valueOfKey, dbQueryEngine);
 
     }
 
     return null;
   }
-
-
 
   /**
    * @param currentParentEntity
@@ -782,9 +821,11 @@ public abstract class ODBMSImportStrategy implements OWorkflowStrategy {
    * @param propertyOfKey
    * @param physicalEntity
    * @param dbQueryEngine
+   *
    * @return
    */
-  private String searchParentEntityTypeFromSingleTable(OEntity currentParentEntity, String[] propertyOfKey, String[] valueOfKey, OEntity physicalEntity, ODBQueryEngine dbQueryEngine) {
+  private String searchParentEntityTypeFromSingleTable(OEntity currentParentEntity, String[] propertyOfKey, String[] valueOfKey,
+      OEntity physicalEntity, ODBQueryEngine dbQueryEngine) {
 
     OHierarchicalBag hierarchicalBag = currentParentEntity.getHierarchicalBag();
     String discriminatorColumn = hierarchicalBag.getDiscriminatorColumn();
@@ -792,13 +833,14 @@ public abstract class ODBMSImportStrategy implements OWorkflowStrategy {
 
     try {
 
-      OQueryResult queryResult = dbQueryEngine.getEntityTypeFromSingleTable(discriminatorColumn, physicalEntity, propertyOfKey, valueOfKey);
+      OQueryResult queryResult = dbQueryEngine
+          .getEntityTypeFromSingleTable(discriminatorColumn, physicalEntity, propertyOfKey, valueOfKey);
       ResultSet result = queryResult.getResult();
       result.next();
       String discriminatorValue = result.getString(discriminatorColumn);
 
-      for(String currentEntityName: hierarchicalBag.getEntityName2discriminatorValue().keySet()) {
-        if(hierarchicalBag.getEntityName2discriminatorValue().get(currentEntityName).equals(discriminatorValue)) {
+      for (String currentEntityName : hierarchicalBag.getEntityName2discriminatorValue().keySet()) {
+        if (hierarchicalBag.getEntityName2discriminatorValue().get(currentEntityName).equals(discriminatorValue)) {
           entityName = currentEntityName;
           break;
         }
@@ -814,15 +856,16 @@ public abstract class ODBMSImportStrategy implements OWorkflowStrategy {
     return entityName;
   }
 
-
   /**
    * @param currentParentEntity
    * @param propertyOfKey
    * @param valueOfKey
    * @param dbQueryEngine
+   *
    * @return
    */
-  private String searchParentEntityTypeFromSubclassTable(OEntity currentParentEntity, String[] propertyOfKey, String[] valueOfKey, ODBQueryEngine dbQueryEngine) {
+  private String searchParentEntityTypeFromSubclassTable(OEntity currentParentEntity, String[] propertyOfKey, String[] valueOfKey,
+      ODBQueryEngine dbQueryEngine) {
 
     OHierarchicalBag hierarchicalBag = currentParentEntity.getHierarchicalBag();
     String entityName = null;
@@ -832,24 +875,24 @@ public abstract class ODBMSImportStrategy implements OWorkflowStrategy {
       OQueryResult queryResult = null;
       ResultSet result = null;
 
-      for(int i=hierarchicalBag.getDepth2entities().size()-1; i>=0; i--) {
-        for(OEntity currentEntity: hierarchicalBag.getDepth2entities().get(i)) {
+      for (int i = hierarchicalBag.getDepth2entities().size() - 1; i >= 0; i--) {
+        for (OEntity currentEntity : hierarchicalBag.getDepth2entities().get(i)) {
 
           // Overwriting propertyOfKey with the currentEntity attributes' names
-          for(int j=0; j<currentEntity.getPrimaryKey().getInvolvedAttributes().size(); j++) {
+          for (int j = 0; j < currentEntity.getPrimaryKey().getInvolvedAttributes().size(); j++) {
             propertyOfKey[j] = currentEntity.getPrimaryKey().getInvolvedAttributes().get(j).getName();
           }
 
           queryResult = dbQueryEngine.getRecordById(currentEntity, propertyOfKey, valueOfKey);
           result = queryResult.getResult();
 
-          if(result != null) {
+          if (result != null) {
             entityName = currentEntity.getName();
             break;
           }
         }
 
-        if(result != null) {
+        if (result != null) {
           break;
         }
       }
@@ -864,15 +907,16 @@ public abstract class ODBMSImportStrategy implements OWorkflowStrategy {
     return entityName;
   }
 
-
   /**
    * @param currentParentEntity
    * @param propertyOfKey
    * @param valueOfKey
    * @param dbQueryEngine
+   *
    * @return
    */
-  private String searchParentEntityTypeFromConcreteTable(OEntity currentParentEntity, String[] propertyOfKey, String[] valueOfKey, ODBQueryEngine dbQueryEngine) {
+  private String searchParentEntityTypeFromConcreteTable(OEntity currentParentEntity, String[] propertyOfKey, String[] valueOfKey,
+      ODBQueryEngine dbQueryEngine) {
 
     OHierarchicalBag hierarchicalBag = currentParentEntity.getHierarchicalBag();
     String entityName = null;
@@ -882,24 +926,24 @@ public abstract class ODBMSImportStrategy implements OWorkflowStrategy {
       OQueryResult queryResult = null;
       ResultSet result = null;
 
-      for(int i=hierarchicalBag.getDepth2entities().size()-1; i>=0; i--) {
-        for(OEntity currentEntity: hierarchicalBag.getDepth2entities().get(i)) {
+      for (int i = hierarchicalBag.getDepth2entities().size() - 1; i >= 0; i--) {
+        for (OEntity currentEntity : hierarchicalBag.getDepth2entities().get(i)) {
 
           // Overwriting propertyOfKey with the currentEntity attributes' names
-          for(int j=0; j<currentEntity.getPrimaryKey().getInvolvedAttributes().size(); j++) {
+          for (int j = 0; j < currentEntity.getPrimaryKey().getInvolvedAttributes().size(); j++) {
             propertyOfKey[j] = currentEntity.getPrimaryKey().getInvolvedAttributes().get(j).getName();
           }
 
           queryResult = dbQueryEngine.getRecordById(currentEntity, propertyOfKey, valueOfKey);
           result = queryResult.getResult();
 
-          if(result != null) {
+          if (result != null) {
             entityName = currentEntity.getName();
             break;
           }
         }
 
-        if(result != null) {
+        if (result != null) {
           break;
         }
       }
@@ -913,15 +957,16 @@ public abstract class ODBMSImportStrategy implements OWorkflowStrategy {
 
     return entityName;
   }
-
 
   /**
    * @param aggregateTableRecords
    * @param aggregateTablePropertyOfKey
    * @param valueOfKey
+   *
    * @return
    */
-  private ResultSet getFullRecordByAggregateTable(ResultSet aggregateTableRecords, String[] aggregateTablePropertyOfKey, String[] valueOfKey) {
+  private ResultSet getFullRecordByAggregateTable(ResultSet aggregateTableRecords, String[] aggregateTablePropertyOfKey,
+      String[] valueOfKey) {
 
     ResultSet fullRecord = null;
     String[] currentValueOfKey = new String[aggregateTablePropertyOfKey.length];
@@ -929,21 +974,21 @@ public abstract class ODBMSImportStrategy implements OWorkflowStrategy {
 
     try {
 
-      while(aggregateTableRecords.next()) {
+      while (aggregateTableRecords.next()) {
 
-        for(int i=0; i<aggregateTablePropertyOfKey.length; i++) {
+        for (int i = 0; i < aggregateTablePropertyOfKey.length; i++) {
           currentValueOfKey[i] = aggregateTableRecords.getString(aggregateTablePropertyOfKey[i]);
         }
 
         equals = true;
-        for(int j=0; j<valueOfKey.length; j++) {
-          if(!valueOfKey[j].equals(currentValueOfKey[j])) {
+        for (int j = 0; j < valueOfKey.length; j++) {
+          if (!valueOfKey[j].equals(currentValueOfKey[j])) {
             equals = false;
             break;
           }
         }
 
-        if(equals) {
+        if (equals) {
           fullRecord = aggregateTableRecords;
           return fullRecord;
         }
@@ -959,11 +1004,10 @@ public abstract class ODBMSImportStrategy implements OWorkflowStrategy {
     return fullRecord;
   }
 
-
   protected boolean hasGeospatialAttributes(OEntity entity, ODBMSDataTypeHandler handler) {
 
-    for(OAttribute currentAttribute: entity.getAllAttributes()) {
-      if(handler.isGeospatial(currentAttribute.getDataType()))
+    for (OAttribute currentAttribute : entity.getAllAttributes()) {
+      if (handler.isGeospatial(currentAttribute.getDataType()))
         return true;
     }
 

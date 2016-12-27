@@ -85,13 +85,12 @@ public class OEdgeMappingInformation {
 
   public String getFromClass() {
     OConfiguredVertexClass fromVertexClass = null;
-    if(this.direction.equals("direct")) {
+    if (this.direction.equals("direct")) {
       if (this.fromVertexClass == null) {
         this.fromVertexClass = belongingEdge.getGlobalConfiguration().getVertexClassByTableName(this.fromTableName);
       }
       fromVertexClass = this.fromVertexClass;
-    }
-    else if(this.direction.equals("inverse")) {
+    } else if (this.direction.equals("inverse")) {
       if (this.toVertexClass == null) {
         this.toVertexClass = belongingEdge.getGlobalConfiguration().getVertexClassByTableName(this.toTableName);
       }
@@ -102,13 +101,12 @@ public class OEdgeMappingInformation {
 
   public String getToClass() {
     OConfiguredVertexClass toVertexClass = null;
-    if(this.direction.equals("direct")) {
+    if (this.direction.equals("direct")) {
       if (this.toVertexClass == null) {
         this.toVertexClass = belongingEdge.getGlobalConfiguration().getVertexClassByTableName(this.toTableName);
       }
       toVertexClass = this.toVertexClass;
-    }
-    else if(this.direction.equals("inverse")) {
+    } else if (this.direction.equals("inverse")) {
       if (this.fromVertexClass == null) {
         this.fromVertexClass = belongingEdge.getGlobalConfiguration().getVertexClassByTableName(this.fromTableName);
       }
@@ -118,13 +116,12 @@ public class OEdgeMappingInformation {
   }
 
   public String[] getFromProperties() {
-    if(this.direction.equals("direct")) {
+    if (this.direction.equals("direct")) {
       if (this.fromVertexClass == null) {
         this.fromVertexClass = belongingEdge.getGlobalConfiguration().getVertexClassByTableName(this.fromTableName);
       }
       return this.fromVertexClass.getPropertiesByColumns(this.fromColumns);
-    }
-    else if(this.direction.equals("inverse")) {
+    } else if (this.direction.equals("inverse")) {
       if (this.toVertexClass == null) {
         this.toVertexClass = belongingEdge.getGlobalConfiguration().getVertexClassByTableName(this.toTableName);
       }
@@ -134,14 +131,13 @@ public class OEdgeMappingInformation {
   }
 
   public String[] getToProperties() {
-    if(this.direction.equals("direct")) {
+    if (this.direction.equals("direct")) {
       if (this.toVertexClass == null) {
         this.toVertexClass = belongingEdge.getGlobalConfiguration().getVertexClassByTableName(this.toTableName);
       }
       return this.toVertexClass.getPropertiesByColumns(this.toColumns);
-    }
-    else if(this.direction.equals("inverse")) {
-      if(this.fromVertexClass == null) {
+    } else if (this.direction.equals("inverse")) {
+      if (this.fromVertexClass == null) {
         this.fromVertexClass = belongingEdge.getGlobalConfiguration().getVertexClassByTableName(this.fromTableName);
       }
       return this.fromVertexClass.getPropertiesByColumns(this.fromColumns);

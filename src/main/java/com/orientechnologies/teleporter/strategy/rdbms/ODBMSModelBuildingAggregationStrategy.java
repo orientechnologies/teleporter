@@ -32,47 +32,49 @@ import java.util.List;
 
 /**
  * @author Gabriele Ponzi
- * @email  <g.ponzi--at--orientdb.com>
- *
+ * @email <g.ponzi--at--orientdb.com>
  */
 
 public class ODBMSModelBuildingAggregationStrategy extends ODBMSModelBuildingStrategy {
 
-    public ODBMSModelBuildingAggregationStrategy() {}
+  public ODBMSModelBuildingAggregationStrategy() {
+  }
 
-    @Override
-    public OER2GraphMapper createSchemaMapper(OSourceDatabaseInfo sourceDBInfo, String outOrientGraphUri, String chosenMapper, String xmlPath, ONameResolver nameResolver, ODBMSDataTypeHandler handler, List<String> includedTables, List<String> excludedTables, OConfiguration migrationConfig) {
+  @Override
+  public OER2GraphMapper createSchemaMapper(OSourceDatabaseInfo sourceDBInfo, String outOrientGraphUri, String chosenMapper,
+      String xmlPath, ONameResolver nameResolver, ODBMSDataTypeHandler handler, List<String> includedTables,
+      List<String> excludedTables, OConfiguration migrationConfig) {
 
-        OMapperFactory mapperFactory = new OMapperFactory();
-        OER2GraphMapper mapper = (OER2GraphMapper) mapperFactory.buildMapper(chosenMapper, sourceDBInfo, xmlPath, includedTables, excludedTables, migrationConfig);
+    OMapperFactory mapperFactory = new OMapperFactory();
+    OER2GraphMapper mapper = (OER2GraphMapper) mapperFactory
+        .buildMapper(chosenMapper, sourceDBInfo, xmlPath, includedTables, excludedTables, migrationConfig);
 
-        // Step 1: DataBase schema building
-        mapper.buildSourceDatabaseSchema();
-        OTeleporterContext.getInstance().getStatistics().notifyListeners();
-        OTeleporterContext.getInstance().getOutputManager().info("\n");
-        OTeleporterContext.getInstance().getOutputManager().debug("\n%s\n", ((OER2GraphMapper)mapper).getDataBaseSchema().toString());
+    // Step 1: DataBase schema building
+    mapper.buildSourceDatabaseSchema();
+    OTeleporterContext.getInstance().getStatistics().notifyListeners();
+    OTeleporterContext.getInstance().getOutputManager().info("\n");
+    OTeleporterContext.getInstance().getOutputManager().debug("\n%s\n", ((OER2GraphMapper) mapper).getDataBaseSchema().toString());
 
-        // Step 2: Graph model building
-        mapper.buildGraphModel(nameResolver);
-        OTeleporterContext.getInstance().getStatistics().notifyListeners();
-        OTeleporterContext.getInstance().getOutputManager().info("\n");
-        OTeleporterContext.getInstance().getOutputManager().debug("\n%s\n", ((OER2GraphMapper)mapper).getGraphModel().toString());
+    // Step 2: Graph model building
+    mapper.buildGraphModel(nameResolver);
+    OTeleporterContext.getInstance().getStatistics().notifyListeners();
+    OTeleporterContext.getInstance().getOutputManager().info("\n");
+    OTeleporterContext.getInstance().getOutputManager().debug("\n%s\n", ((OER2GraphMapper) mapper).getGraphModel().toString());
 
-        // Step 3: Eventual migrationConfigDoc applying
-        mapper.applyImportConfiguration();
+    // Step 3: Eventual migrationConfigDoc applying
+    mapper.applyImportConfiguration();
 
-        // Step 4: Aggregation
-        ((OER2GraphMapper)mapper).performAggregations();
-        OTeleporterContext.getInstance().getOutputManager().debug("\n'Junction-Entity' aggregation complete.\n");
-        OTeleporterContext.getInstance().getOutputManager().debug("\n%s\n", ((OER2GraphMapper)mapper).getGraphModel().toString());
+    // Step 4: Aggregation
+    ((OER2GraphMapper) mapper).performAggregations();
+    OTeleporterContext.getInstance().getOutputManager().debug("\n'Junction-Entity' aggregation complete.\n");
+    OTeleporterContext.getInstance().getOutputManager().debug("\n%s\n", ((OER2GraphMapper) mapper).getGraphModel().toString());
 
-        return mapper;
-    }
+    return mapper;
+  }
 
-    @Override
-    protected OConfigurationHandler buildConfigurationHandler() {
-        return new OConfigurationHandler(true);
-    }
-
+  @Override
+  protected OConfigurationHandler buildConfigurationHandler() {
+    return new OConfigurationHandler(true);
+  }
 
 }

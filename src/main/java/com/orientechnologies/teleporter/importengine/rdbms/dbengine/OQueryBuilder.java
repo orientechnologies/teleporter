@@ -29,17 +29,23 @@ import java.util.List;
  * Interface representing the query builder used by the DB Query Engine, hiding specific implementation for each DBMS.
  *
  * @author Gabriele Ponzi
- * @email  <g.ponzi--at--orientdb.com>
- *
+ * @email <g.ponzi--at--orientdb.com>
  */
 
 public interface OQueryBuilder {
 
-    String countTableRecords(String currentTableName, String currentTableSchema);
-    String getRecordById(OEntity entity, String[] propertyOfKey, String[] valueOfKey);
-    String getRecordsByEntity(OEntity entity);
-    String getRecordsFromMultipleEntities(List<OEntity> mappedEntities, String[][] columns);
-    String getRecordsFromSingleTableByDiscriminatorValue(String discriminatorColumn, String currentDiscriminatorValue, OEntity entity);
-    String getEntityTypeFromSingleTable(String discriminatorColumn, OEntity entity, String[] propertyOfKey, String[] valueOfKey);
-    String buildAggregateTableFromHierarchicalBag(OHierarchicalBag bag);
+  String countTableRecords(String currentTableName, String currentTableSchema);
+
+  String getRecordById(OEntity entity, String[] propertyOfKey, String[] valueOfKey);
+
+  String getRecordsByEntity(OEntity entity);
+
+  String getRecordsFromMultipleEntities(List<OEntity> mappedEntities, String[][] columns);
+
+  String getRecordsFromSingleTableByDiscriminatorValue(String discriminatorColumn, String currentDiscriminatorValue,
+      OEntity entity);
+
+  String getEntityTypeFromSingleTable(String discriminatorColumn, OEntity entity, String[] propertyOfKey, String[] valueOfKey);
+
+  String buildAggregateTableFromHierarchicalBag(OHierarchicalBag bag);
 }

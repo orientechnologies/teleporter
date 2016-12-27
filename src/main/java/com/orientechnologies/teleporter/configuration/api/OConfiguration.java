@@ -31,126 +31,125 @@ import java.util.Map;
  *
  * @author Gabriele Ponzi
  * @email <g.ponzi--at--orientdb.com>
- *
  */
 
 public class OConfiguration {
 
-    private static OConfiguration instance = null;
+  private static OConfiguration instance = null;
 
-    private List<OConfiguredVertexClass> configuredVertices;  // may be empty but not null
-    private List<OConfiguredEdgeClass> configuredEdges;       // may be empty but not null
+  private List<OConfiguredVertexClass> configuredVertices;  // may be empty but not null
+  private List<OConfiguredEdgeClass>   configuredEdges;       // may be empty but not null
 
-    public OConfiguration() {
-        this.configuredVertices = new LinkedList<OConfiguredVertexClass>();
-        this.configuredEdges = new LinkedList<OConfiguredEdgeClass>();
+  public OConfiguration() {
+    this.configuredVertices = new LinkedList<OConfiguredVertexClass>();
+    this.configuredEdges = new LinkedList<OConfiguredEdgeClass>();
+  }
+
+  public static OConfiguration getInstance() {
+    if (instance == null) {
+      instance = new OConfiguration();
     }
+    return instance;
+  }
 
-    public static OConfiguration getInstance() {
-        if (instance == null) {
-            instance = new OConfiguration();
+  public List<OConfiguredVertexClass> getConfiguredVertices() {
+    return this.configuredVertices;
+  }
+
+  public void setConfiguredVertices(List<OConfiguredVertexClass> configuredVertices) {
+    this.configuredVertices = configuredVertices;
+  }
+
+  public List<OConfiguredEdgeClass> getConfiguredEdges() {
+    return this.configuredEdges;
+  }
+
+  public void setConfiguredEdges(List<OConfiguredEdgeClass> configuredEdges) {
+    this.configuredEdges = configuredEdges;
+  }
+
+  public OConfiguredVertexClass getVertexClassByName(String vertexClassName) {
+
+    for (OConfiguredVertexClass currVertexClass : this.configuredVertices) {
+      if (currVertexClass.getName().equals(vertexClassName)) {
+        return currVertexClass;
+      }
+    }
+    return null;
+  }
+
+  public OConfiguredEdgeClass getEdgeClassByName(String edgeClassName) {
+
+    for (OConfiguredEdgeClass currEdgeClass : this.configuredEdges) {
+      if (currEdgeClass.getName().equals(edgeClassName)) {
+        return currEdgeClass;
+      }
+    }
+    return null;
+  }
+
+  public OConfiguredVertexClass getVertexByMappedEntities(List<OEntity> mappedEntities) {
+
+    for (OConfiguredVertexClass currConfiguredVertex : this.configuredVertices) {
+      boolean isTargetVertex = this.isTargetVertex(currConfiguredVertex, mappedEntities);
+
+      if (isTargetVertex) {
+        return currConfiguredVertex;
+      }
+    }
+    return null;
+  }
+
+  private boolean isTargetVertex(OConfiguredVertexClass currConfiguredVertex, List<OEntity> mappedEntities) {
+
+    List<OSourceTable> sourceTables = currConfiguredVertex.getMapping().getSourceTables();
+
+    for (OEntity currEntity : mappedEntities) {
+      String entityName = currEntity.getName();
+
+      boolean containsEntity = false;
+      for (OSourceTable sourceTable : sourceTables) {
+        if (sourceTable.getTableName().equals(entityName)) {
+          containsEntity = true;
+          break;
         }
-        return instance;
+      }
+      if (!containsEntity) {
+        return false;
+      }
     }
 
-    public List<OConfiguredVertexClass> getConfiguredVertices() {
-        return this.configuredVertices;
-    }
+    return true;
+  }
 
-    public void setConfiguredVertices(List<OConfiguredVertexClass> configuredVertices) {
-        this.configuredVertices = configuredVertices;
-    }
+  public OConfiguredVertexClass getVertexClassByTableName(String tableName) {
 
-    public List<OConfiguredEdgeClass> getConfiguredEdges() {
-        return this.configuredEdges;
-    }
-
-    public void setConfiguredEdges(List<OConfiguredEdgeClass> configuredEdges) {
-        this.configuredEdges = configuredEdges;
-    }
-
-    public OConfiguredVertexClass getVertexClassByName(String vertexClassName) {
-
-        for(OConfiguredVertexClass currVertexClass: this.configuredVertices) {
-            if(currVertexClass.getName().equals(vertexClassName)) {
-                return currVertexClass;
-            }
+    for (OConfiguredVertexClass vertexClass : this.configuredVertices) {
+      List<OSourceTable> sourceTables = vertexClass.getMapping().getSourceTables();
+      for (OSourceTable sourceTable : sourceTables) {
+        if (sourceTable.getTableName().equals(tableName)) {
+          return vertexClass;
         }
-        return null;
+      }
     }
+    return null;
+  }
 
-    public OConfiguredEdgeClass getEdgeClassByName(String edgeClassName) {
+  public Map<String, List<OConfiguredVertexClass>> buildTableName2MappedConfiguredVertices() {
 
-        for(OConfiguredEdgeClass currEdgeClass: this.configuredEdges) {
-            if(currEdgeClass.getName().equals(edgeClassName)) {
-                return currEdgeClass;
-            }
+    Map<String, List<OConfiguredVertexClass>> tableName2mappedConfiguredVertices = new HashMap<String, List<OConfiguredVertexClass>>();
+
+    for (OConfiguredVertexClass currConfiguredVertexClass : this.configuredVertices) {
+      for (OSourceTable currSourceTable : currConfiguredVertexClass.getMapping().getSourceTables()) {
+        String tableName = currSourceTable.getTableName();
+        List<OConfiguredVertexClass> mappedVertices = tableName2mappedConfiguredVertices.get(tableName);
+        if (mappedVertices == null) {
+          mappedVertices = new LinkedList<OConfiguredVertexClass>();
         }
-        return null;
+        mappedVertices.add(currConfiguredVertexClass);
+        tableName2mappedConfiguredVertices.put(tableName, mappedVertices);
+      }
     }
-
-    public OConfiguredVertexClass getVertexByMappedEntities(List<OEntity> mappedEntities) {
-
-        for(OConfiguredVertexClass currConfiguredVertex: this.configuredVertices) {
-            boolean isTargetVertex = this.isTargetVertex(currConfiguredVertex, mappedEntities);
-
-            if(isTargetVertex) {
-                return currConfiguredVertex;
-            }
-        }
-        return null;
-    }
-
-    private boolean isTargetVertex(OConfiguredVertexClass currConfiguredVertex, List<OEntity> mappedEntities) {
-
-        List<OSourceTable> sourceTables = currConfiguredVertex.getMapping().getSourceTables();
-
-        for(OEntity currEntity: mappedEntities) {
-            String entityName = currEntity.getName();
-
-            boolean containsEntity = false;
-            for (OSourceTable sourceTable : sourceTables) {
-                if(sourceTable.getTableName().equals(entityName)) {
-                    containsEntity = true;
-                    break;
-                }
-            }
-            if(!containsEntity) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    public OConfiguredVertexClass getVertexClassByTableName(String tableName) {
-
-        for(OConfiguredVertexClass vertexClass: this.configuredVertices) {
-            List<OSourceTable> sourceTables = vertexClass.getMapping().getSourceTables();
-            for(OSourceTable sourceTable: sourceTables) {
-                if(sourceTable.getTableName().equals(tableName)) {
-                    return vertexClass;
-                }
-            }
-        }
-        return null;
-    }
-
-    public Map<String,List<OConfiguredVertexClass>> buildTableName2MappedConfiguredVertices() {
-
-        Map<String,List<OConfiguredVertexClass>> tableName2mappedConfiguredVertices = new HashMap<String,List<OConfiguredVertexClass>>();
-
-        for(OConfiguredVertexClass currConfiguredVertexClass: this.configuredVertices) {
-            for(OSourceTable currSourceTable: currConfiguredVertexClass.getMapping().getSourceTables()) {
-                String tableName = currSourceTable.getTableName();
-                List<OConfiguredVertexClass> mappedVertices = tableName2mappedConfiguredVertices.get(tableName);
-                if(mappedVertices == null) {
-                    mappedVertices = new LinkedList<OConfiguredVertexClass>();
-                }
-                mappedVertices.add(currConfiguredVertexClass);
-                tableName2mappedConfiguredVertices.put(tableName, mappedVertices);
-            }
-        }
-        return tableName2mappedConfiguredVertices;
-    }
+    return tableName2mappedConfiguredVertices;
+  }
 }

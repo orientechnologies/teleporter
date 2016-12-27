@@ -28,10 +28,9 @@ import com.orientechnologies.orient.core.metadata.schema.OType;
 /**
  * Handler that executes type conversions from PostgreSQL DBMS to the OrientDB types.
  * Geospatial implemented (PostGis).
- * 
- * @author Gabriele Ponzi
- * @email  <g.ponzi--at--orientdb.com>
  *
+ * @author Gabriele Ponzi
+ * @email <g.ponzi--at--orientdb.com>
  */
 
 public class OPostgreSQLDataTypeHandler extends ODBMSDataTypeHandler {
@@ -101,7 +100,7 @@ public class OPostgreSQLDataTypeHandler extends ODBMSDataTypeHandler {
     /*
      * Date/Time Types
      * (doc at http://www.postgresql.org/docs/9.6/static/datatype-datetime.html )
-     */    
+     */
     dbmsType2OrientType.put("timestamp", OType.DATETIME);
     dbmsType2OrientType.put("date", OType.DATE);
     dbmsType2OrientType.put("time", OType.STRING);

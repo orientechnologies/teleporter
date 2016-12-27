@@ -20,10 +20,9 @@ package com.orientechnologies.teleporter.model;
 
 /**
  * Interface that represents a generic data source schema with all its elements.
- * 
+ *
  * @author Gabriele Ponzi
- * @email  <g.ponzi--at--orientdb.com>
- * 
+ * @email <g.ponzi--at--orientdb.com>
  */
 
 public interface ODataSourceSchemaInfo {

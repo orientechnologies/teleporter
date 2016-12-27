@@ -1,30 +1,42 @@
 {
   "vertices": [],
-  "edges": [{
-    "Performs": {
-      "isLogical": false,
-      "mapping": [{
-        "fromTable": "ACTOR",
-        "fromColumns": ["ID"],
-        "toTable": "FILM",
-        "toColumns": ["ID"],
-        "joinTable": {
-          "tableName": "ACTOR_FILM",
-          "fromColumns": ["ACTOR_ID"],
-          "toColumns": ["FILM_ID"]
-        },
-        "direction": "direct"
-      }],
-      "properties": {
-        "year": {
-          "include": true,
-          "type": "DATE",
-          "ordinalPosition": 1,
-          "mandatory": true,
-          "readOnly": false,
-          "notNull": false
+  "edges": [
+    {
+      "Performs": {
+        "isLogical": false,
+        "mapping": [
+          {
+            "fromTable": "ACTOR",
+            "fromColumns": [
+              "ID"
+            ],
+            "toTable": "FILM",
+            "toColumns": [
+              "ID"
+            ],
+            "joinTable": {
+              "tableName": "ACTOR_FILM",
+              "fromColumns": [
+                "ACTOR_ID"
+              ],
+              "toColumns": [
+                "FILM_ID"
+              ]
+            },
+            "direction": "direct"
+          }
+        ],
+        "properties": {
+          "year": {
+            "include": true,
+            "type": "DATE",
+            "ordinalPosition": 1,
+            "mandatory": true,
+            "readOnly": false,
+            "notNull": false
+          }
         }
       }
     }
-  }]
+  ]
 }

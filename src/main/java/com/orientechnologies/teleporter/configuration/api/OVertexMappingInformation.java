@@ -21,43 +21,41 @@ package com.orientechnologies.teleporter.configuration.api;
 import java.util.List;
 
 /**
- *
  * @author Gabriele Ponzi
  * @email <g.ponzi--at--orientdb.com>
- *
  */
 
 public class OVertexMappingInformation {
 
-    private OConfiguredVertexClass belongingVertex;  // mandatory
-    private List<OSourceTable> sourceTables;         // must be not empty!
-    private String aggregationFunction;              // optional (not present when there is not any aggregation)
+  private OConfiguredVertexClass belongingVertex;  // mandatory
+  private List<OSourceTable>     sourceTables;         // must be not empty!
+  private String                 aggregationFunction;              // optional (not present when there is not any aggregation)
 
-    public OVertexMappingInformation(OConfiguredVertexClass belongingVertex) {
-        this.belongingVertex = belongingVertex;
-    }
+  public OVertexMappingInformation(OConfiguredVertexClass belongingVertex) {
+    this.belongingVertex = belongingVertex;
+  }
 
-    public OConfiguredVertexClass getBelongingVertex() {
-        return this.belongingVertex;
-    }
+  public OConfiguredVertexClass getBelongingVertex() {
+    return this.belongingVertex;
+  }
 
-    public void setBelongingVertex(OConfiguredVertexClass belongingVertex) {
-        this.belongingVertex = belongingVertex;
-    }
+  public void setBelongingVertex(OConfiguredVertexClass belongingVertex) {
+    this.belongingVertex = belongingVertex;
+  }
 
-    public List<OSourceTable> getSourceTables() {
-        return this.sourceTables;
-    }
+  public List<OSourceTable> getSourceTables() {
+    return this.sourceTables;
+  }
 
-    public void setSourceTables(List<OSourceTable> sourceTables) {
-        this.sourceTables = sourceTables;
-    }
+  public void setSourceTables(List<OSourceTable> sourceTables) {
+    this.sourceTables = sourceTables;
+  }
 
-    public String getAggregationFunction() {
-        return this.aggregationFunction;
-    }
+  public String getAggregationFunction() {
+    return this.aggregationFunction;
+  }
 
-    public void setAggregationFunction(String aggregationFunction) {
-        this.aggregationFunction = aggregationFunction;
-    }
+  public void setAggregationFunction(String aggregationFunction) {
+    this.aggregationFunction = aggregationFunction;
+  }
 }

@@ -38,32 +38,30 @@ import static org.junit.Assert.fail;
 
 /**
  * @author Gabriele Ponzi
- * @email  <g.ponzi--at--orientdb.com>
- *
+ * @email <g.ponzi--at--orientdb.com>
  */
 
 public abstract class TeleporterInvocationTest {
 
   // arguments
-  protected Map<String,String> arguments = new HashMap<String,String>();
-  protected String[] args;
+  protected Map<String, String> arguments = new HashMap<String, String>();
+  protected String[]   args;
   protected Connection dbConnection;
-  private String driver = "org.hsqldb.jdbc.JDBCDriver";
-  private String jurl = "jdbc:hsqldb:mem:mydb";
+  private String driver   = "org.hsqldb.jdbc.JDBCDriver";
+  private String jurl     = "jdbc:hsqldb:mem:mydb";
   private String username = "SA";
   private String password = "";
 
   // server configuration path
   private final String configurationPath = "orientdb-server-config.xml";
-  private final String serverHome = "target/server";
-
+  private final String serverHome        = "target/server";
 
   protected void buildEnvironmentForExecution() {
     this.buildHSQLDBDatabaseToImport();
     try {
       OServerMain.create();
       this.startServer(OServerMain.server());
-    } catch(Exception e) {
+    } catch (Exception e) {
       fail("Server instance not created correctly.");
     }
   }
@@ -88,73 +86,51 @@ public abstract class TeleporterInvocationTest {
 
       // Tables Building
 
-      String directorTableBuilding = "create memory table DIRECTOR (ID varchar(256) not null, NAME  varchar(256),"+
-              " SURNAME varchar(256) not null, primary key (ID))";
+      String directorTableBuilding = "create memory table DIRECTOR (ID varchar(256) not null, NAME  varchar(256),"
+          + " SURNAME varchar(256) not null, primary key (ID))";
       Statement st = this.dbConnection.createStatement();
       st.execute(directorTableBuilding);
 
       String categoryTableBuilding = "create memory table CATEGORY (ID varchar(256) not null, NAME  varchar(256), primary key (ID))";
       st.execute(categoryTableBuilding);
 
-      String filmTableBuilding = "create memory table FILM (ID varchar(256) not null,"+
-              " TITLE varchar(256) not null, DIRECTOR varchar(256) not null, CATEGORY varchar(256) not null," +
-              " primary key (ID), " +
-              " foreign key (DIRECTOR) references DIRECTOR(ID)," +
-              " foreign key (CATEGORY) references CATEGORY(ID))";
+      String filmTableBuilding = "create memory table FILM (ID varchar(256) not null,"
+          + " TITLE varchar(256) not null, DIRECTOR varchar(256) not null, CATEGORY varchar(256) not null," + " primary key (ID), "
+          + " foreign key (DIRECTOR) references DIRECTOR(ID)," + " foreign key (CATEGORY) references CATEGORY(ID))";
       st.execute(filmTableBuilding);
 
-      String actorTableBuilding = "create memory table ACTOR (ID varchar(256) not null, NAME  varchar(256),"+
-              " SURNAME varchar(256) not null, primary key (ID))";
+      String actorTableBuilding = "create memory table ACTOR (ID varchar(256) not null, NAME  varchar(256),"
+          + " SURNAME varchar(256) not null, primary key (ID))";
       st.execute(actorTableBuilding);
 
-      String film2actorTableBuilding = "create memory table FILM_ACTOR (FILM_ID varchar(256) not null, ACTOR_ID  varchar(256),"+
-              " primary key (FILM_ID,ACTOR_ID), foreign key (FILM_ID) references FILM(ID), foreign key (ACTOR_ID) references ACTOR(ID))";
+      String film2actorTableBuilding = "create memory table FILM_ACTOR (FILM_ID varchar(256) not null, ACTOR_ID  varchar(256),"
+          + " primary key (FILM_ID,ACTOR_ID), foreign key (FILM_ID) references FILM(ID), foreign key (ACTOR_ID) references ACTOR(ID))";
       st.execute(film2actorTableBuilding);
-
 
       // Records Inserting
 
-      String directorFilling = "insert into DIRECTOR (ID,NAME,SURNAME) values ("
-              + "('D001','Quentin','Tarantino'),"
-              + "('D002','Martin','Scorsese'))";
+      String directorFilling =
+          "insert into DIRECTOR (ID,NAME,SURNAME) values (" + "('D001','Quentin','Tarantino')," + "('D002','Martin','Scorsese'))";
       st.execute(directorFilling);
 
-      String categoryFilling = "insert into CATEGORY (ID,NAME) values ("
-              + "('C001','Thriller'),"
-              + "('C002','Action'),"
-              + "('C003','Sci-Fi'),"
-              + "('C004','Fantasy'),"
-              + "('C005','Comedy'),"
-              + "('C006','Drama'),"
-              + "('C007','War'))";
+      String categoryFilling =
+          "insert into CATEGORY (ID,NAME) values (" + "('C001','Thriller')," + "('C002','Action')," + "('C003','Sci-Fi'),"
+              + "('C004','Fantasy')," + "('C005','Comedy')," + "('C006','Drama')," + "('C007','War'))";
       st.execute(categoryFilling);
 
-      String filmFilling = "insert into FILM (ID,TITLE,DIRECTOR,CATEGORY) values ("
-              + "('F001','Pulp Fiction','D001','C002'),"
-              + "('F002','Shutter Island','D002','C001'),"
-              + "('F003','The Departed','D002','C001'))";
+      String filmFilling = "insert into FILM (ID,TITLE,DIRECTOR,CATEGORY) values (" + "('F001','Pulp Fiction','D001','C002'),"
+          + "('F002','Shutter Island','D002','C001')," + "('F003','The Departed','D002','C001'))";
       st.execute(filmFilling);
 
-      String actorFilling = "insert into ACTOR (ID,NAME,SURNAME) values ("
-              + "('A001','John','Travolta'),"
-              + "('A002','Samuel','Lee Jackson'),"
-              + "('A003','Bruce','Willis'),"
-              + "('A004','Leonardo','Di Caprio'),"
-              + "('A005','Ben','Kingsley'),"
-              + "('A006','Mark','Ruffalo'),"
-              + "('A007','Jack','Nicholson'),"
-              + "('A008','Matt','Damon'))";
+      String actorFilling =
+          "insert into ACTOR (ID,NAME,SURNAME) values (" + "('A001','John','Travolta')," + "('A002','Samuel','Lee Jackson'),"
+              + "('A003','Bruce','Willis')," + "('A004','Leonardo','Di Caprio')," + "('A005','Ben','Kingsley'),"
+              + "('A006','Mark','Ruffalo')," + "('A007','Jack','Nicholson')," + "('A008','Matt','Damon'))";
       st.execute(actorFilling);
 
-      String film2actorFilling = "insert into FILM_ACTOR (FILM_ID,ACTOR_ID) values ("
-              + "('F001','A001'),"
-              + "('F001','A002'),"
-              + "('F001','A003'),"
-              + "('F002','A004'),"
-              + "('F002','A005'),"
-              + "('F002','A006'),"
-              + "('F003','A004'),"
-              + "('F003','A007'),"
+      String film2actorFilling =
+          "insert into FILM_ACTOR (FILM_ID,ACTOR_ID) values (" + "('F001','A001')," + "('F001','A002')," + "('F001','A003'),"
+              + "('F002','A004')," + "('F002','A005')," + "('F002','A006')," + "('F003','A004')," + "('F003','A007'),"
               + "('F003','A008'))";
       st.execute(film2actorFilling);
     } catch (Exception e) {
@@ -173,13 +149,13 @@ public abstract class TeleporterInvocationTest {
 
   public void prepareArrayArgs() {
 
-    args = new String[arguments.size()*2];
+    args = new String[arguments.size() * 2];
 
     int i = 0;
-    for(String key: arguments.keySet()) {
+    for (String key : arguments.keySet()) {
       args[i] = key;
-      args[i+1] = arguments.get(key);
-      i = i+2;
+      args[i + 1] = arguments.get(key);
+      i = i + 2;
     }
 
   }
@@ -220,7 +196,7 @@ public abstract class TeleporterInvocationTest {
       Statement st = this.dbConnection.createStatement();
       st.execute(dbDropping);
       this.dbConnection.close();
-    }catch(Exception e) {
+    } catch (Exception e) {
       e.printStackTrace();
       fail();
     }
@@ -233,12 +209,12 @@ public abstract class TeleporterInvocationTest {
 
     try {
 
-      if(orientGraph != null) {
+      if (orientGraph != null) {
         orientGraph.drop();
         orientGraph.shutdown();
       }
 
-    }catch(Exception e) {
+    } catch (Exception e) {
       e.printStackTrace();
       fail();
     }
@@ -249,7 +225,7 @@ public abstract class TeleporterInvocationTest {
 
     try {
       OFileManager.deleteResource(this.serverHome);
-    }catch(Exception e) {
+    } catch (Exception e) {
       e.printStackTrace();
       fail();
     }

@@ -19,10 +19,8 @@
 package com.orientechnologies.teleporter.configuration.api;
 
 /**
- *
  * @author Gabriele Ponzi
  * @email <g.ponzi--at--orientdb.com>
- *
  */
 
 public class OConfiguredPropertyMapping {

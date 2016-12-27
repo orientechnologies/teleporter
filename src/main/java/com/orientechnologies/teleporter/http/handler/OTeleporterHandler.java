@@ -33,9 +33,9 @@ import java.util.concurrent.Future;
  * Created by Enrico Risa on 27/11/15.
  */
 public class OTeleporterHandler {
-  private ExecutorService pool       = Executors.newFixedThreadPool(1);
+  private ExecutorService pool = Executors.newFixedThreadPool(1);
 
-  OTeleporterJob          currentJob = null;
+  OTeleporterJob currentJob = null;
 
   /**
    * Execute import with jsonConfiguration;
@@ -72,6 +72,7 @@ public class OTeleporterHandler {
    * Check If the connection with given parameters is alive
    *
    * @param args
+   *
    * @throws Exception
    */
   public void checkConnection(ODocument args) throws Exception {

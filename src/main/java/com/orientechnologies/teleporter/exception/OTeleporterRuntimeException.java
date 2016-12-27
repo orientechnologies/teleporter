@@ -20,10 +20,9 @@ package com.orientechnologies.teleporter.exception;
 
 /**
  * It represents a Runtime Exception in Teleporter.
- * 
- * @author Gabriele Ponzi
- * @email  <g.ponzi--at--orientdb.com>
  *
+ * @author Gabriele Ponzi
+ * @email <g.ponzi--at--orientdb.com>
  */
 
 @SuppressWarnings("serial")

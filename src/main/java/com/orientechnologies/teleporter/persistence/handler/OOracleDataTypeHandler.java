@@ -26,21 +26,18 @@ import java.util.Map;
 /**
  * Handler that executes type conversions from Oracle DBMS to the OrientDB types.
  * No Geospatial implemented.
- * 
- * @author Gabriele Ponzi
- * @email  <g.ponzi--at--orientdb.com>
  *
+ * @author Gabriele Ponzi
+ * @email <g.ponzi--at--orientdb.com>
  */
 
 public class OOracleDataTypeHandler extends ODBMSDataTypeHandler {
 
-
-  public OOracleDataTypeHandler(){
+  public OOracleDataTypeHandler() {
     this.dbmsType2OrientType = this.fillTypesMap();
     super.jsonImplemented = false;
     super.geospatialImplemented = false;
   }
-
 
   private Map<String, OType> fillTypesMap() {
 
@@ -76,7 +73,7 @@ public class OOracleDataTypeHandler extends ODBMSDataTypeHandler {
     /*
      * Date/Time Types
      * (doc at http://docs.oracle.com/cd/B28359_01/server.111/b28318/datatype.htm#CNCPT413 )
-     */    
+     */
     dbmsType2OrientType.put("date", OType.DATE);
     dbmsType2OrientType.put("datetime", OType.DATETIME);
     dbmsType2OrientType.put("timestamp", OType.DATETIME);

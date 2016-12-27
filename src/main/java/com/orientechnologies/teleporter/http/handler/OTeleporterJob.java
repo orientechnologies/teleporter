@@ -34,14 +34,14 @@ import java.util.concurrent.Callable;
  */
 public class OTeleporterJob implements Callable<ODocument> {
 
-  private final ODocument     cfg;
-  private OTeleporterListener listener;
+  private final ODocument           cfg;
+  private       OTeleporterListener listener;
 
-  public String               id;
+  public String id;
 
-  public Status               status;
-  public PrintStream          stream;
-  ByteArrayOutputStream       baos;
+  public Status      status;
+  public PrintStream stream;
+  ByteArrayOutputStream baos;
 
   public OTeleporterJob(ODocument cfg, OTeleporterListener listener) {
     this.cfg = cfg;
@@ -73,8 +73,9 @@ public class OTeleporterJob implements Callable<ODocument> {
 
     ODocument executionResult = null;
     try {
-      if(chosenStrategy.equals("interactive") || chosenStrategy.equals("interactive-aggr")) {
-        executionResult = OTeleporter.executeJob(driver, jurl, username, password, outDbUrl, chosenStrategy, chosenMapper, xmlPath, nameResolver,
+      if (chosenStrategy.equals("interactive") || chosenStrategy.equals("interactive-aggr")) {
+        executionResult = OTeleporter
+            .executeJob(driver, jurl, username, password, outDbUrl, chosenStrategy, chosenMapper, xmlPath, nameResolver,
                 outputLevel, includedTables, excludedTable, migrationConfig, new OOutputStreamManager(stream, 2));
 
         synchronized (listener) {
@@ -85,13 +86,13 @@ public class OTeleporterJob implements Callable<ODocument> {
           } catch (InterruptedException e) {
           }
         }
-      }
-      else {
+      } else {
         new Thread(new Runnable() {
           @Override
           public void run() {
             try {
-              OTeleporter.executeJob(driver, jurl, username, password, outDbUrl, chosenStrategy, chosenMapper, xmlPath, nameResolver,
+              OTeleporter
+                  .executeJob(driver, jurl, username, password, outDbUrl, chosenStrategy, chosenMapper, xmlPath, nameResolver,
                       outputLevel, includedTables, excludedTable, migrationConfig, new OOutputStreamManager(stream, 2));
             } catch (OTeleporterIOException e) {
               e.printStackTrace();

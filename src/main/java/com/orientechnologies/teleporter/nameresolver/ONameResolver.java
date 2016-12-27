@@ -21,19 +21,18 @@ package com.orientechnologies.teleporter.nameresolver;
 import com.orientechnologies.teleporter.model.dbschema.OCanonicalRelationship;
 
 /**
- * Interface that performs name transformations on the elements 
+ * Interface that performs name transformations on the elements
  * of the data source according to a specific convention.
- * 
- * @author Gabriele Ponzi
- * @email  <g.ponzi--at--orientdb.com>
  *
+ * @author Gabriele Ponzi
+ * @email <g.ponzi--at--orientdb.com>
  */
 
 public interface ONameResolver {
 
   public String resolveVertexName(String candidateName);
 
-  public  String resolveVertexProperty(String candidateName);
+  public String resolveVertexProperty(String candidateName);
 
   public String resolveEdgeName(OCanonicalRelationship relationship);
 

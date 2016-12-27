@@ -23,10 +23,9 @@ import java.util.List;
 /**
  * It represents a canonical relationship between two entities (foreign and parent entity)
  * based on the importing of a single primary key (composite or not) through a foreign key.
- * 
+ *
  * @author Gabriele Ponzi
- * @email  <g.ponzi--at--orientdb.com>
- * 
+ * @email <g.ponzi--at--orientdb.com>
  */
 
 public class OCanonicalRelationship extends ORelationship {
@@ -74,12 +73,11 @@ public class OCanonicalRelationship extends ORelationship {
     this.primaryKey = primaryKey;
   }
 
-
   @Override
   public boolean equals(Object obj) {
     OCanonicalRelationship that = (OCanonicalRelationship) obj;
-    if(this.foreignEntity.equals(that.getForeignEntity()) && this.parentEntity.equals(that.getParentEntity())) {
-      if(this.foreignKey.equals(that.getForeignKey()) && this.primaryKey.equals(that.getPrimaryKey())) {
+    if (this.foreignEntity.equals(that.getForeignEntity()) && this.parentEntity.equals(that.getParentEntity())) {
+      if (this.foreignKey.equals(that.getForeignKey()) && this.primaryKey.equals(that.getPrimaryKey())) {
         return true;
       }
     }

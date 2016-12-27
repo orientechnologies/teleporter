@@ -21,46 +21,44 @@ package com.orientechnologies.teleporter.configuration.api;
 import java.util.List;
 
 /**
- *
  * @author Gabriele Ponzi
  * @email <g.ponzi--at--orientdb.com>
- *
  */
 
 public class OConfiguredEdgeClass extends OConfiguredClass {
 
-    // mappings and splittingEdgeInfo are mutually exclusive
-    private List<OEdgeMappingInformation> mappings;                  // mandatory
-    private OSplittingEdgeInformation splittingEdgeInfo;             // mandatory
+  // mappings and splittingEdgeInfo are mutually exclusive
+  private List<OEdgeMappingInformation> mappings;                  // mandatory
+  private OSplittingEdgeInformation     splittingEdgeInfo;             // mandatory
 
-    private boolean isLogical;                                       // optional
+  private boolean isLogical;                                       // optional
 
-    public OConfiguredEdgeClass(String edgeName, OConfiguration globalConfiguration) {
-        super(edgeName, globalConfiguration);
-        this.isLogical = false;
-    }
+  public OConfiguredEdgeClass(String edgeName, OConfiguration globalConfiguration) {
+    super(edgeName, globalConfiguration);
+    this.isLogical = false;
+  }
 
-    public List<OEdgeMappingInformation> getMappings() {
-        return this.mappings;
-    }
+  public List<OEdgeMappingInformation> getMappings() {
+    return this.mappings;
+  }
 
-    public void setMappings(List<OEdgeMappingInformation> mappings) {
-        this.mappings = mappings;
-    }
+  public void setMappings(List<OEdgeMappingInformation> mappings) {
+    this.mappings = mappings;
+  }
 
-    public OSplittingEdgeInformation getSplittingEdgeInfo() {
-        return this.splittingEdgeInfo;
-    }
+  public OSplittingEdgeInformation getSplittingEdgeInfo() {
+    return this.splittingEdgeInfo;
+  }
 
-    public void setSplittingEdgeInfo(OSplittingEdgeInformation splittingEdgeInfo) {
-        this.splittingEdgeInfo = splittingEdgeInfo;
-    }
+  public void setSplittingEdgeInfo(OSplittingEdgeInformation splittingEdgeInfo) {
+    this.splittingEdgeInfo = splittingEdgeInfo;
+  }
 
-    public boolean isLogical() {
-        return this.isLogical;
-    }
+  public boolean isLogical() {
+    return this.isLogical;
+  }
 
-    public void setLogical(boolean logical) {
-        this.isLogical = logical;
-    }
+  public void setLogical(boolean logical) {
+    this.isLogical = logical;
+  }
 }

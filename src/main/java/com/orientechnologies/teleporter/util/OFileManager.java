@@ -30,13 +30,13 @@ public class OFileManager {
   public static void deleteResource(String resourcePath) throws IOException {
 
     File currentFile = new File(resourcePath);
-    if(currentFile.isDirectory()) {
+    if (currentFile.isDirectory()) {
       File[] innerFiles = currentFile.listFiles();
-      for(File file: innerFiles) {
+      for (File file : innerFiles) {
         deleteResource(file.getCanonicalPath());
       }
     }
-    if(!currentFile.delete())
+    if (!currentFile.delete())
       throw new IOException();
   }
 
@@ -64,7 +64,7 @@ public class OFileManager {
     //get the zipped file list entry
     ZipEntry zipEntry = zipInputStream.getNextEntry();
 
-    while(zipEntry != null){
+    while (zipEntry != null) {
 
       String fileName = zipEntry.getName();
       String newFilePath = destinationFolderPath + File.separator + fileName;
@@ -86,7 +86,7 @@ public class OFileManager {
         dir.mkdir();
       }
 
-      if(fileOutputStream != null)
+      if (fileOutputStream != null)
         fileOutputStream.close();
       zipEntry = zipInputStream.getNextEntry();
 
@@ -106,22 +106,22 @@ public class OFileManager {
     return sb.toString();
   }
 
-
   /**
    * It returns a ODocument starting from a json file.
    *
    * @param filePath
+   *
    * @return ODocument (null if the file does not exist or problem are encountered during the reading)
    */
 
   public static ODocument buildJsonFromFile(String filePath) throws IOException {
 
-    if(filePath == null) {
+    if (filePath == null) {
       return null;
     }
 
     File jsonFile = new File(filePath);
-    if(!jsonFile.exists()) {
+    if (!jsonFile.exists()) {
       return null;
     }
 
@@ -133,7 +133,6 @@ public class OFileManager {
     return json;
 
   }
-
 
   public static void writeFileFromText(String text, String outFilePath, boolean append) throws IOException {
 
