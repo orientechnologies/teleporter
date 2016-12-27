@@ -30,10 +30,9 @@ import com.orientechnologies.teleporter.persistence.handler.OSQLServerDataTypeHa
 /**
  * Factory used to instantiate a specific DataTypeHandler according to the driver of the
  * DBMS from which the import is performed.
- * 
- * @author Gabriele Ponzi
- * @email  <gabriele.ponzi--at--gmail.com>
  *
+ * @author Gabriele Ponzi
+ * @email <gabriele.ponzi--at--gmail.com>
  */
 
 public class ODataTypeHandlerFactory {
@@ -41,26 +40,33 @@ public class ODataTypeHandlerFactory {
   public ODriverDataTypeHandler buildDataTypeHandler(String driver, OTeleporterContext context) {
     ODriverDataTypeHandler handler = null;
 
-    switch(driver) {
+    switch (driver) {
 
-    case "oracle.jdbc.driver.OracleDriver": handler = new OOracleDataTypeHandler();
-    break;
+    case "oracle.jdbc.driver.OracleDriver":
+      handler = new OOracleDataTypeHandler();
+      break;
 
-    case "com.microsoft.sqlserver.jdbc.SQLServerDriver": handler = new OSQLServerDataTypeHandler();
-    break;
+    case "com.microsoft.sqlserver.jdbc.SQLServerDriver":
+      handler = new OSQLServerDataTypeHandler();
+      break;
 
-    case "com.mysql.jdbc.Driver":   handler = new OMySQLDataTypeHandler();
-    break;
+    case "com.mysql.jdbc.Driver":
+      handler = new OMySQLDataTypeHandler();
+      break;
 
-    case "org.postgresql.Driver":   handler = new OPostgreSQLDataTypeHandler();
-    break;
+    case "org.postgresql.Driver":
+      handler = new OPostgreSQLDataTypeHandler();
+      break;
 
-    case "org.hsqldb.jdbc.JDBCDriver": handler = new OHSQLDBDataTypeHandler();
-    break;
+    case "org.hsqldb.jdbc.JDBCDriver":
+      handler = new OHSQLDBDataTypeHandler();
+      break;
 
-    default :  	handler = new ODBMSDataTypeHandler();
-    context.getStatistics().warningMessages.add("Driver " + driver + " is not completely supported. Thus problems may occur during type conversion.");
-    break;
+    default:
+      handler = new ODBMSDataTypeHandler();
+      context.getStatistics().warningMessages
+          .add("Driver " + driver + " is not completely supported. Thus problems may occur during type conversion.");
+      break;
     }
 
     context.setDataTypeHandler(handler);

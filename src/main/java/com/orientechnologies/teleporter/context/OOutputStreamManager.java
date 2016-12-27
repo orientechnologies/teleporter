@@ -30,22 +30,20 @@ import java.io.PrintStream;
  * - 3 : only error level is printed
  * - 2 : from info to error is printed
  * - 1 : from debug to error is printed
- * 
- * @author Gabriele Ponzi
- * @email  gabriele.ponzi--at--gmail.com
  *
+ * @author Gabriele Ponzi
+ * @email gabriele.ponzi--at--gmail.com
  */
 
 public class OOutputStreamManager {
 
-  public PrintStream outputStream;
-  private int level;
-  private final int BLANK_LEVEL = 0;
-  private final int DEBUG_LEVEL = 1;
-  private final int INFO_LEVEL = 2;
+  public  PrintStream outputStream;
+  private int         level;
+  private final int BLANK_LEVEL   = 0;
+  private final int DEBUG_LEVEL   = 1;
+  private final int INFO_LEVEL    = 2;
   private final int WARNING_LEVEL = 3;
-  private final int ERROR_LEVEL = 4;
-
+  private final int ERROR_LEVEL   = 4;
 
   public OOutputStreamManager(int level) {
     this.outputStream = System.out;
@@ -56,7 +54,6 @@ public class OOutputStreamManager {
     this.outputStream = outputStream;
     this.level = level;
   }
-
 
   public OutputStream getOutputStream() {
     return outputStream;
@@ -71,57 +68,57 @@ public class OOutputStreamManager {
   }
 
   public void debug(String message) {
-    if(!(this.level == BLANK_LEVEL) && message != null) {
-      if(this.level <= DEBUG_LEVEL ) 
+    if (!(this.level == BLANK_LEVEL) && message != null) {
+      if (this.level <= DEBUG_LEVEL)
         this.outputStream.print(message);
     }
   }
 
   public void debug(String format, Object... args) {
-    if(!(this.level == BLANK_LEVEL) && format != null) {
-      if(this.level <= DEBUG_LEVEL ) 
+    if (!(this.level == BLANK_LEVEL) && format != null) {
+      if (this.level <= DEBUG_LEVEL)
         this.outputStream.printf(format, args);
     }
   }
 
   public void info(String message) {
-    if(!(this.level == BLANK_LEVEL) && message != null) {
-      if(this.level <= INFO_LEVEL)
+    if (!(this.level == BLANK_LEVEL) && message != null) {
+      if (this.level <= INFO_LEVEL)
         this.outputStream.print(message);
     }
   }
 
-  public void info(String format,  Object... args) {
-    if(!(this.level == BLANK_LEVEL) && format != null) {
-      if(this.level <= INFO_LEVEL)
+  public void info(String format, Object... args) {
+    if (!(this.level == BLANK_LEVEL) && format != null) {
+      if (this.level <= INFO_LEVEL)
         this.outputStream.printf(format, args);
     }
   }
 
   public void warn(String message) {
-    if(!(this.level == BLANK_LEVEL) && message != null) {
-      if(this.level <= WARNING_LEVEL)
+    if (!(this.level == BLANK_LEVEL) && message != null) {
+      if (this.level <= WARNING_LEVEL)
         this.outputStream.print(message);
     }
   }
 
   public void warn(String format, Object... args) {
-    if(!(this.level == BLANK_LEVEL) && format != null) {
-      if(this.level <= WARNING_LEVEL)
+    if (!(this.level == BLANK_LEVEL) && format != null) {
+      if (this.level <= WARNING_LEVEL)
         this.outputStream.printf(format, args);
     }
   }
 
   public void error(String message) {
-    if(!(this.level == BLANK_LEVEL) && message != null) {
-      if(this.level <= ERROR_LEVEL)
+    if (!(this.level == BLANK_LEVEL) && message != null) {
+      if (this.level <= ERROR_LEVEL)
         this.outputStream.print("\nERROR: " + message);
     }
   }
 
   public void error(String format, Object... args) {
-    if(!(this.level == BLANK_LEVEL) && format != null) {
-      if(this.level <= ERROR_LEVEL)
+    if (!(this.level == BLANK_LEVEL) && format != null) {
+      if (this.level <= ERROR_LEVEL)
         this.outputStream.printf(format, "\nERROR: ", args);
     }
   }

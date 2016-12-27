@@ -30,28 +30,32 @@ import java.util.List;
  * Factory used to instantiate the chosen 'Mapper' which will be adopted for the source schema building.
  *
  * @author Gabriele Ponzi
- * @email  <gabriele.ponzi--at--gmail.com>
- *
+ * @email <gabriele.ponzi--at--gmail.com>
  */
 
 public class OMapperFactory {
 
-  public OMapperFactory() {}
+  public OMapperFactory() {
+  }
 
-  public OSource2GraphMapper buildMapper(String chosenMapper, String driver, String uri, String username, String password, String xmlPath, List<String> includedTables, List<String> excludedTables,
-      ODocument configuration, OTeleporterContext context) {
+  public OSource2GraphMapper buildMapper(String chosenMapper, String driver, String uri, String username, String password,
+      String xmlPath, List<String> includedTables, List<String> excludedTables, ODocument configuration,
+      OTeleporterContext context) {
 
     OSource2GraphMapper mapper = null;
 
-    switch(chosenMapper) {
+    switch (chosenMapper) {
 
-    case "basicDBMapper":   mapper = new OER2GraphMapper(driver, uri, username, password, includedTables, excludedTables, configuration);
+    case "basicDBMapper":
+      mapper = new OER2GraphMapper(driver, uri, username, password, includedTables, excludedTables, configuration);
       break;
 
-    case "hibernate":   mapper = new OHibernate2GraphMapper(driver, uri, username, password, xmlPath, includedTables, excludedTables, configuration);
+    case "hibernate":
+      mapper = new OHibernate2GraphMapper(driver, uri, username, password, xmlPath, includedTables, excludedTables, configuration);
       break;
 
-    default :  mapper = new OER2GraphMapper(driver, uri, username, password, includedTables, excludedTables, configuration);
+    default:
+      mapper = new OER2GraphMapper(driver, uri, username, password, includedTables, excludedTables, configuration);
     }
 
     return mapper;

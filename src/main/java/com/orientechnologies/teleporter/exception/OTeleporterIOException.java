@@ -22,17 +22,16 @@ import java.io.IOException;
 
 /**
  * It represents an IO Exception in Teleporter.
- * 
- * @author Gabriele Ponzi
- * @email  <gabriele.ponzi--at--gmail.com>
  *
+ * @author Gabriele Ponzi
+ * @email <gabriele.ponzi--at--gmail.com>
  */
 
 @SuppressWarnings("serial")
 public class OTeleporterIOException extends IOException {
 
-  public OTeleporterIOException() {}
-
+  public OTeleporterIOException() {
+  }
 
   public OTeleporterIOException(String message) {
     super(message);

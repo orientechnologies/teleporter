@@ -35,19 +35,17 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-
 /**
  * Executes an automatic configuration of the chosen driver JDBC.
  *
  * @author Gabriele Ponzi
  * @email <gabriele.ponzi--at--gmail.com>
- *
  */
 
 public class ODriverConfigurator {
 
-  public static final String DRIVERS = "http://orientdb.com/jdbc-drivers.json";
-  private final String localJsonPath = "../config/jdbc-drivers.json";
+  public static final String DRIVERS       = "http://orientdb.com/jdbc-drivers.json";
+  private final       String localJsonPath = "../config/jdbc-drivers.json";
   private Map<String, List<String>> driver2filesIdentifier;
 
   public ODriverConfigurator() {
@@ -163,6 +161,7 @@ public class ODriverConfigurator {
 
   /**
    * @param driverName
+   *
    * @return the path of the driver
    */
   private String isDriverAlreadyPresent(String driverName, String classPath) {
@@ -170,7 +169,7 @@ public class ODriverConfigurator {
     File dir = new File(classPath);
     File[] files = dir.listFiles();
 
-    if(files == null) {
+    if (files == null) {
       // ../lib does not exist yet, so create it.
       dir.mkdirs();
       files = dir.listFiles();
@@ -209,7 +208,8 @@ public class ODriverConfigurator {
           // read json from the file in the ORIENTDB_HOME/config path
           is = new FileInputStream(new File(this.localJsonPath));
         } catch (IOException e2) {
-          String mess = "The jdbc-drivers json cannot be found. The connection to http://orientdb.com/jdbc-drivers.json did not succeed, and the \"jdbc-drivers.json\" file is not present in ORIENTDB_HOME/config neither.\n";          context.printExceptionMessage(e2, mess, "error");
+          String mess = "The jdbc-drivers json cannot be found. The connection to http://orientdb.com/jdbc-drivers.json did not succeed, and the \"jdbc-drivers.json\" file is not present in ORIENTDB_HOME/config neither.\n";
+          context.printExceptionMessage(e2, mess, "error");
           context.printExceptionStackTrace(e2, "error");
           throw new OTeleporterRuntimeException(e2);
         }
@@ -222,7 +222,7 @@ public class ODriverConfigurator {
       json.fromJSON(jsonText, "noMap");
 
       // writing the just downloaded json into /config
-      if(downloadedNewJsonDrivers) {
+      if (downloadedNewJsonDrivers) {
         OFileManager.writeFileFromText(jsonText, this.localJsonPath, false);
       }
 
@@ -245,7 +245,7 @@ public class ODriverConfigurator {
   }
 
   public void checkConnection(String driver, String uri, String username, String password, OTeleporterContext context)
-          throws Exception {
+      throws Exception {
 
     String driverName = checkConfiguration(driver, context);
 

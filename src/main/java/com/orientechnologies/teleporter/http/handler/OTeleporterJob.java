@@ -32,14 +32,14 @@ import java.util.UUID;
  */
 public class OTeleporterJob implements Runnable {
 
-  private final ODocument     cfg;
-  private OTeleporterListener listener;
+  private final ODocument           cfg;
+  private       OTeleporterListener listener;
 
-  public String               id;
+  public String id;
 
-  public Status               status;
-  public PrintStream          stream;
-  ByteArrayOutputStream       baos;
+  public Status      status;
+  public PrintStream stream;
+  ByteArrayOutputStream baos;
 
   public OTeleporterJob(ODocument cfg, OTeleporterListener listener) {
     this.cfg = cfg;
@@ -68,8 +68,9 @@ public class OTeleporterJob implements Runnable {
     final List<String> excludedTable = cfg.field("excludes");
     status = Status.RUNNING;
     try {
-      OTeleporter.execute(driver, jurl, username, password, outDbUrl, chosenStrategy, chosenMapper, xmlPath, nameResolver,
-          outputLevel, includedTables, excludedTable, new OOutputStreamManager(stream, 2));
+      OTeleporter
+          .execute(driver, jurl, username, password, outDbUrl, chosenStrategy, chosenMapper, xmlPath, nameResolver, outputLevel,
+              includedTables, excludedTable, new OOutputStreamManager(stream, 2));
     } catch (Exception e) {
     }
 
@@ -90,7 +91,7 @@ public class OTeleporterJob implements Runnable {
 
   /**
    * Single Job Status
-   * 
+   *
    * @return ODocument
    */
   public ODocument status() {

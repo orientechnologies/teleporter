@@ -22,8 +22,7 @@ import com.orientechnologies.teleporter.context.OTeleporterContext;
 
 /**
  * @author Gabriele Ponzi
- * @email  <gabriele.ponzi--at--gmail.com>
- *
+ * @email <gabriele.ponzi--at--gmail.com>
  */
 
 public class OQueryQuoteTypeFactory {
@@ -31,27 +30,34 @@ public class OQueryQuoteTypeFactory {
   public void buildQueryQuoteType(String driver, OTeleporterContext context) {
     String queryQuoteType;
 
-    switch(driver) {
+    switch (driver) {
 
-    case "oracle.jdbc.driver.OracleDriver": queryQuoteType = "\"";
-    break;
+    case "oracle.jdbc.driver.OracleDriver":
+      queryQuoteType = "\"";
+      break;
 
-    case "com.microsoft.sqlserver.jdbc.SQLServerDriver": queryQuoteType = "\"";
-    break;
+    case "com.microsoft.sqlserver.jdbc.SQLServerDriver":
+      queryQuoteType = "\"";
+      break;
 
-    case "com.mysql.jdbc.Driver":   queryQuoteType = "`";
-    break;
+    case "com.mysql.jdbc.Driver":
+      queryQuoteType = "`";
+      break;
 
-    case "org.postgresql.Driver":   queryQuoteType = "\"";
-    break;
+    case "org.postgresql.Driver":
+      queryQuoteType = "\"";
+      break;
 
-    case "org.hsqldb.jdbc.JDBCDriver": queryQuoteType = "\"";
-    break;
+    case "org.hsqldb.jdbc.JDBCDriver":
+      queryQuoteType = "\"";
+      break;
 
-    default :  queryQuoteType = "";
-    context.getStatistics().warningMessages.add("Driver " + driver + " is not completely supported, the \" quote will be adopted for the case-sensitive queries. "
-        + "Thus problems may occur during the querying.");
-    break;
+    default:
+      queryQuoteType = "";
+      context.getStatistics().warningMessages.add(
+          "Driver " + driver + " is not completely supported, the \" quote will be adopted for the case-sensitive queries. "
+              + "Thus problems may occur during the querying.");
+      break;
     }
 
     context.setQueryQuoteType(queryQuoteType);

@@ -20,19 +20,17 @@ package com.orientechnologies.teleporter.model.dbschema;
 
 /**
  * It represents an attribute of an entity.
- * 
+ *
  * @author Gabriele Ponzi
- * @email  <gabriele.ponzi--at--gmail.com>
- * 
+ * @email <gabriele.ponzi--at--gmail.com>
  */
 
 public class OAttribute implements Comparable<OAttribute> {
 
-  private String name;
-  private int ordinalPosition;
-  private String dataType;
+  private String  name;
+  private int     ordinalPosition;
+  private String  dataType;
   private OEntity belongingEntity;
-
 
   public OAttribute(String name, int ordinalPosition, String dataType, OEntity belongingEntity) {
     this.name = name;
@@ -73,7 +71,6 @@ public class OAttribute implements Comparable<OAttribute> {
     this.belongingEntity = belongingEntity;
   }
 
-
   @Override
   public int hashCode() {
     final int prime = 31;
@@ -85,10 +82,9 @@ public class OAttribute implements Comparable<OAttribute> {
 
   public boolean equals(Object o) {
     OAttribute that = (OAttribute) o;
-    if(this.name.equals(that.getName()) && this.dataType.equals(that.getDataType())) {
+    if (this.name.equals(that.getName()) && this.dataType.equals(that.getDataType())) {
       return true;
-    }
-    else
+    } else
       return false;
 
   }
@@ -96,10 +92,10 @@ public class OAttribute implements Comparable<OAttribute> {
   @Override
   public int compareTo(OAttribute attributeToCompare) {
 
-    if(this.ordinalPosition > attributeToCompare.getOrdinalPosition())
+    if (this.ordinalPosition > attributeToCompare.getOrdinalPosition())
       return 0;
 
-    else if(this.ordinalPosition < attributeToCompare.getOrdinalPosition())
+    else if (this.ordinalPosition < attributeToCompare.getOrdinalPosition())
       return -1;
 
     else
@@ -111,8 +107,5 @@ public class OAttribute implements Comparable<OAttribute> {
     s += this.ordinalPosition + ": " + this.name + " ( " + this.dataType + " )";
     return s;
   }
-
-
-
 
 }

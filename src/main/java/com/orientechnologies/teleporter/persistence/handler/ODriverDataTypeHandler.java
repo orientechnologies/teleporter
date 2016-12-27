@@ -22,12 +22,11 @@ import com.orientechnologies.teleporter.context.OTeleporterContext;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 
 /**
- * Interface that executes the right type conversions between DBMS and OrientDB types according 
+ * Interface that executes the right type conversions between DBMS and OrientDB types according
  * to the specific driver of the source DB.
- * 
- * @author Gabriele Ponzi
- * @email  <gabriele.ponzi--at--gmail.com>
  *
+ * @author Gabriele Ponzi
+ * @email <gabriele.ponzi--at--gmail.com>
  */
 
 public interface ODriverDataTypeHandler {

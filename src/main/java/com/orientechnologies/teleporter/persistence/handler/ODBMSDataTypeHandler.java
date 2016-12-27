@@ -28,18 +28,16 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
 
 /**
  * Generic Handler that executes generic type conversions to the OrientDB types.
- * 
- * @author Gabriele Ponzi
- * @email  <gabriele.ponzi--at--gmail.com>
  *
+ * @author Gabriele Ponzi
+ * @email <gabriele.ponzi--at--gmail.com>
  */
 
 public class ODBMSDataTypeHandler implements ODriverDataTypeHandler {
 
-  protected Map<String,OType> dbmsType2OrientType;
-  public boolean jsonImplemented;
-  public boolean geospatialImplemented;
-
+  protected Map<String, OType> dbmsType2OrientType;
+  public    boolean            jsonImplemented;
+  public    boolean            geospatialImplemented;
 
   public ODBMSDataTypeHandler() {
     this.dbmsType2OrientType = this.fillTypesMap();
@@ -47,7 +45,7 @@ public class ODBMSDataTypeHandler implements ODriverDataTypeHandler {
     this.geospatialImplemented = false;
   }
 
-  /**  
+  /**
    * The method returns the Orient Type starting from the string name type of the original DBMS.
    * If the starting type is not mapped, OType.STRING is returned.
    */
@@ -57,16 +55,16 @@ public class ODBMSDataTypeHandler implements ODriverDataTypeHandler {
     type = type.toLowerCase();
 
     // Defined Types
-    if(this.dbmsType2OrientType.keySet().contains(type))
+    if (this.dbmsType2OrientType.keySet().contains(type))
       return this.dbmsType2OrientType.get(type);
 
-    // Undefined Types
+      // Undefined Types
     else {
-      context.getStatistics().warningMessages.add("The original type '" + type + "' is not convertible into any OrientDB type thus, in order to prevent data loss, it will be converted to the OrientDB Type String.");
+      context.getStatistics().warningMessages.add("The original type '" + type
+          + "' is not convertible into any OrientDB type thus, in order to prevent data loss, it will be converted to the OrientDB Type String.");
       return OType.STRING;
     }
   }
-
 
   private Map<String, OType> fillTypesMap() {
 
@@ -87,13 +85,13 @@ public class ODBMSDataTypeHandler implements ODriverDataTypeHandler {
     /*
      * Numeric Types
      */
-    dbmsType2OrientType.put("int2", OType.SHORT); 
-    dbmsType2OrientType.put("int", OType.INTEGER); 
-    dbmsType2OrientType.put("integer", OType.INTEGER); 
+    dbmsType2OrientType.put("int2", OType.SHORT);
+    dbmsType2OrientType.put("int", OType.INTEGER);
+    dbmsType2OrientType.put("integer", OType.INTEGER);
     dbmsType2OrientType.put("int4", OType.INTEGER);
     dbmsType2OrientType.put("int8", OType.LONG);
-    dbmsType2OrientType.put("real", OType.LONG); 
-    dbmsType2OrientType.put("float", OType.LONG); 
+    dbmsType2OrientType.put("real", OType.LONG);
+    dbmsType2OrientType.put("float", OType.LONG);
     dbmsType2OrientType.put("float4", OType.LONG);
     dbmsType2OrientType.put("float8", OType.DOUBLE);
     dbmsType2OrientType.put("double", OType.DOUBLE);
@@ -104,7 +102,7 @@ public class ODBMSDataTypeHandler implements ODriverDataTypeHandler {
 
     /*
      * Date/Time Types
-     */    
+     */
     dbmsType2OrientType.put("date", OType.DATE);
     dbmsType2OrientType.put("datetime", OType.DATETIME);
     dbmsType2OrientType.put("timestamp", OType.DATETIME);
@@ -130,22 +128,20 @@ public class ODBMSDataTypeHandler implements ODriverDataTypeHandler {
      */
     //    TODO! in EMBEDDED
 
-
     return dbmsType2OrientType;
   }
 
-
   public ODocument convertJSONToDocument(String currentProperty, String currentAttributeValue) {
     ODocument document = new ODocument(currentProperty);
-    if(currentAttributeValue != null && currentAttributeValue.length() > 0) {
+    if (currentAttributeValue != null && currentAttributeValue.length() > 0) {
       document.fromJSON(currentAttributeValue, "noMap");
     }
     return document;
   }
 
-
   /**
    * @param currentOriginalType
+   *
    * @return
    */
   public boolean isGeospatial(String currentOriginalType) {
@@ -156,6 +152,7 @@ public class ODBMSDataTypeHandler implements ODriverDataTypeHandler {
   /**
    * @param entity
    * @param context
+   *
    * @return
    */
   public String buildGeospatialQuery(OEntity entity, OTeleporterContext context) {

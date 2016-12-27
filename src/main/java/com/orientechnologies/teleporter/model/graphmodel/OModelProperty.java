@@ -21,17 +21,16 @@ package com.orientechnologies.teleporter.model.graphmodel;
 /**
  * Class which holds all the attributes of a vertex property obtained from
  * the transformation of an attribute belonging to an entity of the source DB schema.
- * 
- * @author Gabriele Ponzi
- * @email  <gabriele.ponzi--at--gmail.com>
  *
+ * @author Gabriele Ponzi
+ * @email <gabriele.ponzi--at--gmail.com>
  */
 
 public class OModelProperty {
 
-  private String name;
-  private int ordinalPosition;
-  private String propertyType;
+  private String  name;
+  private int     ordinalPosition;
+  private String  propertyType;
   private boolean fromPrimaryKey;
   // costraints
   private Boolean mandatory;
@@ -45,7 +44,8 @@ public class OModelProperty {
     this.fromPrimaryKey = fromPrimaryKey;
   }
 
-  public OModelProperty(String name, int ordinalPosition, String propertyType, boolean fromPrimaryKey, boolean mandatory, boolean readOnly, boolean notNull) {
+  public OModelProperty(String name, int ordinalPosition, String propertyType, boolean fromPrimaryKey, boolean mandatory,
+      boolean readOnly, boolean notNull) {
     this.name = name;
     this.ordinalPosition = ordinalPosition;
     this.propertyType = propertyType;
@@ -125,8 +125,8 @@ public class OModelProperty {
   @Override
   public boolean equals(Object obj) {
     OModelProperty that = (OModelProperty) obj;
-    if(this.name.equals(that.getName()) && this.ordinalPosition == that.getOrdinalPosition() && 
-        this.propertyType.equals(that.getPropertyType()) && this.isFromPrimaryKey() == that.isFromPrimaryKey())
+    if (this.name.equals(that.getName()) && this.ordinalPosition == that.getOrdinalPosition() && this.propertyType
+        .equals(that.getPropertyType()) && this.isFromPrimaryKey() == that.isFromPrimaryKey())
       return true;
     return false;
   }

@@ -24,15 +24,15 @@ import java.util.List;
 
 /**
  * Interface that represents a specific approach of data importing.
- * 
+ *
  * @author Gabriele Ponzi
- * @email  <gabriele.ponzi--at--gmail.com>
- * 
+ * @email <gabriele.ponzi--at--gmail.com>
  */
 
 public interface OImportStrategy {
 
-  public void executeStrategy(String driver, String uri, String username, String password, String outOrientGraphUri, String chosenMapper, String xmlPath, String nameResolverConvention,
-      List<String> includedTables, List<String> excludedTables, String configurationPath, OTeleporterContext context);
+  public void executeStrategy(String driver, String uri, String username, String password, String outOrientGraphUri,
+      String chosenMapper, String xmlPath, String nameResolverConvention, List<String> includedTables, List<String> excludedTables,
+      String configurationPath, OTeleporterContext context);
 
 }

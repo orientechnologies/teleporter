@@ -45,8 +45,7 @@ import static org.junit.Assert.*;
 
 /**
  * @author Gabriele Ponzi
- * @email  <gabriele.ponzi--at--gmail.com>
- *
+ * @email <gabriele.ponzi--at--gmail.com>
  */
 
 public class FilterTableMappingTest {
@@ -54,12 +53,10 @@ public class FilterTableMappingTest {
   private OER2GraphMapper    mapper;
   private OTeleporterContext context;
 
-  private final static String XML_TABLE_PER_CLASS = "src/test/resources/inheritance/hibernate/tablePerClassHierarchyImportTest.xml";
-  private final static String XML_TABLE_PER_SUBCLASS1 = "src/test/resources/inheritance/hibernate/tablePerSubclassImportTest1.xml";
-  private final static String XML_TABLE_PER_SUBCLASS2 = "src/test/resources/inheritance/hibernate/tablePerSubclassImportTest2.xml";
+  private final static String XML_TABLE_PER_CLASS          = "src/test/resources/inheritance/hibernate/tablePerClassHierarchyImportTest.xml";
+  private final static String XML_TABLE_PER_SUBCLASS1      = "src/test/resources/inheritance/hibernate/tablePerSubclassImportTest1.xml";
+  private final static String XML_TABLE_PER_SUBCLASS2      = "src/test/resources/inheritance/hibernate/tablePerSubclassImportTest2.xml";
   private final static String XML_TABLE_PER_CONCRETE_CLASS = "src/test/resources/inheritance/hibernate/tablePerConcreteClassImportTest.xml";
-
-
 
   @Before
   public void init() {
@@ -73,8 +70,7 @@ public class FilterTableMappingTest {
   @Test
   /*
    * Filtering out a table through include-tables (without inheritance).
-   */
-  public void test1() {
+   */ public void test1() {
 
     Connection connection = null;
     Statement st = null;
@@ -88,38 +84,34 @@ public class FilterTableMappingTest {
       st = connection.createStatement();
       st.execute(countryTableBuilding);
 
-      String residenceTableBuilding = "create memory table RESIDENCE(ID varchar(256) not null, CITY varchar(256), COUNTRY varchar(256), "
-          + "primary key (ID), foreign key (COUNTRY) references COUNTRY(ID))";
+      String residenceTableBuilding =
+          "create memory table RESIDENCE(ID varchar(256) not null, CITY varchar(256), COUNTRY varchar(256), "
+              + "primary key (ID), foreign key (COUNTRY) references COUNTRY(ID))";
       st.execute(residenceTableBuilding);
 
       String managerTableBuilding = "create memory table MANAGER(ID varchar(256) not null, NAME varchar(256), PROJECT varchar(256), primary key (ID))";
       st.execute(managerTableBuilding);
 
-      String employeeTableBuilding = "create memory table EMPLOYEE (ID varchar(256) not null,"+
-          " NAME varchar(256), SALARY decimal(10,2), RESIDENCE varchar(256), MANAGER varchar(256), "
+      String employeeTableBuilding = "create memory table EMPLOYEE (ID varchar(256) not null,"
+          + " NAME varchar(256), SALARY decimal(10,2), RESIDENCE varchar(256), MANAGER varchar(256), "
           + "primary key (ID), foreign key (RESIDENCE) references RESIDENCE(ID), foreign key (MANAGER) references MANAGER(ID))";
       st.execute(employeeTableBuilding);
 
-
       // Records Inserting
 
-      String countryFilling = "insert into COUNTRY (ID,NAME,CONTINENT) values ("
-          + "('C001','Italy','Europe'))";
+      String countryFilling = "insert into COUNTRY (ID,NAME,CONTINENT) values (" + "('C001','Italy','Europe'))";
       st.execute(countryFilling);
 
-      String residenceFilling = "insert into RESIDENCE (ID,CITY,COUNTRY) values ("
-          + "('R001','Rome','C001'),"
-          + "('R002','Milan','C001'))";
+      String residenceFilling =
+          "insert into RESIDENCE (ID,CITY,COUNTRY) values (" + "('R001','Rome','C001')," + "('R002','Milan','C001'))";
       st.execute(residenceFilling);
 
-      String managerFilling = "insert into MANAGER (ID,NAME,PROJECT) values ("
-          + "('M001','Bill Right','New World'))";
+      String managerFilling = "insert into MANAGER (ID,NAME,PROJECT) values (" + "('M001','Bill Right','New World'))";
       st.execute(managerFilling);
 
-      String employeeFilling = "insert into EMPLOYEE (ID,NAME,SALARY,RESIDENCE,MANAGER) values ("
-          + "('E001','John Black',1500.00,'R001',null),"
-          + "('E002','Andrew Brown','1000.00','R001','M001'),"
-          + "('E003','Jack Johnson',2000.00,'R002',null))";
+      String employeeFilling =
+          "insert into EMPLOYEE (ID,NAME,SALARY,RESIDENCE,MANAGER) values (" + "('E001','John Black',1500.00,'R001',null),"
+              + "('E002','Andrew Brown','1000.00','R001','M001')," + "('E003','Jack Johnson',2000.00,'R002',null))";
       st.execute(employeeFilling);
 
       List<String> includedTables = new ArrayList<String>();
@@ -156,7 +148,6 @@ public class FilterTableMappingTest {
       OEntity managerEntity = mapper.getDataBaseSchema().getEntityByNameIgnoreCase("MANAGER");
       OEntity residenceEntity = mapper.getDataBaseSchema().getEntityByNameIgnoreCase("RESIDENCE");
 
-
       // entities check
       Assert.assertEquals(3, mapper.getDataBaseSchema().getEntities().size());
       Assert.assertEquals(1, mapper.getDataBaseSchema().getRelationships().size());
@@ -164,7 +155,6 @@ public class FilterTableMappingTest {
       assertNotNull(countryEntity);
       assertNotNull(managerEntity);
       assertNull(residenceEntity);
-
 
       // attributes check
       assertEquals(5, employeeEntity.getAttributes().size());
@@ -239,7 +229,6 @@ public class FilterTableMappingTest {
       assertEquals(3, managerEntity.getAttributeByName("PROJECT").getOrdinalPosition());
       assertEquals("MANAGER", managerEntity.getAttributeByName("PROJECT").getBelongingEntity().getName());
 
-
       // relationship, primary and foreign key check
       assertEquals(1, employeeEntity.getOutRelationships().size());
       assertEquals(0, managerEntity.getOutRelationships().size());
@@ -270,7 +259,6 @@ public class FilterTableMappingTest {
       OVertexType countryVertexType = mapper.getGraphModel().getVertexTypeByName("Country");
       OVertexType managerVertexType = mapper.getGraphModel().getVertexTypeByName("Manager");
       OVertexType residenceVertexType = mapper.getGraphModel().getVertexTypeByName("Residence");
-
 
       // vertices check
       Assert.assertEquals(3, mapper.getGraphModel().getVerticesType().size());
@@ -352,7 +340,6 @@ public class FilterTableMappingTest {
       assertEquals(3, managerVertexType.getPropertyByName("project").getOrdinalPosition());
       assertEquals(false, managerVertexType.getPropertyByName("project").isFromPrimaryKey());
 
-
       // edges check
 
       assertEquals(1, mapper.getRelationship2edgeType().size());
@@ -390,7 +377,7 @@ public class FilterTableMappingTest {
       assertEquals("RESIDENCE", employeeClassMapper.property2attribute.get("residence"));
       assertEquals("MANAGER", employeeClassMapper.property2attribute.get("manager"));
 
-      OClassMapper countryClassMapper =  mapper.getClassMappingRulesByVertex(countryVertexType);
+      OClassMapper countryClassMapper = mapper.getClassMappingRulesByVertex(countryVertexType);
       assertEquals(countryClassMapper, mapper.getClassMappingRulesByEntity(countryEntity));
       assertEquals(countryClassMapper.getEntity(), countryEntity);
       assertEquals(countryClassMapper.getVertexType(), countryVertexType);
@@ -404,7 +391,7 @@ public class FilterTableMappingTest {
       assertEquals("NAME", countryClassMapper.property2attribute.get("name"));
       assertEquals("CONTINENT", countryClassMapper.property2attribute.get("continent"));
 
-      OClassMapper managerClassMapper =  mapper.getClassMappingRulesByVertex(managerVertexType);
+      OClassMapper managerClassMapper = mapper.getClassMappingRulesByVertex(managerVertexType);
       assertEquals(managerClassMapper, mapper.getClassMappingRulesByEntity(managerEntity));
       assertEquals(managerClassMapper.getEntity(), managerEntity);
       assertEquals(managerClassMapper.getVertexType(), managerVertexType);
@@ -437,29 +424,27 @@ public class FilterTableMappingTest {
 
       assertEquals(0, mapper.getJoinVertex2aggregatorEdges().size());
 
-    } catch(Exception e) {
+    } catch (Exception e) {
       e.printStackTrace();
       fail();
-    }finally {      
+    } finally {
       try {
 
         // Dropping Source DB Schema and OrientGraph
         String dbDropping = "drop schema public cascade";
         st.execute(dbDropping);
         connection.close();
-      }catch(Exception e) {
+      } catch (Exception e) {
         e.printStackTrace();
         fail();
       }
     }
   }
 
-
   @Test
   /*
    * Filtering out a table through exclude-tables (without inheritance).
-   */
-  public void test2() {
+   */ public void test2() {
 
     Connection connection = null;
     Statement st = null;
@@ -473,38 +458,34 @@ public class FilterTableMappingTest {
       st = connection.createStatement();
       st.execute(countryTableBuilding);
 
-      String residenceTableBuilding = "create memory table RESIDENCE(ID varchar(256) not null, CITY varchar(256), COUNTRY varchar(256), "
-          + "primary key (ID), foreign key (COUNTRY) references COUNTRY(ID))";
+      String residenceTableBuilding =
+          "create memory table RESIDENCE(ID varchar(256) not null, CITY varchar(256), COUNTRY varchar(256), "
+              + "primary key (ID), foreign key (COUNTRY) references COUNTRY(ID))";
       st.execute(residenceTableBuilding);
 
       String managerTableBuilding = "create memory table MANAGER(ID varchar(256) not null, NAME varchar(256), PROJECT varchar(256), primary key (ID))";
       st.execute(managerTableBuilding);
 
-      String employeeTableBuilding = "create memory table EMPLOYEE (ID varchar(256) not null,"+
-          " NAME varchar(256), SALARY decimal(10,2), RESIDENCE varchar(256), MANAGER varchar(256), "
+      String employeeTableBuilding = "create memory table EMPLOYEE (ID varchar(256) not null,"
+          + " NAME varchar(256), SALARY decimal(10,2), RESIDENCE varchar(256), MANAGER varchar(256), "
           + "primary key (id), foreign key (RESIDENCE) references RESIDENCE(ID), foreign key (MANAGER) references MANAGER(ID))";
       st.execute(employeeTableBuilding);
 
-
       // Records Inserting
 
-      String countryFilling = "insert into COUNTRY (ID,NAME,CONTINENT) values ("
-          + "('C001','Italy','Europe'))";
+      String countryFilling = "insert into COUNTRY (ID,NAME,CONTINENT) values (" + "('C001','Italy','Europe'))";
       st.execute(countryFilling);
 
-      String residenceFilling = "insert into RESIDENCE (ID,CITY,COUNTRY) values ("
-          + "('R001','Rome','C001'),"
-          + "('R002','Milan','C001'))";
+      String residenceFilling =
+          "insert into RESIDENCE (ID,CITY,COUNTRY) values (" + "('R001','Rome','C001')," + "('R002','Milan','C001'))";
       st.execute(residenceFilling);
 
-      String managerFilling = "insert into MANAGER (ID,NAME,PROJECT) values ("
-          + "('M001','Bill Right','New World'))";
+      String managerFilling = "insert into MANAGER (ID,NAME,PROJECT) values (" + "('M001','Bill Right','New World'))";
       st.execute(managerFilling);
 
-      String employeeFilling = "insert into EMPLOYEE (ID,NAME,SALARY,RESIDENCE,MANAGER) values ("
-          + "('E001','John Black',1500.00,'R001',null),"
-          + "('E002','Andrew Brown','1000.00','R001','M001'),"
-          + "('E003','Jack Johnson',2000.00,'R002',null))";
+      String employeeFilling =
+          "insert into EMPLOYEE (ID,NAME,SALARY,RESIDENCE,MANAGER) values (" + "('E001','John Black',1500.00,'R001',null),"
+              + "('E002','Andrew Brown','1000.00','R001','M001')," + "('E003','Jack Johnson',2000.00,'R002',null))";
       st.execute(employeeFilling);
 
       List<String> excludedTables = new ArrayList<String>();
@@ -539,7 +520,6 @@ public class FilterTableMappingTest {
       OEntity managerEntity = mapper.getDataBaseSchema().getEntityByNameIgnoreCase("MANAGER");
       OEntity residenceEntity = mapper.getDataBaseSchema().getEntityByNameIgnoreCase("RESIDENCE");
 
-
       // entities check
       Assert.assertEquals(3, mapper.getDataBaseSchema().getEntities().size());
       Assert.assertEquals(1, mapper.getDataBaseSchema().getRelationships().size());
@@ -547,7 +527,6 @@ public class FilterTableMappingTest {
       assertNotNull(countryEntity);
       assertNotNull(managerEntity);
       assertNull(residenceEntity);
-
 
       // attributes check
       assertEquals(5, employeeEntity.getAttributes().size());
@@ -622,7 +601,6 @@ public class FilterTableMappingTest {
       assertEquals(3, managerEntity.getAttributeByName("PROJECT").getOrdinalPosition());
       assertEquals("MANAGER", managerEntity.getAttributeByName("PROJECT").getBelongingEntity().getName());
 
-
       // relationship, primary and foreign key check
       assertEquals(1, employeeEntity.getOutRelationships().size());
       assertEquals(0, managerEntity.getOutRelationships().size());
@@ -651,7 +629,6 @@ public class FilterTableMappingTest {
       OVertexType countryVertexType = mapper.getGraphModel().getVertexTypeByName("Country");
       OVertexType managerVertexType = mapper.getGraphModel().getVertexTypeByName("Manager");
       OVertexType residenceVertexType = mapper.getGraphModel().getVertexTypeByName("Residence");
-
 
       // vertices check
       Assert.assertEquals(3, mapper.getGraphModel().getVerticesType().size());
@@ -733,7 +710,6 @@ public class FilterTableMappingTest {
       assertEquals(3, managerVertexType.getPropertyByName("project").getOrdinalPosition());
       assertEquals(false, managerVertexType.getPropertyByName("project").isFromPrimaryKey());
 
-
       // edges check
 
       assertEquals(1, mapper.getRelationship2edgeType().size());
@@ -771,7 +747,7 @@ public class FilterTableMappingTest {
       assertEquals("RESIDENCE", employeeClassMapper.property2attribute.get("residence"));
       assertEquals("MANAGER", employeeClassMapper.property2attribute.get("manager"));
 
-      OClassMapper countryClassMapper =  mapper.getClassMappingRulesByVertex(countryVertexType);
+      OClassMapper countryClassMapper = mapper.getClassMappingRulesByVertex(countryVertexType);
       assertEquals(countryClassMapper, mapper.getClassMappingRulesByEntity(countryEntity));
       assertEquals(countryClassMapper.getEntity(), countryEntity);
       assertEquals(countryClassMapper.getVertexType(), countryVertexType);
@@ -785,7 +761,7 @@ public class FilterTableMappingTest {
       assertEquals("NAME", countryClassMapper.property2attribute.get("name"));
       assertEquals("CONTINENT", countryClassMapper.property2attribute.get("continent"));
 
-      OClassMapper managerClassMapper =  mapper.getClassMappingRulesByVertex(managerVertexType);
+      OClassMapper managerClassMapper = mapper.getClassMappingRulesByVertex(managerVertexType);
       assertEquals(managerClassMapper, mapper.getClassMappingRulesByEntity(managerEntity));
       assertEquals(managerClassMapper.getEntity(), managerEntity);
       assertEquals(managerClassMapper.getVertexType(), managerVertexType);
@@ -818,30 +794,27 @@ public class FilterTableMappingTest {
 
       assertEquals(0, mapper.getJoinVertex2aggregatorEdges().size());
 
-
-    } catch(Exception e) {
+    } catch (Exception e) {
       e.printStackTrace();
       fail();
-    }finally {      
+    } finally {
       try {
 
         // Dropping Source DB Schema and OrientGraph
         String dbDropping = "drop schema public cascade";
         st.execute(dbDropping);
         connection.close();
-      }catch(Exception e) {
+      } catch (Exception e) {
         e.printStackTrace();
         fail();
       }
     }
   }
 
-
   @Test
   /*
    * Filtering out a table through include-tables (with Table per Hierarchy inheritance).
-   */
-  public void test3() {
+   */ public void test3() {
 
     Connection connection = null;
     Statement st = null;
@@ -855,39 +828,38 @@ public class FilterTableMappingTest {
       st = connection.createStatement();
       st.execute(countryTableBuilding);
 
-      String residenceTableBuilding = "create memory table RESIDENCE(ID varchar(256) not null, CITY varchar(256), COUNTRY varchar(256), "
-          + "primary key (ID), foreign key (COUNTRY) references COUNTRY(ID))";
+      String residenceTableBuilding =
+          "create memory table RESIDENCE(ID varchar(256) not null, CITY varchar(256), COUNTRY varchar(256), "
+              + "primary key (ID), foreign key (COUNTRY) references COUNTRY(ID))";
       st.execute(residenceTableBuilding);
 
       String managerTableBuilding = "create memory table MANAGER(ID varchar(256) not null, TYPE varchar(256), NAME varchar(256), PROJECT varchar(256), primary key (ID))";
       st.execute(managerTableBuilding);
 
-      String employeeTableBuilding = "create memory table EMPLOYEE (ID varchar(256) not null,"+
-          " TYPE varchar(256), NAME varchar(256), SALARY decimal(10,2), BONUS decimal(10,0), "
+      String employeeTableBuilding = "create memory table EMPLOYEE (ID varchar(256) not null,"
+          + " TYPE varchar(256), NAME varchar(256), SALARY decimal(10,2), BONUS decimal(10,0), "
           + "PAY_PER_HOUR decimal(10,2), CONTRACT_DURATION varchar(256), RESIDENCE varchar(256), MANAGER varchar(256), "
           + "primary key (id), foreign key (RESIDENCE) references RESIDENCE(ID), foreign key (MANAGER) references MANAGER(ID))";
       st.execute(employeeTableBuilding);
 
-
       // Records Inserting
 
-      String countryFilling = "insert into country (ID,NAME,CONTINENT) values ("
-          + "('C001','Italy','Europe'))";
+      String countryFilling = "insert into country (ID,NAME,CONTINENT) values (" + "('C001','Italy','Europe'))";
       st.execute(countryFilling);
 
-      String residenceFilling = "insert into RESIDENCE (ID,CITY,COUNTRY) values ("
-          + "('R001','Rome','C001'),"
-          + "('R002','Milan','C001'))";
+      String residenceFilling =
+          "insert into RESIDENCE (ID,CITY,COUNTRY) values (" + "('R001','Rome','C001')," + "('R002','Milan','C001'))";
       st.execute(residenceFilling);
 
-      String managerFilling = "insert into MANAGER (ID,TYPE,NAME,PROJECT) values ("
-          + "('M001','prj_mgr','Bill Right','New World'))";
+      String managerFilling =
+          "insert into MANAGER (ID,TYPE,NAME,PROJECT) values (" + "('M001','prj_mgr','Bill Right','New World'))";
       st.execute(managerFilling);
 
-      String employeeFilling = "insert into EMPLOYEE (ID,TYPE,NAME,SALARY,BONUS,PAY_PER_HOUR,CONTRACT_DURATION,RESIDENCE,MANAGER) values ("
-          + "('E001','emp','John Black',null,null,null,null,'R001',null),"
-          + "('E002','reg_emp','Andrew Brown','1000.00','10',null,null,'R001','M001'),"
-          + "('E003','cont_emp','Jack Johnson',null,null,'50.00','6','R002',null))";
+      String employeeFilling =
+          "insert into EMPLOYEE (ID,TYPE,NAME,SALARY,BONUS,PAY_PER_HOUR,CONTRACT_DURATION,RESIDENCE,MANAGER) values ("
+              + "('E001','emp','John Black',null,null,null,null,'R001',null),"
+              + "('E002','reg_emp','Andrew Brown','1000.00','10',null,null,'R001','M001'),"
+              + "('E003','cont_emp','Jack Johnson',null,null,'50.00','6','R002',null))";
       st.execute(employeeFilling);
 
       List<String> includedTables = new ArrayList<String>();
@@ -895,7 +867,8 @@ public class FilterTableMappingTest {
       includedTables.add("MANAGER");
       includedTables.add("EMPLOYEE");
 
-      this.mapper = new OHibernate2GraphMapper("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", FilterTableMappingTest.XML_TABLE_PER_CLASS, includedTables, null, null);
+      this.mapper = new OHibernate2GraphMapper("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "",
+          FilterTableMappingTest.XML_TABLE_PER_CLASS, includedTables, null, null);
       mapper.buildSourceDatabaseSchema(this.context);
       mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
 
@@ -927,7 +900,6 @@ public class FilterTableMappingTest {
       OEntity projectManagerEntity = mapper.getDataBaseSchema().getEntityByNameIgnoreCase("PROJECT_MANAGER");
       OEntity residenceEntity = mapper.getDataBaseSchema().getEntityByNameIgnoreCase("RESIDENCE");
 
-
       // entities check
       Assert.assertEquals(6, mapper.getDataBaseSchema().getEntities().size());
       Assert.assertEquals(1, mapper.getDataBaseSchema().getRelationships().size());
@@ -937,7 +909,6 @@ public class FilterTableMappingTest {
       assertNotNull(countryEntity);
       assertNotNull(managerEntity);
       assertNull(residenceEntity);
-
 
       // attributes check
       assertEquals(4, employeeEntity.getAttributes().size());
@@ -992,7 +963,8 @@ public class FilterTableMappingTest {
       assertEquals("CONTRACT_DURATION", contractEmployeeEntity.getAttributeByName("CONTRACT_DURATION").getName());
       assertEquals("VARCHAR", contractEmployeeEntity.getAttributeByName("CONTRACT_DURATION").getDataType());
       assertEquals(2, contractEmployeeEntity.getAttributeByName("CONTRACT_DURATION").getOrdinalPosition());
-      assertEquals("Contract_Employee", contractEmployeeEntity.getAttributeByName("CONTRACT_DURATION").getBelongingEntity().getName());
+      assertEquals("Contract_Employee",
+          contractEmployeeEntity.getAttributeByName("CONTRACT_DURATION").getBelongingEntity().getName());
 
       assertEquals(3, countryEntity.getAttributes().size());
 
@@ -1035,7 +1007,6 @@ public class FilterTableMappingTest {
       assertEquals("VARCHAR", projectManagerEntity.getAttributeByName("PROJECT").getDataType());
       assertEquals(1, projectManagerEntity.getAttributeByName("PROJECT").getOrdinalPosition());
       assertEquals("Project_Manager", projectManagerEntity.getAttributeByName("PROJECT").getBelongingEntity().getName());
-
 
       // inherited attributes check
       assertEquals(0, employeeEntity.getInheritedAttributes().size());
@@ -1106,7 +1077,6 @@ public class FilterTableMappingTest {
       assertEquals(2, projectManagerEntity.getInheritedAttributeByName("NAME").getOrdinalPosition());
       assertEquals("MANAGER", projectManagerEntity.getInheritedAttributeByName("NAME").getBelongingEntity().getName());
 
-
       assertEquals(0, countryEntity.getInheritedAttributes().size());
       assertEquals(0, managerEntity.getInheritedAttributes().size());
 
@@ -1119,7 +1089,8 @@ public class FilterTableMappingTest {
       assertEquals(1, contractEmployeeEntity.getPrimaryKey().getInvolvedAttributes().size());
       assertEquals("ID", contractEmployeeEntity.getPrimaryKey().getInvolvedAttributes().get(0).getName());
       assertEquals("VARCHAR", contractEmployeeEntity.getPrimaryKey().getInvolvedAttributes().get(0).getDataType());
-      assertEquals("EMPLOYEE", contractEmployeeEntity.getPrimaryKey().getInvolvedAttributes().get(0).getBelongingEntity().getName());
+      assertEquals("EMPLOYEE",
+          contractEmployeeEntity.getPrimaryKey().getInvolvedAttributes().get(0).getBelongingEntity().getName());
 
       assertEquals(1, projectManagerEntity.getPrimaryKey().getInvolvedAttributes().size());
       assertEquals("ID", projectManagerEntity.getPrimaryKey().getInvolvedAttributes().get(0).getName());
@@ -1213,12 +1184,12 @@ public class FilterTableMappingTest {
       assertEquals(hierarchicalBag1, contractEmployeeEntity.getHierarchicalBag());
 
       assertNotNull(hierarchicalBag1.getDiscriminatorColumn());
-      assertEquals("TYPE",hierarchicalBag1.getDiscriminatorColumn());
+      assertEquals("TYPE", hierarchicalBag1.getDiscriminatorColumn());
 
       assertEquals(3, hierarchicalBag1.getEntityName2discriminatorValue().size());
-      assertEquals("emp",hierarchicalBag1.getEntityName2discriminatorValue().get("EMPLOYEE"));
-      assertEquals("reg_emp",hierarchicalBag1.getEntityName2discriminatorValue().get("Regular_Employee"));
-      assertEquals("cont_emp",hierarchicalBag1.getEntityName2discriminatorValue().get("Contract_Employee"));
+      assertEquals("emp", hierarchicalBag1.getEntityName2discriminatorValue().get("EMPLOYEE"));
+      assertEquals("reg_emp", hierarchicalBag1.getEntityName2discriminatorValue().get("Regular_Employee"));
+      assertEquals("cont_emp", hierarchicalBag1.getEntityName2discriminatorValue().get("Contract_Employee"));
 
       assertEquals(2, hierarchicalBag2.getDepth2entities().size());
 
@@ -1236,11 +1207,11 @@ public class FilterTableMappingTest {
       assertEquals(hierarchicalBag2, projectManagerEntity.getHierarchicalBag());
 
       assertNotNull(hierarchicalBag2.getDiscriminatorColumn());
-      assertEquals("TYPE",hierarchicalBag2.getDiscriminatorColumn());
+      assertEquals("TYPE", hierarchicalBag2.getDiscriminatorColumn());
 
       assertEquals(2, hierarchicalBag2.getEntityName2discriminatorValue().size());
-      assertEquals("mgr",hierarchicalBag2.getEntityName2discriminatorValue().get("MANAGER"));
-      assertEquals("prj_mgr",hierarchicalBag2.getEntityName2discriminatorValue().get("Project_Manager"));
+      assertEquals("mgr", hierarchicalBag2.getEntityName2discriminatorValue().get("MANAGER"));
+      assertEquals("prj_mgr", hierarchicalBag2.getEntityName2discriminatorValue().get("Project_Manager"));
 
 
       /*
@@ -1254,7 +1225,6 @@ public class FilterTableMappingTest {
       OVertexType managerVertexType = mapper.getGraphModel().getVertexTypeByName("Manager");
       OVertexType projectManagerVertexType = mapper.getGraphModel().getVertexTypeByName("ProjectManager");
       OVertexType residenceVertexType = mapper.getGraphModel().getVertexTypeByName("Residence");
-
 
       // vertices check
       Assert.assertEquals(6, mapper.getGraphModel().getVerticesType().size());
@@ -1435,7 +1405,6 @@ public class FilterTableMappingTest {
       assertEquals(0, countryVertexType.getInheritedProperties().size());
       assertEquals(0, managerVertexType.getInheritedProperties().size());
 
-
       // edges check
 
       assertEquals(1, mapper.getRelationship2edgeType().size());
@@ -1501,7 +1470,7 @@ public class FilterTableMappingTest {
       assertEquals("PAY_PER_HOUR", contractEmployeeClassMapper.property2attribute.get("payPerHour"));
       assertEquals("CONTRACT_DURATION", contractEmployeeClassMapper.property2attribute.get("contractDuration"));
 
-      OClassMapper countryClassMapper =  mapper.getClassMappingRulesByVertex(countryVertexType);
+      OClassMapper countryClassMapper = mapper.getClassMappingRulesByVertex(countryVertexType);
       assertEquals(countryClassMapper, mapper.getClassMappingRulesByEntity(countryEntity));
       assertEquals(countryClassMapper.getEntity(), countryEntity);
       assertEquals(countryClassMapper.getVertexType(), countryVertexType);
@@ -1515,7 +1484,7 @@ public class FilterTableMappingTest {
       assertEquals("NAME", countryClassMapper.property2attribute.get("name"));
       assertEquals("CONTINENT", countryClassMapper.property2attribute.get("continent"));
 
-      OClassMapper managerClassMapper =  mapper.getClassMappingRulesByVertex(managerVertexType);
+      OClassMapper managerClassMapper = mapper.getClassMappingRulesByVertex(managerVertexType);
       assertEquals(managerClassMapper, mapper.getClassMappingRulesByEntity(managerEntity));
       assertEquals(managerClassMapper.getEntity(), managerEntity);
       assertEquals(managerClassMapper.getVertexType(), managerVertexType);
@@ -1527,7 +1496,7 @@ public class FilterTableMappingTest {
       assertEquals("ID", managerClassMapper.property2attribute.get("id"));
       assertEquals("NAME", managerClassMapper.property2attribute.get("name"));
 
-      OClassMapper projectManagerClassMapper =  mapper.getClassMappingRulesByVertex(projectManagerVertexType);
+      OClassMapper projectManagerClassMapper = mapper.getClassMappingRulesByVertex(projectManagerVertexType);
       assertEquals(projectManagerClassMapper, mapper.getClassMappingRulesByEntity(projectManagerEntity));
       assertEquals(projectManagerClassMapper.getEntity(), projectManagerEntity);
       assertEquals(projectManagerClassMapper.getVertexType(), projectManagerVertexType);
@@ -1556,17 +1525,17 @@ public class FilterTableMappingTest {
 
       assertEquals(0, mapper.getJoinVertex2aggregatorEdges().size());
 
-    }catch(Exception e) {
+    } catch (Exception e) {
       e.printStackTrace();
       fail();
-    }finally {      
+    } finally {
       try {
 
         // Dropping Source DB Schema and OrientGraph
         String dbDropping = "drop schema public cascade";
         st.execute(dbDropping);
         connection.close();
-      }catch(Exception e) {
+      } catch (Exception e) {
         e.printStackTrace();
         fail();
       }
@@ -1576,8 +1545,7 @@ public class FilterTableMappingTest {
   @Test
   /*
    * Filtering out a table through include-tables (with Table per Type inheritance).
-   */
-  public void test4() {
+   */ public void test4() {
 
     Connection connection = null;
     Statement st = null;
@@ -1601,8 +1569,8 @@ public class FilterTableMappingTest {
       String projectManagerTableBuilding = "create memory table PROJECT_MANAGER(EID varchar(256) not null, PROJECT varchar(256), primary key (EID), foreign key (EID) references MANAGER(ID))";
       st.execute(projectManagerTableBuilding);
 
-      String employeeTableBuilding = "create memory table EMPLOYEE (ID varchar(256) not null,"+
-          " NAME varchar(256), RESIDENCE varchar(256), MANAGER varchar(256), primary key (ID), "
+      String employeeTableBuilding = "create memory table EMPLOYEE (ID varchar(256) not null,"
+          + " NAME varchar(256), RESIDENCE varchar(256), MANAGER varchar(256), primary key (ID), "
           + "foreign key (RESIDENCE) references RESIDENCE(ID), foreign key (MANAGER) references MANAGER(ID))";
       st.execute(employeeTableBuilding);
 
@@ -1614,38 +1582,30 @@ public class FilterTableMappingTest {
           + "PAY_PER_HOUR decimal(10,2), CONTRACT_DURATION varchar(256), primary key (EID), foreign key (EID) references EMPLOYEE(ID))";
       st.execute(contractEmployeeTableBuilding);
 
-
       // Records Inserting
 
-      String countryFilling = "insert into COUNTRY (ID,NAME,CONTINENT) values ("
-          + "('C001','Italy','Europe'))";
+      String countryFilling = "insert into COUNTRY (ID,NAME,CONTINENT) values (" + "('C001','Italy','Europe'))";
       st.execute(countryFilling);
 
-      String residenceFilling = "insert into RESIDENCE (ID,CITY,COUNTRY) values ("
-          + "('R001','Rome','C001'),"
-          + "('R002','Milan','C001'))";
+      String residenceFilling =
+          "insert into RESIDENCE (ID,CITY,COUNTRY) values (" + "('R001','Rome','C001')," + "('R002','Milan','C001'))";
       st.execute(residenceFilling);
 
-      String managerFilling = "insert into MANAGER (ID,NAME) values ("
-          + "('M001','Bill Right'))";
+      String managerFilling = "insert into MANAGER (ID,NAME) values (" + "('M001','Bill Right'))";
       st.execute(managerFilling);
 
-      String projectManagerFilling = "insert into PROJECT_MANAGER (EID,PROJECT) values ("
-          + "('M001','New World'))";
+      String projectManagerFilling = "insert into PROJECT_MANAGER (EID,PROJECT) values (" + "('M001','New World'))";
       st.execute(projectManagerFilling);
 
-      String employeeFilling = "insert into EMPLOYEE (ID,NAME,RESIDENCE,MANAGER) values ("
-          + "('E001','John Black','R001',null),"
-          + "('E002','Andrew Brown','R001','M001'),"
-          + "('E003','Jack Johnson','R002',null))";
+      String employeeFilling = "insert into EMPLOYEE (ID,NAME,RESIDENCE,MANAGER) values (" + "('E001','John Black','R001',null),"
+          + "('E002','Andrew Brown','R001','M001')," + "('E003','Jack Johnson','R002',null))";
       st.execute(employeeFilling);
 
-      String regularEmployeeFilling = "insert into REGULAR_EMPLOYEE (EID,SALARY,BONUS) values ("
-          + "('E002','1000.00','10'))";
+      String regularEmployeeFilling = "insert into REGULAR_EMPLOYEE (EID,SALARY,BONUS) values (" + "('E002','1000.00','10'))";
       st.execute(regularEmployeeFilling);
 
-      String contractEmployeeFilling = "insert into CONTRACT_EMPLOYEE (EID,PAY_PER_HOUR,CONTRACT_DURATION) values ("
-          + "('E003','50.00','6'))";
+      String contractEmployeeFilling =
+          "insert into CONTRACT_EMPLOYEE (EID,PAY_PER_HOUR,CONTRACT_DURATION) values (" + "('E003','50.00','6'))";
       st.execute(contractEmployeeFilling);
 
       List<String> includedTables = new ArrayList<String>();
@@ -1656,7 +1616,8 @@ public class FilterTableMappingTest {
       includedTables.add("REGULAR_EMPLOYEE");
       includedTables.add("CONTRACT_EMPLOYEE");
 
-      this.mapper = new OHibernate2GraphMapper("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", FilterTableMappingTest.XML_TABLE_PER_SUBCLASS1, includedTables, null, null);
+      this.mapper = new OHibernate2GraphMapper("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "",
+          FilterTableMappingTest.XML_TABLE_PER_SUBCLASS1, includedTables, null, null);
       mapper.buildSourceDatabaseSchema(this.context);
       mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
 
@@ -1688,7 +1649,6 @@ public class FilterTableMappingTest {
       OEntity projectManagerEntity = mapper.getDataBaseSchema().getEntityByNameIgnoreCase("PROJECT_MANAGER");
       OEntity residenceEntity = mapper.getDataBaseSchema().getEntityByNameIgnoreCase("RESIDENCE");
 
-
       // entities check
       Assert.assertEquals(6, mapper.getDataBaseSchema().getEntities().size());
       Assert.assertEquals(4, mapper.getDataBaseSchema().getRelationships().size());
@@ -1698,7 +1658,6 @@ public class FilterTableMappingTest {
       assertNotNull(countryEntity);
       assertNotNull(managerEntity);
       assertNull(residenceEntity);
-
 
       // attributes check
       assertEquals(4, employeeEntity.getAttributes().size());
@@ -1753,7 +1712,8 @@ public class FilterTableMappingTest {
       assertEquals("CONTRACT_DURATION", contractEmployeeEntity.getAttributeByName("CONTRACT_DURATION").getName());
       assertEquals("VARCHAR", contractEmployeeEntity.getAttributeByName("CONTRACT_DURATION").getDataType());
       assertEquals(2, contractEmployeeEntity.getAttributeByName("CONTRACT_DURATION").getOrdinalPosition());
-      assertEquals("CONTRACT_EMPLOYEE", contractEmployeeEntity.getAttributeByName("CONTRACT_DURATION").getBelongingEntity().getName());
+      assertEquals("CONTRACT_EMPLOYEE",
+          contractEmployeeEntity.getAttributeByName("CONTRACT_DURATION").getBelongingEntity().getName());
 
       assertEquals(3, countryEntity.getAttributes().size());
 
@@ -1796,7 +1756,6 @@ public class FilterTableMappingTest {
       assertEquals("VARCHAR", projectManagerEntity.getAttributeByName("PROJECT").getDataType());
       assertEquals(1, projectManagerEntity.getAttributeByName("PROJECT").getOrdinalPosition());
       assertEquals("PROJECT_MANAGER", projectManagerEntity.getAttributeByName("PROJECT").getBelongingEntity().getName());
-
 
       // inherited attributes check
       assertEquals(0, employeeEntity.getInheritedAttributes().size());
@@ -1867,7 +1826,6 @@ public class FilterTableMappingTest {
       assertEquals(2, projectManagerEntity.getInheritedAttributeByName("NAME").getOrdinalPosition());
       assertEquals("MANAGER", projectManagerEntity.getInheritedAttributeByName("NAME").getBelongingEntity().getName());
 
-
       assertEquals(0, countryEntity.getInheritedAttributes().size());
       assertEquals(0, managerEntity.getInheritedAttributes().size());
 
@@ -1875,18 +1833,20 @@ public class FilterTableMappingTest {
       assertEquals(1, regularEmployeeEntity.getPrimaryKey().getInvolvedAttributes().size());
       assertEquals("EID", regularEmployeeEntity.getPrimaryKey().getInvolvedAttributes().get(0).getName());
       assertEquals("VARCHAR", regularEmployeeEntity.getPrimaryKey().getInvolvedAttributes().get(0).getDataType());
-      assertEquals("REGULAR_EMPLOYEE", regularEmployeeEntity.getPrimaryKey().getInvolvedAttributes().get(0).getBelongingEntity().getName());
+      assertEquals("REGULAR_EMPLOYEE",
+          regularEmployeeEntity.getPrimaryKey().getInvolvedAttributes().get(0).getBelongingEntity().getName());
 
       assertEquals(1, contractEmployeeEntity.getPrimaryKey().getInvolvedAttributes().size());
       assertEquals("EID", contractEmployeeEntity.getPrimaryKey().getInvolvedAttributes().get(0).getName());
       assertEquals("VARCHAR", contractEmployeeEntity.getPrimaryKey().getInvolvedAttributes().get(0).getDataType());
-      assertEquals("CONTRACT_EMPLOYEE", contractEmployeeEntity.getPrimaryKey().getInvolvedAttributes().get(0).getBelongingEntity().getName());
+      assertEquals("CONTRACT_EMPLOYEE",
+          contractEmployeeEntity.getPrimaryKey().getInvolvedAttributes().get(0).getBelongingEntity().getName());
 
       assertEquals(1, projectManagerEntity.getPrimaryKey().getInvolvedAttributes().size());
       assertEquals("EID", projectManagerEntity.getPrimaryKey().getInvolvedAttributes().get(0).getName());
       assertEquals("VARCHAR", projectManagerEntity.getPrimaryKey().getInvolvedAttributes().get(0).getDataType());
-      assertEquals("PROJECT_MANAGER", projectManagerEntity.getPrimaryKey().getInvolvedAttributes().get(0).getBelongingEntity().getName());
-
+      assertEquals("PROJECT_MANAGER",
+          projectManagerEntity.getPrimaryKey().getInvolvedAttributes().get(0).getBelongingEntity().getName());
 
       // relationship, primary and foreign key check
       assertEquals(1, regularEmployeeEntity.getOutRelationships().size());
@@ -1931,7 +1891,6 @@ public class FilterTableMappingTest {
       ORelationship currentRegEmpRel = itRegEmp.next();
       currentEmpRel = itEmp.next();
       assertEquals(currentRegEmpRel, currentEmpRel);
-
 
       // inherited relationships check
       assertEquals(1, regularEmployeeEntity.getInheritedOutRelationships().size());
@@ -2020,7 +1979,6 @@ public class FilterTableMappingTest {
       OVertexType managerVertexType = mapper.getGraphModel().getVertexTypeByName("Manager");
       OVertexType projectManagerVertexType = mapper.getGraphModel().getVertexTypeByName("ProjectManager");
       OVertexType residenceVertexType = mapper.getGraphModel().getVertexTypeByName("Residence");
-
 
       // vertices check
       Assert.assertEquals(6, mapper.getGraphModel().getVerticesType().size());
@@ -2201,7 +2159,6 @@ public class FilterTableMappingTest {
       assertEquals(0, countryVertexType.getInheritedProperties().size());
       assertEquals(0, managerVertexType.getInheritedProperties().size());
 
-
       // edges check
 
       assertEquals(1, mapper.getRelationship2edgeType().size());
@@ -2267,7 +2224,7 @@ public class FilterTableMappingTest {
       assertEquals("PAY_PER_HOUR", contractEmployeeClassMapper.property2attribute.get("payPerHour"));
       assertEquals("CONTRACT_DURATION", contractEmployeeClassMapper.property2attribute.get("contractDuration"));
 
-      OClassMapper countryClassMapper =  mapper.getClassMappingRulesByVertex(countryVertexType);
+      OClassMapper countryClassMapper = mapper.getClassMappingRulesByVertex(countryVertexType);
       assertEquals(countryClassMapper, mapper.getClassMappingRulesByEntity(countryEntity));
       assertEquals(countryClassMapper.getEntity(), countryEntity);
       assertEquals(countryClassMapper.getVertexType(), countryVertexType);
@@ -2281,7 +2238,7 @@ public class FilterTableMappingTest {
       assertEquals("NAME", countryClassMapper.property2attribute.get("name"));
       assertEquals("CONTINENT", countryClassMapper.property2attribute.get("continent"));
 
-      OClassMapper managerClassMapper =  mapper.getClassMappingRulesByVertex(managerVertexType);
+      OClassMapper managerClassMapper = mapper.getClassMappingRulesByVertex(managerVertexType);
       assertEquals(managerClassMapper, mapper.getClassMappingRulesByEntity(managerEntity));
       assertEquals(managerClassMapper.getEntity(), managerEntity);
       assertEquals(managerClassMapper.getVertexType(), managerVertexType);
@@ -2293,7 +2250,7 @@ public class FilterTableMappingTest {
       assertEquals("ID", managerClassMapper.property2attribute.get("id"));
       assertEquals("NAME", managerClassMapper.property2attribute.get("name"));
 
-      OClassMapper projectManagerClassMapper =  mapper.getClassMappingRulesByVertex(projectManagerVertexType);
+      OClassMapper projectManagerClassMapper = mapper.getClassMappingRulesByVertex(projectManagerVertexType);
       assertEquals(projectManagerClassMapper, mapper.getClassMappingRulesByEntity(projectManagerEntity));
       assertEquals(projectManagerClassMapper.getEntity(), projectManagerEntity);
       assertEquals(projectManagerClassMapper.getVertexType(), projectManagerVertexType);
@@ -2322,18 +2279,17 @@ public class FilterTableMappingTest {
 
       assertEquals(0, mapper.getJoinVertex2aggregatorEdges().size());
 
-
-    } catch(Exception e) {
+    } catch (Exception e) {
       e.printStackTrace();
       fail();
-    }finally {      
+    } finally {
       try {
 
         // Dropping Source DB Schema and OrientGraph
         String dbDropping = "drop schema public cascade";
         st.execute(dbDropping);
         connection.close();
-      }catch(Exception e) {
+      } catch (Exception e) {
         e.printStackTrace();
         fail();
       }
@@ -2343,8 +2299,7 @@ public class FilterTableMappingTest {
   @Test
   /*
    * Filtering out a table through exclude-tables (with Table per Type inheritance).
-   */
-  public void test5() {
+   */ public void test5() {
 
     Connection connection = null;
     Statement st = null;
@@ -2368,8 +2323,8 @@ public class FilterTableMappingTest {
       String projectManagerTableBuilding = "create memory table PROJECT_MANAGER(EID varchar(256) not null, PROJECT varchar(256), primary key (EID), foreign key (EID) references MANAGER(ID))";
       st.execute(projectManagerTableBuilding);
 
-      String employeeTableBuilding = "create memory table EMPLOYEE (ID varchar(256) not null,"+
-          " NAME varchar(256), RESIDENCE varchar(256), MANAGER varchar(256), primary key (ID), "
+      String employeeTableBuilding = "create memory table EMPLOYEE (ID varchar(256) not null,"
+          + " NAME varchar(256), RESIDENCE varchar(256), MANAGER varchar(256), primary key (ID), "
           + "foreign key (RESIDENCE) references RESIDENCE(ID), foreign key (MANAGER) references MANAGER(ID))";
       st.execute(employeeTableBuilding);
 
@@ -2381,44 +2336,37 @@ public class FilterTableMappingTest {
           + "PAY_PER_HOUR decimal(10,2), CONTRACT_DURATION varchar(256), primary key (EID), foreign key (EID) references EMPLOYEE(ID))";
       st.execute(contractEmployeeTableBuilding);
 
-
       // Records Inserting
 
-      String countryFilling = "insert into COUNTRY (ID,NAME,CONTINENT) values ("
-          + "('C001','Italy','Europe'))";
+      String countryFilling = "insert into COUNTRY (ID,NAME,CONTINENT) values (" + "('C001','Italy','Europe'))";
       st.execute(countryFilling);
 
-      String residenceFilling = "insert into RESIDENCE (ID,CITY,COUNTRY) values ("
-          + "('R001','Rome','C001'),"
-          + "('R002','Milan','C001'))";
+      String residenceFilling =
+          "insert into RESIDENCE (ID,CITY,COUNTRY) values (" + "('R001','Rome','C001')," + "('R002','Milan','C001'))";
       st.execute(residenceFilling);
 
-      String managerFilling = "insert into MANAGER (ID,NAME) values ("
-          + "('M001','Bill Right'))";
+      String managerFilling = "insert into MANAGER (ID,NAME) values (" + "('M001','Bill Right'))";
       st.execute(managerFilling);
 
-      String projectManagerFilling = "insert into PROJECT_MANAGER (EID,PROJECT) values ("
-          + "('M001','New World'))";
+      String projectManagerFilling = "insert into PROJECT_MANAGER (EID,PROJECT) values (" + "('M001','New World'))";
       st.execute(projectManagerFilling);
 
-      String employeeFilling = "insert into EMPLOYEE (ID,NAME,RESIDENCE,MANAGER) values ("
-          + "('E001','John Black','R001',null),"
-          + "('E002','Andrew Brown','R001','M001'),"
-          + "('E003','Jack Johnson','R002',null))";
+      String employeeFilling = "insert into EMPLOYEE (ID,NAME,RESIDENCE,MANAGER) values (" + "('E001','John Black','R001',null),"
+          + "('E002','Andrew Brown','R001','M001')," + "('E003','Jack Johnson','R002',null))";
       st.execute(employeeFilling);
 
-      String regularEmployeeFilling = "insert into REGULAR_EMPLOYEE (EID,SALARY,BONUS) values ("
-          + "('E002','1000.00','10'))";
+      String regularEmployeeFilling = "insert into REGULAR_EMPLOYEE (EID,SALARY,BONUS) values (" + "('E002','1000.00','10'))";
       st.execute(regularEmployeeFilling);
 
-      String contractEmployeeFilling = "insert into CONTRACT_EMPLOYEE (EID,PAY_PER_HOUR,CONTRACT_DURATION) values ("
-          + "('E003','50.00','6'))";
+      String contractEmployeeFilling =
+          "insert into CONTRACT_EMPLOYEE (EID,PAY_PER_HOUR,CONTRACT_DURATION) values (" + "('E003','50.00','6'))";
       st.execute(contractEmployeeFilling);
 
       List<String> excludedTables = new ArrayList<String>();
       excludedTables.add("RESIDENCE");
 
-      this.mapper = new OHibernate2GraphMapper("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", FilterTableMappingTest.XML_TABLE_PER_SUBCLASS2, null, excludedTables, null);
+      this.mapper = new OHibernate2GraphMapper("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "",
+          FilterTableMappingTest.XML_TABLE_PER_SUBCLASS2, null, excludedTables, null);
       mapper.buildSourceDatabaseSchema(this.context);
       mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
 
@@ -2450,7 +2398,6 @@ public class FilterTableMappingTest {
       OEntity projectManagerEntity = mapper.getDataBaseSchema().getEntityByNameIgnoreCase("PROJECT_MANAGER");
       OEntity residenceEntity = mapper.getDataBaseSchema().getEntityByNameIgnoreCase("RESIDENCE");
 
-
       // entities check
       Assert.assertEquals(6, mapper.getDataBaseSchema().getEntities().size());
       Assert.assertEquals(4, mapper.getDataBaseSchema().getRelationships().size());
@@ -2460,7 +2407,6 @@ public class FilterTableMappingTest {
       assertNotNull(countryEntity);
       assertNotNull(managerEntity);
       assertNull(residenceEntity);
-
 
       // attributes check
       assertEquals(4, employeeEntity.getAttributes().size());
@@ -2515,7 +2461,8 @@ public class FilterTableMappingTest {
       assertEquals("CONTRACT_DURATION", contractEmployeeEntity.getAttributeByName("CONTRACT_DURATION").getName());
       assertEquals("VARCHAR", contractEmployeeEntity.getAttributeByName("CONTRACT_DURATION").getDataType());
       assertEquals(2, contractEmployeeEntity.getAttributeByName("CONTRACT_DURATION").getOrdinalPosition());
-      assertEquals("CONTRACT_EMPLOYEE", contractEmployeeEntity.getAttributeByName("CONTRACT_DURATION").getBelongingEntity().getName());
+      assertEquals("CONTRACT_EMPLOYEE",
+          contractEmployeeEntity.getAttributeByName("CONTRACT_DURATION").getBelongingEntity().getName());
 
       assertEquals(3, countryEntity.getAttributes().size());
 
@@ -2558,7 +2505,6 @@ public class FilterTableMappingTest {
       assertEquals("VARCHAR", projectManagerEntity.getAttributeByName("PROJECT").getDataType());
       assertEquals(1, projectManagerEntity.getAttributeByName("PROJECT").getOrdinalPosition());
       assertEquals("PROJECT_MANAGER", projectManagerEntity.getAttributeByName("PROJECT").getBelongingEntity().getName());
-
 
       // inherited attributes check
       assertEquals(0, employeeEntity.getInheritedAttributes().size());
@@ -2629,7 +2575,6 @@ public class FilterTableMappingTest {
       assertEquals(2, projectManagerEntity.getInheritedAttributeByName("NAME").getOrdinalPosition());
       assertEquals("MANAGER", projectManagerEntity.getInheritedAttributeByName("NAME").getBelongingEntity().getName());
 
-
       assertEquals(0, countryEntity.getInheritedAttributes().size());
       assertEquals(0, managerEntity.getInheritedAttributes().size());
 
@@ -2637,17 +2582,20 @@ public class FilterTableMappingTest {
       assertEquals(1, regularEmployeeEntity.getPrimaryKey().getInvolvedAttributes().size());
       assertEquals("EID", regularEmployeeEntity.getPrimaryKey().getInvolvedAttributes().get(0).getName());
       assertEquals("VARCHAR", regularEmployeeEntity.getPrimaryKey().getInvolvedAttributes().get(0).getDataType());
-      assertEquals("REGULAR_EMPLOYEE", regularEmployeeEntity.getPrimaryKey().getInvolvedAttributes().get(0).getBelongingEntity().getName());
+      assertEquals("REGULAR_EMPLOYEE",
+          regularEmployeeEntity.getPrimaryKey().getInvolvedAttributes().get(0).getBelongingEntity().getName());
 
       assertEquals(1, contractEmployeeEntity.getPrimaryKey().getInvolvedAttributes().size());
       assertEquals("EID", contractEmployeeEntity.getPrimaryKey().getInvolvedAttributes().get(0).getName());
       assertEquals("VARCHAR", contractEmployeeEntity.getPrimaryKey().getInvolvedAttributes().get(0).getDataType());
-      assertEquals("CONTRACT_EMPLOYEE", contractEmployeeEntity.getPrimaryKey().getInvolvedAttributes().get(0).getBelongingEntity().getName());
+      assertEquals("CONTRACT_EMPLOYEE",
+          contractEmployeeEntity.getPrimaryKey().getInvolvedAttributes().get(0).getBelongingEntity().getName());
 
       assertEquals(1, projectManagerEntity.getPrimaryKey().getInvolvedAttributes().size());
       assertEquals("EID", projectManagerEntity.getPrimaryKey().getInvolvedAttributes().get(0).getName());
       assertEquals("VARCHAR", projectManagerEntity.getPrimaryKey().getInvolvedAttributes().get(0).getDataType());
-      assertEquals("PROJECT_MANAGER", projectManagerEntity.getPrimaryKey().getInvolvedAttributes().get(0).getBelongingEntity().getName());
+      assertEquals("PROJECT_MANAGER",
+          projectManagerEntity.getPrimaryKey().getInvolvedAttributes().get(0).getBelongingEntity().getName());
 
       // relationship, primary and foreign key check
       assertEquals(1, regularEmployeeEntity.getOutRelationships().size());
@@ -2692,7 +2640,6 @@ public class FilterTableMappingTest {
       ORelationship currentRegEmpRel = itRegEmp.next();
       currentEmpRel = itEmp.next();
       assertEquals(currentRegEmpRel, currentEmpRel);
-
 
       // inherited relationships check
       assertEquals(1, regularEmployeeEntity.getInheritedOutRelationships().size());
@@ -2782,7 +2729,6 @@ public class FilterTableMappingTest {
       OVertexType projectManagerVertexType = mapper.getGraphModel().getVertexTypeByName("ProjectManager");
       OVertexType residenceVertexType = mapper.getGraphModel().getVertexTypeByName("Residence");
 
-
       // vertices check
       Assert.assertEquals(6, mapper.getGraphModel().getVerticesType().size());
       assertNotNull(employeeVertexType);
@@ -2962,7 +2908,6 @@ public class FilterTableMappingTest {
       assertEquals(0, countryVertexType.getInheritedProperties().size());
       assertEquals(0, managerVertexType.getInheritedProperties().size());
 
-
       // edges check
 
       assertEquals(1, mapper.getRelationship2edgeType().size());
@@ -3028,7 +2973,7 @@ public class FilterTableMappingTest {
       assertEquals("PAY_PER_HOUR", contractEmployeeClassMapper.property2attribute.get("payPerHour"));
       assertEquals("CONTRACT_DURATION", contractEmployeeClassMapper.property2attribute.get("contractDuration"));
 
-      OClassMapper countryClassMapper =  mapper.getClassMappingRulesByVertex(countryVertexType);
+      OClassMapper countryClassMapper = mapper.getClassMappingRulesByVertex(countryVertexType);
       assertEquals(countryClassMapper, mapper.getClassMappingRulesByEntity(countryEntity));
       assertEquals(countryClassMapper.getEntity(), countryEntity);
       assertEquals(countryClassMapper.getVertexType(), countryVertexType);
@@ -3042,7 +2987,7 @@ public class FilterTableMappingTest {
       assertEquals("NAME", countryClassMapper.property2attribute.get("name"));
       assertEquals("CONTINENT", countryClassMapper.property2attribute.get("continent"));
 
-      OClassMapper managerClassMapper =  mapper.getClassMappingRulesByVertex(managerVertexType);
+      OClassMapper managerClassMapper = mapper.getClassMappingRulesByVertex(managerVertexType);
       assertEquals(managerClassMapper, mapper.getClassMappingRulesByEntity(managerEntity));
       assertEquals(managerClassMapper.getEntity(), managerEntity);
       assertEquals(managerClassMapper.getVertexType(), managerVertexType);
@@ -3054,7 +2999,7 @@ public class FilterTableMappingTest {
       assertEquals("ID", managerClassMapper.property2attribute.get("id"));
       assertEquals("NAME", managerClassMapper.property2attribute.get("name"));
 
-      OClassMapper projectManagerClassMapper =  mapper.getClassMappingRulesByVertex(projectManagerVertexType);
+      OClassMapper projectManagerClassMapper = mapper.getClassMappingRulesByVertex(projectManagerVertexType);
       assertEquals(projectManagerClassMapper, mapper.getClassMappingRulesByEntity(projectManagerEntity));
       assertEquals(projectManagerClassMapper.getEntity(), projectManagerEntity);
       assertEquals(projectManagerClassMapper.getVertexType(), projectManagerVertexType);
@@ -3083,30 +3028,27 @@ public class FilterTableMappingTest {
 
       assertEquals(0, mapper.getJoinVertex2aggregatorEdges().size());
 
-
-    } catch(Exception e) {
+    } catch (Exception e) {
       e.printStackTrace();
       fail();
-    }finally {      
+    } finally {
       try {
 
         // Dropping Source DB Schema and OrientGraph
         String dbDropping = "drop schema public cascade";
         st.execute(dbDropping);
         connection.close();
-      }catch(Exception e) {
+      } catch (Exception e) {
         e.printStackTrace();
         fail();
       }
     }
   }
 
-
   @Test
   /*
    * Filtering out a table through include-tables (with Table per Concrete Type inheritance).
-   */
-  public void test6() {
+   */ public void test6() {
 
     Connection connection = null;
     Statement st = null;
@@ -3130,8 +3072,8 @@ public class FilterTableMappingTest {
       String projectManagerTableBuilding = "create memory table PROJECT_MANAGER(ID varchar(256) not null, NAME varchar(256), PROJECT varchar(256), primary key (ID))";
       st.execute(projectManagerTableBuilding);
 
-      String employeeTableBuilding = "create memory table EMPLOYEE (ID varchar(256) not null,"+
-          " NAME varchar(256), RESIDENCE varchar(256), MANAGER varchar(256), primary key (ID), "
+      String employeeTableBuilding = "create memory table EMPLOYEE (ID varchar(256) not null,"
+          + " NAME varchar(256), RESIDENCE varchar(256), MANAGER varchar(256), primary key (ID), "
           + "foreign key (RESIDENCE) references RESIDENCE(ID), foreign key (MANAGER) references MANAGER(ID))";
       st.execute(employeeTableBuilding);
 
@@ -3145,38 +3087,33 @@ public class FilterTableMappingTest {
           + "PAY_PER_HOUR decimal(10,2), CONTRACT_DURATION varchar(256), primary key (ID))";
       st.execute(contractEmployeeTableBuilding);
 
-
       // Records Inserting
 
-      String countryFilling = "insert into COUNTRY (ID,NAME,CONTINENT) values ("
-          + "('C001','Italy','Europe'))";
+      String countryFilling = "insert into COUNTRY (ID,NAME,CONTINENT) values (" + "('C001','Italy','Europe'))";
       st.execute(countryFilling);
 
-      String residenceFilling = "insert into RESIDENCE (ID,CITY,COUNTRY) values ("
-          + "('R001','Rome','C001'),"
-          + "('R002','Milan','C001'))";
+      String residenceFilling =
+          "insert into RESIDENCE (ID,CITY,COUNTRY) values (" + "('R001','Rome','C001')," + "('R002','Milan','C001'))";
       st.execute(residenceFilling);
 
-      String managerFilling = "insert into MANAGER (ID,NAME) values ("
-          + "('M001','Bill Right'))";
+      String managerFilling = "insert into MANAGER (ID,NAME) values (" + "('M001','Bill Right'))";
       st.execute(managerFilling);
 
-      String projectManagerFilling = "insert into PROJECT_MANAGER (ID,NAME,PROJECT) values ("
-          + "('M001','Bill Right','New World'))";
+      String projectManagerFilling =
+          "insert into PROJECT_MANAGER (ID,NAME,PROJECT) values (" + "('M001','Bill Right','New World'))";
       st.execute(projectManagerFilling);
 
-      String employeeFilling = "insert into EMPLOYEE (ID,NAME,RESIDENCE,MANAGER) values ("
-          + "('E001','John Black','R001',null),"
-          + "('E002','Andrew Brown','R001','M001'),"
-          + "('E003','Jack Johnson','R002',null))";
+      String employeeFilling = "insert into EMPLOYEE (ID,NAME,RESIDENCE,MANAGER) values (" + "('E001','John Black','R001',null),"
+          + "('E002','Andrew Brown','R001','M001')," + "('E003','Jack Johnson','R002',null))";
       st.execute(employeeFilling);
 
       String regularEmployeeFilling = "insert into REGULAR_EMPLOYEE (ID,NAME,RESIDENCE,MANAGER,SALARY,BONUS) values ("
           + "('E002','Andrew Brown','R001','M001','1000.00','10'))";
       st.execute(regularEmployeeFilling);
 
-      String contractEmployeeFilling = "insert into CONTRACT_EMPLOYEE (ID,NAME,RESIDENCE,MANAGER,PAY_PER_HOUR,CONTRACT_DURATION) values ("
-          + "('E003','Jack Johnson','R002',null,'50.00','6'))";
+      String contractEmployeeFilling =
+          "insert into CONTRACT_EMPLOYEE (ID,NAME,RESIDENCE,MANAGER,PAY_PER_HOUR,CONTRACT_DURATION) values ("
+              + "('E003','Jack Johnson','R002',null,'50.00','6'))";
       st.execute(contractEmployeeFilling);
 
       List<String> includedTables = new ArrayList<String>();
@@ -3187,7 +3124,8 @@ public class FilterTableMappingTest {
       includedTables.add("REGULAR_EMPLOYEE");
       includedTables.add("CONTRACT_EMPLOYEE");
 
-      this.mapper = new OHibernate2GraphMapper("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "", FilterTableMappingTest.XML_TABLE_PER_CONCRETE_CLASS, includedTables, null, null);
+      this.mapper = new OHibernate2GraphMapper("org.hsqldb.jdbc.JDBCDriver", "jdbc:hsqldb:mem:mydb", "SA", "",
+          FilterTableMappingTest.XML_TABLE_PER_CONCRETE_CLASS, includedTables, null, null);
       mapper.buildSourceDatabaseSchema(this.context);
       mapper.buildGraphModel(new OJavaConventionNameResolver(), context);
 
@@ -3219,7 +3157,6 @@ public class FilterTableMappingTest {
       OEntity projectManagerEntity = mapper.getDataBaseSchema().getEntityByNameIgnoreCase("PROJECT_MANAGER");
       OEntity residenceEntity = mapper.getDataBaseSchema().getEntityByNameIgnoreCase("RESIDENCE");
 
-
       // entities check
       Assert.assertEquals(6, mapper.getDataBaseSchema().getEntities().size());
       Assert.assertEquals(1, mapper.getDataBaseSchema().getRelationships().size());
@@ -3229,7 +3166,6 @@ public class FilterTableMappingTest {
       assertNotNull(countryEntity);
       assertNotNull(managerEntity);
       assertNull(residenceEntity);
-
 
       // attributes check
       assertEquals(4, employeeEntity.getAttributes().size());
@@ -3284,7 +3220,8 @@ public class FilterTableMappingTest {
       assertEquals("CONTRACT_DURATION", contractEmployeeEntity.getAttributeByName("CONTRACT_DURATION").getName());
       assertEquals("VARCHAR", contractEmployeeEntity.getAttributeByName("CONTRACT_DURATION").getDataType());
       assertEquals(2, contractEmployeeEntity.getAttributeByName("CONTRACT_DURATION").getOrdinalPosition());
-      assertEquals("CONTRACT_EMPLOYEE", contractEmployeeEntity.getAttributeByName("CONTRACT_DURATION").getBelongingEntity().getName());
+      assertEquals("CONTRACT_EMPLOYEE",
+          contractEmployeeEntity.getAttributeByName("CONTRACT_DURATION").getBelongingEntity().getName());
 
       assertEquals(3, countryEntity.getAttributes().size());
 
@@ -3327,7 +3264,6 @@ public class FilterTableMappingTest {
       assertEquals("VARCHAR", projectManagerEntity.getAttributeByName("PROJECT").getDataType());
       assertEquals(1, projectManagerEntity.getAttributeByName("PROJECT").getOrdinalPosition());
       assertEquals("PROJECT_MANAGER", projectManagerEntity.getAttributeByName("PROJECT").getBelongingEntity().getName());
-
 
       // inherited attributes check
       assertEquals(0, employeeEntity.getInheritedAttributes().size());
@@ -3398,7 +3334,6 @@ public class FilterTableMappingTest {
       assertEquals(2, projectManagerEntity.getInheritedAttributeByName("NAME").getOrdinalPosition());
       assertEquals("MANAGER", projectManagerEntity.getInheritedAttributeByName("NAME").getBelongingEntity().getName());
 
-
       assertEquals(0, countryEntity.getInheritedAttributes().size());
       assertEquals(0, managerEntity.getInheritedAttributes().size());
 
@@ -3406,17 +3341,20 @@ public class FilterTableMappingTest {
       assertEquals(1, regularEmployeeEntity.getPrimaryKey().getInvolvedAttributes().size());
       assertEquals("ID", regularEmployeeEntity.getPrimaryKey().getInvolvedAttributes().get(0).getName());
       assertEquals("VARCHAR", regularEmployeeEntity.getPrimaryKey().getInvolvedAttributes().get(0).getDataType());
-      assertEquals("REGULAR_EMPLOYEE", regularEmployeeEntity.getPrimaryKey().getInvolvedAttributes().get(0).getBelongingEntity().getName());
+      assertEquals("REGULAR_EMPLOYEE",
+          regularEmployeeEntity.getPrimaryKey().getInvolvedAttributes().get(0).getBelongingEntity().getName());
 
       assertEquals(1, contractEmployeeEntity.getPrimaryKey().getInvolvedAttributes().size());
       assertEquals("ID", contractEmployeeEntity.getPrimaryKey().getInvolvedAttributes().get(0).getName());
       assertEquals("VARCHAR", contractEmployeeEntity.getPrimaryKey().getInvolvedAttributes().get(0).getDataType());
-      assertEquals("CONTRACT_EMPLOYEE", contractEmployeeEntity.getPrimaryKey().getInvolvedAttributes().get(0).getBelongingEntity().getName());
+      assertEquals("CONTRACT_EMPLOYEE",
+          contractEmployeeEntity.getPrimaryKey().getInvolvedAttributes().get(0).getBelongingEntity().getName());
 
       assertEquals(1, projectManagerEntity.getPrimaryKey().getInvolvedAttributes().size());
       assertEquals("ID", projectManagerEntity.getPrimaryKey().getInvolvedAttributes().get(0).getName());
       assertEquals("VARCHAR", projectManagerEntity.getPrimaryKey().getInvolvedAttributes().get(0).getDataType());
-      assertEquals("PROJECT_MANAGER", projectManagerEntity.getPrimaryKey().getInvolvedAttributes().get(0).getBelongingEntity().getName());
+      assertEquals("PROJECT_MANAGER",
+          projectManagerEntity.getPrimaryKey().getInvolvedAttributes().get(0).getBelongingEntity().getName());
 
       // relationship, primary and foreign key check
       assertEquals(0, regularEmployeeEntity.getOutRelationships().size());
@@ -3450,7 +3388,6 @@ public class FilterTableMappingTest {
       Iterator<ORelationship> itManager = managerEntity.getInRelationships().iterator();
       ORelationship currentManRel = itManager.next();
       assertEquals(currentEmpRel, currentManRel);
-
 
       // inherited relationships check
       assertEquals(1, regularEmployeeEntity.getInheritedOutRelationships().size());
@@ -3539,7 +3476,6 @@ public class FilterTableMappingTest {
       OVertexType managerVertexType = mapper.getGraphModel().getVertexTypeByName("Manager");
       OVertexType projectManagerVertexType = mapper.getGraphModel().getVertexTypeByName("ProjectManager");
       OVertexType residenceVertexType = mapper.getGraphModel().getVertexTypeByName("Residence");
-
 
       // vertices check
       Assert.assertEquals(6, mapper.getGraphModel().getVerticesType().size());
@@ -3720,7 +3656,6 @@ public class FilterTableMappingTest {
       assertEquals(0, countryVertexType.getInheritedProperties().size());
       assertEquals(0, managerVertexType.getInheritedProperties().size());
 
-
       // edges check
 
       assertEquals(1, mapper.getRelationship2edgeType().size());
@@ -3786,7 +3721,7 @@ public class FilterTableMappingTest {
       assertEquals("PAY_PER_HOUR", contractEmployeeClassMapper.property2attribute.get("payPerHour"));
       assertEquals("CONTRACT_DURATION", contractEmployeeClassMapper.property2attribute.get("contractDuration"));
 
-      OClassMapper countryClassMapper =  mapper.getClassMappingRulesByVertex(countryVertexType);
+      OClassMapper countryClassMapper = mapper.getClassMappingRulesByVertex(countryVertexType);
       assertEquals(countryClassMapper, mapper.getClassMappingRulesByEntity(countryEntity));
       assertEquals(countryClassMapper.getEntity(), countryEntity);
       assertEquals(countryClassMapper.getVertexType(), countryVertexType);
@@ -3800,7 +3735,7 @@ public class FilterTableMappingTest {
       assertEquals("NAME", countryClassMapper.property2attribute.get("name"));
       assertEquals("CONTINENT", countryClassMapper.property2attribute.get("continent"));
 
-      OClassMapper managerClassMapper =  mapper.getClassMappingRulesByVertex(managerVertexType);
+      OClassMapper managerClassMapper = mapper.getClassMappingRulesByVertex(managerVertexType);
       assertEquals(managerClassMapper, mapper.getClassMappingRulesByEntity(managerEntity));
       assertEquals(managerClassMapper.getEntity(), managerEntity);
       assertEquals(managerClassMapper.getVertexType(), managerVertexType);
@@ -3812,7 +3747,7 @@ public class FilterTableMappingTest {
       assertEquals("ID", managerClassMapper.property2attribute.get("id"));
       assertEquals("NAME", managerClassMapper.property2attribute.get("name"));
 
-      OClassMapper projectManagerClassMapper =  mapper.getClassMappingRulesByVertex(projectManagerVertexType);
+      OClassMapper projectManagerClassMapper = mapper.getClassMappingRulesByVertex(projectManagerVertexType);
       assertEquals(projectManagerClassMapper, mapper.getClassMappingRulesByEntity(projectManagerEntity));
       assertEquals(projectManagerClassMapper.getEntity(), projectManagerEntity);
       assertEquals(projectManagerClassMapper.getVertexType(), projectManagerVertexType);
@@ -3841,18 +3776,17 @@ public class FilterTableMappingTest {
 
       assertEquals(0, mapper.getJoinVertex2aggregatorEdges().size());
 
-
-    } catch(Exception e) {
+    } catch (Exception e) {
       e.printStackTrace();
       fail();
-    }finally {      
+    } finally {
       try {
 
         // Dropping Source DB Schema and OrientGraph
         String dbDropping = "drop schema public cascade";
         st.execute(dbDropping);
         connection.close();
-      }catch(Exception e) {
+      } catch (Exception e) {
         e.printStackTrace();
         fail();
       }

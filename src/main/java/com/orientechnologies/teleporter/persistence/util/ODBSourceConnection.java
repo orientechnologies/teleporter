@@ -29,10 +29,9 @@ import java.sql.DriverManager;
 
 /**
  * Utility class to which connection with source DB is delegated.
- * 
+ *
  * @author Gabriele Ponzi
- * @email  <gabriele.ponzi--at--gmail.com>
- * 
+ * @email <gabriele.ponzi--at--gmail.com>
  */
 
 public class ODBSourceConnection {
@@ -42,8 +41,7 @@ public class ODBSourceConnection {
   private String username;
   private String password;
 
-
-  public ODBSourceConnection(String driver, String uri, String username, String password) {	
+  public ODBSourceConnection(String driver, String uri, String username, String password) {
     this.driver = driver;
     this.uri = uri;
     this.username = username;

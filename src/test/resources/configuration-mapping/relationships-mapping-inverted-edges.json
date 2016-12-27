@@ -1,34 +1,39 @@
 {
-	"vertices": {
-		"Employee": {
-			"table": "EMPLOYEE"
-		}
-	},
-	"edges": [{
-		"HasEmployee": {
-			"mapping": {
-				"fromTable": "EMPLOYEE",
-				"fromColumns": ["PROJECT"],
-				"toTable": "PROJECT",
-				"toColumns": ["ID"],
-				"direction": "inverse"
-			},
-			"properties": {
-				"updatedOn": {
-					"type": "DATE",
-					"value": "$from.date",
-					"mandatory": true,
-					"readOnly": false,
-					"notNull": false
-				},
-				"propWithoutTypeField": {
-					"value": "$from.date",
-					"mandatory": true,
-					"readOnly": false,
-					"notNull": false
-				}
-			}
-		}
-	}]
-
+  "vertices": {
+    "Employee": {
+      "table": "EMPLOYEE"
+    }
+  },
+  "edges": [
+    {
+      "HasEmployee": {
+        "mapping": {
+          "fromTable": "EMPLOYEE",
+          "fromColumns": [
+            "PROJECT"
+          ],
+          "toTable": "PROJECT",
+          "toColumns": [
+            "ID"
+          ],
+          "direction": "inverse"
+        },
+        "properties": {
+          "updatedOn": {
+            "type": "DATE",
+            "value": "$from.date",
+            "mandatory": true,
+            "readOnly": false,
+            "notNull": false
+          },
+          "propWithoutTypeField": {
+            "value": "$from.date",
+            "mandatory": true,
+            "readOnly": false,
+            "notNull": false
+          }
+        }
+      }
+    }
+  ]
 }

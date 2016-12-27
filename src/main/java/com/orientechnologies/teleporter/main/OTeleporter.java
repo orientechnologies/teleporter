@@ -43,24 +43,22 @@ import java.util.*;
  *
  * @author Gabriele Ponzi
  * @email <gabriele.ponzi--at--gmail.com>
- *
  */
 
 public class OTeleporter extends OServerPluginAbstract {
 
-  private static OOutputStreamManager   outputManager;
+  private static OOutputStreamManager outputManager;
 
-  private static final OStrategyFactory FACTORY  = new OStrategyFactory();
+  private static final OStrategyFactory FACTORY = new OStrategyFactory();
 
-  private static final String           teleport = "OrientDB                  \n"
-      + " ______________________________________________________________________________ \n"
-      + " ___  __/__  ____/__  /___  ____/__  __ \\_  __ \\__  __\\__  __/__  ____/__  _ _ \\  \n"
-      + " __  /  __  __/  __  / __  __/  __  /_/ /  / / /_  /_/ /_  /  __  __/  __  /_/ /\n"
-      + " _  /   _  /___  _  /___  /___  _  ____// /_/ /_  _, _/_  /   _  /___  _  _, _/ \n"
-      + " /_/    /_____/  /_____/_____/  /_/     \\____/ /_/ |_| /_/    /_____/  /_/ |_|  \n"
-      + "\n"
-      + "                                                  http://orientdb.com/teleporter";
-  private OServer                       server;
+  private static final String teleport =
+      "OrientDB                  \n" + " ______________________________________________________________________________ \n"
+          + " ___  __/__  ____/__  /___  ____/__  __ \\_  __ \\__  __\\__  __/__  ____/__  _ _ \\  \n"
+          + " __  /  __  __/  __  / __  __/  __  /_/ /  / / /_  /_/ /_  /  __  __/  __  /_/ /\n"
+          + " _  /   _  /___  _  /___  /___  _  ____// /_/ /_  _, _/_  /   _  /___  _  _, _/ \n"
+          + " /_/    /_____/  /_____/_____/  /_/     \\____/ /_/ |_| /_/    /_____/  /_/ |_|  \n" + "\n"
+          + "                                                  http://orientdb.com/teleporter";
+  private OServer server;
 
   public static void main(String[] args) throws Exception {
 
@@ -75,8 +73,8 @@ public class OTeleporter extends OServerPluginAbstract {
     // Missing argument validation
 
     if (args.length < 6) {
-      outputManager
-          .error("Syntax error, missing argument. Use:\n ./oteleporter.sh -jdriver <jdbc-driver> -jurl <jdbc-url> -juser <username> -jpasswd <password> -ourl <orientdb-url>.\n");
+      outputManager.error(
+          "Syntax error, missing argument. Use:\n ./oteleporter.sh -jdriver <jdbc-driver> -jurl <jdbc-url> -juser <username> -jpasswd <password> -ourl <orientdb-url>.\n");
       throw new OTeleporterIOException();
     }
 
@@ -113,8 +111,8 @@ public class OTeleporter extends OServerPluginAbstract {
     if (!arguments.get("-jdriver").equalsIgnoreCase("Oracle") && !arguments.get("-jdriver").equalsIgnoreCase("SQLServer")
         && !arguments.get("-jdriver").equalsIgnoreCase("MySQL") && !arguments.get("-jdriver").equalsIgnoreCase("PostgreSQL")
         && !arguments.get("-jdriver").equalsIgnoreCase("HyperSQL")) {
-      outputManager
-          .error("Not valid db-driver name. Type one of the following driver names: 'Oracle','SQLServer','MySQL','PostgreSQL','HyperSQL'\n");
+      outputManager.error(
+          "Not valid db-driver name. Type one of the following driver names: 'Oracle','SQLServer','MySQL','PostgreSQL','HyperSQL'\n");
       throw new OTeleporterIOException();
     }
 
@@ -137,8 +135,8 @@ public class OTeleporter extends OServerPluginAbstract {
     }
 
     if (arguments.get("-v") != null) {
-      if (!(arguments.get("-v").equals("0") | arguments.get("-v").equals("1") | arguments.get("-v").equals("2") | arguments.get(
-          "-v").equals("3"))) {
+      if (!(arguments.get("-v").equals("0") | arguments.get("-v").equals("1") | arguments.get("-v").equals("2") | arguments
+          .get("-v").equals("3"))) {
         outputManager
             .error("Not valid output level. Available levels:\n0 - No messages\n1 - Debug\n2 - Info\n3 - Warning \n4 - Error\n");
         throw new OTeleporterIOException();
@@ -203,33 +201,27 @@ public class OTeleporter extends OServerPluginAbstract {
     }
     String configurationPath = arguments.get("-conf");
 
-    OTeleporter.execute(driver, jurl, username, password, outDbUrl, chosenStrategy, chosenMapper, xmlPath, nameResolver,
-        outputLevel, includedTables, excludedTables, configurationPath, outputManager);
+    OTeleporter
+        .execute(driver, jurl, username, password, outDbUrl, chosenStrategy, chosenMapper, xmlPath, nameResolver, outputLevel,
+            includedTables, excludedTables, configurationPath, outputManager);
   }
 
   /**
    * Executes the import of the source DB in a OrientDB Graph through different parameters.
    *
-   * @param driver
-   *          the driver name of the DBMS from which you want to execute the import
-   * @param jurl
-   *          an absolute URL giving the location of the source DB to import
-   * @param username
-   *          to access to the source DB
-   * @param password
-   *          to access to the source DB
-   * @param chosenStrategy
-   *          the execution approach adopted during the importing of data
-   * @param outDbUrl
-   *          an absolute URI for the destination Orient Graph DB
-   * @param nameResolver
-   *          the name of the resolver which transforms the names of all the elements of the source DB according to a specific
-   *          convention (if null Java convention is adopted)
-   * @param outputLevel
-   *          the level of the logging messages that will be printed on the OutputStream during the execution
+   * @param driver            the driver name of the DBMS from which you want to execute the import
+   * @param jurl              an absolute URL giving the location of the source DB to import
+   * @param username          to access to the source DB
+   * @param password          to access to the source DB
+   * @param chosenStrategy    the execution approach adopted during the importing of data
+   * @param outDbUrl          an absolute URI for the destination Orient Graph DB
+   * @param nameResolver      the name of the resolver which transforms the names of all the elements of the source DB according to
+   *                          a specific convention (if null Java convention is adopted)
+   * @param outputLevel       the level of the logging messages that will be printed on the OutputStream during the execution
    * @param excludedTables
    * @param includedTables
    * @param configurationPath
+   *
    * @throws OTeleporterIOException
    */
 
@@ -269,7 +261,9 @@ public class OTeleporter extends OServerPluginAbstract {
       }, 0, 1000);
 
       // the last argument represents the nameResolver
-      strategy.executeStrategy(driverClassName, jurl, username, password, outDbUrl, chosenMapper, xmlPath, nameResolver, includedTables, excludedTables, configurationPath, context);
+      strategy
+          .executeStrategy(driverClassName, jurl, username, password, outDbUrl, chosenMapper, xmlPath, nameResolver, includedTables,
+              excludedTables, configurationPath, context);
 
       // Disabling query scan threshold tip
       OGlobalConfiguration.QUERY_SCAN_THRESHOLD_TIP.setValue(50000);
@@ -283,7 +277,8 @@ public class OTeleporter extends OServerPluginAbstract {
   public static void execute(String driver, String jurl, String username, String password, String outDbUrl, String chosenStrategy,
       String chosenMapper, String xmlPath, String nameResolver, String outputLevel, List<String> includedTables,
       List<String> excludedTables, OOutputStreamManager outputManager) throws OTeleporterIOException {
-    execute(driver, jurl, username, password, outDbUrl, chosenStrategy, chosenMapper, xmlPath, nameResolver, outputLevel, includedTables, excludedTables, null, outputManager);
+    execute(driver, jurl, username, password, outDbUrl, chosenStrategy, chosenMapper, xmlPath, nameResolver, outputLevel,
+        includedTables, excludedTables, null, outputManager);
   }
 
   @Override

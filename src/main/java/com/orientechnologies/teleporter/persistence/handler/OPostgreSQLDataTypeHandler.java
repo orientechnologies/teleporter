@@ -32,10 +32,9 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
 /**
  * Handler that executes type conversions from PostgreSQL DBMS to the OrientDB types.
  * Geospatial implemented (PostGis).
- * 
- * @author Gabriele Ponzi
- * @email  <gabriele.ponzi--at--gmail.com>
  *
+ * @author Gabriele Ponzi
+ * @email <gabriele.ponzi--at--gmail.com>
  */
 
 public class OPostgreSQLDataTypeHandler extends ODBMSDataTypeHandler {
@@ -105,7 +104,7 @@ public class OPostgreSQLDataTypeHandler extends ODBMSDataTypeHandler {
     /*
      * Date/Time Types
      * (doc at http://www.postgresql.org/docs/9.6/static/datatype-datetime.html )
-     */    
+     */
     dbmsType2OrientType.put("timestamp", OType.DATETIME);
     dbmsType2OrientType.put("date", OType.DATE);
     dbmsType2OrientType.put("time", OType.STRING);
@@ -228,25 +227,24 @@ public class OPostgreSQLDataTypeHandler extends ODBMSDataTypeHandler {
     return geospatialTypes;
   }
 
-
   public String buildGeospatialQuery(OEntity entity, OTeleporterContext context) {
 
     String quote = context.getQueryQuote();
 
     String query = "select ";
 
-    for(OAttribute currentAttribute: entity.getAllAttributes()) {
-      if(this.isGeospatial(currentAttribute.getDataType()))
-        query += "ST_AsText(" + quote + currentAttribute.getName()  + quote +   ") as " + currentAttribute.getName() + ",";
+    for (OAttribute currentAttribute : entity.getAllAttributes()) {
+      if (this.isGeospatial(currentAttribute.getDataType()))
+        query += "ST_AsText(" + quote + currentAttribute.getName() + quote + ") as " + currentAttribute.getName() + ",";
       else
         query += quote + currentAttribute.getName() + quote + ",";
     }
 
-    query = query.substring(0,query.length()-1);
+    query = query.substring(0, query.length() - 1);
 
     String entitySchema = entity.getSchemaName();
 
-    if(entitySchema != null)
+    if (entitySchema != null)
       query += " from " + entitySchema + "." + quote + entity.getName() + quote;
     else
       query += " from " + quote + entity.getName() + quote;

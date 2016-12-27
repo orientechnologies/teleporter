@@ -21,21 +21,19 @@ package com.orientechnologies.teleporter.model.graphmodel;
 import java.util.ArrayList;
 import java.util.List;
 
-
 /**
  * It represents the model of the destination GraphDB.
- * 
+ *
  * @author Gabriele Ponzi
- * @email  <gabriele.ponzi--at--gmail.com>
- * 
+ * @email <gabriele.ponzi--at--gmail.com>
  */
 
 public class OGraphModel {
 
   private List<OVertexType> verticesType;
-  private List<OEdgeType> edgesType;
+  private List<OEdgeType>   edgesType;
 
-  public OGraphModel() {    
+  public OGraphModel() {
     this.verticesType = new ArrayList<OVertexType>();
     this.edgesType = new ArrayList<OEdgeType>();
   }
@@ -43,24 +41,24 @@ public class OGraphModel {
   public OVertexType getVertexTypeByName(String name) {
     OVertexType vertex = null;
 
-    for(OVertexType currentVertex: this.verticesType) {
-      if(currentVertex.getName().equals(name)) {
+    for (OVertexType currentVertex : this.verticesType) {
+      if (currentVertex.getName().equals(name)) {
         vertex = currentVertex;
         break;
       }
-    }    
+    }
     return vertex;
   }
 
   public OVertexType getVertexTypeByNameIgnoreCase(String name) {
     OVertexType vertex = null;
 
-    for(OVertexType currentVertex: this.verticesType) {
-      if(currentVertex.getName().equalsIgnoreCase(name)) {
+    for (OVertexType currentVertex : this.verticesType) {
+      if (currentVertex.getName().equalsIgnoreCase(name)) {
         vertex = currentVertex;
         break;
       }
-    }    
+    }
     return vertex;
   }
 
@@ -81,8 +79,8 @@ public class OGraphModel {
   }
 
   public OEdgeType getEdgeTypeByName(String name) {
-    for(OEdgeType currentEdgetype: this.edgesType) {
-      if(currentEdgetype.getName().equals(name)) {
+    for (OEdgeType currentEdgetype : this.edgesType) {
+      if (currentEdgetype.getName().equals(name)) {
         return currentEdgetype;
       }
     }
@@ -90,8 +88,8 @@ public class OGraphModel {
   }
 
   public OEdgeType getEdgeTypeByNameIgnoreCase(String name) {
-    for(OEdgeType currentEdgetype: this.edgesType) {
-      if(currentEdgetype.getName().equalsIgnoreCase(name)) {
+    for (OEdgeType currentEdgetype : this.edgesType) {
+      if (currentEdgetype.getName().equalsIgnoreCase(name)) {
         return currentEdgetype;
       }
     }
@@ -105,29 +103,26 @@ public class OGraphModel {
 
     // info about vertices
     s += "Vertex-type:\n\n";
-    for(OVertexType v: this.verticesType)
+    for (OVertexType v : this.verticesType)
       s += v.toString() + "\n\n";
 
     s += "\n\n";
 
     // info about edges
     s += "Edge-type:\n\n";
-    for(OEdgeType e: this.edgesType)
+    for (OEdgeType e : this.edgesType)
       s += e.toString() + "\n";
 
     s += "\n\n";
 
     // graph structure
     s += "Graph structure:\n\n";
-    for(OVertexType v: this.verticesType) {
-      for(OEdgeType e: v.getOutEdgesType())
+    for (OVertexType v : this.verticesType) {
+      for (OEdgeType e : v.getOutEdgesType())
         s += v.getName() + " -----------[" + e.getName() + "]-----------> " + e.getInVertexType().getName() + "\n";
     }
 
-    return s; 
+    return s;
   }
-
-
-
 
 }

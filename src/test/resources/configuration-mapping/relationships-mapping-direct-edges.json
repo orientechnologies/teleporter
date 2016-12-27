@@ -7,47 +7,58 @@
       "table": "PROJECT"
     }
   },
-  "edges": [{
-    "WorksAtProject": {
-      "mapping": {
-        "fromTable": "EMPLOYEE",
-        "fromColumns": ["PROJECT"],
-        "toTable": "PROJECT",
-        "toColumns": ["ID"],
-        "direction": "direct"
-      },
-      "properties": {
-        "updatedOn": {
-          "type": "DATE",
-          "value": "$from.date",
-          "mandatory": true,
-          "readOnly": false,
-          "notNull": false
+  "edges": [
+    {
+      "WorksAtProject": {
+        "mapping": {
+          "fromTable": "EMPLOYEE",
+          "fromColumns": [
+            "PROJECT"
+          ],
+          "toTable": "PROJECT",
+          "toColumns": [
+            "ID"
+          ],
+          "direction": "direct"
         },
-        "propWithoutTypeField": {
-          "value": "$from.date",
-          "mandatory": true,
-          "readOnly": false,
-          "notNull": false
+        "properties": {
+          "updatedOn": {
+            "type": "DATE",
+            "value": "$from.date",
+            "mandatory": true,
+            "readOnly": false,
+            "notNull": false
+          },
+          "propWithoutTypeField": {
+            "value": "$from.date",
+            "mandatory": true,
+            "readOnly": false,
+            "notNull": false
+          }
+        }
+      }
+    },
+    {
+      "HasManager": {
+        "mapping": {
+          "fromTable": "PROJECT",
+          "fromColumns": [
+            "PROJECT_MANAGER"
+          ],
+          "toTable": "EMPLOYEE",
+          "toColumns": [
+            "EMP_ID"
+          ],
+          "direction": "direct"
+        },
+        "properties": {
+          "updatedOn": {
+            "type": "DATE",
+            "value": "$from.date",
+            "mandatory": false
+          }
         }
       }
     }
-  }, {
-    "HasManager": {
-      "mapping": {
-        "fromTable": "PROJECT",
-        "fromColumns": ["PROJECT_MANAGER"],
-        "toTable": "EMPLOYEE",
-        "toColumns": ["EMP_ID"],
-        "direction": "direct"
-      },
-      "properties": {
-        "updatedOn": {
-          "type": "DATE",
-          "value": "$from.date",
-          "mandatory": false
-        }
-      }
-    }
-  }]
+  ]
 }

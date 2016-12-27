@@ -27,10 +27,9 @@ import com.orientechnologies.teleporter.nameresolver.ONameResolver;
  * Interface that manages the data source schema and the destination graph model with their correspondences.
  * It has the responsibility to build in memory the two models: the first is built from the source meta-data,
  * the second from the data source schema just created.
- * 
- * @author Gabriele Ponzi
- * @email  <gabriele.ponzi--at--gmail.com>
  *
+ * @author Gabriele Ponzi
+ * @email <gabriele.ponzi--at--gmail.com>
  */
 
 public abstract class OSource2GraphMapper {
@@ -38,9 +37,8 @@ public abstract class OSource2GraphMapper {
   // graph model
   protected OGraphModel graphModel;
 
-
-  public OSource2GraphMapper() {}
-
+  public OSource2GraphMapper() {
+  }
 
   public OGraphModel getGraphModel() {
     return this.graphModel;

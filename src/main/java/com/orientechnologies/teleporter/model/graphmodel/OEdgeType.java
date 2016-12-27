@@ -21,17 +21,16 @@ package com.orientechnologies.teleporter.model.graphmodel;
 /**
  * It represents an Orient class of a specific type that extends the Orient Edge Class.
  * It's a simple edge-type in the graph model.
- * 
- * @author Gabriele Ponzi
- * @email  <gabriele.ponzi--at--gmail.com>
  *
+ * @author Gabriele Ponzi
+ * @email <gabriele.ponzi--at--gmail.com>
  */
 
 public class OEdgeType extends OElementType {
 
   private OVertexType inVertexType;
   private OVertexType outVertexType;
-  private int numberRelationshipsRepresented;  // the number of relationships represented by the edge
+  private int         numberRelationshipsRepresented;  // the number of relationships represented by the edge
 
   public OEdgeType(String edgeType) {
     super(edgeType);
@@ -86,12 +85,12 @@ public class OEdgeType extends OElementType {
     OEdgeType that = (OEdgeType) obj;
 
     // check on type and in/out vertex
-    if(!(super.name.equals(that.getName()) && this.inVertexType.getName().equals(that.getInVertexType().getName())))
+    if (!(super.name.equals(that.getName()) && this.inVertexType.getName().equals(that.getInVertexType().getName())))
       return false;
 
     // check on properties
-    for(OModelProperty currentProperty: this.properties) {
-      if(!(that.getProperties().contains(currentProperty)))
+    for (OModelProperty currentProperty : this.properties) {
+      if (!(that.getProperties().contains(currentProperty)))
         return false;
     }
 
@@ -99,25 +98,25 @@ public class OEdgeType extends OElementType {
 
   }
 
-
   public String toString() {
 
     String s = "";
 
-    if(this.outVertexType != null && this.inVertexType != null)
-      s = "Edge-type [type = " + super.name + ", out-vertex-type = " + this.getOutVertexType().getName() +  ", in-vertex-type = " + this.getInVertexType().getName() + " ]"; 
+    if (this.outVertexType != null && this.inVertexType != null)
+      s = "Edge-type [type = " + super.name + ", out-vertex-type = " + this.getOutVertexType().getName() + ", in-vertex-type = "
+          + this.getInVertexType().getName() + " ]";
 
     else
-      s = "Edge-type [type = " + super.name + " ]"; 
+      s = "Edge-type [type = " + super.name + " ]";
 
-    if(this.properties.size() > 0) {
-      s += "\nEdge's properties ("+this.properties.size()+"):\n";
-      for(OModelProperty property: this.properties) {
+    if (this.properties.size() > 0) {
+      s += "\nEdge's properties (" + this.properties.size() + "):\n";
+      for (OModelProperty property : this.properties) {
         s += property.getName() + " --> " + property.toString() + "\n";
       }
     }
     s += "\n";
-    return s; 
+    return s;
 
   }
 }

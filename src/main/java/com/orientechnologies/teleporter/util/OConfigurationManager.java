@@ -12,29 +12,28 @@ import java.nio.channels.FileChannel;
  */
 public class OConfigurationManager {
 
-
   // config info
   private final String configurationDirectoryName = "teleporter-config/";
-  private final String configFileName = "migration-config.json";
-  private String outDBConfigPath;       // path ORIENTDB_HOME/<db-name>/teleporter-config/config.json
+  private final String configFileName             = "migration-config.json";
+  private String  outDBConfigPath;       // path ORIENTDB_HOME/<db-name>/teleporter-config/config.json
   private boolean configPresentInDB;
 
-  public OConfigurationManager() {}
-
+  public OConfigurationManager() {
+  }
 
   /**
    * Loading eventual configuration.
    * Look for the config in the <db-path>/teleporter-config/ path:
-   *  (i) - if db and configuration are present use the default config
-   *      - else
-   *       (ii)  - if an external config path was passed as argument then load the config, use it for the steps 1,2,3 and then copy it
-   *               in the <db-path>/teleporter-config/ path (configuration.json)
-   *       (iii) - else execute strategy without configuration
+   * (i) - if db and configuration are present use the default config
+   * - else
+   * (ii)  - if an external config path was passed as argument then load the config, use it for the steps 1,2,3 and then copy it
+   * in the <db-path>/teleporter-config/ path (configuration.json)
+   * (iii) - else execute strategy without configuration
    **/
   public ODocument loadConfiguration(String outOrientGraphUri, String configurationPath, OTeleporterContext context) {
 
-    if(outOrientGraphUri.contains("\\")) {
-      outOrientGraphUri = outOrientGraphUri.replace("\\","/");
+    if (outOrientGraphUri.contains("\\")) {
+      outOrientGraphUri = outOrientGraphUri.replace("\\", "/");
     }
 
     // checking the presence of the configuration in the target db
@@ -60,14 +59,16 @@ public class OConfigurationManager {
         config = OFileManager.buildJsonFromFile(configurationPath);
         // (ii)
         if (config != null) {
-          context.getOutputManager().info("Configuration correctly loaded from %s and saved in %s.\n", configurationPath, this.outDBConfigPath);
+          context.getOutputManager()
+              .info("Configuration correctly loaded from %s and saved in %s.\n", configurationPath, this.outDBConfigPath);
 
           // manage conf if present: updating in the db directory
           this.copyConfigurationInDatabase(config, configurationPath, context);
         }
         // (iii)
         else {
-          context.getOutputManager().info("No configuration file was found. Migration will be performed according to standard mapping policies.\n");
+          context.getOutputManager()
+              .info("No configuration file was found. Migration will be performed according to standard mapping policies.\n");
         }
       }
     } catch (Exception e) {

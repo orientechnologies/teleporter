@@ -31,7 +31,6 @@ import static org.junit.Assert.*;
 /**
  * @author Gabriele Ponzi
  * @email <gabriele.ponzi--at--gmail.com>
- *
  */
 
 public class FileManagerTest {
@@ -54,7 +53,7 @@ public class FileManagerTest {
       assertFalse(dir.exists());
       assertFalse(newFile.exists());
 
-    } catch(IOException e) {
+    } catch (IOException e) {
       e.printStackTrace();
       fail(e.getMessage());
     }
@@ -75,7 +74,7 @@ public class FileManagerTest {
 
       OFileManager.deleteFile(dir.getPath());
 
-    }catch(IOException e) {
+    } catch (IOException e) {
       e.printStackTrace();
       fail(e.getMessage());
     }
@@ -97,7 +96,7 @@ public class FileManagerTest {
 
       OFileManager.deleteFile(dir.getPath());
 
-    }catch(IOException e) {
+    } catch (IOException e) {
       e.printStackTrace();
       fail(e.getMessage());
     }
@@ -129,7 +128,8 @@ public class FileManagerTest {
       ODocument document2 = null;
       try {
         document2 = OFileManager.buildJsonFromFile("src/test/resources/file-manager/sample2.json");
-      }catch(Exception e) {}
+      } catch (Exception e) {
+      }
       assertNull(document2);
 
     } catch (Exception e) {
@@ -137,7 +137,5 @@ public class FileManagerTest {
       fail(e.getMessage());
     }
   }
-
-
 
 }

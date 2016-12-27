@@ -28,40 +28,42 @@ import com.orientechnologies.teleporter.strategy.rdbms.ODBMSNaiveStrategy;
  * Factory used to instantiate the chosen strategy for the importing phase starting from its name.
  *
  * @author Gabriele Ponzi
- * @email  <gabriele.ponzi--at--gmail.com>
- *
+ * @email <gabriele.ponzi--at--gmail.com>
  */
 
 public class OStrategyFactory {
 
-  public OStrategyFactory() {}
+  public OStrategyFactory() {
+  }
 
-  public OImportStrategy buildStrategy(String storageDriver, String chosenStrategy, OTeleporterContext context) throws
-      OTeleporterIOException {
+  public OImportStrategy buildStrategy(String storageDriver, String chosenStrategy, OTeleporterContext context)
+      throws OTeleporterIOException {
 
     OImportStrategy strategy = null;
 
     // choosing strategy for migration from RDBSs
 
-    if(chosenStrategy == null)  {
+    if (chosenStrategy == null) {
       strategy = new ODBMSNaiveAggregationStrategy();
-    }
-    else {
-      switch(chosenStrategy) {
+    } else {
+      switch (chosenStrategy) {
 
-      case "naive":   strategy = new ODBMSNaiveStrategy();
+      case "naive":
+        strategy = new ODBMSNaiveStrategy();
         break;
 
-      case "naive-aggregate":   strategy = new ODBMSNaiveAggregationStrategy();
+      case "naive-aggregate":
+        strategy = new ODBMSNaiveAggregationStrategy();
         break;
 
-      default :  context.getOutputManager().error("The typed strategy doesn't exist for migration from the chosen RDBMS.\n");
+      default:
+        context.getOutputManager().error("The typed strategy doesn't exist for migration from the chosen RDBMS.\n");
       }
 
       context.setExecutionStrategy(chosenStrategy);
     }
 
-    if(strategy == null)
+    if (strategy == null)
       throw new OTeleporterIOException("Strategy not available for the chosen source.");
 
     return strategy;

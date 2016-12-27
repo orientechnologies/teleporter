@@ -27,7 +27,6 @@ import static org.junit.Assert.fail;
 /**
  * @author Gabriele Ponzi
  * @email <gabriele.ponzi--at--gmail.com>
- *
  */
 
 public class TeleporterBasicExecutionTest extends TeleporterInvocationTest {
@@ -45,19 +44,18 @@ public class TeleporterBasicExecutionTest extends TeleporterInvocationTest {
     boolean jobComplete = false;
     int retry = 0;
 
-    while(!jobComplete) {
+    while (!jobComplete) {
 
       try {
         OTeleporter.main(args);
         jobComplete = true;
       } catch (Exception e) {
         e.printStackTrace();
-        if(retry < 3) {
-          System.out.printf("Job failed, restarting job (retry " + (retry+1) + "/3)");
+        if (retry < 3) {
+          System.out.printf("Job failed, restarting job (retry " + (retry + 1) + "/3)");
           retry++;
           continue;
-        }
-        else {
+        } else {
           fail("Job failed " + (retry + 1) + " times!\n" + e.getMessage());
         }
       } finally {
@@ -66,6 +64,5 @@ public class TeleporterBasicExecutionTest extends TeleporterInvocationTest {
     }
 
   }
-
 
 }

@@ -7,29 +7,39 @@
       "table": "ACTOR"
     }
   },
-  "edges": [{
-    "Performs": {
-      "mapping": {
-        "fromTable": "FILM",
-        "fromColumns": ["ID"],
-        "toTable": "ACTOR",
-        "toColumns": ["ID"],
-        "joinTable": {
-          "tableName": "FILM_ACTOR",
-          "fromColumns": ["FILM_ID"],
-          "toColumns": ["ACTOR_ID"]
+  "edges": [
+    {
+      "Performs": {
+        "mapping": {
+          "fromTable": "FILM",
+          "fromColumns": [
+            "ID"
+          ],
+          "toTable": "ACTOR",
+          "toColumns": [
+            "ID"
+          ],
+          "joinTable": {
+            "tableName": "FILM_ACTOR",
+            "fromColumns": [
+              "FILM_ID"
+            ],
+            "toColumns": [
+              "ACTOR_ID"
+            ]
+          },
+          "direction": "inverse"
         },
-        "direction": "inverse"
-      },
-      "properties": {
-        "year": {
-          "type": "DATE",
-          "value": "$from.date",
-          "mandatory": true,
-          "readOnly": false,
-          "notNull": false
+        "properties": {
+          "year": {
+            "type": "DATE",
+            "value": "$from.date",
+            "mandatory": true,
+            "readOnly": false,
+            "notNull": false
+          }
         }
       }
     }
-  }]
+  ]
 }

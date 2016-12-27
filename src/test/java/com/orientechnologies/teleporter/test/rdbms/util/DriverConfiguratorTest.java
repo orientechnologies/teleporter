@@ -33,16 +33,15 @@ import static org.junit.Assert.fail;
 /**
  * @author Gabriele Ponzi
  * @email <gabriele.ponzi--at--gmail.com>
- *
  */
 
 public class DriverConfiguratorTest {
 
-  private OTeleporterContext context;
+  private OTeleporterContext  context;
   private ODriverConfigurator driverConfigurator;
   public static final String DRIVERS = "http://orientdb.com/jdbc-drivers.json";  // it must be coherent with the instance variable "DRIVERS" of the class ODriverConfigurator
   private OOutputStreamManager outputManager;
-  private String fileName;
+  private String               fileName;
 
   @Before
   public void init() {
@@ -54,7 +53,7 @@ public class DriverConfiguratorTest {
     ODocument driversParams = this.driverConfigurator.readJsonFromUrl(DRIVERS, this.context);
     ODocument hsqldbConfig = driversParams.field("HyperSQL");
     this.fileName = hsqldbConfig.field("url");
-    fileName = fileName.substring(fileName.lastIndexOf("/")+1);
+    fileName = fileName.substring(fileName.lastIndexOf("/") + 1);
   }
 
   @Test
@@ -64,27 +63,26 @@ public class DriverConfiguratorTest {
 
       try {
         OFileManager.deleteFile("../lib/" + fileName);
-      }catch(IOException e) {
+      } catch (IOException e) {
         System.out.println("Driver not present in '../lib/' path.");
       }
 
       String driverName = this.driverConfigurator.checkConfiguration("hypersql", this.context);
       OFileManager.deleteFile("../lib/" + fileName);
 
-    }catch(Exception e) {
+    } catch (Exception e) {
       e.printStackTrace();
       fail(e.getMessage());
     }
 
   }
 
-
   @Test
   public void checkConnectionTest() {
 
     try {
       OFileManager.deleteFile("../lib/" + fileName);
-    }catch(IOException e) {
+    } catch (IOException e) {
       System.out.println("Driver not present in '../lib/' path.");
     }
 

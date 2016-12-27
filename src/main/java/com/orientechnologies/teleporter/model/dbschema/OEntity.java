@@ -29,32 +29,30 @@ import java.util.Set;
  * It represents an entity of the source DB.
  *
  * @author Gabriele Ponzi
- * @email  <gabriele.ponzi--at--gmail.com>
- *
+ * @email <gabriele.ponzi--at--gmail.com>
  */
 
 public class OEntity implements Comparable<OEntity> {
 
-  private String name;
-  private String schemaName;
-  private Set<OAttribute> attributes;
-  private Set<OAttribute> inheritedAttributes;
-  private boolean inheritedAttributesRecovered;
-  private OPrimaryKey primaryKey;
-  private List<OForeignKey> foreignKeys;
+  private String             name;
+  private String             schemaName;
+  private Set<OAttribute>    attributes;
+  private Set<OAttribute>    inheritedAttributes;
+  private boolean            inheritedAttributesRecovered;
+  private OPrimaryKey        primaryKey;
+  private List<OForeignKey>  foreignKeys;
   private Set<ORelationship> outRelationships;
   private Set<ORelationship> inheritedOutRelationships;
-  private boolean inheritedOutRelationshipsRecovered;
+  private boolean            inheritedOutRelationshipsRecovered;
   private Set<ORelationship> inRelationships;
   private Set<ORelationship> inheritedInRelationships;
-  private boolean inheritedInRelationshipsRecovered;
-  private Boolean isAggregable;
-  private String directionOfN2NRepresentedRelationship;  // when the entity corresponds to an aggregable join table it's 'direct' by default (at the first invocation of 'isAggregableJoinTable()')
-  private String nameOfN2NRepresentedRelationship;      // we can have this parameter only in a join table and with the manual configuration of its represented relationship
-  private OEntity parentEntity;
-  private int inheritanceLevel;
-  private OHierarchicalBag hierarchicalBag;
-
+  private boolean            inheritedInRelationshipsRecovered;
+  private Boolean            isAggregable;
+  private String             directionOfN2NRepresentedRelationship;  // when the entity corresponds to an aggregable join table it's 'direct' by default (at the first invocation of 'isAggregableJoinTable()')
+  private String             nameOfN2NRepresentedRelationship;      // we can have this parameter only in a join table and with the manual configuration of its represented relationship
+  private OEntity            parentEntity;
+  private int                inheritanceLevel;
+  private OHierarchicalBag   hierarchicalBag;
 
   public OEntity(String name, String schemaName) {
     this.name = name;
@@ -83,9 +81,7 @@ public class OEntity implements Comparable<OEntity> {
     // if already known, just retrieve the info
     if (this.isAggregable != null) {
       return this.isAggregable;
-    }
-
-    else {
+    } else {
 
       // (i) preliminar check
       if (this.foreignKeys.size() != 2)
@@ -96,7 +92,7 @@ public class OEntity implements Comparable<OEntity> {
         this.isAggregable = aggregable;
 
         // if the entity is an aggregable join table then the direction of the N-N represented relationship is set to 'direct' by default.
-        if(this.isAggregable && this.directionOfN2NRepresentedRelationship == null) {
+        if (this.isAggregable && this.directionOfN2NRepresentedRelationship == null) {
           this.directionOfN2NRepresentedRelationship = "direct";
         }
 
@@ -173,14 +169,13 @@ public class OEntity implements Comparable<OEntity> {
 
   public Set<OAttribute> getInheritedAttributes() {
 
-    if(inheritedAttributesRecovered)
+    if (inheritedAttributesRecovered)
       return this.inheritedAttributes;
-    else if(parentEntity != null) {
+    else if (parentEntity != null) {
       this.inheritedAttributes = parentEntity.getAllAttributes();
       this.inheritedAttributesRecovered = true;
       return this.inheritedAttributes;
-    }
-    else
+    } else
       return this.inheritedAttributes;
   }
 
@@ -226,7 +221,7 @@ public class OEntity implements Comparable<OEntity> {
     boolean added = this.attributes.add(attribute);
     List<OAttribute> temp = new LinkedList<OAttribute>(this.attributes);
 
-    if(added) {
+    if (added) {
       Collections.sort(temp);
     }
     this.attributes.clear();
@@ -238,22 +233,21 @@ public class OEntity implements Comparable<OEntity> {
 
     OAttribute currentAttribute;
     Iterator<OAttribute> it = this.attributes.iterator();
-    while(it.hasNext()) {
+    while (it.hasNext()) {
       currentAttribute = it.next();
-      if(currentAttribute.getName().equalsIgnoreCase(toRemove)) {
+      if (currentAttribute.getName().equalsIgnoreCase(toRemove)) {
         it.remove();
         break;
       }
     }
   }
 
-
   public OAttribute getAttributeByName(String name) {
 
     OAttribute toReturn = null;
 
-    for(OAttribute a: this.attributes) {
-      if(a.getName().equals(name)) {
+    for (OAttribute a : this.attributes) {
+      if (a.getName().equals(name)) {
         toReturn = a;
         break;
       }
@@ -265,8 +259,8 @@ public class OEntity implements Comparable<OEntity> {
 
     OAttribute toReturn = null;
 
-    for(OAttribute a: this.attributes) {
-      if(a.getName().equalsIgnoreCase(name)) {
+    for (OAttribute a : this.attributes) {
+      if (a.getName().equalsIgnoreCase(name)) {
         toReturn = a;
         break;
       }
@@ -278,8 +272,8 @@ public class OEntity implements Comparable<OEntity> {
 
     OAttribute toReturn = null;
 
-    for(OAttribute a: this.attributes) {
-      if(a.getOrdinalPosition() == position) {
+    for (OAttribute a : this.attributes) {
+      if (a.getOrdinalPosition() == position) {
         toReturn = a;
         break;
       }
@@ -288,13 +282,12 @@ public class OEntity implements Comparable<OEntity> {
     return toReturn;
   }
 
-
   public OAttribute getInheritedAttributeByName(String name) {
 
     OAttribute toReturn = null;
 
-    for(OAttribute a: this.getInheritedAttributes()) {
-      if(a.getName().equals(name)) {
+    for (OAttribute a : this.getInheritedAttributes()) {
+      if (a.getName().equals(name)) {
         toReturn = a;
         break;
       }
@@ -306,8 +299,8 @@ public class OEntity implements Comparable<OEntity> {
   public OAttribute getInheritedAttributeByNameIgnoreCase(String name) {
     OAttribute toReturn = null;
 
-    for(OAttribute a: this.getInheritedAttributes()) {
-      if(a.getName().equalsIgnoreCase(name)) {
+    for (OAttribute a : this.getInheritedAttributes()) {
+      if (a.getName().equalsIgnoreCase(name)) {
         toReturn = a;
         break;
       }
@@ -328,14 +321,13 @@ public class OEntity implements Comparable<OEntity> {
 
   public Set<ORelationship> getInheritedOutRelationships() {
 
-    if(inheritedOutRelationshipsRecovered)
+    if (inheritedOutRelationshipsRecovered)
       return this.inheritedOutRelationships;
-    else if(parentEntity != null) {
+    else if (parentEntity != null) {
       this.inheritedOutRelationships = parentEntity.getAllOutRelationships();
       this.inheritedOutRelationshipsRecovered = true;
       return this.inheritedOutRelationships;
-    }
-    else
+    } else
       return this.inheritedOutRelationships;
   }
 
@@ -361,7 +353,6 @@ public class OEntity implements Comparable<OEntity> {
     this.inheritedOutRelationshipsRecovered = inheritedOutRelationshipsRecovered;
   }
 
-
   // Getter and Setter In Relationships
 
   public Set<ORelationship> getInRelationships() {
@@ -374,14 +365,13 @@ public class OEntity implements Comparable<OEntity> {
 
   public Set<ORelationship> getInheritedInRelationships() {
 
-    if(inheritedInRelationshipsRecovered)
+    if (inheritedInRelationshipsRecovered)
       return this.inheritedInRelationships;
-    else if(parentEntity != null) {
+    else if (parentEntity != null) {
       this.inheritedInRelationships = parentEntity.getAllInRelationships();
       this.inheritedInRelationshipsRecovered = true;
       return this.inheritedInRelationships;
-    }
-    else
+    } else
       return this.inheritedInRelationships;
   }
 
@@ -406,7 +396,6 @@ public class OEntity implements Comparable<OEntity> {
   public void setInheritedInRelationshipsRecovered(boolean inheritedInRelationshipsRecovered) {
     this.inheritedInRelationshipsRecovered = inheritedInRelationshipsRecovered;
   }
-
 
   public OEntity getParentEntity() {
     return this.parentEntity;
@@ -434,7 +423,7 @@ public class OEntity implements Comparable<OEntity> {
 
   public void renumberAttributesOrdinalPositions() {
     int i = 1;
-    for(OAttribute attribute: this.attributes) {
+    for (OAttribute attribute : this.attributes) {
       attribute.setOrdinalPosition(i);
       i++;
     }
@@ -443,9 +432,9 @@ public class OEntity implements Comparable<OEntity> {
   @Override
   public int compareTo(OEntity toCompare) {
 
-    if(this.inheritanceLevel > toCompare.getInheritanceLevel())
+    if (this.inheritanceLevel > toCompare.getInheritanceLevel())
       return 1;
-    else if(this.inheritanceLevel < toCompare.getInheritanceLevel())
+    else if (this.inheritanceLevel < toCompare.getInheritanceLevel())
       return -1;
     else
       return this.name.compareTo(toCompare.getName());
@@ -456,40 +445,40 @@ public class OEntity implements Comparable<OEntity> {
   public String toString() {
     String s = "Entity [name = " + this.name + ", number of attributes = " + this.attributes.size() + "]";
 
-    if(this.isAggregableJoinTable())
+    if (this.isAggregableJoinTable())
       s += "\t\t\tJoin Entity (Aggregable Join Table)";
 
     s += "\n|| ";
 
-    for(OAttribute a: this.attributes)
+    for (OAttribute a : this.attributes)
       s += a.getOrdinalPosition() + ": " + a.getName() + " ( " + a.getDataType() + " ) || ";
 
     s += "\nPrimary Key (" + this.primaryKey.getInvolvedAttributes().size() + " involved attributes): ";
 
     int cont = 1;
     int size = this.primaryKey.getInvolvedAttributes().size();
-    for(OAttribute a: this.primaryKey.getInvolvedAttributes()) {
-      if(cont < size)
-        s += a.getName()+", ";
+    for (OAttribute a : this.primaryKey.getInvolvedAttributes()) {
+      if (cont < size)
+        s += a.getName() + ", ";
       else
-        s += a.getName()+".";
+        s += a.getName() + ".";
       cont++;
     }
 
-    if(this.outRelationships.size() > 0) {
+    if (this.outRelationships.size() > 0) {
 
-      s += "\nForeign Keys ("+outRelationships.size()+"):\n";
+      s += "\nForeign Keys (" + outRelationships.size() + "):\n";
       int index = 1;
 
-      for(ORelationship relationship: this.outRelationships) {
-        s += index +".  ";
-        s += "Foreign Entity: " + relationship.getForeignEntity().getName() + ", Foreign Key: " + relationship.getForeignKey().toString() + "\t||\t"
-            + "Parent Entity: " + relationship.getParentEntity().getName() + ", Primary Key: " + relationship.getForeignKey().toString() + "\n";
+      for (ORelationship relationship : this.outRelationships) {
+        s += index + ".  ";
+        s += "Foreign Entity: " + relationship.getForeignEntity().getName() + ", Foreign Key: " + relationship.getForeignKey()
+            .toString() + "\t||\t" + "Parent Entity: " + relationship.getParentEntity().getName() + ", Primary Key: " + relationship
+            .getForeignKey().toString() + "\n";
         index++;
       }
 
-    }
-    else {
+    } else {
       s += "\nForeign Key: Not Present\n";
     }
 
@@ -510,6 +499,5 @@ public class OEntity implements Comparable<OEntity> {
     OEntity that = (OEntity) obj;
     return this.name.equals(that.getName());
   }
-
 
 }

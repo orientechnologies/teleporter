@@ -51,27 +51,27 @@ import java.util.List;
  * translated semi-directly in a correspondent and coherent graph model.
  *
  * @author Gabriele Ponzi
- * @email  <gabriele.ponzi--at--gmail.com>
- *
+ * @email <gabriele.ponzi--at--gmail.com>
  */
 
 public class ODBMSNaiveStrategy extends ODBMSImportStrategy {
 
+  public ODBMSNaiveStrategy() {
+  }
 
-  public ODBMSNaiveStrategy() {}
-
-
-  public OSource2GraphMapper createSchemaMapper(String driver, String uri, String username, String password, String outOrientGraphUri, String chosenMapper, String xmlPath, ONameResolver nameResolver,
-      ODBMSDataTypeHandler handler, List<String> includedTables, List<String> excludedTables, ODocument config, OTeleporterContext context) {
+  public OSource2GraphMapper createSchemaMapper(String driver, String uri, String username, String password,
+      String outOrientGraphUri, String chosenMapper, String xmlPath, ONameResolver nameResolver, ODBMSDataTypeHandler handler,
+      List<String> includedTables, List<String> excludedTables, ODocument config, OTeleporterContext context) {
 
     OMapperFactory mapperFactory = new OMapperFactory();
-    OSource2GraphMapper mapper = mapperFactory.buildMapper(chosenMapper, driver, uri, username, password, xmlPath, includedTables, excludedTables, config, context);
+    OSource2GraphMapper mapper = mapperFactory
+        .buildMapper(chosenMapper, driver, uri, username, password, xmlPath, includedTables, excludedTables, config, context);
 
     // Step 1: DataBase schema building
     mapper.buildSourceDatabaseSchema(context);
     context.getStatistics().notifyListeners();
     context.getOutputManager().info("\n");
-    context.getOutputManager().debug("\n%s\n", ((OER2GraphMapper)mapper).getDataBaseSchema().toString());
+    context.getOutputManager().debug("\n%s\n", ((OER2GraphMapper) mapper).getDataBaseSchema().toString());
 
     // Step 2: Graph model building
     mapper.buildGraphModel(nameResolver, context);
@@ -84,9 +84,9 @@ public class ODBMSNaiveStrategy extends ODBMSImportStrategy {
 
     // Step 4: Writing schema on OrientDB
     OGraphModelWriter graphModelWriter = new OGraphModelWriter();
-    OGraphModel graphModel = ((OER2GraphMapper)mapper).getGraphModel();
+    OGraphModel graphModel = ((OER2GraphMapper) mapper).getGraphModel();
     boolean success = graphModelWriter.writeModelOnOrient(graphModel, handler, outOrientGraphUri, context);
-    if(!success) {
+    if (!success) {
       context.getOutputManager().error("Writing not complete. Something gone wrong.\n");
       throw new OTeleporterRuntimeException();
     }
@@ -97,8 +97,8 @@ public class ODBMSNaiveStrategy extends ODBMSImportStrategy {
     return mapper;
   }
 
-
-  public void executeImport(String driver, String uri, String username, String password, String outOrientGraphUri, OSource2GraphMapper genericMapper, ODBMSDataTypeHandler handler, OTeleporterContext context) {
+  public void executeImport(String driver, String uri, String username, String password, String outOrientGraphUri,
+      OSource2GraphMapper genericMapper, ODBMSDataTypeHandler handler, OTeleporterContext context) {
 
     try {
 
@@ -165,20 +165,23 @@ public class ODBMSNaiveStrategy extends ODBMSImportStrategy {
           currentOutVertexType = mapper.getVertexTypeByEntity(entity);
 
           // each record is imported as vertex in the orient graph
-          while(records.next()) {
+          while (records.next()) {
 
             // upsert of the vertex
             currentRecord = records;
-            currentOutVertex = (OrientVertex) graphEngine.upsertVisitedVertex(orientGraph, currentRecord, currentOutVertexType, null, context);
+            currentOutVertex = (OrientVertex) graphEngine
+                .upsertVisitedVertex(orientGraph, currentRecord, currentOutVertexType, null, context);
 
             // for each attribute of the entity belonging to the primary key, correspondent relationship is
             // built as edge and for the referenced record a vertex is built (only id)
-            for(ORelationship currentRelationship: entity.getOutRelationships()) {
-              OEntity currentParentEntity = mapper.getDataBaseSchema().getEntityByName(currentRelationship.getParentEntity().getName());
+            for (ORelationship currentRelationship : entity.getOutRelationships()) {
+              OEntity currentParentEntity = mapper.getDataBaseSchema()
+                  .getEntityByName(currentRelationship.getParentEntity().getName());
               currentInVertexType = mapper.getVertexTypeByEntity(currentParentEntity);
 
               edgeType = mapper.getRelationship2edgeType().get(currentRelationship);
-              graphEngine.upsertReachedVertexWithEdge(orientGraph, currentRecord, currentRelationship, currentOutVertex, currentInVertexType, edgeType.getName(), context);
+              graphEngine.upsertReachedVertexWithEdge(orientGraph, currentRecord, currentRelationship, currentOutVertex,
+                  currentInVertexType, edgeType.getName(), context);
             }
 
             // Statistics updated

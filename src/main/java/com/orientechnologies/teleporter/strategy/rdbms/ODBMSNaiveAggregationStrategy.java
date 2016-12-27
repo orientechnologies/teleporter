@@ -49,51 +49,52 @@ import java.util.List;
 
 /**
  * A strategy that performs a "naive" import of the data source. The data source schema is
- * translated semi-directly in a correspondent and coherent graph model using an aggregation 
+ * translated semi-directly in a correspondent and coherent graph model using an aggregation
  * policy on the junction tables of dimension equals to 2.
- * 
+ *
  * @author Gabriele Ponzi
- * @email  <gabriele.ponzi--at--gmail.com>
- * 
+ * @email <gabriele.ponzi--at--gmail.com>
  */
 
-public class ODBMSNaiveAggregationStrategy extends ODBMSImportStrategy {	
+public class ODBMSNaiveAggregationStrategy extends ODBMSImportStrategy {
 
-  public ODBMSNaiveAggregationStrategy() {}
-
+  public ODBMSNaiveAggregationStrategy() {
+  }
 
   @Override
-  public OSource2GraphMapper createSchemaMapper(String driver, String uri, String username, String password, String outOrientGraphUri, String chosenMapper, String xmlPath, ONameResolver nameResolver,
-      ODBMSDataTypeHandler handler, List<String> includedTables, List<String> excludedTables, ODocument config, OTeleporterContext context) {
+  public OSource2GraphMapper createSchemaMapper(String driver, String uri, String username, String password,
+      String outOrientGraphUri, String chosenMapper, String xmlPath, ONameResolver nameResolver, ODBMSDataTypeHandler handler,
+      List<String> includedTables, List<String> excludedTables, ODocument config, OTeleporterContext context) {
 
     OMapperFactory mapperFactory = new OMapperFactory();
-    OSource2GraphMapper mapper = mapperFactory.buildMapper(chosenMapper, driver, uri, username, password, xmlPath, includedTables, excludedTables, config, context);
+    OSource2GraphMapper mapper = mapperFactory
+        .buildMapper(chosenMapper, driver, uri, username, password, xmlPath, includedTables, excludedTables, config, context);
 
     // Step 1: DataBase schema building
     mapper.buildSourceDatabaseSchema(context);
     context.getStatistics().notifyListeners();
     context.getOutputManager().info("\n");
-    context.getOutputManager().debug("\n%s\n", ((OER2GraphMapper)mapper).getDataBaseSchema().toString());
+    context.getOutputManager().debug("\n%s\n", ((OER2GraphMapper) mapper).getDataBaseSchema().toString());
 
     // Step 2: Graph model building
     mapper.buildGraphModel(nameResolver, context);
     context.getStatistics().notifyListeners();
     context.getOutputManager().info("\n");
-    context.getOutputManager().debug("\n%s\n", ((OER2GraphMapper)mapper).getGraphModel().toString());
+    context.getOutputManager().debug("\n%s\n", ((OER2GraphMapper) mapper).getGraphModel().toString());
 
     // Step 3: Eventual configuration applying
     mapper.applyImportConfiguration(context);
 
     // Step 4: Aggregation
-    ((OER2GraphMapper)mapper).performAggregations(context);
+    ((OER2GraphMapper) mapper).performAggregations(context);
     context.getOutputManager().debug("\n'Junction-Entity' aggregation complete.\n");
-    context.getOutputManager().debug("\n%s\n", ((OER2GraphMapper)mapper).getGraphModel().toString());
+    context.getOutputManager().debug("\n%s\n", ((OER2GraphMapper) mapper).getGraphModel().toString());
 
     // Step 5: Writing schema on OrientDB
     OGraphModelWriter graphModelWriter = new OGraphModelWriter();
-    OGraphModel graphModel = ((OER2GraphMapper)mapper).getGraphModel();
+    OGraphModel graphModel = ((OER2GraphMapper) mapper).getGraphModel();
     boolean success = graphModelWriter.writeModelOnOrient(graphModel, handler, outOrientGraphUri, context);
-    if(!success) {
+    if (!success) {
       context.getOutputManager().error("Writing not complete. Something gone wrong.\n");
       throw new OTeleporterRuntimeException();
     }
@@ -104,9 +105,9 @@ public class ODBMSNaiveAggregationStrategy extends ODBMSImportStrategy {
     return mapper;
   }
 
-
   @Override
-  public void executeImport(String driver, String uri, String username, String password, String outOrientGraphUri, OSource2GraphMapper genericMapper, ODBMSDataTypeHandler handler, OTeleporterContext context) {
+  public void executeImport(String driver, String uri, String username, String password, String outOrientGraphUri,
+      OSource2GraphMapper genericMapper, ODBMSDataTypeHandler handler, OTeleporterContext context) {
 
     try {
 
@@ -115,34 +116,37 @@ public class ODBMSNaiveAggregationStrategy extends ODBMSImportStrategy {
       statistics.runningStepNumber = 4;
 
       OER2GraphMapper mapper = (OER2GraphMapper) genericMapper;
-      ODBQueryEngine dbQueryEngine = new ODBQueryEngine(driver, uri, username, password, context);    
-      OGraphEngineForDB graphEngine = new OGraphEngineForDB((OER2GraphMapper)mapper, handler);
+      ODBQueryEngine dbQueryEngine = new ODBQueryEngine(driver, uri, username, password, context);
+      OGraphEngineForDB graphEngine = new OGraphEngineForDB((OER2GraphMapper) mapper, handler);
 
       // OrientDB graph initialization/connection
       OrientBaseGraph orientGraph = null;
-      OrientGraphFactory factory = new OrientGraphFactory(outOrientGraphUri,"admin","admin");
+      OrientGraphFactory factory = new OrientGraphFactory(outOrientGraphUri, "admin", "admin");
       orientGraph = factory.getNoTx();
       orientGraph.getRawGraph().declareIntent(new OIntentMassiveInsert());
       orientGraph.setStandardElementConstraints(false);
 
       OVertexType currentOutVertexType = null;
-      OVertexType currentInVertexType = null;  
+      OVertexType currentInVertexType = null;
       OrientVertex currentOutVertex = null;
       OEdgeType edgeType = null;
 
       // Importing from Entities belonging to hierarchical bags
-      for(OHierarchicalBag bag: mapper.getDataBaseSchema().getHierarchicalBags()) {
+      for (OHierarchicalBag bag : mapper.getDataBaseSchema().getHierarchicalBags()) {
 
-        switch(bag.getInheritancePattern()) {
+        switch (bag.getInheritancePattern()) {
 
-        case "table-per-hierarchy": super.tablePerHierarchyImport(bag, mapper, dbQueryEngine, graphEngine, orientGraph, context);
-        break;
+        case "table-per-hierarchy":
+          super.tablePerHierarchyImport(bag, mapper, dbQueryEngine, graphEngine, orientGraph, context);
+          break;
 
-        case "table-per-type": super.tablePerTypeImport(bag, mapper, dbQueryEngine, graphEngine, orientGraph, context);
-        break;
+        case "table-per-type":
+          super.tablePerTypeImport(bag, mapper, dbQueryEngine, graphEngine, orientGraph, context);
+          break;
 
-        case "table-per-concrete-type": super.tablePerConcreteTypeImport(bag, mapper, dbQueryEngine, graphEngine, orientGraph, context);
-        break;
+        case "table-per-concrete-type":
+          super.tablePerConcreteTypeImport(bag, mapper, dbQueryEngine, graphEngine, orientGraph, context);
+          break;
 
         }
       }
@@ -151,17 +155,16 @@ public class ODBMSNaiveAggregationStrategy extends ODBMSImportStrategy {
       ResultSet records = null;
 
       // Importing from Entities NOT belonging to hierarchical bags NOR corresponding to join tables
-      for(OEntity entity: mapper.getDataBaseSchema().getEntities()) {
+      for (OEntity entity : mapper.getDataBaseSchema().getEntities()) {
 
-        if(!entity.isAggregableJoinTable() && entity.getHierarchicalBag() == null) {
+        if (!entity.isAggregableJoinTable() && entity.getHierarchicalBag() == null) {
 
           // for each entity in dbSchema all records are retrieved
 
-          if(handler.geospatialImplemented && super.hasGeospatialAttributes(entity, handler)) {
+          if (handler.geospatialImplemented && super.hasGeospatialAttributes(entity, handler)) {
             String query = handler.buildGeospatialQuery(entity, context);
             queryResult = dbQueryEngine.getRecordsByQuery(query, context);
-          }
-          else {
+          } else {
             queryResult = dbQueryEngine.getRecordsByEntity(entity.getName(), entity.getSchemaName(), context);
           }
 
@@ -171,21 +174,24 @@ public class ODBMSNaiveAggregationStrategy extends ODBMSImportStrategy {
           currentOutVertexType = mapper.getVertexTypeByEntity(entity);
 
           // each record is imported as vertex in the orient graph
-          while(records.next()) {
+          while (records.next()) {
 
             // upsert of the vertex
             currentRecord = records;
-            currentOutVertex = (OrientVertex) graphEngine.upsertVisitedVertex(orientGraph, currentRecord, currentOutVertexType, null, context);
+            currentOutVertex = (OrientVertex) graphEngine
+                .upsertVisitedVertex(orientGraph, currentRecord, currentOutVertexType, null, context);
 
             // for each attribute of the entity belonging to the primary key, correspondent relationship is
             // built as edge and for the referenced record a vertex is built (only id)
-            for(ORelationship currentRelationship: entity.getOutRelationships()) {
-              OEntity currentParentEntity = mapper.getDataBaseSchema().getEntityByName(currentRelationship.getParentEntity().getName());
+            for (ORelationship currentRelationship : entity.getOutRelationships()) {
+              OEntity currentParentEntity = mapper.getDataBaseSchema()
+                  .getEntityByName(currentRelationship.getParentEntity().getName());
               currentInVertexType = mapper.getVertexTypeByEntity(currentParentEntity);
 
               edgeType = mapper.getRelationship2edgeType().get(currentRelationship);
-              graphEngine.upsertReachedVertexWithEdge(orientGraph, currentRecord, currentRelationship, currentOutVertex, currentInVertexType, edgeType.getName(), context);
-            }   
+              graphEngine.upsertReachedVertexWithEdge(orientGraph, currentRecord, currentRelationship, currentOutVertex,
+                  currentInVertexType, edgeType.getName(), context);
+            }
 
             // Statistics updated
             statistics.analyzedRecords++;
@@ -198,27 +204,27 @@ public class ODBMSNaiveAggregationStrategy extends ODBMSImportStrategy {
       }
 
       // Importing from Entities NOT belonging to hierarchical bags and corresponding to join tables
-      for(OEntity entity: mapper.getDataBaseSchema().getEntities()) {
+      for (OEntity entity : mapper.getDataBaseSchema().getEntities()) {
 
-        if(entity.isAggregableJoinTable() && entity.getHierarchicalBag() == null) {
+        if (entity.isAggregableJoinTable() && entity.getHierarchicalBag() == null) {
 
           // for each entity in dbSchema all records are retrieved
 
-          if(handler.geospatialImplemented && super.hasGeospatialAttributes(entity, handler)) {
+          if (handler.geospatialImplemented && super.hasGeospatialAttributes(entity, handler)) {
             String query = handler.buildGeospatialQuery(entity, context);
             queryResult = dbQueryEngine.getRecordsByQuery(query, context);
-          }
-          else {
+          } else {
             queryResult = dbQueryEngine.getRecordsByEntity(entity.getName(), entity.getSchemaName(), context);
           }
 
           records = queryResult.getResult();
           ResultSet currentRecord = null;
 
-          OAggregatorEdge aggregatorEdge = mapper.getAggregatorEdgeByJoinVertexTypeName(mapper.getVertexTypeByEntity(entity).getName());
+          OAggregatorEdge aggregatorEdge = mapper
+              .getAggregatorEdgeByJoinVertexTypeName(mapper.getVertexTypeByEntity(entity).getName());
 
           // each record of the join table used to add an edge
-          while(records.next()) {
+          while (records.next()) {
             currentRecord = records;
             graphEngine.upsertAggregatorEdge(orientGraph, currentRecord, entity, aggregatorEdge, context);
 
@@ -236,9 +242,9 @@ public class ODBMSNaiveAggregationStrategy extends ODBMSImportStrategy {
       orientGraph.shutdown();
       context.getOutputManager().info("\n");
 
-    } catch(OTeleporterRuntimeException e) {
+    } catch (OTeleporterRuntimeException e) {
       throw e;
-    } catch (Exception e){
+    } catch (Exception e) {
       String mess = "";
       context.printExceptionMessage(e, mess, "error");
       context.printExceptionStackTrace(e, "debug");

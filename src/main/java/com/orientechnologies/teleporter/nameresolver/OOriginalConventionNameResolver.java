@@ -22,14 +22,12 @@ import com.orientechnologies.teleporter.model.dbschema.ORelationship;
 
 /**
  * Implementation of ONameResolver that maintains the original name convention.
- * 
- * @author Gabriele Ponzi
- * @email  <gabriele.ponzi--at--gmail.com>
  *
+ * @author Gabriele Ponzi
+ * @email <gabriele.ponzi--at--gmail.com>
  */
 
 public class OOriginalConventionNameResolver implements ONameResolver {
-
 
   @Override
   public String resolveVertexName(String candidateName) {
@@ -38,7 +36,6 @@ public class OOriginalConventionNameResolver implements ONameResolver {
     return candidateName;
   }
 
-
   @Override
   public String resolveVertexProperty(String candidateName) {
 
@@ -46,14 +43,13 @@ public class OOriginalConventionNameResolver implements ONameResolver {
     return candidateName;
   }
 
-
   @Override
   public String resolveEdgeName(ORelationship relationship) {
 
     String finalName;
 
     // Foreign Key composed of 1 attribute
-    if(relationship.getForeignKey().getInvolvedAttributes().size() == 1) {
+    if (relationship.getForeignKey().getInvolvedAttributes().size() == 1) {
       String columnName = relationship.getForeignKey().getInvolvedAttributes().get(0).getName();
       columnName = columnName.replace("_id", "");
       columnName = columnName.replace("_ID", "");
@@ -67,7 +63,7 @@ public class OOriginalConventionNameResolver implements ONameResolver {
     }
 
     // Foreign Key composed of multiple attribute
-    else {         
+    else {
       finalName = relationship.getForeignEntity() + "2" + relationship.getParentEntity();
     }
 

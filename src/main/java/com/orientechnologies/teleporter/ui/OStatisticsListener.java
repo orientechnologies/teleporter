@@ -22,15 +22,13 @@ import com.orientechnologies.teleporter.context.OTeleporterStatistics;
 
 /**
  * Listener interface of ODrakkarStatistics.
- * 
- * @author Gabriele Ponzi
- * @email  <gabriele.ponzi--at--gmail.com>
  *
+ * @author Gabriele Ponzi
+ * @email <gabriele.ponzi--at--gmail.com>
  */
 
 public interface OStatisticsListener {
 
   public String updateOnEvent(OTeleporterStatistics statistics);
-
 
 }

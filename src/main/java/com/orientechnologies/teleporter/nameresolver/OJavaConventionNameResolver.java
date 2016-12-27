@@ -21,12 +21,11 @@ package com.orientechnologies.teleporter.nameresolver;
 import com.orientechnologies.teleporter.model.dbschema.ORelationship;
 
 /**
- * Implementation of ONameResolver that performs name transformations on the elements 
+ * Implementation of ONameResolver that performs name transformations on the elements
  * of the data source according to the Java convention.
- * 
- * @author Gabriele Ponzi
- * @email  <gabriele.ponzi--at--gmail.com>
  *
+ * @author Gabriele Ponzi
+ * @email <gabriele.ponzi--at--gmail.com>
  */
 
 public class OJavaConventionNameResolver implements ONameResolver {
@@ -34,7 +33,7 @@ public class OJavaConventionNameResolver implements ONameResolver {
   @Override
   public String resolveVertexName(String candidateName) {
 
-    if(this.isCompliantToJavaClassConvention(candidateName))
+    if (this.isCompliantToJavaClassConvention(candidateName))
       return candidateName;
 
     else {
@@ -46,11 +45,10 @@ public class OJavaConventionNameResolver implements ONameResolver {
     }
   }
 
-
   @Override
   public String resolveVertexProperty(String candidateName) {
 
-    if(this.isCompliantToJavaVariableConvention(candidateName))
+    if (this.isCompliantToJavaVariableConvention(candidateName))
       return candidateName;
 
     else {
@@ -60,8 +58,7 @@ public class OJavaConventionNameResolver implements ONameResolver {
 
       return candidateName;
     }
-  }  
-
+  }
 
   @Override
   public String resolveEdgeName(ORelationship relationship) {
@@ -69,7 +66,7 @@ public class OJavaConventionNameResolver implements ONameResolver {
     String finalName;
 
     // Foreign Key composed of 1 attribute
-    if(relationship.getForeignKey().getInvolvedAttributes().size() == 1) {
+    if (relationship.getForeignKey().getInvolvedAttributes().size() == 1) {
       String columnName = relationship.getForeignKey().getInvolvedAttributes().get(0).getName();
       columnName = columnName.replace("_id", "");
       columnName = columnName.replace("_ID", "");
@@ -78,8 +75,7 @@ public class OJavaConventionNameResolver implements ONameResolver {
       columnName = columnName.replace("_eid", "");
       columnName = columnName.replace("_EID", "");
 
-
-      if(!this.isCompliantToJavaClassConvention(columnName)) {
+      if (!this.isCompliantToJavaClassConvention(columnName)) {
         // manipulating name (Java Convention)
         columnName = this.toJavaClassConvention(columnName);
       }
@@ -88,144 +84,139 @@ public class OJavaConventionNameResolver implements ONameResolver {
     }
 
     // Foreign Key composed of multiple attribute
-    else {         
-      finalName = this.toJavaClassConvention(relationship.getForeignEntity().getName()) + "2" + this.toJavaClassConvention(relationship.getParentEntity().getName());
+    else {
+      finalName = this.toJavaClassConvention(relationship.getForeignEntity().getName()) + "2" + this
+          .toJavaClassConvention(relationship.getParentEntity().getName());
     }
 
     return finalName;
 
   }
 
-
-
   public String toJavaClassConvention(String name) {
 
     // if all chars are uppercase, then name is transformed in a lowercase version
 
     boolean allUpperCase = true;
-    for(int i=0; i<name.length(); i++) {
-      if(Character.isLowerCase(name.charAt(i))) {
+    for (int i = 0; i < name.length(); i++) {
+      if (Character.isLowerCase(name.charAt(i))) {
         allUpperCase = false;
         break;
       }
     }
 
-    if(allUpperCase) {
+    if (allUpperCase) {
       name = name.toLowerCase();
     }
 
-    if(name.contains(" ")) {
+    if (name.contains(" ")) {
       int pos;
-      while(name.contains(" ")) {
+      while (name.contains(" ")) {
         pos = name.indexOf(" ");
-        name = name.substring(0,pos) + (name.charAt(pos+1)+"").toUpperCase() + name.substring(pos+2);
+        name = name.substring(0, pos) + (name.charAt(pos + 1) + "").toUpperCase() + name.substring(pos + 2);
       }
     }
 
-    if(name.contains("_")) {
+    if (name.contains("_")) {
       int pos;
-      while(name.contains("_")) {
+      while (name.contains("_")) {
         pos = name.indexOf("_");
-        name = name.substring(0,pos) + (name.charAt(pos+1)+"").toUpperCase() + name.substring(pos+2);
+        name = name.substring(0, pos) + (name.charAt(pos + 1) + "").toUpperCase() + name.substring(pos + 2);
       }
     }
 
-    if(name.contains("-")) {
+    if (name.contains("-")) {
       int pos;
-      while(name.contains("-")) {
+      while (name.contains("-")) {
         pos = name.indexOf("-");
-        name = name.substring(0,pos) + (name.charAt(pos+1)+"").toUpperCase() + name.substring(pos+2);
+        name = name.substring(0, pos) + (name.charAt(pos + 1) + "").toUpperCase() + name.substring(pos + 2);
       }
     }
-
 
     // First char must be uppercase
-    if(Character.isLowerCase(name.charAt(0)))
+    if (Character.isLowerCase(name.charAt(0)))
       name = name.substring(0, 1).toUpperCase() + name.substring(1);
 
     return name;
 
-
   }
-
 
   public String toJavaVariableConvention(String name) {
 
     // if all chars are uppercase, then name is transformed in a lowercase version
 
     boolean allUpperCase = true;
-    for(int i=0; i<name.length(); i++) {
-      if(Character.isLowerCase(name.charAt(i))) {
+    for (int i = 0; i < name.length(); i++) {
+      if (Character.isLowerCase(name.charAt(i))) {
         allUpperCase = false;
         break;
       }
     }
 
-    if(allUpperCase) {
+    if (allUpperCase) {
       name = name.toLowerCase();
     }
 
-    if(name.contains(" ")) {
+    if (name.contains(" ")) {
       int pos;
-      while(name.contains(" ")) {
+      while (name.contains(" ")) {
         pos = name.indexOf(" ");
-        name = name.substring(0,pos) + (name.charAt(pos+1)+"").toUpperCase() + name.substring(pos+2);
+        name = name.substring(0, pos) + (name.charAt(pos + 1) + "").toUpperCase() + name.substring(pos + 2);
       }
     }
 
-    if(name.contains("_")) {
+    if (name.contains("_")) {
       int pos;
-      while(name.contains("_")) {
+      while (name.contains("_")) {
         pos = name.indexOf("_");
-        name = name.substring(0,pos) + (name.charAt(pos+1)+"").toUpperCase() + name.substring(pos+2);
+        name = name.substring(0, pos) + (name.charAt(pos + 1) + "").toUpperCase() + name.substring(pos + 2);
       }
     }
 
-    if(name.contains("-")) {
+    if (name.contains("-")) {
       int pos;
-      while(name.contains("-")) {
+      while (name.contains("-")) {
         pos = name.indexOf("-");
-        name = name.substring(0,pos) + (name.charAt(pos+1)+"").toUpperCase() + name.substring(pos+2);
+        name = name.substring(0, pos) + (name.charAt(pos + 1) + "").toUpperCase() + name.substring(pos + 2);
       }
     }
 
     // First char must be lowercase
-    if(Character.isUpperCase(name.charAt(0)))
+    if (Character.isUpperCase(name.charAt(0)))
       name = name.substring(0, 1).toLowerCase() + name.substring(1);
 
     return name;
   }
 
-
   public boolean isCompliantToJavaClassConvention(String candidateName) {
 
-    if( !(candidateName.contains(" ") || candidateName.contains("_") || candidateName.contains("-")) && Character.isUpperCase(candidateName.charAt(0))) {
+    if (!(candidateName.contains(" ") || candidateName.contains("_") || candidateName.contains("-")) && Character
+        .isUpperCase(candidateName.charAt(0))) {
 
       // if all chars are uppercase, then name is transformed in a lowercase version
 
       boolean allUpperCase = true;
-      for(int i=0; i<candidateName.length(); i++) {
-        if(Character.isLowerCase(candidateName.charAt(i))) {
+      for (int i = 0; i < candidateName.length(); i++) {
+        if (Character.isLowerCase(candidateName.charAt(i))) {
           allUpperCase = false;
           break;
         }
       }
 
-      if(allUpperCase) 
+      if (allUpperCase)
         return false;
       else
         return true;
-    }
-    else 
+    } else
       return false;
   }
 
-
   public boolean isCompliantToJavaVariableConvention(String candidateName) {
 
-    if( !(candidateName.contains(" ") || candidateName.contains("_") || candidateName.contains("-")) && Character.isLowerCase(candidateName.charAt(0)))
+    if (!(candidateName.contains(" ") || candidateName.contains("_") || candidateName.contains("-")) && Character
+        .isLowerCase(candidateName.charAt(0)))
       return true;
-    else 
+    else
       return false;
 
   }

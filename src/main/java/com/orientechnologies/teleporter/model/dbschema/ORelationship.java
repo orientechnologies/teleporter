@@ -21,19 +21,18 @@ package com.orientechnologies.teleporter.model.dbschema;
 /**
  * It represents the relationship between two entities (foreign and parent entity)
  * based on the importing of a single primary key (composite or not) through a foreign key.
- * 
+ *
  * @author Gabriele Ponzi
- * @email  <gabriele.ponzi--at--gmail.com>
- * 
+ * @email <gabriele.ponzi--at--gmail.com>
  */
 
 public class ORelationship {
 
-  private OEntity foreignEntity;				// Entity importing the key (starting entity)
-  private OEntity parentEntity;				// Entity exporting the key (arrival entity)
+  private OEntity     foreignEntity;        // Entity importing the key (starting entity)
+  private OEntity     parentEntity;        // Entity exporting the key (arrival entity)
   private OForeignKey foreignKey;
   private OPrimaryKey primaryKey;
-  private String direction;               // represents the direction of the relationship
+  private String      direction;               // represents the direction of the relationship
 
   public ORelationship(OEntity foreignEntity, OEntity parentEntity) {
     this.foreignEntity = foreignEntity;
@@ -101,8 +100,8 @@ public class ORelationship {
   @Override
   public boolean equals(Object obj) {
     ORelationship that = (ORelationship) obj;
-    if(this.foreignEntity.equals(that.getForeignEntity()) && this.parentEntity.equals(that.getParentEntity())) {
-      if(this.foreignKey.equals(that.getForeignKey()) && this.primaryKey.equals(that.getPrimaryKey())) {
+    if (this.foreignEntity.equals(that.getForeignEntity()) && this.parentEntity.equals(that.getParentEntity())) {
+      if (this.foreignKey.equals(that.getForeignKey()) && this.primaryKey.equals(that.getPrimaryKey())) {
         return true;
       }
     }
@@ -111,10 +110,8 @@ public class ORelationship {
 
   @Override
   public String toString() {
-    return "ORelationship [foreignEntity=" + foreignEntity.getName() + ", parentEntity=" + parentEntity.getName()
-        + ", Foreign key=" + this.foreignKey.toString() + ", Primary key=" + this.primaryKey.toString() + "]";
+    return "ORelationship [foreignEntity=" + foreignEntity.getName() + ", parentEntity=" + parentEntity.getName() + ", Foreign key="
+        + this.foreignKey.toString() + ", Primary key=" + this.primaryKey.toString() + "]";
   }
-
-
 
 }

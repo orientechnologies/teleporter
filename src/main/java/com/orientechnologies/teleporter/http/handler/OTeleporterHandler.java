@@ -32,13 +32,13 @@ import java.util.concurrent.Executors;
  * Created by Enrico Risa on 27/11/15.
  */
 public class OTeleporterHandler {
-  private ExecutorService pool       = Executors.newFixedThreadPool(1);
+  private ExecutorService pool = Executors.newFixedThreadPool(1);
 
-  OTeleporterJob          currentJob = null;
+  OTeleporterJob currentJob = null;
 
   /**
    * Execute import with configuration;
-   * 
+   *
    * @param cfg
    */
   public void executeImport(ODocument cfg) {
@@ -59,8 +59,9 @@ public class OTeleporterHandler {
 
   /**
    * Check If the connection with given parameters is alive
-   * 
+   *
    * @param cfg
+   *
    * @throws Exception
    */
   public void checkConnection(ODocument cfg) throws Exception {
@@ -78,7 +79,7 @@ public class OTeleporterHandler {
 
   /**
    * Status of the Running Jobs
-   * 
+   *
    * @return ODocument
    */
   public ODocument status() {

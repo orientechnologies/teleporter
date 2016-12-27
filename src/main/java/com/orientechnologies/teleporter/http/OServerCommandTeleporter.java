@@ -34,7 +34,7 @@ import java.io.IOException;
 public class OServerCommandTeleporter extends OServerCommandAuthenticatedServerAbstract {
 
   OTeleporterHandler handler = new OTeleporterHandler();
-  private static final String[] NAMES   = { "GET|teleporter/*", "POST|teleporter/*" };
+  private static final String[] NAMES = { "GET|teleporter/*", "POST|teleporter/*" };
 
   public OServerCommandTeleporter() {
     super("server.profiler");

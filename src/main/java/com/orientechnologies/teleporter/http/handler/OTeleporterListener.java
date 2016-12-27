@@ -23,6 +23,5 @@ package com.orientechnologies.teleporter.http.handler;
  */
 public interface OTeleporterListener {
 
-
   public void onEnd(OTeleporterJob oTeleporterJob);
 }
