@@ -144,6 +144,33 @@ public class JavaNameResolverTest {
   @Test
 
   /*
+   * Resolve Vertex Name (Java Class Convention)
+   * Test-Fix: Resolver supports names ending with '_'.
+   */
+
+  public void NamesEndingWithUnderscore() {
+
+    String candidateName = "";
+    String newCandidateName = "";
+
+    // No white space nor underscore
+
+    candidateName = "testClass_";    // NOT acceptable (one or more uppercase char, except the first one)
+    assertEquals(false, nameResolver.isCompliantToJavaClassConvention(candidateName));
+    newCandidateName = nameResolver.toJavaClassConvention(candidateName);
+    assertEquals(true, nameResolver.isCompliantToJavaClassConvention(newCandidateName));
+    assertEquals("TestClass", newCandidateName);
+
+    candidateName = "test_class_";    // NOT acceptable (one or more uppercase char, except the first one)
+    assertEquals(false, nameResolver.isCompliantToJavaClassConvention(candidateName));
+    newCandidateName = nameResolver.toJavaClassConvention(candidateName);
+    assertEquals(true, nameResolver.isCompliantToJavaClassConvention(newCandidateName));
+    assertEquals("TestClass", newCandidateName);
+  }
+
+  @Test
+
+  /*
    * Resolve VertexProperty (Java Variable Convention)
    */
 
