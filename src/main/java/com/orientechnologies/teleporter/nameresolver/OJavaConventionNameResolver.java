@@ -121,7 +121,14 @@ public class OJavaConventionNameResolver implements ONameResolver {
       int pos;
       while (name.contains("_")) {
         pos = name.indexOf("_");
-        name = name.substring(0, pos) + (name.charAt(pos + 1) + "").toUpperCase() + name.substring(pos + 2);
+        if(pos < name.length()-1) {
+          // the '_' char is not in last position
+          name = name.substring(0, pos) + (name.charAt(pos + 1) + "").toUpperCase() + name.substring(pos + 2);
+        }
+        else {
+          // the '_' char is in last position
+          name = name.substring(0,name.length()-1);
+        }
       }
     }
 
