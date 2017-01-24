@@ -18,6 +18,10 @@
 
 package com.orientechnologies.teleporter.test.rdbms.orientWriter;
 
+import com.orientechnologies.orient.core.db.OrientDB;
+import com.orientechnologies.orient.core.db.OrientDBConfig;
+import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
+import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.teleporter.context.OOutputStreamManager;
 import com.orientechnologies.teleporter.context.OTeleporterContext;
 import com.orientechnologies.teleporter.importengine.rdbms.dbengine.ODBQueryEngine;
@@ -28,9 +32,6 @@ import com.orientechnologies.teleporter.persistence.handler.OHSQLDBDataTypeHandl
 import com.orientechnologies.teleporter.writer.OGraphModelWriter;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.metadata.schema.OType;
-import com.tinkerpop.blueprints.impls.orient.OrientEdgeType;
-import com.tinkerpop.blueprints.impls.orient.OrientGraphNoTx;
-import com.tinkerpop.blueprints.impls.orient.OrientVertexType;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -58,7 +59,8 @@ public class OrientDBSchemaWritingTest {
   private String jurl     = "jdbc:hsqldb:mem:mydb";
   private String username = "SA";
   private String password = "";
-  private String              outOrientGraphUri;
+  private String dbName = "testOrientDB";
+  private String outOrientGraphUri = "plocal:target/" + this.dbName;
   private OSourceDatabaseInfo sourceDBInfo;
 
   @Before
@@ -69,7 +71,6 @@ public class OrientDBSchemaWritingTest {
     this.context.setOutputManager(new OOutputStreamManager(0));
     this.context.setDataTypeHandler(new OHSQLDBDataTypeHandler());
     this.modelWriter = new OGraphModelWriter();
-    this.outOrientGraphUri = "plocal:target/testOrientDB";
     this.sourceDBInfo = new OSourceDatabaseInfo("source", this.driver, this.jurl, this.username, this.password);
   }
 
@@ -83,7 +84,7 @@ public class OrientDBSchemaWritingTest {
 
     Connection connection = null;
     Statement st = null;
-    OrientGraphNoTx orientGraph = null;
+    ODatabaseDocument orientGraph = null;
 
     try {
 
@@ -119,10 +120,12 @@ public class OrientDBSchemaWritingTest {
       /*
        *  Testing built OrientDB schema
        */
-      orientGraph = new OrientGraphNoTx(this.outOrientGraphUri);
-      OrientVertexType authorVertexType = orientGraph.getVertexType("BookAuthor");
-      OrientVertexType bookVertexType = orientGraph.getVertexType("Book");
-      OrientEdgeType authorEdgeType = orientGraph.getEdgeType("HasAuthor");
+      OrientDB orient = OrientDB.fromUrl(this.outOrientGraphUri, OrientDBConfig.defaultConfig());
+      orientGraph = orient.open(this.dbName,"admin","admin");
+      
+      OClass authorVertexType = orientGraph.getClass("BookAuthor");
+      OClass bookVertexType = orientGraph.getClass("Book");
+      OClass authorEdgeType = orientGraph.getClass("HasAuthor");
 
       // vertices check
       assertNotNull(authorVertexType);
@@ -159,11 +162,11 @@ public class OrientDBSchemaWritingTest {
       assertEquals("HasAuthor", authorEdgeType.getName());
 
       // Indices check
-      assertEquals(true, orientGraph.getRawGraph().getMetadata().getIndexManager().existsIndex("BookAuthor.pkey"));
-      assertEquals(true, orientGraph.getRawGraph().getMetadata().getIndexManager().areIndexed("BookAuthor", "id"));
+      assertEquals(true, orientGraph.getMetadata().getIndexManager().existsIndex("BookAuthor.pkey"));
+      assertEquals(true, orientGraph.getMetadata().getIndexManager().areIndexed("BookAuthor", "id"));
 
-      assertEquals(true, orientGraph.getRawGraph().getMetadata().getIndexManager().existsIndex("Book.pkey"));
-      assertEquals(true, orientGraph.getRawGraph().getMetadata().getIndexManager().areIndexed("Book", "id"));
+      assertEquals(true, orientGraph.getMetadata().getIndexManager().existsIndex("Book.pkey"));
+      assertEquals(true, orientGraph.getMetadata().getIndexManager().areIndexed("Book", "id"));
 
     } catch (Exception e) {
       e.printStackTrace();
@@ -181,7 +184,7 @@ public class OrientDBSchemaWritingTest {
       }
       if (orientGraph != null) {
         orientGraph.drop();
-        orientGraph.shutdown();
+        orientGraph.close();
       }
     }
   }
@@ -196,7 +199,7 @@ public class OrientDBSchemaWritingTest {
 
     Connection connection = null;
     Statement st = null;
-    OrientGraphNoTx orientGraph = null;
+    ODatabaseDocument orientGraph = null;
 
     try {
 
@@ -236,12 +239,14 @@ public class OrientDBSchemaWritingTest {
       /*
        *  Testing built OrientDB schema
        */
-      orientGraph = new OrientGraphNoTx(this.outOrientGraphUri);
-      OrientVertexType authorVertexType = orientGraph.getVertexType("Author");
-      OrientVertexType bookVertexType = orientGraph.getVertexType("Book");
-      OrientVertexType itemVertexType = orientGraph.getVertexType("Item");
-      OrientEdgeType authorEdgeType = orientGraph.getEdgeType("HasAuthor");
-      OrientEdgeType bookEdgeType = orientGraph.getEdgeType("HasBook");
+      OrientDB orient = OrientDB.fromUrl(this.outOrientGraphUri, OrientDBConfig.defaultConfig());
+      orientGraph = orient.open(this.dbName,"admin","admin");
+      
+      OClass authorVertexType = orientGraph.getClass("Author");
+      OClass bookVertexType = orientGraph.getClass("Book");
+      OClass itemVertexType = orientGraph.getClass("Item");
+      OClass authorEdgeType = orientGraph.getClass("HasAuthor");
+      OClass bookEdgeType = orientGraph.getClass("HasBook");
 
       // vertices check
       assertNotNull(authorVertexType);
@@ -292,14 +297,14 @@ public class OrientDBSchemaWritingTest {
       assertEquals("HasBook", bookEdgeType.getName());
 
       // Indices check
-      assertEquals(true, orientGraph.getRawGraph().getMetadata().getIndexManager().existsIndex("Author.pkey"));
-      assertEquals(true, orientGraph.getRawGraph().getMetadata().getIndexManager().areIndexed("Author", "id"));
+      assertEquals(true, orientGraph.getMetadata().getIndexManager().existsIndex("Author.pkey"));
+      assertEquals(true, orientGraph.getMetadata().getIndexManager().areIndexed("Author", "id"));
 
-      assertEquals(true, orientGraph.getRawGraph().getMetadata().getIndexManager().existsIndex("Book.pkey"));
-      assertEquals(true, orientGraph.getRawGraph().getMetadata().getIndexManager().areIndexed("Book", "id"));
+      assertEquals(true, orientGraph.getMetadata().getIndexManager().existsIndex("Book.pkey"));
+      assertEquals(true, orientGraph.getMetadata().getIndexManager().areIndexed("Book", "id"));
 
-      assertEquals(true, orientGraph.getRawGraph().getMetadata().getIndexManager().existsIndex("Item.pkey"));
-      assertEquals(true, orientGraph.getRawGraph().getMetadata().getIndexManager().areIndexed("Item", "id"));
+      assertEquals(true, orientGraph.getMetadata().getIndexManager().existsIndex("Item.pkey"));
+      assertEquals(true, orientGraph.getMetadata().getIndexManager().areIndexed("Item", "id"));
 
     } catch (Exception e) {
       e.printStackTrace();
@@ -317,7 +322,7 @@ public class OrientDBSchemaWritingTest {
       }
       if (orientGraph != null) {
         orientGraph.drop();
-        orientGraph.shutdown();
+        orientGraph.close();
       }
     }
   }
@@ -332,7 +337,7 @@ public class OrientDBSchemaWritingTest {
 
     Connection connection = null;
     Statement st = null;
-    OrientGraphNoTx orientGraph = null;
+    ODatabaseDocument orientGraph = null;
 
     try {
 
@@ -372,11 +377,13 @@ public class OrientDBSchemaWritingTest {
       /*
        *  Testing built OrientDB schema
        */
-      orientGraph = new OrientGraphNoTx(this.outOrientGraphUri);
-      OrientVertexType authorVertexType = orientGraph.getVertexType("Author");
-      OrientVertexType bookVertexType = orientGraph.getVertexType("Book");
-      OrientVertexType articleVertexType = orientGraph.getVertexType("Article");
-      OrientEdgeType authorEdgeType = orientGraph.getEdgeType("HasAuthor");
+      OrientDB orient = OrientDB.fromUrl(this.outOrientGraphUri, OrientDBConfig.defaultConfig());
+      orientGraph = orient.open(this.dbName,"admin","admin");
+      
+      OClass authorVertexType = orientGraph.getClass("Author");
+      OClass bookVertexType = orientGraph.getClass("Book");
+      OClass articleVertexType = orientGraph.getClass("Article");
+      OClass authorEdgeType = orientGraph.getClass("HasAuthor");
 
       // vertices check
       assertNotNull(authorVertexType);
@@ -429,14 +436,14 @@ public class OrientDBSchemaWritingTest {
       assertEquals("HasAuthor", authorEdgeType.getName());
 
       // Indices check
-      assertEquals(true, orientGraph.getRawGraph().getMetadata().getIndexManager().existsIndex("Author.pkey"));
-      assertEquals(true, orientGraph.getRawGraph().getMetadata().getIndexManager().areIndexed("Author", "id"));
+      assertEquals(true, orientGraph.getMetadata().getIndexManager().existsIndex("Author.pkey"));
+      assertEquals(true, orientGraph.getMetadata().getIndexManager().areIndexed("Author", "id"));
 
-      assertEquals(true, orientGraph.getRawGraph().getMetadata().getIndexManager().existsIndex("Book.pkey"));
-      assertEquals(true, orientGraph.getRawGraph().getMetadata().getIndexManager().areIndexed("Book", "id"));
+      assertEquals(true, orientGraph.getMetadata().getIndexManager().existsIndex("Book.pkey"));
+      assertEquals(true, orientGraph.getMetadata().getIndexManager().areIndexed("Book", "id"));
 
-      assertEquals(true, orientGraph.getRawGraph().getMetadata().getIndexManager().existsIndex("Article.pkey"));
-      assertEquals(true, orientGraph.getRawGraph().getMetadata().getIndexManager().areIndexed("Article", "id"));
+      assertEquals(true, orientGraph.getMetadata().getIndexManager().existsIndex("Article.pkey"));
+      assertEquals(true, orientGraph.getMetadata().getIndexManager().areIndexed("Article", "id"));
 
     } catch (Exception e) {
       e.printStackTrace();
@@ -454,7 +461,7 @@ public class OrientDBSchemaWritingTest {
       }
       if (orientGraph != null) {
         orientGraph.drop();
-        orientGraph.shutdown();
+        orientGraph.close();
       }
     }
   }
@@ -469,7 +476,7 @@ public class OrientDBSchemaWritingTest {
 
     Connection connection = null;
     Statement st = null;
-    OrientGraphNoTx orientGraph = null;
+    ODatabaseDocument orientGraph = null;
 
     try {
 
@@ -506,10 +513,12 @@ public class OrientDBSchemaWritingTest {
       /*
        *  Testing built OrientDB schema
        */
-      orientGraph = new OrientGraphNoTx(this.outOrientGraphUri);
-      OrientVertexType authorVertexType = orientGraph.getVertexType("Author");
-      OrientVertexType bookVertexType = orientGraph.getVertexType("Book");
-      OrientEdgeType authorEdgeType = orientGraph.getEdgeType("Book2Author");
+      OrientDB orient = OrientDB.fromUrl(this.outOrientGraphUri, OrientDBConfig.defaultConfig());
+      orientGraph = orient.open(this.dbName,"admin","admin");
+      
+      OClass authorVertexType = orientGraph.getClass("Author");
+      OClass bookVertexType = orientGraph.getClass("Book");
+      OClass authorEdgeType = orientGraph.getClass("Book2Author");
 
       // vertices check
       assertNotNull(authorVertexType);
@@ -550,11 +559,11 @@ public class OrientDBSchemaWritingTest {
       assertEquals("Book2Author", authorEdgeType.getName());
 
       // Indices check
-      assertEquals(true, orientGraph.getRawGraph().getMetadata().getIndexManager().existsIndex("Author.pkey"));
-      assertEquals(true, orientGraph.getRawGraph().getMetadata().getIndexManager().areIndexed("Author", "name", "surname"));
+      assertEquals(true, orientGraph.getMetadata().getIndexManager().existsIndex("Author.pkey"));
+      assertEquals(true, orientGraph.getMetadata().getIndexManager().areIndexed("Author", "name", "surname"));
 
-      assertEquals(true, orientGraph.getRawGraph().getMetadata().getIndexManager().existsIndex("Book.pkey"));
-      assertEquals(true, orientGraph.getRawGraph().getMetadata().getIndexManager().areIndexed("Book", "id"));
+      assertEquals(true, orientGraph.getMetadata().getIndexManager().existsIndex("Book.pkey"));
+      assertEquals(true, orientGraph.getMetadata().getIndexManager().areIndexed("Book", "id"));
 
     } catch (Exception e) {
       e.printStackTrace();
@@ -572,7 +581,7 @@ public class OrientDBSchemaWritingTest {
       }
       if (orientGraph != null) {
         orientGraph.drop();
-        orientGraph.shutdown();
+        orientGraph.close();
       }
     }
   }
@@ -587,7 +596,7 @@ public class OrientDBSchemaWritingTest {
 
     Connection connection = null;
     Statement st = null;
-    OrientGraphNoTx orientGraph = null;
+    ODatabaseDocument orientGraph = null;
 
     try {
 
@@ -628,12 +637,14 @@ public class OrientDBSchemaWritingTest {
       /*
        *  Testing built OrientDB schema
        */
-      orientGraph = new OrientGraphNoTx(this.outOrientGraphUri);
-      OrientVertexType actorVertexType = orientGraph.getVertexType("Actor");
-      OrientVertexType filmVertexType = orientGraph.getVertexType("Film");
-      OrientVertexType film2actorVertexType = orientGraph.getVertexType("FilmActor");
-      OrientEdgeType actorEdgeType = orientGraph.getEdgeType("HasActor");
-      OrientEdgeType filmEdgeType = orientGraph.getEdgeType("HasFilm");
+      OrientDB orient = OrientDB.fromUrl(this.outOrientGraphUri, OrientDBConfig.defaultConfig());
+      orientGraph = orient.open(this.dbName,"admin","admin");
+      
+      OClass actorVertexType = orientGraph.getClass("Actor");
+      OClass filmVertexType = orientGraph.getClass("Film");
+      OClass film2actorVertexType = orientGraph.getClass("FilmActor");
+      OClass actorEdgeType = orientGraph.getClass("HasActor");
+      OClass filmEdgeType = orientGraph.getClass("HasFilm");
 
       // vertices check
       assertNotNull(actorVertexType);
@@ -681,14 +692,14 @@ public class OrientDBSchemaWritingTest {
       assertEquals("HasActor", actorEdgeType.getName());
 
       // Indices check
-      assertEquals(true, orientGraph.getRawGraph().getMetadata().getIndexManager().existsIndex("Actor.pkey"));
-      assertEquals(true, orientGraph.getRawGraph().getMetadata().getIndexManager().areIndexed("Actor", "id"));
+      assertEquals(true, orientGraph.getMetadata().getIndexManager().existsIndex("Actor.pkey"));
+      assertEquals(true, orientGraph.getMetadata().getIndexManager().areIndexed("Actor", "id"));
 
-      assertEquals(true, orientGraph.getRawGraph().getMetadata().getIndexManager().existsIndex("Film.pkey"));
-      assertEquals(true, orientGraph.getRawGraph().getMetadata().getIndexManager().areIndexed("Film", "id"));
+      assertEquals(true, orientGraph.getMetadata().getIndexManager().existsIndex("Film.pkey"));
+      assertEquals(true, orientGraph.getMetadata().getIndexManager().areIndexed("Film", "id"));
 
-      assertEquals(true, orientGraph.getRawGraph().getMetadata().getIndexManager().existsIndex("FilmActor.pkey"));
-      assertEquals(true, orientGraph.getRawGraph().getMetadata().getIndexManager().areIndexed("FilmActor", "filmId", "actorId"));
+      assertEquals(true, orientGraph.getMetadata().getIndexManager().existsIndex("FilmActor.pkey"));
+      assertEquals(true, orientGraph.getMetadata().getIndexManager().areIndexed("FilmActor", "filmId", "actorId"));
 
     } catch (Exception e) {
       e.printStackTrace();
@@ -706,7 +717,7 @@ public class OrientDBSchemaWritingTest {
       }
       if (orientGraph != null) {
         orientGraph.drop();
-        orientGraph.shutdown();
+        orientGraph.close();
       }
     }
   }
@@ -722,7 +733,7 @@ public class OrientDBSchemaWritingTest {
 
     Connection connection = null;
     Statement st = null;
-    OrientGraphNoTx orientGraph = null;
+    ODatabaseDocument orientGraph = null;
 
     try {
 
@@ -760,11 +771,13 @@ public class OrientDBSchemaWritingTest {
       /*
        *  Testing built OrientDB schema
        */
-      orientGraph = new OrientGraphNoTx(this.outOrientGraphUri);
-      OrientVertexType employeeVertexType = orientGraph.getVertexType("Employee");
-      OrientVertexType projectVertexType = orientGraph.getVertexType("Project");
-      OrientEdgeType projectManagerEdgeType = orientGraph.getEdgeType("HasProjectManager");
-      OrientEdgeType mgrEdgeType = orientGraph.getEdgeType("HasMgr");
+      OrientDB orient = OrientDB.fromUrl(this.outOrientGraphUri, OrientDBConfig.defaultConfig());
+      orientGraph = orient.open(this.dbName,"admin","admin");
+      
+      OClass employeeVertexType = orientGraph.getClass("Employee");
+      OClass projectVertexType = orientGraph.getClass("Project");
+      OClass projectManagerEdgeType = orientGraph.getClass("HasProjectManager");
+      OClass mgrEdgeType = orientGraph.getClass("HasMgr");
 
       // vertices check
       assertNotNull(employeeVertexType);
@@ -803,11 +816,11 @@ public class OrientDBSchemaWritingTest {
       assertEquals("HasProjectManager", projectManagerEdgeType.getName());
 
       // Indices check
-      assertEquals(true, orientGraph.getRawGraph().getMetadata().getIndexManager().existsIndex("Employee.pkey"));
-      assertEquals(true, orientGraph.getRawGraph().getMetadata().getIndexManager().areIndexed("Employee", "empId"));
+      assertEquals(true, orientGraph.getMetadata().getIndexManager().existsIndex("Employee.pkey"));
+      assertEquals(true, orientGraph.getMetadata().getIndexManager().areIndexed("Employee", "empId"));
 
-      assertEquals(true, orientGraph.getRawGraph().getMetadata().getIndexManager().existsIndex("Project.pkey"));
-      assertEquals(true, orientGraph.getRawGraph().getMetadata().getIndexManager().areIndexed("Project", "id"));
+      assertEquals(true, orientGraph.getMetadata().getIndexManager().existsIndex("Project.pkey"));
+      assertEquals(true, orientGraph.getMetadata().getIndexManager().areIndexed("Project", "id"));
 
     } catch (Exception e) {
       e.printStackTrace();
@@ -825,7 +838,7 @@ public class OrientDBSchemaWritingTest {
       }
       if (orientGraph != null) {
         orientGraph.drop();
-        orientGraph.shutdown();
+        orientGraph.close();
       }
     }
   }
@@ -840,7 +853,7 @@ public class OrientDBSchemaWritingTest {
 
     Connection connection = null;
     Statement st = null;
-    OrientGraphNoTx orientGraph = null;
+    ODatabaseDocument orientGraph = null;
 
     try {
 
@@ -866,11 +879,13 @@ public class OrientDBSchemaWritingTest {
       modelWriter.writeModelOnOrient(mapper, new OHSQLDBDataTypeHandler(), this.outOrientGraphUri);
 
       // dropping property from OrientDB Schema (from Author)
-      orientGraph = new OrientGraphNoTx(this.outOrientGraphUri);
-      OrientVertexType authorVertexType = orientGraph.getVertexType("Author");
+      OrientDB orient = OrientDB.fromUrl(this.outOrientGraphUri, OrientDBConfig.defaultConfig());
+      orientGraph = orient.open(this.dbName,"admin","admin");
+      
+      OClass authorVertexType = orientGraph.getClass("Author");
 
       authorVertexType.createProperty("surname", OType.STRING);
-      authorVertexType = orientGraph.getVertexType("Author");
+      authorVertexType = orientGraph.getClass("Author");
       assertEquals(4, authorVertexType.properties().size());
       Iterator<OProperty> it = authorVertexType.properties().iterator();
 
@@ -885,7 +900,7 @@ public class OrientDBSchemaWritingTest {
       assertEquals(true, props.contains("surname"));
 
       modelWriter.writeModelOnOrient(mapper, new OHSQLDBDataTypeHandler(), this.outOrientGraphUri);
-      authorVertexType = orientGraph.getVertexType("Author");
+      authorVertexType = orientGraph.getClass("Author");
       assertEquals(3, authorVertexType.properties().size());
       it = authorVertexType.properties().iterator();
 
@@ -899,7 +914,7 @@ public class OrientDBSchemaWritingTest {
       assertEquals(true, props.contains("name"));
 
       // dropping property from Graph Model (from Book)
-      OrientVertexType articleVertexType = orientGraph.getVertexType("Article");
+      OClass articleVertexType = orientGraph.getClass("Article");
 
       mapper.getGraphModel().getVertexTypeByName("Article").removePropertyByName("title");
       assertEquals(3, mapper.getGraphModel().getVertexTypeByName("Article").getProperties().size());
@@ -922,7 +937,7 @@ public class OrientDBSchemaWritingTest {
 
       modelWriter.writeModelOnOrient(mapper, new OHSQLDBDataTypeHandler(), this.outOrientGraphUri);
       assertEquals(3, articleVertexType.properties().size());
-      articleVertexType = orientGraph.getVertexType("Article");
+      articleVertexType = orientGraph.getClass("Article");
       it = articleVertexType.properties().iterator();
 
       props.clear();
@@ -935,7 +950,7 @@ public class OrientDBSchemaWritingTest {
       assertEquals(true, props.contains("date"));
 
       // adding a property to OrientDB Schema (to HasAuthor)
-      OrientEdgeType authorEdgeType = orientGraph.getEdgeType("HasAuthor");
+      OClass authorEdgeType = orientGraph.getClass("HasAuthor");
       authorEdgeType.createProperty("date", OType.DATE);
       assertEquals(1, authorEdgeType.properties().size());
       it = authorEdgeType.properties().iterator();
@@ -943,7 +958,7 @@ public class OrientDBSchemaWritingTest {
       assertFalse(it.hasNext());
 
       modelWriter.writeModelOnOrient(mapper, new OHSQLDBDataTypeHandler(), this.outOrientGraphUri);
-      authorEdgeType = orientGraph.getEdgeType("HasAuthor");
+      authorEdgeType = orientGraph.getClass("HasAuthor");
       assertEquals(0, authorEdgeType.properties().size());
 
     } catch (Exception e) {
@@ -962,7 +977,7 @@ public class OrientDBSchemaWritingTest {
       }
       if (orientGraph != null) {
         orientGraph.drop();
-        orientGraph.shutdown();
+        orientGraph.close();
       }
     }
   }

@@ -19,11 +19,12 @@
 package com.orientechnologies.teleporter.writer;
 
 import com.orientechnologies.common.exception.OException;
+import com.orientechnologies.orient.core.db.OrientDB;
+import com.orientechnologies.orient.core.db.OrientDBConfig;
+import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.index.OIndex;
 import com.orientechnologies.orient.core.index.OIndexManagerProxy;
-import com.orientechnologies.orient.core.metadata.schema.OClass;
-import com.orientechnologies.orient.core.metadata.schema.OProperty;
-import com.orientechnologies.orient.core.metadata.schema.OType;
+import com.orientechnologies.orient.core.metadata.schema.*;
 import com.orientechnologies.orient.core.sql.OCommandSQL;
 import com.orientechnologies.teleporter.configuration.api.OConfiguration;
 import com.orientechnologies.teleporter.context.OTeleporterContext;
@@ -35,7 +36,6 @@ import com.orientechnologies.teleporter.model.dbschema.ODataBaseSchema;
 import com.orientechnologies.teleporter.model.dbschema.OLogicalRelationship;
 import com.orientechnologies.teleporter.model.graphmodel.*;
 import com.orientechnologies.teleporter.persistence.handler.ODriverDataTypeHandler;
-import com.tinkerpop.blueprints.impls.orient.*;
 
 import java.util.*;
 
@@ -50,6 +50,7 @@ import java.util.*;
 public class OGraphModelWriter {
 
   private Map<String, OType> orientdbTypeName2orientdbType;
+
   private OConfiguration     previousConfiguration;
 
   public OGraphModelWriter() {
@@ -79,14 +80,19 @@ public class OGraphModelWriter {
   }
 
   public boolean writeModelOnOrient(OER2GraphMapper mapper, ODriverDataTypeHandler handler, String outOrientGraphUri) {
-    boolean success = false;
 
+    boolean success = false;
     OGraphModel graphModel = mapper.getGraphModel();
-    OrientBaseGraph orientGraph = null;
-    OrientGraphFactory factory = new OrientGraphFactory(outOrientGraphUri, "admin", "admin");
+
+    String dbName = outOrientGraphUri.substring(outOrientGraphUri.lastIndexOf('/')+1);
+    ODatabaseDocument orientGraph;
+    OrientDB orient = OrientDB.fromUrl(outOrientGraphUri, OrientDBConfig.defaultConfig());
+
     try {
-      orientGraph = factory.getNoTx();
-      orientGraph.setUseLightweightEdges(true);
+      if(!orient.exists(dbName,"admin","admin")) {
+        orient.create(dbName, "admin", "admin", OrientDB.DatabaseType.PLOCAL);
+      }
+      orientGraph = orient.open(dbName,"admin","admin");
     } catch (Exception e) {
       String mess = "";
       OTeleporterContext.getInstance().printExceptionMessage(e, mess, "error");
@@ -98,6 +104,9 @@ public class OGraphModelWriter {
     statistics.startWork3Time = new Date();
     statistics.runningStepNumber = 3;
 
+    // orient graph schema
+    OSchema orientSchema = orientGraph.getMetadata().getSchema();
+
     int numberOfVertices = graphModel.getVerticesType().size();
     statistics.totalNumberOfVertexTypes = numberOfVertices;
     int numberOfEdges = graphModel.getEdgesType().size();
@@ -105,14 +114,14 @@ public class OGraphModelWriter {
     statistics.totalNumberOfIndices = numberOfVertices;
 
     // deleting orient classes not present in the current graph model
-    Collection<OClass> orientClasses = orientGraph.getRawGraph().getMetadata().getSchema().getClasses();
+    Collection<OClass> orientClasses = orientSchema.getClasses();
     for (OClass currOrientClass : orientClasses) {
       String orientClassName = currOrientClass.getName();
       if (!(orientClassName.startsWith("O") || orientClassName.startsWith("V") || orientClassName.startsWith("E") || orientClassName
           .startsWith("_"))) {
         if (graphModel.getVertexTypeByNameIgnoreCase(orientClassName) == null
             && graphModel.getEdgeTypeByNameIgnoreCase(orientClassName) == null) {
-          orientGraph.getRawGraph().getMetadata().getSchema().dropClass(orientClassName);
+          orientSchema.dropClass(orientClassName);
         }
       }
     }
@@ -138,16 +147,18 @@ public class OGraphModelWriter {
               .debug("\nWriting '%s' vertex-type  (%s/%s)...\n", currentVertexType.getName(), iteration, numberOfVertices);
 
           // check if vertex type is already present in the orient schema
-          OrientVertexType newVertexType = orientGraph.getVertexType(currentVertexType.getName());
+          OClass newVertexType = orientGraph.getClass(currentVertexType.getName());
 
           if (newVertexType == null) {
 
             // inheritance case
-            if (currentVertexType.getParentType() != null)
-              newVertexType = orientGraph
-                  .createVertexType(currentVertexType.getName(), currentVertexType.getParentType().getName());
+            OElementType parentType = currentVertexType.getParentType();
+            if (parentType != null) {
+              OClass superClass = orientGraph.createClassIfNotExist(parentType.getName(), "V");
+              newVertexType = orientGraph.createClass(currentVertexType.getName(), superClass.getName());
+            }
             else
-              newVertexType = orientGraph.createVertexType(currentVertexType.getName());
+              newVertexType = orientGraph.createVertexClass(currentVertexType.getName());
 
             OModelProperty currentProperty = null;
             it = currentVertexType.getProperties().iterator();
@@ -204,7 +215,7 @@ public class OGraphModelWriter {
 
         OTeleporterContext.getInstance().getOutputManager().debug("\nWriting edge-types on OrientDB Schema...\n");
 
-        OrientEdgeType newEdgeType;
+        OClass newEdgeType;
 
         iteration = 1;
         for (OEdgeType currentEdgeType : graphModel.getEdgesType()) {
@@ -212,10 +223,10 @@ public class OGraphModelWriter {
               .debug("\nWriting '%s' edge-type  (%s/%s)...\n", currentEdgeType.getName(), iteration, numberOfEdges);
 
           // check if edge type is already present in the orient schema
-          newEdgeType = orientGraph.getEdgeType(currentEdgeType.getName());
+          newEdgeType = orientGraph.getClass(currentEdgeType.getName());
 
           if (newEdgeType == null) {
-            newEdgeType = orientGraph.createEdgeType(currentEdgeType.getName());
+            newEdgeType = orientGraph.createEdgeClass(currentEdgeType.getName());
             OModelProperty currentProperty = null;
             it = currentEdgeType.getProperties().iterator();
 
@@ -272,7 +283,7 @@ public class OGraphModelWriter {
         String currentType = null;
         List<String> properties = null;
         iteration = 1;
-        OIndexManagerProxy indexManager = orientGraph.getRawGraph().getMetadata().getIndexManager();
+        OIndexManagerProxy indexManager = (OIndexManagerProxy) orientGraph.getMetadata().getIndexManager();
         boolean isPresent;
         for (OVertexType currentVertexType : graphModel.getVerticesType()) {
 
@@ -342,7 +353,7 @@ public class OGraphModelWriter {
       }
       statistics.notifyListeners();
       statistics.runningStepNumber = -1;
-      orientGraph.shutdown();
+      orientGraph.close();
 
       success = true;
 
@@ -370,7 +381,7 @@ public class OGraphModelWriter {
    * @param currentVertexType
    */
 
-  private void buildIndexOnExternalKey(OrientBaseGraph orientGraph, int numberOfVertices, int iteration, String currentType,
+  private void buildIndexOnExternalKey(ODatabaseDocument orientGraph, int numberOfVertices, int iteration, String currentType,
       List<String> properties, OIndexManagerProxy indexManager, OVertexType currentVertexType) {
     boolean isPresent;
     String statement;
@@ -412,7 +423,7 @@ public class OGraphModelWriter {
         statement =
             "create index `" + currentType + ".pkey`" + " on `" + currentType + "` (" + propertiesList + ") unique_hash_index";
         sqlCommand = new OCommandSQL(statement);
-        orientGraph.getRawGraph().command(sqlCommand).execute();
+        orientGraph.command(sqlCommand).execute();
         OTeleporterContext.getInstance().getOutputManager().debug("\nIndex for %s built.\n", currentVertexType.getName());
       } else {
         OTeleporterContext.getInstance().getStatistics().warningMessages.add(
@@ -438,7 +449,7 @@ public class OGraphModelWriter {
    * @param indexClassName
    */
 
-  private void buildLogicalIndex(OrientBaseGraph orientGraph, int numberOfVertices, int iteration, String currentType,
+  private void buildLogicalIndex(ODatabaseDocument orientGraph, int numberOfVertices, int iteration, String currentType,
       List<String> properties, OIndexManagerProxy indexManager, OVertexType currentVertexType, String indexClassName) {
 
     boolean isPresent;
@@ -466,7 +477,7 @@ public class OGraphModelWriter {
                 numberOfVertices);
         statement = "create index `" + indexClassName + "` on `" + currentType + "` (" + propertiesList + ") notunique_hash_index";
         sqlCommand = new OCommandSQL(statement);
-        orientGraph.getRawGraph().command(sqlCommand).execute();
+        orientGraph.command(sqlCommand).execute();
         OTeleporterContext.getInstance().getOutputManager().debug("\nIndex for %s built.\n", currentVertexType.getName());
       } else {
         OTeleporterContext.getInstance().getStatistics().warningMessages.add(
@@ -485,16 +496,16 @@ public class OGraphModelWriter {
    *
    * @return
    */
-  private boolean checkAndUpdateClass(OrientBaseGraph orientGraph, OElementType currentElementType,
+  private boolean checkAndUpdateClass(ODatabaseDocument orientGraph, OElementType currentElementType,
       ODriverDataTypeHandler handler) {
 
     boolean updated = false;
-    OrientElementType orientElementType = null;
+    OClass orientElementType = null;
 
     if (currentElementType instanceof OVertexType) {
-      orientElementType = orientGraph.getVertexType(currentElementType.getName());
+      orientElementType = orientGraph.getClass(currentElementType.getName());
     } else if (currentElementType instanceof OEdgeType) {
-      orientElementType = orientGraph.getEdgeType(currentElementType.getName());
+      orientElementType = orientGraph.getClass(currentElementType.getName());
     } else {
       OTeleporterContext.getInstance().getOutputManager()
           .error("Fatal error: current element type '%s' is not instance neither of Vertex Type nor of EdgeType.\n",
@@ -571,22 +582,21 @@ public class OGraphModelWriter {
     return updated;
   }
 
-  public boolean inheritanceChangesPresent(OGraphModel graphModel, OrientBaseGraph orientGraph) {
+  public boolean inheritanceChangesPresent(OGraphModel graphModel, ODatabaseDocument orientGraph) {
 
     for (OVertexType currentVertexType : graphModel.getVerticesType()) {
 
-      OrientVertexType orientCorrespondentVertexType = orientGraph.getVertexType(currentVertexType.getName());
+      OClass orientCorrespondentVertexType = orientGraph.getClass(currentVertexType.getName());
 
       // check for changes if vertex type is already present in the orient schema
       if (currentVertexType != null && orientCorrespondentVertexType != null) {
 
-        if ((currentVertexType.getParentType() == null && !orientCorrespondentVertexType.getSuperClass().getName().equals("V")) || (
-            currentVertexType.getParentType() != null && orientCorrespondentVertexType.getSuperClass().getName().equals("V")))
+        if ((currentVertexType.getParentType() == null && !orientCorrespondentVertexType.isSubClassOf("V")) || (
+            currentVertexType.getParentType() != null && orientCorrespondentVertexType.isSubClassOf("V")))
           return true;
 
-        else if (currentVertexType.getParentType() != null && !orientCorrespondentVertexType.getSuperClass().getName()
-            .equals("V")) {
-          if (!currentVertexType.getParentType().getName().equals(orientCorrespondentVertexType.getSuperClass().getName()))
+        else if (currentVertexType.getParentType() != null && !orientCorrespondentVertexType.isSubClassOf("V")) {
+          if (!currentVertexType.getParentType().getName().equals(orientCorrespondentVertexType.getSuperClasses().get(0).getName())) // now we can have just a super-class for each vertex type
             return true;
         }
       }

@@ -18,7 +18,9 @@
 
 package com.orientechnologies.teleporter.strategy.rdbms;
 
-import com.orientechnologies.orient.core.intent.OIntentMassiveInsert;
+import com.orientechnologies.orient.core.db.OrientDB;
+import com.orientechnologies.orient.core.db.OrientDBConfig;
+import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.teleporter.configuration.OConfigurationHandler;
 import com.orientechnologies.teleporter.configuration.api.OConfiguration;
 import com.orientechnologies.teleporter.configuration.api.OConfiguredVertexClass;
@@ -40,8 +42,6 @@ import com.orientechnologies.teleporter.nameresolver.ONameResolver;
 import com.orientechnologies.teleporter.persistence.handler.ODBMSDataTypeHandler;
 import com.orientechnologies.teleporter.persistence.util.OQueryResult;
 import com.orientechnologies.teleporter.writer.OGraphModelWriter;
-import com.tinkerpop.blueprints.impls.orient.OrientBaseGraph;
-import com.tinkerpop.blueprints.impls.orient.OrientGraphFactory;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -127,11 +127,20 @@ public class ODBMSNaiveAggregationStrategy extends ODBMSImportStrategy {
       OGraphEngineForDB graphEngine = new OGraphEngineForDB((OER2GraphMapper) mapper, handler);
 
       // OrientDB graph initialization/connection
-      OrientBaseGraph orientGraph = null;
-      OrientGraphFactory factory = new OrientGraphFactory(outOrientGraphUri, "admin", "admin");
-      orientGraph = factory.getNoTx();
-      orientGraph.getRawGraph().declareIntent(new OIntentMassiveInsert());
-      orientGraph.setStandardElementConstraints(false);
+      String dbName = outOrientGraphUri.substring(outOrientGraphUri.lastIndexOf('/')+1);
+      ODatabaseDocument orientGraph;
+      OrientDB orient = OrientDB.fromUrl(outOrientGraphUri, OrientDBConfig.defaultConfig());
+      try {
+        if(!orient.exists(dbName,"admin","admin")) {
+          orient.create(dbName, "admin", "admin", OrientDB.DatabaseType.PLOCAL);
+        }
+        orientGraph = orient.open(dbName,"admin","admin");
+      } catch (Exception e) {
+        String mess = "";
+        OTeleporterContext.getInstance().printExceptionMessage(e, mess, "error");
+        OTeleporterContext.getInstance().printExceptionStackTrace(e, "error");
+        throw new OTeleporterRuntimeException(e);
+      }
 
       // Importing from Entities belonging to hierarchical bags
       super.importEntitiesBelongingToHierarchies(dbQueryEngine, graphEngine, orientGraph);
@@ -229,7 +238,7 @@ public class ODBMSNaiveAggregationStrategy extends ODBMSImportStrategy {
 
       statistics.notifyListeners();
       statistics.runningStepNumber = -1;
-      orientGraph.shutdown();
+      orientGraph.close();
       OTeleporterContext.getInstance().getOutputManager().info("\n");
 
     } catch (OTeleporterRuntimeException e) {
@@ -242,7 +251,7 @@ public class ODBMSNaiveAggregationStrategy extends ODBMSImportStrategy {
   }
 
   protected void importJoinTableRecordIntoEdgeClass(List<OEntity> mappedEntities, ODBQueryEngine dbQueryEngine,
-      OGraphEngineForDB graphEngine, OrientBaseGraph orientGraph) throws SQLException {
+      OGraphEngineForDB graphEngine, ODatabaseDocument orientGraph) throws SQLException {
 
     OTeleporterStatistics statistics = OTeleporterContext.getInstance().getStatistics();
     OQueryResult queryResult;

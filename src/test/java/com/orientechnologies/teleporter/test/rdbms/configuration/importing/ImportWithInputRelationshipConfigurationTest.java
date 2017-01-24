@@ -18,7 +18,14 @@
 
 package com.orientechnologies.teleporter.test.rdbms.configuration.importing;
 
+import com.orientechnologies.orient.core.db.OrientDB;
+import com.orientechnologies.orient.core.db.OrientDBConfig;
+import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
+import com.orientechnologies.orient.core.record.ODirection;
+import com.orientechnologies.orient.core.record.OEdge;
+import com.orientechnologies.orient.core.record.OVertex;
 import com.orientechnologies.orient.core.record.impl.ODocument;
+import com.orientechnologies.orient.core.sql.executor.OResultSet;
 import com.orientechnologies.teleporter.context.OOutputStreamManager;
 import com.orientechnologies.teleporter.context.OTeleporterContext;
 import com.orientechnologies.teleporter.importengine.rdbms.dbengine.ODBQueryEngine;
@@ -28,11 +35,9 @@ import com.orientechnologies.teleporter.persistence.handler.OHSQLDBDataTypeHandl
 import com.orientechnologies.teleporter.strategy.rdbms.ODBMSNaiveAggregationStrategy;
 import com.orientechnologies.teleporter.strategy.rdbms.ODBMSNaiveStrategy;
 import com.orientechnologies.teleporter.util.OFileManager;
+import com.orientechnologies.teleporter.util.OGraphCommands;
 import com.orientechnologies.teleporter.util.OMigrationConfigManager;
-import com.tinkerpop.blueprints.Direction;
-import com.tinkerpop.blueprints.Edge;
-import com.tinkerpop.blueprints.Vertex;
-import com.tinkerpop.blueprints.impls.orient.OrientGraphNoTx;
+import com.sun.javafx.geom.Edge;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -64,8 +69,14 @@ public class ImportWithInputRelationshipConfigurationTest {
   private String jurl     = "jdbc:hsqldb:mem:mydb";
   private String username = "SA";
   private String password = "";
-  private String              outOrientGraphUri;
+  private String dbName = "testOrientDB";
+  private String outOrientGraphUri = "plocal:target/" + this.dbName;
   private OSourceDatabaseInfo sourceDBInfo;
+
+  // Queries
+  private String getVerticesQuery = "select * from V";
+  private String getEdgesQuery = "select * from E";
+  private String getElementsFromClassQuery = "select * from ?";
 
   @Before
   public void init() {
@@ -77,7 +88,6 @@ public class ImportWithInputRelationshipConfigurationTest {
     this.context.setDataTypeHandler(new OHSQLDBDataTypeHandler());
     this.naiveStrategy = new ODBMSNaiveStrategy();
     this.naiveAggregationStrategy = new ODBMSNaiveAggregationStrategy();
-    this.outOrientGraphUri = "plocal:target/testOrientDB";
     this.dbParentDirectoryPath = this.outOrientGraphUri.replace("plocal:", "");
     this.sourceDBInfo = new OSourceDatabaseInfo("source", this.driver, this.jurl, this.username, this.password);
   }
@@ -102,7 +112,7 @@ public class ImportWithInputRelationshipConfigurationTest {
 
     Connection connection = null;
     Statement st = null;
-    OrientGraphNoTx orientGraph = null;
+    ODatabaseDocument orientGraph = null;
 
     try {
 
@@ -149,73 +159,74 @@ public class ImportWithInputRelationshipConfigurationTest {
       /*
        *  Testing built OrientDB
        */
-      orientGraph = new OrientGraphNoTx(this.outOrientGraphUri);
+      OrientDB orient = OrientDB.fromUrl(this.outOrientGraphUri, OrientDBConfig.defaultConfig());
+      orientGraph = orient.open(this.dbName,"admin","admin");
 
       // vertices check
 
-      int count = 0;
-      for (Vertex v : orientGraph.getVertices()) {
-        assertNotNull(v.getId());
-        count++;
-      }
-      assertEquals(8, count);
+//      int count = 0;
+//      for(OVertex v : orientGraph.command(this.getVerticesQuery)) {
+//        assertNotNull(v.getIdentity());
+//        count++;
+//      }
+      assertEquals(8, orientGraph.countClass("V"));
 
-      count = 0;
-      for (Vertex v : orientGraph.getVerticesOfClass("Employee")) {
-        assertNotNull(v.getId());
-        count++;
-      }
-      assertEquals(6, count);
+//      count = 0;
+//      for(OVertex v : orientGraph.command(this.getElementsFromClassQuery, "Employee")) {
+//        assertNotNull(v.getIdentity());
+//        count++;
+//      }
+      assertEquals(6, orientGraph.countClass("Employee"));
 
-      count = 0;
-      for (Vertex v : orientGraph.getVerticesOfClass("Project")) {
-        assertNotNull(v.getId());
-        count++;
-      }
-      assertEquals(2, count);
+//      count = 0;
+//      for(OVertex v : orientGraph.command(this.getElementsFromClassQuery, "Project")) {
+//        assertNotNull(v.getIdentity());
+//        count++;
+//      }
+      assertEquals(2, orientGraph.countClass("Project"));
 
       // edges check
-      count = 0;
-      for (Edge e : orientGraph.getEdges()) {
-        assertNotNull(e.getId());
-        count++;
-      }
-      assertEquals(8, count);
+//      count = 0;
+//      for (OEdge  e : orientGraph.command(this.getEdgesQuery)) {
+//        assertNotNull(e.getIdentity());
+//        count++;
+//      }
+      assertEquals(8, orientGraph.countClass("E"));
 
-      count = 0;
-      for (Edge e : orientGraph.getEdgesOfClass("WorksAtProject")) {
-        assertNotNull(e.getId());
-        count++;
-      }
-      assertEquals(6, count);
+//      count = 0;
+//      for (OEdge  e : orientGraph.command(this.getElementsFromClassQuery, "WorksAtProject")) {
+//        assertNotNull(e.getIdentity());
+//        count++;
+//      }
+      assertEquals(6, orientGraph.countClass("WorksAtProject"));
 
-      count = 0;
-      for (Edge e : orientGraph.getEdgesOfClass("HasManager")) {
-        assertNotNull(e.getId());
-        count++;
-      }
-      assertEquals(2, count);
+//      count = 0;
+//      for (OEdge  e : orientGraph.command(this.getElementsFromClassQuery, "HasManager")) {
+//        assertNotNull(e.getIdentity());
+//        count++;
+//      }
+      assertEquals(2, orientGraph.countClass("HasManager"));
 
       // vertex properties and connections check
-      Iterator<Edge> edgesIt = null;
+      Iterator<OEdge>  edgesIt = null;
       String[] keys = { "id" };
       String[] values = { "P001" };
 
-      Vertex v = null;
-      Iterator<Vertex> iterator = orientGraph.getVertices("Project", keys, values).iterator();
-      assertTrue(iterator.hasNext());
-      if (iterator.hasNext()) {
-        v = iterator.next();
+      OVertex v = null;
+      OResultSet result = OGraphCommands.getVertices(orientGraph, "Project", keys, values);
+      assertTrue(result.hasNext());
+      if (result.hasNext()) {
+        v = result.next().getVertex().get();
         assertEquals("P001", v.getProperty("id"));
         assertEquals("Data Migration", v.getProperty("title"));
         assertEquals("E001", v.getProperty("projectManager"));
-        edgesIt = v.getEdges(Direction.IN, "WorksAtProject").iterator();
-        assertEquals("E001", edgesIt.next().getVertex(Direction.OUT).getProperty("empId"));
-        assertEquals("E003", edgesIt.next().getVertex(Direction.OUT).getProperty("empId"));
-        assertEquals("E004", edgesIt.next().getVertex(Direction.OUT).getProperty("empId"));
+        edgesIt = v.getEdges(ODirection.IN, "WorksAtProject").iterator();
+        assertEquals("E001", edgesIt.next().getVertex(ODirection.OUT).getProperty("empId"));
+        assertEquals("E003", edgesIt.next().getVertex(ODirection.OUT).getProperty("empId"));
+        assertEquals("E004", edgesIt.next().getVertex(ODirection.OUT).getProperty("empId"));
         assertEquals(false, edgesIt.hasNext());
-        edgesIt = v.getEdges(Direction.OUT, "HasManager").iterator();
-        assertEquals("E001", edgesIt.next().getVertex(Direction.IN).getProperty("empId"));
+        edgesIt = v.getEdges(ODirection.OUT, "HasManager").iterator();
+        assertEquals("E001", edgesIt.next().getVertex(ODirection.IN).getProperty("empId"));
         assertEquals(false, edgesIt.hasNext());
 
       } else {
@@ -223,20 +234,20 @@ public class ImportWithInputRelationshipConfigurationTest {
       }
 
       values[0] = "P002";
-      iterator = orientGraph.getVertices("Project", keys, values).iterator();
-      assertTrue(iterator.hasNext());
-      if (iterator.hasNext()) {
-        v = iterator.next();
+      result = OGraphCommands.getVertices(orientGraph, "Project", keys, values);
+      assertTrue(result.hasNext());
+      if (result.hasNext()) {
+        v = result.next().getVertex().get();
         assertEquals("P002", v.getProperty("id"));
         assertEquals("Contracts Update", v.getProperty("title"));
         assertEquals("E005", v.getProperty("projectManager"));
-        edgesIt = v.getEdges(Direction.IN, "WorksAtProject").iterator();
-        assertEquals("E002", edgesIt.next().getVertex(Direction.OUT).getProperty("empId"));
-        assertEquals("E005", edgesIt.next().getVertex(Direction.OUT).getProperty("empId"));
-        assertEquals("E006", edgesIt.next().getVertex(Direction.OUT).getProperty("empId"));
+        edgesIt = v.getEdges(ODirection.IN, "WorksAtProject").iterator();
+        assertEquals("E002", edgesIt.next().getVertex(ODirection.OUT).getProperty("empId"));
+        assertEquals("E005", edgesIt.next().getVertex(ODirection.OUT).getProperty("empId"));
+        assertEquals("E006", edgesIt.next().getVertex(ODirection.OUT).getProperty("empId"));
         assertEquals(false, edgesIt.hasNext());
-        edgesIt = v.getEdges(Direction.OUT, "HasManager").iterator();
-        assertEquals("E005", edgesIt.next().getVertex(Direction.IN).getProperty("empId"));
+        edgesIt = v.getEdges(ODirection.OUT, "HasManager").iterator();
+        assertEquals("E005", edgesIt.next().getVertex(ODirection.IN).getProperty("empId"));
         assertEquals(false, edgesIt.hasNext());
       } else {
         fail("Query fail!");
@@ -244,110 +255,110 @@ public class ImportWithInputRelationshipConfigurationTest {
 
       keys[0] = "empId";
       values[0] = "E001";
-      iterator = orientGraph.getVertices("Employee", keys, values).iterator();
-      assertTrue(iterator.hasNext());
-      if (iterator.hasNext()) {
-        v = iterator.next();
+      result = OGraphCommands.getVertices(orientGraph, "Employee", keys, values);
+      assertTrue(result.hasNext());
+      if (result.hasNext()) {
+        v = result.next().getVertex().get();
         assertEquals("E001", v.getProperty("empId"));
         assertEquals("Joe", v.getProperty("firstName"));
         assertEquals("Black", v.getProperty("lastName"));
         assertEquals("P001", v.getProperty("project"));
-        edgesIt = v.getEdges(Direction.OUT, "WorksAtProject").iterator();
-        assertEquals("P001", edgesIt.next().getVertex(Direction.IN).getProperty("id"));
+        edgesIt = v.getEdges(ODirection.OUT, "WorksAtProject").iterator();
+        assertEquals("P001", edgesIt.next().getVertex(ODirection.IN).getProperty("id"));
         assertEquals(false, edgesIt.hasNext());
-        edgesIt = v.getEdges(Direction.IN, "HasManager").iterator();
-        assertEquals("P001", edgesIt.next().getVertex(Direction.OUT).getProperty("id"));
+        edgesIt = v.getEdges(ODirection.IN, "HasManager").iterator();
+        assertEquals("P001", edgesIt.next().getVertex(ODirection.OUT).getProperty("id"));
         assertEquals(false, edgesIt.hasNext());
       } else {
         fail("Query fail!");
       }
 
       values[0] = "E002";
-      iterator = orientGraph.getVertices("Employee", keys, values).iterator();
-      assertTrue(iterator.hasNext());
-      if (iterator.hasNext()) {
-        v = iterator.next();
+      result = OGraphCommands.getVertices(orientGraph, "Employee", keys, values);
+      assertTrue(result.hasNext());
+      if (result.hasNext()) {
+        v = result.next().getVertex().get();
         assertEquals("E002", v.getProperty("empId"));
         assertEquals("Thomas", v.getProperty("firstName"));
         assertEquals("Anderson", v.getProperty("lastName"));
         assertEquals("P002", v.getProperty("project"));
-        edgesIt = v.getEdges(Direction.OUT, "WorksAtProject").iterator();
-        assertEquals("P002", edgesIt.next().getVertex(Direction.IN).getProperty("id"));
+        edgesIt = v.getEdges(ODirection.OUT, "WorksAtProject").iterator();
+        assertEquals("P002", edgesIt.next().getVertex(ODirection.IN).getProperty("id"));
         assertEquals(false, edgesIt.hasNext());
-        edgesIt = v.getEdges(Direction.IN, "HasManager").iterator();
+        edgesIt = v.getEdges(ODirection.IN, "HasManager").iterator();
         assertEquals(false, edgesIt.hasNext());
       } else {
         fail("Query fail!");
       }
 
       values[0] = "E003";
-      iterator = orientGraph.getVertices("Employee", keys, values).iterator();
-      assertTrue(iterator.hasNext());
-      if (iterator.hasNext()) {
-        v = iterator.next();
+      result = OGraphCommands.getVertices(orientGraph, "Employee", keys, values);
+      assertTrue(result.hasNext());
+      if (result.hasNext()) {
+        v = result.next().getVertex().get();
         assertEquals("E003", v.getProperty("empId"));
         assertEquals("Tyler", v.getProperty("firstName"));
         assertEquals("Durden", v.getProperty("lastName"));
         assertEquals("P001", v.getProperty("project"));
-        edgesIt = v.getEdges(Direction.OUT, "WorksAtProject").iterator();
-        assertEquals("P001", edgesIt.next().getVertex(Direction.IN).getProperty("id"));
+        edgesIt = v.getEdges(ODirection.OUT, "WorksAtProject").iterator();
+        assertEquals("P001", edgesIt.next().getVertex(ODirection.IN).getProperty("id"));
         assertEquals(false, edgesIt.hasNext());
-        edgesIt = v.getEdges(Direction.IN, "HasManager").iterator();
+        edgesIt = v.getEdges(ODirection.IN, "HasManager").iterator();
         assertEquals(false, edgesIt.hasNext());
       } else {
         fail("Query fail!");
       }
 
       values[0] = "E004";
-      iterator = orientGraph.getVertices("Employee", keys, values).iterator();
-      assertTrue(iterator.hasNext());
-      if (iterator.hasNext()) {
-        v = iterator.next();
+      result = OGraphCommands.getVertices(orientGraph, "Employee", keys, values);
+      assertTrue(result.hasNext());
+      if (result.hasNext()) {
+        v = result.next().getVertex().get();
         assertEquals("E004", v.getProperty("empId"));
         assertEquals("John", v.getProperty("firstName"));
         assertEquals("McClanenei", v.getProperty("lastName"));
         assertEquals("P001", v.getProperty("project"));
-        edgesIt = v.getEdges(Direction.OUT, "WorksAtProject").iterator();
-        assertEquals("P001", edgesIt.next().getVertex(Direction.IN).getProperty("id"));
+        edgesIt = v.getEdges(ODirection.OUT, "WorksAtProject").iterator();
+        assertEquals("P001", edgesIt.next().getVertex(ODirection.IN).getProperty("id"));
         assertEquals(false, edgesIt.hasNext());
-        edgesIt = v.getEdges(Direction.IN, "HasManager").iterator();
+        edgesIt = v.getEdges(ODirection.IN, "HasManager").iterator();
         assertEquals(false, edgesIt.hasNext());
       } else {
         fail("Query fail!");
       }
 
       values[0] = "E005";
-      iterator = orientGraph.getVertices("Employee", keys, values).iterator();
-      assertTrue(iterator.hasNext());
-      if (iterator.hasNext()) {
-        v = iterator.next();
+      result = OGraphCommands.getVertices(orientGraph, "Employee", keys, values);
+      assertTrue(result.hasNext());
+      if (result.hasNext()) {
+        v = result.next().getVertex().get();
         assertEquals("E005", v.getProperty("empId"));
         assertEquals("Ellen", v.getProperty("firstName"));
         assertEquals("Ripley", v.getProperty("lastName"));
         assertEquals("P002", v.getProperty("project"));
-        edgesIt = v.getEdges(Direction.OUT, "WorksAtProject").iterator();
-        assertEquals("P002", edgesIt.next().getVertex(Direction.IN).getProperty("id"));
+        edgesIt = v.getEdges(ODirection.OUT, "WorksAtProject").iterator();
+        assertEquals("P002", edgesIt.next().getVertex(ODirection.IN).getProperty("id"));
         assertEquals(false, edgesIt.hasNext());
-        edgesIt = v.getEdges(Direction.IN, "HasManager").iterator();
-        assertEquals("P002", edgesIt.next().getVertex(Direction.OUT).getProperty("id"));
+        edgesIt = v.getEdges(ODirection.IN, "HasManager").iterator();
+        assertEquals("P002", edgesIt.next().getVertex(ODirection.OUT).getProperty("id"));
         assertEquals(false, edgesIt.hasNext());
       } else {
         fail("Query fail!");
       }
 
       values[0] = "E006";
-      iterator = orientGraph.getVertices("Employee", keys, values).iterator();
-      assertTrue(iterator.hasNext());
-      if (iterator.hasNext()) {
-        v = iterator.next();
+      result = OGraphCommands.getVertices(orientGraph, "Employee", keys, values);
+      assertTrue(result.hasNext());
+      if (result.hasNext()) {
+        v = result.next().getVertex().get();
         assertEquals("E006", v.getProperty("empId"));
         assertEquals("Marty", v.getProperty("firstName"));
         assertEquals("McFly", v.getProperty("lastName"));
         assertEquals("P002", v.getProperty("project"));
-        edgesIt = v.getEdges(Direction.OUT, "WorksAtProject").iterator();
-        assertEquals("P002", edgesIt.next().getVertex(Direction.IN).getProperty("id"));
+        edgesIt = v.getEdges(ODirection.OUT, "WorksAtProject").iterator();
+        assertEquals("P002", edgesIt.next().getVertex(ODirection.IN).getProperty("id"));
         assertEquals(false, edgesIt.hasNext());
-        edgesIt = v.getEdges(Direction.IN, "HasManager").iterator();
+        edgesIt = v.getEdges(ODirection.IN, "HasManager").iterator();
         assertEquals(false, edgesIt.hasNext());
       } else {
         fail("Query fail!");
@@ -370,7 +381,7 @@ public class ImportWithInputRelationshipConfigurationTest {
       }
       if (orientGraph != null) {
         orientGraph.drop();
-        orientGraph.shutdown();
+        orientGraph.close();
       }
     }
   }
@@ -408,7 +419,7 @@ public class ImportWithInputRelationshipConfigurationTest {
 
     Connection connection = null;
     Statement st = null;
-    OrientGraphNoTx orientGraph = null;
+    ODatabaseDocument orientGraph = null;
 
     try {
 
@@ -460,73 +471,74 @@ public class ImportWithInputRelationshipConfigurationTest {
       /*
        *  Testing built OrientDB
        */
-      orientGraph = new OrientGraphNoTx(this.outOrientGraphUri);
+      OrientDB orient = OrientDB.fromUrl(this.outOrientGraphUri, OrientDBConfig.defaultConfig());
+      orientGraph = orient.open(this.dbName,"admin","admin");
 
       // vertices check
 
-      int count = 0;
-      for (Vertex v : orientGraph.getVertices()) {
-        assertNotNull(v.getId());
-        count++;
-      }
-      assertEquals(8, count);
+//      int count = 0;
+//      for(OVertex v : orientGraph.command(this.getVerticesQuery)) {
+//        assertNotNull(v.getIdentity());
+//        count++;
+//      }
+      assertEquals(8, orientGraph.countClass("V"));
 
-      count = 0;
-      for (Vertex v : orientGraph.getVerticesOfClass("Employee")) {
-        assertNotNull(v.getId());
-        count++;
-      }
-      assertEquals(6, count);
+//      count = 0;
+//      for(OVertex v : orientGraph.command(this.getElementsFromClassQuery, "Employee")) {
+//        assertNotNull(v.getIdentity());
+//        count++;
+//      }
+      assertEquals(6, orientGraph.countClass("Employee"));
 
-      count = 0;
-      for (Vertex v : orientGraph.getVerticesOfClass("Project")) {
-        assertNotNull(v.getId());
-        count++;
-      }
-      assertEquals(2, count);
+//      count = 0;
+//      for(OVertex v : orientGraph.command(this.getElementsFromClassQuery, "Project")) {
+//        assertNotNull(v.getIdentity());
+//        count++;
+//      }
+      assertEquals(2, orientGraph.countClass("Project"));
 
       // edges check
-      count = 0;
-      for (Edge e : orientGraph.getEdges()) {
-        assertNotNull(e.getId());
-        count++;
-      }
-      assertEquals(8, count);
+//      count = 0;
+//      for (OEdge  e : orientGraph.command(this.getEdgesQuery)) {
+//        assertNotNull(e.getIdentity());
+//        count++;
+//      }
+      assertEquals(8, orientGraph.countClass("E"));
 
-      count = 0;
-      for (Edge e : orientGraph.getEdgesOfClass("HasEmployee")) {
-        assertNotNull(e.getId());
-        count++;
-      }
-      assertEquals(6, count);
+//      count = 0;
+//      for (OEdge  e : orientGraph.command(this.getElementsFromClassQuery, "HasEmployee")) {
+//        assertNotNull(e.getIdentity());
+//        count++;
+//      }
+      assertEquals(6, orientGraph.countClass("HasEmployee"));
 
-      count = 0;
-      for (Edge e : orientGraph.getEdgesOfClass("HasProjectManager")) {
-        assertNotNull(e.getId());
-        count++;
-      }
-      assertEquals(2, count);
+//      count = 0;
+//      for (OEdge  e : orientGraph.command(this.getElementsFromClassQuery, "HasProjectManager")) {
+//        assertNotNull(e.getIdentity());
+//        count++;
+//      }
+      assertEquals(2, orientGraph.countClass("HasProjectManager"));
 
       // vertex properties and connections check
-      Iterator<Edge> edgesIt = null;
+      Iterator<OEdge>  edgesIt = null;
       String[] keys = { "id" };
       String[] values = { "P001" };
 
-      Vertex v = null;
-      Iterator<Vertex> iterator = orientGraph.getVertices("Project", keys, values).iterator();
-      assertTrue(iterator.hasNext());
-      if (iterator.hasNext()) {
-        v = iterator.next();
+      OVertex v = null;
+      OResultSet result = OGraphCommands.getVertices(orientGraph, "Project", keys, values);
+      assertTrue(result.hasNext());
+      if (result.hasNext()) {
+        v = result.next().getVertex().get();
         assertEquals("P001", v.getProperty("id"));
         assertEquals("Data Migration", v.getProperty("title"));
         assertEquals("E001", v.getProperty("projectManager"));
-        edgesIt = v.getEdges(Direction.OUT, "HasEmployee").iterator();
-        assertEquals("E001", edgesIt.next().getVertex(Direction.IN).getProperty("empId"));
-        assertEquals("E003", edgesIt.next().getVertex(Direction.IN).getProperty("empId"));
-        assertEquals("E004", edgesIt.next().getVertex(Direction.IN).getProperty("empId"));
+        edgesIt = v.getEdges(ODirection.OUT, "HasEmployee").iterator();
+        assertEquals("E001", edgesIt.next().getVertex(ODirection.IN).getProperty("empId"));
+        assertEquals("E003", edgesIt.next().getVertex(ODirection.IN).getProperty("empId"));
+        assertEquals("E004", edgesIt.next().getVertex(ODirection.IN).getProperty("empId"));
         assertEquals(false, edgesIt.hasNext());
-        edgesIt = v.getEdges(Direction.OUT, "HasProjectManager").iterator();
-        assertEquals("E001", edgesIt.next().getVertex(Direction.IN).getProperty("empId"));
+        edgesIt = v.getEdges(ODirection.OUT, "HasProjectManager").iterator();
+        assertEquals("E001", edgesIt.next().getVertex(ODirection.IN).getProperty("empId"));
         assertEquals(false, edgesIt.hasNext());
 
       } else {
@@ -534,20 +546,20 @@ public class ImportWithInputRelationshipConfigurationTest {
       }
 
       values[0] = "P002";
-      iterator = orientGraph.getVertices("Project", keys, values).iterator();
-      assertTrue(iterator.hasNext());
-      if (iterator.hasNext()) {
-        v = iterator.next();
+      result = OGraphCommands.getVertices(orientGraph, "Project", keys, values);
+      assertTrue(result.hasNext());
+      if (result.hasNext()) {
+        v = result.next().getVertex().get();
         assertEquals("P002", v.getProperty("id"));
         assertEquals("Contracts Update", v.getProperty("title"));
         assertEquals("E005", v.getProperty("projectManager"));
-        edgesIt = v.getEdges(Direction.OUT, "HasEmployee").iterator();
-        assertEquals("E002", edgesIt.next().getVertex(Direction.IN).getProperty("empId"));
-        assertEquals("E005", edgesIt.next().getVertex(Direction.IN).getProperty("empId"));
-        assertEquals("E006", edgesIt.next().getVertex(Direction.IN).getProperty("empId"));
+        edgesIt = v.getEdges(ODirection.OUT, "HasEmployee").iterator();
+        assertEquals("E002", edgesIt.next().getVertex(ODirection.IN).getProperty("empId"));
+        assertEquals("E005", edgesIt.next().getVertex(ODirection.IN).getProperty("empId"));
+        assertEquals("E006", edgesIt.next().getVertex(ODirection.IN).getProperty("empId"));
         assertEquals(false, edgesIt.hasNext());
-        edgesIt = v.getEdges(Direction.OUT, "HasProjectManager").iterator();
-        assertEquals("E005", edgesIt.next().getVertex(Direction.IN).getProperty("empId"));
+        edgesIt = v.getEdges(ODirection.OUT, "HasProjectManager").iterator();
+        assertEquals("E005", edgesIt.next().getVertex(ODirection.IN).getProperty("empId"));
         assertEquals(false, edgesIt.hasNext());
       } else {
         fail("Query fail!");
@@ -555,110 +567,110 @@ public class ImportWithInputRelationshipConfigurationTest {
 
       keys[0] = "empId";
       values[0] = "E001";
-      iterator = orientGraph.getVertices("Employee", keys, values).iterator();
-      assertTrue(iterator.hasNext());
-      if (iterator.hasNext()) {
-        v = iterator.next();
+      result = OGraphCommands.getVertices(orientGraph, "Employee", keys, values);
+      assertTrue(result.hasNext());
+      if (result.hasNext()) {
+        v = result.next().getVertex().get();
         assertEquals("E001", v.getProperty("empId"));
         assertEquals("Joe", v.getProperty("firstName"));
         assertEquals("Black", v.getProperty("lastName"));
         assertEquals("P001", v.getProperty("project"));
-        edgesIt = v.getEdges(Direction.IN, "HasEmployee").iterator();
-        assertEquals("P001", edgesIt.next().getVertex(Direction.OUT).getProperty("id"));
+        edgesIt = v.getEdges(ODirection.IN, "HasEmployee").iterator();
+        assertEquals("P001", edgesIt.next().getVertex(ODirection.OUT).getProperty("id"));
         assertEquals(false, edgesIt.hasNext());
-        edgesIt = v.getEdges(Direction.IN, "HasProjectManager").iterator();
-        assertEquals("P001", edgesIt.next().getVertex(Direction.OUT).getProperty("id"));
+        edgesIt = v.getEdges(ODirection.IN, "HasProjectManager").iterator();
+        assertEquals("P001", edgesIt.next().getVertex(ODirection.OUT).getProperty("id"));
         assertEquals(false, edgesIt.hasNext());
       } else {
         fail("Query fail!");
       }
 
       values[0] = "E002";
-      iterator = orientGraph.getVertices("Employee", keys, values).iterator();
-      assertTrue(iterator.hasNext());
-      if (iterator.hasNext()) {
-        v = iterator.next();
+      result = OGraphCommands.getVertices(orientGraph, "Employee", keys, values);
+      assertTrue(result.hasNext());
+      if (result.hasNext()) {
+        v = result.next().getVertex().get();
         assertEquals("E002", v.getProperty("empId"));
         assertEquals("Thomas", v.getProperty("firstName"));
         assertEquals("Anderson", v.getProperty("lastName"));
         assertEquals("P002", v.getProperty("project"));
-        edgesIt = v.getEdges(Direction.IN, "HasEmployee").iterator();
-        assertEquals("P002", edgesIt.next().getVertex(Direction.OUT).getProperty("id"));
+        edgesIt = v.getEdges(ODirection.IN, "HasEmployee").iterator();
+        assertEquals("P002", edgesIt.next().getVertex(ODirection.OUT).getProperty("id"));
         assertEquals(false, edgesIt.hasNext());
-        edgesIt = v.getEdges(Direction.IN, "HasProjectManager").iterator();
+        edgesIt = v.getEdges(ODirection.IN, "HasProjectManager").iterator();
         assertEquals(false, edgesIt.hasNext());
       } else {
         fail("Query fail!");
       }
 
       values[0] = "E003";
-      iterator = orientGraph.getVertices("Employee", keys, values).iterator();
-      assertTrue(iterator.hasNext());
-      if (iterator.hasNext()) {
-        v = iterator.next();
+      result = OGraphCommands.getVertices(orientGraph, "Employee", keys, values);
+      assertTrue(result.hasNext());
+      if (result.hasNext()) {
+        v = result.next().getVertex().get();
         assertEquals("E003", v.getProperty("empId"));
         assertEquals("Tyler", v.getProperty("firstName"));
         assertEquals("Durden", v.getProperty("lastName"));
         assertEquals("P001", v.getProperty("project"));
-        edgesIt = v.getEdges(Direction.IN, "HasEmployee").iterator();
-        assertEquals("P001", edgesIt.next().getVertex(Direction.OUT).getProperty("id"));
+        edgesIt = v.getEdges(ODirection.IN, "HasEmployee").iterator();
+        assertEquals("P001", edgesIt.next().getVertex(ODirection.OUT).getProperty("id"));
         assertEquals(false, edgesIt.hasNext());
-        edgesIt = v.getEdges(Direction.IN, "HasProjectManager").iterator();
+        edgesIt = v.getEdges(ODirection.IN, "HasProjectManager").iterator();
         assertEquals(false, edgesIt.hasNext());
       } else {
         fail("Query fail!");
       }
 
       values[0] = "E004";
-      iterator = orientGraph.getVertices("Employee", keys, values).iterator();
-      assertTrue(iterator.hasNext());
-      if (iterator.hasNext()) {
-        v = iterator.next();
+      result = OGraphCommands.getVertices(orientGraph, "Employee", keys, values);
+      assertTrue(result.hasNext());
+      if (result.hasNext()) {
+        v = result.next().getVertex().get();
         assertEquals("E004", v.getProperty("empId"));
         assertEquals("John", v.getProperty("firstName"));
         assertEquals("McClanenei", v.getProperty("lastName"));
         assertEquals("P001", v.getProperty("project"));
-        edgesIt = v.getEdges(Direction.IN, "HasEmployee").iterator();
-        assertEquals("P001", edgesIt.next().getVertex(Direction.OUT).getProperty("id"));
+        edgesIt = v.getEdges(ODirection.IN, "HasEmployee").iterator();
+        assertEquals("P001", edgesIt.next().getVertex(ODirection.OUT).getProperty("id"));
         assertEquals(false, edgesIt.hasNext());
-        edgesIt = v.getEdges(Direction.IN, "HasProjectManager").iterator();
+        edgesIt = v.getEdges(ODirection.IN, "HasProjectManager").iterator();
         assertEquals(false, edgesIt.hasNext());
       } else {
         fail("Query fail!");
       }
 
       values[0] = "E005";
-      iterator = orientGraph.getVertices("Employee", keys, values).iterator();
-      assertTrue(iterator.hasNext());
-      if (iterator.hasNext()) {
-        v = iterator.next();
+      result = OGraphCommands.getVertices(orientGraph, "Employee", keys, values);
+      assertTrue(result.hasNext());
+      if (result.hasNext()) {
+        v = result.next().getVertex().get();
         assertEquals("E005", v.getProperty("empId"));
         assertEquals("Ellen", v.getProperty("firstName"));
         assertEquals("Ripley", v.getProperty("lastName"));
         assertEquals("P002", v.getProperty("project"));
-        edgesIt = v.getEdges(Direction.IN, "HasEmployee").iterator();
-        assertEquals("P002", edgesIt.next().getVertex(Direction.OUT).getProperty("id"));
+        edgesIt = v.getEdges(ODirection.IN, "HasEmployee").iterator();
+        assertEquals("P002", edgesIt.next().getVertex(ODirection.OUT).getProperty("id"));
         assertEquals(false, edgesIt.hasNext());
-        edgesIt = v.getEdges(Direction.IN, "HasProjectManager").iterator();
-        assertEquals("P002", edgesIt.next().getVertex(Direction.OUT).getProperty("id"));
+        edgesIt = v.getEdges(ODirection.IN, "HasProjectManager").iterator();
+        assertEquals("P002", edgesIt.next().getVertex(ODirection.OUT).getProperty("id"));
         assertEquals(false, edgesIt.hasNext());
       } else {
         fail("Query fail!");
       }
 
       values[0] = "E006";
-      iterator = orientGraph.getVertices("Employee", keys, values).iterator();
-      assertTrue(iterator.hasNext());
-      if (iterator.hasNext()) {
-        v = iterator.next();
+      result = OGraphCommands.getVertices(orientGraph, "Employee", keys, values);
+      assertTrue(result.hasNext());
+      if (result.hasNext()) {
+        v = result.next().getVertex().get();
         assertEquals("E006", v.getProperty("empId"));
         assertEquals("Marty", v.getProperty("firstName"));
         assertEquals("McFly", v.getProperty("lastName"));
         assertEquals("P002", v.getProperty("project"));
-        edgesIt = v.getEdges(Direction.IN, "HasEmployee").iterator();
-        assertEquals("P002", edgesIt.next().getVertex(Direction.OUT).getProperty("id"));
+        edgesIt = v.getEdges(ODirection.IN, "HasEmployee").iterator();
+        assertEquals("P002", edgesIt.next().getVertex(ODirection.OUT).getProperty("id"));
         assertEquals(false, edgesIt.hasNext());
-        edgesIt = v.getEdges(Direction.IN, "HasProjectManager").iterator();
+        edgesIt = v.getEdges(ODirection.IN, "HasProjectManager").iterator();
         assertEquals(false, edgesIt.hasNext());
       } else {
         fail("Query fail!");
@@ -681,7 +693,7 @@ public class ImportWithInputRelationshipConfigurationTest {
       }
       if (orientGraph != null) {
         orientGraph.drop();
-        orientGraph.shutdown();
+        orientGraph.close();
       }
     }
   }
@@ -712,7 +724,7 @@ public class ImportWithInputRelationshipConfigurationTest {
     this.context.setExecutionStrategy("naive-aggregate");
     Connection connection = null;
     Statement st = null;
-    OrientGraphNoTx orientGraph = null;
+    ODatabaseDocument orientGraph = null;
 
     try {
 
@@ -768,72 +780,73 @@ public class ImportWithInputRelationshipConfigurationTest {
       /*
        *  Testing built OrientDB
        */
-      orientGraph = new OrientGraphNoTx(this.outOrientGraphUri);
+      OrientDB orient = OrientDB.fromUrl(this.outOrientGraphUri, OrientDBConfig.defaultConfig());
+      orientGraph = orient.open(this.dbName,"admin","admin");
 
       // vertices check
 
-      int count = 0;
-      for (Vertex v : orientGraph.getVertices()) {
-        assertNotNull(v.getId());
-        count++;
-      }
-      assertEquals(11, count);
+//      int count = 0;
+//      for(OVertex v : orientGraph.command(this.getVerticesQuery)) {
+//        assertNotNull(v.getIdentity());
+//        count++;
+//      }
+      assertEquals(11, orientGraph.countClass("V"));
 
-      count = 0;
-      for (Vertex v : orientGraph.getVerticesOfClass("Film")) {
-        assertNotNull(v.getId());
-        count++;
-      }
-      assertEquals(3, count);
+//      count = 0;
+//      for(OVertex v : orientGraph.command(this.getElementsFromClassQuery, "Film")) {
+//        assertNotNull(v.getIdentity());
+//        count++;
+//      }
+      assertEquals(3, orientGraph.countClass("Film"));
 
-      count = 0;
-      for (Vertex v : orientGraph.getVerticesOfClass("Actor")) {
-        assertNotNull(v.getId());
-        count++;
-      }
-      assertEquals(8, count);
+//      count = 0;
+//      for(OVertex v : orientGraph.command(this.getElementsFromClassQuery, "Actor")) {
+//        assertNotNull(v.getIdentity());
+//        count++;
+//      }
+      assertEquals(8, orientGraph.countClass("Actor"));
 
       // edges check
-      count = 0;
-      for (Edge e : orientGraph.getEdges()) {
-        assertNotNull(e.getId());
-        count++;
-      }
-      assertEquals(9, count);
+//      count = 0;
+//      for (OEdge  e : orientGraph.command(this.getEdgesQuery)) {
+//        assertNotNull(e.getIdentity());
+//        count++;
+//      }
+      assertEquals(9, orientGraph.countClass("E"));
 
-      count = 0;
-      for (Edge e : orientGraph.getEdgesOfClass("Performs")) {
-        assertNotNull(e.getId());
-        count++;
-      }
-      assertEquals(9, count);
+//      count = 0;
+//      for (OEdge  e : orientGraph.command(this.getElementsFromClassQuery, "Performs")) {
+//        assertNotNull(e.getIdentity());
+//        count++;
+//      }
+      assertEquals(9, orientGraph.countClass("Performs"));
 
       // vertex properties and connections check
-      Iterator<Edge> edgesIt = null;
+      Iterator<OEdge>  edgesIt = null;
       String[] keys = { "id" };
       String[] values = { "F001" };
 
-      Vertex v = null;
-      Edge currentEdge = null;
-      Iterator<Vertex> iterator = orientGraph.getVertices("Film", keys, values).iterator();
-      assertTrue(iterator.hasNext());
-      if (iterator.hasNext()) {
-        v = iterator.next();
+      OVertex v = null;
+      OEdge currentEdge = null;
+      OResultSet result = OGraphCommands.getVertices(orientGraph, "Film", keys, values);
+      assertTrue(result.hasNext());
+      if (result.hasNext()) {
+        v = result.next().getVertex().get();
         assertEquals("F001", v.getProperty("id"));
         assertEquals("Pulp Fiction", v.getProperty("title"));
         assertEquals("Action", v.getProperty("category"));
-        edgesIt = v.getEdges(Direction.IN, "Performs").iterator();
+        edgesIt = v.getEdges(ODirection.IN, "Performs").iterator();
         currentEdge = edgesIt.next();
-        assertEquals("A001", currentEdge.getVertex(Direction.OUT).getProperty("id"));
-        assertEquals(12000000, currentEdge.getProperty("payment"));
+        assertEquals("A001", currentEdge.getVertex(ODirection.OUT).getProperty("id"));
+        assertEquals(Long.valueOf(12000000), currentEdge.getProperty("payment"));
         assertNull(currentEdge.getProperty("year"));
         currentEdge = edgesIt.next();
-        assertEquals("A002", currentEdge.getVertex(Direction.OUT).getProperty("id"));
-        assertEquals(10000000, currentEdge.getProperty("payment"));
+        assertEquals("A002", currentEdge.getVertex(ODirection.OUT).getProperty("id"));
+        assertEquals(Long.valueOf(10000000), currentEdge.getProperty("payment"));
         assertNull(currentEdge.getProperty("year"));
         currentEdge = edgesIt.next();
-        assertEquals("A003", currentEdge.getVertex(Direction.OUT).getProperty("id"));
-        assertEquals(15000000, currentEdge.getProperty("payment"));
+        assertEquals("A003", currentEdge.getVertex(ODirection.OUT).getProperty("id"));
+        assertEquals(Long.valueOf(15000000), currentEdge.getProperty("payment"));
         assertNull(currentEdge.getProperty("year"));
         assertEquals(false, edgesIt.hasNext());
       } else {
@@ -841,25 +854,25 @@ public class ImportWithInputRelationshipConfigurationTest {
       }
 
       values[0] = "F002";
-      iterator = orientGraph.getVertices("Film", keys, values).iterator();
-      assertTrue(iterator.hasNext());
-      if (iterator.hasNext()) {
-        v = iterator.next();
+      result = OGraphCommands.getVertices(orientGraph, "Film", keys, values);
+      assertTrue(result.hasNext());
+      if (result.hasNext()) {
+        v = result.next().getVertex().get();
         assertEquals("F002", v.getProperty("id"));
         assertEquals("Shutter Island", v.getProperty("title"));
         assertEquals("Thriller", v.getProperty("category"));
-        edgesIt = v.getEdges(Direction.IN, "Performs").iterator();
+        edgesIt = v.getEdges(ODirection.IN, "Performs").iterator();
         currentEdge = edgesIt.next();
-        assertEquals("A004", currentEdge.getVertex(Direction.OUT).getProperty("id"));
-        assertEquals(30000000, currentEdge.getProperty("payment"));
+        assertEquals("A004", currentEdge.getVertex(ODirection.OUT).getProperty("id"));
+        assertEquals(Long.valueOf(30000000), currentEdge.getProperty("payment"));
         assertNull(currentEdge.getProperty("year"));
         currentEdge = edgesIt.next();
-        assertEquals("A005", currentEdge.getVertex(Direction.OUT).getProperty("id"));
-        assertEquals(35000000, currentEdge.getProperty("payment"));
+        assertEquals("A005", currentEdge.getVertex(ODirection.OUT).getProperty("id"));
+        assertEquals(Long.valueOf(35000000), currentEdge.getProperty("payment"));
         assertNull(currentEdge.getProperty("year"));
         currentEdge = edgesIt.next();
-        assertEquals("A006", currentEdge.getVertex(Direction.OUT).getProperty("id"));
-        assertEquals(9000000, currentEdge.getProperty("payment"));
+        assertEquals("A006", currentEdge.getVertex(ODirection.OUT).getProperty("id"));
+        assertEquals(Long.valueOf(9000000), currentEdge.getProperty("payment"));
         assertNull(currentEdge.getProperty("year"));
         assertEquals(false, edgesIt.hasNext());
       } else {
@@ -867,25 +880,25 @@ public class ImportWithInputRelationshipConfigurationTest {
       }
 
       values[0] = "F003";
-      iterator = orientGraph.getVertices("Film", keys, values).iterator();
-      assertTrue(iterator.hasNext());
-      if (iterator.hasNext()) {
-        v = iterator.next();
+      result = OGraphCommands.getVertices(orientGraph, "Film", keys, values);
+      assertTrue(result.hasNext());
+      if (result.hasNext()) {
+        v = result.next().getVertex().get();
         assertEquals("F003", v.getProperty("id"));
         assertEquals("The Departed", v.getProperty("title"));
         assertEquals("Action-Thriller", v.getProperty("category"));
-        edgesIt = v.getEdges(Direction.IN, "Performs").iterator();
+        edgesIt = v.getEdges(ODirection.IN, "Performs").iterator();
         currentEdge = edgesIt.next();
-        assertEquals("A004", currentEdge.getVertex(Direction.OUT).getProperty("id"));
-        assertEquals(40000000, currentEdge.getProperty("payment"));
+        assertEquals("A004", currentEdge.getVertex(ODirection.OUT).getProperty("id"));
+        assertEquals(Long.valueOf(40000000), currentEdge.getProperty("payment"));
         assertNull(currentEdge.getProperty("year"));
         currentEdge = edgesIt.next();
-        assertEquals("A007", currentEdge.getVertex(Direction.OUT).getProperty("id"));
-        assertEquals(25000000, currentEdge.getProperty("payment"));
+        assertEquals("A007", currentEdge.getVertex(ODirection.OUT).getProperty("id"));
+        assertEquals(Long.valueOf(25000000), currentEdge.getProperty("payment"));
         assertNull(currentEdge.getProperty("year"));
         currentEdge = edgesIt.next();
-        assertEquals("A008", currentEdge.getVertex(Direction.OUT).getProperty("id"));
-        assertEquals(15000000, currentEdge.getProperty("payment"));
+        assertEquals("A008", currentEdge.getVertex(ODirection.OUT).getProperty("id"));
+        assertEquals(Long.valueOf(15000000), currentEdge.getProperty("payment"));
         assertNull(currentEdge.getProperty("year"));
         assertEquals(false, edgesIt.hasNext());
       } else {
@@ -893,17 +906,17 @@ public class ImportWithInputRelationshipConfigurationTest {
       }
 
       values[0] = "A001";
-      iterator = orientGraph.getVertices("Actor", keys, values).iterator();
-      assertTrue(iterator.hasNext());
-      if (iterator.hasNext()) {
-        v = iterator.next();
+      result = OGraphCommands.getVertices(orientGraph, "Actor", keys, values);
+      assertTrue(result.hasNext());
+      if (result.hasNext()) {
+        v = result.next().getVertex().get();
         assertEquals("A001", v.getProperty("id"));
         assertEquals("John", v.getProperty("firstName"));
         assertEquals("Travolta", v.getProperty("lastName"));
-        edgesIt = v.getEdges(Direction.OUT, "Performs").iterator();
+        edgesIt = v.getEdges(ODirection.OUT, "Performs").iterator();
         currentEdge = edgesIt.next();
-        assertEquals("F001", currentEdge.getVertex(Direction.IN).getProperty("id"));
-        assertEquals(12000000, currentEdge.getProperty("payment"));
+        assertEquals("F001", currentEdge.getVertex(ODirection.IN).getProperty("id"));
+        assertEquals(Long.valueOf(12000000), currentEdge.getProperty("payment"));
         assertNull(currentEdge.getProperty("year"));
         assertEquals(false, edgesIt.hasNext());
       } else {
@@ -911,17 +924,17 @@ public class ImportWithInputRelationshipConfigurationTest {
       }
 
       values[0] = "A002";
-      iterator = orientGraph.getVertices("Actor", keys, values).iterator();
-      assertTrue(iterator.hasNext());
-      if (iterator.hasNext()) {
-        v = iterator.next();
+      result = OGraphCommands.getVertices(orientGraph, "Actor", keys, values);
+      assertTrue(result.hasNext());
+      if (result.hasNext()) {
+        v = result.next().getVertex().get();
         assertEquals("A002", v.getProperty("id"));
         assertEquals("Samuel", v.getProperty("firstName"));
         assertEquals("Lee Jackson", v.getProperty("lastName"));
-        edgesIt = v.getEdges(Direction.OUT, "Performs").iterator();
+        edgesIt = v.getEdges(ODirection.OUT, "Performs").iterator();
         currentEdge = edgesIt.next();
-        assertEquals("F001", currentEdge.getVertex(Direction.IN).getProperty("id"));
-        assertEquals(10000000, currentEdge.getProperty("payment"));
+        assertEquals("F001", currentEdge.getVertex(ODirection.IN).getProperty("id"));
+        assertEquals(Long.valueOf(10000000), currentEdge.getProperty("payment"));
         assertNull(currentEdge.getProperty("year"));
         assertEquals(false, edgesIt.hasNext());
       } else {
@@ -929,17 +942,17 @@ public class ImportWithInputRelationshipConfigurationTest {
       }
 
       values[0] = "A003";
-      iterator = orientGraph.getVertices("Actor", keys, values).iterator();
-      assertTrue(iterator.hasNext());
-      if (iterator.hasNext()) {
-        v = iterator.next();
+      result = OGraphCommands.getVertices(orientGraph, "Actor", keys, values);
+      assertTrue(result.hasNext());
+      if (result.hasNext()) {
+        v = result.next().getVertex().get();
         assertEquals("A003", v.getProperty("id"));
         assertEquals("Bruce", v.getProperty("firstName"));
         assertEquals("Willis", v.getProperty("lastName"));
-        edgesIt = v.getEdges(Direction.OUT, "Performs").iterator();
+        edgesIt = v.getEdges(ODirection.OUT, "Performs").iterator();
         currentEdge = edgesIt.next();
-        assertEquals("F001", currentEdge.getVertex(Direction.IN).getProperty("id"));
-        assertEquals(15000000, currentEdge.getProperty("payment"));
+        assertEquals("F001", currentEdge.getVertex(ODirection.IN).getProperty("id"));
+        assertEquals(Long.valueOf(15000000), currentEdge.getProperty("payment"));
         assertNull(currentEdge.getProperty("year"));
         assertEquals(false, edgesIt.hasNext());
       } else {
@@ -947,21 +960,21 @@ public class ImportWithInputRelationshipConfigurationTest {
       }
 
       values[0] = "A004";
-      iterator = orientGraph.getVertices("Actor", keys, values).iterator();
-      assertTrue(iterator.hasNext());
-      if (iterator.hasNext()) {
-        v = iterator.next();
+      result = OGraphCommands.getVertices(orientGraph, "Actor", keys, values);
+      assertTrue(result.hasNext());
+      if (result.hasNext()) {
+        v = result.next().getVertex().get();
         assertEquals("A004", v.getProperty("id"));
         assertEquals("Leonardo", v.getProperty("firstName"));
         assertEquals("Di Caprio", v.getProperty("lastName"));
-        edgesIt = v.getEdges(Direction.OUT, "Performs").iterator();
+        edgesIt = v.getEdges(ODirection.OUT, "Performs").iterator();
         currentEdge = edgesIt.next();
-        assertEquals("F002", currentEdge.getVertex(Direction.IN).getProperty("id"));
-        assertEquals(30000000, currentEdge.getProperty("payment"));
+        assertEquals("F002", currentEdge.getVertex(ODirection.IN).getProperty("id"));
+        assertEquals(Long.valueOf(30000000), currentEdge.getProperty("payment"));
         assertNull(currentEdge.getProperty("year"));
         currentEdge = edgesIt.next();
-        assertEquals("F003", currentEdge.getVertex(Direction.IN).getProperty("id"));
-        assertEquals(40000000, currentEdge.getProperty("payment"));
+        assertEquals("F003", currentEdge.getVertex(ODirection.IN).getProperty("id"));
+        assertEquals(Long.valueOf(40000000), currentEdge.getProperty("payment"));
         assertNull(currentEdge.getProperty("year"));
         assertEquals(false, edgesIt.hasNext());
       } else {
@@ -969,17 +982,17 @@ public class ImportWithInputRelationshipConfigurationTest {
       }
 
       values[0] = "A005";
-      iterator = orientGraph.getVertices("Actor", keys, values).iterator();
-      assertTrue(iterator.hasNext());
-      if (iterator.hasNext()) {
-        v = iterator.next();
+      result = OGraphCommands.getVertices(orientGraph, "Actor", keys, values);
+      assertTrue(result.hasNext());
+      if (result.hasNext()) {
+        v = result.next().getVertex().get();
         assertEquals("A005", v.getProperty("id"));
         assertEquals("Ben", v.getProperty("firstName"));
         assertEquals("Kingsley", v.getProperty("lastName"));
-        edgesIt = v.getEdges(Direction.OUT, "Performs").iterator();
+        edgesIt = v.getEdges(ODirection.OUT, "Performs").iterator();
         currentEdge = edgesIt.next();
-        assertEquals("F002", currentEdge.getVertex(Direction.IN).getProperty("id"));
-        assertEquals(35000000, currentEdge.getProperty("payment"));
+        assertEquals("F002", currentEdge.getVertex(ODirection.IN).getProperty("id"));
+        assertEquals(Long.valueOf(35000000), currentEdge.getProperty("payment"));
         assertNull(currentEdge.getProperty("year"));
         assertEquals(false, edgesIt.hasNext());
       } else {
@@ -987,17 +1000,17 @@ public class ImportWithInputRelationshipConfigurationTest {
       }
 
       values[0] = "A006";
-      iterator = orientGraph.getVertices("Actor", keys, values).iterator();
-      assertTrue(iterator.hasNext());
-      if (iterator.hasNext()) {
-        v = iterator.next();
+      result = OGraphCommands.getVertices(orientGraph, "Actor", keys, values);
+      assertTrue(result.hasNext());
+      if (result.hasNext()) {
+        v = result.next().getVertex().get();
         assertEquals("A006", v.getProperty("id"));
         assertEquals("Mark", v.getProperty("firstName"));
         assertEquals("Ruffalo", v.getProperty("lastName"));
-        edgesIt = v.getEdges(Direction.OUT, "Performs").iterator();
+        edgesIt = v.getEdges(ODirection.OUT, "Performs").iterator();
         currentEdge = edgesIt.next();
-        assertEquals("F002", currentEdge.getVertex(Direction.IN).getProperty("id"));
-        assertEquals(9000000, currentEdge.getProperty("payment"));
+        assertEquals("F002", currentEdge.getVertex(ODirection.IN).getProperty("id"));
+        assertEquals(Long.valueOf(9000000), currentEdge.getProperty("payment"));
         assertNull(currentEdge.getProperty("year"));
         assertEquals(false, edgesIt.hasNext());
       } else {
@@ -1005,17 +1018,17 @@ public class ImportWithInputRelationshipConfigurationTest {
       }
 
       values[0] = "A007";
-      iterator = orientGraph.getVertices("Actor", keys, values).iterator();
-      assertTrue(iterator.hasNext());
-      if (iterator.hasNext()) {
-        v = iterator.next();
+      result = OGraphCommands.getVertices(orientGraph, "Actor", keys, values);
+      assertTrue(result.hasNext());
+      if (result.hasNext()) {
+        v = result.next().getVertex().get();
         assertEquals("A007", v.getProperty("id"));
         assertEquals("Jack", v.getProperty("firstName"));
         assertEquals("Nicholson", v.getProperty("lastName"));
-        edgesIt = v.getEdges(Direction.OUT, "Performs").iterator();
+        edgesIt = v.getEdges(ODirection.OUT, "Performs").iterator();
         currentEdge = edgesIt.next();
-        assertEquals("F003", currentEdge.getVertex(Direction.IN).getProperty("id"));
-        assertEquals(25000000, currentEdge.getProperty("payment"));
+        assertEquals("F003", currentEdge.getVertex(ODirection.IN).getProperty("id"));
+        assertEquals(Long.valueOf(25000000), currentEdge.getProperty("payment"));
         assertNull(currentEdge.getProperty("year"));
         assertEquals(false, edgesIt.hasNext());
       } else {
@@ -1023,17 +1036,17 @@ public class ImportWithInputRelationshipConfigurationTest {
       }
 
       values[0] = "A008";
-      iterator = orientGraph.getVertices("Actor", keys, values).iterator();
-      assertTrue(iterator.hasNext());
-      if (iterator.hasNext()) {
-        v = iterator.next();
+      result = OGraphCommands.getVertices(orientGraph, "Actor", keys, values);
+      assertTrue(result.hasNext());
+      if (result.hasNext()) {
+        v = result.next().getVertex().get();
         assertEquals("A008", v.getProperty("id"));
         assertEquals("Matt", v.getProperty("firstName"));
         assertEquals("Damon", v.getProperty("lastName"));
-        edgesIt = v.getEdges(Direction.OUT, "Performs").iterator();
+        edgesIt = v.getEdges(ODirection.OUT, "Performs").iterator();
         currentEdge = edgesIt.next();
-        assertEquals("F003", currentEdge.getVertex(Direction.IN).getProperty("id"));
-        assertEquals(15000000, currentEdge.getProperty("payment"));
+        assertEquals("F003", currentEdge.getVertex(ODirection.IN).getProperty("id"));
+        assertEquals(Long.valueOf(15000000), currentEdge.getProperty("payment"));
         assertNull(currentEdge.getProperty("year"));
         assertEquals(false, edgesIt.hasNext());
       } else {
@@ -1057,7 +1070,7 @@ public class ImportWithInputRelationshipConfigurationTest {
       }
       if (orientGraph != null) {
         orientGraph.drop();
-        orientGraph.shutdown();
+        orientGraph.close();
       }
     }
   }
@@ -1090,7 +1103,7 @@ public class ImportWithInputRelationshipConfigurationTest {
     this.context.setExecutionStrategy("naive-aggregate");
     Connection connection = null;
     Statement st = null;
-    OrientGraphNoTx orientGraph = null;
+    ODatabaseDocument orientGraph = null;
 
     try {
 
@@ -1146,72 +1159,73 @@ public class ImportWithInputRelationshipConfigurationTest {
       /*
        *  Testing built OrientDB
        */
-      orientGraph = new OrientGraphNoTx(this.outOrientGraphUri);
+      OrientDB orient = OrientDB.fromUrl(this.outOrientGraphUri, OrientDBConfig.defaultConfig());
+      orientGraph = orient.open(this.dbName,"admin","admin");
 
       // vertices check
 
-      int count = 0;
-      for (Vertex v : orientGraph.getVertices()) {
-        assertNotNull(v.getId());
-        count++;
-      }
-      assertEquals(11, count);
+//      int count = 0;
+//      for(OVertex v : orientGraph.command(this.getVerticesQuery)) {
+//        assertNotNull(v.getIdentity());
+//        count++;
+//      }
+      assertEquals(11, orientGraph.countClass("V"));
 
-      count = 0;
-      for (Vertex v : orientGraph.getVerticesOfClass("Film")) {
-        assertNotNull(v.getId());
-        count++;
-      }
-      assertEquals(3, count);
+//      count = 0;
+//      for(OVertex v : orientGraph.command(this.getElementsFromClassQuery, "Film")) {
+//        assertNotNull(v.getIdentity());
+//        count++;
+//      }
+      assertEquals(3, orientGraph.countClass("Film"));
 
-      count = 0;
-      for (Vertex v : orientGraph.getVerticesOfClass("Actor")) {
-        assertNotNull(v.getId());
-        count++;
-      }
-      assertEquals(8, count);
+//      count = 0;
+//      for(OVertex v : orientGraph.command(this.getElementsFromClassQuery, "Actor")) {
+//        assertNotNull(v.getIdentity());
+//        count++;
+//      }
+      assertEquals(8, orientGraph.countClass("Actor"));
 
       // edges check
-      count = 0;
-      for (Edge e : orientGraph.getEdges()) {
-        assertNotNull(e.getId());
-        count++;
-      }
-      assertEquals(9, count);
+//      count = 0;
+//      for (OEdge  e : orientGraph.command(this.getEdgesQuery)) {
+//        assertNotNull(e.getIdentity());
+//        count++;
+//      }
+      assertEquals(9, orientGraph.countClass("E"));
 
-      count = 0;
-      for (Edge e : orientGraph.getEdgesOfClass("Performs")) {
-        assertNotNull(e.getId());
-        count++;
-      }
-      assertEquals(9, count);
+//      count = 0;
+//      for (OEdge  e : orientGraph.command(this.getElementsFromClassQuery, "Performs")) {
+//        assertNotNull(e.getIdentity());
+//        count++;
+//      }
+      assertEquals(9, orientGraph.countClass("Performs"));
 
       // vertex properties and connections check
-      Iterator<Edge> edgesIt = null;
+      Iterator<OEdge>  edgesIt = null;
       String[] keys = { "id" };
       String[] values = { "F001" };
 
-      Vertex v = null;
-      Edge currentEdge = null;
-      Iterator<Vertex> iterator = orientGraph.getVertices("Film", keys, values).iterator();
-      assertTrue(iterator.hasNext());
-      if (iterator.hasNext()) {
-        v = iterator.next();
+      OVertex v = null;
+      OEdge currentEdge = null;
+      OResultSet result = OGraphCommands.getVertices(orientGraph, "Film", keys, values);
+      assertTrue(result.hasNext());
+      if (result.hasNext()) {
+        v = result.next().getVertex().get();
         assertEquals("F001", v.getProperty("id"));
         assertEquals("Pulp Fiction", v.getProperty("title"));
         assertEquals("Action", v.getProperty("category"));
-        edgesIt = v.getEdges(Direction.IN, "Performs").iterator();
+        edgesIt = v.getEdges(ODirection.IN, "Performs").iterator();
         currentEdge = edgesIt.next();
-        assertEquals("A001", currentEdge.getVertex(Direction.OUT).getProperty("id"));
-        assertEquals(12000000, currentEdge.getProperty("payment"));
+        assertEquals("A001", currentEdge.getVertex(ODirection.OUT).getProperty("id"));
+        assertEquals(Long.valueOf(12000000), currentEdge.getProperty("payment"));
         assertNull(currentEdge.getProperty("year"));
         currentEdge = edgesIt.next();
-        assertEquals("A002", currentEdge.getVertex(Direction.OUT).getProperty("id"));
-        assertEquals(10000000, currentEdge.getProperty("payment"));
+        assertEquals("A002", currentEdge.getVertex(ODirection.OUT).getProperty("id"));
+        assertEquals(Long.valueOf(10000000), currentEdge.getProperty("payment"));
         assertNull(currentEdge.getProperty("year"));
         currentEdge = edgesIt.next();
-        assertEquals("A003", currentEdge.getVertex(Direction.OUT).getProperty("id"));
-        assertEquals(15000000, currentEdge.getProperty("payment"));
+        assertEquals("A003", currentEdge.getVertex(ODirection.OUT).getProperty("id"));
+        assertEquals(Long.valueOf(15000000), currentEdge.getProperty("payment"));
         assertNull(currentEdge.getProperty("year"));
         assertEquals(false, edgesIt.hasNext());
       } else {
@@ -1219,25 +1233,25 @@ public class ImportWithInputRelationshipConfigurationTest {
       }
 
       values[0] = "F002";
-      iterator = orientGraph.getVertices("Film", keys, values).iterator();
-      assertTrue(iterator.hasNext());
-      if (iterator.hasNext()) {
-        v = iterator.next();
+      result = OGraphCommands.getVertices(orientGraph, "Film", keys, values);
+      assertTrue(result.hasNext());
+      if (result.hasNext()) {
+        v = result.next().getVertex().get();
         assertEquals("F002", v.getProperty("id"));
         assertEquals("Shutter Island", v.getProperty("title"));
         assertEquals("Thriller", v.getProperty("category"));
-        edgesIt = v.getEdges(Direction.IN, "Performs").iterator();
+        edgesIt = v.getEdges(ODirection.IN, "Performs").iterator();
         currentEdge = edgesIt.next();
-        assertEquals("A004", currentEdge.getVertex(Direction.OUT).getProperty("id"));
-        assertEquals(30000000, currentEdge.getProperty("payment"));
+        assertEquals("A004", currentEdge.getVertex(ODirection.OUT).getProperty("id"));
+        assertEquals(Long.valueOf(30000000), currentEdge.getProperty("payment"));
         assertNull(currentEdge.getProperty("year"));
         currentEdge = edgesIt.next();
-        assertEquals("A005", currentEdge.getVertex(Direction.OUT).getProperty("id"));
-        assertEquals(35000000, currentEdge.getProperty("payment"));
+        assertEquals("A005", currentEdge.getVertex(ODirection.OUT).getProperty("id"));
+        assertEquals(Long.valueOf(35000000), currentEdge.getProperty("payment"));
         assertNull(currentEdge.getProperty("year"));
         currentEdge = edgesIt.next();
-        assertEquals("A006", currentEdge.getVertex(Direction.OUT).getProperty("id"));
-        assertEquals(9000000, currentEdge.getProperty("payment"));
+        assertEquals("A006", currentEdge.getVertex(ODirection.OUT).getProperty("id"));
+        assertEquals(Long.valueOf(9000000), currentEdge.getProperty("payment"));
         assertNull(currentEdge.getProperty("year"));
         assertEquals(false, edgesIt.hasNext());
       } else {
@@ -1245,25 +1259,25 @@ public class ImportWithInputRelationshipConfigurationTest {
       }
 
       values[0] = "F003";
-      iterator = orientGraph.getVertices("Film", keys, values).iterator();
-      assertTrue(iterator.hasNext());
-      if (iterator.hasNext()) {
-        v = iterator.next();
+      result = OGraphCommands.getVertices(orientGraph, "Film", keys, values);
+      assertTrue(result.hasNext());
+      if (result.hasNext()) {
+        v = result.next().getVertex().get();
         assertEquals("F003", v.getProperty("id"));
         assertEquals("The Departed", v.getProperty("title"));
         assertEquals("Action-Thriller", v.getProperty("category"));
-        edgesIt = v.getEdges(Direction.IN, "Performs").iterator();
+        edgesIt = v.getEdges(ODirection.IN, "Performs").iterator();
         currentEdge = edgesIt.next();
-        assertEquals("A004", currentEdge.getVertex(Direction.OUT).getProperty("id"));
-        assertEquals(40000000, currentEdge.getProperty("payment"));
+        assertEquals("A004", currentEdge.getVertex(ODirection.OUT).getProperty("id"));
+        assertEquals(Long.valueOf(40000000), currentEdge.getProperty("payment"));
         assertNull(currentEdge.getProperty("year"));
         currentEdge = edgesIt.next();
-        assertEquals("A007", currentEdge.getVertex(Direction.OUT).getProperty("id"));
-        assertEquals(25000000, currentEdge.getProperty("payment"));
+        assertEquals("A007", currentEdge.getVertex(ODirection.OUT).getProperty("id"));
+        assertEquals(Long.valueOf(25000000), currentEdge.getProperty("payment"));
         assertNull(currentEdge.getProperty("year"));
         currentEdge = edgesIt.next();
-        assertEquals("A008", currentEdge.getVertex(Direction.OUT).getProperty("id"));
-        assertEquals(15000000, currentEdge.getProperty("payment"));
+        assertEquals("A008", currentEdge.getVertex(ODirection.OUT).getProperty("id"));
+        assertEquals(Long.valueOf(15000000), currentEdge.getProperty("payment"));
         assertNull(currentEdge.getProperty("year"));
         assertEquals(false, edgesIt.hasNext());
       } else {
@@ -1271,17 +1285,17 @@ public class ImportWithInputRelationshipConfigurationTest {
       }
 
       values[0] = "A001";
-      iterator = orientGraph.getVertices("Actor", keys, values).iterator();
-      assertTrue(iterator.hasNext());
-      if (iterator.hasNext()) {
-        v = iterator.next();
+      result = OGraphCommands.getVertices(orientGraph, "Actor", keys, values);
+      assertTrue(result.hasNext());
+      if (result.hasNext()) {
+        v = result.next().getVertex().get();
         assertEquals("A001", v.getProperty("id"));
         assertEquals("John", v.getProperty("firstName"));
         assertEquals("Travolta", v.getProperty("lastName"));
-        edgesIt = v.getEdges(Direction.OUT, "Performs").iterator();
+        edgesIt = v.getEdges(ODirection.OUT, "Performs").iterator();
         currentEdge = edgesIt.next();
-        assertEquals("F001", currentEdge.getVertex(Direction.IN).getProperty("id"));
-        assertEquals(12000000, currentEdge.getProperty("payment"));
+        assertEquals("F001", currentEdge.getVertex(ODirection.IN).getProperty("id"));
+        assertEquals(Long.valueOf(12000000), currentEdge.getProperty("payment"));
         assertNull(currentEdge.getProperty("year"));
         assertEquals(false, edgesIt.hasNext());
       } else {
@@ -1289,17 +1303,17 @@ public class ImportWithInputRelationshipConfigurationTest {
       }
 
       values[0] = "A002";
-      iterator = orientGraph.getVertices("Actor", keys, values).iterator();
-      assertTrue(iterator.hasNext());
-      if (iterator.hasNext()) {
-        v = iterator.next();
+      result = OGraphCommands.getVertices(orientGraph, "Actor", keys, values);
+      assertTrue(result.hasNext());
+      if (result.hasNext()) {
+        v = result.next().getVertex().get();
         assertEquals("A002", v.getProperty("id"));
         assertEquals("Samuel", v.getProperty("firstName"));
         assertEquals("Lee Jackson", v.getProperty("lastName"));
-        edgesIt = v.getEdges(Direction.OUT, "Performs").iterator();
+        edgesIt = v.getEdges(ODirection.OUT, "Performs").iterator();
         currentEdge = edgesIt.next();
-        assertEquals("F001", currentEdge.getVertex(Direction.IN).getProperty("id"));
-        assertEquals(10000000, currentEdge.getProperty("payment"));
+        assertEquals("F001", currentEdge.getVertex(ODirection.IN).getProperty("id"));
+        assertEquals(Long.valueOf(10000000), currentEdge.getProperty("payment"));
         assertNull(currentEdge.getProperty("year"));
         assertEquals(false, edgesIt.hasNext());
       } else {
@@ -1307,17 +1321,17 @@ public class ImportWithInputRelationshipConfigurationTest {
       }
 
       values[0] = "A003";
-      iterator = orientGraph.getVertices("Actor", keys, values).iterator();
-      assertTrue(iterator.hasNext());
-      if (iterator.hasNext()) {
-        v = iterator.next();
+      result = OGraphCommands.getVertices(orientGraph, "Actor", keys, values);
+      assertTrue(result.hasNext());
+      if (result.hasNext()) {
+        v = result.next().getVertex().get();
         assertEquals("A003", v.getProperty("id"));
         assertEquals("Bruce", v.getProperty("firstName"));
         assertEquals("Willis", v.getProperty("lastName"));
-        edgesIt = v.getEdges(Direction.OUT, "Performs").iterator();
+        edgesIt = v.getEdges(ODirection.OUT, "Performs").iterator();
         currentEdge = edgesIt.next();
-        assertEquals("F001", currentEdge.getVertex(Direction.IN).getProperty("id"));
-        assertEquals(15000000, currentEdge.getProperty("payment"));
+        assertEquals("F001", currentEdge.getVertex(ODirection.IN).getProperty("id"));
+        assertEquals(Long.valueOf(15000000), currentEdge.getProperty("payment"));
         assertNull(currentEdge.getProperty("year"));
         assertEquals(false, edgesIt.hasNext());
       } else {
@@ -1325,21 +1339,21 @@ public class ImportWithInputRelationshipConfigurationTest {
       }
 
       values[0] = "A004";
-      iterator = orientGraph.getVertices("Actor", keys, values).iterator();
-      assertTrue(iterator.hasNext());
-      if (iterator.hasNext()) {
-        v = iterator.next();
+      result = OGraphCommands.getVertices(orientGraph, "Actor", keys, values);
+      assertTrue(result.hasNext());
+      if (result.hasNext()) {
+        v = result.next().getVertex().get();
         assertEquals("A004", v.getProperty("id"));
         assertEquals("Leonardo", v.getProperty("firstName"));
         assertEquals("Di Caprio", v.getProperty("lastName"));
-        edgesIt = v.getEdges(Direction.OUT, "Performs").iterator();
+        edgesIt = v.getEdges(ODirection.OUT, "Performs").iterator();
         currentEdge = edgesIt.next();
-        assertEquals("F002", currentEdge.getVertex(Direction.IN).getProperty("id"));
-        assertEquals(30000000, currentEdge.getProperty("payment"));
+        assertEquals("F002", currentEdge.getVertex(ODirection.IN).getProperty("id"));
+        assertEquals(Long.valueOf(30000000), currentEdge.getProperty("payment"));
         assertNull(currentEdge.getProperty("year"));
         currentEdge = edgesIt.next();
-        assertEquals("F003", currentEdge.getVertex(Direction.IN).getProperty("id"));
-        assertEquals(40000000, currentEdge.getProperty("payment"));
+        assertEquals("F003", currentEdge.getVertex(ODirection.IN).getProperty("id"));
+        assertEquals(Long.valueOf(40000000), currentEdge.getProperty("payment"));
         assertNull(currentEdge.getProperty("year"));
         assertEquals(false, edgesIt.hasNext());
       } else {
@@ -1347,17 +1361,17 @@ public class ImportWithInputRelationshipConfigurationTest {
       }
 
       values[0] = "A005";
-      iterator = orientGraph.getVertices("Actor", keys, values).iterator();
-      assertTrue(iterator.hasNext());
-      if (iterator.hasNext()) {
-        v = iterator.next();
+      result = OGraphCommands.getVertices(orientGraph, "Actor", keys, values);
+      assertTrue(result.hasNext());
+      if (result.hasNext()) {
+        v = result.next().getVertex().get();
         assertEquals("A005", v.getProperty("id"));
         assertEquals("Ben", v.getProperty("firstName"));
         assertEquals("Kingsley", v.getProperty("lastName"));
-        edgesIt = v.getEdges(Direction.OUT, "Performs").iterator();
+        edgesIt = v.getEdges(ODirection.OUT, "Performs").iterator();
         currentEdge = edgesIt.next();
-        assertEquals("F002", currentEdge.getVertex(Direction.IN).getProperty("id"));
-        assertEquals(35000000, currentEdge.getProperty("payment"));
+        assertEquals("F002", currentEdge.getVertex(ODirection.IN).getProperty("id"));
+        assertEquals(Long.valueOf(35000000), currentEdge.getProperty("payment"));
         assertNull(currentEdge.getProperty("year"));
         assertEquals(false, edgesIt.hasNext());
       } else {
@@ -1365,17 +1379,17 @@ public class ImportWithInputRelationshipConfigurationTest {
       }
 
       values[0] = "A006";
-      iterator = orientGraph.getVertices("Actor", keys, values).iterator();
-      assertTrue(iterator.hasNext());
-      if (iterator.hasNext()) {
-        v = iterator.next();
+      result = OGraphCommands.getVertices(orientGraph, "Actor", keys, values);
+      assertTrue(result.hasNext());
+      if (result.hasNext()) {
+        v = result.next().getVertex().get();
         assertEquals("A006", v.getProperty("id"));
         assertEquals("Mark", v.getProperty("firstName"));
         assertEquals("Ruffalo", v.getProperty("lastName"));
-        edgesIt = v.getEdges(Direction.OUT, "Performs").iterator();
+        edgesIt = v.getEdges(ODirection.OUT, "Performs").iterator();
         currentEdge = edgesIt.next();
-        assertEquals("F002", currentEdge.getVertex(Direction.IN).getProperty("id"));
-        assertEquals(9000000, currentEdge.getProperty("payment"));
+        assertEquals("F002", currentEdge.getVertex(ODirection.IN).getProperty("id"));
+        assertEquals(Long.valueOf(9000000), currentEdge.getProperty("payment"));
         assertNull(currentEdge.getProperty("year"));
         assertEquals(false, edgesIt.hasNext());
       } else {
@@ -1383,17 +1397,17 @@ public class ImportWithInputRelationshipConfigurationTest {
       }
 
       values[0] = "A007";
-      iterator = orientGraph.getVertices("Actor", keys, values).iterator();
-      assertTrue(iterator.hasNext());
-      if (iterator.hasNext()) {
-        v = iterator.next();
+      result = OGraphCommands.getVertices(orientGraph, "Actor", keys, values);
+      assertTrue(result.hasNext());
+      if (result.hasNext()) {
+        v = result.next().getVertex().get();
         assertEquals("A007", v.getProperty("id"));
         assertEquals("Jack", v.getProperty("firstName"));
         assertEquals("Nicholson", v.getProperty("lastName"));
-        edgesIt = v.getEdges(Direction.OUT, "Performs").iterator();
+        edgesIt = v.getEdges(ODirection.OUT, "Performs").iterator();
         currentEdge = edgesIt.next();
-        assertEquals("F003", currentEdge.getVertex(Direction.IN).getProperty("id"));
-        assertEquals(25000000, currentEdge.getProperty("payment"));
+        assertEquals("F003", currentEdge.getVertex(ODirection.IN).getProperty("id"));
+        assertEquals(Long.valueOf(25000000), currentEdge.getProperty("payment"));
         assertNull(currentEdge.getProperty("year"));
         assertEquals(false, edgesIt.hasNext());
       } else {
@@ -1401,17 +1415,17 @@ public class ImportWithInputRelationshipConfigurationTest {
       }
 
       values[0] = "A008";
-      iterator = orientGraph.getVertices("Actor", keys, values).iterator();
-      assertTrue(iterator.hasNext());
-      if (iterator.hasNext()) {
-        v = iterator.next();
+      result = OGraphCommands.getVertices(orientGraph, "Actor", keys, values);
+      assertTrue(result.hasNext());
+      if (result.hasNext()) {
+        v = result.next().getVertex().get();
         assertEquals("A008", v.getProperty("id"));
         assertEquals("Matt", v.getProperty("firstName"));
         assertEquals("Damon", v.getProperty("lastName"));
-        edgesIt = v.getEdges(Direction.OUT, "Performs").iterator();
+        edgesIt = v.getEdges(ODirection.OUT, "Performs").iterator();
         currentEdge = edgesIt.next();
-        assertEquals("F003", currentEdge.getVertex(Direction.IN).getProperty("id"));
-        assertEquals(15000000, currentEdge.getProperty("payment"));
+        assertEquals("F003", currentEdge.getVertex(ODirection.IN).getProperty("id"));
+        assertEquals(Long.valueOf(15000000), currentEdge.getProperty("payment"));
         assertNull(currentEdge.getProperty("year"));
         assertEquals(false, edgesIt.hasNext());
       } else {
@@ -1435,7 +1449,7 @@ public class ImportWithInputRelationshipConfigurationTest {
       }
       if (orientGraph != null) {
         orientGraph.drop();
-        orientGraph.shutdown();
+        orientGraph.close();
       }
     }
   }
@@ -1466,7 +1480,7 @@ public class ImportWithInputRelationshipConfigurationTest {
     this.context.setExecutionStrategy("naive-aggregate");
     Connection connection = null;
     Statement st = null;
-    OrientGraphNoTx orientGraph = null;
+    ODatabaseDocument orientGraph = null;
 
     try {
 
@@ -1523,72 +1537,73 @@ public class ImportWithInputRelationshipConfigurationTest {
       /*
        *  Testing built OrientDB
        */
-      orientGraph = new OrientGraphNoTx(this.outOrientGraphUri);
+      OrientDB orient = OrientDB.fromUrl(this.outOrientGraphUri, OrientDBConfig.defaultConfig());
+      orientGraph = orient.open(this.dbName,"admin","admin");
 
       // vertices check
 
-      int count = 0;
-      for (Vertex v : orientGraph.getVertices()) {
-        assertNotNull(v.getId());
-        count++;
-      }
-      assertEquals(11, count);
+//      int count = 0;
+//      for(OVertex v : orientGraph.command(this.getVerticesQuery)) {
+//        assertNotNull(v.getIdentity());
+//        count++;
+//      }
+      assertEquals(11, orientGraph.countClass("V"));
 
-      count = 0;
-      for (Vertex v : orientGraph.getVerticesOfClass("Film")) {
-        assertNotNull(v.getId());
-        count++;
-      }
-      assertEquals(3, count);
+//      count = 0;
+//      for(OVertex v : orientGraph.command(this.getElementsFromClassQuery, "Film")) {
+//        assertNotNull(v.getIdentity());
+//        count++;
+//      }
+      assertEquals(3, orientGraph.countClass("Film"));
 
-      count = 0;
-      for (Vertex v : orientGraph.getVerticesOfClass("Actor")) {
-        assertNotNull(v.getId());
-        count++;
-      }
-      assertEquals(8, count);
+//      count = 0;
+//      for(OVertex v : orientGraph.command(this.getElementsFromClassQuery, "Actor")) {
+//        assertNotNull(v.getIdentity());
+//        count++;
+//      }
+      assertEquals(8, orientGraph.countClass("Actor"));
 
       // edges check
-      count = 0;
-      for (Edge e : orientGraph.getEdges()) {
-        assertNotNull(e.getId());
-        count++;
-      }
-      assertEquals(9, count);
+//      count = 0;
+//      for (OEdge  e : orientGraph.command(this.getEdgesQuery)) {
+//        assertNotNull(e.getIdentity());
+//        count++;
+//      }
+      assertEquals(9, orientGraph.countClass("E"));
 
-      count = 0;
-      for (Edge e : orientGraph.getEdgesOfClass("Performs")) {
-        assertNotNull(e.getId());
-        count++;
-      }
-      assertEquals(9, count);
+//      count = 0;
+//      for (OEdge  e : orientGraph.command(this.getElementsFromClassQuery, "Performs")) {
+//        assertNotNull(e.getIdentity());
+//        count++;
+//      }
+      assertEquals(9, orientGraph.countClass("Performs"));
 
       // vertex properties and connections check
-      Iterator<Edge> edgesIt = null;
+      Iterator<OEdge>  edgesIt = null;
       String[] keys = { "id" };
       String[] values = { "F001" };
 
-      Vertex v = null;
-      Edge currentEdge = null;
-      Iterator<Vertex> iterator = orientGraph.getVertices("Film", keys, values).iterator();
-      assertTrue(iterator.hasNext());
-      if (iterator.hasNext()) {
-        v = iterator.next();
+      OVertex v = null;
+      OEdge currentEdge = null;
+      OResultSet result = OGraphCommands.getVertices(orientGraph, "Film", keys, values);
+      assertTrue(result.hasNext());
+      if (result.hasNext()) {
+        v = result.next().getVertex().get();
         assertEquals("F001", v.getProperty("id"));
         assertEquals("Pulp Fiction", v.getProperty("title"));
         assertEquals("Action", v.getProperty("category"));
-        edgesIt = v.getEdges(Direction.IN, "Performs").iterator();
+        edgesIt = v.getEdges(ODirection.IN, "Performs").iterator();
         currentEdge = edgesIt.next();
-        assertEquals("A001", currentEdge.getVertex(Direction.OUT).getProperty("id"));
-        assertEquals(12000000, currentEdge.getProperty("payment"));
+        assertEquals("A001", currentEdge.getVertex(ODirection.OUT).getProperty("id"));
+        assertEquals(Long.valueOf(12000000), currentEdge.getProperty("payment"));
         assertNull(currentEdge.getProperty("year"));
         currentEdge = edgesIt.next();
-        assertEquals("A002", currentEdge.getVertex(Direction.OUT).getProperty("id"));
-        assertEquals(10000000, currentEdge.getProperty("payment"));
+        assertEquals("A002", currentEdge.getVertex(ODirection.OUT).getProperty("id"));
+        assertEquals(Long.valueOf(10000000), currentEdge.getProperty("payment"));
         assertNull(currentEdge.getProperty("year"));
         currentEdge = edgesIt.next();
-        assertEquals("A003", currentEdge.getVertex(Direction.OUT).getProperty("id"));
-        assertEquals(15000000, currentEdge.getProperty("payment"));
+        assertEquals("A003", currentEdge.getVertex(ODirection.OUT).getProperty("id"));
+        assertEquals(Long.valueOf(15000000), currentEdge.getProperty("payment"));
         assertNull(currentEdge.getProperty("year"));
         assertEquals(false, edgesIt.hasNext());
       } else {
@@ -1596,25 +1611,25 @@ public class ImportWithInputRelationshipConfigurationTest {
       }
 
       values[0] = "F002";
-      iterator = orientGraph.getVertices("Film", keys, values).iterator();
-      assertTrue(iterator.hasNext());
-      if (iterator.hasNext()) {
-        v = iterator.next();
+      result = OGraphCommands.getVertices(orientGraph, "Film", keys, values);
+      assertTrue(result.hasNext());
+      if (result.hasNext()) {
+        v = result.next().getVertex().get();
         assertEquals("F002", v.getProperty("id"));
         assertEquals("Shutter Island", v.getProperty("title"));
         assertEquals("Thriller", v.getProperty("category"));
-        edgesIt = v.getEdges(Direction.IN, "Performs").iterator();
+        edgesIt = v.getEdges(ODirection.IN, "Performs").iterator();
         currentEdge = edgesIt.next();
-        assertEquals("A004", currentEdge.getVertex(Direction.OUT).getProperty("id"));
-        assertEquals(30000000, currentEdge.getProperty("payment"));
+        assertEquals("A004", currentEdge.getVertex(ODirection.OUT).getProperty("id"));
+        assertEquals(Long.valueOf(30000000), currentEdge.getProperty("payment"));
         assertNull(currentEdge.getProperty("year"));
         currentEdge = edgesIt.next();
-        assertEquals("A005", currentEdge.getVertex(Direction.OUT).getProperty("id"));
-        assertEquals(35000000, currentEdge.getProperty("payment"));
+        assertEquals("A005", currentEdge.getVertex(ODirection.OUT).getProperty("id"));
+        assertEquals(Long.valueOf(35000000), currentEdge.getProperty("payment"));
         assertNull(currentEdge.getProperty("year"));
         currentEdge = edgesIt.next();
-        assertEquals("A006", currentEdge.getVertex(Direction.OUT).getProperty("id"));
-        assertEquals(9000000, currentEdge.getProperty("payment"));
+        assertEquals("A006", currentEdge.getVertex(ODirection.OUT).getProperty("id"));
+        assertEquals(Long.valueOf(9000000), currentEdge.getProperty("payment"));
         assertNull(currentEdge.getProperty("year"));
         assertEquals(false, edgesIt.hasNext());
       } else {
@@ -1622,25 +1637,25 @@ public class ImportWithInputRelationshipConfigurationTest {
       }
 
       values[0] = "F003";
-      iterator = orientGraph.getVertices("Film", keys, values).iterator();
-      assertTrue(iterator.hasNext());
-      if (iterator.hasNext()) {
-        v = iterator.next();
+      result = OGraphCommands.getVertices(orientGraph, "Film", keys, values);
+      assertTrue(result.hasNext());
+      if (result.hasNext()) {
+        v = result.next().getVertex().get();
         assertEquals("F003", v.getProperty("id"));
         assertEquals("The Departed", v.getProperty("title"));
         assertEquals("Action-Thriller", v.getProperty("category"));
-        edgesIt = v.getEdges(Direction.IN, "Performs").iterator();
+        edgesIt = v.getEdges(ODirection.IN, "Performs").iterator();
         currentEdge = edgesIt.next();
-        assertEquals("A004", currentEdge.getVertex(Direction.OUT).getProperty("id"));
-        assertEquals(40000000, currentEdge.getProperty("payment"));
+        assertEquals("A004", currentEdge.getVertex(ODirection.OUT).getProperty("id"));
+        assertEquals(Long.valueOf(40000000), currentEdge.getProperty("payment"));
         assertNull(currentEdge.getProperty("year"));
         currentEdge = edgesIt.next();
-        assertEquals("A007", currentEdge.getVertex(Direction.OUT).getProperty("id"));
-        assertEquals(25000000, currentEdge.getProperty("payment"));
+        assertEquals("A007", currentEdge.getVertex(ODirection.OUT).getProperty("id"));
+        assertEquals(Long.valueOf(25000000), currentEdge.getProperty("payment"));
         assertNull(currentEdge.getProperty("year"));
         currentEdge = edgesIt.next();
-        assertEquals("A008", currentEdge.getVertex(Direction.OUT).getProperty("id"));
-        assertEquals(15000000, currentEdge.getProperty("payment"));
+        assertEquals("A008", currentEdge.getVertex(ODirection.OUT).getProperty("id"));
+        assertEquals(Long.valueOf(15000000), currentEdge.getProperty("payment"));
         assertNull(currentEdge.getProperty("year"));
         assertEquals(false, edgesIt.hasNext());
       } else {
@@ -1648,17 +1663,17 @@ public class ImportWithInputRelationshipConfigurationTest {
       }
 
       values[0] = "A001";
-      iterator = orientGraph.getVertices("Actor", keys, values).iterator();
-      assertTrue(iterator.hasNext());
-      if (iterator.hasNext()) {
-        v = iterator.next();
+      result = OGraphCommands.getVertices(orientGraph, "Actor", keys, values);
+      assertTrue(result.hasNext());
+      if (result.hasNext()) {
+        v = result.next().getVertex().get();
         assertEquals("A001", v.getProperty("id"));
         assertEquals("John", v.getProperty("firstName"));
         assertEquals("Travolta", v.getProperty("lastName"));
-        edgesIt = v.getEdges(Direction.OUT, "Performs").iterator();
+        edgesIt = v.getEdges(ODirection.OUT, "Performs").iterator();
         currentEdge = edgesIt.next();
-        assertEquals("F001", currentEdge.getVertex(Direction.IN).getProperty("id"));
-        assertEquals(12000000, currentEdge.getProperty("payment"));
+        assertEquals("F001", currentEdge.getVertex(ODirection.IN).getProperty("id"));
+        assertEquals(Long.valueOf(12000000), currentEdge.getProperty("payment"));
         assertNull(currentEdge.getProperty("year"));
         assertEquals(false, edgesIt.hasNext());
       } else {
@@ -1666,17 +1681,17 @@ public class ImportWithInputRelationshipConfigurationTest {
       }
 
       values[0] = "A002";
-      iterator = orientGraph.getVertices("Actor", keys, values).iterator();
-      assertTrue(iterator.hasNext());
-      if (iterator.hasNext()) {
-        v = iterator.next();
+      result = OGraphCommands.getVertices(orientGraph, "Actor", keys, values);
+      assertTrue(result.hasNext());
+      if (result.hasNext()) {
+        v = result.next().getVertex().get();
         assertEquals("A002", v.getProperty("id"));
         assertEquals("Samuel", v.getProperty("firstName"));
         assertEquals("Lee Jackson", v.getProperty("lastName"));
-        edgesIt = v.getEdges(Direction.OUT, "Performs").iterator();
+        edgesIt = v.getEdges(ODirection.OUT, "Performs").iterator();
         currentEdge = edgesIt.next();
-        assertEquals("F001", currentEdge.getVertex(Direction.IN).getProperty("id"));
-        assertEquals(10000000, currentEdge.getProperty("payment"));
+        assertEquals("F001", currentEdge.getVertex(ODirection.IN).getProperty("id"));
+        assertEquals(Long.valueOf(10000000), currentEdge.getProperty("payment"));
         assertNull(currentEdge.getProperty("year"));
         assertEquals(false, edgesIt.hasNext());
       } else {
@@ -1684,17 +1699,17 @@ public class ImportWithInputRelationshipConfigurationTest {
       }
 
       values[0] = "A003";
-      iterator = orientGraph.getVertices("Actor", keys, values).iterator();
-      assertTrue(iterator.hasNext());
-      if (iterator.hasNext()) {
-        v = iterator.next();
+      result = OGraphCommands.getVertices(orientGraph, "Actor", keys, values);
+      assertTrue(result.hasNext());
+      if (result.hasNext()) {
+        v = result.next().getVertex().get();
         assertEquals("A003", v.getProperty("id"));
         assertEquals("Bruce", v.getProperty("firstName"));
         assertEquals("Willis", v.getProperty("lastName"));
-        edgesIt = v.getEdges(Direction.OUT, "Performs").iterator();
+        edgesIt = v.getEdges(ODirection.OUT, "Performs").iterator();
         currentEdge = edgesIt.next();
-        assertEquals("F001", currentEdge.getVertex(Direction.IN).getProperty("id"));
-        assertEquals(15000000, currentEdge.getProperty("payment"));
+        assertEquals("F001", currentEdge.getVertex(ODirection.IN).getProperty("id"));
+        assertEquals(Long.valueOf(15000000), currentEdge.getProperty("payment"));
         assertNull(currentEdge.getProperty("year"));
         assertEquals(false, edgesIt.hasNext());
       } else {
@@ -1702,21 +1717,21 @@ public class ImportWithInputRelationshipConfigurationTest {
       }
 
       values[0] = "A004";
-      iterator = orientGraph.getVertices("Actor", keys, values).iterator();
-      assertTrue(iterator.hasNext());
-      if (iterator.hasNext()) {
-        v = iterator.next();
+      result = OGraphCommands.getVertices(orientGraph, "Actor", keys, values);
+      assertTrue(result.hasNext());
+      if (result.hasNext()) {
+        v = result.next().getVertex().get();
         assertEquals("A004", v.getProperty("id"));
         assertEquals("Leonardo", v.getProperty("firstName"));
         assertEquals("Di Caprio", v.getProperty("lastName"));
-        edgesIt = v.getEdges(Direction.OUT, "Performs").iterator();
+        edgesIt = v.getEdges(ODirection.OUT, "Performs").iterator();
         currentEdge = edgesIt.next();
-        assertEquals("F002", currentEdge.getVertex(Direction.IN).getProperty("id"));
-        assertEquals(30000000, currentEdge.getProperty("payment"));
+        assertEquals("F002", currentEdge.getVertex(ODirection.IN).getProperty("id"));
+        assertEquals(Long.valueOf(30000000), currentEdge.getProperty("payment"));
         assertNull(currentEdge.getProperty("year"));
         currentEdge = edgesIt.next();
-        assertEquals("F003", currentEdge.getVertex(Direction.IN).getProperty("id"));
-        assertEquals(40000000, currentEdge.getProperty("payment"));
+        assertEquals("F003", currentEdge.getVertex(ODirection.IN).getProperty("id"));
+        assertEquals(Long.valueOf(40000000), currentEdge.getProperty("payment"));
         assertNull(currentEdge.getProperty("year"));
         assertEquals(false, edgesIt.hasNext());
       } else {
@@ -1724,17 +1739,17 @@ public class ImportWithInputRelationshipConfigurationTest {
       }
 
       values[0] = "A005";
-      iterator = orientGraph.getVertices("Actor", keys, values).iterator();
-      assertTrue(iterator.hasNext());
-      if (iterator.hasNext()) {
-        v = iterator.next();
+      result = OGraphCommands.getVertices(orientGraph, "Actor", keys, values);
+      assertTrue(result.hasNext());
+      if (result.hasNext()) {
+        v = result.next().getVertex().get();
         assertEquals("A005", v.getProperty("id"));
         assertEquals("Ben", v.getProperty("firstName"));
         assertEquals("Kingsley", v.getProperty("lastName"));
-        edgesIt = v.getEdges(Direction.OUT, "Performs").iterator();
+        edgesIt = v.getEdges(ODirection.OUT, "Performs").iterator();
         currentEdge = edgesIt.next();
-        assertEquals("F002", currentEdge.getVertex(Direction.IN).getProperty("id"));
-        assertEquals(35000000, currentEdge.getProperty("payment"));
+        assertEquals("F002", currentEdge.getVertex(ODirection.IN).getProperty("id"));
+        assertEquals(Long.valueOf(35000000), currentEdge.getProperty("payment"));
         assertNull(currentEdge.getProperty("year"));
         assertEquals(false, edgesIt.hasNext());
       } else {
@@ -1742,17 +1757,17 @@ public class ImportWithInputRelationshipConfigurationTest {
       }
 
       values[0] = "A006";
-      iterator = orientGraph.getVertices("Actor", keys, values).iterator();
-      assertTrue(iterator.hasNext());
-      if (iterator.hasNext()) {
-        v = iterator.next();
+      result = OGraphCommands.getVertices(orientGraph, "Actor", keys, values);
+      assertTrue(result.hasNext());
+      if (result.hasNext()) {
+        v = result.next().getVertex().get();
         assertEquals("A006", v.getProperty("id"));
         assertEquals("Mark", v.getProperty("firstName"));
         assertEquals("Ruffalo", v.getProperty("lastName"));
-        edgesIt = v.getEdges(Direction.OUT, "Performs").iterator();
+        edgesIt = v.getEdges(ODirection.OUT, "Performs").iterator();
         currentEdge = edgesIt.next();
-        assertEquals("F002", currentEdge.getVertex(Direction.IN).getProperty("id"));
-        assertEquals(9000000, currentEdge.getProperty("payment"));
+        assertEquals("F002", currentEdge.getVertex(ODirection.IN).getProperty("id"));
+        assertEquals(Long.valueOf(9000000), currentEdge.getProperty("payment"));
         assertNull(currentEdge.getProperty("year"));
         assertEquals(false, edgesIt.hasNext());
       } else {
@@ -1760,17 +1775,17 @@ public class ImportWithInputRelationshipConfigurationTest {
       }
 
       values[0] = "A007";
-      iterator = orientGraph.getVertices("Actor", keys, values).iterator();
-      assertTrue(iterator.hasNext());
-      if (iterator.hasNext()) {
-        v = iterator.next();
+      result = OGraphCommands.getVertices(orientGraph, "Actor", keys, values);
+      assertTrue(result.hasNext());
+      if (result.hasNext()) {
+        v = result.next().getVertex().get();
         assertEquals("A007", v.getProperty("id"));
         assertEquals("Jack", v.getProperty("firstName"));
         assertEquals("Nicholson", v.getProperty("lastName"));
-        edgesIt = v.getEdges(Direction.OUT, "Performs").iterator();
+        edgesIt = v.getEdges(ODirection.OUT, "Performs").iterator();
         currentEdge = edgesIt.next();
-        assertEquals("F003", currentEdge.getVertex(Direction.IN).getProperty("id"));
-        assertEquals(25000000, currentEdge.getProperty("payment"));
+        assertEquals("F003", currentEdge.getVertex(ODirection.IN).getProperty("id"));
+        assertEquals(Long.valueOf(25000000), currentEdge.getProperty("payment"));
         assertNull(currentEdge.getProperty("year"));
         assertEquals(false, edgesIt.hasNext());
       } else {
@@ -1778,17 +1793,17 @@ public class ImportWithInputRelationshipConfigurationTest {
       }
 
       values[0] = "A008";
-      iterator = orientGraph.getVertices("Actor", keys, values).iterator();
-      assertTrue(iterator.hasNext());
-      if (iterator.hasNext()) {
-        v = iterator.next();
+      result = OGraphCommands.getVertices(orientGraph, "Actor", keys, values);
+      assertTrue(result.hasNext());
+      if (result.hasNext()) {
+        v = result.next().getVertex().get();
         assertEquals("A008", v.getProperty("id"));
         assertEquals("Matt", v.getProperty("firstName"));
         assertEquals("Damon", v.getProperty("lastName"));
-        edgesIt = v.getEdges(Direction.OUT, "Performs").iterator();
+        edgesIt = v.getEdges(ODirection.OUT, "Performs").iterator();
         currentEdge = edgesIt.next();
-        assertEquals("F003", currentEdge.getVertex(Direction.IN).getProperty("id"));
-        assertEquals(15000000, currentEdge.getProperty("payment"));
+        assertEquals("F003", currentEdge.getVertex(ODirection.IN).getProperty("id"));
+        assertEquals(Long.valueOf(15000000), currentEdge.getProperty("payment"));
         assertNull(currentEdge.getProperty("year"));
         assertEquals(false, edgesIt.hasNext());
       } else {
@@ -1812,7 +1827,7 @@ public class ImportWithInputRelationshipConfigurationTest {
       }
       if (orientGraph != null) {
         orientGraph.drop();
-        orientGraph.shutdown();
+        orientGraph.close();
       }
     }
   }
@@ -1845,7 +1860,7 @@ public class ImportWithInputRelationshipConfigurationTest {
     this.context.setExecutionStrategy("naive-aggregate");
     Connection connection = null;
     Statement st = null;
-    OrientGraphNoTx orientGraph = null;
+    ODatabaseDocument orientGraph = null;
 
     try {
 
@@ -1902,72 +1917,73 @@ public class ImportWithInputRelationshipConfigurationTest {
       /*
        *  Testing built OrientDB
        */
-      orientGraph = new OrientGraphNoTx(this.outOrientGraphUri);
+      OrientDB orient = OrientDB.fromUrl(this.outOrientGraphUri, OrientDBConfig.defaultConfig());
+      orientGraph = orient.open(this.dbName,"admin","admin");
 
       // vertices check
 
-      int count = 0;
-      for (Vertex v : orientGraph.getVertices()) {
-        assertNotNull(v.getId());
-        count++;
-      }
-      assertEquals(11, count);
+//      int count = 0;
+//      for(OVertex v : orientGraph.command(this.getVerticesQuery)) {
+//        assertNotNull(v.getIdentity());
+//        count++;
+//      }
+      assertEquals(11, orientGraph.countClass("V"));
 
-      count = 0;
-      for (Vertex v : orientGraph.getVerticesOfClass("Film")) {
-        assertNotNull(v.getId());
-        count++;
-      }
-      assertEquals(3, count);
+//      count = 0;
+//      for(OVertex v : orientGraph.command(this.getElementsFromClassQuery, "Film")) {
+//        assertNotNull(v.getIdentity());
+//        count++;
+//      }
+      assertEquals(3, orientGraph.countClass("Film"));
 
-      count = 0;
-      for (Vertex v : orientGraph.getVerticesOfClass("Actor")) {
-        assertNotNull(v.getId());
-        count++;
-      }
-      assertEquals(8, count);
+//      count = 0;
+//      for(OVertex v : orientGraph.command(this.getElementsFromClassQuery, "Actor")) {
+//        assertNotNull(v.getIdentity());
+//        count++;
+//      }
+      assertEquals(8, orientGraph.countClass("Actor"));
 
       // edges check
-      count = 0;
-      for (Edge e : orientGraph.getEdges()) {
-        assertNotNull(e.getId());
-        count++;
-      }
-      assertEquals(9, count);
+//      count = 0;
+//      for (OEdge e : orientGraph.command(this.getEdgesQuery)) {
+//        assertNotNull(e.getIdentity());
+//        count++;
+//      }
+      assertEquals(9, orientGraph.countClass("E"));
 
-      count = 0;
-      for (Edge e : orientGraph.getEdgesOfClass("Features")) {
-        assertNotNull(e.getId());
-        count++;
-      }
-      assertEquals(9, count);
+//      count = 0;
+//      for (OEdge  e : orientGraph.command(this.getElementsFromClassQuery, "Features")) {
+//        assertNotNull(e.getIdentity());
+//        count++;
+//      }
+      assertEquals(9, orientGraph.countClass("Features"));
 
       // vertex properties and connections check
-      Iterator<Edge> edgesIt = null;
+      Iterator<OEdge>  edgesIt = null;
       String[] keys = { "id" };
       String[] values = { "F001" };
 
-      Vertex v = null;
-      Edge currentEdge = null;
-      Iterator<Vertex> iterator = orientGraph.getVertices("Film", keys, values).iterator();
-      assertTrue(iterator.hasNext());
-      if (iterator.hasNext()) {
-        v = iterator.next();
+      OVertex v = null;
+      OEdge currentEdge = null;
+      OResultSet result = OGraphCommands.getVertices(orientGraph, "Film", keys, values);
+      assertTrue(result.hasNext());
+      if (result.hasNext()) {
+        v = result.next().getVertex().get();
         assertEquals("F001", v.getProperty("id"));
         assertEquals("Pulp Fiction", v.getProperty("title"));
         assertEquals("Action", v.getProperty("category"));
-        edgesIt = v.getEdges(Direction.OUT, "Features").iterator();
+        edgesIt = v.getEdges(ODirection.OUT, "Features").iterator();
         currentEdge = edgesIt.next();
-        assertEquals("A001", currentEdge.getVertex(Direction.IN).getProperty("id"));
-        assertEquals(12000000, currentEdge.getProperty("payment"));
+        assertEquals("A001", currentEdge.getVertex(ODirection.IN).getProperty("id"));
+        assertEquals(Long.valueOf(12000000), currentEdge.getProperty("payment"));
         assertNull(currentEdge.getProperty("year"));
         currentEdge = edgesIt.next();
-        assertEquals("A002", currentEdge.getVertex(Direction.IN).getProperty("id"));
-        assertEquals(10000000, currentEdge.getProperty("payment"));
+        assertEquals("A002", currentEdge.getVertex(ODirection.IN).getProperty("id"));
+        assertEquals(Long.valueOf(10000000), currentEdge.getProperty("payment"));
         assertNull(currentEdge.getProperty("year"));
         currentEdge = edgesIt.next();
-        assertEquals("A003", currentEdge.getVertex(Direction.IN).getProperty("id"));
-        assertEquals(15000000, currentEdge.getProperty("payment"));
+        assertEquals("A003", currentEdge.getVertex(ODirection.IN).getProperty("id"));
+        assertEquals(Long.valueOf(15000000), currentEdge.getProperty("payment"));
         assertNull(currentEdge.getProperty("year"));
         assertEquals(false, edgesIt.hasNext());
       } else {
@@ -1975,25 +1991,25 @@ public class ImportWithInputRelationshipConfigurationTest {
       }
 
       values[0] = "F002";
-      iterator = orientGraph.getVertices("Film", keys, values).iterator();
-      assertTrue(iterator.hasNext());
-      if (iterator.hasNext()) {
-        v = iterator.next();
+      result = OGraphCommands.getVertices(orientGraph, "Film", keys, values);
+      assertTrue(result.hasNext());
+      if (result.hasNext()) {
+        v = result.next().getVertex().get();
         assertEquals("F002", v.getProperty("id"));
         assertEquals("Shutter Island", v.getProperty("title"));
         assertEquals("Thriller", v.getProperty("category"));
-        edgesIt = v.getEdges(Direction.OUT, "Features").iterator();
+        edgesIt = v.getEdges(ODirection.OUT, "Features").iterator();
         currentEdge = edgesIt.next();
-        assertEquals("A004", currentEdge.getVertex(Direction.IN).getProperty("id"));
-        assertEquals(30000000, currentEdge.getProperty("payment"));
+        assertEquals("A004", currentEdge.getVertex(ODirection.IN).getProperty("id"));
+        assertEquals(Long.valueOf(30000000), currentEdge.getProperty("payment"));
         assertNull(currentEdge.getProperty("year"));
         currentEdge = edgesIt.next();
-        assertEquals("A005", currentEdge.getVertex(Direction.IN).getProperty("id"));
-        assertEquals(35000000, currentEdge.getProperty("payment"));
+        assertEquals("A005", currentEdge.getVertex(ODirection.IN).getProperty("id"));
+        assertEquals(Long.valueOf(35000000), currentEdge.getProperty("payment"));
         assertNull(currentEdge.getProperty("year"));
         currentEdge = edgesIt.next();
-        assertEquals("A006", currentEdge.getVertex(Direction.IN).getProperty("id"));
-        assertEquals(9000000, currentEdge.getProperty("payment"));
+        assertEquals("A006", currentEdge.getVertex(ODirection.IN).getProperty("id"));
+        assertEquals(Long.valueOf(9000000), currentEdge.getProperty("payment"));
         assertNull(currentEdge.getProperty("year"));
         assertEquals(false, edgesIt.hasNext());
       } else {
@@ -2001,25 +2017,25 @@ public class ImportWithInputRelationshipConfigurationTest {
       }
 
       values[0] = "F003";
-      iterator = orientGraph.getVertices("Film", keys, values).iterator();
-      assertTrue(iterator.hasNext());
-      if (iterator.hasNext()) {
-        v = iterator.next();
+      result = OGraphCommands.getVertices(orientGraph, "Film", keys, values);
+      assertTrue(result.hasNext());
+      if (result.hasNext()) {
+        v = result.next().getVertex().get();
         assertEquals("F003", v.getProperty("id"));
         assertEquals("The Departed", v.getProperty("title"));
         assertEquals("Action-Thriller", v.getProperty("category"));
-        edgesIt = v.getEdges(Direction.OUT, "Features").iterator();
+        edgesIt = v.getEdges(ODirection.OUT, "Features").iterator();
         currentEdge = edgesIt.next();
-        assertEquals("A004", currentEdge.getVertex(Direction.IN).getProperty("id"));
-        assertEquals(40000000, currentEdge.getProperty("payment"));
+        assertEquals("A004", currentEdge.getVertex(ODirection.IN).getProperty("id"));
+        assertEquals(Long.valueOf(40000000), currentEdge.getProperty("payment"));
         assertNull(currentEdge.getProperty("year"));
         currentEdge = edgesIt.next();
-        assertEquals("A007", currentEdge.getVertex(Direction.IN).getProperty("id"));
-        assertEquals(25000000, currentEdge.getProperty("payment"));
+        assertEquals("A007", currentEdge.getVertex(ODirection.IN).getProperty("id"));
+        assertEquals(Long.valueOf(25000000), currentEdge.getProperty("payment"));
         assertNull(currentEdge.getProperty("year"));
         currentEdge = edgesIt.next();
-        assertEquals("A008", currentEdge.getVertex(Direction.IN).getProperty("id"));
-        assertEquals(15000000, currentEdge.getProperty("payment"));
+        assertEquals("A008", currentEdge.getVertex(ODirection.IN).getProperty("id"));
+        assertEquals(Long.valueOf(15000000), currentEdge.getProperty("payment"));
         assertNull(currentEdge.getProperty("year"));
         assertEquals(false, edgesIt.hasNext());
       } else {
@@ -2027,17 +2043,17 @@ public class ImportWithInputRelationshipConfigurationTest {
       }
 
       values[0] = "A001";
-      iterator = orientGraph.getVertices("Actor", keys, values).iterator();
-      assertTrue(iterator.hasNext());
-      if (iterator.hasNext()) {
-        v = iterator.next();
+      result = OGraphCommands.getVertices(orientGraph, "Actor", keys, values);
+      assertTrue(result.hasNext());
+      if (result.hasNext()) {
+        v = result.next().getVertex().get();
         assertEquals("A001", v.getProperty("id"));
         assertEquals("John", v.getProperty("firstName"));
         assertEquals("Travolta", v.getProperty("lastName"));
-        edgesIt = v.getEdges(Direction.IN, "Features").iterator();
+        edgesIt = v.getEdges(ODirection.IN, "Features").iterator();
         currentEdge = edgesIt.next();
-        assertEquals("F001", currentEdge.getVertex(Direction.OUT).getProperty("id"));
-        assertEquals(12000000, currentEdge.getProperty("payment"));
+        assertEquals("F001", currentEdge.getVertex(ODirection.OUT).getProperty("id"));
+        assertEquals(Long.valueOf(12000000), currentEdge.getProperty("payment"));
         assertNull(currentEdge.getProperty("year"));
         assertEquals(false, edgesIt.hasNext());
       } else {
@@ -2045,17 +2061,17 @@ public class ImportWithInputRelationshipConfigurationTest {
       }
 
       values[0] = "A002";
-      iterator = orientGraph.getVertices("Actor", keys, values).iterator();
-      assertTrue(iterator.hasNext());
-      if (iterator.hasNext()) {
-        v = iterator.next();
+      result = OGraphCommands.getVertices(orientGraph, "Actor", keys, values);
+      assertTrue(result.hasNext());
+      if (result.hasNext()) {
+        v = result.next().getVertex().get();
         assertEquals("A002", v.getProperty("id"));
         assertEquals("Samuel", v.getProperty("firstName"));
         assertEquals("Lee Jackson", v.getProperty("lastName"));
-        edgesIt = v.getEdges(Direction.IN, "Features").iterator();
+        edgesIt = v.getEdges(ODirection.IN, "Features").iterator();
         currentEdge = edgesIt.next();
-        assertEquals("F001", currentEdge.getVertex(Direction.OUT).getProperty("id"));
-        assertEquals(10000000, currentEdge.getProperty("payment"));
+        assertEquals("F001", currentEdge.getVertex(ODirection.OUT).getProperty("id"));
+        assertEquals(Long.valueOf(10000000), currentEdge.getProperty("payment"));
         assertNull(currentEdge.getProperty("year"));
         assertEquals(false, edgesIt.hasNext());
       } else {
@@ -2063,17 +2079,17 @@ public class ImportWithInputRelationshipConfigurationTest {
       }
 
       values[0] = "A003";
-      iterator = orientGraph.getVertices("Actor", keys, values).iterator();
-      assertTrue(iterator.hasNext());
-      if (iterator.hasNext()) {
-        v = iterator.next();
+      result = OGraphCommands.getVertices(orientGraph, "Actor", keys, values);
+      assertTrue(result.hasNext());
+      if (result.hasNext()) {
+        v = result.next().getVertex().get();
         assertEquals("A003", v.getProperty("id"));
         assertEquals("Bruce", v.getProperty("firstName"));
         assertEquals("Willis", v.getProperty("lastName"));
-        edgesIt = v.getEdges(Direction.IN, "Features").iterator();
+        edgesIt = v.getEdges(ODirection.IN, "Features").iterator();
         currentEdge = edgesIt.next();
-        assertEquals("F001", currentEdge.getVertex(Direction.OUT).getProperty("id"));
-        assertEquals(15000000, currentEdge.getProperty("payment"));
+        assertEquals("F001", currentEdge.getVertex(ODirection.OUT).getProperty("id"));
+        assertEquals(Long.valueOf(15000000), currentEdge.getProperty("payment"));
         assertNull(currentEdge.getProperty("year"));
         assertEquals(false, edgesIt.hasNext());
       } else {
@@ -2081,39 +2097,39 @@ public class ImportWithInputRelationshipConfigurationTest {
       }
 
       values[0] = "A004";
-      iterator = orientGraph.getVertices("Actor", keys, values).iterator();
-      assertTrue(iterator.hasNext());
-      if (iterator.hasNext()) {
-        v = iterator.next();
+      result = OGraphCommands.getVertices(orientGraph, "Actor", keys, values);
+      assertTrue(result.hasNext());
+      if (result.hasNext()) {
+        v = result.next().getVertex().get();
         assertEquals("A004", v.getProperty("id"));
         assertEquals("Leonardo", v.getProperty("firstName"));
         assertEquals("Di Caprio", v.getProperty("lastName"));
-        edgesIt = v.getEdges(Direction.IN, "Features").iterator();
+        edgesIt = v.getEdges(ODirection.IN, "Features").iterator();
         currentEdge = edgesIt.next();
-        assertEquals("F002", currentEdge.getVertex(Direction.OUT).getProperty("id"));
-        assertEquals(30000000, currentEdge.getProperty("payment"));
+        assertEquals("F002", currentEdge.getVertex(ODirection.OUT).getProperty("id"));
+        assertEquals(Long.valueOf(30000000), currentEdge.getProperty("payment"));
         assertNull(currentEdge.getProperty("year"));
         currentEdge = edgesIt.next();
-        assertEquals("F003", currentEdge.getVertex(Direction.OUT).getProperty("id"));
-        assertEquals(40000000, currentEdge.getProperty("payment"));
+        assertEquals("F003", currentEdge.getVertex(ODirection.OUT).getProperty("id"));
         assertNull(currentEdge.getProperty("year"));
+        assertEquals(Long.valueOf(40000000), currentEdge.getProperty("payment"));
         assertEquals(false, edgesIt.hasNext());
       } else {
         fail("Query fail!");
       }
 
       values[0] = "A005";
-      iterator = orientGraph.getVertices("Actor", keys, values).iterator();
-      assertTrue(iterator.hasNext());
-      if (iterator.hasNext()) {
-        v = iterator.next();
+      result = OGraphCommands.getVertices(orientGraph, "Actor", keys, values);
+      assertTrue(result.hasNext());
+      if (result.hasNext()) {
+        v = result.next().getVertex().get();
         assertEquals("A005", v.getProperty("id"));
         assertEquals("Ben", v.getProperty("firstName"));
         assertEquals("Kingsley", v.getProperty("lastName"));
-        edgesIt = v.getEdges(Direction.IN, "Features").iterator();
+        edgesIt = v.getEdges(ODirection.IN, "Features").iterator();
         currentEdge = edgesIt.next();
-        assertEquals("F002", currentEdge.getVertex(Direction.OUT).getProperty("id"));
-        assertEquals(35000000, currentEdge.getProperty("payment"));
+        assertEquals("F002", currentEdge.getVertex(ODirection.OUT).getProperty("id"));
+        assertEquals(Long.valueOf(35000000), currentEdge.getProperty("payment"));
         assertNull(currentEdge.getProperty("year"));
         assertEquals(false, edgesIt.hasNext());
       } else {
@@ -2121,17 +2137,17 @@ public class ImportWithInputRelationshipConfigurationTest {
       }
 
       values[0] = "A006";
-      iterator = orientGraph.getVertices("Actor", keys, values).iterator();
-      assertTrue(iterator.hasNext());
-      if (iterator.hasNext()) {
-        v = iterator.next();
+      result = OGraphCommands.getVertices(orientGraph, "Actor", keys, values);
+      assertTrue(result.hasNext());
+      if (result.hasNext()) {
+        v = result.next().getVertex().get();
         assertEquals("A006", v.getProperty("id"));
         assertEquals("Mark", v.getProperty("firstName"));
         assertEquals("Ruffalo", v.getProperty("lastName"));
-        edgesIt = v.getEdges(Direction.IN, "Features").iterator();
+        edgesIt = v.getEdges(ODirection.IN, "Features").iterator();
         currentEdge = edgesIt.next();
-        assertEquals("F002", currentEdge.getVertex(Direction.OUT).getProperty("id"));
-        assertEquals(9000000, currentEdge.getProperty("payment"));
+        assertEquals("F002", currentEdge.getVertex(ODirection.OUT).getProperty("id"));
+        assertEquals(Long.valueOf(9000000), currentEdge.getProperty("payment"));
         assertNull(currentEdge.getProperty("year"));
         assertEquals(false, edgesIt.hasNext());
       } else {
@@ -2139,17 +2155,17 @@ public class ImportWithInputRelationshipConfigurationTest {
       }
 
       values[0] = "A007";
-      iterator = orientGraph.getVertices("Actor", keys, values).iterator();
-      assertTrue(iterator.hasNext());
-      if (iterator.hasNext()) {
-        v = iterator.next();
+      result = OGraphCommands.getVertices(orientGraph, "Actor", keys, values);
+      assertTrue(result.hasNext());
+      if (result.hasNext()) {
+        v = result.next().getVertex().get();
         assertEquals("A007", v.getProperty("id"));
         assertEquals("Jack", v.getProperty("firstName"));
         assertEquals("Nicholson", v.getProperty("lastName"));
-        edgesIt = v.getEdges(Direction.IN, "Features").iterator();
+        edgesIt = v.getEdges(ODirection.IN, "Features").iterator();
         currentEdge = edgesIt.next();
-        assertEquals("F003", currentEdge.getVertex(Direction.OUT).getProperty("id"));
-        assertEquals(25000000, currentEdge.getProperty("payment"));
+        assertEquals("F003", currentEdge.getVertex(ODirection.OUT).getProperty("id"));
+        assertEquals(Long.valueOf(25000000), currentEdge.getProperty("payment"));
         assertNull(currentEdge.getProperty("year"));
         assertEquals(false, edgesIt.hasNext());
       } else {
@@ -2157,17 +2173,17 @@ public class ImportWithInputRelationshipConfigurationTest {
       }
 
       values[0] = "A008";
-      iterator = orientGraph.getVertices("Actor", keys, values).iterator();
-      assertTrue(iterator.hasNext());
-      if (iterator.hasNext()) {
-        v = iterator.next();
+      result = OGraphCommands.getVertices(orientGraph, "Actor", keys, values);
+      assertTrue(result.hasNext());
+      if (result.hasNext()) {
+        v = result.next().getVertex().get();
         assertEquals("A008", v.getProperty("id"));
         assertEquals("Matt", v.getProperty("firstName"));
         assertEquals("Damon", v.getProperty("lastName"));
-        edgesIt = v.getEdges(Direction.IN, "Features").iterator();
+        edgesIt = v.getEdges(ODirection.IN, "Features").iterator();
         currentEdge = edgesIt.next();
-        assertEquals("F003", currentEdge.getVertex(Direction.OUT).getProperty("id"));
-        assertEquals(15000000, currentEdge.getProperty("payment"));
+        assertEquals("F003", currentEdge.getVertex(ODirection.OUT).getProperty("id"));
+        assertEquals(Long.valueOf(15000000), currentEdge.getProperty("payment"));
         assertNull(currentEdge.getProperty("year"));
         assertEquals(false, edgesIt.hasNext());
       } else {
@@ -2191,7 +2207,7 @@ public class ImportWithInputRelationshipConfigurationTest {
       }
       if (orientGraph != null) {
         orientGraph.drop();
-        orientGraph.shutdown();
+        orientGraph.close();
       }
     }
   }

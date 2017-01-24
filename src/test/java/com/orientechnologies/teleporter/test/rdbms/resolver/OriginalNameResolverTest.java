@@ -41,7 +41,7 @@ public class OriginalNameResolverTest {
   @Test
 
   /*
-   * Resolve Vertex Name (Original Class Convention)
+   * Resolve OVertex Name (Original Class Convention)
    */
 
   public void test1() {

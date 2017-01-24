@@ -19,6 +19,9 @@
 package com.orientechnologies.teleporter.test.rdbms.main;
 
 import com.orientechnologies.orient.core.Orient;
+import com.orientechnologies.orient.core.db.OrientDB;
+import com.orientechnologies.orient.core.db.OrientDBConfig;
+import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.serialization.serializer.record.ORecordSerializerFactory;
 import com.orientechnologies.orient.core.serialization.serializer.record.binary.ORecordSerializerBinary;
 import com.orientechnologies.orient.core.storage.OStorage;
@@ -26,7 +29,6 @@ import com.orientechnologies.orient.core.storage.impl.local.paginated.OLocalPagi
 import com.orientechnologies.orient.server.OServer;
 import com.orientechnologies.orient.server.OServerMain;
 import com.orientechnologies.teleporter.util.OFileManager;
-import com.tinkerpop.blueprints.impls.orient.OrientGraphNoTx;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -51,6 +53,8 @@ public abstract class TeleporterInvocationTest {
   private String jurl     = "jdbc:hsqldb:mem:mydb";
   private String username = "SA";
   private String password = "";
+  private String dbName = "testOrientDB";
+  private String outOrientGraphUri = "plocal:src/test/target/server/databases/" + this.dbName;
 
   // server configuration path
   private final String configurationPath = "orientdb-server-config.xml";
@@ -160,18 +164,18 @@ public abstract class TeleporterInvocationTest {
 
   }
 
-  protected void shutdownEnvironment() {
+  protected void closeEnvironment() {
 
     this.closeAndDropSourceDatabase();
     this.closeAndDropOrientdbDatabase();
-    //this.shutdownServer(OServerMain.server());
+    //this.closeServer(OServerMain.server());
     this.purgeOrientdbServer();
 
     // REGISTER THE BINARY RECORD SERIALIZER TO SUPPORT ANY OF THE EXTERNAL FIELDS
     ORecordSerializerFactory.instance().register("ORecordSerializerBinary", new ORecordSerializerBinary());
   }
 
-  public void shutdownServer(OServer server) {
+  public void closeServer(OServer server) {
     if (server != null) {
       server.shutdown();
     }
@@ -205,13 +209,15 @@ public abstract class TeleporterInvocationTest {
 
   private void closeAndDropOrientdbDatabase() {
 
-    OrientGraphNoTx orientGraph = new OrientGraphNoTx("plocal:src/test/target/server/databases/testOrientDB");
+    String outOrientGraphUri = "plocal:src/test/target/server/databases/testOrientDB";
+    OrientDB orient = OrientDB.fromUrl(this.outOrientGraphUri, OrientDBConfig.defaultConfig());
+    ODatabaseDocument orientGraph = orient.open(this.dbName,"admin","admin");
 
     try {
 
       if (orientGraph != null) {
         orientGraph.drop();
-        orientGraph.shutdown();
+        orientGraph.close();
       }
 
     } catch (Exception e) {

@@ -41,7 +41,7 @@ public class JavaNameResolverTest {
   @Test
 
   /*
-   * Resolve Vertex Name (Java Class Convention)
+   * Resolve OVertex Name (Java Class Convention)
    */
 
   public void test1() {
@@ -144,7 +144,7 @@ public class JavaNameResolverTest {
   @Test
 
   /*
-   * Resolve Vertex Name (Java Class Convention)
+   * Resolve OVertex Name (Java Class Convention)
    * Test-Fix: Resolver supports names ending with '_'.
    */
 

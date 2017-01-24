@@ -18,7 +18,14 @@
 
 package com.orientechnologies.teleporter.test.rdbms.configuration.importing;
 
+import com.orientechnologies.orient.core.db.OrientDB;
+import com.orientechnologies.orient.core.db.OrientDBConfig;
+import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
+import com.orientechnologies.orient.core.record.ODirection;
+import com.orientechnologies.orient.core.record.OEdge;
+import com.orientechnologies.orient.core.record.OVertex;
 import com.orientechnologies.orient.core.record.impl.ODocument;
+import com.orientechnologies.orient.core.sql.executor.OResultSet;
 import com.orientechnologies.teleporter.context.OOutputStreamManager;
 import com.orientechnologies.teleporter.context.OTeleporterContext;
 import com.orientechnologies.teleporter.importengine.rdbms.dbengine.ODBQueryEngine;
@@ -27,12 +34,8 @@ import com.orientechnologies.teleporter.nameresolver.OJavaConventionNameResolver
 import com.orientechnologies.teleporter.persistence.handler.OHSQLDBDataTypeHandler;
 import com.orientechnologies.teleporter.strategy.rdbms.ODBMSNaiveStrategy;
 import com.orientechnologies.teleporter.util.OFileManager;
+import com.orientechnologies.teleporter.util.OGraphCommands;
 import com.orientechnologies.teleporter.util.OMigrationConfigManager;
-import com.tinkerpop.blueprints.Direction;
-import com.tinkerpop.blueprints.Edge;
-import com.tinkerpop.blueprints.Vertex;
-import com.tinkerpop.blueprints.impls.orient.OrientGraphNoTx;
-import com.tinkerpop.blueprints.impls.orient.OrientVertex;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -62,8 +65,14 @@ public class ImportWithSplittingTest {
   private String jurl     = "jdbc:hsqldb:mem:mydb";
   private String username = "SA";
   private String password = "";
-  private String              outOrientGraphUri;
+  private String dbName = "testOrientDB";
+  private String outOrientGraphUri = "plocal:target/" + this.dbName;
   private OSourceDatabaseInfo sourceDBInfo;
+
+  // Queries
+  private String getVerticesQuery = "select * from V";
+  private String getEdgesQuery = "select * from E";
+  private String getElementsFromClassQuery = "select * from ?";
 
   @Before
   public void init() {
@@ -74,7 +83,6 @@ public class ImportWithSplittingTest {
     this.context.setNameResolver(new OJavaConventionNameResolver());
     this.context.setDataTypeHandler(new OHSQLDBDataTypeHandler());
     this.naiveStrategy = new ODBMSNaiveStrategy();
-    this.outOrientGraphUri = "plocal:target/testOrientDB";
     this.dbParentDirectoryPath = this.outOrientGraphUri.replace("plocal:", "");
     this.sourceDBInfo = new OSourceDatabaseInfo("source", this.driver, this.jurl, this.username, this.password);
   }
@@ -108,7 +116,7 @@ public class ImportWithSplittingTest {
 
     Connection connection = null;
     Statement st = null;
-    OrientGraphNoTx orientGraph = null;
+    ODatabaseDocument orientGraph = null;
 
     try {
 
@@ -165,110 +173,109 @@ public class ImportWithSplittingTest {
       /**
        *  Testing built OrientDB
        */
-      orientGraph = new OrientGraphNoTx(this.outOrientGraphUri);
+      OrientDB orient = OrientDB.fromUrl(this.outOrientGraphUri, OrientDBConfig.defaultConfig());
+      orientGraph = orient.open(this.dbName,"admin","admin");
 
       // vertices check
-      Map<String, Vertex> vertices = new LinkedHashMap<String, Vertex>();
-      int count = 0;
-      for (Vertex v : orientGraph.getVertices()) {
-        assertNotNull(v.getId());
-        vertices.put(v.getId().toString(), v);
-        count++;
-      }
-      assertEquals(15, count);
+//      int count = 0;
+//      for(OVertex v : orientGraph.command(this.getVerticesQuery)) {
+//        assertNotNull(v.getIdentity());
+//        count++;
+//      }
+      assertEquals(15, orientGraph.countClass("V"));
 
-      count = 0;
-      for (Vertex v : orientGraph.getVerticesOfClass("Employee")) {
-        assertNotNull(v.getId());
-        count++;
-      }
-      assertEquals(5, count);
+//      count = 0;
+//      for(OVertex v : orientGraph.command(this.getElementsFromClassQuery, "Employee")) {
+//        assertNotNull(v.getIdentity());
+//        count++;
+//      }
+      assertEquals(5, orientGraph.countClass("Employee"));
 
-      count = 0;
-      for (Vertex v : orientGraph.getVerticesOfClass("Project")) {
-        assertNotNull(v.getId());
-        count++;
-      }
-      assertEquals(4, count);
+//      count = 0;
+//      for(OVertex v : orientGraph.command(this.getElementsFromClassQuery, "Project")) {
+//        assertNotNull(v.getIdentity());
+//        count++;
+//      }
+      assertEquals(4, orientGraph.countClass("Project"));
 
-      count = 0;
-      for (Vertex v : orientGraph.getVerticesOfClass("Department")) {
-        assertNotNull(v.getId());
-        count++;
-      }
-      assertEquals(2, count);
+//      count = 0;
+//      for(OVertex v : orientGraph.command(this.getElementsFromClassQuery, "Department")) {
+//        assertNotNull(v.getIdentity());
+//        count++;
+//      }
+      assertEquals(2, orientGraph.countClass("Department"));
 
-      count = 0;
-      for (Vertex v : orientGraph.getVerticesOfClass("ChiefOfficer")) {
-        assertNotNull(v.getId());
-        count++;
-      }
-      assertEquals(4, count);
+//      count = 0;
+//      for(OVertex v : orientGraph.command(this.getElementsFromClassQuery, "ChiefOfficer")) {
+//        assertNotNull(v.getIdentity());
+//        count++;
+//      }
+      assertEquals(4, orientGraph.countClass("ChiefOfficer"));
 
       // edges check
-      count = 0;
-      for (Edge e : orientGraph.getEdges()) {
-        assertNotNull(e.getId());
-        count++;
-      }
-      assertEquals(15, count);
+//      count = 0;
+//      for (OEdge e : orientGraph.command(this.getEdgesQuery)) {
+//        assertNotNull(e.getIdentity());
+//        count++;
+//      }
+      assertEquals(15, orientGraph.countClass("E"));
 
-      count = 0;
-      for (Edge e : orientGraph.getEdgesOfClass("WorksAt")) {
-        assertNotNull(e.getId());
-        count++;
-      }
-      assertEquals(5, count);
+//      count = 0;
+//      for (OEdge  e : orientGraph.command(this.getElementsFromClassQuery, "WorksAt")) {
+//        assertNotNull(e.getIdentity());
+//        count++;
+//      }
+      assertEquals(5, orientGraph.countClass("WorksAt"));
 
-      count = 0;
-      for (Edge e : orientGraph.getEdgesOfClass("HasProject")) {
-        assertNotNull(e.getId());
-        count++;
-      }
-      assertEquals(6, count);
+//      count = 0;
+//      for (OEdge  e : orientGraph.command(this.getElementsFromClassQuery, "HasProject")) {
+//        assertNotNull(e.getIdentity());
+//        count++;
+//      }
+      assertEquals(6, orientGraph.countClass("HasProject"));
 
-      count = 0;
-      for (Edge e : orientGraph.getEdgesOfClass("IsChiefForProject")) {
-        assertNotNull(e.getId());
-        count++;
-      }
-      assertEquals(4, count);
+//      count = 0;
+//      for (OEdge  e : orientGraph.command(this.getElementsFromClassQuery, "IsChiefForProject")) {
+//        assertNotNull(e.getIdentity());
+//        count++;
+//      }
+      assertEquals(4, orientGraph.countClass("IsChiefForProject"));
 
       // vertex properties and connections check
-      Iterator<Edge> edgesIt = null;
+      Iterator<OEdge>  edgesIt = null;
       String[] keys = { "id" };
       String[] values = { "D001" };
 
-      Vertex v = null;
-      Iterator<Vertex> iterator = orientGraph.getVertices("Department", keys, values).iterator();
-      assertTrue(iterator.hasNext());
-      if (iterator.hasNext()) {
-        v = iterator.next();
+      OVertex v = null;
+      OResultSet result = OGraphCommands.getVertices(orientGraph, "Department", keys, values);
+      assertTrue(result.hasNext());
+      if (result.hasNext()) {
+        v = result.next().getVertex().get();
         assertEquals("D001", v.getProperty("id"));
         assertEquals("Data Migration", v.getProperty("departmentName"));
         assertEquals("London", v.getProperty("location"));
         assertNull(v.getProperty("updatedOn"));
-        edgesIt = v.getEdges(Direction.IN, "WorksAt").iterator();
-        assertEquals("Black", edgesIt.next().getVertex(Direction.OUT).getProperty("lastName"));
-        assertEquals("McClanenei", edgesIt.next().getVertex(Direction.OUT).getProperty("lastName"));
-        assertEquals("Durden", edgesIt.next().getVertex(Direction.OUT).getProperty("lastName"));
+        edgesIt = v.getEdges(ODirection.IN, "WorksAt").iterator();
+        assertEquals("Black", edgesIt.next().getVertex(ODirection.OUT).getProperty("lastName"));
+        assertEquals("McClanenei", edgesIt.next().getVertex(ODirection.OUT).getProperty("lastName"));
+        assertEquals("Durden", edgesIt.next().getVertex(ODirection.OUT).getProperty("lastName"));
         assertEquals(false, edgesIt.hasNext());
       } else {
         fail("Query fail!");
       }
 
       values[0] = "D002";
-      iterator = orientGraph.getVertices("Department", keys, values).iterator();
-      assertTrue(iterator.hasNext());
-      if (iterator.hasNext()) {
-        v = iterator.next();
+      result = OGraphCommands.getVertices(orientGraph, "Department", keys, values);
+      assertTrue(result.hasNext());
+      if (result.hasNext()) {
+        v = result.next().getVertex().get();
         assertEquals("D002", v.getProperty("id"));
         assertEquals("Contracts Update", v.getProperty("departmentName"));
         assertEquals("Glasgow", v.getProperty("location"));
         assertNull(v.getProperty("updatedOn"));
-        edgesIt = v.getEdges(Direction.IN, "WorksAt").iterator();
-        assertEquals("McFly", edgesIt.next().getVertex(Direction.OUT).getProperty("lastName"));
-        assertEquals("Anderson", edgesIt.next().getVertex(Direction.OUT).getProperty("lastName"));
+        edgesIt = v.getEdges(ODirection.IN, "WorksAt").iterator();
+        assertEquals("McFly", edgesIt.next().getVertex(ODirection.OUT).getProperty("lastName"));
+        assertEquals("Anderson", edgesIt.next().getVertex(ODirection.OUT).getProperty("lastName"));
         assertEquals(false, edgesIt.hasNext());
       } else {
         fail("Query fail!");
@@ -276,20 +283,20 @@ public class ImportWithSplittingTest {
 
       String[] employeeKeys = { "firstName", "lastName" };
       String[] employeeValues = { "Joe", "Black" };
-      iterator = orientGraph.getVertices("Employee", employeeKeys, employeeValues).iterator();
-      assertTrue(iterator.hasNext());
-      if (iterator.hasNext()) {
-        v = iterator.next();
+      result = OGraphCommands.getVertices(orientGraph, "Employee", employeeKeys, employeeValues);
+      assertTrue(result.hasNext());
+      if (result.hasNext()) {
+        v = result.next().getVertex().get();
         assertEquals("Joe", v.getProperty("firstName"));
         assertEquals("Black", v.getProperty("lastName"));
         assertEquals(20000, ((BigDecimal) v.getProperty("salary")).intValue());
         assertEquals("D001", v.getProperty("department"));
-        edgesIt = v.getEdges(Direction.OUT, "WorksAt").iterator();
-        assertEquals("D001", edgesIt.next().getVertex(Direction.IN).getProperty("id"));
+        edgesIt = v.getEdges(ODirection.OUT, "WorksAt").iterator();
+        assertEquals("D001", edgesIt.next().getVertex(ODirection.IN).getProperty("id"));
         assertEquals(false, edgesIt.hasNext());
-        edgesIt = v.getEdges(Direction.OUT, "HasProject").iterator();
-        Edge currentSplittingEdge = edgesIt.next();
-        assertEquals("Mars", currentSplittingEdge.getVertex(Direction.IN).getProperty("project"));
+        edgesIt = v.getEdges(ODirection.OUT, "HasProject").iterator();
+        OEdge currentSplittingEdge = edgesIt.next();
+        assertEquals("Mars", currentSplittingEdge.getVertex(ODirection.IN).getProperty("project"));
         assertEquals("T", currentSplittingEdge.getProperty("role"));
         assertEquals(false, edgesIt.hasNext());
       } else {
@@ -298,20 +305,20 @@ public class ImportWithSplittingTest {
 
       employeeValues[0] = "Thomas";
       employeeValues[1] = "Anderson";
-      iterator = orientGraph.getVertices("Employee", employeeKeys, employeeValues).iterator();
-      assertTrue(iterator.hasNext());
-      if (iterator.hasNext()) {
-        v = iterator.next();
+      result = OGraphCommands.getVertices(orientGraph, "Employee", employeeKeys, employeeValues);
+      assertTrue(result.hasNext());
+      if (result.hasNext()) {
+        v = result.next().getVertex().get();
         assertEquals("Thomas", v.getProperty("firstName"));
         assertEquals("Anderson", v.getProperty("lastName"));
         assertEquals(35000, ((BigDecimal) v.getProperty("salary")).intValue());
         assertEquals("D002", v.getProperty("department"));
-        edgesIt = v.getEdges(Direction.OUT, "WorksAt").iterator();
-        assertEquals("D002", edgesIt.next().getVertex(Direction.IN).getProperty("id"));
+        edgesIt = v.getEdges(ODirection.OUT, "WorksAt").iterator();
+        assertEquals("D002", edgesIt.next().getVertex(ODirection.IN).getProperty("id"));
         assertEquals(false, edgesIt.hasNext());
-        edgesIt = v.getEdges(Direction.OUT, "HasProject").iterator();
-        Edge currentSplittingEdge = edgesIt.next();
-        assertEquals("Venus", currentSplittingEdge.getVertex(Direction.IN).getProperty("project"));
+        edgesIt = v.getEdges(ODirection.OUT, "HasProject").iterator();
+        OEdge currentSplittingEdge = edgesIt.next();
+        assertEquals("Venus", currentSplittingEdge.getVertex(ODirection.IN).getProperty("project"));
         assertEquals("T", currentSplittingEdge.getProperty("role"));
         assertEquals(false, edgesIt.hasNext());
       } else {
@@ -320,20 +327,20 @@ public class ImportWithSplittingTest {
 
       employeeValues[0] = "Tyler";
       employeeValues[1] = "Durden";
-      iterator = orientGraph.getVertices("Employee", employeeKeys, employeeValues).iterator();
-      assertTrue(iterator.hasNext());
-      if (iterator.hasNext()) {
-        v = iterator.next();
+      result = OGraphCommands.getVertices(orientGraph, "Employee", employeeKeys, employeeValues);
+      assertTrue(result.hasNext());
+      if (result.hasNext()) {
+        v = result.next().getVertex().get();
         assertEquals("Tyler", v.getProperty("firstName"));
         assertEquals("Durden", v.getProperty("lastName"));
         assertEquals(35000, ((BigDecimal) v.getProperty("salary")).intValue());
         assertEquals("D001", v.getProperty("department"));
-        edgesIt = v.getEdges(Direction.OUT, "WorksAt").iterator();
-        assertEquals("D001", edgesIt.next().getVertex(Direction.IN).getProperty("id"));
+        edgesIt = v.getEdges(ODirection.OUT, "WorksAt").iterator();
+        assertEquals("D001", edgesIt.next().getVertex(ODirection.IN).getProperty("id"));
         assertEquals(false, edgesIt.hasNext());
-        edgesIt = v.getEdges(Direction.OUT, "HasProject").iterator();
-        Edge currentSplittingEdge = edgesIt.next();
-        assertEquals("Iuppiter", currentSplittingEdge.getVertex(Direction.IN).getProperty("project"));
+        edgesIt = v.getEdges(ODirection.OUT, "HasProject").iterator();
+        OEdge currentSplittingEdge = edgesIt.next();
+        assertEquals("Iuppiter", currentSplittingEdge.getVertex(ODirection.IN).getProperty("project"));
         assertEquals("A", currentSplittingEdge.getProperty("role"));
         assertEquals(false, edgesIt.hasNext());
       } else {
@@ -342,20 +349,20 @@ public class ImportWithSplittingTest {
 
       employeeValues[0] = "John";
       employeeValues[1] = "McClanenei";
-      iterator = orientGraph.getVertices("Employee", employeeKeys, employeeValues).iterator();
-      assertTrue(iterator.hasNext());
-      if (iterator.hasNext()) {
-        v = iterator.next();
+      result = OGraphCommands.getVertices(orientGraph, "Employee", employeeKeys, employeeValues);
+      assertTrue(result.hasNext());
+      if (result.hasNext()) {
+        v = result.next().getVertex().get();
         assertEquals("John", v.getProperty("firstName"));
         assertEquals("McClanenei", v.getProperty("lastName"));
         assertEquals(25000, ((BigDecimal) v.getProperty("salary")).intValue());
         assertEquals("D001", v.getProperty("department"));
-        edgesIt = v.getEdges(Direction.OUT, "WorksAt").iterator();
-        assertEquals("D001", edgesIt.next().getVertex(Direction.IN).getProperty("id"));
+        edgesIt = v.getEdges(ODirection.OUT, "WorksAt").iterator();
+        assertEquals("D001", edgesIt.next().getVertex(ODirection.IN).getProperty("id"));
         assertEquals(false, edgesIt.hasNext());
-        edgesIt = v.getEdges(Direction.OUT, "HasProject").iterator();
-        Edge currentSplittingEdge = edgesIt.next();
-        assertEquals("Venus", currentSplittingEdge.getVertex(Direction.IN).getProperty("project"));
+        edgesIt = v.getEdges(ODirection.OUT, "HasProject").iterator();
+        OEdge currentSplittingEdge = edgesIt.next();
+        assertEquals("Venus", currentSplittingEdge.getVertex(ODirection.IN).getProperty("project"));
         assertEquals("S", currentSplittingEdge.getProperty("role"));
         assertEquals(false, edgesIt.hasNext());
       } else {
@@ -364,23 +371,23 @@ public class ImportWithSplittingTest {
 
       employeeValues[0] = "Marty";
       employeeValues[1] = "McFly";
-      iterator = orientGraph.getVertices("Employee", employeeKeys, employeeValues).iterator();
-      assertTrue(iterator.hasNext());
-      if (iterator.hasNext()) {
-        v = iterator.next();
+      result = OGraphCommands.getVertices(orientGraph, "Employee", employeeKeys, employeeValues);
+      assertTrue(result.hasNext());
+      if (result.hasNext()) {
+        v = result.next().getVertex().get();
         assertEquals("Marty", v.getProperty("firstName"));
         assertEquals("McFly", v.getProperty("lastName"));
         assertEquals(40000, ((BigDecimal) v.getProperty("salary")).intValue());
         assertEquals("D002", v.getProperty("department"));
-        edgesIt = v.getEdges(Direction.OUT, "WorksAt").iterator();
-        assertEquals("D002", edgesIt.next().getVertex(Direction.IN).getProperty("id"));
+        edgesIt = v.getEdges(ODirection.OUT, "WorksAt").iterator();
+        assertEquals("D002", edgesIt.next().getVertex(ODirection.IN).getProperty("id"));
         assertEquals(false, edgesIt.hasNext());
-        edgesIt = v.getEdges(Direction.OUT, "HasProject").iterator();
-        Edge currentSplittingEdge = edgesIt.next();
-        assertEquals("Mars", currentSplittingEdge.getVertex(Direction.IN).getProperty("project"));
+        edgesIt = v.getEdges(ODirection.OUT, "HasProject").iterator();
+        OEdge currentSplittingEdge = edgesIt.next();
+        assertEquals("Mars", currentSplittingEdge.getVertex(ODirection.IN).getProperty("project"));
         assertEquals("M", currentSplittingEdge.getProperty("role"));
         currentSplittingEdge = edgesIt.next();
-        assertEquals("Mercury", currentSplittingEdge.getVertex(Direction.IN).getProperty("project"));
+        assertEquals("Mercury", currentSplittingEdge.getVertex(ODirection.IN).getProperty("project"));
         assertEquals("M", currentSplittingEdge.getProperty("role"));
         assertEquals(false, edgesIt.hasNext());
       } else {
@@ -389,102 +396,102 @@ public class ImportWithSplittingTest {
 
       String[] projectKeys = { "project" };
       String[] projectValues = { "Mars" };
-      iterator = orientGraph.getVertices("Project", projectKeys, projectValues).iterator();
-      assertTrue(iterator.hasNext());
-      if (iterator.hasNext()) {
-        v = iterator.next();
+      result = OGraphCommands.getVertices(orientGraph, "Project", projectKeys, projectValues);
+      assertTrue(result.hasNext());
+      if (result.hasNext()) {
+        v = result.next().getVertex().get();
         assertEquals("Mars", v.getProperty("project"));
         assertEquals(12000, ((BigDecimal) v.getProperty("balance")).intValue());
-        edgesIt = v.getEdges(Direction.IN, "HasProject").iterator();
-        Edge currentSplittingEdge = edgesIt.next();
-        assertEquals("Black", currentSplittingEdge.getVertex(Direction.OUT).getProperty("lastName"));
+        edgesIt = v.getEdges(ODirection.IN, "HasProject").iterator();
+        OEdge currentSplittingEdge = edgesIt.next();
+        assertEquals("Black", currentSplittingEdge.getVertex(ODirection.OUT).getProperty("lastName"));
         assertEquals("T", currentSplittingEdge.getProperty("role"));
         currentSplittingEdge = edgesIt.next();
-        assertEquals("McFly", currentSplittingEdge.getVertex(Direction.OUT).getProperty("lastName"));
+        assertEquals("McFly", currentSplittingEdge.getVertex(ODirection.OUT).getProperty("lastName"));
         assertEquals("M", currentSplittingEdge.getProperty("role"));
         assertEquals(false, edgesIt.hasNext());
 
-        edgesIt = v.getEdges(Direction.IN, "IsChiefForProject").iterator();
-        Edge currentEdge = edgesIt.next();
-        assertEquals("Tim", currentEdge.getVertex(Direction.OUT).getProperty("firstName"));
-        assertEquals("Cook", currentEdge.getVertex(Direction.OUT).getProperty("lastName"));
-        assertEquals("Mars", currentEdge.getVertex(Direction.OUT).getProperty("project"));
-        assertEquals(0, currentEdge.getPropertyKeys().size());
+        edgesIt = v.getEdges(ODirection.IN, "IsChiefForProject").iterator();
+        OEdge currentEdge = edgesIt.next();
+        assertEquals("Tim", currentEdge.getVertex(ODirection.OUT).getProperty("firstName"));
+        assertEquals("Cook", currentEdge.getVertex(ODirection.OUT).getProperty("lastName"));
+        assertEquals("Mars", currentEdge.getVertex(ODirection.OUT).getProperty("project"));
+        assertEquals(0, currentEdge.getPropertyNames().size());
         assertEquals(false, edgesIt.hasNext());
       } else {
         fail("Query fail!");
       }
 
       projectValues[0] = "Venus";
-      iterator = orientGraph.getVertices("Project", projectKeys, projectValues).iterator();
-      assertTrue(iterator.hasNext());
-      if (iterator.hasNext()) {
-        v = iterator.next();
+      result = OGraphCommands.getVertices(orientGraph, "Project", projectKeys, projectValues);
+      assertTrue(result.hasNext());
+      if (result.hasNext()) {
+        v = result.next().getVertex().get();
         assertEquals("Venus", v.getProperty("project"));
         assertEquals(15000, ((BigDecimal) v.getProperty("balance")).intValue());
-        edgesIt = v.getEdges(Direction.IN, "HasProject").iterator();
-        Edge currentSplittingEdge = edgesIt.next();
-        assertEquals("McClanenei", currentSplittingEdge.getVertex(Direction.OUT).getProperty("lastName"));
+        edgesIt = v.getEdges(ODirection.IN, "HasProject").iterator();
+        OEdge currentSplittingEdge = edgesIt.next();
+        assertEquals("McClanenei", currentSplittingEdge.getVertex(ODirection.OUT).getProperty("lastName"));
         assertEquals("S", currentSplittingEdge.getProperty("role"));
         currentSplittingEdge = edgesIt.next();
-        assertEquals("Anderson", currentSplittingEdge.getVertex(Direction.OUT).getProperty("lastName"));
+        assertEquals("Anderson", currentSplittingEdge.getVertex(ODirection.OUT).getProperty("lastName"));
         assertEquals("T", currentSplittingEdge.getProperty("role"));
         assertEquals(false, edgesIt.hasNext());
 
-        edgesIt = v.getEdges(Direction.IN, "IsChiefForProject").iterator();
-        Edge currentEdge = edgesIt.next();
-        assertEquals("Sundar", currentEdge.getVertex(Direction.OUT).getProperty("firstName"));
-        assertEquals("Pichai", currentEdge.getVertex(Direction.OUT).getProperty("lastName"));
-        assertEquals("Venus", currentEdge.getVertex(Direction.OUT).getProperty("project"));
-        assertEquals(0, currentEdge.getPropertyKeys().size());
+        edgesIt = v.getEdges(ODirection.IN, "IsChiefForProject").iterator();
+        OEdge currentEdge = edgesIt.next();
+        assertEquals("Sundar", currentEdge.getVertex(ODirection.OUT).getProperty("firstName"));
+        assertEquals("Pichai", currentEdge.getVertex(ODirection.OUT).getProperty("lastName"));
+        assertEquals("Venus", currentEdge.getVertex(ODirection.OUT).getProperty("project"));
+        assertEquals(0, currentEdge.getPropertyNames().size());
         assertEquals(false, edgesIt.hasNext());
       } else {
         fail("Query fail!");
       }
 
       projectValues[0] = "Iuppiter";
-      iterator = orientGraph.getVertices("Project", projectKeys, projectValues).iterator();
-      assertTrue(iterator.hasNext());
-      if (iterator.hasNext()) {
-        v = iterator.next();
+      result = OGraphCommands.getVertices(orientGraph, "Project", projectKeys, projectValues);
+      assertTrue(result.hasNext());
+      if (result.hasNext()) {
+        v = result.next().getVertex().get();
         assertEquals("Iuppiter", v.getProperty("project"));
         assertEquals(20000, ((BigDecimal) v.getProperty("balance")).intValue());
-        edgesIt = v.getEdges(Direction.IN, "HasProject").iterator();
-        Edge currentSplittingEdge = edgesIt.next();
-        assertEquals("Durden", currentSplittingEdge.getVertex(Direction.OUT).getProperty("lastName"));
+        edgesIt = v.getEdges(ODirection.IN, "HasProject").iterator();
+        OEdge currentSplittingEdge = edgesIt.next();
+        assertEquals("Durden", currentSplittingEdge.getVertex(ODirection.OUT).getProperty("lastName"));
         assertEquals("A", currentSplittingEdge.getProperty("role"));
         assertEquals(false, edgesIt.hasNext());
 
-        edgesIt = v.getEdges(Direction.IN, "IsChiefForProject").iterator();
-        Edge currentEdge = edgesIt.next();
-        assertEquals("Satya", currentEdge.getVertex(Direction.OUT).getProperty("firstName"));
-        assertEquals("Nadella", currentEdge.getVertex(Direction.OUT).getProperty("lastName"));
-        assertEquals("Iuppiter", currentEdge.getVertex(Direction.OUT).getProperty("project"));
-        assertEquals(0, currentEdge.getPropertyKeys().size());
+        edgesIt = v.getEdges(ODirection.IN, "IsChiefForProject").iterator();
+        OEdge currentEdge = edgesIt.next();
+        assertEquals("Satya", currentEdge.getVertex(ODirection.OUT).getProperty("firstName"));
+        assertEquals("Nadella", currentEdge.getVertex(ODirection.OUT).getProperty("lastName"));
+        assertEquals("Iuppiter", currentEdge.getVertex(ODirection.OUT).getProperty("project"));
+        assertEquals(0, currentEdge.getPropertyNames().size());
         assertEquals(false, edgesIt.hasNext());
       } else {
         fail("Query fail!");
       }
 
       projectValues[0] = "Mercury";
-      iterator = orientGraph.getVertices("Project", projectKeys, projectValues).iterator();
-      assertTrue(iterator.hasNext());
-      if (iterator.hasNext()) {
-        v = iterator.next();
+      result = OGraphCommands.getVertices(orientGraph, "Project", projectKeys, projectValues);
+      assertTrue(result.hasNext());
+      if (result.hasNext()) {
+        v = result.next().getVertex().get();
         assertEquals("Mercury", v.getProperty("project"));
         assertEquals(5000, ((BigDecimal) v.getProperty("balance")).intValue());
-        edgesIt = v.getEdges(Direction.IN, "HasProject").iterator();
-        Edge currentSplittingEdge = edgesIt.next();
-        assertEquals("McFly", currentSplittingEdge.getVertex(Direction.OUT).getProperty("lastName"));
+        edgesIt = v.getEdges(ODirection.IN, "HasProject").iterator();
+        OEdge currentSplittingEdge = edgesIt.next();
+        assertEquals("McFly", currentSplittingEdge.getVertex(ODirection.OUT).getProperty("lastName"));
         assertEquals("M", currentSplittingEdge.getProperty("role"));
         assertEquals(false, edgesIt.hasNext());
 
-        edgesIt = v.getEdges(Direction.IN, "IsChiefForProject").iterator();
-        Edge currentEdge = edgesIt.next();
-        assertEquals("Chuck", currentEdge.getVertex(Direction.OUT).getProperty("firstName"));
-        assertEquals("Robbins", currentEdge.getVertex(Direction.OUT).getProperty("lastName"));
-        assertEquals("Mercury", currentEdge.getVertex(Direction.OUT).getProperty("project"));
-        assertEquals(0, currentEdge.getPropertyKeys().size());
+        edgesIt = v.getEdges(ODirection.IN, "IsChiefForProject").iterator();
+        OEdge currentEdge = edgesIt.next();
+        assertEquals("Chuck", currentEdge.getVertex(ODirection.OUT).getProperty("firstName"));
+        assertEquals("Robbins", currentEdge.getVertex(ODirection.OUT).getProperty("lastName"));
+        assertEquals("Mercury", currentEdge.getVertex(ODirection.OUT).getProperty("project"));
+        assertEquals(0, currentEdge.getPropertyNames().size());
         assertEquals(false, edgesIt.hasNext());
       } else {
         fail("Query fail!");
@@ -492,17 +499,17 @@ public class ImportWithSplittingTest {
 
       String[] chiefOfficerKeys = { "firstName", "lastName" };
       String[] chiefOfficerValues = { "Tim", "Cook" };
-      iterator = orientGraph.getVertices("ChiefOfficer", chiefOfficerKeys, chiefOfficerValues).iterator();
-      assertTrue(iterator.hasNext());
-      if (iterator.hasNext()) {
-        v = iterator.next();
+      result = OGraphCommands.getVertices(orientGraph, "ChiefOfficer", chiefOfficerKeys, chiefOfficerValues);
+      assertTrue(result.hasNext());
+      if (result.hasNext()) {
+        v = result.next().getVertex().get();
         assertEquals("Tim", v.getProperty("firstName"));
         assertEquals("Cook", v.getProperty("lastName"));
         assertEquals("Mars", v.getProperty("project"));
-        edgesIt = v.getEdges(Direction.OUT, "IsChiefForProject").iterator();
-        Edge currentEdge = edgesIt.next();
-        assertEquals("Mars", currentEdge.getVertex(Direction.IN).getProperty("project"));
-        assertEquals(0, currentEdge.getPropertyKeys().size());
+        edgesIt = v.getEdges(ODirection.OUT, "IsChiefForProject").iterator();
+        OEdge currentEdge = edgesIt.next();
+        assertEquals("Mars", currentEdge.getVertex(ODirection.IN).getProperty("project"));
+        assertEquals(0, currentEdge.getPropertyNames().size());
         assertEquals(false, edgesIt.hasNext());
 
       } else {
@@ -511,17 +518,17 @@ public class ImportWithSplittingTest {
 
       chiefOfficerValues[0] = "Sundar";
       chiefOfficerValues[1] = "Pichai";
-      iterator = orientGraph.getVertices("ChiefOfficer", chiefOfficerKeys, chiefOfficerValues).iterator();
-      assertTrue(iterator.hasNext());
-      if (iterator.hasNext()) {
-        v = iterator.next();
+      result = OGraphCommands.getVertices(orientGraph, "ChiefOfficer", chiefOfficerKeys, chiefOfficerValues);
+      assertTrue(result.hasNext());
+      if (result.hasNext()) {
+        v = result.next().getVertex().get();
         assertEquals("Sundar", v.getProperty("firstName"));
         assertEquals("Pichai", v.getProperty("lastName"));
         assertEquals("Venus", v.getProperty("project"));
-        edgesIt = v.getEdges(Direction.OUT, "IsChiefForProject").iterator();
-        Edge currentEdge = edgesIt.next();
-        assertEquals("Venus", currentEdge.getVertex(Direction.IN).getProperty("project"));
-        assertEquals(0, currentEdge.getPropertyKeys().size());
+        edgesIt = v.getEdges(ODirection.OUT, "IsChiefForProject").iterator();
+        OEdge currentEdge = edgesIt.next();
+        assertEquals("Venus", currentEdge.getVertex(ODirection.IN).getProperty("project"));
+        assertEquals(0, currentEdge.getPropertyNames().size());
         assertEquals(false, edgesIt.hasNext());
       } else {
         fail("Query fail!");
@@ -529,17 +536,17 @@ public class ImportWithSplittingTest {
 
       chiefOfficerValues[0] = "Satya";
       chiefOfficerValues[1] = "Nadella";
-      iterator = orientGraph.getVertices("ChiefOfficer", chiefOfficerKeys, chiefOfficerValues).iterator();
-      assertTrue(iterator.hasNext());
-      if (iterator.hasNext()) {
-        v = iterator.next();
+      result = OGraphCommands.getVertices(orientGraph, "ChiefOfficer", chiefOfficerKeys, chiefOfficerValues);
+      assertTrue(result.hasNext());
+      if (result.hasNext()) {
+        v = result.next().getVertex().get();
         assertEquals("Satya", v.getProperty("firstName"));
         assertEquals("Nadella", v.getProperty("lastName"));
         assertEquals("Iuppiter", v.getProperty("project"));
-        edgesIt = v.getEdges(Direction.OUT, "IsChiefForProject").iterator();
-        Edge currentEdge = edgesIt.next();
-        assertEquals("Iuppiter", currentEdge.getVertex(Direction.IN).getProperty("project"));
-        assertEquals(0, currentEdge.getPropertyKeys().size());
+        edgesIt = v.getEdges(ODirection.OUT, "IsChiefForProject").iterator();
+        OEdge currentEdge = edgesIt.next();
+        assertEquals("Iuppiter", currentEdge.getVertex(ODirection.IN).getProperty("project"));
+        assertEquals(0, currentEdge.getPropertyNames().size());
         assertEquals(false, edgesIt.hasNext());
       } else {
         fail("Query fail!");
@@ -547,17 +554,17 @@ public class ImportWithSplittingTest {
 
       chiefOfficerValues[0] = "Chuck";
       chiefOfficerValues[1] = "Robbins";
-      iterator = orientGraph.getVertices("ChiefOfficer", chiefOfficerKeys, chiefOfficerValues).iterator();
-      assertTrue(iterator.hasNext());
-      if (iterator.hasNext()) {
-        v = iterator.next();
+      result = OGraphCommands.getVertices(orientGraph, "ChiefOfficer", chiefOfficerKeys, chiefOfficerValues);
+      assertTrue(result.hasNext());
+      if (result.hasNext()) {
+        v = result.next().getVertex().get();
         assertEquals("Chuck", v.getProperty("firstName"));
         assertEquals("Robbins", v.getProperty("lastName"));
         assertEquals("Mercury", v.getProperty("project"));
-        edgesIt = v.getEdges(Direction.OUT, "IsChiefForProject").iterator();
-        Edge currentEdge = edgesIt.next();
-        assertEquals("Mercury", currentEdge.getVertex(Direction.IN).getProperty("project"));
-        assertEquals(0, currentEdge.getPropertyKeys().size());
+        edgesIt = v.getEdges(ODirection.OUT, "IsChiefForProject").iterator();
+        OEdge currentEdge = edgesIt.next();
+        assertEquals("Mercury", currentEdge.getVertex(ODirection.IN).getProperty("project"));
+        assertEquals(0, currentEdge.getPropertyNames().size());
         assertEquals(false, edgesIt.hasNext());
       } else {
         fail("Query fail!");
@@ -580,7 +587,7 @@ public class ImportWithSplittingTest {
       }
       if (orientGraph != null) {
         orientGraph.drop();
-        orientGraph.shutdown();
+        orientGraph.close();
       }
     }
   }

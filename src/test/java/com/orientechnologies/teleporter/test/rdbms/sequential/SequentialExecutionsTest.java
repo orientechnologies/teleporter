@@ -18,6 +18,13 @@
 
 package com.orientechnologies.teleporter.test.rdbms.sequential;
 
+import com.orientechnologies.orient.core.db.OrientDB;
+import com.orientechnologies.orient.core.db.OrientDBConfig;
+import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
+import com.orientechnologies.orient.core.metadata.schema.OClass;
+import com.orientechnologies.orient.core.record.OEdge;
+import com.orientechnologies.orient.core.record.OVertex;
+import com.orientechnologies.orient.core.sql.executor.OResultSet;
 import com.orientechnologies.teleporter.context.OOutputStreamManager;
 import com.orientechnologies.teleporter.context.OTeleporterContext;
 import com.orientechnologies.teleporter.importengine.rdbms.dbengine.ODBQueryEngine;
@@ -28,10 +35,6 @@ import com.orientechnologies.teleporter.strategy.rdbms.ODBMSNaiveAggregationStra
 import com.orientechnologies.teleporter.strategy.rdbms.ODBMSNaiveStrategy;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.metadata.schema.OType;
-import com.tinkerpop.blueprints.Edge;
-import com.tinkerpop.blueprints.Vertex;
-import com.tinkerpop.blueprints.impls.orient.OrientGraphNoTx;
-import com.tinkerpop.blueprints.impls.orient.OrientVertexType;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -59,12 +62,17 @@ public class SequentialExecutionsTest {
   private String jurl     = "jdbc:hsqldb:mem:mydb";
   private String username = "SA";
   private String password = "";
-  private String              outOrientGraphUri;
+  private String dbName = "testOrientDB";
+  private String outOrientGraphUri = "plocal:target/" + this.dbName;
   private OSourceDatabaseInfo sourceDBInfo;
+
+  // Queries
+  private String getVerticesQuery = "select * from V";
+  private String getEdgesQuery = "select * from E";
+  private String getElementsFromClassQuery = "select * from ?";
 
   @Before
   public void init() {
-    this.outOrientGraphUri = "plocal:target/testOrientDB";
     this.context = OTeleporterContext.newInstance();
     this.dbQueryEngine = new ODBQueryEngine(this.driver);
     this.context.setDbQueryEngine(this.dbQueryEngine);
@@ -86,7 +94,7 @@ public class SequentialExecutionsTest {
 
     Connection connection = null;
     Statement st = null;
-    OrientGraphNoTx orientGraph = null;
+    ODatabaseDocument orientGraph = null;
 
     try {
 
@@ -108,9 +116,10 @@ public class SequentialExecutionsTest {
        *  Testing built OrientDB
        */
 
-      orientGraph = new OrientGraphNoTx(this.outOrientGraphUri);
+      OrientDB orient = OrientDB.fromUrl(this.outOrientGraphUri, OrientDBConfig.defaultConfig());
+      orientGraph = orient.open(this.dbName,"admin","admin");
 
-      OrientVertexType actorVertexType = orientGraph.getVertexType("Actor");
+      OClass actorVertexType = orientGraph.getClass("Actor");
 
       assertNotNull(actorVertexType);
       assertEquals(3, actorVertexType.properties().size());
@@ -152,9 +161,10 @@ public class SequentialExecutionsTest {
        *  Testing built OrientDB
        */
 
-      orientGraph = new OrientGraphNoTx(this.outOrientGraphUri);
+      orient = OrientDB.fromUrl(this.outOrientGraphUri, OrientDBConfig.defaultConfig());
+      orientGraph = orient.open(this.dbName,"admin","admin");
 
-      actorVertexType = orientGraph.getVertexType("Actor");
+      actorVertexType = orientGraph.getClass("Actor");
 
       assertNotNull(actorVertexType);
       assertEquals(4, actorVertexType.properties().size());
@@ -199,7 +209,7 @@ public class SequentialExecutionsTest {
       }
       if (orientGraph != null) {
         orientGraph.drop();
-        orientGraph.shutdown();
+        orientGraph.close();
       }
     }
   }
@@ -214,7 +224,7 @@ public class SequentialExecutionsTest {
 
     Connection connection = null;
     Statement st = null;
-    OrientGraphNoTx orientGraph = null;
+    ODatabaseDocument orientGraph = null;
 
     try {
 
@@ -236,9 +246,10 @@ public class SequentialExecutionsTest {
        *  Testing built OrientDB
        */
 
-      orientGraph = new OrientGraphNoTx(this.outOrientGraphUri);
+      OrientDB orient = OrientDB.fromUrl(this.outOrientGraphUri, OrientDBConfig.defaultConfig());
+      orientGraph = orient.open(this.dbName,"admin","admin");
 
-      OrientVertexType actorVertexType = orientGraph.getVertexType("Actor");
+      OClass actorVertexType = orientGraph.getClass("Actor");
 
       assertNotNull(actorVertexType);
       assertEquals(4, actorVertexType.properties().size());
@@ -283,9 +294,10 @@ public class SequentialExecutionsTest {
        *  Testing built OrientDB
        */
 
-      orientGraph = new OrientGraphNoTx(this.outOrientGraphUri);
+      orient = OrientDB.fromUrl(this.outOrientGraphUri, OrientDBConfig.defaultConfig());
+      orientGraph = orient.open(this.dbName,"admin","admin");
 
-      actorVertexType = orientGraph.getVertexType("Actor");
+      actorVertexType = orientGraph.getClass("Actor");
 
       assertNotNull(actorVertexType);
       assertEquals(3, actorVertexType.properties().size());
@@ -327,7 +339,7 @@ public class SequentialExecutionsTest {
       }
       if (orientGraph != null) {
         orientGraph.drop();
-        orientGraph.shutdown();
+        orientGraph.close();
       }
     }
   }
@@ -342,7 +354,7 @@ public class SequentialExecutionsTest {
 
     Connection connection = null;
     Statement st = null;
-    OrientGraphNoTx orientGraph = null;
+    ODatabaseDocument orientGraph = null;
 
     try {
 
@@ -364,9 +376,10 @@ public class SequentialExecutionsTest {
        *  Testing built OrientDB
        */
 
-      orientGraph = new OrientGraphNoTx(this.outOrientGraphUri);
+      OrientDB orient = OrientDB.fromUrl(this.outOrientGraphUri, OrientDBConfig.defaultConfig());
+      orientGraph = orient.open(this.dbName,"admin","admin");
 
-      OrientVertexType actorVertexType = orientGraph.getVertexType("Actor");
+      OClass actorVertexType = orientGraph.getClass("Actor");
 
       assertNotNull(actorVertexType);
       assertEquals(4, actorVertexType.properties().size());
@@ -414,9 +427,10 @@ public class SequentialExecutionsTest {
        *  Testing built OrientDB
        */
 
-      orientGraph = new OrientGraphNoTx(this.outOrientGraphUri);
+      orient = OrientDB.fromUrl(this.outOrientGraphUri, OrientDBConfig.defaultConfig());
+      orientGraph = orient.open(this.dbName,"admin","admin");
 
-      actorVertexType = orientGraph.getVertexType("Actor");
+      actorVertexType = orientGraph.getClass("Actor");
 
       assertNotNull(actorVertexType);
       assertEquals(4, actorVertexType.properties().size());
@@ -461,7 +475,7 @@ public class SequentialExecutionsTest {
       }
       if (orientGraph != null) {
         orientGraph.drop();
-        orientGraph.shutdown();
+        orientGraph.close();
       }
     }
   }
@@ -476,7 +490,7 @@ public class SequentialExecutionsTest {
 
     Connection connection = null;
     Statement st = null;
-    OrientGraphNoTx orientGraph = null;
+    ODatabaseDocument orientGraph = null;
 
     try {
 
@@ -513,46 +527,47 @@ public class SequentialExecutionsTest {
        *  Testing built OrientDB
        */
 
-      orientGraph = new OrientGraphNoTx(this.outOrientGraphUri);
+      OrientDB orient = OrientDB.fromUrl(this.outOrientGraphUri, OrientDBConfig.defaultConfig());
+      orientGraph = orient.open(this.dbName,"admin","admin");
 
       // vertices check
 
-      int count = 0;
-      for (Vertex v : orientGraph.getVertices()) {
-        assertNotNull(v.getId());
-        count++;
-      }
-      assertEquals(4, count);
+//      int count = 0;
+//      for(OVertex v : orientGraph.command(this.getVerticesQuery)) {
+//        assertNotNull(v.getIdentity());
+//        count++;
+//      }
+      assertEquals(4, orientGraph.countClass("V"));
 
-      count = 0;
-      for (Vertex v : orientGraph.getVerticesOfClass("Director")) {
-        assertNotNull(v.getId());
-        count++;
-      }
-      assertEquals(2, count);
+//      count = 0;
+//      for(OVertex v : orientGraph.command(this.getElementsFromClassQuery, "Director")) {
+//        assertNotNull(v.getIdentity());
+//        count++;
+//      }
+      assertEquals(2, orientGraph.countClass("Director"));
 
-      count = 0;
-      for (Vertex v : orientGraph.getVerticesOfClass("Film")) {
-        assertNotNull(v.getId());
-        count++;
-      }
-      assertEquals(2, count);
+//      count = 0;
+//      for(OVertex v : orientGraph.command(this.getElementsFromClassQuery, "Film")) {
+//        assertNotNull(v.getIdentity());
+//        count++;
+//      }
+      assertEquals(2, orientGraph.countClass("Film"));
 
       // edges check
 
-      count = 0;
-      for (Edge e : orientGraph.getEdges()) {
-        assertNotNull(e.getId());
-        count++;
-      }
-      assertEquals(2, count);
+//      count = 0;
+//      for (OEdge  e : orientGraph.command(this.getEdgesQuery)) {
+//        assertNotNull(e.getIdentity());
+//        count++;
+//      }
+      assertEquals(2, orientGraph.countClass("E"));
 
-      count = 0;
-      for (Edge e : orientGraph.getEdgesOfClass("HasDirector")) {
-        assertNotNull(e.getId());
-        count++;
-      }
-      assertEquals(2, count);
+//      count = 0;
+//      for (OEdge  e : orientGraph.command(this.getElementsFromClassQuery, "HasDirector")) {
+//        assertNotNull(e.getIdentity());
+//        count++;
+//      }
+      assertEquals(2, orientGraph.countClass("HasDirector"));
 
 
       /*
@@ -573,48 +588,49 @@ public class SequentialExecutionsTest {
        *  Testing built OrientDB
        */
 
-      orientGraph = new OrientGraphNoTx(this.outOrientGraphUri);
+      orient = OrientDB.fromUrl(this.outOrientGraphUri, OrientDBConfig.defaultConfig());
+      orientGraph = orient.open(this.dbName,"admin","admin");
 
       // vertices check
 
-      count = 0;
-      for (Vertex v : orientGraph.getVertices()) {
-        assertNotNull(v.getId());
-        count++;
-      }
-      assertEquals(4, count);
+//      count = 0;
+//      for(OVertex v : orientGraph.command(this.getVerticesQuery)) {
+//        assertNotNull(v.getIdentity());
+//        count++;
+//      }
+      assertEquals(4, orientGraph.countClass("V"));
 
-      count = 0;
-      for (Vertex v : orientGraph.getVerticesOfClass("Director")) {
-        assertNotNull(v.getId());
-        count++;
-      }
-      assertEquals(2, count);
+//      count = 0;
+//      for(OVertex v : orientGraph.command(this.getElementsFromClassQuery, "Director")) {
+//        assertNotNull(v.getIdentity());
+//        count++;
+//      }
+      assertEquals(2, orientGraph.countClass("Director"));
 
-      count = 0;
-      for (Vertex v : orientGraph.getVerticesOfClass("Film")) {
-        assertNotNull(v.getId());
-        count++;
-      }
-      assertEquals(2, count);
+//      count = 0;
+//      for(OVertex v : orientGraph.command(this.getElementsFromClassQuery, "Film")) {
+//        assertNotNull(v.getIdentity());
+//        count++;
+//      }
+      assertEquals(2, orientGraph.countClass("Film"));
 
       // edges check
 
-      count = 0;
-      for (Edge e : orientGraph.getEdges()) {
-        assertNotNull(e.getId());
-        count++;
-      }
-      assertEquals(2, count);
+//      count = 0;
+//      for (OEdge  e : orientGraph.command(this.getEdgesQuery)) {
+//        assertNotNull(e.getIdentity());
+//        count++;
+//      }
+      assertEquals(2, orientGraph.countClass("E"));
 
-      count = 0;
-      for (Edge e : orientGraph.getEdgesOfClass("HasBestfilm")) {
-        assertNotNull(e.getId());
-        count++;
-      }
-      assertEquals(2, count);
+//      count = 0;
+//      for (OEdge  e : orientGraph.command(this.getElementsFromClassQuery, "HasBestfilm")) {
+//        assertNotNull(e.getIdentity());
+//        count++;
+//      }
+      assertEquals(2, orientGraph.countClass("HasBestFilm"));
 
-      assertNull(orientGraph.getEdgeType("HasDirector"));
+      assertNull(orientGraph.getClass("HasDirector"));
 
     } catch (Exception e) {
       e.printStackTrace();
@@ -632,7 +648,7 @@ public class SequentialExecutionsTest {
       }
       if (orientGraph != null) {
         orientGraph.drop();
-        orientGraph.shutdown();
+        orientGraph.close();
       }
     }
 
@@ -648,7 +664,7 @@ public class SequentialExecutionsTest {
 
     Connection connection = null;
     Statement st = null;
-    OrientGraphNoTx orientGraph = null;
+    ODatabaseDocument orientGraph = null;
 
     try {
 
@@ -670,9 +686,10 @@ public class SequentialExecutionsTest {
        *  Testing built OrientDB
        */
 
-      orientGraph = new OrientGraphNoTx(this.outOrientGraphUri);
+      OrientDB orient = OrientDB.fromUrl(this.outOrientGraphUri, OrientDBConfig.defaultConfig());
+      orientGraph = orient.open(this.dbName,"admin","admin");
 
-      OrientVertexType actorVertexType = orientGraph.getVertexType("Actor");
+      OClass actorVertexType = orientGraph.getClass("Actor");
 
       assertNotNull(actorVertexType);
       assertEquals(4, actorVertexType.properties().size());
@@ -718,9 +735,10 @@ public class SequentialExecutionsTest {
        *  Testing built OrientDB
        */
 
-      orientGraph = new OrientGraphNoTx(this.outOrientGraphUri);
+      orient = OrientDB.fromUrl(this.outOrientGraphUri, OrientDBConfig.defaultConfig());
+      orientGraph = orient.open(this.dbName,"admin","admin");
 
-      actorVertexType = orientGraph.getVertexType("Actor");
+      actorVertexType = orientGraph.getClass("Actor");
 
       assertNotNull(actorVertexType);
       assertEquals(4, actorVertexType.properties().size());
@@ -749,7 +767,7 @@ public class SequentialExecutionsTest {
       assertEquals("surname", currentProperty.getName());
       assertEquals(OType.STRING, currentProperty.getType());
 
-      OrientVertexType filmVertexType = orientGraph.getVertexType("Film");
+      OClass filmVertexType = orientGraph.getClass("Film");
 
       assertNotNull(filmVertexType);
       assertEquals(3, filmVertexType.properties().size());
@@ -791,7 +809,7 @@ public class SequentialExecutionsTest {
       }
       if (orientGraph != null) {
         orientGraph.drop();
-        orientGraph.shutdown();
+        orientGraph.close();
       }
     }
   }
@@ -806,7 +824,7 @@ public class SequentialExecutionsTest {
 
     Connection connection = null;
     Statement st = null;
-    OrientGraphNoTx orientGraph = null;
+    ODatabaseDocument orientGraph = null;
 
     try {
 
@@ -842,39 +860,40 @@ public class SequentialExecutionsTest {
        *  Testing built OrientDB
        */
 
-      orientGraph = new OrientGraphNoTx(this.outOrientGraphUri);
+      OrientDB orient = OrientDB.fromUrl(this.outOrientGraphUri, OrientDBConfig.defaultConfig());
+      orientGraph = orient.open(this.dbName,"admin","admin");
 
       // vertices check
 
-      int count = 0;
-      for (Vertex v : orientGraph.getVertices()) {
-        assertNotNull(v.getId());
-        count++;
-      }
-      assertEquals(4, count);
+//      int count = 0;
+//      for(OVertex v : orientGraph.command(this.getVerticesQuery)) {
+//        assertNotNull(v.getIdentity());
+//        count++;
+//      }
+      assertEquals(4, orientGraph.countClass("V"));
 
-      count = 0;
-      for (Vertex v : orientGraph.getVerticesOfClass("Director")) {
-        assertNotNull(v.getId());
-        count++;
-      }
-      assertEquals(2, count);
+//      count = 0;
+//      for(OVertex v : orientGraph.command(this.getElementsFromClassQuery, "Director")) {
+//        assertNotNull(v.getIdentity());
+//        count++;
+//      }
+      assertEquals(2, orientGraph.countClass("Director"));
 
-      count = 0;
-      for (Vertex v : orientGraph.getVerticesOfClass("Film")) {
-        assertNotNull(v.getId());
-        count++;
-      }
-      assertEquals(2, count);
+//      count = 0;
+//      for(OVertex v : orientGraph.command(this.getElementsFromClassQuery, "Film")) {
+//        assertNotNull(v.getIdentity());
+//        count++;
+//      }
+      assertEquals(2, orientGraph.countClass("Film"));
 
       // edges check
 
-      count = 0;
-      for (Edge e : orientGraph.getEdges()) {
-        assertNotNull(e.getId());
-        count++;
-      }
-      assertEquals(0, count);
+//      count = 0;
+//      for (OEdge  e : orientGraph.command(this.getEdgesQuery)) {
+//        assertNotNull(e.getIdentity());
+//        count++;
+//      }
+      assertEquals(0, orientGraph.countClass("E"));
 
 
       /*
@@ -892,46 +911,47 @@ public class SequentialExecutionsTest {
        *  Testing built OrientDB
        */
 
-      orientGraph = new OrientGraphNoTx(this.outOrientGraphUri);
+      orient = OrientDB.fromUrl(this.outOrientGraphUri, OrientDBConfig.defaultConfig());
+      orientGraph = orient.open(this.dbName,"admin","admin");
 
       // vertices check
 
-      count = 0;
-      for (Vertex v : orientGraph.getVertices()) {
-        assertNotNull(v.getId());
-        count++;
-      }
-      assertEquals(4, count);
+//      count = 0;
+//      for(OVertex v : orientGraph.command(this.getVerticesQuery)) {
+//        assertNotNull(v.getIdentity());
+//        count++;
+//      }
+      assertEquals(4, orientGraph.countClass("V"));
 
-      count = 0;
-      for (Vertex v : orientGraph.getVerticesOfClass("Director")) {
-        assertNotNull(v.getId());
-        count++;
-      }
-      assertEquals(2, count);
+//      count = 0;
+//      for(OVertex v : orientGraph.command(this.getElementsFromClassQuery, "Director")) {
+//        assertNotNull(v.getIdentity());
+//        count++;
+//      }
+      assertEquals(2, orientGraph.countClass("Director"));
 
-      count = 0;
-      for (Vertex v : orientGraph.getVerticesOfClass("Film")) {
-        assertNotNull(v.getId());
-        count++;
-      }
-      assertEquals(2, count);
+//      count = 0;
+//      for(OVertex v : orientGraph.command(this.getElementsFromClassQuery, "Film")) {
+//        assertNotNull(v.getIdentity());
+//        count++;
+//      }
+      assertEquals(2, orientGraph.countClass("Film"));
 
       // edges check
 
-      count = 0;
-      for (Edge e : orientGraph.getEdges()) {
-        assertNotNull(e.getId());
-        count++;
-      }
-      assertEquals(2, count);
+//      count = 0;
+//      for (OEdge  e : orientGraph.command(this.getEdgesQuery)) {
+//        assertNotNull(e.getIdentity());
+//        count++;
+//      }
+      assertEquals(2, orientGraph.countClass("E"));
 
-      count = 0;
-      for (Edge e : orientGraph.getEdgesOfClass("HasDirector")) {
-        assertNotNull(e.getId());
-        count++;
-      }
-      assertEquals(2, count);
+//      count = 0;
+//      for (OEdge  e : orientGraph.command(this.getElementsFromClassQuery, "HasDirector")) {
+//        assertNotNull(e.getIdentity());
+//        count++;
+//      }
+      assertEquals(2, orientGraph.countClass("HasDirector"));
 
     } catch (Exception e) {
       e.printStackTrace();
@@ -949,7 +969,7 @@ public class SequentialExecutionsTest {
       }
       if (orientGraph != null) {
         orientGraph.drop();
-        orientGraph.shutdown();
+        orientGraph.close();
       }
     }
 
@@ -965,7 +985,7 @@ public class SequentialExecutionsTest {
 
     Connection connection = null;
     Statement st = null;
-    OrientGraphNoTx orientGraph = null;
+    ODatabaseDocument orientGraph = null;
 
     try {
 
@@ -991,9 +1011,10 @@ public class SequentialExecutionsTest {
        *  Testing built OrientDB
        */
 
-      orientGraph = new OrientGraphNoTx(this.outOrientGraphUri);
+      OrientDB orient = OrientDB.fromUrl(this.outOrientGraphUri, OrientDBConfig.defaultConfig());
+      orientGraph = orient.open(this.dbName,"admin","admin");
 
-      OrientVertexType actorVertexType = orientGraph.getVertexType("Actor");
+      OClass actorVertexType = orientGraph.getClass("Actor");
 
       assertNotNull(actorVertexType);
       assertEquals(4, actorVertexType.properties().size());
@@ -1022,7 +1043,7 @@ public class SequentialExecutionsTest {
       assertEquals("surname", currentProperty.getName());
       assertEquals(OType.STRING, currentProperty.getType());
 
-      OrientVertexType filmVertexType = orientGraph.getVertexType("Film");
+      OClass filmVertexType = orientGraph.getClass("Film");
 
       assertNotNull(filmVertexType);
       assertEquals(3, filmVertexType.properties().size());
@@ -1064,9 +1085,10 @@ public class SequentialExecutionsTest {
        *  Testing built OrientDB
        */
 
-      orientGraph = new OrientGraphNoTx(this.outOrientGraphUri);
+      orient = OrientDB.fromUrl(this.outOrientGraphUri, OrientDBConfig.defaultConfig());
+      orientGraph = orient.open(this.dbName,"admin","admin");
 
-      actorVertexType = orientGraph.getVertexType("Actor");
+      actorVertexType = orientGraph.getClass("Actor");
 
       assertNotNull(actorVertexType);
       assertEquals(4, actorVertexType.properties().size());
@@ -1095,7 +1117,7 @@ public class SequentialExecutionsTest {
       assertEquals("surname", currentProperty.getName());
       assertEquals(OType.STRING, currentProperty.getType());
 
-      filmVertexType = orientGraph.getVertexType(filmTableBuilding);
+      filmVertexType = orientGraph.getClass(filmTableBuilding);
 
       assertNull(filmVertexType);
 
@@ -1115,7 +1137,7 @@ public class SequentialExecutionsTest {
       }
       if (orientGraph != null) {
         orientGraph.drop();
-        orientGraph.shutdown();
+        orientGraph.close();
       }
     }
   }
@@ -1130,7 +1152,7 @@ public class SequentialExecutionsTest {
 
     Connection connection = null;
     Statement st = null;
-    OrientGraphNoTx orientGraph = null;
+    ODatabaseDocument orientGraph = null;
 
     try {
 
@@ -1167,46 +1189,47 @@ public class SequentialExecutionsTest {
        *  Testing built OrientDB
        */
 
-      orientGraph = new OrientGraphNoTx(this.outOrientGraphUri);
+      OrientDB orient = OrientDB.fromUrl(this.outOrientGraphUri, OrientDBConfig.defaultConfig());
+      orientGraph = orient.open(this.dbName,"admin","admin");
 
       // vertices check
 
-      int count = 0;
-      for (Vertex v : orientGraph.getVertices()) {
-        assertNotNull(v.getId());
-        count++;
-      }
-      assertEquals(4, count);
+//      int count = 0;
+//      for(OVertex v : orientGraph.command(this.getVerticesQuery)) {
+//        assertNotNull(v.getIdentity());
+//        count++;
+//      }
+      assertEquals(4, orientGraph.countClass("V"));
 
-      count = 0;
-      for (Vertex v : orientGraph.getVerticesOfClass("Director")) {
-        assertNotNull(v.getId());
-        count++;
-      }
-      assertEquals(2, count);
+//      count = 0;
+//      for(OVertex v : orientGraph.command(this.getElementsFromClassQuery, "Director")) {
+//        assertNotNull(v.getIdentity());
+//        count++;
+//      }
+      assertEquals(2, orientGraph.countClass("Director"));
 
-      count = 0;
-      for (Vertex v : orientGraph.getVerticesOfClass("Film")) {
-        assertNotNull(v.getId());
-        count++;
-      }
-      assertEquals(2, count);
+//      count = 0;
+//      for(OVertex v : orientGraph.command(this.getElementsFromClassQuery, "Film")) {
+//        assertNotNull(v.getIdentity());
+//        count++;
+//      }
+      assertEquals(2, orientGraph.countClass("Film"));
 
       // edges check
 
-      count = 0;
-      for (Edge e : orientGraph.getEdges()) {
-        assertNotNull(e.getId());
-        count++;
-      }
-      assertEquals(2, count);
+//      count = 0;
+//      for (OEdge e : orientGraph.command(this.getEdgesQuery)) {
+//        assertNotNull(e.getIdentity());
+//        count++;
+//      }
+      assertEquals(2, orientGraph.countClass("E"));
 
-      count = 0;
-      for (Edge e : orientGraph.getEdgesOfClass("HasDirector")) {
-        assertNotNull(e.getId());
-        count++;
-      }
-      assertEquals(2, count);
+//      count = 0;
+//      for (OEdge  e : orientGraph.command(this.getElementsFromClassQuery, "HasDirector")) {
+//        assertNotNull(e.getIdentity());
+//        count++;
+//      }
+      assertEquals(2, orientGraph.countClass("HasDirector"));
 
 
       /*
@@ -1224,41 +1247,41 @@ public class SequentialExecutionsTest {
        *  Testing built OrientDB
        */
 
-      orientGraph = new OrientGraphNoTx(this.outOrientGraphUri);
+      orientGraph = orient.open(this.dbName,"admin","admin");
 
       // vertices check
 
-      count = 0;
-      for (Vertex v : orientGraph.getVertices()) {
-        assertNotNull(v.getId());
-        count++;
-      }
-      assertEquals(4, count);
+//      count = 0;
+//      for(OVertex v : orientGraph.command(this.getVerticesQuery)) {
+//        assertNotNull(v.getIdentity());
+//        count++;
+//      }
+      assertEquals(4, orientGraph.countClass("V"));
 
-      count = 0;
-      for (Vertex v : orientGraph.getVerticesOfClass("Director")) {
-        assertNotNull(v.getId());
-        count++;
-      }
-      assertEquals(2, count);
+//      count = 0;
+//      for(OVertex v : orientGraph.command(this.getElementsFromClassQuery, "Director")) {
+//        assertNotNull(v.getIdentity());
+//        count++;
+//      }
+      assertEquals(2, orientGraph.countClass("Director"));
 
-      count = 0;
-      for (Vertex v : orientGraph.getVerticesOfClass("Film")) {
-        assertNotNull(v.getId());
-        count++;
-      }
-      assertEquals(2, count);
+//      count = 0;
+//      for(OVertex v : orientGraph.command(this.getElementsFromClassQuery, "Film")) {
+//        assertNotNull(v.getIdentity());
+//        count++;
+//      }
+      assertEquals(2, orientGraph.countClass("Film"));
 
       // edges check
 
-      count = 0;
-      for (Edge e : orientGraph.getEdges()) {
-        assertNotNull(e.getId());
-        count++;
-      }
-      assertEquals(0, count);
+//      count = 0;
+//      for (OEdge  e : orientGraph.command(this.getEdgesQuery)) {
+//        assertNotNull(e.getIdentity());
+//        count++;
+//      }
+      assertEquals(0, orientGraph.countClass("E"));
 
-      assertNull(orientGraph.getEdgeType("HasDirector"));
+      assertNull(orientGraph.getClass("HasDirector"));
 
     } catch (Exception e) {
       e.printStackTrace();
@@ -1276,7 +1299,7 @@ public class SequentialExecutionsTest {
       }
       if (orientGraph != null) {
         orientGraph.drop();
-        orientGraph.shutdown();
+        orientGraph.close();
       }
     }
 
@@ -1292,7 +1315,7 @@ public class SequentialExecutionsTest {
 
     Connection connection = null;
     Statement st = null;
-    OrientGraphNoTx orientGraph = null;
+    ODatabaseDocument orientGraph = null;
 
     try {
 
@@ -1322,32 +1345,33 @@ public class SequentialExecutionsTest {
        *  Testing built OrientDB
        */
 
-      orientGraph = new OrientGraphNoTx(this.outOrientGraphUri);
+      OrientDB orient = OrientDB.fromUrl(this.outOrientGraphUri, OrientDBConfig.defaultConfig());
+      orientGraph = orient.open(this.dbName,"admin","admin");
 
       // vertices check
 
-      int count = 0;
-      for (Vertex v : orientGraph.getVertices()) {
-        assertNotNull(v.getId());
-        count++;
-      }
-      assertEquals(8, count);
+//      int count = 0;
+//      for(OVertex v : orientGraph.command(this.getVerticesQuery)) {
+//        assertNotNull(v.getIdentity());
+//        count++;
+//      }
+      assertEquals(8, orientGraph.countClass("V"));
 
-      count = 0;
-      for (Vertex v : orientGraph.getVerticesOfClass("Actor")) {
-        assertNotNull(v.getId());
-        count++;
-      }
-      assertEquals(8, count);
+//      count = 0;
+//      for(OVertex v : orientGraph.command(this.getElementsFromClassQuery, "Actor")) {
+//        assertNotNull(v.getIdentity());
+//        count++;
+//      }
+      assertEquals(8, orientGraph.countClass("Actor"));
 
       // edges check
 
-      count = 0;
-      for (Edge e : orientGraph.getEdges()) {
-        assertNotNull(e.getId());
-        count++;
-      }
-      assertEquals(0, count);
+//      count = 0;
+//      for (OEdge  e : orientGraph.command(this.getEdgesQuery)) {
+//        assertNotNull(e.getIdentity());
+//        count++;
+//      }
+      assertEquals(0, orientGraph.countClass("E"));
 
 
       /*
@@ -1365,32 +1389,32 @@ public class SequentialExecutionsTest {
        *  Testing built OrientDB
        */
 
-      orientGraph = new OrientGraphNoTx(this.outOrientGraphUri);
+      orientGraph = orient.open(this.dbName,"admin","admin");
 
       // vertices check
 
-      count = 0;
-      for (Vertex v : orientGraph.getVertices()) {
-        assertNotNull(v.getId());
-        count++;
-      }
-      assertEquals(10, count);
+//      count = 0;
+//      for(OVertex v : orientGraph.command(this.getVerticesQuery)) {
+//        assertNotNull(v.getIdentity());
+//        count++;
+//      }
+      assertEquals(10, orientGraph.countClass("V"));
 
-      count = 0;
-      for (Vertex v : orientGraph.getVerticesOfClass("Actor")) {
-        assertNotNull(v.getId());
-        count++;
-      }
-      assertEquals(10, count);
+//      count = 0;
+//      for(OVertex v : orientGraph.command(this.getElementsFromClassQuery, "Actor")) {
+//        assertNotNull(v.getIdentity());
+//        count++;
+//      }
+      assertEquals(10, orientGraph.countClass("Actor"));
 
       // edges check
 
-      count = 0;
-      for (Edge e : orientGraph.getEdges()) {
-        assertNotNull(e.getId());
-        count++;
-      }
-      assertEquals(0, count);
+//      count = 0;
+//      for (OEdge  e : orientGraph.command(this.getEdgesQuery)) {
+//        assertNotNull(e.getIdentity());
+//        count++;
+//      }
+      assertEquals(0, orientGraph.countClass("E"));
 
     } catch (Exception e) {
       e.printStackTrace();
@@ -1408,7 +1432,7 @@ public class SequentialExecutionsTest {
       }
       if (orientGraph != null) {
         orientGraph.drop();
-        orientGraph.shutdown();
+        orientGraph.close();
       }
     }
   }
@@ -1423,7 +1447,7 @@ public class SequentialExecutionsTest {
 
     Connection connection = null;
     Statement st = null;
-    OrientGraphNoTx orientGraph = null;
+    ODatabaseDocument orientGraph = null;
 
     try {
 
@@ -1471,46 +1495,47 @@ public class SequentialExecutionsTest {
        *  Testing built OrientDB
        */
 
-      orientGraph = new OrientGraphNoTx(this.outOrientGraphUri);
+      OrientDB orient = OrientDB.fromUrl(this.outOrientGraphUri, OrientDBConfig.defaultConfig());
+      orientGraph = orient.open(this.dbName,"admin","admin");
 
       // vertices check
 
-      int count = 0;
-      for (Vertex v : orientGraph.getVertices()) {
-        assertNotNull(v.getId());
-        count++;
-      }
-      assertEquals(9, count);
+//      int count = 0;
+//      for(OVertex v : orientGraph.command(this.getVerticesQuery)) {
+//        assertNotNull(v.getIdentity());
+//        count++;
+//      }
+      assertEquals(9, orientGraph.countClass("V"));
 
-      count = 0;
-      for (Vertex v : orientGraph.getVerticesOfClass("Actor")) {
-        assertNotNull(v.getId());
-        count++;
-      }
-      assertEquals(6, count);
+//      count = 0;
+//      for(OVertex v : orientGraph.command(this.getElementsFromClassQuery, "Actor")) {
+//        assertNotNull(v.getIdentity());
+//        count++;
+//      }
+      assertEquals(6, orientGraph.countClass("Actor"));
 
-      count = 0;
-      for (Vertex v : orientGraph.getVerticesOfClass("Film")) {
-        assertNotNull(v.getId());
-        count++;
-      }
-      assertEquals(3, count);
+//      count = 0;
+//      for(OVertex v : orientGraph.command(this.getElementsFromClassQuery, "Film")) {
+//        assertNotNull(v.getIdentity());
+//        count++;
+//      }
+      assertEquals(3, orientGraph.countClass("Film"));
 
       // edges check
 
-      count = 0;
-      for (Edge e : orientGraph.getEdges()) {
-        assertNotNull(e.getId());
-        count++;
-      }
-      assertEquals(8, count);
+//      count = 0;
+//      for (OEdge  e : orientGraph.command(this.getEdgesQuery)) {
+//        assertNotNull(e.getIdentity());
+//        count++;
+//      }
+      assertEquals(8, orientGraph.countClass("E"));
 
-      count = 0;
-      for (Edge e : orientGraph.getEdgesOfClass("FilmActor")) {
-        assertNotNull(e.getId());
-        count++;
-      }
-      assertEquals(8, count);
+//      count = 0;
+//      for (OEdge  e : orientGraph.command(this.getElementsFromClassQuery, "FilmActor")) {
+//        assertNotNull(e.getIdentity());
+//        count++;
+//      }
+      assertEquals(8, orientGraph.countClass("FilmActor"));
 
 
       /*
@@ -1534,46 +1559,46 @@ public class SequentialExecutionsTest {
        *  Testing built OrientDB
        */
 
-      orientGraph = new OrientGraphNoTx(this.outOrientGraphUri);
+      orientGraph = orient.open(this.dbName,"admin","admin");
 
       // vertices check
 
-      count = 0;
-      for (Vertex v : orientGraph.getVertices()) {
-        assertNotNull(v.getId());
-        count++;
-      }
-      assertEquals(11, count);
+//      count = 0;
+//      for(OVertex v : orientGraph.command(this.getVerticesQuery)) {
+//        assertNotNull(v.getIdentity());
+//        count++;
+//      }
+      assertEquals(11, orientGraph.countClass("V"));
 
-      count = 0;
-      for (Vertex v : orientGraph.getVerticesOfClass("Actor")) {
-        assertNotNull(v.getId());
-        count++;
-      }
-      assertEquals(7, count);
+//      count = 0;
+//      for(OVertex v : orientGraph.command(this.getElementsFromClassQuery, "Actor")) {
+//        assertNotNull(v.getIdentity());
+//        count++;
+//      }
+      assertEquals(7, orientGraph.countClass("Actor"));
 
-      count = 0;
-      for (Vertex v : orientGraph.getVerticesOfClass("Film")) {
-        assertNotNull(v.getId());
-        count++;
-      }
-      assertEquals(4, count);
+//      count = 0;
+//      for(OVertex v : orientGraph.command(this.getElementsFromClassQuery, "Film")) {
+//        assertNotNull(v.getIdentity());
+//        count++;
+//      }
+      assertEquals(4, orientGraph.countClass("Film"));
 
       // edges check
 
-      count = 0;
-      for (Edge e : orientGraph.getEdges()) {
-        assertNotNull(e.getId());
-        count++;
-      }
-      assertEquals(10, count);
+//      count = 0;
+//      for (OEdge  e : orientGraph.command(this.getEdgesQuery)) {
+//        assertNotNull(e.getIdentity());
+//        count++;
+//      }
+      assertEquals(10, orientGraph.countClass("E"));
 
-      count = 0;
-      for (Edge e : orientGraph.getEdgesOfClass("FilmActor")) {
-        assertNotNull(e.getId());
-        count++;
-      }
-      assertEquals(10, count);
+//      count = 0;
+//      for (OEdge  e : orientGraph.command(this.getElementsFromClassQuery, "FilmActor")) {
+//        assertNotNull(e.getIdentity());
+//        count++;
+//      }
+      assertEquals(10, orientGraph.countClass("FilmActor"));
 
     } catch (Exception e) {
       e.printStackTrace();
@@ -1591,7 +1616,7 @@ public class SequentialExecutionsTest {
       }
       if (orientGraph != null) {
         orientGraph.drop();
-        orientGraph.shutdown();
+        orientGraph.close();
       }
     }
   }
@@ -1606,7 +1631,7 @@ public class SequentialExecutionsTest {
 
     Connection connection = null;
     Statement st = null;
-    OrientGraphNoTx orientGraph = null;
+    ODatabaseDocument orientGraph = null;
 
     try {
 
@@ -1633,23 +1658,24 @@ public class SequentialExecutionsTest {
       /*
        *  Testing built OrientDB
        */
-      orientGraph = new OrientGraphNoTx(this.outOrientGraphUri);
+      OrientDB orient = OrientDB.fromUrl(this.outOrientGraphUri, OrientDBConfig.defaultConfig());
+      orientGraph = orient.open(this.dbName,"admin","admin");
 
       // vertices check
 
-      int count = 0;
-      for (Vertex v : orientGraph.getVertices()) {
-        assertNotNull(v.getId());
-        count++;
-      }
-      assertEquals(2, count);
+//      int count = 0;
+//      for(OVertex v : orientGraph.command(this.getVerticesQuery)) {
+//        assertNotNull(v.getIdentity());
+//        count++;
+//      }
+      assertEquals(2, orientGraph.countClass("V"));
 
-      count = 0;
-      for (Vertex v : orientGraph.getVerticesOfClass("Director")) {
-        assertNotNull(v.getId());
-        count++;
-      }
-      assertEquals(2, count);
+//      count = 0;
+//      for(OVertex v : orientGraph.command(this.getElementsFromClassQuery, "Director")) {
+//        assertNotNull(v.getIdentity());
+//        count++;
+//      }
+      assertEquals(2, orientGraph.countClass("Director"));
 
 
       /*
@@ -1675,46 +1701,47 @@ public class SequentialExecutionsTest {
       /*
        *  Testing built OrientDB
        */
-      orientGraph = new OrientGraphNoTx(this.outOrientGraphUri);
+      orient = OrientDB.fromUrl(this.outOrientGraphUri, OrientDBConfig.defaultConfig());
+      orientGraph = orient.open(this.dbName,"admin","admin");
 
       // vertices check
 
-      count = 0;
-      for (Vertex v : orientGraph.getVertices()) {
-        assertNotNull(v.getId());
-        count++;
-      }
-      assertEquals(5, count);
+//      count = 0;
+//      for(OVertex v : orientGraph.command(this.getVerticesQuery)) {
+//        assertNotNull(v.getIdentity());
+//        count++;
+//      }
+      assertEquals(5, orientGraph.countClass("V"));
 
-      count = 0;
-      for (Vertex v : orientGraph.getVerticesOfClass("Director")) {
-        assertNotNull(v.getId());
-        count++;
-      }
-      assertEquals(2, count);
+//      count = 0;
+//      for(OVertex v : orientGraph.command(this.getElementsFromClassQuery, "Director")) {
+//        assertNotNull(v.getIdentity());
+//        count++;
+//      }
+      assertEquals(2, orientGraph.countClass("Director"));
 
-      count = 0;
-      for (Vertex v : orientGraph.getVerticesOfClass("Film")) {
-        assertNotNull(v.getId());
-        count++;
-      }
-      assertEquals(3, count);
+//      count = 0;
+//      for(OVertex v : orientGraph.command(this.getElementsFromClassQuery, "Film")) {
+//        assertNotNull(v.getIdentity());
+//        count++;
+//      }
+      assertEquals(3, orientGraph.countClass("Film"));
 
       // edges check
 
-      count = 0;
-      for (Edge e : orientGraph.getEdges()) {
-        assertNotNull(e.getId());
-        count++;
-      }
-      assertEquals(3, count);
+//      count = 0;
+//      for (OEdge  e : orientGraph.command(this.getEdgesQuery)) {
+//        assertNotNull(e.getIdentity());
+//        count++;
+//      }
+      assertEquals(3, orientGraph.countClass("E"));
 
-      count = 0;
-      for (Edge e : orientGraph.getEdgesOfClass("HasDirector")) {
-        assertNotNull(e.getId());
-        count++;
-      }
-      assertEquals(3, count);
+//      count = 0;
+//      for (OEdge  e : orientGraph.command(this.getElementsFromClassQuery, "HasDirector")) {
+//        assertNotNull(e.getIdentity());
+//        count++;
+//      }
+      assertEquals(3, orientGraph.countClass("HasDirector"));
 
     } catch (Exception e) {
       e.printStackTrace();
@@ -1732,7 +1759,7 @@ public class SequentialExecutionsTest {
       }
       if (orientGraph != null) {
         orientGraph.drop();
-        orientGraph.shutdown();
+        orientGraph.close();
       }
     }
 
@@ -1748,7 +1775,7 @@ public class SequentialExecutionsTest {
 
     Connection connection = null;
     Statement st = null;
-    OrientGraphNoTx orientGraph = null;
+    ODatabaseDocument orientGraph = null;
 
     try {
 
@@ -1787,39 +1814,40 @@ public class SequentialExecutionsTest {
        *  Testing built OrientDB
        */
 
-      orientGraph = new OrientGraphNoTx(this.outOrientGraphUri);
+      OrientDB orient = OrientDB.fromUrl(this.outOrientGraphUri, OrientDBConfig.defaultConfig());
+      orientGraph = orient.open(this.dbName,"admin","admin");
 
       // vertices check
 
-      int count = 0;
-      for (Vertex v : orientGraph.getVertices()) {
-        assertNotNull(v.getId());
-        count++;
-      }
-      assertEquals(9, count);
+//      int count = 0;
+//      for(OVertex v : orientGraph.command(this.getVerticesQuery)) {
+//        assertNotNull(v.getIdentity());
+//        count++;
+//      }
+      assertEquals(9, orientGraph.countClass("V"));
 
-      count = 0;
-      for (Vertex v : orientGraph.getVerticesOfClass("Actor")) {
-        assertNotNull(v.getId());
-        count++;
-      }
-      assertEquals(6, count);
+//      count = 0;
+//      for(OVertex v : orientGraph.command(this.getElementsFromClassQuery, "Actor")) {
+//        assertNotNull(v.getIdentity());
+//        count++;
+//      }
+      assertEquals(6, orientGraph.countClass("Actor"));
 
-      count = 0;
-      for (Vertex v : orientGraph.getVerticesOfClass("Film")) {
-        assertNotNull(v.getId());
-        count++;
-      }
-      assertEquals(3, count);
+//      count = 0;
+//      for(OVertex v : orientGraph.command(this.getElementsFromClassQuery, "Film")) {
+//        assertNotNull(v.getIdentity());
+//        count++;
+//      }
+      assertEquals(3, orientGraph.countClass("Film"));
 
       // edges check
 
-      count = 0;
-      for (Edge e : orientGraph.getEdges()) {
-        assertNotNull(e.getId());
-        count++;
-      }
-      assertEquals(0, count);
+//      count = 0;
+//      for (OEdge  e : orientGraph.command(this.getEdgesQuery)) {
+//        assertNotNull(e.getIdentity());
+//        count++;
+//      }
+      assertEquals(0, orientGraph.countClass("E"));
 
 
       /*
@@ -1843,46 +1871,47 @@ public class SequentialExecutionsTest {
        *  Testing built OrientDB
        */
 
-      orientGraph = new OrientGraphNoTx(this.outOrientGraphUri);
+      orient = OrientDB.fromUrl(this.outOrientGraphUri, OrientDBConfig.defaultConfig());
+      orientGraph = orient.open(this.dbName,"admin","admin");
 
       // vertices check
 
-      count = 0;
-      for (Vertex v : orientGraph.getVertices()) {
-        assertNotNull(v.getId());
-        count++;
-      }
-      assertEquals(9, count);
+//      count = 0;
+//      for(OVertex v : orientGraph.command(this.getVerticesQuery)) {
+//        assertNotNull(v.getIdentity());
+//        count++;
+//      }
+      assertEquals(9, orientGraph.countClass("V"));
 
-      count = 0;
-      for (Vertex v : orientGraph.getVerticesOfClass("Actor")) {
-        assertNotNull(v.getId());
-        count++;
-      }
-      assertEquals(6, count);
+//      count = 0;
+//      for(OVertex v : orientGraph.command(this.getElementsFromClassQuery, "Actor")) {
+//        assertNotNull(v.getIdentity());
+//        count++;
+//      }
+      assertEquals(6, orientGraph.countClass("Actor"));
 
-      count = 0;
-      for (Vertex v : orientGraph.getVerticesOfClass("Film")) {
-        assertNotNull(v.getId());
-        count++;
-      }
-      assertEquals(3, count);
+//      count = 0;
+//      for(OVertex v : orientGraph.command(this.getElementsFromClassQuery, "Film")) {
+//        assertNotNull(v.getIdentity());
+//        count++;
+//      }
+      assertEquals(3, orientGraph.countClass("Film"));
 
       // edges check
 
-      count = 0;
-      for (Edge e : orientGraph.getEdges()) {
-        assertNotNull(e.getId());
-        count++;
-      }
-      assertEquals(8, count);
+//      count = 0;
+//      for (OEdge  e : orientGraph.command(this.getEdgesQuery)) {
+//        assertNotNull(e.getIdentity());
+//        count++;
+//      }
+      assertEquals(8, orientGraph.countClass("E"));
 
-      count = 0;
-      for (Edge e : orientGraph.getEdgesOfClass("FilmActor")) {
-        assertNotNull(e.getId());
-        count++;
-      }
-      assertEquals(8, count);
+//      count = 0;
+//      for (OEdge  e : orientGraph.command(this.getElementsFromClassQuery, "FilmActor")) {
+//        assertNotNull(e.getIdentity());
+//        count++;
+//      }
+      assertEquals(8, orientGraph.countClass("FilmActor"));
 
     } catch (Exception e) {
       e.printStackTrace();
@@ -1900,7 +1929,7 @@ public class SequentialExecutionsTest {
       }
       if (orientGraph != null) {
         orientGraph.drop();
-        orientGraph.shutdown();
+        orientGraph.close();
       }
     }
   }
@@ -1915,7 +1944,7 @@ public class SequentialExecutionsTest {
 
     Connection connection = null;
     Statement st = null;
-    OrientGraphNoTx orientGraph = null;
+    ODatabaseDocument orientGraph = null;
 
     try {
 
@@ -1945,49 +1974,50 @@ public class SequentialExecutionsTest {
        *  Testing built OrientDB
        */
 
-      orientGraph = new OrientGraphNoTx(this.outOrientGraphUri);
+      OrientDB orient = OrientDB.fromUrl(this.outOrientGraphUri, OrientDBConfig.defaultConfig());
+      orientGraph = orient.open(this.dbName,"admin","admin");
 
       // vertices check
 
-      int count = 0;
-      for (Vertex v : orientGraph.getVertices()) {
-        assertNotNull(v.getId());
-        count++;
-      }
-      assertEquals(8, count);
+//      int count = 0;
+//      for(OVertex v : orientGraph.command(this.getVerticesQuery)) {
+//        assertNotNull(v.getIdentity());
+//        count++;
+//      }
+      assertEquals(8, orientGraph.countClass("V"));
 
-      count = 0;
-      for (Vertex v : orientGraph.getVerticesOfClass("Actor")) {
-        assertNotNull(v.getId());
-        count++;
-      }
-      assertEquals(8, count);
+//      count = 0;
+//      for(OVertex v : orientGraph.command(this.getElementsFromClassQuery, "Actor")) {
+//        assertNotNull(v.getIdentity());
+//        count++;
+//      }
+      assertEquals(8, orientGraph.countClass("Actor"));
 
-      Iterator<Vertex> it = orientGraph.getVerticesOfClass("Actor").iterator();
-      Vertex currentVertex = it.next();
+      OResultSet result = orientGraph.command(this.getElementsFromClassQuery, "Actor");
+      OVertex currentVertex = result.next().getVertex().get();
       assertEquals("John", currentVertex.getProperty("name"));
       assertEquals("Unaltravolta", currentVertex.getProperty("surname"));
-      currentVertex = it.next();
+      currentVertex = result.next().getVertex().get();
       assertEquals("Samuel", currentVertex.getProperty("name"));
       assertEquals("Lì Clacson", currentVertex.getProperty("surname"));
-      currentVertex = it.next();
-      currentVertex = it.next();
-      currentVertex = it.next();
-      currentVertex = it.next();
-      currentVertex = it.next();
-      currentVertex = it.next();
+      currentVertex = result.next().getVertex().get();
+      currentVertex = result.next().getVertex().get();
+      currentVertex = result.next().getVertex().get();
+      currentVertex = result.next().getVertex().get();
+      currentVertex = result.next().getVertex().get();
+      currentVertex = result.next().getVertex().get();
       assertEquals("Matto", currentVertex.getProperty("name"));
       assertEquals("Demone", currentVertex.getProperty("surname"));
-      assertFalse(it.hasNext());
+      assertFalse(result.hasNext());
 
       // edges check
 
-      count = 0;
-      for (Edge e : orientGraph.getEdges()) {
-        assertNotNull(e.getId());
-        count++;
-      }
-      assertEquals(0, count);
+//      count = 0;
+//      for (OEdge  e : orientGraph.command(this.getEdgesQuery)) {
+//        assertNotNull(e.getIdentity());
+//        count++;
+//      }
+      assertEquals(0, orientGraph.countClass("E"));
 
 
       /*
@@ -2009,49 +2039,50 @@ public class SequentialExecutionsTest {
        *  Testing built OrientDB
        */
 
-      orientGraph = new OrientGraphNoTx(this.outOrientGraphUri);
+      orient = OrientDB.fromUrl(this.outOrientGraphUri, OrientDBConfig.defaultConfig());
+      orientGraph = orient.open(this.dbName,"admin","admin");
 
       // vertices check
 
-      count = 0;
-      for (Vertex v : orientGraph.getVertices()) {
-        assertNotNull(v.getId());
-        count++;
-      }
-      assertEquals(8, count);
+//      count = 0;
+//      for(OVertex v : orientGraph.command(this.getVerticesQuery)) {
+//        assertNotNull(v.getIdentity());
+//        count++;
+//      }
+      assertEquals(8, orientGraph.countClass("V"));
 
-      count = 0;
-      for (Vertex v : orientGraph.getVerticesOfClass("Actor")) {
-        assertNotNull(v.getId());
-        count++;
-      }
-      assertEquals(8, count);
+//      count = 0;
+//      for(OVertex v : orientGraph.command(this.getElementsFromClassQuery, "Actor")) {
+//        assertNotNull(v.getIdentity());
+//        count++;
+//      }
+      assertEquals(8, orientGraph.countClass("Actor"));
 
-      it = orientGraph.getVerticesOfClass("Actor").iterator();
-      currentVertex = it.next();
+      result = orientGraph.command(this.getElementsFromClassQuery, "Actor");
+      currentVertex = result.next().getVertex().get();
       assertEquals("John", currentVertex.getProperty("name"));
       assertEquals("Travolta", currentVertex.getProperty("surname"));
-      currentVertex = it.next();
+      currentVertex = result.next().getVertex().get();
       assertEquals("Samuel", currentVertex.getProperty("name"));
       assertEquals("Lee Jackson", currentVertex.getProperty("surname"));
-      currentVertex = it.next();
-      currentVertex = it.next();
-      currentVertex = it.next();
-      currentVertex = it.next();
-      currentVertex = it.next();
-      currentVertex = it.next();
+      currentVertex = result.next().getVertex().get();
+      currentVertex = result.next().getVertex().get();
+      currentVertex = result.next().getVertex().get();
+      currentVertex = result.next().getVertex().get();
+      currentVertex = result.next().getVertex().get();
+      currentVertex = result.next().getVertex().get();
       assertEquals("Matt", currentVertex.getProperty("name"));
       assertEquals("Damon", currentVertex.getProperty("surname"));
-      assertFalse(it.hasNext());
+      assertFalse(result.hasNext());
 
       // edges check
 
-      count = 0;
-      for (Edge e : orientGraph.getEdges()) {
-        assertNotNull(e.getId());
-        count++;
-      }
-      assertEquals(0, count);
+//      count = 0;
+//      for (OEdge  e : orientGraph.command(this.getEdgesQuery)) {
+//        assertNotNull(e.getIdentity());
+//        count++;
+//      }
+      assertEquals(0, orientGraph.countClass("E"));
 
     } catch (Exception e) {
       e.printStackTrace();
@@ -2069,7 +2100,7 @@ public class SequentialExecutionsTest {
       }
       if (orientGraph != null) {
         orientGraph.drop();
-        orientGraph.shutdown();
+        orientGraph.close();
       }
     }
   }

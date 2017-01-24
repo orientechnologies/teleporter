@@ -18,9 +18,9 @@
 
 package com.orientechnologies.teleporter.model.graphmodel;
 
-import java.util.*;
+import com.orientechnologies.orient.core.record.ODirection;
 
-import com.tinkerpop.blueprints.Direction;
+import java.util.*;
 
 /**
  * It represents an Orient class of a specific type that extends the Orient Vertex Class.
@@ -98,19 +98,19 @@ public class OVertexType extends OElementType {
 
   }
 
-  public OEdgeType getEdgeByName(String name, Direction direction) {
+  public OEdgeType getEdgeByName(String name, ODirection direction) {
 
-    if (direction.equals(Direction.IN)) {
+    if (direction.equals(ODirection.IN)) {
       for (OEdgeType currentEdgeType : this.inEdgesType) {
         if (currentEdgeType.getName().equals(name))
           return currentEdgeType;
       }
-    } else if (direction.equals(Direction.OUT)) {
+    } else if (direction.equals(ODirection.OUT)) {
       for (OEdgeType currentEdgeType : this.outEdgesType) {
         if (currentEdgeType.getName().equals(name))
           return currentEdgeType;
       }
-    } else if (direction.equals(Direction.BOTH)) {
+    } else if (direction.equals(ODirection.BOTH)) {
       return this.getEdgeByName(name);
     }
 

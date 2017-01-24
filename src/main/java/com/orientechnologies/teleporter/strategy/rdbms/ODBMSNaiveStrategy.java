@@ -18,6 +18,9 @@
 
 package com.orientechnologies.teleporter.strategy.rdbms;
 
+import com.orientechnologies.orient.core.db.OrientDB;
+import com.orientechnologies.orient.core.db.OrientDBConfig;
+import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.intent.OIntentMassiveInsert;
 import com.orientechnologies.teleporter.configuration.OConfigurationHandler;
 import com.orientechnologies.teleporter.configuration.api.OConfiguration;
@@ -38,8 +41,6 @@ import com.orientechnologies.teleporter.model.graphmodel.OVertexType;
 import com.orientechnologies.teleporter.nameresolver.ONameResolver;
 import com.orientechnologies.teleporter.persistence.handler.ODBMSDataTypeHandler;
 import com.orientechnologies.teleporter.writer.OGraphModelWriter;
-import com.tinkerpop.blueprints.impls.orient.OrientBaseGraph;
-import com.tinkerpop.blueprints.impls.orient.OrientGraphFactory;
 
 import java.util.Date;
 import java.util.LinkedList;
@@ -88,7 +89,7 @@ public class ODBMSNaiveStrategy extends ODBMSImportStrategy {
 
     // Step 4: Writing schema on OrientDB
     OGraphModelWriter graphModelWriter = new OGraphModelWriter(migrationConfig);
-    OGraphModel graphModel = ((OER2GraphMapper) mapper).getGraphModel();
+    //OGraphModel graphModel = ((OER2GraphMapper) mapper).getGraphModel();
     boolean success = graphModelWriter.writeModelOnOrient(mapper, handler, outOrientGraphUri);
     if (!success) {
       OTeleporterContext.getInstance().getOutputManager().error("Writing not complete. Something gone wrong.\n");
@@ -115,11 +116,20 @@ public class ODBMSNaiveStrategy extends ODBMSImportStrategy {
       OGraphEngineForDB graphEngine = new OGraphEngineForDB((OER2GraphMapper) mapper, handler);
 
       // OrientDB graph initialization/connection
-      OrientBaseGraph orientGraph = null;
-      OrientGraphFactory factory = new OrientGraphFactory(outOrientGraphUri, "admin", "admin");
-      orientGraph = factory.getNoTx();
-      orientGraph.getRawGraph().declareIntent(new OIntentMassiveInsert());
-      orientGraph.setStandardElementConstraints(false);
+      String dbName = outOrientGraphUri.substring(outOrientGraphUri.lastIndexOf('/')+1);
+      ODatabaseDocument orientGraph;
+      OrientDB orient = OrientDB.fromUrl(outOrientGraphUri, OrientDBConfig.defaultConfig());
+      try {
+        if(!orient.exists(dbName,"admin","admin")) {
+          orient.create(dbName, "admin", "admin", OrientDB.DatabaseType.PLOCAL);
+        }
+        orientGraph = orient.open(dbName,"admin","admin");
+      } catch (Exception e) {
+        String mess = "";
+        OTeleporterContext.getInstance().printExceptionMessage(e, mess, "error");
+        OTeleporterContext.getInstance().printExceptionStackTrace(e, "error");
+        throw new OTeleporterRuntimeException(e);
+      }
 
       // Importing from Entities belonging to hierarchical bags
       super.importEntitiesBelongingToHierarchies(dbQueryEngine, graphEngine, orientGraph);
@@ -186,7 +196,7 @@ public class ODBMSNaiveStrategy extends ODBMSImportStrategy {
 
       statistics.notifyListeners();
       statistics.runningStepNumber = -1;
-      orientGraph.shutdown();
+      orientGraph.close();
       OTeleporterContext.getInstance().getOutputManager().info("\n");
 
     } catch (OTeleporterRuntimeException e) {

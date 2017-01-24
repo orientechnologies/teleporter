@@ -18,6 +18,10 @@
 
 package com.orientechnologies.teleporter.test.rdbms.configuration.orientWriter;
 
+import com.orientechnologies.orient.core.db.OrientDB;
+import com.orientechnologies.orient.core.db.OrientDBConfig;
+import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
+import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.teleporter.configuration.OConfigurationHandler;
@@ -31,9 +35,6 @@ import com.orientechnologies.teleporter.nameresolver.OJavaConventionNameResolver
 import com.orientechnologies.teleporter.persistence.handler.OHSQLDBDataTypeHandler;
 import com.orientechnologies.teleporter.util.OFileManager;
 import com.orientechnologies.teleporter.writer.OGraphModelWriter;
-import com.tinkerpop.blueprints.impls.orient.OrientEdgeType;
-import com.tinkerpop.blueprints.impls.orient.OrientGraphNoTx;
-import com.tinkerpop.blueprints.impls.orient.OrientVertexType;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -55,13 +56,14 @@ public class OrientDBSchemaWritingWithSplittingTest {
   private OER2GraphMapper    mapper;
   private OTeleporterContext context;
   private OGraphModelWriter  modelWriter;
-  private String             outOrientGraphUri;
   private final String config = "src/test/resources/configuration-mapping/splitting-into2tables-mapping.json";
   private ODBQueryEngine dbQueryEngine;
   private String driver   = "org.hsqldb.jdbc.JDBCDriver";
   private String jurl     = "jdbc:hsqldb:mem:mydb";
   private String username = "SA";
   private String password = "";
+  private String dbName = "testOrientDB";
+  private String outOrientGraphUri = "plocal:target/" + this.dbName;
   private OSourceDatabaseInfo sourceDBInfo;
 
   @Before
@@ -73,7 +75,6 @@ public class OrientDBSchemaWritingWithSplittingTest {
     this.context.setNameResolver(new OJavaConventionNameResolver());
     this.context.setDataTypeHandler(new OHSQLDBDataTypeHandler());
     this.modelWriter = new OGraphModelWriter();
-    this.outOrientGraphUri = "plocal:target/testOrientDB";
     this.sourceDBInfo = new OSourceDatabaseInfo("source", this.driver, this.jurl, this.username, this.password);
   }
 
@@ -105,7 +106,7 @@ public class OrientDBSchemaWritingWithSplittingTest {
 
     Connection connection = null;
     Statement st = null;
-    OrientGraphNoTx orientGraph = null;
+    ODatabaseDocument orientGraph = null;
 
     try {
 
@@ -152,14 +153,16 @@ public class OrientDBSchemaWritingWithSplittingTest {
        *  Testing built OrientDB schema
        */
 
-      orientGraph = new OrientGraphNoTx(this.outOrientGraphUri);
-      OrientVertexType employeeVertexType = orientGraph.getVertexType("Employee");
-      OrientVertexType projectVertexType = orientGraph.getVertexType("Project");
-      OrientVertexType departmentVertexType = orientGraph.getVertexType("Department");
-      OrientVertexType chiefOfficerVertexType = orientGraph.getVertexType("ChiefOfficer");
-      OrientEdgeType worksAtEdgeType = orientGraph.getEdgeType("WorksAt");
-      OrientEdgeType hasProjectEdgeType = orientGraph.getEdgeType("HasProject");
-      OrientEdgeType isChiefForProjectEdgeType = orientGraph.getEdgeType("IsChiefForProject");
+      OrientDB orient = OrientDB.fromUrl(this.outOrientGraphUri, OrientDBConfig.defaultConfig());
+      orientGraph = orient.open(this.dbName,"admin","admin");
+
+      OClass employeeVertexType = orientGraph.getClass("Employee");
+      OClass projectVertexType = orientGraph.getClass("Project");
+      OClass departmentVertexType = orientGraph.getClass("Department");
+      OClass chiefOfficerVertexType = orientGraph.getClass("ChiefOfficer");
+      OClass worksAtEdgeType = orientGraph.getClass("WorksAt");
+      OClass hasProjectEdgeType = orientGraph.getClass("HasProject");
+      OClass isChiefForProjectEdgeType = orientGraph.getClass("IsChiefForProject");
 
       // vertices check
       assertNotNull(employeeVertexType);
@@ -282,18 +285,18 @@ public class OrientDBSchemaWritingWithSplittingTest {
       assertEquals(0, isChiefForProjectEdgeType.propertiesMap().size());
 
       // Indices check
-      assertEquals(true, orientGraph.getRawGraph().getMetadata().getIndexManager().existsIndex("Employee.pkey"));
-      assertEquals(true, orientGraph.getRawGraph().getMetadata().getIndexManager().areIndexed("Employee", "firstName", "lastName"));
+      assertEquals(true, orientGraph.getMetadata().getIndexManager().existsIndex("Employee.pkey"));
+      assertEquals(true, orientGraph.getMetadata().getIndexManager().areIndexed("Employee", "firstName", "lastName"));
 
-      assertEquals(true, orientGraph.getRawGraph().getMetadata().getIndexManager().existsIndex("Project.pkey"));
-      assertEquals(true, orientGraph.getRawGraph().getMetadata().getIndexManager().areIndexed("Project", "project"));
+      assertEquals(true, orientGraph.getMetadata().getIndexManager().existsIndex("Project.pkey"));
+      assertEquals(true, orientGraph.getMetadata().getIndexManager().areIndexed("Project", "project"));
 
-      assertEquals(true, orientGraph.getRawGraph().getMetadata().getIndexManager().existsIndex("Department.pkey"));
-      assertEquals(true, orientGraph.getRawGraph().getMetadata().getIndexManager().areIndexed("Department", "id"));
+      assertEquals(true, orientGraph.getMetadata().getIndexManager().existsIndex("Department.pkey"));
+      assertEquals(true, orientGraph.getMetadata().getIndexManager().areIndexed("Department", "id"));
 
-      assertEquals(true, orientGraph.getRawGraph().getMetadata().getIndexManager().existsIndex("ChiefOfficer.pkey"));
+      assertEquals(true, orientGraph.getMetadata().getIndexManager().existsIndex("ChiefOfficer.pkey"));
       assertEquals(true,
-          orientGraph.getRawGraph().getMetadata().getIndexManager().areIndexed("ChiefOfficer", "firstName", "lastName"));
+          orientGraph.getMetadata().getIndexManager().areIndexed("ChiefOfficer", "firstName", "lastName"));
 
     } catch (Exception e) {
       e.printStackTrace();
@@ -311,7 +314,7 @@ public class OrientDBSchemaWritingWithSplittingTest {
       }
       if (orientGraph != null) {
         orientGraph.drop();
-        orientGraph.shutdown();
+        orientGraph.close();
       }
     }
   }

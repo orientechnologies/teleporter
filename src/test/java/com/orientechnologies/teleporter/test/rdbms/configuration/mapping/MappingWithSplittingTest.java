@@ -18,6 +18,7 @@
 
 package com.orientechnologies.teleporter.test.rdbms.configuration.mapping;
 
+import com.orientechnologies.orient.core.record.ODirection;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.teleporter.configuration.OConfigurationHandler;
 import com.orientechnologies.teleporter.configuration.api.OConfiguration;
@@ -36,7 +37,6 @@ import com.orientechnologies.teleporter.model.graphmodel.OVertexType;
 import com.orientechnologies.teleporter.nameresolver.OJavaConventionNameResolver;
 import com.orientechnologies.teleporter.persistence.handler.OHSQLDBDataTypeHandler;
 import com.orientechnologies.teleporter.util.OFileManager;
-import com.tinkerpop.blueprints.Direction;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -362,8 +362,8 @@ public class MappingWithSplittingTest {
       assertEquals(true, employeeVertexType.getPropertyByName("department").isIncludedInMigration());
 
       assertEquals(2, employeeVertexType.getOutEdgesType().size());
-      assertNotNull(employeeVertexType.getEdgeByName("WorksAt", Direction.OUT));
-      assertNotNull(employeeVertexType.getEdgeByName("HasProject", Direction.OUT));
+      assertNotNull(employeeVertexType.getEdgeByName("WorksAt", ODirection.OUT));
+      assertNotNull(employeeVertexType.getEdgeByName("HasProject", ODirection.OUT));
       assertEquals(0, employeeVertexType.getInEdgesType().size());
 
       assertEquals(2, projectVertexType.getProperties().size());

@@ -18,6 +18,8 @@
 
 package com.orientechnologies.teleporter.strategy.rdbms;
 
+import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
+import com.orientechnologies.orient.core.record.OVertex;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.teleporter.configuration.OConfigurationHandler;
 import com.orientechnologies.teleporter.configuration.api.OConfiguration;
@@ -43,8 +45,6 @@ import com.orientechnologies.teleporter.persistence.handler.ODBMSDataTypeHandler
 import com.orientechnologies.teleporter.persistence.util.OQueryResult;
 import com.orientechnologies.teleporter.strategy.OWorkflowStrategy;
 import com.orientechnologies.teleporter.util.OFunctionsHandler;
-import com.tinkerpop.blueprints.impls.orient.OrientBaseGraph;
-import com.tinkerpop.blueprints.impls.orient.OrientVertex;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -67,6 +67,8 @@ public abstract class ODBMSImportStrategy implements OWorkflowStrategy {
       String nameResolverConvention, List<String> includedTables, List<String> excludedTables, ODocument migrationConfigDoc) {
 
     OSourceDatabaseInfo sourceDBInfo = (OSourceDatabaseInfo) sourceInfo;
+    outOrientGraphUri = outOrientGraphUri.replace("plocal","embedded");
+
     Date globalStart = new Date();
 
     ODataTypeHandlerFactory dataTypeHandlerFactory = new ODataTypeHandlerFactory();
@@ -134,7 +136,7 @@ public abstract class ODBMSImportStrategy implements OWorkflowStrategy {
    */
 
   protected void importRecordsFromEntitiesIntoVertexClass(List<OEntity> mappedEntities, String[][] aggregationColumns,
-      OVertexType currentOutVertexType, ODBQueryEngine dbQueryEngine, OGraphEngineForDB graphEngine, OrientBaseGraph orientGraph)
+      OVertexType currentOutVertexType, ODBQueryEngine dbQueryEngine, OGraphEngineForDB graphEngine, ODatabaseDocument orientGraph)
       throws SQLException {
 
     OTeleporterStatistics statistics = OTeleporterContext.getInstance().getStatistics();
@@ -162,7 +164,7 @@ public abstract class ODBMSImportStrategy implements OWorkflowStrategy {
 
       // upsert of the vertex
       currentRecord = records;
-      OrientVertex currentOutVertex = (OrientVertex) graphEngine
+      OVertex currentOutVertex = (OVertex) graphEngine
           .upsertVisitedVertex(orientGraph, currentRecord, currentOutVertexType, currentOutVertexType.getExternalKey());
 
       // navigating relationships outgoing from the current mapped entities and for each of them all the correspondent edges are built
@@ -193,8 +195,8 @@ public abstract class ODBMSImportStrategy implements OWorkflowStrategy {
    *
    * @throws SQLException
    */
-  private void navigateRelationshipsAndInsertReachableVertices(OrientBaseGraph orientGraph, OGraphEngineForDB graphEngine,
-      List<OEntity> mappedEntities, ResultSet currentRecord, OVertexType outVertexType, OrientVertex outVertex)
+  private void navigateRelationshipsAndInsertReachableVertices(ODatabaseDocument orientGraph, OGraphEngineForDB graphEngine,
+      List<OEntity> mappedEntities, ResultSet currentRecord, OVertexType outVertexType, OVertex outVertex)
       throws SQLException {
 
     // for each attribute of the entity belonging to a foreign key, correspondent relationship is
@@ -222,7 +224,7 @@ public abstract class ODBMSImportStrategy implements OWorkflowStrategy {
    */
 
   public void importRecordsFromSplitEntityIntoVertexClasses(List<OEntity> mappedEntities, List<OVertexType> mappedVertices,
-      ODBQueryEngine dbQueryEngine, OGraphEngineForDB graphEngine, OrientBaseGraph orientGraph) throws SQLException {
+      ODBQueryEngine dbQueryEngine, OGraphEngineForDB graphEngine, ODatabaseDocument orientGraph) throws SQLException {
 
     OTeleporterStatistics statistics = OTeleporterContext.getInstance().getStatistics();
     OEntity entity = mappedEntities.get(0);     // we have just a mapped entity in the splitting case
@@ -239,9 +241,9 @@ public abstract class ODBMSImportStrategy implements OWorkflowStrategy {
       currentRecord = records;
 
       // building vertices from the record
-      Map<String, OrientVertex> className2insertedVertex = new LinkedHashMap<String, OrientVertex>();
+      Map<String, OVertex> className2insertedVertex = new LinkedHashMap<String, OVertex>();
       for (OVertexType currentVertexType : mappedVertices) {
-        OrientVertex currentOutVertex = (OrientVertex) graphEngine
+        OVertex currentOutVertex = (OVertex) graphEngine
             .upsertVisitedVertex(orientGraph, currentRecord, currentVertexType, currentVertexType.getExternalKey());
 
         boolean navigate = false;
@@ -290,8 +292,8 @@ public abstract class ODBMSImportStrategy implements OWorkflowStrategy {
         OEdgeType currentEdgeType = classMapper.getEdgeType();
         String currentOutVertexName = currentEdgeType.getOutVertexType().getName();
         String currentInVertexName = currentEdgeType.getInVertexType().getName();
-        OrientVertex currentOutVertex = className2insertedVertex.get(currentOutVertexName);
-        OrientVertex currentInVertex = className2insertedVertex.get(currentInVertexName);
+        OVertex currentOutVertex = className2insertedVertex.get(currentOutVertexName);
+        OVertex currentInVertex = className2insertedVertex.get(currentInVertexName);
 
         Map<String, Object> properties = new LinkedHashMap<String, Object>();
 
@@ -339,7 +341,7 @@ public abstract class ODBMSImportStrategy implements OWorkflowStrategy {
    */
 
   protected void importEntitiesBelongingToHierarchies(ODBQueryEngine dbQueryEngine, OGraphEngineForDB graphEngine,
-      OrientBaseGraph orientGraph) {
+      ODatabaseDocument orientGraph) {
 
     for (OHierarchicalBag bag : this.mapper.getDataBaseSchema().getHierarchicalBags()) {
 
@@ -369,7 +371,7 @@ public abstract class ODBMSImportStrategy implements OWorkflowStrategy {
    * @param orientGraph
    */
   protected void tablePerHierarchyImport(OHierarchicalBag bag, OER2GraphMapper mapper, ODBQueryEngine dbQueryEngine,
-      OGraphEngineForDB graphDBCommandEngine, OrientBaseGraph orientGraph) {
+      OGraphEngineForDB graphDBCommandEngine, ODatabaseDocument orientGraph) {
 
     try {
 
@@ -379,7 +381,7 @@ public abstract class ODBMSImportStrategy implements OWorkflowStrategy {
 
       OVertexType currentOutVertexType = null;
       OVertexType currentInVertexType = null;
-      OrientVertex currentOutVertex = null;
+      OVertex currentOutVertex = null;
       OEdgeType edgeType = null;
 
       String currentDiscriminatorValue;
@@ -407,7 +409,7 @@ public abstract class ODBMSImportStrategy implements OWorkflowStrategy {
 
             // upsert of the vertex
             currentRecord = records;
-            currentOutVertex = (OrientVertex) graphDBCommandEngine
+            currentOutVertex = (OVertex) graphDBCommandEngine
                 .upsertVisitedVertex(orientGraph, currentRecord, currentOutVertexType, currentOutVertexType.getExternalKey());
 
             // for each attribute of the entity belonging to the primary key, correspondent relationship is
@@ -496,7 +498,7 @@ public abstract class ODBMSImportStrategy implements OWorkflowStrategy {
    * @param orientGraph
    */
   protected void tablePerTypeImport(OHierarchicalBag bag, OER2GraphMapper mapper, ODBQueryEngine dbQueryEngine,
-      OGraphEngineForDB graphDBCommandEngine, OrientBaseGraph orientGraph) {
+      OGraphEngineForDB graphDBCommandEngine, ODatabaseDocument orientGraph) {
 
     try {
 
@@ -508,7 +510,7 @@ public abstract class ODBMSImportStrategy implements OWorkflowStrategy {
 
       OVertexType currentOutVertexType = null;
       OVertexType currentInVertexType = null;
-      OrientVertex currentOutVertex = null;
+      OVertex currentOutVertex = null;
       OEdgeType edgeType = null;
       ResultSet records;
       ResultSet currentRecord;
@@ -563,7 +565,7 @@ public abstract class ODBMSImportStrategy implements OWorkflowStrategy {
             if (!graphDBCommandEngine
                 .alreadyFullImportedInOrient(orientGraph, fullRecord, currentOutVertexType, propertiesOfIndex)) {
 
-              currentOutVertex = (OrientVertex) graphDBCommandEngine
+              currentOutVertex = (OVertex) graphDBCommandEngine
                   .upsertVisitedVertex(orientGraph, fullRecord, currentOutVertexType, propertiesOfIndex);
 
               // for each attribute of the entity belonging to the primary key, correspondent relationship is
@@ -653,7 +655,7 @@ public abstract class ODBMSImportStrategy implements OWorkflowStrategy {
    * @param orientGraph
    */
   protected void tablePerConcreteTypeImport(OHierarchicalBag bag, OER2GraphMapper mapper, ODBQueryEngine dbQueryEngine,
-      OGraphEngineForDB graphDBCommandEngine, OrientBaseGraph orientGraph) {
+      OGraphEngineForDB graphDBCommandEngine, ODatabaseDocument orientGraph) {
 
     try {
 
@@ -663,7 +665,7 @@ public abstract class ODBMSImportStrategy implements OWorkflowStrategy {
 
       OVertexType currentOutVertexType = null;
       OVertexType currentInVertexType = null;
-      OrientVertex currentOutVertex = null;
+      OVertex currentOutVertex = null;
       OEdgeType edgeType = null;
       ResultSet records;
       ResultSet currentRecord;
@@ -699,7 +701,7 @@ public abstract class ODBMSImportStrategy implements OWorkflowStrategy {
             if (!graphDBCommandEngine
                 .alreadyFullImportedInOrient(orientGraph, currentRecord, currentOutVertexType, propertiesOfIndex)) {
 
-              currentOutVertex = (OrientVertex) graphDBCommandEngine
+              currentOutVertex = (OVertex) graphDBCommandEngine
                   .upsertVisitedVertex(orientGraph, currentRecord, currentOutVertexType, propertiesOfIndex);
 
               // for each attribute of the entity belonging to the primary key, correspondent relationship is
