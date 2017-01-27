@@ -69,7 +69,7 @@ public class ODBMSNaiveAggregationStrategy extends ODBMSImportStrategy {
   }
 
   @Override
-  public OER2GraphMapper createSchemaMapper(OSourceDatabaseInfo sourceDBInfo, String outOrientGraphUri, String chosenMapper,
+  public OER2GraphMapper createSchemaMapper(OSourceDatabaseInfo sourceDBInfo, String outParentDatabaseDirectory, String dbName, String chosenMapper,
       String xmlPath, ONameResolver nameResolver, ODBMSDataTypeHandler handler, List<String> includedTables,
       List<String> excludedTables, OConfiguration migrationConfig) {
 
@@ -99,8 +99,8 @@ public class ODBMSNaiveAggregationStrategy extends ODBMSImportStrategy {
 
     // Step 5: Writing schema on OrientDB
     OGraphModelWriter graphModelWriter = new OGraphModelWriter(migrationConfig);
-    OGraphModel graphModel = ((OER2GraphMapper) mapper).getGraphModel();
-    boolean success = graphModelWriter.writeModelOnOrient(mapper, handler, outOrientGraphUri);
+    boolean success = graphModelWriter.writeModelOnOrient(mapper, handler, outParentDatabaseDirectory, dbName);
+
     if (!success) {
       OTeleporterContext.getInstance().getOutputManager().error("Writing not complete. Something gone wrong.\n");
       throw new OTeleporterRuntimeException();
@@ -129,12 +129,11 @@ public class ODBMSNaiveAggregationStrategy extends ODBMSImportStrategy {
       // OrientDB graph initialization/connection
       String dbName = outOrientGraphUri.substring(outOrientGraphUri.lastIndexOf('/')+1);
       ODatabaseDocument orientGraph;
-      OrientDB orient = OrientDB.fromUrl(outOrientGraphUri, OrientDBConfig.defaultConfig());
       try {
-        if(!orient.exists(dbName,"admin","admin")) {
-          orient.create(dbName, "admin", "admin", OrientDB.DatabaseType.PLOCAL);
+        if(! OTeleporterContext.getInstance().getOrientDBInstance().exists(dbName,"admin","admin")) {
+          OTeleporterContext.getInstance().getOrientDBInstance().create(dbName, "admin", "admin", OrientDB.DatabaseType.PLOCAL);
         }
-        orientGraph = orient.open(dbName,"admin","admin");
+        orientGraph = OTeleporterContext.getInstance().getOrientDBInstance().open(dbName,"admin","admin");
       } catch (Exception e) {
         String mess = "";
         OTeleporterContext.getInstance().printExceptionMessage(e, mess, "error");

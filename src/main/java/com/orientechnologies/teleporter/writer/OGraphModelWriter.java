@@ -79,20 +79,22 @@ public class OGraphModelWriter {
     this.orientdbTypeName2orientdbType.put("byte", OType.BYTE);
   }
 
-  public boolean writeModelOnOrient(OER2GraphMapper mapper, ODriverDataTypeHandler handler, String outOrientGraphUri) {
+  public boolean writeModelOnOrient(OER2GraphMapper mapper, ODriverDataTypeHandler handler, String outParentDatabaseDirectory, String dbName) {
 
     boolean success = false;
     OGraphModel graphModel = mapper.getGraphModel();
 
-    String dbName = outOrientGraphUri.substring(outOrientGraphUri.lastIndexOf('/')+1);
     ODatabaseDocument orientGraph;
-    OrientDB orient = OrientDB.fromUrl(outOrientGraphUri, OrientDBConfig.defaultConfig());
 
     try {
-      if(!orient.exists(dbName,"admin","admin")) {
-        orient.create(dbName, "admin", "admin", OrientDB.DatabaseType.PLOCAL);
+
+      // starting OrientDB instance
+
+      OTeleporterContext.getInstance().initOrientDBInstance(outParentDatabaseDirectory);
+      if(! OTeleporterContext.getInstance().getOrientDBInstance().exists(dbName,"admin","admin")) {
+        OTeleporterContext.getInstance().getOrientDBInstance().create(dbName, "admin", "admin", OrientDB.DatabaseType.PLOCAL);
       }
-      orientGraph = orient.open(dbName,"admin","admin");
+      orientGraph = OTeleporterContext.getInstance().getOrientDBInstance().open(dbName,"admin","admin");
     } catch (Exception e) {
       String mess = "";
       OTeleporterContext.getInstance().printExceptionMessage(e, mess, "error");
@@ -363,6 +365,8 @@ public class OGraphModelWriter {
               + "grant coherence between the two databases. Rebuild the schema from scratch.\n");
       throw new OTeleporterRuntimeException();
     }
+
+    OTeleporterContext.getInstance().getOrientDBInstance().close();
 
     return success;
   }

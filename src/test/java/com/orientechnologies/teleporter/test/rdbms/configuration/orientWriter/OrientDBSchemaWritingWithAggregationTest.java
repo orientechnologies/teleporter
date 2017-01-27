@@ -35,6 +35,7 @@ import com.orientechnologies.teleporter.nameresolver.OJavaConventionNameResolver
 import com.orientechnologies.teleporter.persistence.handler.OHSQLDBDataTypeHandler;
 import com.orientechnologies.teleporter.util.OFileManager;
 import com.orientechnologies.teleporter.writer.OGraphModelWriter;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -62,7 +63,8 @@ public class OrientDBSchemaWritingWithAggregationTest {
   private String username = "SA";
   private String password = "";
   private String dbName = "testOrientDB";
-  private String outOrientGraphUri = "plocal:target/" + this.dbName;
+  private String outParentDirectory = "embedded:target/";
+  private String outOrientGraphUri = this.outParentDirectory + this.dbName;
   private OSourceDatabaseInfo sourceDBInfo;
 
   @Before
@@ -75,6 +77,22 @@ public class OrientDBSchemaWritingWithAggregationTest {
     this.context.setDataTypeHandler(new OHSQLDBDataTypeHandler());
     this.modelWriter = new OGraphModelWriter();
     this.sourceDBInfo = new OSourceDatabaseInfo("source", this.driver, this.jurl, this.username, this.password);
+  }
+
+  @After
+  public void tearDown() {
+
+    // closing OrientDB instance
+    this.context.closeOrientDBInstance();
+
+    try {
+
+      // Deleting database directory
+      OFileManager.deleteResource(this.outOrientGraphUri.replace("embedded:",""));
+
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
   }
 
   @Test
@@ -131,7 +149,7 @@ public class OrientDBSchemaWritingWithAggregationTest {
       mapper.buildSourceDatabaseSchema();
       mapper.buildGraphModel(new OJavaConventionNameResolver());
       mapper.applyImportConfiguration();
-      modelWriter.writeModelOnOrient(mapper, new OHSQLDBDataTypeHandler(), this.outOrientGraphUri);
+      modelWriter.writeModelOnOrient(mapper, new OHSQLDBDataTypeHandler(), this.outParentDirectory, this.dbName);
 
       /**
        *  Testing context information
@@ -148,14 +166,16 @@ public class OrientDBSchemaWritingWithAggregationTest {
        *  Testing built OrientDB schema
        */
 
-      OrientDB orient = OrientDB.fromUrl(this.outOrientGraphUri, OrientDBConfig.defaultConfig());
-      orientGraph = orient.open(this.dbName,"admin","admin");
+
+      this.context.initOrientDBInstance(this.outOrientGraphUri);
+      orientGraph = this.context.getOrientDBInstance().open(this.dbName,"admin","admin");
 
       OClass personVertexType = orientGraph.getClass("Person");
       OClass departmentVertexType = orientGraph.getClass("Department");
       OClass worksAtEdgeType = orientGraph.getClass("WorksAt");
 
       // vertices check
+
       assertNotNull(personVertexType);
       assertNotNull(departmentVertexType);
 
@@ -257,11 +277,10 @@ public class OrientDBSchemaWritingWithAggregationTest {
         fail();
       }
       if (orientGraph != null) {
-        orientGraph.drop();
         orientGraph.close();
       }
-    }
 
+    }
   }
 
 }

@@ -19,6 +19,8 @@
 package com.orientechnologies.teleporter.test.rdbms.main;
 
 import com.orientechnologies.teleporter.main.OTeleporter;
+import com.orientechnologies.teleporter.util.OFileManager;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -32,12 +34,7 @@ import static org.junit.Assert.fail;
 
 public class TeleporterBasicExecutionTest extends TeleporterInvocationTest {
 
-  @Before
-  public void init() {
-    buildEnvironmentForExecution();
-    prepareArguments();
-    prepareArrayArgs();
-  }
+
 
   @Test
   public void test1() {
@@ -59,8 +56,6 @@ public class TeleporterBasicExecutionTest extends TeleporterInvocationTest {
         } else {
           fail("Job failed " + (retry + 1) + " times!\n" + e.getMessage());
         }
-      } finally {
-        closeEnvironment();
       }
     }
 

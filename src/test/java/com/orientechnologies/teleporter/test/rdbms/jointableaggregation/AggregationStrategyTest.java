@@ -38,7 +38,9 @@ import com.orientechnologies.teleporter.model.graphmodel.OVertexType;
 import com.orientechnologies.teleporter.nameresolver.OJavaConventionNameResolver;
 import com.orientechnologies.teleporter.persistence.handler.OHSQLDBDataTypeHandler;
 import com.orientechnologies.teleporter.strategy.rdbms.ODBMSNaiveAggregationStrategy;
+import com.orientechnologies.teleporter.util.OFileManager;
 import com.orientechnologies.teleporter.util.OGraphCommands;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -64,24 +66,38 @@ public class AggregationStrategyTest {
   private String username = "SA";
   private String password = "";
   private String dbName = "testOrientDB";
-  private String outOrientGraphUri = "plocal:target/" + this.dbName;
+  private String outParentDirectory = "embedded:target/";
+  private String outOrientGraphUri = this.outParentDirectory + this.dbName;
   private OSourceDatabaseInfo sourceDBInfo;
 
-  // Queries
-  private String getVerticesQuery = "select * from V";
-  private String getEdgesQuery = "select * from E";
-  private String getElementsFromClassQuery = "select * from ?";
 
   @Before
   public void init() {
     this.importStrategy = new ODBMSNaiveAggregationStrategy();
     this.context = OTeleporterContext.newInstance();
+    this.context.initOrientDBInstance(this.outOrientGraphUri);
     this.dbQueryEngine = new ODBQueryEngine(this.driver);
     this.context.setDbQueryEngine(this.dbQueryEngine);
     this.context.setOutputManager(new OOutputStreamManager(0));
     this.context.setNameResolver(new OJavaConventionNameResolver());
     this.context.setDataTypeHandler(new OHSQLDBDataTypeHandler());
     this.sourceDBInfo = new OSourceDatabaseInfo("source", this.driver, this.jurl, this.username, this.password);
+  }
+
+  @After
+  public void tearDown() {
+
+    // closing OrientDB instance
+    this.context.closeOrientDBInstance();
+
+    try {
+
+      // Deleting database directory
+      OFileManager.deleteResource(this.outOrientGraphUri.replace("embedded:",""));
+
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
   }
 
   @Test
@@ -556,45 +572,19 @@ public class AggregationStrategyTest {
        *  Testing built OrientDB
        */
 
-      OrientDB orient = OrientDB.fromUrl(this.outOrientGraphUri, OrientDBConfig.defaultConfig());
-      orientGraph = orient.open(this.dbName,"admin","admin");
+
+      this.context.initOrientDBInstance(outOrientGraphUri);
+      orientGraph = this.context.getOrientDBInstance().open(this.dbName,"admin","admin");
 
       // vertices check
 
-//      int count = 0;
-//      for(OVertex v : orientGraph.command(this.getVerticesQuery)) {
-//        assertNotNull(v.getIdentity());
-//        count++;
-//      }
       assertEquals(11, orientGraph.countClass("V"));
-
-//      count = 0;
-//      for(OVertex v : orientGraph.command(this.getElementsFromClassQuery, "Film")) {
-//        assertNotNull(v.getIdentity());
-//        count++;
-//      }
       assertEquals(4, orientGraph.countClass("Film"));
-
-//      count = 0;
-//      for(OVertex v : orientGraph.command(this.getElementsFromClassQuery, "Actor")) {
-//        assertNotNull(v.getIdentity());
-//        count++;
-//      }
       assertEquals(7, orientGraph.countClass("Actor"));
 
       // edges check
-//      count = 0;
-//      for (OEdge e : orientGraph.command(this.getEdgesQuery)) {
-//        assertNotNull(e.getIdentity());
-//        count++;
-//      }
-      assertEquals(10, orientGraph.countClass("E"));
 
-//      count = 0;
-//      for (OEdge  e : orientGraph.command(this.getElementsFromClassQuery, "FilmActor")) {
-//        assertNotNull(e.getIdentity());
-//        count++;
-//      }
+      assertEquals(10, orientGraph.countClass("E"));
       assertEquals(10, orientGraph.countClass("FilmActor"));
 
       // vertex properties and connections check
@@ -613,10 +603,10 @@ public class AggregationStrategyTest {
         edgesIt = v.getEdges(ODirection.IN, "FilmActor").iterator();
         currentEdge = edgesIt.next();
         assertEquals("A001", currentEdge.getVertex(ODirection.OUT).getProperty("id"));
-        assertEquals(Long.valueOf(32000000), currentEdge.getProperty("payment"));
+        assertEquals(Integer.valueOf(32000000), currentEdge.getProperty("payment"));
         currentEdge = edgesIt.next();
         assertEquals("A002", currentEdge.getVertex(ODirection.OUT).getProperty("id"));
-        assertEquals(Long.valueOf(20000000), currentEdge.getProperty("payment"));
+        assertEquals(Integer.valueOf(20000000), currentEdge.getProperty("payment"));
         assertEquals(false, edgesIt.hasNext());
       } else {
         fail("Query fail!");
@@ -632,13 +622,13 @@ public class AggregationStrategyTest {
         edgesIt = v.getEdges(ODirection.IN, "FilmActor").iterator();
         currentEdge = edgesIt.next();
         assertEquals("A001", currentEdge.getVertex(ODirection.OUT).getProperty("id"));
-        assertEquals(Long.valueOf(28000000), currentEdge.getProperty("payment"));
+        assertEquals(Integer.valueOf(28000000), currentEdge.getProperty("payment"));
         currentEdge = edgesIt.next();
         assertEquals("A003", currentEdge.getVertex(ODirection.OUT).getProperty("id"));
-        assertEquals(Long.valueOf(18000000), currentEdge.getProperty("payment"));
+        assertEquals(Integer.valueOf(18000000), currentEdge.getProperty("payment"));
         currentEdge = edgesIt.next();
         assertEquals("A004", currentEdge.getVertex(ODirection.OUT).getProperty("id"));
-        assertEquals(Long.valueOf(6000000), currentEdge.getProperty("payment"));
+        assertEquals(Integer.valueOf(6000000), currentEdge.getProperty("payment"));
         assertEquals(false, edgesIt.hasNext());
       } else {
         fail("Query fail!");
@@ -654,13 +644,13 @@ public class AggregationStrategyTest {
         edgesIt = v.getEdges(ODirection.IN, "FilmActor").iterator();
         currentEdge = edgesIt.next();
         assertEquals("A001", currentEdge.getVertex(ODirection.OUT).getProperty("id"));
-        assertEquals(Long.valueOf(25000000), currentEdge.getProperty("payment"));
+        assertEquals(Integer.valueOf(25000000), currentEdge.getProperty("payment"));
         currentEdge = edgesIt.next();
         assertEquals("A005", currentEdge.getVertex(ODirection.OUT).getProperty("id"));
-        assertEquals(Long.valueOf(27000000), currentEdge.getProperty("payment"));
+        assertEquals(Integer.valueOf(27000000), currentEdge.getProperty("payment"));
         currentEdge = edgesIt.next();
         assertEquals("A006", currentEdge.getVertex(ODirection.OUT).getProperty("id"));
-        assertEquals(Long.valueOf(14000000), currentEdge.getProperty("payment"));
+        assertEquals(Integer.valueOf(14000000), currentEdge.getProperty("payment"));
         assertEquals(false, edgesIt.hasNext());
       } else {
         fail("Query fail!");
@@ -676,10 +666,10 @@ public class AggregationStrategyTest {
         edgesIt = v.getEdges(ODirection.IN, "FilmActor").iterator();
         currentEdge = edgesIt.next();
         assertEquals("A001", currentEdge.getVertex(ODirection.OUT).getProperty("id"));
-        assertEquals(Long.valueOf(30000000), currentEdge.getProperty("payment"));
+        assertEquals(Integer.valueOf(30000000), currentEdge.getProperty("payment"));
         currentEdge = edgesIt.next();
         assertEquals("A007", currentEdge.getVertex(ODirection.OUT).getProperty("id"));
-        assertEquals(Long.valueOf(12000000), currentEdge.getProperty("payment"));
+        assertEquals(Integer.valueOf(12000000), currentEdge.getProperty("payment"));
         assertEquals(false, edgesIt.hasNext());
       } else {
         fail("Query fail!");
@@ -808,9 +798,9 @@ public class AggregationStrategyTest {
         fail();
       }
       if (orientGraph != null) {
-        orientGraph.drop();
         orientGraph.close();
       }
+
     }
   }
 

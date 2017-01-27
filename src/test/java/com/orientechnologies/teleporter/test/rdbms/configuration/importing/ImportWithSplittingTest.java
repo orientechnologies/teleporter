@@ -36,6 +36,7 @@ import com.orientechnologies.teleporter.strategy.rdbms.ODBMSNaiveStrategy;
 import com.orientechnologies.teleporter.util.OFileManager;
 import com.orientechnologies.teleporter.util.OGraphCommands;
 import com.orientechnologies.teleporter.util.OMigrationConfigManager;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -66,13 +67,10 @@ public class ImportWithSplittingTest {
   private String username = "SA";
   private String password = "";
   private String dbName = "testOrientDB";
-  private String outOrientGraphUri = "plocal:target/" + this.dbName;
+  private String outParentDirectory = "embedded:target/";
+  private String outOrientGraphUri = this.outParentDirectory + this.dbName;
   private OSourceDatabaseInfo sourceDBInfo;
 
-  // Queries
-  private String getVerticesQuery = "select * from V";
-  private String getEdgesQuery = "select * from E";
-  private String getElementsFromClassQuery = "select * from ?";
 
   @Before
   public void init() {
@@ -83,33 +81,51 @@ public class ImportWithSplittingTest {
     this.context.setNameResolver(new OJavaConventionNameResolver());
     this.context.setDataTypeHandler(new OHSQLDBDataTypeHandler());
     this.naiveStrategy = new ODBMSNaiveStrategy();
-    this.dbParentDirectoryPath = this.outOrientGraphUri.replace("plocal:", "");
     this.sourceDBInfo = new OSourceDatabaseInfo("source", this.driver, this.jurl, this.username, this.password);
   }
 
-  //@Ignore
+  @After
+  public void tearDown() {
+
+    // closing OrientDB instance
+    this.context.closeOrientDBInstance();
+
+    try {
+
+      // Deleting database directory
+      OFileManager.deleteResource(this.outOrientGraphUri.replace("embedded:",""));
+
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+  }
+
+
   @Test
   /*
    *  Source DB schema:
    *
    *  - 1 hsqldb source
    *  - 1 relationship from employee to department (not declared through foreign key definition)
-   *  - 2 tables: "employee", "department"
+   *  - 3 tables: "employee", "department", "chief_officer"
    *
    *  employee(first_name, last_name, salary, department, project, balance, role)
    *  department(id, name, location, updated_on)
+   *  chief_officer(first_name, last_name, project)
    *
    *  Desired Graph Model:
    *
-   *  - 3 vertex classes: "Employee" and "Project" (both split from employee entity), "Department"
-   *  - 1 edge class "WorksAt", corresponding to the relationship between "person" and "department"
+   *  - 4 vertex classes: "Employee" and "Project" (both split from employee entity), "Department", "ChiefOfficer"
+   *  - 1 edge class "WorksAt", corresponding to the relationship between  the "employee" as person and "department"
    *  - 1 edge class "HasProject", representing the splitting-edge connecting each couple of instances of "Employee"
    *    and "Project" coming from the same record of the "employee" table. It has a "role" property coming from the
    *    "employee" table too.
+   *  - 1 edge class "isChiefForProject", representing the relationship between the CEO and the correspondent project.
    *
    *  Employee(firstName, lastName, salary, department)
    *  Project(project, balance, role)
    *  Department(id, departmentName, location)
+   *  ChiefOfficer(firstName, lastName, project)
    */
 
   public void test1() {
@@ -173,72 +189,21 @@ public class ImportWithSplittingTest {
       /**
        *  Testing built OrientDB
        */
-      OrientDB orient = OrientDB.fromUrl(this.outOrientGraphUri, OrientDBConfig.defaultConfig());
-      orientGraph = orient.open(this.dbName,"admin","admin");
+
+      orientGraph = this.context.getOrientDBInstance().open(this.dbName,"admin","admin");
 
       // vertices check
-//      int count = 0;
-//      for(OVertex v : orientGraph.command(this.getVerticesQuery)) {
-//        assertNotNull(v.getIdentity());
-//        count++;
-//      }
+
       assertEquals(15, orientGraph.countClass("V"));
-
-//      count = 0;
-//      for(OVertex v : orientGraph.command(this.getElementsFromClassQuery, "Employee")) {
-//        assertNotNull(v.getIdentity());
-//        count++;
-//      }
       assertEquals(5, orientGraph.countClass("Employee"));
-
-//      count = 0;
-//      for(OVertex v : orientGraph.command(this.getElementsFromClassQuery, "Project")) {
-//        assertNotNull(v.getIdentity());
-//        count++;
-//      }
       assertEquals(4, orientGraph.countClass("Project"));
-
-//      count = 0;
-//      for(OVertex v : orientGraph.command(this.getElementsFromClassQuery, "Department")) {
-//        assertNotNull(v.getIdentity());
-//        count++;
-//      }
       assertEquals(2, orientGraph.countClass("Department"));
-
-//      count = 0;
-//      for(OVertex v : orientGraph.command(this.getElementsFromClassQuery, "ChiefOfficer")) {
-//        assertNotNull(v.getIdentity());
-//        count++;
-//      }
       assertEquals(4, orientGraph.countClass("ChiefOfficer"));
 
       // edges check
-//      count = 0;
-//      for (OEdge e : orientGraph.command(this.getEdgesQuery)) {
-//        assertNotNull(e.getIdentity());
-//        count++;
-//      }
       assertEquals(15, orientGraph.countClass("E"));
-
-//      count = 0;
-//      for (OEdge  e : orientGraph.command(this.getElementsFromClassQuery, "WorksAt")) {
-//        assertNotNull(e.getIdentity());
-//        count++;
-//      }
       assertEquals(5, orientGraph.countClass("WorksAt"));
-
-//      count = 0;
-//      for (OEdge  e : orientGraph.command(this.getElementsFromClassQuery, "HasProject")) {
-//        assertNotNull(e.getIdentity());
-//        count++;
-//      }
       assertEquals(6, orientGraph.countClass("HasProject"));
-
-//      count = 0;
-//      for (OEdge  e : orientGraph.command(this.getElementsFromClassQuery, "IsChiefForProject")) {
-//        assertNotNull(e.getIdentity());
-//        count++;
-//      }
       assertEquals(4, orientGraph.countClass("IsChiefForProject"));
 
       // vertex properties and connections check
@@ -580,15 +545,14 @@ public class ImportWithSplittingTest {
         String dbDropping = "drop schema public cascade";
         st.execute(dbDropping);
         connection.close();
-        OFileManager.deleteResource(this.dbParentDirectoryPath);
       } catch (Exception e) {
         e.printStackTrace();
         fail();
       }
       if (orientGraph != null) {
-        orientGraph.drop();
         orientGraph.close();
       }
+
     }
   }
 

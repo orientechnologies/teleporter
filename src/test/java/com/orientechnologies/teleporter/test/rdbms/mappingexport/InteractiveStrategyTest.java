@@ -67,7 +67,7 @@ public class InteractiveStrategyTest {
 
   @Before
   public void init() {
-    this.outOrientGraphUri = "plocal:target/testOrientDB";
+    this.outOrientGraphUri = "embedded:target/testOrientDB";
     this.context = OTeleporterContext.newInstance();
     this.context.setExecutionStrategy("interactive-aggr");
     this.dataTypeHandler = new OHSQLDBDataTypeHandler();

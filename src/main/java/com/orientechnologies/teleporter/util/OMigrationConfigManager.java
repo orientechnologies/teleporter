@@ -77,7 +77,12 @@ public class OMigrationConfigManager {
       outOrientGraphUri += "/";
     }
     String outDBConfigPath = outOrientGraphUri + configurationDirectoryName + configFileName;
-    outDBConfigPath = outDBConfigPath.replace("plocal:", "");
+    if(outDBConfigPath.contains("plocal:")) {
+      outDBConfigPath = outDBConfigPath.replace("plocal:", "");
+    }
+    else if(outDBConfigPath.contains("embedded:")) {
+      outDBConfigPath = outDBConfigPath.replace("embedded:", "");
+    }
     return outDBConfigPath;
   }
 

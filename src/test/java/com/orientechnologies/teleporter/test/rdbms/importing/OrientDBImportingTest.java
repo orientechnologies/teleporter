@@ -32,7 +32,9 @@ import com.orientechnologies.teleporter.model.dbschema.OSourceDatabaseInfo;
 import com.orientechnologies.teleporter.nameresolver.OJavaConventionNameResolver;
 import com.orientechnologies.teleporter.persistence.handler.OHSQLDBDataTypeHandler;
 import com.orientechnologies.teleporter.strategy.rdbms.ODBMSNaiveStrategy;
+import com.orientechnologies.teleporter.util.OFileManager;
 import com.orientechnologies.teleporter.util.OGraphCommands;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -58,13 +60,10 @@ public class OrientDBImportingTest {
   private String username = "SA";
   private String password = "";
   private String dbName = "testOrientDB";
-  private String outOrientGraphUri = "plocal:target/" + this.dbName;
+  private String outParentDirectory = "embedded:target/";
+  private String outOrientGraphUri = this.outParentDirectory + this.dbName;
   private OSourceDatabaseInfo sourceDBInfo;
 
-  // Queries
-  private String getVerticesQuery = "select * from V";
-  private String getEdgesQuery = "select * from E";
-  private String getElementsFromClassQuery = "select * from ?";
 
   @Before
   public void init() {
@@ -76,6 +75,22 @@ public class OrientDBImportingTest {
     this.context.setDataTypeHandler(new OHSQLDBDataTypeHandler());
     this.importStrategy = new ODBMSNaiveStrategy();
     this.sourceDBInfo = new OSourceDatabaseInfo("source", this.driver, this.jurl, this.username, this.password);
+  }
+
+  @After
+  public void tearDown() {
+
+    // closing OrientDB instance
+    this.context.closeOrientDBInstance();
+
+    try {
+
+      // Deleting database directory
+      OFileManager.deleteResource(this.outOrientGraphUri.replace("embedded:",""));
+
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
   }
 
   @Test
@@ -157,87 +172,25 @@ public class OrientDBImportingTest {
       /*
        *  Testing built OrientDB
        */
-      OrientDB orient = OrientDB.fromUrl(this.outOrientGraphUri, OrientDBConfig.defaultConfig());
-      orientGraph = orient.open(this.dbName,"admin","admin");
+
+      this.context.initOrientDBInstance(outOrientGraphUri);
+      orientGraph = this.context.getOrientDBInstance().open(this.dbName,"admin","admin");
 
       // vertices check
 
-//      int count = 0;
-//      for(OVertex v : orientGraph.command(this.getVerticesQuery)) {
-//        assertNotNull(v.getIdentity());
-//        count++;
-//      }
       assertEquals(29, orientGraph.countClass("V"));
-
-//      count = 0;
-//      for(OVertex v : orientGraph.command(this.getElementsFromClassQuery, "Director")) {
-//        assertNotNull(v.getIdentity());
-//        count++;
-//      }
       assertEquals(2, orientGraph.countClass("Director"));
-
-//      count = 0;
-//      for(OVertex v : orientGraph.command(this.getElementsFromClassQuery, "Category")) {
-//        assertNotNull(v.getIdentity());
-//        count++;
-//      }
       assertEquals(7, orientGraph.countClass("Category"));
-
-//      count = 0;
-//      for(OVertex v : orientGraph.command(this.getElementsFromClassQuery, "Film")) {
-//        assertNotNull(v.getIdentity());
-//        count++;
-//      }
       assertEquals(3, orientGraph.countClass("Film"));
-
-//      count = 0;
-//      for(OVertex v : orientGraph.command(this.getElementsFromClassQuery, "Actor")) {
-//        assertNotNull(v.getIdentity());
-//        count++;
-//      }
       assertEquals(8, orientGraph.countClass("Actor"));
-
-//      count = 0;
-//      for(OVertex v : orientGraph.command(this.getElementsFromClassQuery, "FilmActor")) {
-//        assertNotNull(v.getIdentity());
-//        count++;
-//      }
       assertEquals(9, orientGraph.countClass("FilmActor"));
 
       // edges check
-//      count = 0;
-//      for (OEdge e : orientGraph.command(this.getEdgesQuery)) {
-//        assertNotNull(e.getIdentity());
-//        count++;
-//      }
+
       assertEquals(24, orientGraph.countClass("E"));
-
-//      count = 0;
-//      for (OEdge  e : orientGraph.command(this.getElementsFromClassQuery, "HasDirector")) {
-//        assertNotNull(e.getIdentity());
-//        count++;
-//      }
       assertEquals(3, orientGraph.countClass("HasDirector"));
-
-//      count = 0;
-//      for (OEdge  e : orientGraph.command(this.getElementsFromClassQuery, "HasCategory")) {
-//        assertNotNull(e.getIdentity());
-//        count++;
-//      }
       assertEquals(3, orientGraph.countClass("HasCategory"));
-
-//      count = 0;
-//      for (OEdge  e : orientGraph.command(this.getElementsFromClassQuery, "HasFilm")) {
-//        assertNotNull(e.getIdentity());
-//        count++;
-//      }
       assertEquals(9, orientGraph.countClass("HasFilm"));
-
-//      count = 0;
-//      for (OEdge  e : orientGraph.command(this.getElementsFromClassQuery, "HasActor")) {
-//        assertNotNull(e.getIdentity());
-//        count++;
-//      }
       assertEquals(9, orientGraph.countClass("HasActor"));
 
       // vertex properties and connections check
@@ -663,9 +616,9 @@ public class OrientDBImportingTest {
         fail();
       }
       if (orientGraph != null) {
-        orientGraph.drop();
         orientGraph.close();
       }
+
     }
 
   }

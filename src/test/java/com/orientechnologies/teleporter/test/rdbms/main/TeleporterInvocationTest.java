@@ -28,7 +28,10 @@ import com.orientechnologies.orient.core.storage.OStorage;
 import com.orientechnologies.orient.core.storage.impl.local.paginated.OLocalPaginatedStorage;
 import com.orientechnologies.orient.server.OServer;
 import com.orientechnologies.orient.server.OServerMain;
+import com.orientechnologies.teleporter.context.OTeleporterContext;
 import com.orientechnologies.teleporter.util.OFileManager;
+import org.junit.After;
+import org.junit.Before;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -45,6 +48,8 @@ import static org.junit.Assert.fail;
 
 public abstract class TeleporterInvocationTest {
 
+  private OTeleporterContext context = OTeleporterContext.newInstance();
+
   // arguments
   protected Map<String, String> arguments = new HashMap<String, String>();
   protected String[]   args;
@@ -54,11 +59,27 @@ public abstract class TeleporterInvocationTest {
   private String username = "SA";
   private String password = "";
   private String dbName = "testOrientDB";
-  private String outOrientGraphUri = "plocal:src/test/target/server/databases/" + this.dbName;
+  private final String serverHome        = "target/server/";
+  private String outOrientGraphUri = "embedded:" + this.serverHome + this.dbName;
 
   // server configuration path
   private final String configurationPath = "orientdb-server-config.xml";
-  private final String serverHome        = "target/server";
+
+
+
+  @Before
+  public void init() {
+    buildEnvironmentForExecution();
+    prepareArguments();
+    prepareArrayArgs();
+  }
+
+  @After
+  public void tearDown() {
+
+    this.closeEnvironment();
+  }
+
 
   protected void buildEnvironmentForExecution() {
     this.buildHSQLDBDatabaseToImport();
@@ -76,7 +97,7 @@ public abstract class TeleporterInvocationTest {
     System.setProperty("ORIENTDB_HOME", this.serverHome);
     server.setServerRootDirectory(this.serverHome);
     server.startup(getClass().getClassLoader().getResourceAsStream(this.configurationPath));
-    server.activate();
+ //   server.activate();
   }
 
   private String getDatabasePath(String databaseName) {
@@ -146,7 +167,7 @@ public abstract class TeleporterInvocationTest {
   public void prepareArguments() {
     this.arguments.put("-jdriver", "hypersql");
     this.arguments.put("-jurl", this.jurl);
-    this.arguments.put("-ourl", "plocal:target/server/databases/testOrientDB");
+    this.arguments.put("-ourl", "embedded:target/server/databases/testOrientDB");
     this.arguments.put("-juser", this.username);
     this.arguments.put("-jpasswd", this.password);
   }
@@ -209,14 +230,12 @@ public abstract class TeleporterInvocationTest {
 
   private void closeAndDropOrientdbDatabase() {
 
-    String outOrientGraphUri = "plocal:src/test/target/server/databases/testOrientDB";
-    OrientDB orient = OrientDB.fromUrl(this.outOrientGraphUri, OrientDBConfig.defaultConfig());
-    ODatabaseDocument orientGraph = orient.open(this.dbName,"admin","admin");
+    this.context.initOrientDBInstance("embedded:" + this.serverHome + "databases/");
+    ODatabaseDocument orientGraph = this.context.getOrientDBInstance().open(this.dbName,"admin","admin");
 
     try {
 
       if (orientGraph != null) {
-        orientGraph.drop();
         orientGraph.close();
       }
 

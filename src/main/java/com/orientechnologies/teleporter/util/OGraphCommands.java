@@ -28,6 +28,8 @@ import com.orientechnologies.orient.core.sql.executor.OResultSet;
 
 public class OGraphCommands {
 
+  private static String quote =  "\"";
+
   /**
    * The method perform on the passed ODatabaseDocument a lookup for a OVertex starting from a record and from a vertex type.
    * It return the vertex if present, null if not present.
@@ -55,11 +57,11 @@ public class OGraphCommands {
   public static OResultSet getVertices(ODatabaseDocument orientGraph, String vertexClassName, String[] keys, String[] values) {
 
     String query = "select * from " + vertexClassName + " where ";
-    query += keys[0] + " = " + values[0];
+    query += keys[0] + " = " + quote + values[0] + quote;
 
     int i;
     for(i=1; i<keys.length; i++) {
-      query += " and " + keys[i] + " = " + values[i];
+      query += " and " + keys[i] + " = " + quote + values[i] + quote;
     }
     return orientGraph.command(query);
   }

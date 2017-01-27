@@ -18,6 +18,7 @@
 
 package com.orientechnologies.teleporter.main;
 
+import com.orientechnologies.common.log.OLogManager;
 import com.orientechnologies.orient.core.config.OGlobalConfiguration;
 import com.orientechnologies.orient.core.exception.OConfigurationException;
 import com.orientechnologies.orient.core.record.impl.ODocument;
@@ -134,8 +135,8 @@ public class OTeleporter extends OServerPluginAbstract {
       }
     }
 
-    if (!(arguments.get("-ourl").contains("plocal:") | arguments.get("-ourl").contains("remote:") | arguments.get("-ourl")
-        .contains("memory:"))) {
+    if (!(arguments.get("-ourl").contains("plocal:") || arguments.get("-ourl").contains("embedded:") ||
+        arguments.get("-ourl").contains("remote:") || arguments.get("-ourl").contains("memory:"))) {
       outputManager.error("Not valid output orient db uri.\n");
       throw new OTeleporterIOException();
     }

@@ -38,6 +38,7 @@ import com.orientechnologies.teleporter.util.OFileManager;
 import com.orientechnologies.teleporter.util.OGraphCommands;
 import com.orientechnologies.teleporter.util.OMigrationConfigManager;
 import com.sun.javafx.geom.Edge;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -70,17 +71,14 @@ public class ImportWithInputRelationshipConfigurationTest {
   private String username = "SA";
   private String password = "";
   private String dbName = "testOrientDB";
-  private String outOrientGraphUri = "plocal:target/" + this.dbName;
+  private String outParentDirectory = "embedded:target/";
+  private String outOrientGraphUri = this.outParentDirectory + this.dbName;
   private OSourceDatabaseInfo sourceDBInfo;
-
-  // Queries
-  private String getVerticesQuery = "select * from V";
-  private String getEdgesQuery = "select * from E";
-  private String getElementsFromClassQuery = "select * from ?";
 
   @Before
   public void init() {
     this.context = OTeleporterContext.newInstance();
+    this.context.initOrientDBInstance(outOrientGraphUri);
     this.dbQueryEngine = new ODBQueryEngine(this.driver);
     this.context.setDbQueryEngine(this.dbQueryEngine);
     this.context.setOutputManager(new OOutputStreamManager(0));
@@ -88,8 +86,23 @@ public class ImportWithInputRelationshipConfigurationTest {
     this.context.setDataTypeHandler(new OHSQLDBDataTypeHandler());
     this.naiveStrategy = new ODBMSNaiveStrategy();
     this.naiveAggregationStrategy = new ODBMSNaiveAggregationStrategy();
-    this.dbParentDirectoryPath = this.outOrientGraphUri.replace("plocal:", "");
     this.sourceDBInfo = new OSourceDatabaseInfo("source", this.driver, this.jurl, this.username, this.password);
+  }
+
+  @After
+  public void tearDown() {
+
+    // closing OrientDB instance
+    this.context.closeOrientDBInstance();
+
+    try {
+
+      // Deleting database directory
+      OFileManager.deleteResource(this.outOrientGraphUri.replace("embedded:",""));
+
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
   }
 
   @Test
@@ -159,52 +172,18 @@ public class ImportWithInputRelationshipConfigurationTest {
       /*
        *  Testing built OrientDB
        */
-      OrientDB orient = OrientDB.fromUrl(this.outOrientGraphUri, OrientDBConfig.defaultConfig());
-      orientGraph = orient.open(this.dbName,"admin","admin");
+      orientGraph = this.context.getOrientDBInstance().open(this.dbName,"admin","admin");
 
       // vertices check
 
-//      int count = 0;
-//      for(OVertex v : orientGraph.command(this.getVerticesQuery)) {
-//        assertNotNull(v.getIdentity());
-//        count++;
-//      }
       assertEquals(8, orientGraph.countClass("V"));
-
-//      count = 0;
-//      for(OVertex v : orientGraph.command(this.getElementsFromClassQuery, "Employee")) {
-//        assertNotNull(v.getIdentity());
-//        count++;
-//      }
       assertEquals(6, orientGraph.countClass("Employee"));
-
-//      count = 0;
-//      for(OVertex v : orientGraph.command(this.getElementsFromClassQuery, "Project")) {
-//        assertNotNull(v.getIdentity());
-//        count++;
-//      }
       assertEquals(2, orientGraph.countClass("Project"));
 
       // edges check
-//      count = 0;
-//      for (OEdge  e : orientGraph.command(this.getEdgesQuery)) {
-//        assertNotNull(e.getIdentity());
-//        count++;
-//      }
+
       assertEquals(8, orientGraph.countClass("E"));
-
-//      count = 0;
-//      for (OEdge  e : orientGraph.command(this.getElementsFromClassQuery, "WorksAtProject")) {
-//        assertNotNull(e.getIdentity());
-//        count++;
-//      }
       assertEquals(6, orientGraph.countClass("WorksAtProject"));
-
-//      count = 0;
-//      for (OEdge  e : orientGraph.command(this.getElementsFromClassQuery, "HasManager")) {
-//        assertNotNull(e.getIdentity());
-//        count++;
-//      }
       assertEquals(2, orientGraph.countClass("HasManager"));
 
       // vertex properties and connections check
@@ -374,15 +353,14 @@ public class ImportWithInputRelationshipConfigurationTest {
         String dbDropping = "drop schema public cascade";
         st.execute(dbDropping);
         connection.close();
-        OFileManager.deleteResource(this.dbParentDirectoryPath);
       } catch (Exception e) {
         e.printStackTrace();
         fail();
       }
       if (orientGraph != null) {
-        orientGraph.drop();
         orientGraph.close();
       }
+
     }
   }
 
@@ -471,52 +449,19 @@ public class ImportWithInputRelationshipConfigurationTest {
       /*
        *  Testing built OrientDB
        */
-      OrientDB orient = OrientDB.fromUrl(this.outOrientGraphUri, OrientDBConfig.defaultConfig());
-      orientGraph = orient.open(this.dbName,"admin","admin");
+
+      orientGraph = this.context.getOrientDBInstance().open(this.dbName,"admin","admin");
 
       // vertices check
 
-//      int count = 0;
-//      for(OVertex v : orientGraph.command(this.getVerticesQuery)) {
-//        assertNotNull(v.getIdentity());
-//        count++;
-//      }
       assertEquals(8, orientGraph.countClass("V"));
-
-//      count = 0;
-//      for(OVertex v : orientGraph.command(this.getElementsFromClassQuery, "Employee")) {
-//        assertNotNull(v.getIdentity());
-//        count++;
-//      }
       assertEquals(6, orientGraph.countClass("Employee"));
-
-//      count = 0;
-//      for(OVertex v : orientGraph.command(this.getElementsFromClassQuery, "Project")) {
-//        assertNotNull(v.getIdentity());
-//        count++;
-//      }
       assertEquals(2, orientGraph.countClass("Project"));
 
       // edges check
-//      count = 0;
-//      for (OEdge  e : orientGraph.command(this.getEdgesQuery)) {
-//        assertNotNull(e.getIdentity());
-//        count++;
-//      }
+
       assertEquals(8, orientGraph.countClass("E"));
-
-//      count = 0;
-//      for (OEdge  e : orientGraph.command(this.getElementsFromClassQuery, "HasEmployee")) {
-//        assertNotNull(e.getIdentity());
-//        count++;
-//      }
       assertEquals(6, orientGraph.countClass("HasEmployee"));
-
-//      count = 0;
-//      for (OEdge  e : orientGraph.command(this.getElementsFromClassQuery, "HasProjectManager")) {
-//        assertNotNull(e.getIdentity());
-//        count++;
-//      }
       assertEquals(2, orientGraph.countClass("HasProjectManager"));
 
       // vertex properties and connections check
@@ -686,15 +631,14 @@ public class ImportWithInputRelationshipConfigurationTest {
         String dbDropping = "drop schema public cascade";
         st.execute(dbDropping);
         connection.close();
-        OFileManager.deleteResource(this.dbParentDirectoryPath);
       } catch (Exception e) {
         e.printStackTrace();
         fail();
       }
       if (orientGraph != null) {
-        orientGraph.drop();
         orientGraph.close();
       }
+
     }
   }
 
@@ -780,45 +724,17 @@ public class ImportWithInputRelationshipConfigurationTest {
       /*
        *  Testing built OrientDB
        */
-      OrientDB orient = OrientDB.fromUrl(this.outOrientGraphUri, OrientDBConfig.defaultConfig());
-      orientGraph = orient.open(this.dbName,"admin","admin");
+
+      orientGraph = this.context.getOrientDBInstance().open(this.dbName,"admin","admin");
 
       // vertices check
 
-//      int count = 0;
-//      for(OVertex v : orientGraph.command(this.getVerticesQuery)) {
-//        assertNotNull(v.getIdentity());
-//        count++;
-//      }
       assertEquals(11, orientGraph.countClass("V"));
-
-//      count = 0;
-//      for(OVertex v : orientGraph.command(this.getElementsFromClassQuery, "Film")) {
-//        assertNotNull(v.getIdentity());
-//        count++;
-//      }
       assertEquals(3, orientGraph.countClass("Film"));
-
-//      count = 0;
-//      for(OVertex v : orientGraph.command(this.getElementsFromClassQuery, "Actor")) {
-//        assertNotNull(v.getIdentity());
-//        count++;
-//      }
       assertEquals(8, orientGraph.countClass("Actor"));
 
       // edges check
-//      count = 0;
-//      for (OEdge  e : orientGraph.command(this.getEdgesQuery)) {
-//        assertNotNull(e.getIdentity());
-//        count++;
-//      }
       assertEquals(9, orientGraph.countClass("E"));
-
-//      count = 0;
-//      for (OEdge  e : orientGraph.command(this.getElementsFromClassQuery, "Performs")) {
-//        assertNotNull(e.getIdentity());
-//        count++;
-//      }
       assertEquals(9, orientGraph.countClass("Performs"));
 
       // vertex properties and connections check
@@ -838,15 +754,15 @@ public class ImportWithInputRelationshipConfigurationTest {
         edgesIt = v.getEdges(ODirection.IN, "Performs").iterator();
         currentEdge = edgesIt.next();
         assertEquals("A001", currentEdge.getVertex(ODirection.OUT).getProperty("id"));
-        assertEquals(Long.valueOf(12000000), currentEdge.getProperty("payment"));
+        assertEquals(Integer.valueOf(12000000), currentEdge.getProperty("payment"));
         assertNull(currentEdge.getProperty("year"));
         currentEdge = edgesIt.next();
         assertEquals("A002", currentEdge.getVertex(ODirection.OUT).getProperty("id"));
-        assertEquals(Long.valueOf(10000000), currentEdge.getProperty("payment"));
+        assertEquals(Integer.valueOf(10000000), currentEdge.getProperty("payment"));
         assertNull(currentEdge.getProperty("year"));
         currentEdge = edgesIt.next();
         assertEquals("A003", currentEdge.getVertex(ODirection.OUT).getProperty("id"));
-        assertEquals(Long.valueOf(15000000), currentEdge.getProperty("payment"));
+        assertEquals(Integer.valueOf(15000000), currentEdge.getProperty("payment"));
         assertNull(currentEdge.getProperty("year"));
         assertEquals(false, edgesIt.hasNext());
       } else {
@@ -864,15 +780,15 @@ public class ImportWithInputRelationshipConfigurationTest {
         edgesIt = v.getEdges(ODirection.IN, "Performs").iterator();
         currentEdge = edgesIt.next();
         assertEquals("A004", currentEdge.getVertex(ODirection.OUT).getProperty("id"));
-        assertEquals(Long.valueOf(30000000), currentEdge.getProperty("payment"));
+        assertEquals(Integer.valueOf(30000000), currentEdge.getProperty("payment"));
         assertNull(currentEdge.getProperty("year"));
         currentEdge = edgesIt.next();
         assertEquals("A005", currentEdge.getVertex(ODirection.OUT).getProperty("id"));
-        assertEquals(Long.valueOf(35000000), currentEdge.getProperty("payment"));
+        assertEquals(Integer.valueOf(35000000), currentEdge.getProperty("payment"));
         assertNull(currentEdge.getProperty("year"));
         currentEdge = edgesIt.next();
         assertEquals("A006", currentEdge.getVertex(ODirection.OUT).getProperty("id"));
-        assertEquals(Long.valueOf(9000000), currentEdge.getProperty("payment"));
+        assertEquals(Integer.valueOf(9000000), currentEdge.getProperty("payment"));
         assertNull(currentEdge.getProperty("year"));
         assertEquals(false, edgesIt.hasNext());
       } else {
@@ -890,15 +806,15 @@ public class ImportWithInputRelationshipConfigurationTest {
         edgesIt = v.getEdges(ODirection.IN, "Performs").iterator();
         currentEdge = edgesIt.next();
         assertEquals("A004", currentEdge.getVertex(ODirection.OUT).getProperty("id"));
-        assertEquals(Long.valueOf(40000000), currentEdge.getProperty("payment"));
+        assertEquals(Integer.valueOf(40000000), currentEdge.getProperty("payment"));
         assertNull(currentEdge.getProperty("year"));
         currentEdge = edgesIt.next();
         assertEquals("A007", currentEdge.getVertex(ODirection.OUT).getProperty("id"));
-        assertEquals(Long.valueOf(25000000), currentEdge.getProperty("payment"));
+        assertEquals(Integer.valueOf(25000000), currentEdge.getProperty("payment"));
         assertNull(currentEdge.getProperty("year"));
         currentEdge = edgesIt.next();
         assertEquals("A008", currentEdge.getVertex(ODirection.OUT).getProperty("id"));
-        assertEquals(Long.valueOf(15000000), currentEdge.getProperty("payment"));
+        assertEquals(Integer.valueOf(15000000), currentEdge.getProperty("payment"));
         assertNull(currentEdge.getProperty("year"));
         assertEquals(false, edgesIt.hasNext());
       } else {
@@ -916,7 +832,7 @@ public class ImportWithInputRelationshipConfigurationTest {
         edgesIt = v.getEdges(ODirection.OUT, "Performs").iterator();
         currentEdge = edgesIt.next();
         assertEquals("F001", currentEdge.getVertex(ODirection.IN).getProperty("id"));
-        assertEquals(Long.valueOf(12000000), currentEdge.getProperty("payment"));
+        assertEquals(Integer.valueOf(12000000), currentEdge.getProperty("payment"));
         assertNull(currentEdge.getProperty("year"));
         assertEquals(false, edgesIt.hasNext());
       } else {
@@ -934,7 +850,7 @@ public class ImportWithInputRelationshipConfigurationTest {
         edgesIt = v.getEdges(ODirection.OUT, "Performs").iterator();
         currentEdge = edgesIt.next();
         assertEquals("F001", currentEdge.getVertex(ODirection.IN).getProperty("id"));
-        assertEquals(Long.valueOf(10000000), currentEdge.getProperty("payment"));
+        assertEquals(Integer.valueOf(10000000), currentEdge.getProperty("payment"));
         assertNull(currentEdge.getProperty("year"));
         assertEquals(false, edgesIt.hasNext());
       } else {
@@ -952,7 +868,7 @@ public class ImportWithInputRelationshipConfigurationTest {
         edgesIt = v.getEdges(ODirection.OUT, "Performs").iterator();
         currentEdge = edgesIt.next();
         assertEquals("F001", currentEdge.getVertex(ODirection.IN).getProperty("id"));
-        assertEquals(Long.valueOf(15000000), currentEdge.getProperty("payment"));
+        assertEquals(Integer.valueOf(15000000), currentEdge.getProperty("payment"));
         assertNull(currentEdge.getProperty("year"));
         assertEquals(false, edgesIt.hasNext());
       } else {
@@ -970,11 +886,11 @@ public class ImportWithInputRelationshipConfigurationTest {
         edgesIt = v.getEdges(ODirection.OUT, "Performs").iterator();
         currentEdge = edgesIt.next();
         assertEquals("F002", currentEdge.getVertex(ODirection.IN).getProperty("id"));
-        assertEquals(Long.valueOf(30000000), currentEdge.getProperty("payment"));
+        assertEquals(Integer.valueOf(30000000), currentEdge.getProperty("payment"));
         assertNull(currentEdge.getProperty("year"));
         currentEdge = edgesIt.next();
         assertEquals("F003", currentEdge.getVertex(ODirection.IN).getProperty("id"));
-        assertEquals(Long.valueOf(40000000), currentEdge.getProperty("payment"));
+        assertEquals(Integer.valueOf(40000000), currentEdge.getProperty("payment"));
         assertNull(currentEdge.getProperty("year"));
         assertEquals(false, edgesIt.hasNext());
       } else {
@@ -992,7 +908,7 @@ public class ImportWithInputRelationshipConfigurationTest {
         edgesIt = v.getEdges(ODirection.OUT, "Performs").iterator();
         currentEdge = edgesIt.next();
         assertEquals("F002", currentEdge.getVertex(ODirection.IN).getProperty("id"));
-        assertEquals(Long.valueOf(35000000), currentEdge.getProperty("payment"));
+        assertEquals(Integer.valueOf(35000000), currentEdge.getProperty("payment"));
         assertNull(currentEdge.getProperty("year"));
         assertEquals(false, edgesIt.hasNext());
       } else {
@@ -1010,7 +926,7 @@ public class ImportWithInputRelationshipConfigurationTest {
         edgesIt = v.getEdges(ODirection.OUT, "Performs").iterator();
         currentEdge = edgesIt.next();
         assertEquals("F002", currentEdge.getVertex(ODirection.IN).getProperty("id"));
-        assertEquals(Long.valueOf(9000000), currentEdge.getProperty("payment"));
+        assertEquals(Integer.valueOf(9000000), currentEdge.getProperty("payment"));
         assertNull(currentEdge.getProperty("year"));
         assertEquals(false, edgesIt.hasNext());
       } else {
@@ -1028,7 +944,7 @@ public class ImportWithInputRelationshipConfigurationTest {
         edgesIt = v.getEdges(ODirection.OUT, "Performs").iterator();
         currentEdge = edgesIt.next();
         assertEquals("F003", currentEdge.getVertex(ODirection.IN).getProperty("id"));
-        assertEquals(Long.valueOf(25000000), currentEdge.getProperty("payment"));
+        assertEquals(Integer.valueOf(25000000), currentEdge.getProperty("payment"));
         assertNull(currentEdge.getProperty("year"));
         assertEquals(false, edgesIt.hasNext());
       } else {
@@ -1046,7 +962,7 @@ public class ImportWithInputRelationshipConfigurationTest {
         edgesIt = v.getEdges(ODirection.OUT, "Performs").iterator();
         currentEdge = edgesIt.next();
         assertEquals("F003", currentEdge.getVertex(ODirection.IN).getProperty("id"));
-        assertEquals(Long.valueOf(15000000), currentEdge.getProperty("payment"));
+        assertEquals(Integer.valueOf(15000000), currentEdge.getProperty("payment"));
         assertNull(currentEdge.getProperty("year"));
         assertEquals(false, edgesIt.hasNext());
       } else {
@@ -1063,15 +979,14 @@ public class ImportWithInputRelationshipConfigurationTest {
         String dbDropping = "drop schema public cascade";
         st.execute(dbDropping);
         connection.close();
-        OFileManager.deleteResource(this.dbParentDirectoryPath);
       } catch (Exception e) {
         e.printStackTrace();
         fail();
       }
       if (orientGraph != null) {
-        orientGraph.drop();
         orientGraph.close();
       }
+
     }
   }
 
@@ -1159,45 +1074,18 @@ public class ImportWithInputRelationshipConfigurationTest {
       /*
        *  Testing built OrientDB
        */
-      OrientDB orient = OrientDB.fromUrl(this.outOrientGraphUri, OrientDBConfig.defaultConfig());
-      orientGraph = orient.open(this.dbName,"admin","admin");
+
+      orientGraph = this.context.getOrientDBInstance().open(this.dbName,"admin","admin");
 
       // vertices check
 
-//      int count = 0;
-//      for(OVertex v : orientGraph.command(this.getVerticesQuery)) {
-//        assertNotNull(v.getIdentity());
-//        count++;
-//      }
       assertEquals(11, orientGraph.countClass("V"));
 
-//      count = 0;
-//      for(OVertex v : orientGraph.command(this.getElementsFromClassQuery, "Film")) {
-//        assertNotNull(v.getIdentity());
-//        count++;
-//      }
       assertEquals(3, orientGraph.countClass("Film"));
-
-//      count = 0;
-//      for(OVertex v : orientGraph.command(this.getElementsFromClassQuery, "Actor")) {
-//        assertNotNull(v.getIdentity());
-//        count++;
-//      }
       assertEquals(8, orientGraph.countClass("Actor"));
 
       // edges check
-//      count = 0;
-//      for (OEdge  e : orientGraph.command(this.getEdgesQuery)) {
-//        assertNotNull(e.getIdentity());
-//        count++;
-//      }
       assertEquals(9, orientGraph.countClass("E"));
-
-//      count = 0;
-//      for (OEdge  e : orientGraph.command(this.getElementsFromClassQuery, "Performs")) {
-//        assertNotNull(e.getIdentity());
-//        count++;
-//      }
       assertEquals(9, orientGraph.countClass("Performs"));
 
       // vertex properties and connections check
@@ -1217,15 +1105,15 @@ public class ImportWithInputRelationshipConfigurationTest {
         edgesIt = v.getEdges(ODirection.IN, "Performs").iterator();
         currentEdge = edgesIt.next();
         assertEquals("A001", currentEdge.getVertex(ODirection.OUT).getProperty("id"));
-        assertEquals(Long.valueOf(12000000), currentEdge.getProperty("payment"));
+        assertEquals(Integer.valueOf(12000000), currentEdge.getProperty("payment"));
         assertNull(currentEdge.getProperty("year"));
         currentEdge = edgesIt.next();
         assertEquals("A002", currentEdge.getVertex(ODirection.OUT).getProperty("id"));
-        assertEquals(Long.valueOf(10000000), currentEdge.getProperty("payment"));
+        assertEquals(Integer.valueOf(10000000), currentEdge.getProperty("payment"));
         assertNull(currentEdge.getProperty("year"));
         currentEdge = edgesIt.next();
         assertEquals("A003", currentEdge.getVertex(ODirection.OUT).getProperty("id"));
-        assertEquals(Long.valueOf(15000000), currentEdge.getProperty("payment"));
+        assertEquals(Integer.valueOf(15000000), currentEdge.getProperty("payment"));
         assertNull(currentEdge.getProperty("year"));
         assertEquals(false, edgesIt.hasNext());
       } else {
@@ -1243,15 +1131,15 @@ public class ImportWithInputRelationshipConfigurationTest {
         edgesIt = v.getEdges(ODirection.IN, "Performs").iterator();
         currentEdge = edgesIt.next();
         assertEquals("A004", currentEdge.getVertex(ODirection.OUT).getProperty("id"));
-        assertEquals(Long.valueOf(30000000), currentEdge.getProperty("payment"));
+        assertEquals(Integer.valueOf(30000000), currentEdge.getProperty("payment"));
         assertNull(currentEdge.getProperty("year"));
         currentEdge = edgesIt.next();
         assertEquals("A005", currentEdge.getVertex(ODirection.OUT).getProperty("id"));
-        assertEquals(Long.valueOf(35000000), currentEdge.getProperty("payment"));
+        assertEquals(Integer.valueOf(35000000), currentEdge.getProperty("payment"));
         assertNull(currentEdge.getProperty("year"));
         currentEdge = edgesIt.next();
         assertEquals("A006", currentEdge.getVertex(ODirection.OUT).getProperty("id"));
-        assertEquals(Long.valueOf(9000000), currentEdge.getProperty("payment"));
+        assertEquals(Integer.valueOf(9000000), currentEdge.getProperty("payment"));
         assertNull(currentEdge.getProperty("year"));
         assertEquals(false, edgesIt.hasNext());
       } else {
@@ -1269,15 +1157,15 @@ public class ImportWithInputRelationshipConfigurationTest {
         edgesIt = v.getEdges(ODirection.IN, "Performs").iterator();
         currentEdge = edgesIt.next();
         assertEquals("A004", currentEdge.getVertex(ODirection.OUT).getProperty("id"));
-        assertEquals(Long.valueOf(40000000), currentEdge.getProperty("payment"));
+        assertEquals(Integer.valueOf(40000000), currentEdge.getProperty("payment"));
         assertNull(currentEdge.getProperty("year"));
         currentEdge = edgesIt.next();
         assertEquals("A007", currentEdge.getVertex(ODirection.OUT).getProperty("id"));
-        assertEquals(Long.valueOf(25000000), currentEdge.getProperty("payment"));
+        assertEquals(Integer.valueOf(25000000), currentEdge.getProperty("payment"));
         assertNull(currentEdge.getProperty("year"));
         currentEdge = edgesIt.next();
         assertEquals("A008", currentEdge.getVertex(ODirection.OUT).getProperty("id"));
-        assertEquals(Long.valueOf(15000000), currentEdge.getProperty("payment"));
+        assertEquals(Integer.valueOf(15000000), currentEdge.getProperty("payment"));
         assertNull(currentEdge.getProperty("year"));
         assertEquals(false, edgesIt.hasNext());
       } else {
@@ -1295,7 +1183,7 @@ public class ImportWithInputRelationshipConfigurationTest {
         edgesIt = v.getEdges(ODirection.OUT, "Performs").iterator();
         currentEdge = edgesIt.next();
         assertEquals("F001", currentEdge.getVertex(ODirection.IN).getProperty("id"));
-        assertEquals(Long.valueOf(12000000), currentEdge.getProperty("payment"));
+        assertEquals(Integer.valueOf(12000000), currentEdge.getProperty("payment"));
         assertNull(currentEdge.getProperty("year"));
         assertEquals(false, edgesIt.hasNext());
       } else {
@@ -1313,7 +1201,7 @@ public class ImportWithInputRelationshipConfigurationTest {
         edgesIt = v.getEdges(ODirection.OUT, "Performs").iterator();
         currentEdge = edgesIt.next();
         assertEquals("F001", currentEdge.getVertex(ODirection.IN).getProperty("id"));
-        assertEquals(Long.valueOf(10000000), currentEdge.getProperty("payment"));
+        assertEquals(Integer.valueOf(10000000), currentEdge.getProperty("payment"));
         assertNull(currentEdge.getProperty("year"));
         assertEquals(false, edgesIt.hasNext());
       } else {
@@ -1331,7 +1219,7 @@ public class ImportWithInputRelationshipConfigurationTest {
         edgesIt = v.getEdges(ODirection.OUT, "Performs").iterator();
         currentEdge = edgesIt.next();
         assertEquals("F001", currentEdge.getVertex(ODirection.IN).getProperty("id"));
-        assertEquals(Long.valueOf(15000000), currentEdge.getProperty("payment"));
+        assertEquals(Integer.valueOf(15000000), currentEdge.getProperty("payment"));
         assertNull(currentEdge.getProperty("year"));
         assertEquals(false, edgesIt.hasNext());
       } else {
@@ -1349,11 +1237,11 @@ public class ImportWithInputRelationshipConfigurationTest {
         edgesIt = v.getEdges(ODirection.OUT, "Performs").iterator();
         currentEdge = edgesIt.next();
         assertEquals("F002", currentEdge.getVertex(ODirection.IN).getProperty("id"));
-        assertEquals(Long.valueOf(30000000), currentEdge.getProperty("payment"));
+        assertEquals(Integer.valueOf(30000000), currentEdge.getProperty("payment"));
         assertNull(currentEdge.getProperty("year"));
         currentEdge = edgesIt.next();
         assertEquals("F003", currentEdge.getVertex(ODirection.IN).getProperty("id"));
-        assertEquals(Long.valueOf(40000000), currentEdge.getProperty("payment"));
+        assertEquals(Integer.valueOf(40000000), currentEdge.getProperty("payment"));
         assertNull(currentEdge.getProperty("year"));
         assertEquals(false, edgesIt.hasNext());
       } else {
@@ -1371,7 +1259,7 @@ public class ImportWithInputRelationshipConfigurationTest {
         edgesIt = v.getEdges(ODirection.OUT, "Performs").iterator();
         currentEdge = edgesIt.next();
         assertEquals("F002", currentEdge.getVertex(ODirection.IN).getProperty("id"));
-        assertEquals(Long.valueOf(35000000), currentEdge.getProperty("payment"));
+        assertEquals(Integer.valueOf(35000000), currentEdge.getProperty("payment"));
         assertNull(currentEdge.getProperty("year"));
         assertEquals(false, edgesIt.hasNext());
       } else {
@@ -1389,7 +1277,7 @@ public class ImportWithInputRelationshipConfigurationTest {
         edgesIt = v.getEdges(ODirection.OUT, "Performs").iterator();
         currentEdge = edgesIt.next();
         assertEquals("F002", currentEdge.getVertex(ODirection.IN).getProperty("id"));
-        assertEquals(Long.valueOf(9000000), currentEdge.getProperty("payment"));
+        assertEquals(Integer.valueOf(9000000), currentEdge.getProperty("payment"));
         assertNull(currentEdge.getProperty("year"));
         assertEquals(false, edgesIt.hasNext());
       } else {
@@ -1407,7 +1295,7 @@ public class ImportWithInputRelationshipConfigurationTest {
         edgesIt = v.getEdges(ODirection.OUT, "Performs").iterator();
         currentEdge = edgesIt.next();
         assertEquals("F003", currentEdge.getVertex(ODirection.IN).getProperty("id"));
-        assertEquals(Long.valueOf(25000000), currentEdge.getProperty("payment"));
+        assertEquals(Integer.valueOf(25000000), currentEdge.getProperty("payment"));
         assertNull(currentEdge.getProperty("year"));
         assertEquals(false, edgesIt.hasNext());
       } else {
@@ -1425,7 +1313,7 @@ public class ImportWithInputRelationshipConfigurationTest {
         edgesIt = v.getEdges(ODirection.OUT, "Performs").iterator();
         currentEdge = edgesIt.next();
         assertEquals("F003", currentEdge.getVertex(ODirection.IN).getProperty("id"));
-        assertEquals(Long.valueOf(15000000), currentEdge.getProperty("payment"));
+        assertEquals(Integer.valueOf(15000000), currentEdge.getProperty("payment"));
         assertNull(currentEdge.getProperty("year"));
         assertEquals(false, edgesIt.hasNext());
       } else {
@@ -1442,15 +1330,14 @@ public class ImportWithInputRelationshipConfigurationTest {
         String dbDropping = "drop schema public cascade";
         st.execute(dbDropping);
         connection.close();
-        OFileManager.deleteResource(this.dbParentDirectoryPath);
       } catch (Exception e) {
         e.printStackTrace();
         fail();
       }
       if (orientGraph != null) {
-        orientGraph.drop();
         orientGraph.close();
       }
+
     }
   }
 
@@ -1537,45 +1424,17 @@ public class ImportWithInputRelationshipConfigurationTest {
       /*
        *  Testing built OrientDB
        */
-      OrientDB orient = OrientDB.fromUrl(this.outOrientGraphUri, OrientDBConfig.defaultConfig());
-      orientGraph = orient.open(this.dbName,"admin","admin");
+
+      orientGraph = this.context.getOrientDBInstance().open(this.dbName,"admin","admin");
 
       // vertices check
 
-//      int count = 0;
-//      for(OVertex v : orientGraph.command(this.getVerticesQuery)) {
-//        assertNotNull(v.getIdentity());
-//        count++;
-//      }
       assertEquals(11, orientGraph.countClass("V"));
-
-//      count = 0;
-//      for(OVertex v : orientGraph.command(this.getElementsFromClassQuery, "Film")) {
-//        assertNotNull(v.getIdentity());
-//        count++;
-//      }
       assertEquals(3, orientGraph.countClass("Film"));
-
-//      count = 0;
-//      for(OVertex v : orientGraph.command(this.getElementsFromClassQuery, "Actor")) {
-//        assertNotNull(v.getIdentity());
-//        count++;
-//      }
       assertEquals(8, orientGraph.countClass("Actor"));
 
       // edges check
-//      count = 0;
-//      for (OEdge  e : orientGraph.command(this.getEdgesQuery)) {
-//        assertNotNull(e.getIdentity());
-//        count++;
-//      }
       assertEquals(9, orientGraph.countClass("E"));
-
-//      count = 0;
-//      for (OEdge  e : orientGraph.command(this.getElementsFromClassQuery, "Performs")) {
-//        assertNotNull(e.getIdentity());
-//        count++;
-//      }
       assertEquals(9, orientGraph.countClass("Performs"));
 
       // vertex properties and connections check
@@ -1595,15 +1454,15 @@ public class ImportWithInputRelationshipConfigurationTest {
         edgesIt = v.getEdges(ODirection.IN, "Performs").iterator();
         currentEdge = edgesIt.next();
         assertEquals("A001", currentEdge.getVertex(ODirection.OUT).getProperty("id"));
-        assertEquals(Long.valueOf(12000000), currentEdge.getProperty("payment"));
+        assertEquals(Integer.valueOf(12000000), currentEdge.getProperty("payment"));
         assertNull(currentEdge.getProperty("year"));
         currentEdge = edgesIt.next();
         assertEquals("A002", currentEdge.getVertex(ODirection.OUT).getProperty("id"));
-        assertEquals(Long.valueOf(10000000), currentEdge.getProperty("payment"));
+        assertEquals(Integer.valueOf(10000000), currentEdge.getProperty("payment"));
         assertNull(currentEdge.getProperty("year"));
         currentEdge = edgesIt.next();
         assertEquals("A003", currentEdge.getVertex(ODirection.OUT).getProperty("id"));
-        assertEquals(Long.valueOf(15000000), currentEdge.getProperty("payment"));
+        assertEquals(Integer.valueOf(15000000), currentEdge.getProperty("payment"));
         assertNull(currentEdge.getProperty("year"));
         assertEquals(false, edgesIt.hasNext());
       } else {
@@ -1621,15 +1480,15 @@ public class ImportWithInputRelationshipConfigurationTest {
         edgesIt = v.getEdges(ODirection.IN, "Performs").iterator();
         currentEdge = edgesIt.next();
         assertEquals("A004", currentEdge.getVertex(ODirection.OUT).getProperty("id"));
-        assertEquals(Long.valueOf(30000000), currentEdge.getProperty("payment"));
+        assertEquals(Integer.valueOf(30000000), currentEdge.getProperty("payment"));
         assertNull(currentEdge.getProperty("year"));
         currentEdge = edgesIt.next();
         assertEquals("A005", currentEdge.getVertex(ODirection.OUT).getProperty("id"));
-        assertEquals(Long.valueOf(35000000), currentEdge.getProperty("payment"));
+        assertEquals(Integer.valueOf(35000000), currentEdge.getProperty("payment"));
         assertNull(currentEdge.getProperty("year"));
         currentEdge = edgesIt.next();
         assertEquals("A006", currentEdge.getVertex(ODirection.OUT).getProperty("id"));
-        assertEquals(Long.valueOf(9000000), currentEdge.getProperty("payment"));
+        assertEquals(Integer.valueOf(9000000), currentEdge.getProperty("payment"));
         assertNull(currentEdge.getProperty("year"));
         assertEquals(false, edgesIt.hasNext());
       } else {
@@ -1647,15 +1506,15 @@ public class ImportWithInputRelationshipConfigurationTest {
         edgesIt = v.getEdges(ODirection.IN, "Performs").iterator();
         currentEdge = edgesIt.next();
         assertEquals("A004", currentEdge.getVertex(ODirection.OUT).getProperty("id"));
-        assertEquals(Long.valueOf(40000000), currentEdge.getProperty("payment"));
+        assertEquals(Integer.valueOf(40000000), currentEdge.getProperty("payment"));
         assertNull(currentEdge.getProperty("year"));
         currentEdge = edgesIt.next();
         assertEquals("A007", currentEdge.getVertex(ODirection.OUT).getProperty("id"));
-        assertEquals(Long.valueOf(25000000), currentEdge.getProperty("payment"));
+        assertEquals(Integer.valueOf(25000000), currentEdge.getProperty("payment"));
         assertNull(currentEdge.getProperty("year"));
         currentEdge = edgesIt.next();
         assertEquals("A008", currentEdge.getVertex(ODirection.OUT).getProperty("id"));
-        assertEquals(Long.valueOf(15000000), currentEdge.getProperty("payment"));
+        assertEquals(Integer.valueOf(15000000), currentEdge.getProperty("payment"));
         assertNull(currentEdge.getProperty("year"));
         assertEquals(false, edgesIt.hasNext());
       } else {
@@ -1673,7 +1532,7 @@ public class ImportWithInputRelationshipConfigurationTest {
         edgesIt = v.getEdges(ODirection.OUT, "Performs").iterator();
         currentEdge = edgesIt.next();
         assertEquals("F001", currentEdge.getVertex(ODirection.IN).getProperty("id"));
-        assertEquals(Long.valueOf(12000000), currentEdge.getProperty("payment"));
+        assertEquals(Integer.valueOf(12000000), currentEdge.getProperty("payment"));
         assertNull(currentEdge.getProperty("year"));
         assertEquals(false, edgesIt.hasNext());
       } else {
@@ -1691,7 +1550,7 @@ public class ImportWithInputRelationshipConfigurationTest {
         edgesIt = v.getEdges(ODirection.OUT, "Performs").iterator();
         currentEdge = edgesIt.next();
         assertEquals("F001", currentEdge.getVertex(ODirection.IN).getProperty("id"));
-        assertEquals(Long.valueOf(10000000), currentEdge.getProperty("payment"));
+        assertEquals(Integer.valueOf(10000000), currentEdge.getProperty("payment"));
         assertNull(currentEdge.getProperty("year"));
         assertEquals(false, edgesIt.hasNext());
       } else {
@@ -1709,7 +1568,7 @@ public class ImportWithInputRelationshipConfigurationTest {
         edgesIt = v.getEdges(ODirection.OUT, "Performs").iterator();
         currentEdge = edgesIt.next();
         assertEquals("F001", currentEdge.getVertex(ODirection.IN).getProperty("id"));
-        assertEquals(Long.valueOf(15000000), currentEdge.getProperty("payment"));
+        assertEquals(Integer.valueOf(15000000), currentEdge.getProperty("payment"));
         assertNull(currentEdge.getProperty("year"));
         assertEquals(false, edgesIt.hasNext());
       } else {
@@ -1727,11 +1586,11 @@ public class ImportWithInputRelationshipConfigurationTest {
         edgesIt = v.getEdges(ODirection.OUT, "Performs").iterator();
         currentEdge = edgesIt.next();
         assertEquals("F002", currentEdge.getVertex(ODirection.IN).getProperty("id"));
-        assertEquals(Long.valueOf(30000000), currentEdge.getProperty("payment"));
+        assertEquals(Integer.valueOf(30000000), currentEdge.getProperty("payment"));
         assertNull(currentEdge.getProperty("year"));
         currentEdge = edgesIt.next();
         assertEquals("F003", currentEdge.getVertex(ODirection.IN).getProperty("id"));
-        assertEquals(Long.valueOf(40000000), currentEdge.getProperty("payment"));
+        assertEquals(Integer.valueOf(40000000), currentEdge.getProperty("payment"));
         assertNull(currentEdge.getProperty("year"));
         assertEquals(false, edgesIt.hasNext());
       } else {
@@ -1749,7 +1608,7 @@ public class ImportWithInputRelationshipConfigurationTest {
         edgesIt = v.getEdges(ODirection.OUT, "Performs").iterator();
         currentEdge = edgesIt.next();
         assertEquals("F002", currentEdge.getVertex(ODirection.IN).getProperty("id"));
-        assertEquals(Long.valueOf(35000000), currentEdge.getProperty("payment"));
+        assertEquals(Integer.valueOf(35000000), currentEdge.getProperty("payment"));
         assertNull(currentEdge.getProperty("year"));
         assertEquals(false, edgesIt.hasNext());
       } else {
@@ -1767,7 +1626,7 @@ public class ImportWithInputRelationshipConfigurationTest {
         edgesIt = v.getEdges(ODirection.OUT, "Performs").iterator();
         currentEdge = edgesIt.next();
         assertEquals("F002", currentEdge.getVertex(ODirection.IN).getProperty("id"));
-        assertEquals(Long.valueOf(9000000), currentEdge.getProperty("payment"));
+        assertEquals(Integer.valueOf(9000000), currentEdge.getProperty("payment"));
         assertNull(currentEdge.getProperty("year"));
         assertEquals(false, edgesIt.hasNext());
       } else {
@@ -1785,7 +1644,7 @@ public class ImportWithInputRelationshipConfigurationTest {
         edgesIt = v.getEdges(ODirection.OUT, "Performs").iterator();
         currentEdge = edgesIt.next();
         assertEquals("F003", currentEdge.getVertex(ODirection.IN).getProperty("id"));
-        assertEquals(Long.valueOf(25000000), currentEdge.getProperty("payment"));
+        assertEquals(Integer.valueOf(25000000), currentEdge.getProperty("payment"));
         assertNull(currentEdge.getProperty("year"));
         assertEquals(false, edgesIt.hasNext());
       } else {
@@ -1803,7 +1662,7 @@ public class ImportWithInputRelationshipConfigurationTest {
         edgesIt = v.getEdges(ODirection.OUT, "Performs").iterator();
         currentEdge = edgesIt.next();
         assertEquals("F003", currentEdge.getVertex(ODirection.IN).getProperty("id"));
-        assertEquals(Long.valueOf(15000000), currentEdge.getProperty("payment"));
+        assertEquals(Integer.valueOf(15000000), currentEdge.getProperty("payment"));
         assertNull(currentEdge.getProperty("year"));
         assertEquals(false, edgesIt.hasNext());
       } else {
@@ -1820,15 +1679,14 @@ public class ImportWithInputRelationshipConfigurationTest {
         String dbDropping = "drop schema public cascade";
         st.execute(dbDropping);
         connection.close();
-        OFileManager.deleteResource(this.dbParentDirectoryPath);
       } catch (Exception e) {
         e.printStackTrace();
         fail();
       }
       if (orientGraph != null) {
-        orientGraph.drop();
         orientGraph.close();
       }
+
     }
   }
 
@@ -1917,45 +1775,18 @@ public class ImportWithInputRelationshipConfigurationTest {
       /*
        *  Testing built OrientDB
        */
-      OrientDB orient = OrientDB.fromUrl(this.outOrientGraphUri, OrientDBConfig.defaultConfig());
-      orientGraph = orient.open(this.dbName,"admin","admin");
+
+      orientGraph = this.context.getOrientDBInstance().open(this.dbName,"admin","admin");
 
       // vertices check
 
-//      int count = 0;
-//      for(OVertex v : orientGraph.command(this.getVerticesQuery)) {
-//        assertNotNull(v.getIdentity());
-//        count++;
-//      }
       assertEquals(11, orientGraph.countClass("V"));
-
-//      count = 0;
-//      for(OVertex v : orientGraph.command(this.getElementsFromClassQuery, "Film")) {
-//        assertNotNull(v.getIdentity());
-//        count++;
-//      }
       assertEquals(3, orientGraph.countClass("Film"));
-
-//      count = 0;
-//      for(OVertex v : orientGraph.command(this.getElementsFromClassQuery, "Actor")) {
-//        assertNotNull(v.getIdentity());
-//        count++;
-//      }
       assertEquals(8, orientGraph.countClass("Actor"));
 
       // edges check
-//      count = 0;
-//      for (OEdge e : orientGraph.command(this.getEdgesQuery)) {
-//        assertNotNull(e.getIdentity());
-//        count++;
-//      }
-      assertEquals(9, orientGraph.countClass("E"));
 
-//      count = 0;
-//      for (OEdge  e : orientGraph.command(this.getElementsFromClassQuery, "Features")) {
-//        assertNotNull(e.getIdentity());
-//        count++;
-//      }
+      assertEquals(9, orientGraph.countClass("E"));
       assertEquals(9, orientGraph.countClass("Features"));
 
       // vertex properties and connections check
@@ -1975,15 +1806,15 @@ public class ImportWithInputRelationshipConfigurationTest {
         edgesIt = v.getEdges(ODirection.OUT, "Features").iterator();
         currentEdge = edgesIt.next();
         assertEquals("A001", currentEdge.getVertex(ODirection.IN).getProperty("id"));
-        assertEquals(Long.valueOf(12000000), currentEdge.getProperty("payment"));
+        assertEquals(Integer.valueOf(12000000), currentEdge.getProperty("payment"));
         assertNull(currentEdge.getProperty("year"));
         currentEdge = edgesIt.next();
         assertEquals("A002", currentEdge.getVertex(ODirection.IN).getProperty("id"));
-        assertEquals(Long.valueOf(10000000), currentEdge.getProperty("payment"));
+        assertEquals(Integer.valueOf(10000000), currentEdge.getProperty("payment"));
         assertNull(currentEdge.getProperty("year"));
         currentEdge = edgesIt.next();
         assertEquals("A003", currentEdge.getVertex(ODirection.IN).getProperty("id"));
-        assertEquals(Long.valueOf(15000000), currentEdge.getProperty("payment"));
+        assertEquals(Integer.valueOf(15000000), currentEdge.getProperty("payment"));
         assertNull(currentEdge.getProperty("year"));
         assertEquals(false, edgesIt.hasNext());
       } else {
@@ -2001,15 +1832,15 @@ public class ImportWithInputRelationshipConfigurationTest {
         edgesIt = v.getEdges(ODirection.OUT, "Features").iterator();
         currentEdge = edgesIt.next();
         assertEquals("A004", currentEdge.getVertex(ODirection.IN).getProperty("id"));
-        assertEquals(Long.valueOf(30000000), currentEdge.getProperty("payment"));
+        assertEquals(Integer.valueOf(30000000), currentEdge.getProperty("payment"));
         assertNull(currentEdge.getProperty("year"));
         currentEdge = edgesIt.next();
         assertEquals("A005", currentEdge.getVertex(ODirection.IN).getProperty("id"));
-        assertEquals(Long.valueOf(35000000), currentEdge.getProperty("payment"));
+        assertEquals(Integer.valueOf(35000000), currentEdge.getProperty("payment"));
         assertNull(currentEdge.getProperty("year"));
         currentEdge = edgesIt.next();
         assertEquals("A006", currentEdge.getVertex(ODirection.IN).getProperty("id"));
-        assertEquals(Long.valueOf(9000000), currentEdge.getProperty("payment"));
+        assertEquals(Integer.valueOf(9000000), currentEdge.getProperty("payment"));
         assertNull(currentEdge.getProperty("year"));
         assertEquals(false, edgesIt.hasNext());
       } else {
@@ -2027,15 +1858,15 @@ public class ImportWithInputRelationshipConfigurationTest {
         edgesIt = v.getEdges(ODirection.OUT, "Features").iterator();
         currentEdge = edgesIt.next();
         assertEquals("A004", currentEdge.getVertex(ODirection.IN).getProperty("id"));
-        assertEquals(Long.valueOf(40000000), currentEdge.getProperty("payment"));
+        assertEquals(Integer.valueOf(40000000), currentEdge.getProperty("payment"));
         assertNull(currentEdge.getProperty("year"));
         currentEdge = edgesIt.next();
         assertEquals("A007", currentEdge.getVertex(ODirection.IN).getProperty("id"));
-        assertEquals(Long.valueOf(25000000), currentEdge.getProperty("payment"));
+        assertEquals(Integer.valueOf(25000000), currentEdge.getProperty("payment"));
         assertNull(currentEdge.getProperty("year"));
         currentEdge = edgesIt.next();
         assertEquals("A008", currentEdge.getVertex(ODirection.IN).getProperty("id"));
-        assertEquals(Long.valueOf(15000000), currentEdge.getProperty("payment"));
+        assertEquals(Integer.valueOf(15000000), currentEdge.getProperty("payment"));
         assertNull(currentEdge.getProperty("year"));
         assertEquals(false, edgesIt.hasNext());
       } else {
@@ -2053,7 +1884,7 @@ public class ImportWithInputRelationshipConfigurationTest {
         edgesIt = v.getEdges(ODirection.IN, "Features").iterator();
         currentEdge = edgesIt.next();
         assertEquals("F001", currentEdge.getVertex(ODirection.OUT).getProperty("id"));
-        assertEquals(Long.valueOf(12000000), currentEdge.getProperty("payment"));
+        assertEquals(Integer.valueOf(12000000), currentEdge.getProperty("payment"));
         assertNull(currentEdge.getProperty("year"));
         assertEquals(false, edgesIt.hasNext());
       } else {
@@ -2071,7 +1902,7 @@ public class ImportWithInputRelationshipConfigurationTest {
         edgesIt = v.getEdges(ODirection.IN, "Features").iterator();
         currentEdge = edgesIt.next();
         assertEquals("F001", currentEdge.getVertex(ODirection.OUT).getProperty("id"));
-        assertEquals(Long.valueOf(10000000), currentEdge.getProperty("payment"));
+        assertEquals(Integer.valueOf(10000000), currentEdge.getProperty("payment"));
         assertNull(currentEdge.getProperty("year"));
         assertEquals(false, edgesIt.hasNext());
       } else {
@@ -2089,7 +1920,7 @@ public class ImportWithInputRelationshipConfigurationTest {
         edgesIt = v.getEdges(ODirection.IN, "Features").iterator();
         currentEdge = edgesIt.next();
         assertEquals("F001", currentEdge.getVertex(ODirection.OUT).getProperty("id"));
-        assertEquals(Long.valueOf(15000000), currentEdge.getProperty("payment"));
+        assertEquals(Integer.valueOf(15000000), currentEdge.getProperty("payment"));
         assertNull(currentEdge.getProperty("year"));
         assertEquals(false, edgesIt.hasNext());
       } else {
@@ -2107,12 +1938,12 @@ public class ImportWithInputRelationshipConfigurationTest {
         edgesIt = v.getEdges(ODirection.IN, "Features").iterator();
         currentEdge = edgesIt.next();
         assertEquals("F002", currentEdge.getVertex(ODirection.OUT).getProperty("id"));
-        assertEquals(Long.valueOf(30000000), currentEdge.getProperty("payment"));
+        assertEquals(Integer.valueOf(30000000), currentEdge.getProperty("payment"));
         assertNull(currentEdge.getProperty("year"));
         currentEdge = edgesIt.next();
         assertEquals("F003", currentEdge.getVertex(ODirection.OUT).getProperty("id"));
         assertNull(currentEdge.getProperty("year"));
-        assertEquals(Long.valueOf(40000000), currentEdge.getProperty("payment"));
+        assertEquals(Integer.valueOf(40000000), currentEdge.getProperty("payment"));
         assertEquals(false, edgesIt.hasNext());
       } else {
         fail("Query fail!");
@@ -2129,7 +1960,7 @@ public class ImportWithInputRelationshipConfigurationTest {
         edgesIt = v.getEdges(ODirection.IN, "Features").iterator();
         currentEdge = edgesIt.next();
         assertEquals("F002", currentEdge.getVertex(ODirection.OUT).getProperty("id"));
-        assertEquals(Long.valueOf(35000000), currentEdge.getProperty("payment"));
+        assertEquals(Integer.valueOf(35000000), currentEdge.getProperty("payment"));
         assertNull(currentEdge.getProperty("year"));
         assertEquals(false, edgesIt.hasNext());
       } else {
@@ -2147,7 +1978,7 @@ public class ImportWithInputRelationshipConfigurationTest {
         edgesIt = v.getEdges(ODirection.IN, "Features").iterator();
         currentEdge = edgesIt.next();
         assertEquals("F002", currentEdge.getVertex(ODirection.OUT).getProperty("id"));
-        assertEquals(Long.valueOf(9000000), currentEdge.getProperty("payment"));
+        assertEquals(Integer.valueOf(9000000), currentEdge.getProperty("payment"));
         assertNull(currentEdge.getProperty("year"));
         assertEquals(false, edgesIt.hasNext());
       } else {
@@ -2165,7 +1996,7 @@ public class ImportWithInputRelationshipConfigurationTest {
         edgesIt = v.getEdges(ODirection.IN, "Features").iterator();
         currentEdge = edgesIt.next();
         assertEquals("F003", currentEdge.getVertex(ODirection.OUT).getProperty("id"));
-        assertEquals(Long.valueOf(25000000), currentEdge.getProperty("payment"));
+        assertEquals(Integer.valueOf(25000000), currentEdge.getProperty("payment"));
         assertNull(currentEdge.getProperty("year"));
         assertEquals(false, edgesIt.hasNext());
       } else {
@@ -2183,7 +2014,7 @@ public class ImportWithInputRelationshipConfigurationTest {
         edgesIt = v.getEdges(ODirection.IN, "Features").iterator();
         currentEdge = edgesIt.next();
         assertEquals("F003", currentEdge.getVertex(ODirection.OUT).getProperty("id"));
-        assertEquals(Long.valueOf(15000000), currentEdge.getProperty("payment"));
+        assertEquals(Integer.valueOf(15000000), currentEdge.getProperty("payment"));
         assertNull(currentEdge.getProperty("year"));
         assertEquals(false, edgesIt.hasNext());
       } else {
@@ -2200,15 +2031,14 @@ public class ImportWithInputRelationshipConfigurationTest {
         String dbDropping = "drop schema public cascade";
         st.execute(dbDropping);
         connection.close();
-        OFileManager.deleteResource(this.dbParentDirectoryPath);
       } catch (Exception e) {
         e.printStackTrace();
         fail();
       }
       if (orientGraph != null) {
-        orientGraph.drop();
         orientGraph.close();
       }
+
     }
   }
 

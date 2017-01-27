@@ -28,6 +28,8 @@ import com.orientechnologies.teleporter.model.dbschema.OSourceDatabaseInfo;
 import com.orientechnologies.teleporter.nameresolver.OJavaConventionNameResolver;
 import com.orientechnologies.teleporter.persistence.handler.OHSQLDBDataTypeHandler;
 import com.orientechnologies.teleporter.strategy.rdbms.ODBMSNaiveStrategy;
+import com.orientechnologies.teleporter.util.OFileManager;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -53,7 +55,8 @@ public class DateTypeTest {
   private String username          = "SA";
   private String password          = "";
   private String dbName = "testOrientDB";
-  private String outOrientGraphUri = "plocal:target/" + this.dbName;
+  private String outParentDirectory = "embedded:target/";
+  private String outOrientGraphUri = this.outParentDirectory + this.dbName;
   private OSourceDatabaseInfo sourceDBInfo;
 
   @Before
@@ -67,6 +70,23 @@ public class DateTypeTest {
     this.context.setDataTypeHandler(new OHSQLDBDataTypeHandler());
     this.importStrategy = new ODBMSNaiveStrategy();
   }
+
+  @After
+  public void tearDown() {
+
+    // closing OrientDB instance
+    this.context.closeOrientDBInstance();
+
+    try {
+
+      // Deleting database directory
+      OFileManager.deleteResource(this.outOrientGraphUri.replace("embedded:",""));
+
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+  }
+
 
   /*
    * Custom year type test.
@@ -106,8 +126,9 @@ public class DateTypeTest {
       /*
        *  Testing built OrientDB
        */
-      OrientDB orient = OrientDB.fromUrl(this.outOrientGraphUri, OrientDBConfig.defaultConfig());
-      orientGraph = orient.open(this.dbName,"admin","admin");
+
+      this.context.initOrientDBInstance(outOrientGraphUri);
+      orientGraph = this.context.getOrientDBInstance().open(this.dbName,"admin","admin");
 
       assertEquals("STRING",
           orientGraph.getMetadata().getSchema().getClass("Film").getProperty("year").getType().toString());
@@ -127,9 +148,9 @@ public class DateTypeTest {
         fail();
       }
       if (orientGraph != null) {
-        orientGraph.drop();
         orientGraph.close();
       }
+
     }
   }
 
@@ -169,8 +190,9 @@ public class DateTypeTest {
       /*
        *  Testing built OrientDB
        */
-      OrientDB orient = OrientDB.fromUrl(this.outOrientGraphUri, OrientDBConfig.defaultConfig());
-      orientGraph = orient.open(this.dbName,"admin","admin");
+
+      this.context.initOrientDBInstance(outOrientGraphUri);
+      orientGraph = this.context.getOrientDBInstance().open(this.dbName,"admin","admin");
 
       assertEquals("DATE",
           orientGraph.getMetadata().getSchema().getClass("Film").getProperty("year").getType().toString());
@@ -191,7 +213,6 @@ public class DateTypeTest {
       }
     }
     if (orientGraph != null) {
-      orientGraph.drop();
       orientGraph.close();
     }
   }
@@ -234,8 +255,9 @@ public class DateTypeTest {
       /*
        *  Testing built OrientDB
        */
-      OrientDB orient = OrientDB.fromUrl(this.outOrientGraphUri, OrientDBConfig.defaultConfig());
-      orientGraph = orient.open(this.dbName,"admin","admin");
+
+      this.context.initOrientDBInstance(outOrientGraphUri);
+      orientGraph = this.context.getOrientDBInstance().open(this.dbName,"admin","admin");
 
       assertEquals("DATETIME",
           orientGraph.getMetadata().getSchema().getClass("Film").getProperty("lastUpdate").getType().toString());
@@ -256,7 +278,6 @@ public class DateTypeTest {
       }
     }
     if (orientGraph != null) {
-      orientGraph.drop();
       orientGraph.close();
     }
   }
@@ -299,8 +320,9 @@ public class DateTypeTest {
       /*
        *  Testing built OrientDB
        */
-      OrientDB orient = OrientDB.fromUrl(this.outOrientGraphUri, OrientDBConfig.defaultConfig());
-      orientGraph = orient.open(this.dbName,"admin","admin");
+
+      this.context.initOrientDBInstance(outOrientGraphUri);
+      orientGraph = this.context.getOrientDBInstance().open(this.dbName,"admin","admin");
 
       assertEquals("DATETIME",
           orientGraph.getMetadata().getSchema().getClass("Film").getProperty("lastUpdate").getType().toString());
@@ -321,7 +343,6 @@ public class DateTypeTest {
       }
     }
     if (orientGraph != null) {
-      orientGraph.drop();
       orientGraph.close();
     }
   }
@@ -364,8 +385,9 @@ public class DateTypeTest {
       /*
        *  Testing built OrientDB
        */
-      OrientDB orient = OrientDB.fromUrl(this.outOrientGraphUri, OrientDBConfig.defaultConfig());
-      orientGraph = orient.open(this.dbName,"admin","admin");
+
+      this.context.initOrientDBInstance(outOrientGraphUri);
+      orientGraph = this.context.getOrientDBInstance().open(this.dbName,"admin","admin");
 
       assertEquals("STRING",
           orientGraph.getMetadata().getSchema().getClass("Film").getProperty("lastUpdate").getType().toString());
@@ -386,7 +408,6 @@ public class DateTypeTest {
       }
     }
     if (orientGraph != null) {
-      orientGraph.drop();
       orientGraph.close();
     }
   }
@@ -429,8 +450,9 @@ public class DateTypeTest {
       /*
        *  Testing built OrientDB
        */
-      OrientDB orient = OrientDB.fromUrl(this.outOrientGraphUri, OrientDBConfig.defaultConfig());
-      orientGraph = orient.open(this.dbName,"admin","admin");
+
+      this.context.initOrientDBInstance(outOrientGraphUri);
+      orientGraph = this.context.getOrientDBInstance().open(this.dbName,"admin","admin");
 
       assertEquals("STRING",
           orientGraph.getMetadata().getSchema().getClass("Film").getProperty("lastUpdate").getType().toString());
@@ -451,7 +473,6 @@ public class DateTypeTest {
       }
     }
     if (orientGraph != null) {
-      orientGraph.drop();
       orientGraph.close();
     }
   }

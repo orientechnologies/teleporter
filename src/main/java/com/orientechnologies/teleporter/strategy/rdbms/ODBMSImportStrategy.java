@@ -67,7 +67,11 @@ public abstract class ODBMSImportStrategy implements OWorkflowStrategy {
       String nameResolverConvention, List<String> includedTables, List<String> excludedTables, ODocument migrationConfigDoc) {
 
     OSourceDatabaseInfo sourceDBInfo = (OSourceDatabaseInfo) sourceInfo;
+
+    // Urls handling
     outOrientGraphUri = outOrientGraphUri.replace("plocal","embedded");
+    String dbName = outOrientGraphUri.substring(outOrientGraphUri.lastIndexOf('/')+1);
+    String outParentDatabaseDirectory = outOrientGraphUri.substring(0, outOrientGraphUri.lastIndexOf('/')+1);
 
     Date globalStart = new Date();
 
@@ -91,11 +95,15 @@ public abstract class ODBMSImportStrategy implements OWorkflowStrategy {
     OTeleporterContext.getInstance().getStatistics().runningStepNumber = -1;
 
     this.mapper = this
-        .createSchemaMapper(sourceDBInfo, outOrientGraphUri, chosenMapper, xmlPath, nameResolver, handler, includedTables,
+        .createSchemaMapper(sourceDBInfo, outParentDatabaseDirectory, dbName, chosenMapper, xmlPath, nameResolver, handler, includedTables,
             excludedTables, migrationConfig);
 
+
     // Step 4: Import
+
+    OTeleporterContext.getInstance().initOrientDBInstance(outParentDatabaseDirectory);
     this.executeImport(sourceDBInfo, outOrientGraphUri, mapper, handler);
+    OTeleporterContext.getInstance().getOrientDBInstance().close();
     OTeleporterContext.getInstance().getStatistics().notifyListeners();
     OTeleporterContext.getInstance().getOutputManager().info("\n");
     OTeleporterContext.getInstance().getStatistics().runningStepNumber = -1;
@@ -116,7 +124,7 @@ public abstract class ODBMSImportStrategy implements OWorkflowStrategy {
 
   protected abstract OConfigurationHandler buildConfigurationHandler();
 
-  public abstract OER2GraphMapper createSchemaMapper(OSourceDatabaseInfo sourceDBInfo, String outOrientGraphUri,
+  public abstract OER2GraphMapper createSchemaMapper(OSourceDatabaseInfo sourceDBInfo, String outParentDatabaseDirectory, String dbName,
       String chosenMapper, String xmlPath, ONameResolver nameResolver, ODBMSDataTypeHandler handler, List<String> includedTables,
       List<String> excludedTables, OConfiguration migrationConfig);
 

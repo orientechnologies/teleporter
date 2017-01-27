@@ -253,7 +253,6 @@ public class OGraphEngineForDB {
 
           // setting new properties and save
           this.setElementProperties(vertex, properties);
-          vertex.save();
           OTeleporterContext.getInstance().getOutputManager().debug("\nLoaded properties: %s\n", properties.toString());
           OTeleporterContext.getInstance().getOutputManager()
               .debug("\nNew vertex inserted (all props setted): %s\n", vertex.toString());
@@ -900,19 +899,18 @@ public class OGraphEngineForDB {
 
   private OVertex addVertexToGraph(ODatabaseDocument orientGraph, String classAndClusterName, Map<String, Object> properties) {
 
-    OVertex vertex;
+    OVertex vertex = null;
     try {
       if (classAndClusterName != null) {
         vertex = orientGraph.newVertex(classAndClusterName);
         if(properties != null) {
           this.setElementProperties(vertex, properties);
         }
-        return vertex.save();
       }
     } catch (OValidationException e) {
       OTeleporterContext.getInstance().getStatistics().errorMessages.add(e.getMessage());
     }
-    return null;
+    return vertex;
   }
 
   private OEdge addEdgeToGraph(ODatabaseDocument orientGraph, OVertex currentOutVertex, OVertex currentInVertex, String edgeType) {
@@ -921,17 +919,16 @@ public class OGraphEngineForDB {
 
   private OEdge addEdgeToGraph(ODatabaseDocument orientGraph, OVertex currentOutVertex, OVertex currentInVertex, String edgeType, Map<String, Object> properties) {
 
-    OEdge edge;
+    OEdge edge = null;
     try {
       edge = orientGraph.newEdge(currentOutVertex, currentInVertex, edgeType);
       if(properties != null) {
         this.setElementProperties(edge, properties);
       }
-      return edge.save();
     } catch (OValidationException e) {
       OTeleporterContext.getInstance().getStatistics().errorMessages.add(e.getMessage());
     }
-    return null;
+    return edge;
   }
 
   private void setElementProperties(OElement element, Map<String, Object> properties) {
@@ -942,11 +939,11 @@ public class OGraphEngineForDB {
         Object value = properties.get(property);
         element.setProperty(property, value);
       }
+      element.save();
 
     } catch (OValidationException e) {
       OTeleporterContext.getInstance().getStatistics().errorMessages.add(e.getMessage());
     }
-
   }
 
   public void updateVertexAccordingToLogicalRelationship(OVertex currentOutVertex, OVertexType currentInVertexType,

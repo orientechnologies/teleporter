@@ -33,7 +33,9 @@ import com.orientechnologies.teleporter.model.dbschema.OSourceDatabaseInfo;
 import com.orientechnologies.teleporter.nameresolver.OJavaConventionNameResolver;
 import com.orientechnologies.teleporter.persistence.handler.OHSQLDBDataTypeHandler;
 import com.orientechnologies.teleporter.strategy.rdbms.ODBMSNaiveStrategy;
+import com.orientechnologies.teleporter.util.OFileManager;
 import com.orientechnologies.teleporter.util.OGraphCommands;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -59,7 +61,8 @@ public class HibernateImportTest {
   private String username = "SA";
   private String password = "";
   private String dbName = "testOrientDB";
-  private String outOrientGraphUri = "plocal:target/" + this.dbName;
+  private String outParentDirectory = "embedded:target/";
+  private String outOrientGraphUri = this.outParentDirectory + this.dbName;
   private OSourceDatabaseInfo sourceDBInfo;
 
   private final static String XML_TABLE_PER_CLASS          = "src/test/resources/inheritance/hibernate/tablePerClassHierarchyImportTest.xml";
@@ -67,10 +70,6 @@ public class HibernateImportTest {
   private final static String XML_TABLE_PER_SUBCLASS2      = "src/test/resources/inheritance/hibernate/tablePerSubclassImportTest2.xml";
   private final static String XML_TABLE_PER_CONCRETE_CLASS = "src/test/resources/inheritance/hibernate/tablePerConcreteClassImportTest.xml";
 
-  // Queries
-  private String getVerticesQuery = "select * from V";
-  private String getEdgesQuery = "select * from E";
-  private String getElementsFromClassQuery = "select * from ?";
 
   @Before
   public void init() {
@@ -82,6 +81,22 @@ public class HibernateImportTest {
     this.context.setDataTypeHandler(new OHSQLDBDataTypeHandler());
     this.importStrategy = new ODBMSNaiveStrategy();
     this.sourceDBInfo = new OSourceDatabaseInfo("source", this.driver, this.jurl, this.username, this.password);
+  }
+
+  @After
+  public void tearDown() {
+
+    // closing OrientDB instance
+    this.context.closeOrientDBInstance();
+
+    try {
+
+      // Deleting database directory
+      OFileManager.deleteResource(this.outOrientGraphUri.replace("embedded:",""));
+
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
   }
 
   @Test
@@ -147,8 +162,9 @@ public class HibernateImportTest {
        * Test OrientDB Schema
        */
 
-      OrientDB orient = OrientDB.fromUrl(this.outOrientGraphUri, OrientDBConfig.defaultConfig());
-      orientGraph = orient.open(this.dbName,"admin","admin");
+
+      this.context.initOrientDBInstance(outOrientGraphUri);
+      orientGraph = this.context.getOrientDBInstance().open(this.dbName,"admin","admin");
 
       OClass employeeVertexType = orientGraph.getClass("Employee");
       OClass regularEmployeeVertexType = orientGraph.getClass("RegularEmployee");
@@ -190,75 +206,18 @@ public class HibernateImportTest {
 
       // vertices check
 
-//      int count = 0;
-//      for(OVertex v : orientGraph.command(this.getVerticesQuery)) {
-//        assertNotNull(v.getIdentity());
-//        count++;
-//      }
       assertEquals(6, orientGraph.countClass("V"));
-
-//      count = 0;
-//      for(OVertex v : orientGraph.command(this.getElementsFromClassQuery, "Employee")) {
-//        assertNotNull(v.getIdentity());
-//        count++;
-//      }
       assertEquals(3, orientGraph.countClass("Employee"));
-
-//      count = 0;
-//      for(OVertex v : orientGraph.command(this.getElementsFromClassQuery, "RegularEmployee")) {
-//        assertNotNull(v.getIdentity());
-//        count++;
-//      }
       assertEquals(1, orientGraph.countClass("RegularEmployee"));
-
-//      count = 0;
-//      for(OVertex v : orientGraph.command(this.getElementsFromClassQuery, "ContractEmployee")) {
-//        assertNotNull(v.getIdentity());
-//        count++;
-//      }
       assertEquals(1, orientGraph.countClass("ContractEmployee"));
-
-//      count = 0;
-//      for(OVertex v : orientGraph.command(this.getElementsFromClassQuery, "Residence")) {
-//        assertNotNull(v.getIdentity());
-//        count++;
-//      }
       assertEquals(2, orientGraph.countClass("Residence"));
-
-//      count = 0;
-//      for(OVertex v : orientGraph.command(this.getElementsFromClassQuery, "Manager")) {
-//        assertNotNull(v.getIdentity());
-//        count++;
-//      }
       assertEquals(1, orientGraph.countClass("Manager"));
-
-//      count = 0;
-//      for(OVertex v : orientGraph.command(this.getElementsFromClassQuery, "ProjectManager")) {
-//        assertNotNull(v.getIdentity());
-//        count++;
-//      }
       assertEquals(1, orientGraph.countClass("ProjectManager"));
 
       // edges check
-//      count = 0;
-//      for (OEdge  e : orientGraph.command(this.getEdgesQuery)) {
-//        assertNotNull(e.getIdentity());
-//        count++;
-//      }
+
       assertEquals(4, orientGraph.countClass("E"));
-
-//      count = 0;
-//      for (OEdge  e : orientGraph.command(this.getElementsFromClassQuery, "HasResidence")) {
-//        assertNotNull(e.getIdentity());
-//        count++;
-//      }
       assertEquals(3, orientGraph.countClass("HasResidence"));
-
-//      count = 0;
-//      for (OEdge  e : orientGraph.command(this.getElementsFromClassQuery, "HasManager")) {
-//        assertNotNull(e.getIdentity());
-//        count++;
-//      }
       assertEquals(1, orientGraph.countClass("HasManager"));
 
       // vertex properties and connections check
@@ -395,9 +354,9 @@ public class HibernateImportTest {
         fail();
       }
       if (orientGraph != null) {
-        orientGraph.drop();
         orientGraph.close();
       }
+
     }
   }
 
@@ -480,8 +439,9 @@ public class HibernateImportTest {
        * Test OrientDB Schema
        */
 
-      OrientDB orient = OrientDB.fromUrl(this.outOrientGraphUri, OrientDBConfig.defaultConfig());
-      orientGraph = orient.open(this.dbName,"admin","admin");
+
+      this.context.initOrientDBInstance(outOrientGraphUri);
+      orientGraph = this.context.getOrientDBInstance().open(this.dbName,"admin","admin");
 
       OClass employeeVertexType = orientGraph.getClass("Employee");
       OClass regularEmployeeVertexType = orientGraph.getClass("RegularEmployee");
@@ -727,9 +687,9 @@ public class HibernateImportTest {
         fail();
       }
       if (orientGraph != null) {
-        orientGraph.drop();
         orientGraph.close();
       }
+
     }
   }
 
@@ -812,8 +772,9 @@ public class HibernateImportTest {
        * Test OrientDB Schema
        */
 
-      OrientDB orient = OrientDB.fromUrl(this.outOrientGraphUri, OrientDBConfig.defaultConfig());
-      orientGraph = orient.open(this.dbName,"admin","admin");
+
+      this.context.initOrientDBInstance(outOrientGraphUri);
+      orientGraph = this.context.getOrientDBInstance().open(this.dbName,"admin","admin");
 
       OClass employeeVertexType = orientGraph.getClass("Employee");
       OClass regularEmployeeVertexType = orientGraph.getClass("RegularEmployee");
@@ -855,75 +816,18 @@ public class HibernateImportTest {
 
       // vertices check
 
-//      int count = 0;
-//      for(OVertex v : orientGraph.command(this.getVerticesQuery)) {
-//        assertNotNull(v.getIdentity());
-//        count++;
-//      }
       assertEquals(6, orientGraph.countClass("V"));
-
-//      count = 0;
-//      for(OVertex v : orientGraph.command(this.getElementsFromClassQuery, "Employee")) {
-//        assertNotNull(v.getIdentity());
-//        count++;
-//      }
       assertEquals(3, orientGraph.countClass("Employee"));
-
-//      count = 0;
-//      for(OVertex v : orientGraph.command(this.getElementsFromClassQuery, "RegularEmployee")) {
-//        assertNotNull(v.getIdentity());
-//        count++;
-//      }
       assertEquals(1, orientGraph.countClass("RegularEmployee"));
-
-//      count = 0;
-//      for(OVertex v : orientGraph.command(this.getElementsFromClassQuery, "ContractEmployee")) {
-//        assertNotNull(v.getIdentity());
-//        count++;
-//      }
       assertEquals(1, orientGraph.countClass("ContractEmployee"));
-
-//      count = 0;
-//      for(OVertex v : orientGraph.command(this.getElementsFromClassQuery, "Residence")) {
-//        assertNotNull(v.getIdentity());
-//        count++;
-//      }
       assertEquals(2, orientGraph.countClass("Residence"));
-
-//      count = 0;
-//      for(OVertex v : orientGraph.command(this.getElementsFromClassQuery, "Manager")) {
-//        assertNotNull(v.getIdentity());
-//        count++;
-//      }
       assertEquals(1, orientGraph.countClass("Manager"));
-
-//      count = 0;
-//      for(OVertex v : orientGraph.command(this.getElementsFromClassQuery, "ProjectManager")) {
-//        assertNotNull(v.getIdentity());
-//        count++;
-//      }
       assertEquals(1, orientGraph.countClass("ProjectManager"));
 
       // edges check
-//      count = 0;
-//      for (OEdge  e : orientGraph.command(this.getEdgesQuery)) {
-//        assertNotNull(e.getIdentity());
-//        count++;
-//      }
+
       assertEquals(4, orientGraph.countClass("E"));
-
-//      count = 0;
-//      for (OEdge  e : orientGraph.command(this.getElementsFromClassQuery, "HasResidence")) {
-//        assertNotNull(e.getIdentity());
-//        count++;
-//      }
       assertEquals(3, orientGraph.countClass("HasResidence"));
-
-//      count = 0;
-//      for (OEdge  e : orientGraph.command(this.getElementsFromClassQuery, "HasManager")) {
-//        assertNotNull(e.getIdentity());
-//        count++;
-//      }
       assertEquals(1, orientGraph.countClass("HasManager"));
 
       // vertex properties and connections check
@@ -1059,9 +963,9 @@ public class HibernateImportTest {
         fail();
       }
       if (orientGraph != null) {
-        orientGraph.drop();
         orientGraph.close();
       }
+
     }
   }
 
@@ -1149,8 +1053,9 @@ public class HibernateImportTest {
        * Test OrientDB Schema
        */
 
-      OrientDB orient = OrientDB.fromUrl(this.outOrientGraphUri, OrientDBConfig.defaultConfig());
-      orientGraph = orient.open(this.dbName,"admin","admin");
+
+      this.context.initOrientDBInstance(outOrientGraphUri);
+      orientGraph = this.context.getOrientDBInstance().open(this.dbName,"admin","admin");
 
       OClass employeeVertexType = orientGraph.getClass("Employee");
       OClass regularEmployeeVertexType = orientGraph.getClass("RegularEmployee");
@@ -1192,75 +1097,18 @@ public class HibernateImportTest {
 
       // vertices check
 
-//      int count = 0;
-//      for(OVertex v : orientGraph.command(this.getVerticesQuery)) {
-//        assertNotNull(v.getIdentity());
-//        count++;
-//      }
       assertEquals(6, orientGraph.countClass("V"));
-
-//      count = 0;
-//      for(OVertex v : orientGraph.command(this.getElementsFromClassQuery, "Employee")) {
-//        assertNotNull(v.getIdentity());
-//        count++;
-//      }
       assertEquals(3, orientGraph.countClass("Employee"));
-
-//      count = 0;
-//      for(OVertex v : orientGraph.command(this.getElementsFromClassQuery, "RegularEmployee")) {
-//        assertNotNull(v.getIdentity());
-//        count++;
-//      }
       assertEquals(1, orientGraph.countClass("RegularEmployee"));
-
-//      count = 0;
-//      for(OVertex v : orientGraph.command(this.getElementsFromClassQuery, "ContractEmployee")) {
-//        assertNotNull(v.getIdentity());
-//        count++;
-//      }
       assertEquals(1, orientGraph.countClass("ContractEmployee"));
-
-//      count = 0;
-//      for(OVertex v : orientGraph.command(this.getElementsFromClassQuery, "Residence")) {
-//        assertNotNull(v.getIdentity());
-//        count++;
-//      }
       assertEquals(2, orientGraph.countClass("Residence"));
-
-//      count = 0;
-//      for(OVertex v : orientGraph.command(this.getElementsFromClassQuery, "Manager")) {
-//        assertNotNull(v.getIdentity());
-//        count++;
-//      }
       assertEquals(1, orientGraph.countClass("Manager"));
-
-//      count = 0;
-//      for(OVertex v : orientGraph.command(this.getElementsFromClassQuery, "ProjectManager")) {
-//        assertNotNull(v.getIdentity());
-//        count++;
-//      }
       assertEquals(1, orientGraph.countClass("ProjectManager"));
 
       // edges check
-//      count = 0;
-//      for (OEdge  e : orientGraph.command(this.getEdgesQuery)) {
-//        assertNotNull(e.getIdentity());
-//        count++;
-//      }
+
       assertEquals(4, orientGraph.countClass("E"));
-
-//      count = 0;
-//      for (OEdge e : orientGraph.command(this.getElementsFromClassQuery, "HasResidence")) {
-//        assertNotNull(e.getIdentity());
-//        count++;
-//      }
       assertEquals(3, orientGraph.countClass("HasResidence"));
-
-//      count = 0;
-//      for (OEdge  e : orientGraph.command(this.getElementsFromClassQuery, "HasManager")) {
-//        assertNotNull(e.getIdentity());
-//        count++;
-//      }
       assertEquals(1, orientGraph.countClass("HasManager"));
 
       // vertex properties and connections check
@@ -1396,9 +1244,9 @@ public class HibernateImportTest {
         fail();
       }
       if (orientGraph != null) {
-        orientGraph.drop();
         orientGraph.close();
       }
+
     }
   }
 

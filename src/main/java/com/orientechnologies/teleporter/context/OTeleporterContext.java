@@ -18,6 +18,8 @@
 
 package com.orientechnologies.teleporter.context;
 
+import com.orientechnologies.orient.core.db.OrientDB;
+import com.orientechnologies.orient.core.db.OrientDBConfig;
 import com.orientechnologies.teleporter.importengine.rdbms.dbengine.ODBQueryEngine;
 import com.orientechnologies.teleporter.nameresolver.ONameResolver;
 import com.orientechnologies.teleporter.persistence.handler.ODriverDataTypeHandler;
@@ -37,6 +39,7 @@ public class OTeleporterContext {
 
   private static OTeleporterContext instance = null;
 
+  private OrientDB orient;
   private OTeleporterStatistics  statistics;
   private OOutputStreamManager   outputManager;
   private ODriverDataTypeHandler dataTypeHandler;
@@ -59,6 +62,22 @@ public class OTeleporterContext {
   public static OTeleporterContext newInstance() {
     instance = new OTeleporterContext();
     return instance;
+  }
+
+  public OrientDB getOrientDBInstance() {
+    return orient;
+  }
+
+  public void initOrientDBInstance(String url) {
+    this.orient = OrientDB.fromUrl(url, OrientDBConfig.defaultConfig());
+  }
+
+  public void initOrientDBInstance(String url, OrientDBConfig config) {
+    this.orient = OrientDB.fromUrl(url, config);
+  }
+
+  public void closeOrientDBInstance() {
+    this.orient.close();
   }
 
   public OTeleporterStatistics getStatistics() {

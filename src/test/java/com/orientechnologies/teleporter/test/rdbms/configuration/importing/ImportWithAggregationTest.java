@@ -36,6 +36,7 @@ import com.orientechnologies.teleporter.strategy.rdbms.ODBMSNaiveStrategy;
 import com.orientechnologies.teleporter.util.OFileManager;
 import com.orientechnologies.teleporter.util.OGraphCommands;
 import com.orientechnologies.teleporter.util.OMigrationConfigManager;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -55,7 +56,6 @@ public class ImportWithAggregationTest {
 
   private OTeleporterContext context;
   private ODBMSNaiveStrategy naiveStrategy;
-  private String             dbParentDirectoryPath;
   private final String configPathJson = "src/test/resources/configuration-mapping/aggregation-from2tables-mapping.json";
   private ODBQueryEngine dbQueryEngine;
   private String driver   = "org.hsqldb.jdbc.JDBCDriver";
@@ -63,25 +63,38 @@ public class ImportWithAggregationTest {
   private String username = "SA";
   private String password = "";
   private String dbName = "testOrientDB";
-  private String outOrientGraphUri = "plocal:target/" + this.dbName;
+  private String outParentDirectory = "embedded:target/";
+  private String outOrientGraphUri = this.outParentDirectory + this.dbName;
   private OSourceDatabaseInfo sourceDBInfo;
-
-  // Queries
-  private String getVerticesQuery = "select * from V";
-  private String getEdgesQuery = "select * from E";
-  private String getElementsFromClassQuery = "select * from ?";
 
   @Before
   public void init() {
     this.context = OTeleporterContext.newInstance();
+    this.context.initOrientDBInstance(outOrientGraphUri);
     this.dbQueryEngine = new ODBQueryEngine(this.driver);
     this.context.setDbQueryEngine(this.dbQueryEngine);
     this.context.setOutputManager(new OOutputStreamManager(0));
     this.context.setNameResolver(new OJavaConventionNameResolver());
     this.context.setDataTypeHandler(new OHSQLDBDataTypeHandler());
     this.naiveStrategy = new ODBMSNaiveStrategy();
-    this.dbParentDirectoryPath = this.outOrientGraphUri.replace("plocal:", "");
     this.sourceDBInfo = new OSourceDatabaseInfo("source", this.driver, this.jurl, this.username, this.password);
+
+  }
+
+  @After
+  public void tearDown() {
+
+    // closing OrientDB instance
+    this.context.closeOrientDBInstance();
+
+    try {
+
+      // Deleting database directory
+      OFileManager.deleteResource(this.outOrientGraphUri.replace("embedded:",""));
+
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
   }
 
   @Test
@@ -164,47 +177,13 @@ public class ImportWithAggregationTest {
       /**
        *  Testing built OrientDB
        */
-      OrientDB orient = OrientDB.fromUrl(this.outOrientGraphUri, OrientDBConfig.defaultConfig());
-      orientGraph = orient.open(this.dbName,"admin","admin");
-
+      orientGraph = this.context.getOrientDBInstance().open(this.dbName,"admin","admin");
 
       // vertices check
-//      int count = 0;
-//      while(result.hasNext()) {
-//        assertNotNull(result.next().getElement().get().getIdentity());
-//        count++;
-//      }
       assertEquals(8, orientGraph.countClass("V"));
-
-//      result = orientGraph.command(this.getElementsFromClassQuery, "Person");
-//
-//      count = 0;
-//      while(result.hasNext()) {
-//        assertNotNull(v.getIdentity());
-//        count++;
-//      }
       assertEquals(6, orientGraph.countClass("Person"));
-
-//      count = 0;
-//      for(OVertex v : orientGraph.command(this.getElementsFromClassQuery, "Department")) {
-//        assertNotNull(v.getIdentity());
-//        count++;
-//      }
       assertEquals(2, orientGraph.countClass("Department"));
-
-      // edges check
-//      count = 0;
-//      for (OEdge e : orientGraph.command(this.getEdgesQuery)) {
-//        assertNotNull(e.getIdentity());
-//        count++;
-//      }
       assertEquals(6, orientGraph.countClass("E"));
-
-//      count = 0;
-//      for (OEdge  e : orientGraph.command(this.getElementsFromClassQuery, "WorksAt")) {
-//        assertNotNull(e.getIdentity());
-//        count++;
-//      }
       assertEquals(6, orientGraph.countClass("WorksAt"));
 
       // vertex properties and connections check
@@ -378,15 +357,14 @@ public class ImportWithAggregationTest {
         String dbDropping = "drop schema public cascade";
         st.execute(dbDropping);
         connection.close();
-        OFileManager.deleteResource(this.dbParentDirectoryPath);
       } catch (Exception e) {
         e.printStackTrace();
         fail();
       }
       if (orientGraph != null) {
-        orientGraph.drop();
         orientGraph.close();
       }
+
     }
   }
 }
