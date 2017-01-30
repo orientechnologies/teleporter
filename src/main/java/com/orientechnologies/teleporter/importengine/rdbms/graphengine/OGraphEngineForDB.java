@@ -282,7 +282,7 @@ public class OGraphEngineForDB {
           vertex.save();
           OTeleporterContext.getInstance().getOutputManager().debug("\nLoaded properties: %s\n", properties.toString());
           OTeleporterContext.getInstance().getOutputManager()
-              .debug("\nNew vertex inserted (all props setted): %s\n", vertex.toString());
+              .debug("\nNew vertex inserted (all props set): %s\n", vertex.toString());
         }
 
         // UPDATING A FULL VERTEX
@@ -336,7 +336,7 @@ public class OGraphEngineForDB {
             statistics.orientUpdatedVertices++;
             OTeleporterContext.getInstance().getOutputManager().debug("\nLoaded properties: %s\n", properties.toString());
             OTeleporterContext.getInstance().getOutputManager()
-                .debug("\nNew vertex upserted (all props setted): %s\n", vertex.toString());
+                .debug("\nNew vertex upserted (all props set): %s\n", vertex.toString());
           }
         }
       }
@@ -619,7 +619,7 @@ public class OGraphEngineForDB {
 
         /*
          *  if the vertex is not already present in the graph it's built, set and inserted to the graph,
-         *  then the edge beetwen the current-out-vertex and the current-in-vertex is added 
+         *  then the edge between the current-out-vertex and the current-in-vertex is added
          */
         if (currentInVertex == null) {
 
@@ -636,7 +636,7 @@ public class OGraphEngineForDB {
           currentInVertex = this.addVertexToGraph(orientGraph, classAndClusterName, partialProperties);
           statistics.orientAddedVertices++;
           OTeleporterContext.getInstance().getOutputManager()
-              .debug("\nNew vertex inserted (only pk props setted): %s\n", currentInVertex.toString());
+              .debug("\nNew vertex inserted (only pk props set): %s\n", currentInVertex.toString());
 
         } else {
           OTeleporterContext.getInstance().getOutputManager()
