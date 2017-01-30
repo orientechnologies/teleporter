@@ -282,7 +282,7 @@ public class ConfigurationHandlerTest {
     assertEquals("departmentName", currentConfiguredProperty.getPropertyName());
     assertEquals("STRING", currentConfiguredProperty.getPropertyType());
     assertEquals(true, currentConfiguredProperty.isIncludedInMigration());
-    assertEquals(true, currentConfiguredProperty.isMandatory());
+    assertEquals(false, currentConfiguredProperty.isMandatory());
     assertEquals(false, currentConfiguredProperty.isReadOnly());
     assertEquals(true, currentConfiguredProperty.isNotNull());
     assertEquals("sourceTable1", currentPropertyMapping.getSourceName());
@@ -296,7 +296,7 @@ public class ConfigurationHandlerTest {
     assertEquals("location", currentConfiguredProperty.getPropertyName());
     assertEquals("STRING", currentConfiguredProperty.getPropertyType());
     assertEquals(true, currentConfiguredProperty.isIncludedInMigration());
-    assertEquals(true, currentConfiguredProperty.isMandatory());
+    assertEquals(false, currentConfiguredProperty.isMandatory());
     assertEquals(false, currentConfiguredProperty.isReadOnly());
     assertEquals(true, currentConfiguredProperty.isNotNull());
     assertEquals("sourceTable1", currentPropertyMapping.getSourceName());
@@ -351,7 +351,7 @@ public class ConfigurationHandlerTest {
     assertEquals("since", currentConfiguredProperty.getPropertyName());
     assertEquals("DATE", currentConfiguredProperty.getPropertyType());
     assertEquals(true, currentConfiguredProperty.isIncludedInMigration());
-    assertEquals(true, currentConfiguredProperty.isMandatory());
+    assertEquals(false, currentConfiguredProperty.isMandatory());
     assertEquals(false, currentConfiguredProperty.isReadOnly());
     assertEquals(false, currentConfiguredProperty.isNotNull());
 
@@ -427,9 +427,10 @@ public class ConfigurationHandlerTest {
     assertEquals("year", currentConfiguredProperty.getPropertyName());
     assertEquals("DATE", currentConfiguredProperty.getPropertyType());
     assertEquals(true, currentConfiguredProperty.isIncludedInMigration());
-    assertEquals(true, currentConfiguredProperty.isMandatory());
+    assertEquals(false, currentConfiguredProperty.isMandatory());
     assertEquals(false, currentConfiguredProperty.isReadOnly());
     assertEquals(false, currentConfiguredProperty.isNotNull());
+
 
     /**
      * 1. Writing the configuration on a second JSON document through the configurationHandler. 2. Checking that the original JSON

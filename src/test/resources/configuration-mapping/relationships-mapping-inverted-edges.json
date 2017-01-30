@@ -22,7 +22,7 @@
             "include": true,
             "type": "DATE",
             "ordinalPosition": 1,
-            "mandatory": true,
+            "mandatory": false,
             "readOnly": false,
             "notNull": false
           },

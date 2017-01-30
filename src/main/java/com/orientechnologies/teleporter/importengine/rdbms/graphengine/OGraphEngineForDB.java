@@ -127,8 +127,8 @@ public class OGraphEngineForDB {
           + ";\tOriginal Record: " + propsAndValuesOfKey;
       OTeleporterContext.getInstance().printExceptionMessage(e, mess, "error");
       OTeleporterContext.getInstance().printExceptionStackTrace(e, "error");
-      if (orientGraph != null)
-        orientGraph.close();
+//      if (orientGraph != null)
+//        orientGraph.close();
       throw new OTeleporterRuntimeException(e);
     }
     return false;
@@ -196,7 +196,7 @@ public class OGraphEngineForDB {
         vertex = OGraphCommands.getVertexByIndexedKey(orientGraph, propertyOfKey, valueOfKey, vertexType.getName());
 
       // extraction of inherited and not inherited properties from the record (through "getAllProperties()" method)
-      Map<String, Object> properties = new LinkedHashMap<String, Object>();
+      Map<String, Object> currentProperties = new LinkedHashMap<String, Object>();
       String currentPropertyType;
       String currentPropertyName = null;
 
@@ -209,7 +209,7 @@ public class OGraphEngineForDB {
           String currentOriginalType = currentProperty.getOriginalType();
 
           try {
-            extractPropertiesFromRecordIntoVertex(record, properties, currentPropertyType, currentPropertyName, currentOriginalType,
+            extractPropertiesFromRecordIntoVertex(record, currentProperties, currentPropertyType, currentPropertyName, currentOriginalType,
                 vertexType);
           } catch (Exception e) {
             String mess =
@@ -223,9 +223,9 @@ public class OGraphEngineForDB {
 
       if (vertex == null) {
         String classAndClusterName = vertexType.getName();
-        vertex = this.addVertexToGraph(orientGraph, classAndClusterName, properties);
+        vertex = this.addVertexToGraph(orientGraph, classAndClusterName, currentProperties);
         statistics.orientAddedVertices++;
-        OTeleporterContext.getInstance().getOutputManager().debug("\nLoaded properties: %s\n", properties.toString());
+        OTeleporterContext.getInstance().getOutputManager().debug("\nLoaded properties: %s\n", currentProperties.toString());
         OTeleporterContext.getInstance().getOutputManager()
             .debug("\nNew vertex inserted (all props set): %s\n", vertex.toString());
       } else {
@@ -252,8 +252,8 @@ public class OGraphEngineForDB {
         if (justReachedVertex) {
 
           // setting new properties and save
-          this.setElementProperties(vertex, properties);
-          OTeleporterContext.getInstance().getOutputManager().debug("\nLoaded properties: %s\n", properties.toString());
+          this.setElementProperties(vertex, currentProperties);
+          OTeleporterContext.getInstance().getOutputManager().debug("\nLoaded properties: %s\n", currentProperties.toString());
           OTeleporterContext.getInstance().getOutputManager()
               .debug("\nNew vertex inserted (all props setted): %s\n", vertex.toString());
         }
@@ -266,11 +266,22 @@ public class OGraphEngineForDB {
           boolean equalVersions = true;
           boolean equalProperties = true;
 
-          if (vertex.getPropertyNames().size() == properties.size()) {
+          Set<String> propertyNames = vertex.getPropertyNames();
+
+          // counting number of properties, edges excluded
+          Iterator<String> it = propertyNames.iterator();
+          while(it.hasNext()) {
+            String property = it.next();
+            if(property.startsWith("out_") || property.startsWith("in_")) {
+              it.remove();
+            }
+          }
+
+          if (propertyNames.size() == currentProperties.size()) {
 
             // comparing properties
-            for (String propertyName : vertex.getPropertyNames()) {
-              if (!properties.keySet().contains(propertyName)) {
+            for (String propertyName : propertyNames) {
+              if (!currentProperties.keySet().contains(propertyName)) {
                 equalProperties = false;
                 equalVersions = false;
                 break;
@@ -279,13 +290,16 @@ public class OGraphEngineForDB {
 
             if (equalProperties) {
               // comparing values of the properties
-              for (String propertyName : vertex.getPropertyNames()) {
-                if (!(vertex.getProperty(propertyName) == null && properties.get(propertyName) == null)) {
-                  currentPropertyType = OTeleporterContext.getInstance().getDataTypeHandler()
-                      .resolveType(vertexType.getPropertyByName(propertyName).getOriginalType().toLowerCase(Locale.ENGLISH))
-                      .toString();
-                  if (!this.areEquals(vertex.getProperty(propertyName), properties.get(propertyName), currentPropertyType,
-                      currentPropertyName)) {
+              for (String propertyName : propertyNames) {
+                if (!(vertex.getProperty(propertyName) == null && currentProperties.get(propertyName) == null)) {
+
+                  currentPropertyType = vertexType.getPropertyByName(propertyName).getOrientdbType();
+                  if(currentPropertyType == null) {
+                    currentPropertyType = OTeleporterContext.getInstance().getDataTypeHandler()
+                        .resolveType(vertexType.getPropertyByName(propertyName).getOriginalType().toLowerCase(Locale.ENGLISH)).toString();
+                  }
+
+                  if (!this.areEquals(vertex.getProperty(propertyName), currentProperties.get(propertyName), currentPropertyType)) {
                     equalVersions = false;
                     break;
                   }
@@ -301,13 +315,15 @@ public class OGraphEngineForDB {
           if (!equalVersions) {
             // removing old eventual properties
             for (String propertyKey : vertex.getPropertyNames()) {
-              vertex.removeProperty(propertyKey);
+              if(!propertyKey.startsWith("out_") && !propertyKey.startsWith("in_")) {
+                vertex.removeProperty(propertyKey);
+              }
             }
 
             // setting new properties and save
-            this.setElementProperties(vertex, properties);
+            this.setElementProperties(vertex, currentProperties);
             statistics.orientUpdatedVertices++;
-            OTeleporterContext.getInstance().getOutputManager().debug("\nLoaded properties: %s\n", properties.toString());
+            OTeleporterContext.getInstance().getOutputManager().debug("\nLoaded properties: %s\n", currentProperties.toString());
             OTeleporterContext.getInstance().getOutputManager()
                 .debug("\nNew vertex upserted (all props setted): %s\n", vertex.toString());
           }
@@ -318,8 +334,8 @@ public class OGraphEngineForDB {
           + propsAndValuesOfKey;
       OTeleporterContext.getInstance().printExceptionMessage(e, mess, "error");
       OTeleporterContext.getInstance().printExceptionStackTrace(e, "error");
-      if (orientGraph != null)
-        orientGraph.close();
+//      if (orientGraph != null)
+//        orientGraph.close();
       throw new OTeleporterRuntimeException(e);
     }
 
@@ -369,6 +385,27 @@ public class OGraphEngineForDB {
       properties.put(currentPropertyName, currentEmbeddedValue);
     }
 
+    // Numeric
+    else if (currentPropertyType.equals("DECIMAL")) {
+      BigDecimal currentDecimalValue = record.getBigDecimal(this.mapper.getAttributeNameByVertexTypeAndProperty(vertexType, currentPropertyName));
+      properties.put(currentPropertyName, currentDecimalValue);
+    } else if (currentPropertyType.equals("DOUBLE")) {
+      Double currentDoubleValue = record.getDouble(this.mapper.getAttributeNameByVertexTypeAndProperty(vertexType, currentPropertyName));
+      properties.put(currentPropertyName, currentDoubleValue);
+    } else if (currentPropertyType.equals("FLOAT")) {
+      Float currentFloatValue = record.getFloat(this.mapper.getAttributeNameByVertexTypeAndProperty(vertexType, currentPropertyName));
+      properties.put(currentPropertyName, currentFloatValue);
+    } else if (currentPropertyType.equals("INTEGER")) {
+      Integer currentIntegerValue = record.getInt(this.mapper.getAttributeNameByVertexTypeAndProperty(vertexType, currentPropertyName));
+      properties.put(currentPropertyName, currentIntegerValue);
+    } else if (currentPropertyType.equals("LONG")) {
+      Long currentLongValue = record.getLong(this.mapper.getAttributeNameByVertexTypeAndProperty(vertexType, currentPropertyName));
+      properties.put(currentPropertyName, currentLongValue);
+    } else if (currentPropertyType.equals("SHORT")) {
+      Short currentShortValue = record.getShort(this.mapper.getAttributeNameByVertexTypeAndProperty(vertexType, currentPropertyName));
+      properties.put(currentPropertyName, currentShortValue);
+    }
+
     // GEOSPATIAL
     else if (handler.geospatialImplemented && handler.isGeospatial(currentOriginalType)) {
       currentAttributeValue = record
@@ -387,20 +424,18 @@ public class OGraphEngineForDB {
   public void extractPropertiesFromRecordIntoEdge(ResultSet record, Map<String, Object> properties, String currentPropertyType,
       String currentPropertyName, String currentOriginalType, OEdgeType edgeType) throws SQLException {
 
-    Date currentDateValue;
-    byte[] currentBinaryValue;
     String currentAttributeValue;
 
     // disambiguation on OrientDB Schema type
 
     if (currentPropertyType.equals("DATE")) {
-      currentDateValue = record.getDate(this.mapper.getAttributeNameByEdgeTypeAndProperty(edgeType, currentPropertyName));
+      Date currentDateValue = record.getDate(this.mapper.getAttributeNameByEdgeTypeAndProperty(edgeType, currentPropertyName));
       properties.put(currentPropertyName, currentDateValue);
     } else if (currentPropertyType.equals("DATETIME")) {
-      currentDateValue = record.getTimestamp(this.mapper.getAttributeNameByEdgeTypeAndProperty(edgeType, currentPropertyName));
+      Date currentDateValue = record.getTimestamp(this.mapper.getAttributeNameByEdgeTypeAndProperty(edgeType, currentPropertyName));
       properties.put(currentPropertyName, currentDateValue);
     } else if (currentPropertyType.equals("BINARY")) {
-      currentBinaryValue = record.getBytes(this.mapper.getAttributeNameByEdgeTypeAndProperty(edgeType, currentPropertyName));
+      byte[] currentBinaryValue = record.getBytes(this.mapper.getAttributeNameByEdgeTypeAndProperty(edgeType, currentPropertyName));
       properties.put(currentPropertyName, currentBinaryValue);
     } else if (currentPropertyType.equals("BOOLEAN")) {
       currentAttributeValue = record.getString(this.mapper.getAttributeNameByEdgeTypeAndProperty(edgeType, currentPropertyName));
@@ -416,6 +451,7 @@ public class OGraphEngineForDB {
       default:
         break;
       }
+      properties.put(currentPropertyName, currentAttributeValue);
     }
 
     // JSON
@@ -423,6 +459,27 @@ public class OGraphEngineForDB {
       currentAttributeValue = record.getString(this.mapper.getAttributeNameByEdgeTypeAndProperty(edgeType, currentPropertyName));
       ODocument currentEmbeddedValue = this.handler.convertJSONToDocument(currentPropertyName, currentAttributeValue);
       properties.put(currentPropertyName, currentEmbeddedValue);
+    }
+
+    // Numeric
+     else if (currentPropertyType.equals("DECIMAL")) {
+      BigDecimal currentDecimalValue = record.getBigDecimal(this.mapper.getAttributeNameByEdgeTypeAndProperty(edgeType, currentPropertyName));
+      properties.put(currentPropertyName, currentDecimalValue);
+    } else if (currentPropertyType.equals("DOUBLE")) {
+      Double currentDoubleValue = record.getDouble(this.mapper.getAttributeNameByEdgeTypeAndProperty(edgeType, currentPropertyName));
+      properties.put(currentPropertyName, currentDoubleValue);
+    } else if (currentPropertyType.equals("FLOAT")) {
+      Float currentFloatValue = record.getFloat(this.mapper.getAttributeNameByEdgeTypeAndProperty(edgeType, currentPropertyName));
+      properties.put(currentPropertyName, currentFloatValue);
+    } else if (currentPropertyType.equals("INTEGER")) {
+      Integer currentIntegerValue = record.getInt(this.mapper.getAttributeNameByEdgeTypeAndProperty(edgeType, currentPropertyName));
+      properties.put(currentPropertyName, currentIntegerValue);
+    } else if (currentPropertyType.equals("LONG")) {
+      Long currentLongValue = record.getLong(this.mapper.getAttributeNameByEdgeTypeAndProperty(edgeType, currentPropertyName));
+      properties.put(currentPropertyName, currentLongValue);
+    } else if (currentPropertyType.equals("SHORT")) {
+      Short currentShortValue = record.getShort(this.mapper.getAttributeNameByEdgeTypeAndProperty(edgeType, currentPropertyName));
+      properties.put(currentPropertyName, currentShortValue);
     }
 
     // GEOSPATIAL
@@ -461,7 +518,7 @@ public class OGraphEngineForDB {
    *
    * @return
    */
-  private boolean areEquals(Object oldProperty, Object newProperty, String currentPropertyType, String currentPropertyName) {
+  private boolean areEquals(Object oldProperty, Object newProperty, String currentPropertyType) {
 
     if (oldProperty != null && newProperty != null) {
 
@@ -626,8 +683,8 @@ public class OGraphEngineForDB {
           + ";\tOriginal Record: " + propsAndValuesOfKey;
       OTeleporterContext.getInstance().printExceptionMessage(e, mess, "error");
       OTeleporterContext.getInstance().printExceptionStackTrace(e, "error");
-      if (orientGraph != null)
-        orientGraph.close();
+//      if (orientGraph != null)
+//        orientGraph.close();
       throw new OTeleporterRuntimeException(e);
     }
 
@@ -708,8 +765,8 @@ public class OGraphEngineForDB {
               + ", inVertexType: " + currentInVertexType.getName();
       OTeleporterContext.getInstance().printExceptionMessage(e, mess, "error");
       OTeleporterContext.getInstance().printExceptionStackTrace(e, "error");
-      if (orientGraph != null)
-        orientGraph.close();
+//      if (orientGraph != null)
+//        orientGraph.close();
       throw new OTeleporterRuntimeException(e);
     }
 
@@ -762,8 +819,8 @@ public class OGraphEngineForDB {
           "Problem encountered during the upsert of an edge. Vertex-out: " + currentOutVertex + ";\tVertex-in: " + currentInVertex;
       OTeleporterContext.getInstance().printExceptionMessage(e, mess, "error");
       OTeleporterContext.getInstance().printExceptionStackTrace(e, "error");
-      if (orientGraph != null)
-        orientGraph.close();
+//      if (orientGraph != null)
+//        orientGraph.close();
       throw new OTeleporterRuntimeException(e);
     }
   }
@@ -799,8 +856,8 @@ public class OGraphEngineForDB {
           "Problem encountered during the insert of an edge. Vertex-out: " + currentOutVertex + ";\tVertex-in: " + currentInVertex;
       OTeleporterContext.getInstance().printExceptionMessage(e, mess, "error");
       OTeleporterContext.getInstance().printExceptionStackTrace(e, "error");
-      if (orientGraph != null)
-        orientGraph.close();
+//      if (orientGraph != null)
+//        orientGraph.close();
       throw new OTeleporterRuntimeException(e);
     }
   }
@@ -887,8 +944,8 @@ public class OGraphEngineForDB {
       String mess = "";
       OTeleporterContext.getInstance().printExceptionMessage(e, mess, "error");
       OTeleporterContext.getInstance().printExceptionStackTrace(e, "error");
-      if (orientGraph != null)
-        orientGraph.close();
+//      if (orientGraph != null)
+//        orientGraph.close();
       throw new OTeleporterRuntimeException(e);
     }
   }
@@ -910,7 +967,7 @@ public class OGraphEngineForDB {
     } catch (OValidationException e) {
       OTeleporterContext.getInstance().getStatistics().errorMessages.add(e.getMessage());
     }
-    return vertex;
+    return vertex.save();
   }
 
   private OEdge addEdgeToGraph(ODatabaseDocument orientGraph, OVertex currentOutVertex, OVertex currentInVertex, String edgeType) {
@@ -928,7 +985,7 @@ public class OGraphEngineForDB {
     } catch (OValidationException e) {
       OTeleporterContext.getInstance().getStatistics().errorMessages.add(e.getMessage());
     }
-    return edge;
+    return edge.save();
   }
 
   private void setElementProperties(OElement element, Map<String, Object> properties) {

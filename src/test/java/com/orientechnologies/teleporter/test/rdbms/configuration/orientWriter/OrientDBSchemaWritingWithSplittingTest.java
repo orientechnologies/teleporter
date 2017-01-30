@@ -244,14 +244,14 @@ public class OrientDBSchemaWritingWithSplittingTest {
       assertNotNull(departmentVertexType.getProperty("departmentName"));
       assertEquals("departmentName", departmentVertexType.getProperty("departmentName").getName());
       assertEquals(OType.STRING, departmentVertexType.getProperty("departmentName").getType());
-      assertEquals(true, departmentVertexType.getProperty("departmentName").isMandatory());
+      assertEquals(false, departmentVertexType.getProperty("departmentName").isMandatory());
       assertEquals(false, departmentVertexType.getProperty("departmentName").isReadonly());
       assertEquals(true, departmentVertexType.getProperty("departmentName").isNotNull());
 
       assertNotNull(departmentVertexType.getProperty("location"));
       assertEquals("location", departmentVertexType.getProperty("location").getName());
       assertEquals(OType.STRING, departmentVertexType.getProperty("location").getType());
-      assertEquals(true, departmentVertexType.getProperty("location").isMandatory());
+      assertEquals(false, departmentVertexType.getProperty("location").isMandatory());
       assertEquals(false, departmentVertexType.getProperty("location").isReadonly());
       assertEquals(true, departmentVertexType.getProperty("location").isNotNull());
 

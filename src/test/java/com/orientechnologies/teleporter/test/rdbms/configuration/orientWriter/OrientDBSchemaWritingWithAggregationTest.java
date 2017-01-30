@@ -230,14 +230,14 @@ public class OrientDBSchemaWritingWithAggregationTest {
       assertNotNull(departmentVertexType.getProperty("departmentName"));
       assertEquals("departmentName", departmentVertexType.getProperty("departmentName").getName());
       assertEquals(OType.STRING, departmentVertexType.getProperty("departmentName").getType());
-      assertEquals(true, departmentVertexType.getProperty("departmentName").isMandatory());
+      assertEquals(false, departmentVertexType.getProperty("departmentName").isMandatory());
       assertEquals(false, departmentVertexType.getProperty("departmentName").isReadonly());
       assertEquals(true, departmentVertexType.getProperty("departmentName").isNotNull());
 
       assertNotNull(departmentVertexType.getProperty("location"));
       assertEquals("location", departmentVertexType.getProperty("location").getName());
       assertEquals(OType.STRING, departmentVertexType.getProperty("location").getType());
-      assertEquals(true, departmentVertexType.getProperty("location").isMandatory());
+      assertEquals(false, departmentVertexType.getProperty("location").isMandatory());
       assertEquals(false, departmentVertexType.getProperty("location").isReadonly());
       assertEquals(true, departmentVertexType.getProperty("location").isNotNull());
 
@@ -251,7 +251,7 @@ public class OrientDBSchemaWritingWithAggregationTest {
 
       assertEquals("since", worksAtEdgeType.getProperty("since").getName());
       assertEquals(OType.DATE, worksAtEdgeType.getProperty("since").getType());
-      assertEquals(true, worksAtEdgeType.getProperty("since").isMandatory());
+      assertEquals(false, worksAtEdgeType.getProperty("since").isMandatory());
       assertEquals(false, worksAtEdgeType.getProperty("since").isReadonly());
       assertEquals(false, worksAtEdgeType.getProperty("since").isNotNull());
 

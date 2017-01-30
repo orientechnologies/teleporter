@@ -161,7 +161,7 @@ public class OrientDBSchemaWritingWithRelationshipConfigTest {
        */
 
 
-      this.context.initOrientDBInstance(outOrientGraphUri);
+      this.context.initOrientDBInstance(this.outOrientGraphUri);
       orientGraph = this.context.getOrientDBInstance().open(this.dbName,"admin","admin");
 
       OClass employeeVertexType = orientGraph.getClass("Employee");
@@ -232,7 +232,7 @@ public class OrientDBSchemaWritingWithRelationshipConfigTest {
 
       assertEquals("updatedOn", worksAtProjectEdgeType.getProperty("updatedOn").getName());
       assertEquals(OType.DATE, worksAtProjectEdgeType.getProperty("updatedOn").getType());
-      assertEquals(true, worksAtProjectEdgeType.getProperty("updatedOn").isMandatory());
+      assertEquals(false, worksAtProjectEdgeType.getProperty("updatedOn").isMandatory());
       assertEquals(false, worksAtProjectEdgeType.getProperty("updatedOn").isReadonly());
       assertEquals(false, worksAtProjectEdgeType.getProperty("updatedOn").isNotNull());
 
@@ -426,7 +426,7 @@ public class OrientDBSchemaWritingWithRelationshipConfigTest {
 
       assertEquals("updatedOn", hasEmployeeEdgeType.getProperty("updatedOn").getName());
       assertEquals(OType.DATE, hasEmployeeEdgeType.getProperty("updatedOn").getType());
-      assertEquals(true, hasEmployeeEdgeType.getProperty("updatedOn").isMandatory());
+      assertEquals(false, hasEmployeeEdgeType.getProperty("updatedOn").isMandatory());
       assertEquals(false, hasEmployeeEdgeType.getProperty("updatedOn").isReadonly());
       assertEquals(false, hasEmployeeEdgeType.getProperty("updatedOn").isNotNull());
 
@@ -535,7 +535,7 @@ public class OrientDBSchemaWritingWithRelationshipConfigTest {
        */
 
 
-      this.context.initOrientDBInstance(outOrientGraphUri);
+      this.context.initOrientDBInstance(this.outOrientGraphUri);
       orientGraph = this.context.getOrientDBInstance().open(this.dbName,"admin","admin");
 
       OClass actorVertexType = orientGraph.getClass("Actor");
@@ -597,7 +597,7 @@ public class OrientDBSchemaWritingWithRelationshipConfigTest {
 
       assertEquals("year", performsEdgeType.getProperty("year").getName());
       assertEquals(OType.DATE, performsEdgeType.getProperty("year").getType());
-      assertEquals(true, performsEdgeType.getProperty("year").isMandatory());
+      assertEquals(false, performsEdgeType.getProperty("year").isMandatory());
       assertEquals(false, performsEdgeType.getProperty("year").isReadonly());
       assertEquals(false, performsEdgeType.getProperty("year").isNotNull());
 
@@ -769,7 +769,7 @@ public class OrientDBSchemaWritingWithRelationshipConfigTest {
 
       assertEquals("year", performsEdgeType.getProperty("year").getName());
       assertEquals(OType.DATE, performsEdgeType.getProperty("year").getType());
-      assertEquals(true, performsEdgeType.getProperty("year").isMandatory());
+      assertEquals(false, performsEdgeType.getProperty("year").isMandatory());
       assertEquals(false, performsEdgeType.getProperty("year").isReadonly());
       assertEquals(false, performsEdgeType.getProperty("year").isNotNull());
 
@@ -940,7 +940,7 @@ public class OrientDBSchemaWritingWithRelationshipConfigTest {
 
       assertEquals("year", performsEdgeType.getProperty("year").getName());
       assertEquals(OType.DATE, performsEdgeType.getProperty("year").getType());
-      assertEquals(true, performsEdgeType.getProperty("year").isMandatory());
+      assertEquals(false, performsEdgeType.getProperty("year").isMandatory());
       assertEquals(false, performsEdgeType.getProperty("year").isReadonly());
       assertEquals(false, performsEdgeType.getProperty("year").isNotNull());
 
@@ -1113,7 +1113,7 @@ public class OrientDBSchemaWritingWithRelationshipConfigTest {
 
       assertEquals("year", featuresEdgeType.getProperty("year").getName());
       assertEquals(OType.DATE, featuresEdgeType.getProperty("year").getType());
-      assertEquals(true, featuresEdgeType.getProperty("year").isMandatory());
+      assertEquals(false, featuresEdgeType.getProperty("year").isMandatory());
       assertEquals(false, featuresEdgeType.getProperty("year").isReadonly());
       assertEquals(false, featuresEdgeType.getProperty("year").isNotNull());
 

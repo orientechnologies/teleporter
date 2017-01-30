@@ -103,7 +103,7 @@ public abstract class ODBMSImportStrategy implements OWorkflowStrategy {
 
     OTeleporterContext.getInstance().initOrientDBInstance(outParentDatabaseDirectory);
     this.executeImport(sourceDBInfo, outOrientGraphUri, mapper, handler);
-    OTeleporterContext.getInstance().getOrientDBInstance().close();
+    OTeleporterContext.getInstance().closeOrientDBInstance();
     OTeleporterContext.getInstance().getStatistics().notifyListeners();
     OTeleporterContext.getInstance().getOutputManager().info("\n");
     OTeleporterContext.getInstance().getStatistics().runningStepNumber = -1;

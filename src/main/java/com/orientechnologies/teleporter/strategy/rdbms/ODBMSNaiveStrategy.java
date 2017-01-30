@@ -105,6 +105,8 @@ public class ODBMSNaiveStrategy extends ODBMSImportStrategy {
   public void executeImport(OSourceDatabaseInfo sourceDBInfo, String outOrientGraphUri, OSource2GraphMapper genericMapper,
       ODBMSDataTypeHandler handler) {
 
+    ODatabaseDocument orientGraph = null;
+
     try {
 
       OTeleporterStatistics statistics = OTeleporterContext.getInstance().getStatistics();
@@ -117,7 +119,7 @@ public class ODBMSNaiveStrategy extends ODBMSImportStrategy {
 
       // OrientDB graph initialization/connection
       String dbName = outOrientGraphUri.substring(outOrientGraphUri.lastIndexOf('/')+1);
-      ODatabaseDocument orientGraph;
+      
       try {
         if(! OTeleporterContext.getInstance().getOrientDBInstance().exists(dbName,"admin","admin")) {
           OTeleporterContext.getInstance().getOrientDBInstance().create(dbName, "admin", "admin", OrientDB.DatabaseType.PLOCAL);
@@ -202,9 +204,14 @@ public class ODBMSNaiveStrategy extends ODBMSImportStrategy {
     } catch (OTeleporterRuntimeException e) {
       throw e;
     } catch (Exception e) {
-      String mess = "";
+      String mess = "Exception during records importing.\n";
       OTeleporterContext.getInstance().printExceptionMessage(e, mess, "error");
-      OTeleporterContext.getInstance().printExceptionStackTrace(e, "debug");
+      OTeleporterContext.getInstance().printExceptionStackTrace(e, "error");
+
+      if (orientGraph != null) {
+        orientGraph.close();
+      }
+      throw new OTeleporterRuntimeException(e);
     }
   }
 

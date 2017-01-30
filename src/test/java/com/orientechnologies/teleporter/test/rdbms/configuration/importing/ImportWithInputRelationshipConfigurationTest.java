@@ -115,7 +115,7 @@ public class ImportWithInputRelationshipConfigurationTest {
    *  Properties manually configured on edges:
    *
    *  * WorksAtProject:
-   *    - updatedOn (type DATE): mandatory=T, readOnly=F, notNull=F.
+   *    - updatedOn (type DATE): mandatory=F, readOnly=F, notNull=F.
    *    - propWithoutTypeField (type not present in config --> property will be dropped): mandatory=T, readOnly=F, notNull=F.
    *  * HasManager:
    *    - updatedOn (type DATE): mandatory=F.
@@ -389,7 +389,7 @@ public class ImportWithInputRelationshipConfigurationTest {
    *  Properties manually configured on edges:
    *
    *  * HasEmployee:
-   *    - updatedOn (type DATE): mandatory=T, readOnly=F, notNull=F.
+   *    - updatedOn (type DATE): mandatory=F, readOnly=F, notNull=F.
    *    - propWithoutTypeField (type not present in config --> property will be dropped): mandatory=T, readOnly=F, notNull=F.
    */
 
@@ -660,7 +660,8 @@ public class ImportWithInputRelationshipConfigurationTest {
    *  Properties manually configured on edges:
    *
    *  Performs:
-   *    - year (type DATE): mandatory=T, readOnly=F, notNull=F.
+   *    - payment (type INTEGER): mandatory=T, readOnly=F, notNull=F.
+   *    - year (type DATE): mandatory=F, readOnly=F, notNull=F.
    */
 
   public void test3() {
@@ -1010,7 +1011,8 @@ public class ImportWithInputRelationshipConfigurationTest {
    *  ACTOR --[Performs]--> FILM
    *
    *  Performs:
-   *    - year (type DATE): mandatory=T, readOnly=F, notNull=F.
+   *    - payment (type INTEGER): mandatory=T, readOnly=F, notNull=F.
+   *    - year (type DATE): mandatory=F, readOnly=F, notNull=F.
    */
 
   public void test4() {
@@ -1703,13 +1705,13 @@ public class ImportWithInputRelationshipConfigurationTest {
    *  Through the migrationConfigDoc we want name the relationship "Performs".
    *  With "direct" direction in the migrationConfigDoc we would obtain:
    *
-   *  ACTOR --[Features]--> FILM
+   *  ACTOR --[Performs]--> FILM
    *
    *  But with the "inverse" direction we obtain:
    *
    *  FILM --[Features]--> ACTOR
    *
-   *  Performs:
+   *  Features:
    *    - year (type DATE): mandatory=T, readOnly=F, notNull=F.
    */
 

@@ -1356,7 +1356,7 @@ public class SequentialExecutionsTest {
        */
 
 
-      this.context.initOrientDBInstance(outOrientGraphUri);
+      this.context.initOrientDBInstance(this.outOrientGraphUri);
       orientGraph = this.context.getOrientDBInstance().open(this.dbName,"admin","admin");
 
       // vertices check
@@ -1394,6 +1394,7 @@ public class SequentialExecutionsTest {
        *  Testing built OrientDB
        */
 
+      this.context.initOrientDBInstance(this.outOrientGraphUri);
       orientGraph = this.context.getOrientDBInstance().open(this.dbName,"admin","admin");
 
       // vertices check

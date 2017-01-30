@@ -392,7 +392,7 @@ public class MappingWithAggregationTest {
       assertEquals(1, sinceProperty.getOrdinalPosition());
       assertEquals(false, sinceProperty.isFromPrimaryKey());
       assertEquals("DATE", sinceProperty.getOrientdbType());
-      assertEquals(true, sinceProperty.isMandatory());
+      assertEquals(false, sinceProperty.isMandatory());
       assertEquals(false, sinceProperty.isReadOnly());
       assertEquals(false, sinceProperty.isNotNull());
 
