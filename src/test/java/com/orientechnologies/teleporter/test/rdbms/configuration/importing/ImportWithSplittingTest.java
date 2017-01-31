@@ -567,10 +567,6 @@ public class ImportWithSplittingTest {
         e.printStackTrace();
         fail();
       }
-      if (orientGraph != null) {
-        orientGraph.close();
-      }
-
     }
   }
 

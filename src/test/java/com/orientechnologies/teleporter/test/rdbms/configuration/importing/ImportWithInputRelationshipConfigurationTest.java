@@ -357,10 +357,6 @@ public class ImportWithInputRelationshipConfigurationTest {
         e.printStackTrace();
         fail();
       }
-      if (orientGraph != null) {
-        orientGraph.close();
-      }
-
     }
   }
 
@@ -635,10 +631,6 @@ public class ImportWithInputRelationshipConfigurationTest {
         e.printStackTrace();
         fail();
       }
-      if (orientGraph != null) {
-        orientGraph.close();
-      }
-
     }
   }
 
@@ -984,10 +976,6 @@ public class ImportWithInputRelationshipConfigurationTest {
         e.printStackTrace();
         fail();
       }
-      if (orientGraph != null) {
-        orientGraph.close();
-      }
-
     }
   }
 
@@ -1336,10 +1324,6 @@ public class ImportWithInputRelationshipConfigurationTest {
         e.printStackTrace();
         fail();
       }
-      if (orientGraph != null) {
-        orientGraph.close();
-      }
-
     }
   }
 
@@ -1685,10 +1669,6 @@ public class ImportWithInputRelationshipConfigurationTest {
         e.printStackTrace();
         fail();
       }
-      if (orientGraph != null) {
-        orientGraph.close();
-      }
-
     }
   }
 
@@ -2037,10 +2017,6 @@ public class ImportWithInputRelationshipConfigurationTest {
         e.printStackTrace();
         fail();
       }
-      if (orientGraph != null) {
-        orientGraph.close();
-      }
-
     }
   }
 

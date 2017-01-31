@@ -172,8 +172,7 @@ public abstract class ODBMSImportStrategy implements OWorkflowStrategy {
 
       // upsert of the vertex
       currentRecord = records;
-      OVertex currentOutVertex = (OVertex) graphEngine
-          .upsertVisitedVertex(orientGraph, currentRecord, currentOutVertexType, currentOutVertexType.getExternalKey());
+      OVertex currentOutVertex = graphEngine.upsertVisitedVertex(orientGraph, currentRecord, currentOutVertexType, currentOutVertexType.getExternalKey());
 
       // navigating relationships outgoing from the current mapped entities and for each of them all the correspondent edges are built
       // and all the in-vertices are upserted in the graph database

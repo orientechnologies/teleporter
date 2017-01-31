@@ -147,10 +147,6 @@ public class DateTypeTest {
         e.printStackTrace();
         fail();
       }
-      if (orientGraph != null) {
-        orientGraph.close();
-      }
-
     }
   }
 

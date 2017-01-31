@@ -37,6 +37,7 @@ import com.orientechnologies.teleporter.util.OFileManager;
 import com.orientechnologies.teleporter.util.OGraphCommands;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.sql.Connection;
@@ -312,10 +313,6 @@ public class FilterTableImportingTest {
         e.printStackTrace();
         fail();
       }
-      if (orientGraph != null) {
-        orientGraph.close();
-      }
-
     }
   }
 
@@ -529,10 +526,6 @@ public class FilterTableImportingTest {
         e.printStackTrace();
         fail();
       }
-      if (orientGraph != null) {
-        orientGraph.close();
-      }
-
     }
   }
 
@@ -778,10 +771,6 @@ public class FilterTableImportingTest {
         e.printStackTrace();
         fail();
       }
-      if (orientGraph != null) {
-        orientGraph.close();
-      }
-
     }
   }
 
@@ -1045,13 +1034,10 @@ public class FilterTableImportingTest {
         e.printStackTrace();
         fail();
       }
-      if (orientGraph != null) {
-        orientGraph.close();
-      }
-
     }
   }
 
+  @Ignore
   @Test
   /*
    * Filtering out a table through exclude-tables (with Table per Type inheritance).
@@ -1309,10 +1295,6 @@ public class FilterTableImportingTest {
         e.printStackTrace();
         fail();
       }
-      if (orientGraph != null) {
-        orientGraph.close();
-      }
-
     }
   }
 

@@ -202,10 +202,6 @@ public class OrientDBSchemaWritingTest {
         e.printStackTrace();
         fail();
       }
-      if (orientGraph != null) {
-        orientGraph.close();
-      }
-
     }
   }
 
@@ -341,10 +337,6 @@ public class OrientDBSchemaWritingTest {
         e.printStackTrace();
         fail();
       }
-      if (orientGraph != null) {
-        orientGraph.close();
-      }
-
     }
   }
 
@@ -481,10 +473,6 @@ public class OrientDBSchemaWritingTest {
         e.printStackTrace();
         fail();
       }
-      if (orientGraph != null) {
-        orientGraph.close();
-      }
-
     }
   }
 
@@ -602,10 +590,6 @@ public class OrientDBSchemaWritingTest {
         e.printStackTrace();
         fail();
       }
-      if (orientGraph != null) {
-        orientGraph.close();
-      }
-
     }
   }
 
@@ -739,10 +723,6 @@ public class OrientDBSchemaWritingTest {
         e.printStackTrace();
         fail();
       }
-      if (orientGraph != null) {
-        orientGraph.close();
-      }
-
     }
   }
 
@@ -861,10 +841,6 @@ public class OrientDBSchemaWritingTest {
         e.printStackTrace();
         fail();
       }
-      if (orientGraph != null) {
-        orientGraph.close();
-      }
-
     }
   }
 
@@ -1022,10 +998,6 @@ public class OrientDBSchemaWritingTest {
         e.printStackTrace();
         fail();
       }
-      if (orientGraph != null) {
-        orientGraph.close();
-      }
-
     }
   }
 

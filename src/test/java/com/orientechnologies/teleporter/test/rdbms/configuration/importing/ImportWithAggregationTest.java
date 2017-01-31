@@ -361,10 +361,6 @@ public class ImportWithAggregationTest {
         e.printStackTrace();
         fail();
       }
-      if (orientGraph != null) {
-        orientGraph.close();
-      }
-
     }
   }
 }

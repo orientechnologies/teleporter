@@ -266,10 +266,6 @@ public class OrientDBSchemaWritingWithRelationshipConfigTest {
         e.printStackTrace();
         fail();
       }
-      if (orientGraph != null) {
-        orientGraph.close();
-      }
-
     }
 
   }
@@ -454,10 +450,6 @@ public class OrientDBSchemaWritingWithRelationshipConfigTest {
         e.printStackTrace();
         fail();
       }
-      if (orientGraph != null) {
-        orientGraph.close();
-      }
-
     }
   }
 

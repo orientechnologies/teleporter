@@ -615,10 +615,6 @@ public class OrientDBImportingTest {
         e.printStackTrace();
         fail();
       }
-      if (orientGraph != null) {
-        orientGraph.close();
-      }
-
     }
 
   }

@@ -31,8 +31,8 @@ public class OGraphCommands {
   private static String quote =  "\"";
 
   /**
-   * The method perform on the passed ODatabaseDocument a lookup for a OVertex starting from a record and from a vertex type.
-   * It return the vertex if present, null if not present.
+   * The method performs a lookup on the passed ODatabaseDocument for a OVertex, starting from a record and from a vertex type.
+   * It returns the vertex if present, null if not present.
    *
    * @param orientGraph
    * @param keys
@@ -48,7 +48,7 @@ public class OGraphCommands {
     final OResultSet vertices = getVertices(orientGraph, vertexClassName, keys, values);
 
     if (vertices.hasNext()) {
-      vertex = vertices.next().getVertex().get();
+      vertex = vertices.next().getVertex().orElse(null);
     }
 
     return vertex;

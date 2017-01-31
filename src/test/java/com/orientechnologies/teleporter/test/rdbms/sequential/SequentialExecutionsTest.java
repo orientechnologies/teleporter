@@ -230,10 +230,6 @@ public class SequentialExecutionsTest {
         e.printStackTrace();
         fail();
       }
-      if (orientGraph != null) {
-        orientGraph.close();
-      }
-
     }
   }
 
@@ -363,10 +359,6 @@ public class SequentialExecutionsTest {
         e.printStackTrace();
         fail();
       }
-      if (orientGraph != null) {
-        orientGraph.close();
-      }
-
     }
   }
 
@@ -502,10 +494,6 @@ public class SequentialExecutionsTest {
         e.printStackTrace();
         fail();
       }
-      if (orientGraph != null) {
-        orientGraph.close();
-      }
-
     }
   }
 
@@ -622,12 +610,7 @@ public class SequentialExecutionsTest {
         e.printStackTrace();
         fail();
       }
-      if (orientGraph != null) {
-        orientGraph.close();
-      }
-
     }
-
   }
 
   @Test
@@ -786,10 +769,6 @@ public class SequentialExecutionsTest {
         e.printStackTrace();
         fail();
       }
-      if (orientGraph != null) {
-        orientGraph.close();
-      }
-
     }
   }
 
@@ -899,12 +878,7 @@ public class SequentialExecutionsTest {
         e.printStackTrace();
         fail();
       }
-      if (orientGraph != null) {
-        orientGraph.close();
-      }
-
     }
-
   }
 
   @Test
@@ -1070,10 +1044,6 @@ public class SequentialExecutionsTest {
         e.printStackTrace();
         fail();
       }
-      if (orientGraph != null) {
-        orientGraph.close();
-      }
-
     }
   }
 
@@ -1144,7 +1114,7 @@ public class SequentialExecutionsTest {
 
 
       /*
-       *  Removing a relation 
+       *  Removing a relationship
        */
 
       String dropForeignKey = "alter table FILM drop constraint director";
@@ -1186,10 +1156,6 @@ public class SequentialExecutionsTest {
         e.printStackTrace();
         fail();
       }
-      if (orientGraph != null) {
-        orientGraph.close();
-      }
-
     }
 
   }
@@ -1290,10 +1256,6 @@ public class SequentialExecutionsTest {
         e.printStackTrace();
         fail();
       }
-      if (orientGraph != null) {
-        orientGraph.close();
-      }
-
     }
   }
 
@@ -1422,10 +1384,6 @@ public class SequentialExecutionsTest {
         e.printStackTrace();
         fail();
       }
-      if (orientGraph != null) {
-        orientGraph.close();
-      }
-
     }
   }
 
@@ -1529,10 +1487,6 @@ public class SequentialExecutionsTest {
         e.printStackTrace();
         fail();
       }
-      if (orientGraph != null) {
-        orientGraph.close();
-      }
-
     }
 
   }
@@ -1652,10 +1606,6 @@ public class SequentialExecutionsTest {
         e.printStackTrace();
         fail();
       }
-      if (orientGraph != null) {
-        orientGraph.close();
-      }
-
     }
   }
 
@@ -1794,10 +1744,6 @@ public class SequentialExecutionsTest {
         e.printStackTrace();
         fail();
       }
-      if (orientGraph != null) {
-        orientGraph.close();
-      }
-
     }
   }
 

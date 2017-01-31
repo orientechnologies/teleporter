@@ -797,10 +797,6 @@ public class AggregationStrategyTest {
         e.printStackTrace();
         fail();
       }
-      if (orientGraph != null) {
-        orientGraph.close();
-      }
-
     }
   }
 

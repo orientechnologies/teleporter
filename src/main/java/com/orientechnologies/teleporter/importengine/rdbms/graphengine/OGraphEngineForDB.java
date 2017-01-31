@@ -127,8 +127,6 @@ public class OGraphEngineForDB {
           + ";\tOriginal Record: " + propsAndValuesOfKey;
       OTeleporterContext.getInstance().printExceptionMessage(e, mess, "error");
       OTeleporterContext.getInstance().printExceptionStackTrace(e, "error");
-//      if (orientGraph != null)
-//        orientGraph.close();
       throw new OTeleporterRuntimeException(e);
     }
     return false;
@@ -334,8 +332,6 @@ public class OGraphEngineForDB {
           + propsAndValuesOfKey;
       OTeleporterContext.getInstance().printExceptionMessage(e, mess, "error");
       OTeleporterContext.getInstance().printExceptionStackTrace(e, "error");
-//      if (orientGraph != null)
-//        orientGraph.close();
       throw new OTeleporterRuntimeException(e);
     }
 
@@ -683,8 +679,6 @@ public class OGraphEngineForDB {
           + ";\tOriginal Record: " + propsAndValuesOfKey;
       OTeleporterContext.getInstance().printExceptionMessage(e, mess, "error");
       OTeleporterContext.getInstance().printExceptionStackTrace(e, "error");
-//      if (orientGraph != null)
-//        orientGraph.close();
       throw new OTeleporterRuntimeException(e);
     }
 
@@ -765,8 +759,6 @@ public class OGraphEngineForDB {
               + ", inVertexType: " + currentInVertexType.getName();
       OTeleporterContext.getInstance().printExceptionMessage(e, mess, "error");
       OTeleporterContext.getInstance().printExceptionStackTrace(e, "error");
-//      if (orientGraph != null)
-//        orientGraph.close();
       throw new OTeleporterRuntimeException(e);
     }
 
@@ -819,8 +811,6 @@ public class OGraphEngineForDB {
           "Problem encountered during the upsert of an edge. Vertex-out: " + currentOutVertex + ";\tVertex-in: " + currentInVertex;
       OTeleporterContext.getInstance().printExceptionMessage(e, mess, "error");
       OTeleporterContext.getInstance().printExceptionStackTrace(e, "error");
-//      if (orientGraph != null)
-//        orientGraph.close();
       throw new OTeleporterRuntimeException(e);
     }
   }
@@ -856,8 +846,6 @@ public class OGraphEngineForDB {
           "Problem encountered during the insert of an edge. Vertex-out: " + currentOutVertex + ";\tVertex-in: " + currentInVertex;
       OTeleporterContext.getInstance().printExceptionMessage(e, mess, "error");
       OTeleporterContext.getInstance().printExceptionStackTrace(e, "error");
-//      if (orientGraph != null)
-//        orientGraph.close();
       throw new OTeleporterRuntimeException(e);
     }
   }
@@ -944,8 +932,6 @@ public class OGraphEngineForDB {
       String mess = "";
       OTeleporterContext.getInstance().printExceptionMessage(e, mess, "error");
       OTeleporterContext.getInstance().printExceptionStackTrace(e, "error");
-//      if (orientGraph != null)
-//        orientGraph.close();
       throw new OTeleporterRuntimeException(e);
     }
   }
@@ -957,17 +943,22 @@ public class OGraphEngineForDB {
   private OVertex addVertexToGraph(ODatabaseDocument orientGraph, String classAndClusterName, Map<String, Object> properties) {
 
     OVertex vertex = null;
+    boolean alreadySaved = false;
     try {
       if (classAndClusterName != null) {
         vertex = orientGraph.newVertex(classAndClusterName);
         if(properties != null) {
           this.setElementProperties(vertex, properties);
+          alreadySaved = true;
         }
       }
     } catch (OValidationException e) {
       OTeleporterContext.getInstance().getStatistics().errorMessages.add(e.getMessage());
     }
-    return vertex.save();
+    if(!alreadySaved) {
+      vertex.save();
+    }
+    return vertex;
   }
 
   private OEdge addEdgeToGraph(ODatabaseDocument orientGraph, OVertex currentOutVertex, OVertex currentInVertex, String edgeType) {
@@ -977,15 +968,20 @@ public class OGraphEngineForDB {
   private OEdge addEdgeToGraph(ODatabaseDocument orientGraph, OVertex currentOutVertex, OVertex currentInVertex, String edgeType, Map<String, Object> properties) {
 
     OEdge edge = null;
+    boolean alreadySaved = false;
     try {
       edge = orientGraph.newEdge(currentOutVertex, currentInVertex, edgeType);
       if(properties != null) {
         this.setElementProperties(edge, properties);
+        alreadySaved = true;
       }
     } catch (OValidationException e) {
       OTeleporterContext.getInstance().getStatistics().errorMessages.add(e.getMessage());
     }
-    return edge.save();
+    if(!alreadySaved) {
+      edge.save();
+    }
+    return edge;
   }
 
   private void setElementProperties(OElement element, Map<String, Object> properties) {

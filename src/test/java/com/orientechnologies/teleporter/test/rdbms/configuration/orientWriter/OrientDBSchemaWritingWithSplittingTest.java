@@ -315,8 +315,7 @@ public class OrientDBSchemaWritingWithSplittingTest {
       assertEquals(true, orientGraph.getMetadata().getIndexManager().areIndexed("Department", "id"));
 
       assertEquals(true, orientGraph.getMetadata().getIndexManager().existsIndex("ChiefOfficer.pkey"));
-      assertEquals(true,
-          orientGraph.getMetadata().getIndexManager().areIndexed("ChiefOfficer", "firstName", "lastName"));
+      assertEquals(true, orientGraph.getMetadata().getIndexManager().areIndexed("ChiefOfficer", "firstName", "lastName"));
 
     } catch (Exception e) {
       e.printStackTrace();
@@ -332,10 +331,6 @@ public class OrientDBSchemaWritingWithSplittingTest {
         e.printStackTrace();
         fail();
       }
-      if (orientGraph != null) {
-        orientGraph.close();
-      }
-
     }
   }
 }
