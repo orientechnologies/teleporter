@@ -1037,7 +1037,6 @@ public class FilterTableImportingTest {
     }
   }
 
-  @Ignore
   @Test
   /*
    * Filtering out a table through exclude-tables (with Table per Type inheritance).
@@ -1224,7 +1223,7 @@ public class FilterTableImportingTest {
 
         edgesIt = v.getEdges(ODirection.OUT, "HasResidence").iterator();
         assertEquals(false, edgesIt.hasNext());
-        edgesIt = v.getEdges(ODirection.OUT, "HasMANAGER").iterator();
+        edgesIt = v.getEdges(ODirection.OUT, "HasManager").iterator();
         assertEquals("M001", edgesIt.next().getVertex(ODirection.IN).getProperty("id"));
         assertEquals(false, edgesIt.hasNext());
       } else {
