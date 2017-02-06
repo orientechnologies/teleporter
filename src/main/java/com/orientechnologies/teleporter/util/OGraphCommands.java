@@ -56,13 +56,19 @@ public class OGraphCommands {
 
   public static OResultSet getVertices(ODatabaseDocument orientGraph, String vertexClassName, String[] keys, String[] values) {
 
+    Object[] params = new Object[values.length];
+
+    for (int i = 0; i < params.length; i++) {
+      params[i] = values[i];
+    }
+
     String query = "select * from " + vertexClassName + " where ";
-    query += keys[0] + " = " + quote + values[0] + quote;
+    query += keys[0] + " = ?";
 
     int i;
     for(i=1; i<keys.length; i++) {
-      query += " and " + keys[i] + " = " + quote + values[i] + quote;
+      query += " and " + keys[i] + " = ?";
     }
-    return orientGraph.command(query);
+    return orientGraph.command(query, params);
   }
 }
