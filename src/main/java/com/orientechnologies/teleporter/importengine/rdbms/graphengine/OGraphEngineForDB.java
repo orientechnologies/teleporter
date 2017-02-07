@@ -751,6 +751,8 @@ public class OGraphEngineForDB {
           this.insertEdge(orientGraph, currentOutVertex, currentInVertex, edgeTypeName, null, direction);
         }
 
+        // closing ResultSet
+        inVertices.close();
       }
 
     } catch (Exception e) {

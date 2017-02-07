@@ -51,6 +51,8 @@ public class OGraphCommands {
       vertex = vertices.next().getVertex().orElse(null);
     }
 
+    vertices.close();
+
     return vertex;
   }
 
