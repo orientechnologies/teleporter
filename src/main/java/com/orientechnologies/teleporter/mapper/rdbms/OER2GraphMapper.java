@@ -1693,7 +1693,7 @@ public class OER2GraphMapper extends OSource2GraphMapper {
           // edge direction chosen according to the value of the parameter direction
           if (currentRelationshipDirection.equals("direct")) {
             currentInVertexType = this
-                .getVertexTypeByEntityAndRelationship(currentParentEntity, (OCanonicalRelationship) currentRelationship);
+                .getVertexTypeByEntityAndRelationship(currentParentEntity, currentRelationship);
             currentOutVertexType = this.getVertexTypeByEntity(currentForeignEntity);
           } else {
             currentInVertexType = this.getVertexTypeByEntity(currentForeignEntity);
@@ -1979,19 +1979,19 @@ public class OER2GraphMapper extends OSource2GraphMapper {
     return this.getEVClassMappersByEntity(entity).get(classMapperIndex).getVertexType();
   }
 
-  public OVertexType getVertexTypeByEntityAndRelationship(OEntity currentParentEntity, OCanonicalRelationship currentRelationship) {
+  public OVertexType getVertexTypeByEntityAndRelationship(OEntity currentParentEntity, ORelationship currentRelationship) {
 
     List<OEVClassMapper> classMappers = this.getEVClassMappersByEntity(currentParentEntity);
 
     if (classMappers.size() == 1) {
       return this.getVertexTypeByEntity(currentParentEntity);
     } else {
-      List<OAttribute> pkAttributes = currentRelationship.getPrimaryKey().getInvolvedAttributes();
+      List<OAttribute> toAttributes = currentRelationship.getToColumns();
       OVertexType correspondentVertexType = null;
 
       for (OEVClassMapper classMapper : classMappers) {
         boolean found = true;
-        for (OAttribute currAttribute : pkAttributes) {
+        for (OAttribute currAttribute : toAttributes) {
           if (classMapper.getAttribute2property().get(currAttribute.getName()) == null) {
             found = false;
             break;

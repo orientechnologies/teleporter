@@ -41,7 +41,7 @@ public class OLogicalRelationship extends ORelationship {
 
   @Override
   public List<OAttribute> getToColumns() {
-    return toColumns;
+    return this.toColumns;
   }
 
   public void setToColumns(List<OAttribute> columns) {
