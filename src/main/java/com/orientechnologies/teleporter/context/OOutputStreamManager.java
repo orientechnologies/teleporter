@@ -39,11 +39,11 @@ public class OOutputStreamManager {
 
   public  PrintStream outputStream;
   private int         level;
-  private final int BLANK_LEVEL   = 0;
-  private final int DEBUG_LEVEL   = 1;
-  private final int INFO_LEVEL    = 2;
-  private final int WARNING_LEVEL = 3;
-  private final int ERROR_LEVEL   = 4;
+  public static final int BLANK_LEVEL   = 0;
+  public static final int DEBUG_LEVEL   = 1;
+  public static final int INFO_LEVEL    = 2;
+  public static final int WARNING_LEVEL = 3;
+  public static final int ERROR_LEVEL   = 4;
 
   public OOutputStreamManager(int level) {
     this.outputStream = System.out;

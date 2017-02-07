@@ -25,6 +25,7 @@ import com.orientechnologies.orient.core.intent.OIntentMassiveInsert;
 import com.orientechnologies.teleporter.configuration.OConfigurationHandler;
 import com.orientechnologies.teleporter.configuration.api.OConfiguration;
 import com.orientechnologies.teleporter.configuration.api.OConfiguredVertexClass;
+import com.orientechnologies.teleporter.context.OOutputStreamManager;
 import com.orientechnologies.teleporter.context.OTeleporterContext;
 import com.orientechnologies.teleporter.context.OTeleporterStatistics;
 import com.orientechnologies.teleporter.exception.OTeleporterRuntimeException;
@@ -76,13 +77,17 @@ public class ODBMSNaiveStrategy extends ODBMSImportStrategy {
     mapper.buildSourceDatabaseSchema();
     OTeleporterContext.getInstance().getStatistics().notifyListeners();
     OTeleporterContext.getInstance().getOutputManager().info("\n");
-    OTeleporterContext.getInstance().getOutputManager().debug("\n%s\n", ((OER2GraphMapper) mapper).getDataBaseSchema().toString());
+    if(OTeleporterContext.getInstance().getOutputManager().getLevel() == OOutputStreamManager.DEBUG_LEVEL) {
+      OTeleporterContext.getInstance().getOutputManager().debug("\n%s\n", ((OER2GraphMapper) mapper).getDataBaseSchema().toString());
+    }
 
     // Step 2: Graph model building
     mapper.buildGraphModel(nameResolver);
     OTeleporterContext.getInstance().getStatistics().notifyListeners();
     OTeleporterContext.getInstance().getOutputManager().info("\n");
-    OTeleporterContext.getInstance().getOutputManager().debug("\n%s\n", mapper.getGraphModel().toString());
+    if(OTeleporterContext.getInstance().getOutputManager().getLevel() == OOutputStreamManager.DEBUG_LEVEL) {
+      OTeleporterContext.getInstance().getOutputManager().debug("\n%s\n", mapper.getGraphModel().toString());
+    }
 
     // Step 3: eventual migrationConfigDoc applying
     mapper.applyImportConfiguration();
@@ -96,7 +101,9 @@ public class ODBMSNaiveStrategy extends ODBMSImportStrategy {
       throw new OTeleporterRuntimeException();
     }
     OTeleporterContext.getInstance().getStatistics().notifyListeners();
-    OTeleporterContext.getInstance().getOutputManager().debug("\nOrientDB Schema writing complete.\n");
+    if(OTeleporterContext.getInstance().getOutputManager().getLevel() == OOutputStreamManager.DEBUG_LEVEL) {
+      OTeleporterContext.getInstance().getOutputManager().debug("\nOrientDB Schema writing complete.\n");
+    }
     OTeleporterContext.getInstance().getOutputManager().info("\n");
 
     return mapper;
