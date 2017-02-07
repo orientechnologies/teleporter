@@ -141,6 +141,7 @@ public class OrientDBSchemaWritingTest {
        *  Testing built OrientDB schema
        */
 
+      this.context.initOrientDBInstance(outOrientGraphUri);
       orientGraph = this.context.getOrientDBInstance().open(this.dbName,"admin","admin");
 
       OClass authorVertexType = orientGraph.getClass("BookAuthor");
