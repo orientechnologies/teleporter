@@ -18,6 +18,7 @@
 
 package com.orientechnologies.teleporter.strategy.rdbms;
 
+import com.orientechnologies.orient.core.db.ODatabaseType;
 import com.orientechnologies.orient.core.db.OrientDB;
 import com.orientechnologies.orient.core.db.OrientDBConfig;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
@@ -139,8 +140,8 @@ public class ODBMSNaiveAggregationStrategy extends ODBMSImportStrategy {
       String dbName = outOrientGraphUri.substring(outOrientGraphUri.lastIndexOf('/')+1);
       ODatabaseDocument orientGraph;
       try {
-        if(! OTeleporterContext.getInstance().getOrientDBInstance().exists(dbName,"admin","admin")) {
-          OTeleporterContext.getInstance().getOrientDBInstance().create(dbName, "admin", "admin", OrientDB.DatabaseType.PLOCAL);
+        if(! OTeleporterContext.getInstance().getOrientDBInstance().exists(dbName)) {
+          OTeleporterContext.getInstance().getOrientDBInstance().create(dbName, ODatabaseType.PLOCAL);
         }
         orientGraph = OTeleporterContext.getInstance().getOrientDBInstance().open(dbName,"admin","admin");
       } catch (Exception e) {

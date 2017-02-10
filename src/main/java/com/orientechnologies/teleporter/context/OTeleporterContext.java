@@ -69,11 +69,11 @@ public class OTeleporterContext {
   }
 
   public void initOrientDBInstance(String url) {
-    this.orient = OrientDB.fromUrl(url, OrientDBConfig.defaultConfig());
+    this.orient = new OrientDB(url, OrientDBConfig.defaultConfig());
   }
 
   public void initOrientDBInstance(String url, OrientDBConfig config) {
-    this.orient = OrientDB.fromUrl(url, config);
+    this.orient = new OrientDB(url, config);
   }
 
   public void closeOrientDBInstance() {
