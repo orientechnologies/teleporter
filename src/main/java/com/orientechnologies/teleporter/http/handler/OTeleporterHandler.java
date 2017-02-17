@@ -20,11 +20,16 @@ package com.orientechnologies.teleporter.http.handler;
 
 import com.orientechnologies.teleporter.context.OOutputStreamManager;
 import com.orientechnologies.teleporter.context.OTeleporterContext;
+import com.orientechnologies.teleporter.persistence.util.ODBSourceConnection;
 import com.orientechnologies.teleporter.util.ODriverConfigurator;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -38,7 +43,7 @@ public class OTeleporterHandler {
   OTeleporterJob currentJob = null;
 
   /**
-   * Execute import with jsonConfiguration;
+   * Executes import with configuration;
    *
    * @param args
    */
@@ -69,7 +74,7 @@ public class OTeleporterHandler {
   }
 
   /**
-   * Check If the connection with given parameters is alive
+   * Checks If the connection with given parameters is alive
    *
    * @param args
    *
@@ -102,5 +107,45 @@ public class OTeleporterHandler {
     }
     status.field("jobs", jobs);
     return status;
+  }
+
+
+  /**
+   * Retrieves all the tables contained in the specified source database.
+   *
+   * @return ODocument
+   */
+  public ODocument getTables(ODocument params) throws Exception {
+
+    ODriverConfigurator configurator = new ODriverConfigurator();
+    List<ODocument> tables = new ArrayList<ODocument>();
+
+    String driver = params.field("driver");
+    String uri = params.field("jurl");
+    String username = params.field("username");
+    String password = params.field("password");
+    OTeleporterContext.getInstance().setOutputManager(new OOutputStreamManager(2));
+
+    Connection connection = configurator.getDBMSConnection(driver, uri, username, password);
+    DatabaseMetaData databaseMetaData = connection.getMetaData();
+    String[] tableTypes = {"TABLE"};
+
+    ResultSet resultTable = databaseMetaData.getTables(null, null, null, tableTypes);
+
+    // Giving db's table names
+    int id = 1;
+    while (resultTable.next()) {
+      String tableName = resultTable.getString("TABLE_NAME");
+      ODocument currentTable = new ODocument();
+      currentTable.field("id", id);
+      currentTable.field("tableName", tableName);
+      tables.add(currentTable);
+      id++;
+    }
+    resultTable.close();
+
+    ODocument result = new ODocument();
+    result.field("tables", tables);
+    return result;
   }
 }
