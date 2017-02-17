@@ -83,9 +83,9 @@ public class OER2GraphMapper extends OSource2GraphMapper {
 
     if (excludedTables != null)
       this.excludedTables = excludedTables;
-
     else
       this.excludedTables = new ArrayList<String>();
+
     this.configuration = configuration;
 
     // creating the two empty models

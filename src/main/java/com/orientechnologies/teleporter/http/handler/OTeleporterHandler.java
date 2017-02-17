@@ -20,11 +20,16 @@ package com.orientechnologies.teleporter.http.handler;
 
 import com.orientechnologies.teleporter.context.OOutputStreamManager;
 import com.orientechnologies.teleporter.context.OTeleporterContext;
+import com.orientechnologies.teleporter.persistence.util.ODBSourceConnection;
 import com.orientechnologies.teleporter.util.ODriverConfigurator;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -37,7 +42,7 @@ public class OTeleporterHandler {
   OTeleporterJob currentJob = null;
 
   /**
-   * Execute import with configuration;
+   * Executes import with configuration;
    *
    * @param cfg
    */
@@ -58,7 +63,7 @@ public class OTeleporterHandler {
   }
 
   /**
-   * Check If the connection with given parameters is alive
+   * Checks If the connection with given parameters is alive
    *
    * @param cfg
    *
@@ -67,14 +72,14 @@ public class OTeleporterHandler {
   public void checkConnection(ODocument cfg) throws Exception {
 
     ODriverConfigurator configurator = new ODriverConfigurator();
+    OTeleporterContext context = new OTeleporterContext();
 
     final String driver = cfg.field("driver");
     final String jurl = cfg.field("jurl");
     final String username = cfg.field("username");
     final String password = cfg.field("password");
-    OTeleporterContext oTeleporterContext = new OTeleporterContext();
-    oTeleporterContext.setOutputManager(new OOutputStreamManager(2));
-    configurator.checkConnection(driver, jurl, username, password, oTeleporterContext);
+    context.setOutputManager(new OOutputStreamManager(2));
+    configurator.checkConnection(driver, jurl, username, password, context);
   }
 
   /**
@@ -92,5 +97,48 @@ public class OTeleporterHandler {
     }
     status.field("jobs", jobs);
     return status;
+  }
+
+
+  /**
+   * Retrieves all the tables contained in the specified source database.
+   *
+   * @return ODocument
+   */
+  public ODocument getTables(ODocument params) throws Exception {
+
+    ODriverConfigurator configurator = new ODriverConfigurator();
+    OTeleporterContext context = new OTeleporterContext();
+    List<ODocument> tables = new ArrayList<ODocument>();
+
+    String driver = params.field("driver");
+    String uri = params.field("jurl");
+    String username = params.field("username");
+    String password = params.field("password");
+    context.setOutputManager(new OOutputStreamManager(2));
+
+    String driverName = configurator.checkConfiguration(driver, context);
+    ODBSourceConnection dbSourceConnection = new ODBSourceConnection(driverName, uri, username, password);
+    Connection connection = dbSourceConnection.getConnection(context);
+    DatabaseMetaData databaseMetaData = connection.getMetaData();
+    String[] tableTypes = {"TABLE"};
+
+    ResultSet resultTable = databaseMetaData.getTables(null, null, null, tableTypes);
+
+    // Giving db's table names
+    int id = 1;
+    while (resultTable.next()) {
+      String tableName = resultTable.getString("TABLE_NAME");
+      ODocument currentTable = new ODocument();
+      currentTable.field("id", id);
+      currentTable.field("tableName", tableName);
+      tables.add(currentTable);
+      id++;
+    }
+    resultTable.close();
+
+    ODocument result = new ODocument();
+    result.field("tables", tables);
+    return result;
   }
 }
