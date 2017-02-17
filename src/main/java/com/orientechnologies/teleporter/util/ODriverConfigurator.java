@@ -370,4 +370,28 @@ public class ODriverConfigurator {
     }
   }
 
+  /**
+   * Once the driver configuration is complete, it checks the connection to the source database.
+   *
+   * @param driver
+   * @param uri
+   * @param username
+   * @param password
+   *
+   * @throws SQLException
+   */
+  public Connection getDBMSConnection(String driver, String uri, String username, String password) throws SQLException {
+
+    String driverName = this.fetchDriverClassName(driver);
+    Connection connection = null;
+    try {
+      connection = ODBSourceConnection.getConnection(driverName, uri, username, password);
+    } finally {
+      if (connection != null) {
+        connection.close();
+      }
+    }
+    return connection;
+  }
+
 }

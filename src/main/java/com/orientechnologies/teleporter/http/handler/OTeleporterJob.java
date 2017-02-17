@@ -25,6 +25,7 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.Callable;
@@ -66,8 +67,8 @@ public class OTeleporterJob implements Callable<ODocument> {
     final String xmlPath = cfg.field("xmlPath");
     final String nameResolver = cfg.field("nameResolver");
     final String outputLevel = cfg.field("level");
-    final List<String> includedTables = cfg.field("includes");
-    final List<String> excludedTable = cfg.field("excludes");
+    final List<String> includedTables = cfg.field("includedTables");
+    final List<String> excludedTable = null;
     final String migrationConfig = cfg.field("migrationConfig");
     status = Status.RUNNING;
 
@@ -108,7 +109,6 @@ public class OTeleporterJob implements Callable<ODocument> {
           }
         }).start();
         executionResult = new ODocument();
-
       }
     } catch (Exception e) {
     }
