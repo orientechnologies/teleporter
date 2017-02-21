@@ -65,17 +65,9 @@ public class OTeleporterJob implements Runnable {
     final String xmlPath = cfg.field("xmlPath");
     final String nameResolver = cfg.field("nameResolver");
     final String outputLevel = cfg.field("level");
-    final List<ODocument> includedTablesDoc = cfg.field("includedTables");
+    final List<String> includedTables = cfg.field("includedTables");
     final List<String> excludedTables = null;
     status = Status.RUNNING;
-
-    // extracting tables' names
-    final List<String> includedTables = new LinkedList<String>();
-
-    for(ODocument currentDoc: includedTablesDoc) {
-      String currTableName = (String)currentDoc.field("tableName");
-      includedTables.add(currTableName);
-    }
 
     try {
       OTeleporter
