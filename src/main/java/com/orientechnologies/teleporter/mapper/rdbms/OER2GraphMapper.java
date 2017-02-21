@@ -98,11 +98,6 @@ public class OER2GraphMapper extends OSource2GraphMapper {
       this.excludedTables = excludedTables;
     else
       this.excludedTables = new ArrayList<String>();
-<<<<<<< HEAD
-=======
-
-    this.configuration = configuration;
->>>>>>> 7b4ad59... New command for Teleporter wizard and other updates for it.
 
     // creating the two empty models
     this.dataBaseSchema = new ODataBaseSchema();
