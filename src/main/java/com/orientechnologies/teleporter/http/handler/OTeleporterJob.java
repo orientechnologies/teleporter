@@ -42,14 +42,14 @@ public class OTeleporterJob implements Callable<ODocument> {
 
   public Status      status;
   public PrintStream stream;
-  ByteArrayOutputStream baos;
+  private ByteArrayOutputStream baos;
 
   public OTeleporterJob(ODocument cfg, OTeleporterListener listener) {
     this.cfg = cfg;
     this.listener = listener;
 
-    baos = new ByteArrayOutputStream();
-    stream = new PrintStream(baos);
+    this.baos = new ByteArrayOutputStream();
+    this.stream = new PrintStream(baos);
   }
 
   @Override
