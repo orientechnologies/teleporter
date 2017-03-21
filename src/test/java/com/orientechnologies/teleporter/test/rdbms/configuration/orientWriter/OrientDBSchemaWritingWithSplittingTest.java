@@ -18,8 +18,6 @@
 
 package com.orientechnologies.teleporter.test.rdbms.configuration.orientWriter;
 
-import com.orientechnologies.orient.core.db.OrientDB;
-import com.orientechnologies.orient.core.db.OrientDBConfig;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OType;
@@ -64,13 +62,15 @@ public class OrientDBSchemaWritingWithSplittingTest {
   private String username = "SA";
   private String password = "";
   private String dbName = "testOrientDB";
+  private String protocol = "plocal";
+
   private String outParentDirectory = "embedded:target/";
   private String outOrientGraphUri = this.outParentDirectory + this.dbName;
   private OSourceDatabaseInfo sourceDBInfo;
 
   @Before
   public void init() {
-    this.context = OTeleporterContext.newInstance();
+    this.context = OTeleporterContext.newInstance(this.outParentDirectory);
     this.dbQueryEngine = new ODBQueryEngine(this.driver);
     this.context.setDbQueryEngine(this.dbQueryEngine);
     this.context.setOutputManager(new OOutputStreamManager(0));
@@ -155,7 +155,7 @@ public class OrientDBSchemaWritingWithSplittingTest {
       mapper.buildSourceDatabaseSchema();
       mapper.buildGraphModel(new OJavaConventionNameResolver());
       mapper.applyImportConfiguration();
-      modelWriter.writeModelOnOrient(mapper, new OHSQLDBDataTypeHandler(), this.outParentDirectory, this.dbName);
+      modelWriter.writeModelOnOrient(mapper, new OHSQLDBDataTypeHandler(), this.dbName, this.protocol);
 
       /**
        *  Testing context information
@@ -173,7 +173,6 @@ public class OrientDBSchemaWritingWithSplittingTest {
        */
 
 
-      this.context.initOrientDBInstance(outOrientGraphUri);
       orientGraph = this.context.getOrientDBInstance().open(this.dbName,"admin","admin");
 
       OClass employeeVertexType = orientGraph.getClass("Employee");

@@ -64,11 +64,12 @@ public class InteractiveStrategyTest {
   private String                     outOrientGraphUri;
   private OSourceDatabaseInfo        sourceDBInfo;
   private ODBMSModelBuildingStrategy strategy;
+  private String outParentDirectory = "embedded:target/";
 
   @Before
   public void init() {
     this.outOrientGraphUri = "embedded:target/testOrientDB";
-    this.context = OTeleporterContext.newInstance();
+    this.context = OTeleporterContext.newInstance(this.outParentDirectory);
     this.context.setExecutionStrategy("interactive-aggr");
     this.dataTypeHandler = new OHSQLDBDataTypeHandler();
     this.context.setDataTypeHandler(dataTypeHandler);

@@ -73,8 +73,8 @@ public class AggregationStrategyTest {
 
   @Before
   public void init() {
-    this.importStrategy = new ODBMSNaiveAggregationStrategy();
-    this.context = OTeleporterContext.newInstance();
+    this.importStrategy = new ODBMSNaiveAggregationStrategy("embedded", this.outParentDirectory, this.dbName);
+    this.context = OTeleporterContext.newInstance(this.outParentDirectory);
     this.context.initOrientDBInstance(this.outOrientGraphUri);
     this.dbQueryEngine = new ODBQueryEngine(this.driver);
     this.context.setDbQueryEngine(this.dbQueryEngine);

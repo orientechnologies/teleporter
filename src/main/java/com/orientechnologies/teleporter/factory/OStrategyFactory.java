@@ -38,23 +38,23 @@ public class OStrategyFactory {
   public OStrategyFactory() {
   }
 
-  public OWorkflowStrategy buildStrategy(String storageDriver, String chosenStrategy) throws OTeleporterIOException {
+  public OWorkflowStrategy buildStrategy(String chosenStrategy, String protocol, String serverInitUrl, String dbName) throws OTeleporterIOException {
 
     OWorkflowStrategy strategy = null;
 
     // choosing strategy for migration from RDBSs
 
     if (chosenStrategy == null) {
-      strategy = new ODBMSNaiveAggregationStrategy();
+      strategy = new ODBMSNaiveAggregationStrategy(protocol, serverInitUrl, dbName);
     } else {
       switch (chosenStrategy) {
 
       case "naive":
-        strategy = new ODBMSNaiveStrategy();
+        strategy = new ODBMSNaiveStrategy(protocol, serverInitUrl, dbName);
         break;
 
       case "naive-aggregate":
-        strategy = new ODBMSNaiveAggregationStrategy();
+        strategy = new ODBMSNaiveAggregationStrategy(protocol, serverInitUrl, dbName);
         break;
 
       case "interactive":

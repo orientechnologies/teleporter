@@ -66,10 +66,11 @@ public class ConfigurationHandlerTest {
   private String username = "SA";
   private String password = "";
   private OSourceDatabaseInfo sourceDBInfo;
+  private String outParentDirectory = "embedded:target/";
 
   @Before
   public void init() {
-    this.context = OTeleporterContext.newInstance();
+    this.context = OTeleporterContext.newInstance(this.outParentDirectory);
     this.context.setOutputManager(new OOutputStreamManager(0));
     this.context.setExecutionStrategy("naive-aggregate");
     this.dataTypeHandler = new OHSQLDBDataTypeHandler();

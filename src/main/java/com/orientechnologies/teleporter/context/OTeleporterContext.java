@@ -48,19 +48,27 @@ public class OTeleporterContext {
   private String                 executionStrategy;
   private ODBQueryEngine         dbQueryEngine;
 
-  private OTeleporterContext() {
+  private OTeleporterContext(OrientDB orientDBInstance) {
     this.statistics = new OTeleporterStatistics();
+    this.orient = orientDBInstance;
+  }
+
+  private OTeleporterContext(String url) {
+    this.statistics = new OTeleporterStatistics();
+    this.initOrientDBInstance(url);
   }
 
   public static OTeleporterContext getInstance() {
-    if (instance == null) {
-      instance = new OTeleporterContext();
-    }
     return instance;
   }
 
-  public static OTeleporterContext newInstance() {
-    instance = new OTeleporterContext();
+  public static OTeleporterContext newInstance(OrientDB orientDBInstance) {
+    instance = new OTeleporterContext(orientDBInstance);
+    return instance;
+  }
+
+  public static OTeleporterContext newInstance(String url) {
+    instance = new OTeleporterContext(url);
     return instance;
   }
 

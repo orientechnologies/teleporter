@@ -51,10 +51,12 @@ public class SourceSchemaBuildingTest {
   private String username = "SA";
   private String password = "";
   private OSourceDatabaseInfo sourceDBInfo;
+  private String outParentDirectory = "embedded:target/";
+
 
   @Before
   public void init() {
-    this.context = OTeleporterContext.newInstance();
+    this.context = OTeleporterContext.newInstance(this.outParentDirectory);
     this.dbQueryEngine = new ODBQueryEngine(this.driver);
     this.context.setDbQueryEngine(this.dbQueryEngine);
     context.setOutputManager(new OOutputStreamManager(0));

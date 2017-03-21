@@ -69,14 +69,14 @@ public class ImportWithAggregationTest {
 
   @Before
   public void init() {
-    this.context = OTeleporterContext.newInstance();
+    this.context = OTeleporterContext.newInstance(this.outParentDirectory);
     this.context.initOrientDBInstance(outOrientGraphUri);
     this.dbQueryEngine = new ODBQueryEngine(this.driver);
     this.context.setDbQueryEngine(this.dbQueryEngine);
     this.context.setOutputManager(new OOutputStreamManager(0));
     this.context.setNameResolver(new OJavaConventionNameResolver());
     this.context.setDataTypeHandler(new OHSQLDBDataTypeHandler());
-    this.naiveStrategy = new ODBMSNaiveStrategy();
+    this.naiveStrategy = new ODBMSNaiveStrategy("embedded", this.outParentDirectory, this.dbName);
     this.sourceDBInfo = new OSourceDatabaseInfo("source", this.driver, this.jurl, this.username, this.password);
 
   }

@@ -20,6 +20,7 @@ package com.orientechnologies.teleporter.main;
 
 import com.orientechnologies.common.log.OLogManager;
 import com.orientechnologies.orient.core.config.OGlobalConfiguration;
+import com.orientechnologies.orient.core.db.OrientDB;
 import com.orientechnologies.orient.core.exception.OConfigurationException;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.orient.core.serialization.serializer.record.ORecordSerializerFactory;
@@ -258,7 +259,7 @@ public class OTeleporter extends OServerPluginAbstract {
     }
 
     executeJob(driver, jurl, username, password, outDbUrl, chosenStrategy, chosenMapper, xmlPath, nameResolver, outputLevel,
-        includedTables, excludedTables, jsonMigrationConfig, outputManager);
+        includedTables, excludedTables, jsonMigrationConfig, outputManager, null);
   }
 
   /**
@@ -282,13 +283,49 @@ public class OTeleporter extends OServerPluginAbstract {
 
   public static ODocument executeJob(String driver, String jurl, String username, String password, String outDbUrl,
       String chosenStrategy, String chosenMapper, String xmlPath, String nameResolver, String outputLevel,
-      List<String> includedTables, List<String> excludedTables, String jsonMigrationConfig, OOutputStreamManager outputManager)
+      List<String> includedTables, List<String> excludedTables, String jsonMigrationConfig, OOutputStreamManager outputManager, OrientDB orientDBInstance)
       throws OTeleporterIOException {
 
     // REGISTER THE BINARY RECORD SERIALIZER TO SUPPORT ANY OF THE EXTERNAL FIELDS
     ORecordSerializerFactory.instance().register("ORecordSerializerBinary", new ORecordSerializerBinary());
 
-    OTeleporterContext.newInstance().setOutputManager(outputManager);
+    /**
+     * Urls handling
+     */
+
+    String dbName;
+    String serverInitUrl;
+    String protocol;
+
+    if(outDbUrl.contains("embedded") || outDbUrl.contains("plocal")) {
+      protocol = "embedded";
+      outDbUrl = outDbUrl.replace("plocal","embedded");
+      serverInitUrl = outDbUrl.substring(0, outDbUrl.lastIndexOf('/') + 1);
+      dbName = outDbUrl.substring(outDbUrl.lastIndexOf('/')+1);
+    }
+
+    else if(outDbUrl.contains("remote")) {
+      protocol = "remote";
+      serverInitUrl = outDbUrl.substring(0, outDbUrl.lastIndexOf('/') + 1);
+      dbName = outDbUrl.substring(outDbUrl.lastIndexOf('/')+1);
+    }
+    else {
+      // memory protocol
+      protocol = "memory";
+      serverInitUrl = outDbUrl;
+      dbName = outDbUrl.substring(outDbUrl.lastIndexOf(':')+1);
+    }
+
+    if(orientDBInstance == null) {
+      // not working inside the orientdb server context: this execution is due to a script call
+      OTeleporterContext.newInstance(serverInitUrl);
+    }
+    else {
+      // working inside the orientdb server context: this execution is due to a command to the plugin
+      OTeleporterContext.newInstance(orientDBInstance);
+    }
+    OTeleporterContext.getInstance().setOutputManager(outputManager);
+
     ODriverConfigurator driverConfig = new ODriverConfigurator();
     List<OSourceDatabaseInfo> sourcesInfo = null;
     boolean sourceInfoLoaded = false;
@@ -314,6 +351,7 @@ public class OTeleporter extends OServerPluginAbstract {
     }
     // checking driver configuration
     driverConfig.checkDriverConfiguration(sourcesInfo.get(0).getSourceIdName());
+
 
     /**
      * Handling configuration files (source access info and migration configuration file)
@@ -356,7 +394,6 @@ public class OTeleporter extends OServerPluginAbstract {
     OGlobalConfiguration.QUERY_SCAN_THRESHOLD_TIP.setValue(-1);
 
     // OutputStream setting
-
     if (outputLevel != null)
       outputManager.setLevel(Integer.parseInt(outputLevel));
 
@@ -368,7 +405,7 @@ public class OTeleporter extends OServerPluginAbstract {
     ODBQueryEngine dbQueryEngine = new ODBQueryEngine(sourceInfo.getDriverName());
     OTeleporterContext.getInstance().setDbQueryEngine(dbQueryEngine);
 
-    OWorkflowStrategy strategy = FACTORY.buildStrategy(driver, chosenStrategy);
+    OWorkflowStrategy strategy = FACTORY.buildStrategy(chosenStrategy, protocol, serverInitUrl, dbName);
     ODocument executionResult;
 
     // Timer for statistics notifying
@@ -383,8 +420,7 @@ public class OTeleporter extends OServerPluginAbstract {
       }, 0, 1000);
 
       // the last argument represents the nameResolver
-      executionResult = strategy
-          .executeStrategy(sourceInfo, outDbUrl, chosenMapper, xmlPath, nameResolver, includedTables, excludedTables,
+      executionResult = strategy.executeStrategy(sourceInfo, outDbUrl, chosenMapper, xmlPath, nameResolver, includedTables, excludedTables,
               migrationConfig);
 
       // Disabling query scan threshold tip
@@ -411,7 +447,7 @@ public class OTeleporter extends OServerPluginAbstract {
       List<String> includedTables, List<String> excludedTables, OOutputStreamManager outputManager) throws OTeleporterIOException {
 
     return executeJob(driver, jurl, username, password, outDbUrl, chosenStrategy, chosenMapper, xmlPath, nameResolver, outputLevel,
-        includedTables, excludedTables, null, outputManager);
+        includedTables, excludedTables, null, outputManager, null);
   }
 
   @Override

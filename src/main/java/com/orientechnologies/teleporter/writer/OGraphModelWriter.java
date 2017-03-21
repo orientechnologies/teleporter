@@ -81,7 +81,7 @@ public class OGraphModelWriter {
     this.orientdbTypeName2orientdbType.put("byte", OType.BYTE);
   }
 
-  public boolean writeModelOnOrient(OER2GraphMapper mapper, ODriverDataTypeHandler handler, String outParentDatabaseDirectory, String dbName) {
+  public boolean writeModelOnOrient(OER2GraphMapper mapper, ODriverDataTypeHandler handler, String dbName, String protocol) {
 
     boolean success = false;
     OGraphModel graphModel = mapper.getGraphModel();
@@ -92,9 +92,25 @@ public class OGraphModelWriter {
 
       // starting OrientDB instance
 
-      OTeleporterContext.getInstance().initOrientDBInstance(outParentDatabaseDirectory);
       if(! OTeleporterContext.getInstance().getOrientDBInstance().exists(dbName)) {
-        OTeleporterContext.getInstance().getOrientDBInstance().create(dbName, ODatabaseType.PLOCAL);
+        String message;
+        switch(protocol) {
+        case "embedded":
+          OTeleporterContext.getInstance().getOrientDBInstance().create(dbName, ODatabaseType.PLOCAL);
+          break;
+        case "plocal":
+          OTeleporterContext.getInstance().getOrientDBInstance().create(dbName, ODatabaseType.PLOCAL);
+          break;
+        case "memory":
+          OTeleporterContext.getInstance().getOrientDBInstance().create(dbName, ODatabaseType.MEMORY);
+          break;
+        case "remote":
+          message = "Cannot create a new database in remote. Try to create a new empty database and restart the migration.\nThe current job will be aborted.";
+          throw new OTeleporterRuntimeException(message);
+        default:
+          message = "Protocol not correct. Migration will be aborted.";
+          throw new OTeleporterRuntimeException(message);
+        }
       }
       orientGraph = OTeleporterContext.getInstance().getOrientDBInstance().open(dbName,"admin","admin");
     } catch (Exception e) {
@@ -387,7 +403,7 @@ public class OGraphModelWriter {
       throw new OTeleporterRuntimeException();
     }
 
-    OTeleporterContext.getInstance().getOrientDBInstance().close();
+//    OTeleporterContext.getInstance().getOrientDBInstance().close();
 
     return success;
   }

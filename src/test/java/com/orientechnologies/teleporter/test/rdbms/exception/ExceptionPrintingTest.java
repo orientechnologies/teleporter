@@ -39,10 +39,12 @@ import static org.junit.Assert.assertTrue;
 public class ExceptionPrintingTest {
 
   private OTeleporterContext context;
+  private String outParentDirectory = "embedded:target/";
+
 
   @Before
   public void init() {
-    this.context = OTeleporterContext.newInstance();
+    this.context = OTeleporterContext.newInstance(this.outParentDirectory);
     this.context.setOutputManager(new OOutputStreamManager(0));
     context.setOutputManager(new OOutputStreamManager(0));
   }

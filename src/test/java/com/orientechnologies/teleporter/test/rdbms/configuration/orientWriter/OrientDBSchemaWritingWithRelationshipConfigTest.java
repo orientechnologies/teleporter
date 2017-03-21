@@ -66,13 +66,14 @@ public class OrientDBSchemaWritingWithRelationshipConfigTest {
   private String username = "SA";
   private String password = "";
   private String dbName = "testOrientDB";
+  private String protocol = "plocal";
   private String outParentDirectory = "embedded:target/";
   private String outOrientGraphUri = this.outParentDirectory + this.dbName;
   private OSourceDatabaseInfo sourceDBInfo;
 
   @Before
   public void init() {
-    this.context = OTeleporterContext.newInstance();
+    this.context = OTeleporterContext.newInstance(this.outParentDirectory);
     this.dbQueryEngine = new ODBQueryEngine(this.driver);
     this.context.setDbQueryEngine(this.dbQueryEngine);
     this.context.setOutputManager(new OOutputStreamManager(0));
@@ -142,7 +143,7 @@ public class OrientDBSchemaWritingWithRelationshipConfigTest {
       mapper.buildSourceDatabaseSchema();
       mapper.buildGraphModel(new OJavaConventionNameResolver());
       mapper.applyImportConfiguration();
-      modelWriter.writeModelOnOrient(mapper, new OHSQLDBDataTypeHandler(), this.outParentDirectory, this.dbName);
+      modelWriter.writeModelOnOrient(mapper, new OHSQLDBDataTypeHandler(), this.dbName, this.protocol);
 
 
       /*
@@ -161,7 +162,7 @@ public class OrientDBSchemaWritingWithRelationshipConfigTest {
        */
 
 
-      this.context.initOrientDBInstance(this.outOrientGraphUri);
+//      this.context.initOrientDBInstance(this.outOrientGraphUri);
       orientGraph = this.context.getOrientDBInstance().open(this.dbName,"admin","admin");
 
       OClass employeeVertexType = orientGraph.getClass("Employee");
@@ -332,7 +333,7 @@ public class OrientDBSchemaWritingWithRelationshipConfigTest {
       mapper.buildSourceDatabaseSchema();
       mapper.buildGraphModel(new OJavaConventionNameResolver());
       mapper.applyImportConfiguration();
-      modelWriter.writeModelOnOrient(mapper, new OHSQLDBDataTypeHandler(), this.outParentDirectory, this.dbName);
+      modelWriter.writeModelOnOrient(mapper, new OHSQLDBDataTypeHandler(), this.dbName, this.protocol);
 
 
       /*
@@ -351,7 +352,6 @@ public class OrientDBSchemaWritingWithRelationshipConfigTest {
        */
 
 
-      this.context.initOrientDBInstance(outOrientGraphUri);
       orientGraph = this.context.getOrientDBInstance().open(this.dbName,"admin","admin");
 
       OClass employeeVertexType = orientGraph.getClass("Employee");
@@ -508,7 +508,7 @@ public class OrientDBSchemaWritingWithRelationshipConfigTest {
       mapper.buildGraphModel(new OJavaConventionNameResolver());
       mapper.applyImportConfiguration();
       mapper.performAggregations();
-      modelWriter.writeModelOnOrient(mapper, new OHSQLDBDataTypeHandler(), this.outParentDirectory, this.dbName);
+      modelWriter.writeModelOnOrient(mapper, new OHSQLDBDataTypeHandler(), this.dbName, this.protocol);
 
 
       /*
@@ -527,7 +527,6 @@ public class OrientDBSchemaWritingWithRelationshipConfigTest {
        */
 
 
-      this.context.initOrientDBInstance(this.outOrientGraphUri);
       orientGraph = this.context.getOrientDBInstance().open(this.dbName,"admin","admin");
 
       OClass actorVertexType = orientGraph.getClass("Actor");
@@ -680,7 +679,7 @@ public class OrientDBSchemaWritingWithRelationshipConfigTest {
       mapper.buildGraphModel(new OJavaConventionNameResolver());
       mapper.applyImportConfiguration();
       mapper.performAggregations();
-      modelWriter.writeModelOnOrient(mapper, new OHSQLDBDataTypeHandler(), this.outParentDirectory, this.dbName);
+      modelWriter.writeModelOnOrient(mapper, new OHSQLDBDataTypeHandler(), this.dbName, this.protocol);
 
 
       /*
@@ -699,7 +698,6 @@ public class OrientDBSchemaWritingWithRelationshipConfigTest {
        */
 
 
-      this.context.initOrientDBInstance(outOrientGraphUri);
       orientGraph = this.context.getOrientDBInstance().open(this.dbName,"admin","admin");
 
       OClass actorVertexType = orientGraph.getClass("Actor");
@@ -851,7 +849,7 @@ public class OrientDBSchemaWritingWithRelationshipConfigTest {
       mapper.buildGraphModel(new OJavaConventionNameResolver());
       mapper.applyImportConfiguration();
       mapper.performAggregations();
-      modelWriter.writeModelOnOrient(mapper, new OHSQLDBDataTypeHandler(), this.outParentDirectory, this.dbName);
+      modelWriter.writeModelOnOrient(mapper, new OHSQLDBDataTypeHandler(), this.dbName, this.protocol);
 
 
       /*
@@ -870,7 +868,6 @@ public class OrientDBSchemaWritingWithRelationshipConfigTest {
        */
 
 
-      this.context.initOrientDBInstance(outOrientGraphUri);
       orientGraph = this.context.getOrientDBInstance().open(this.dbName,"admin","admin");
 
       OClass actorVertexType = orientGraph.getClass("Actor");
@@ -1024,7 +1021,7 @@ public class OrientDBSchemaWritingWithRelationshipConfigTest {
       mapper.buildGraphModel(new OJavaConventionNameResolver());
       mapper.applyImportConfiguration();
       mapper.performAggregations();
-      modelWriter.writeModelOnOrient(mapper, new OHSQLDBDataTypeHandler(), this.outParentDirectory, this.dbName);
+      modelWriter.writeModelOnOrient(mapper, new OHSQLDBDataTypeHandler(), this.dbName, this.protocol);
 
 
       /*
@@ -1043,7 +1040,6 @@ public class OrientDBSchemaWritingWithRelationshipConfigTest {
        */
 
 
-      this.context.initOrientDBInstance(outOrientGraphUri);
       orientGraph = this.context.getOrientDBInstance().open(this.dbName,"admin","admin");
 
       OClass actorVertexType = orientGraph.getClass("Actor");

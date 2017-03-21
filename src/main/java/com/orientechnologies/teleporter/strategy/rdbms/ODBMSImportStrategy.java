@@ -58,8 +58,14 @@ import java.util.*;
 public abstract class ODBMSImportStrategy implements OWorkflowStrategy {
 
   protected OER2GraphMapper mapper;
+  protected String protocol;
+  protected String serverInitUrl;
+  protected String dbName;
 
-  public ODBMSImportStrategy() {
+  public ODBMSImportStrategy(String protocol, String serverInitUrl, String dbName) {
+    this.protocol = protocol;
+    this.serverInitUrl = serverInitUrl;
+    this.dbName = dbName;
   }
 
   @Override
@@ -67,11 +73,6 @@ public abstract class ODBMSImportStrategy implements OWorkflowStrategy {
       String nameResolverConvention, List<String> includedTables, List<String> excludedTables, ODocument migrationConfigDoc) {
 
     OSourceDatabaseInfo sourceDBInfo = (OSourceDatabaseInfo) sourceInfo;
-
-    // Urls handling
-    outOrientGraphUri = outOrientGraphUri.replace("plocal","embedded");
-    String dbName = outOrientGraphUri.substring(outOrientGraphUri.lastIndexOf('/')+1);
-    String outParentDatabaseDirectory = outOrientGraphUri.substring(0, outOrientGraphUri.lastIndexOf('/')+1);
 
     Date globalStart = new Date();
 
@@ -94,16 +95,14 @@ public abstract class ODBMSImportStrategy implements OWorkflowStrategy {
     ONameResolver nameResolver = nameResolverFactory.buildNameResolver(nameResolverConvention);
     OTeleporterContext.getInstance().getStatistics().runningStepNumber = -1;
 
-    this.mapper = this
-        .createSchemaMapper(sourceDBInfo, outParentDatabaseDirectory, dbName, chosenMapper, xmlPath, nameResolver, handler, includedTables,
-            excludedTables, migrationConfig);
+    this.mapper = this.createSchemaMapper(sourceDBInfo, chosenMapper, xmlPath, nameResolver, handler, includedTables, excludedTables, migrationConfig);
 
 
-    // Step 4: Import
+    /*
+     * Step 4: Import
+     */
 
-    OTeleporterContext.getInstance().initOrientDBInstance(outParentDatabaseDirectory);
-    this.executeImport(sourceDBInfo, outOrientGraphUri, mapper, handler);
-    OTeleporterContext.getInstance().closeOrientDBInstance();
+    this.executeImport(sourceDBInfo, dbName, mapper, handler);
     OTeleporterContext.getInstance().getStatistics().notifyListeners();
     OTeleporterContext.getInstance().getOutputManager().info("\n");
     OTeleporterContext.getInstance().getStatistics().runningStepNumber = -1;
@@ -124,9 +123,8 @@ public abstract class ODBMSImportStrategy implements OWorkflowStrategy {
 
   protected abstract OConfigurationHandler buildConfigurationHandler();
 
-  public abstract OER2GraphMapper createSchemaMapper(OSourceDatabaseInfo sourceDBInfo, String outParentDatabaseDirectory, String dbName,
-      String chosenMapper, String xmlPath, ONameResolver nameResolver, ODBMSDataTypeHandler handler, List<String> includedTables,
-      List<String> excludedTables, OConfiguration migrationConfig);
+  public abstract OER2GraphMapper createSchemaMapper(OSourceDatabaseInfo sourceDBInfo, String chosenMapper, String xmlPath, ONameResolver nameResolver, ODBMSDataTypeHandler handler,
+      List<String> includedTables, List<String> excludedTables, OConfiguration migrationConfig);
 
   public abstract void executeImport(OSourceDatabaseInfo sourceDBInfo, String outOrientGraphUri, OSource2GraphMapper mapper,
       ODBMSDataTypeHandler handler);

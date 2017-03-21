@@ -48,8 +48,6 @@ import static org.junit.Assert.fail;
 
 public abstract class TeleporterInvocationTest {
 
-  private OTeleporterContext context = OTeleporterContext.newInstance();
-
   // arguments
   protected Map<String, String> arguments = new HashMap<String, String>();
   protected String[]   args;
@@ -60,7 +58,8 @@ public abstract class TeleporterInvocationTest {
   private String password = "";
   private String dbName = "testOrientDB";
   private final String serverHome        = "target/server/";
-  private String outOrientGraphUri = "embedded:" + this.serverHome + this.dbName;
+  private String outParentDirectory = "embedded:" + this.serverHome;
+  private OTeleporterContext context = OTeleporterContext.newInstance(this.outParentDirectory);
 
   // server configuration path
   private final String configurationPath = "orientdb-server-config.xml";

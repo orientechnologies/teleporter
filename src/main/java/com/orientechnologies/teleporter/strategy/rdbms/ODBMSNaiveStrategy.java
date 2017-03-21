@@ -58,7 +58,8 @@ import java.util.List;
 
 public class ODBMSNaiveStrategy extends ODBMSImportStrategy {
 
-  public ODBMSNaiveStrategy() {
+  public ODBMSNaiveStrategy(String protocol, String serverInitUrl, String dbName) {
+    super(protocol, serverInitUrl, dbName);
   }
 
   @Override
@@ -66,9 +67,8 @@ public class ODBMSNaiveStrategy extends ODBMSImportStrategy {
     return new OConfigurationHandler(false);
   }
 
-  public OER2GraphMapper createSchemaMapper(OSourceDatabaseInfo sourceDBInfo, String outParentDatabaseDirectory, String dbName, String chosenMapper,
-      String xmlPath, ONameResolver nameResolver, ODBMSDataTypeHandler handler, List<String> includedTables,
-      List<String> excludedTables, OConfiguration migrationConfig) {
+  public OER2GraphMapper createSchemaMapper(OSourceDatabaseInfo sourceDBInfo, String chosenMapper, String xmlPath, ONameResolver nameResolver, ODBMSDataTypeHandler handler,
+      List<String> includedTables, List<String> excludedTables, OConfiguration migrationConfig) {
 
     OMapperFactory mapperFactory = new OMapperFactory();
     OER2GraphMapper mapper = (OER2GraphMapper) mapperFactory
@@ -95,7 +95,7 @@ public class ODBMSNaiveStrategy extends ODBMSImportStrategy {
 
     // Step 4: Writing schema on OrientDB
     OGraphModelWriter graphModelWriter = new OGraphModelWriter(migrationConfig);
-    boolean success = graphModelWriter.writeModelOnOrient(mapper, handler, outParentDatabaseDirectory, dbName);
+    boolean success = graphModelWriter.writeModelOnOrient(mapper, handler, dbName, protocol);
 
     if (!success) {
       OTeleporterContext.getInstance().getOutputManager().error("Writing not complete. Something gone wrong.\n");
@@ -110,7 +110,7 @@ public class ODBMSNaiveStrategy extends ODBMSImportStrategy {
     return mapper;
   }
 
-  public void executeImport(OSourceDatabaseInfo sourceDBInfo, String outOrientGraphUri, OSource2GraphMapper genericMapper,
+  public void executeImport(OSourceDatabaseInfo sourceDBInfo, String dbName, OSource2GraphMapper genericMapper,
       ODBMSDataTypeHandler handler) {
 
     ODatabaseDocument orientGraph = null;
@@ -126,12 +126,8 @@ public class ODBMSNaiveStrategy extends ODBMSImportStrategy {
       OGraphEngineForDB graphEngine = new OGraphEngineForDB((OER2GraphMapper) mapper, handler);
 
       // OrientDB graph initialization/connection
-      String dbName = outOrientGraphUri.substring(outOrientGraphUri.lastIndexOf('/')+1);
-      
+
       try {
-        if(! OTeleporterContext.getInstance().getOrientDBInstance().exists(dbName)) {
-          OTeleporterContext.getInstance().getOrientDBInstance().create(dbName, ODatabaseType.PLOCAL);
-        }
         orientGraph = OTeleporterContext.getInstance().getOrientDBInstance().open(dbName,"admin","admin");
       } catch (Exception e) {
         String mess = "";

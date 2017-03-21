@@ -41,10 +41,11 @@ public class ProgressMonitorTest {
   private OTeleporterStatistics statistics;
   private OOutputStreamManager  outputManager;
   private OProgressMonitor      progressMonitor;
+  private String outParentDirectory = "embedded:target/";
 
   @Before
   public void init() {
-    this.context = OTeleporterContext.newInstance();
+    this.context = OTeleporterContext.newInstance(this.outParentDirectory);
     this.statistics = new OTeleporterStatistics();
     this.context.setStatistics(this.statistics);
     this.outputManager = new OOutputStreamManager(2);

@@ -64,10 +64,12 @@ public class FilterTableMappingTest {
   private final static String XML_TABLE_PER_SUBCLASS1      = "src/test/resources/inheritance/hibernate/tablePerSubclassImportTest1.xml";
   private final static String XML_TABLE_PER_SUBCLASS2      = "src/test/resources/inheritance/hibernate/tablePerSubclassImportTest2.xml";
   private final static String XML_TABLE_PER_CONCRETE_CLASS = "src/test/resources/inheritance/hibernate/tablePerConcreteClassImportTest.xml";
+  private String outParentDirectory = "embedded:target/";
+
 
   @Before
   public void init() {
-    this.context = OTeleporterContext.newInstance();
+    this.context = OTeleporterContext.newInstance(this.outParentDirectory);
     this.dbQueryEngine = new ODBQueryEngine(this.driver);
     this.context.setDbQueryEngine(this.dbQueryEngine);
     this.context.setOutputManager(new OOutputStreamManager(0));

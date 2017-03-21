@@ -76,14 +76,14 @@ public class SequentialExecutionsTest {
 
   @Before
   public void init() {
-    this.context = OTeleporterContext.newInstance();
+    this.context = OTeleporterContext.newInstance(this.outParentDirectory);
     this.dbQueryEngine = new ODBQueryEngine(this.driver);
     this.context.setDbQueryEngine(this.dbQueryEngine);
     this.context.setOutputManager(new OOutputStreamManager(0));
     this.context.setNameResolver(new OJavaConventionNameResolver());
     this.context.setDataTypeHandler(new OHSQLDBDataTypeHandler());
-    this.naiveImportStrategy = new ODBMSNaiveStrategy();
-    this.naiveAggregationImportStrategy = new ODBMSNaiveAggregationStrategy();
+    this.naiveImportStrategy = new ODBMSNaiveStrategy("embedded", this.outParentDirectory, this.dbName);
+    this.naiveAggregationImportStrategy = new ODBMSNaiveAggregationStrategy("embedded", this.outParentDirectory, this.dbName);
     this.sourceDBInfo = new OSourceDatabaseInfo("source", this.driver, this.jurl, this.username, this.password);
   }
 
@@ -165,8 +165,6 @@ public class SequentialExecutionsTest {
       currentProperty = name2props.get("surname");
       assertEquals("surname", currentProperty.getName());
       assertEquals(OType.STRING, currentProperty.getType());
-
-      this.context.closeOrientDBInstance();
 
 
       /*
@@ -298,8 +296,6 @@ public class SequentialExecutionsTest {
       assertEquals("surname", currentProperty.getName());
       assertEquals(OType.STRING, currentProperty.getType());
 
-      this.context.closeOrientDBInstance();
-
 
       /*
        * Modify of the db schema, removing a column
@@ -426,8 +422,6 @@ public class SequentialExecutionsTest {
       currentProperty = name2props.get("surname");
       assertEquals("surname", currentProperty.getName());
       assertEquals(OType.STRING, currentProperty.getType());
-
-      this.context.closeOrientDBInstance();
 
 
       /*
@@ -559,8 +553,6 @@ public class SequentialExecutionsTest {
       assertEquals(2, orientGraph.countClass("E"));
       assertEquals(2, orientGraph.countClass("HasDirector"));
 
-      this.context.closeOrientDBInstance();
-
 
       /*
        * Modify of the db schema, adding a table
@@ -677,8 +669,6 @@ public class SequentialExecutionsTest {
       currentProperty = name2props.get("surname");
       assertEquals("surname", currentProperty.getName());
       assertEquals(OType.STRING, currentProperty.getType());
-
-      this.context.closeOrientDBInstance();
 
 
       /*
@@ -832,8 +822,6 @@ public class SequentialExecutionsTest {
 
       assertEquals(0, orientGraph.countClass("E"));
 
-      this.context.closeOrientDBInstance();
-
 
       /*
        *  Adding a relationship (foreign key).
@@ -976,8 +964,6 @@ public class SequentialExecutionsTest {
       assertEquals("director", currentProperty.getName());
       assertEquals(OType.STRING, currentProperty.getType());
 
-      this.context.closeOrientDBInstance();
-
 
       /*
        * Modify of the db schema, removing a table
@@ -1110,8 +1096,6 @@ public class SequentialExecutionsTest {
       assertEquals(2, orientGraph.countClass("E"));
       assertEquals(2, orientGraph.countClass("HasDirector"));
 
-      this.context.closeOrientDBInstance();
-
 
       /*
        *  Removing a relationship
@@ -1212,8 +1196,6 @@ public class SequentialExecutionsTest {
       // edges check
 
       assertEquals(0, orientGraph.countClass("E"));
-
-      this.context.closeOrientDBInstance();
 
 
       /*
@@ -1333,8 +1315,6 @@ public class SequentialExecutionsTest {
       assertEquals(8, orientGraph.countClass("E"));
       assertEquals(8, orientGraph.countClass("FilmActor"));
 
-      this.context.closeOrientDBInstance();
-
 
       /*
        * Adding records to the film, actor and join tables
@@ -1433,8 +1413,6 @@ public class SequentialExecutionsTest {
 
       assertEquals(2, orientGraph.countClass("V"));
       assertEquals(2, orientGraph.countClass("Director"));
-
-      this.context.closeOrientDBInstance();
 
 
       /*
@@ -1554,8 +1532,6 @@ public class SequentialExecutionsTest {
       // edges check
 
       assertEquals(0, orientGraph.countClass("E"));
-
-      this.context.closeOrientDBInstance();
 
 
       /*
@@ -1679,8 +1655,6 @@ public class SequentialExecutionsTest {
       // edges check
 
       assertEquals(0, orientGraph.countClass("E"));
-
-      this.context.closeOrientDBInstance();
 
 
       /*

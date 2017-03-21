@@ -42,10 +42,11 @@ public class DriverConfiguratorTest {
   public static final String DRIVERS = "http://orientdb.com/jdbc-drivers.json";  // it must be coherent with the instance variable "DRIVERS" of the class ODriverConfigurator
   private OOutputStreamManager outputManager;
   private String               fileName;
+  private String outParentDirectory = "embedded:target/";
 
   @Before
   public void init() {
-    this.context = OTeleporterContext.newInstance();
+    this.context = OTeleporterContext.newInstance(outParentDirectory);
     this.driverConfigurator = new ODriverConfigurator();
     this.outputManager = new OOutputStreamManager(2);
     this.context.setOutputManager(outputManager);
