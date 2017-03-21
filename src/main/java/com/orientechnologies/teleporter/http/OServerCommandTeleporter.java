@@ -74,7 +74,7 @@ public class OServerCommandTeleporter extends OServerCommandAuthenticatedServerA
 
     if ("job".equalsIgnoreCase(parts[1])) {
       ODocument cfg = new ODocument().fromJSON(iRequest.content);
-      handler.executeImport(cfg);
+      handler.executeImport(cfg, super.server);
       iResponse.send(OHttpUtils.STATUS_OK_CODE, "OK", OHttpUtils.CONTENT_JSON, null, null);
 
     } else if ("test".equalsIgnoreCase(parts[1])) {

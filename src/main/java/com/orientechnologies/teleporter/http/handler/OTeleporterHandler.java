@@ -18,6 +18,7 @@
 
 package com.orientechnologies.teleporter.http.handler;
 
+import com.orientechnologies.orient.server.OServer;
 import com.orientechnologies.teleporter.context.OOutputStreamManager;
 import com.orientechnologies.teleporter.context.OTeleporterContext;
 import com.orientechnologies.teleporter.persistence.util.ODBSourceConnection;
@@ -46,9 +47,9 @@ public class OTeleporterHandler {
    *
    * @param cfg
    */
-  public void executeImport(ODocument cfg) {
+  public void executeImport(ODocument cfg, OServer currentServerInstance) {
 
-    OTeleporterJob job = new OTeleporterJob(cfg, new OTeleporterListener() {
+    OTeleporterJob job = new OTeleporterJob(cfg, currentServerInstance, new OTeleporterListener() {
       @Override
       public void onEnd(OTeleporterJob oTeleporterJob) {
         currentJob = null;

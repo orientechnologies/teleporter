@@ -18,6 +18,7 @@
 
 package com.orientechnologies.teleporter.http.handler;
 
+import com.orientechnologies.orient.server.OServer;
 import com.orientechnologies.teleporter.context.OOutputStreamManager;
 import com.orientechnologies.teleporter.main.OTeleporter;
 import com.orientechnologies.orient.core.record.impl.ODocument;
@@ -36,18 +37,22 @@ public class OTeleporterJob implements Runnable {
   private final ODocument           cfg;
   private       OTeleporterListener listener;
 
-  public String id;
+  private String id;
 
-  public Status      status;
-  public PrintStream stream;
-  ByteArrayOutputStream baos;
+  private Status      status;
+  private PrintStream stream;
+  private ByteArrayOutputStream baos;
 
-  public OTeleporterJob(ODocument cfg, OTeleporterListener listener) {
+  private OServer currentServerInstance;
+
+  public OTeleporterJob(ODocument cfg, OServer currentServerInstance, OTeleporterListener listener) {
     this.cfg = cfg;
     this.listener = listener;
 
     baos = new ByteArrayOutputStream();
     stream = new PrintStream(baos);
+
+    this.currentServerInstance = currentServerInstance;
   }
 
   @Override
@@ -55,11 +60,14 @@ public class OTeleporterJob implements Runnable {
 
     id = UUID.randomUUID().toString();
 
+    String serverDatabaseDirectory = this.currentServerInstance.getDatabaseDirectory();
+
     final String driver = cfg.field("driver");
     final String jurl = cfg.field("jurl");
     final String username = cfg.field("username");
     final String password = cfg.field("password");
-    final String outDbUrl = cfg.field("outDbUrl");
+    final String protocol = cfg.field("protocol");
+    final String outDbName = cfg.field("outDBName");
     final String chosenStrategy = cfg.field("strategy");
     final String chosenMapper = cfg.field("mapper");
     final String xmlPath = cfg.field("xmlPath");
@@ -68,6 +76,15 @@ public class OTeleporterJob implements Runnable {
     final List<String> includedTables = cfg.field("includedTables");
     final List<String> excludedTables = null;
     status = Status.RUNNING;
+
+    String outDbUrl;
+    if(protocol.equals("plocal")) {
+      outDbUrl = protocol + ":" + serverDatabaseDirectory + outDbName;
+    }
+    else {
+      // protocol.equals("memory")
+      outDbUrl = protocol + ":" + outDbName;
+    }
 
     try {
       OTeleporter
