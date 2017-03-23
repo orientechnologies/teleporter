@@ -316,11 +316,10 @@ public class OTeleporter extends OServerPluginAbstract {
       dbName = outDbUrl.substring(outDbUrl.lastIndexOf(':')+1);
     }
 
-    if(orientDBInstance == null) {
+    if (orientDBInstance == null) {
       // not working inside the orientdb server context: this execution is due to a script call
       OTeleporterContext.newInstance(serverInitUrl);
-    }
-    else {
+    } else {
       // working inside the orientdb server context: this execution is due to a command to the plugin
       OTeleporterContext.newInstance(orientDBInstance);
     }
@@ -421,7 +420,7 @@ public class OTeleporter extends OServerPluginAbstract {
 
       // the last argument represents the nameResolver
       executionResult = strategy.executeStrategy(sourceInfo, outDbUrl, chosenMapper, xmlPath, nameResolver, includedTables, excludedTables,
-              migrationConfig);
+          migrationConfig);
 
       // Disabling query scan threshold tip
       OGlobalConfiguration.QUERY_SCAN_THRESHOLD_TIP.setValue(50000);

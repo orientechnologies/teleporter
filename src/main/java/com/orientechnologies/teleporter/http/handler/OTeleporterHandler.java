@@ -82,7 +82,7 @@ public class OTeleporterHandler {
    *
    * @throws Exception
    */
-  public void checkConnection(ODocument args) throws Exception {
+  public void checkConnection(ODocument args, OServer currentServerInstance) throws Exception {
 
     ODriverConfigurator configurator = new ODriverConfigurator();
 
@@ -90,7 +90,12 @@ public class OTeleporterHandler {
     final String jurl = args.field("jurl");
     final String username = args.field("username");
     final String password = args.field("password");
+
+    if(OTeleporterContext.getInstance() == null) {
+      OTeleporterContext.newInstance(currentServerInstance.getContext());
+    }
     OTeleporterContext.getInstance().setOutputManager(new OOutputStreamManager(2));
+
     configurator.checkConnection(driver, jurl, username, password);
   }
 
@@ -117,7 +122,7 @@ public class OTeleporterHandler {
    *
    * @return ODocument
    */
-  public ODocument getTables(ODocument params) throws Exception {
+  public ODocument getTables(ODocument params, OServer currentServerInstance) throws Exception {
 
     ODriverConfigurator configurator = new ODriverConfigurator();
     List<ODocument> tables = new ArrayList<ODocument>();
@@ -126,6 +131,10 @@ public class OTeleporterHandler {
     String uri = params.field("jurl");
     String username = params.field("username");
     String password = params.field("password");
+
+    if(OTeleporterContext.getInstance() == null) {
+      OTeleporterContext.newInstance(currentServerInstance.getContext());
+    }
     OTeleporterContext.getInstance().setOutputManager(new OOutputStreamManager(2));
 
     Connection connection = configurator.getDBMSConnection(driver, uri, username, password);

@@ -87,7 +87,7 @@ public class OServerCommandTeleporter extends OServerCommandAuthenticatedServerA
     } else if ("test".equalsIgnoreCase(parts[1])) {
       ODocument args = new ODocument().fromJSON(iRequest.content);
       try {
-        handler.checkConnection(args);
+        handler.checkConnection(args, super.server);
       } catch (Exception e) {
         throw new IllegalArgumentException(e);
       }
@@ -97,7 +97,7 @@ public class OServerCommandTeleporter extends OServerCommandAuthenticatedServerA
       ODocument params = new ODocument().fromJSON(iRequest.content);
       ODocument tables;
       try {
-        tables = handler.getTables(params);
+        tables = handler.getTables(params, super.server);
       } catch (Exception e) {
         throw new IllegalArgumentException(e);
       }
