@@ -243,9 +243,11 @@ public class OGraphEngineForDB {
         // second check: the set properties on the current vertex are only those correspondent to the primary key's attributes
         if (justReachedVertex) {
           for (String property : vertex.getPropertyNames()) {
-            if (!this.containsProperty(propertiesOfIndex, property)) {
-              justReachedVertex = false;
-              break;
+            if(!property.startsWith("in_") && !property.startsWith("out_")) {
+              if (!this.containsProperty(propertiesOfIndex, property)) {
+                justReachedVertex = false;
+                break;
+              }
             }
           }
         }
