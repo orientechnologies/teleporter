@@ -371,7 +371,7 @@ public class ODriverConfigurator {
   }
 
   /**
-   * Once the driver configuration is complete, it checks the connection to the source database.
+   * It gets the connection to the source database.
    *
    * @param driver
    * @param uri
@@ -386,10 +386,11 @@ public class ODriverConfigurator {
     Connection connection = null;
     try {
       connection = ODBSourceConnection.getConnection(driverName, uri, username, password);
-    } finally {
-      if (connection != null) {
-        connection.close();
-      }
+    } catch(Exception e) {
+      String mess = "";
+      OTeleporterContext.getInstance().printExceptionMessage(e, mess, "error");
+      OTeleporterContext.getInstance().printExceptionStackTrace(e, "error");
+      throw new OTeleporterRuntimeException(e);
     }
     return connection;
   }
