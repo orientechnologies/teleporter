@@ -572,8 +572,6 @@ public class AggregationStrategyTest {
        *  Testing built OrientDB
        */
 
-
-      this.context.initOrientDBInstance(outOrientGraphUri);
       orientGraph = this.context.getOrientDBInstance().open(this.dbName,"admin","admin");
 
       // vertices check

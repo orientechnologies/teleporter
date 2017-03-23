@@ -172,7 +172,6 @@ public class FilterTableImportingTest {
        */
 
 
-      this.context.initOrientDBInstance(outOrientGraphUri);
       orientGraph = this.context.getOrientDBInstance().open(this.dbName,"admin","admin");
 
       OClass employeeVertexType = orientGraph.getClass("Employee");
@@ -385,7 +384,6 @@ public class FilterTableImportingTest {
        */
 
 
-      this.context.initOrientDBInstance(outOrientGraphUri);
       orientGraph = this.context.getOrientDBInstance().open(this.dbName,"admin","admin");
 
       OClass employeeVertexType = orientGraph.getClass("Employee");
@@ -604,7 +602,6 @@ public class FilterTableImportingTest {
        */
 
 
-      this.context.initOrientDBInstance(outOrientGraphUri);
       orientGraph = this.context.getOrientDBInstance().open(this.dbName,"admin","admin");
 
       OClass employeeVertexType = orientGraph.getClass("Employee");
@@ -867,7 +864,6 @@ public class FilterTableImportingTest {
        */
 
 
-      this.context.initOrientDBInstance(outOrientGraphUri);
       orientGraph = this.context.getOrientDBInstance().open(this.dbName,"admin","admin");
 
       OClass employeeVertexType = orientGraph.getClass("Employee");
@@ -1126,7 +1122,6 @@ public class FilterTableImportingTest {
        */
 
 
-      this.context.initOrientDBInstance(outOrientGraphUri);
       orientGraph = this.context.getOrientDBInstance().open(this.dbName,"admin","admin");
 
       OClass employeeVertexType = orientGraph.getClass("Employee");
@@ -1394,7 +1389,6 @@ public class FilterTableImportingTest {
        */
 
 
-      this.context.initOrientDBInstance(outOrientGraphUri);
       orientGraph = this.context.getOrientDBInstance().open(this.dbName,"admin","admin");
 
       OClass employeeVertexType = orientGraph.getClass("Employee");

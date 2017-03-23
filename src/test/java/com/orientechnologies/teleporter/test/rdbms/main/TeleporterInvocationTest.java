@@ -52,14 +52,14 @@ public abstract class TeleporterInvocationTest {
   protected Map<String, String> arguments = new HashMap<String, String>();
   protected String[]   args;
   protected Connection dbConnection;
-  private String driver   = "org.hsqldb.jdbc.JDBCDriver";
-  private String jurl     = "jdbc:hsqldb:mem:mydb";
-  private String username = "SA";
-  private String password = "";
-  private String dbName = "testOrientDB";
-  private final String serverHome        = "target/server/";
-  private String outParentDirectory = "embedded:" + this.serverHome;
-  private OTeleporterContext context = OTeleporterContext.newInstance(this.outParentDirectory);
+  protected String driver   = "org.hsqldb.jdbc.JDBCDriver";
+  protected String jurl     = "jdbc:hsqldb:mem:mydb";
+  protected String username = "SA";
+  protected String password = "";
+  protected String dbName = "testOrientDB";
+  protected final String serverHome        = "target/server/";
+  protected String outParentDirectory = "embedded:" + this.serverHome + "databases";
+  protected OTeleporterContext context = OTeleporterContext.newInstance(this.outParentDirectory);
 
   // server configuration path
   private final String configurationPath = "orientdb-server-config.xml";
@@ -187,7 +187,6 @@ public abstract class TeleporterInvocationTest {
   protected void closeEnvironment() {
 
     this.closeAndDropSourceDatabase();
-    this.closeAndDropOrientdbDatabase();
     //this.closeServer(OServerMain.server());
     this.purgeOrientdbServer();
 
@@ -227,23 +226,6 @@ public abstract class TeleporterInvocationTest {
 
   }
 
-  private void closeAndDropOrientdbDatabase() {
-
-    this.context.initOrientDBInstance("embedded:" + this.serverHome + "databases/");
-    ODatabaseDocument orientGraph = this.context.getOrientDBInstance().open(this.dbName,"admin","admin");
-
-    try {
-
-      if (orientGraph != null) {
-        orientGraph.close();
-      }
-
-    } catch (Exception e) {
-      e.printStackTrace();
-      fail();
-    }
-
-  }
 
   private void purgeOrientdbServer() {
 

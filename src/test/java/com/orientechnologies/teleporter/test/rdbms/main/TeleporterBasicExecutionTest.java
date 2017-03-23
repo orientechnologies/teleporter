@@ -46,6 +46,7 @@ public class TeleporterBasicExecutionTest extends TeleporterInvocationTest {
 
       try {
         OTeleporter.main(args);
+        super.context.closeOrientDBInstance();
         jobComplete = true;
       } catch (Exception e) {
         e.printStackTrace();

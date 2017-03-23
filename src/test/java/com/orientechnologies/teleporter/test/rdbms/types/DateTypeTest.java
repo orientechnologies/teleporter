@@ -62,6 +62,7 @@ public class DateTypeTest {
   @Before
   public void init() {
     this.context = OTeleporterContext.newInstance(this.outParentDirectory);
+    this.context.initOrientDBInstance(outOrientGraphUri);
     this.dbQueryEngine = new ODBQueryEngine(this.driver);
     this.sourceDBInfo = new OSourceDatabaseInfo("source", this.driver, this.jurl, this.username, this.password);
     this.context.setDbQueryEngine(this.dbQueryEngine);
@@ -127,7 +128,6 @@ public class DateTypeTest {
        *  Testing built OrientDB
        */
 
-      this.context.initOrientDBInstance(outOrientGraphUri);
       orientGraph = this.context.getOrientDBInstance().open(this.dbName,"admin","admin");
 
       assertEquals("STRING",
@@ -187,7 +187,6 @@ public class DateTypeTest {
        *  Testing built OrientDB
        */
 
-      this.context.initOrientDBInstance(outOrientGraphUri);
       orientGraph = this.context.getOrientDBInstance().open(this.dbName,"admin","admin");
 
       assertEquals("DATE",
@@ -252,7 +251,6 @@ public class DateTypeTest {
        *  Testing built OrientDB
        */
 
-      this.context.initOrientDBInstance(outOrientGraphUri);
       orientGraph = this.context.getOrientDBInstance().open(this.dbName,"admin","admin");
 
       assertEquals("DATETIME",
@@ -317,7 +315,6 @@ public class DateTypeTest {
        *  Testing built OrientDB
        */
 
-      this.context.initOrientDBInstance(outOrientGraphUri);
       orientGraph = this.context.getOrientDBInstance().open(this.dbName,"admin","admin");
 
       assertEquals("DATETIME",
@@ -382,7 +379,6 @@ public class DateTypeTest {
        *  Testing built OrientDB
        */
 
-      this.context.initOrientDBInstance(outOrientGraphUri);
       orientGraph = this.context.getOrientDBInstance().open(this.dbName,"admin","admin");
 
       assertEquals("STRING",
@@ -447,7 +443,6 @@ public class DateTypeTest {
        *  Testing built OrientDB
        */
 
-      this.context.initOrientDBInstance(outOrientGraphUri);
       orientGraph = this.context.getOrientDBInstance().open(this.dbName,"admin","admin");
 
       assertEquals("STRING",

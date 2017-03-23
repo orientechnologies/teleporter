@@ -74,6 +74,7 @@ public class HibernateImportTest {
   @Before
   public void init() {
     this.context = OTeleporterContext.newInstance(this.outParentDirectory);
+    this.context.initOrientDBInstance(outOrientGraphUri);
     this.dbQueryEngine = new ODBQueryEngine(this.driver);
     this.context.setDbQueryEngine(this.dbQueryEngine);
     this.context.setOutputManager(new OOutputStreamManager(0));
@@ -162,8 +163,6 @@ public class HibernateImportTest {
        * Test OrientDB Schema
        */
 
-
-      this.context.initOrientDBInstance(outOrientGraphUri);
       orientGraph = this.context.getOrientDBInstance().open(this.dbName,"admin","admin");
 
       OClass employeeVertexType = orientGraph.getClass("Employee");
@@ -435,8 +434,6 @@ public class HibernateImportTest {
        * Test OrientDB Schema
        */
 
-
-      this.context.initOrientDBInstance(outOrientGraphUri);
       orientGraph = this.context.getOrientDBInstance().open(this.dbName,"admin","admin");
 
       OClass employeeVertexType = orientGraph.getClass("Employee");
@@ -764,8 +761,6 @@ public class HibernateImportTest {
        * Test OrientDB Schema
        */
 
-
-      this.context.initOrientDBInstance(outOrientGraphUri);
       orientGraph = this.context.getOrientDBInstance().open(this.dbName,"admin","admin");
 
       OClass employeeVertexType = orientGraph.getClass("Employee");
@@ -1041,8 +1036,6 @@ public class HibernateImportTest {
        * Test OrientDB Schema
        */
 
-
-      this.context.initOrientDBInstance(outOrientGraphUri);
       orientGraph = this.context.getOrientDBInstance().open(this.dbName,"admin","admin");
 
       OClass employeeVertexType = orientGraph.getClass("Employee");

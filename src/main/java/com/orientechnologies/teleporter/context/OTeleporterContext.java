@@ -51,10 +51,12 @@ public class OTeleporterContext {
   private OTeleporterContext(OrientDB orientDBInstance) {
     this.statistics = new OTeleporterStatistics();
     this.orient = orientDBInstance;
+    this.executionStrategy = "not_specified";
   }
 
   private OTeleporterContext(String url) {
     this.statistics = new OTeleporterStatistics();
+    this.executionStrategy = "not_specified";
     this.initOrientDBInstance(url);
   }
 
