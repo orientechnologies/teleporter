@@ -69,6 +69,7 @@
     </distributionManagement>
 
     <properties>
+        <jdk.version>1.7</jdk.version>
         <maven.compiler.sourceTable>1.7</maven.compiler.sourceTable>
         <hsqldb.version>2.3.3</hsqldb.version>
     </properties>
@@ -155,6 +156,12 @@
             <artifactId>orientdb-test-commons</artifactId>
             <version>${project.parent.version}</version>
             <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.testng</groupId>
+                    <artifactId>testng</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>com.orientechnologies</groupId>
@@ -171,7 +178,19 @@
         </dependency>
         <dependency>
             <groupId>com.orientechnologies</groupId>
+            <artifactId>orientdb-server</artifactId>
+            <version>${project.parent.version}</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.orientechnologies</groupId>
             <artifactId>orientdb-graphdb</artifactId>
+            <version>${project.parent.version}</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.orientechnologies</groupId>
+            <artifactId>orientdb-client</artifactId>
             <version>${project.parent.version}</version>
             <scope>compile</scope>
         </dependency>
