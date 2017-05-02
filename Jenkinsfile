@@ -1,15 +1,15 @@
 #!groovy
 node("master") {
     def mvnHome = tool 'mvn'
-    def mvnJdk8Image = "orientdb/mvn-gradle-zulu-jdk-8"
+    def mvnJdk7Image = "orientdb/mvn-gradle-zulu-jdk-7"
 
     stage('Source checkout') {
 
         checkout scm
     }
 
-    stage('Run tests on Java8') {
-        docker.image("${mvnJdk8Image}").inside("${env.VOLUMES}") {
+    stage('Run tests on Java7') {
+        docker.image("${mvnJdk7Image}").inside("${env.VOLUMES}") {
             try {
 
 
@@ -17,7 +17,7 @@ node("master") {
             } catch (e) {
                 currentBuild.result = 'FAILURE'
 
-                slackSend(color: 'bad', message: "FAILED: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})")
+                slackSend(channel: '#jenkins-failures',color: 'bad', message: "FAILED: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})")
             } finally {
                 junit allowEmptyResults: true, testResults: '**/target/surefire-reports/TEST-*.xml'
 
