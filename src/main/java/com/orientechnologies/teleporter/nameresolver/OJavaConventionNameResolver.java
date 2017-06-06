@@ -20,6 +20,8 @@ package com.orientechnologies.teleporter.nameresolver;
 
 import com.orientechnologies.teleporter.model.dbschema.OCanonicalRelationship;
 
+import java.util.Locale;
+
 /**
  * Implementation of ONameResolver that performs name transformations on the elements
  * of the data source according to the Java convention.
@@ -106,14 +108,14 @@ public class OJavaConventionNameResolver implements ONameResolver {
     }
 
     if (allUpperCase) {
-      name = name.toLowerCase();
+      name = name.toLowerCase(Locale.ENGLISH);
     }
 
     if (name.contains(" ")) {
       int pos;
       while (name.contains(" ")) {
         pos = name.indexOf(" ");
-        name = name.substring(0, pos) + (name.charAt(pos + 1) + "").toUpperCase() + name.substring(pos + 2);
+        name = name.substring(0, pos) + (name.charAt(pos + 1) + "").toUpperCase(Locale.ENGLISH) + name.substring(pos + 2);
       }
     }
 
@@ -123,7 +125,7 @@ public class OJavaConventionNameResolver implements ONameResolver {
         pos = name.indexOf("_");
         if(pos < name.length()-1) {
           // the '_' char is not in last position
-          name = name.substring(0, pos) + (name.charAt(pos + 1) + "").toUpperCase() + name.substring(pos + 2);
+          name = name.substring(0, pos) + (name.charAt(pos + 1) + "").toUpperCase(Locale.ENGLISH) + name.substring(pos + 2);
         }
         else {
           // the '_' char is in last position
@@ -136,13 +138,13 @@ public class OJavaConventionNameResolver implements ONameResolver {
       int pos;
       while (name.contains("-")) {
         pos = name.indexOf("-");
-        name = name.substring(0, pos) + (name.charAt(pos + 1) + "").toUpperCase() + name.substring(pos + 2);
+        name = name.substring(0, pos) + (name.charAt(pos + 1) + "").toUpperCase(Locale.ENGLISH) + name.substring(pos + 2);
       }
     }
 
     // First char must be uppercase
     if (Character.isLowerCase(name.charAt(0)))
-      name = name.substring(0, 1).toUpperCase() + name.substring(1);
+      name = name.substring(0, 1).toUpperCase(Locale.ENGLISH) + name.substring(1);
 
     return name;
 
@@ -161,14 +163,14 @@ public class OJavaConventionNameResolver implements ONameResolver {
     }
 
     if (allUpperCase) {
-      name = name.toLowerCase();
+      name = name.toLowerCase(Locale.ENGLISH);
     }
 
     if (name.contains(" ")) {
       int pos;
       while (name.contains(" ")) {
         pos = name.indexOf(" ");
-        name = name.substring(0, pos) + (name.charAt(pos + 1) + "").toUpperCase() + name.substring(pos + 2);
+        name = name.substring(0, pos) + (name.charAt(pos + 1) + "").toUpperCase(Locale.ENGLISH) + name.substring(pos + 2);
       }
     }
 
@@ -176,7 +178,7 @@ public class OJavaConventionNameResolver implements ONameResolver {
       int pos;
       while (name.contains("_")) {
         pos = name.indexOf("_");
-        name = name.substring(0, pos) + (name.charAt(pos + 1) + "").toUpperCase() + name.substring(pos + 2);
+        name = name.substring(0, pos) + (name.charAt(pos + 1) + "").toUpperCase(Locale.ENGLISH) + name.substring(pos + 2);
       }
     }
 
@@ -184,13 +186,13 @@ public class OJavaConventionNameResolver implements ONameResolver {
       int pos;
       while (name.contains("-")) {
         pos = name.indexOf("-");
-        name = name.substring(0, pos) + (name.charAt(pos + 1) + "").toUpperCase() + name.substring(pos + 2);
+        name = name.substring(0, pos) + (name.charAt(pos + 1) + "").toUpperCase(Locale.ENGLISH) + name.substring(pos + 2);
       }
     }
 
     // First char must be lowercase
     if (Character.isUpperCase(name.charAt(0)))
-      name = name.substring(0, 1).toLowerCase() + name.substring(1);
+      name = name.substring(0, 1).toLowerCase(Locale.ENGLISH) + name.substring(1);
 
     return name;
   }

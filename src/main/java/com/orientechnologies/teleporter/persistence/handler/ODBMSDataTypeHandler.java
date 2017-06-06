@@ -19,6 +19,7 @@
 package com.orientechnologies.teleporter.persistence.handler;
 
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 import com.orientechnologies.teleporter.context.OTeleporterContext;
@@ -52,7 +53,7 @@ public class ODBMSDataTypeHandler implements ODriverDataTypeHandler {
   public OType resolveType(String type) {
 
     // normalization
-    type = type.toLowerCase();
+    type = type.toLowerCase(Locale.ENGLISH);
 
     // Defined Types
     if (this.dbmsType2OrientType.keySet().contains(type))

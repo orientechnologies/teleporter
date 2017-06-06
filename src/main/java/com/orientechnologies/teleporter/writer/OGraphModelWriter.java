@@ -632,7 +632,7 @@ public class OGraphModelWriter {
   }
 
   public OType resolveOrientDBType(String orientdbTypeName) {
-    orientdbTypeName = orientdbTypeName.toLowerCase();
+    orientdbTypeName = orientdbTypeName.toLowerCase(Locale.ENGLISH);
     return this.orientdbTypeName2orientdbType.get(orientdbTypeName);
   }
 

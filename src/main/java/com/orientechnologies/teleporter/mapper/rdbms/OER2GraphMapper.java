@@ -577,7 +577,7 @@ public class OER2GraphMapper extends OSource2GraphMapper {
 
           LinkedHashMap<String, String> row = new LinkedHashMap<String, String>();
           for (int i = 1; i <= columnsAmount; i++) {
-            row.put(resultForeignKeys.getMetaData().getColumnName(i).toLowerCase(), resultForeignKeys.getString(i));
+            row.put(resultForeignKeys.getMetaData().getColumnName(i).toLowerCase(Locale.ENGLISH), resultForeignKeys.getString(i));
           }
           rows.add(row);
         }
