@@ -31,10 +31,7 @@ import java.nio.channels.ReadableByteChannel;
 import java.nio.charset.Charset;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Executes an automatic migrationConfigDoc of the chosen driver JDBC.
@@ -100,7 +97,7 @@ public class ODriverConfigurator {
   public String fetchDriverClassName(String driverName) {
 
     String driverClassName = null;
-    driverName = driverName.toLowerCase();
+    driverName = driverName.toLowerCase(Locale.ENGLISH);
 
     try {
 
@@ -155,7 +152,7 @@ public class ODriverConfigurator {
 
   public void checkDriverConfiguration(String driverName, String driverClassPath) {
 
-    driverName = driverName.toLowerCase();
+    driverName = driverName.toLowerCase(Locale.ENGLISH);
 
     try {
 
