@@ -18,6 +18,8 @@
 
 package com.orientechnologies.teleporter.main;
 
+import com.orientechnologies.common.log.OLogManager;
+import com.orientechnologies.common.profiler.OProfiler;
 import com.orientechnologies.orient.core.config.OGlobalConfiguration;
 import com.orientechnologies.orient.core.exception.OConfigurationException;
 import com.orientechnologies.orient.core.record.impl.ODocument;
@@ -31,6 +33,7 @@ import com.orientechnologies.orient.server.plugin.OServerPluginAbstract;
 import com.orientechnologies.teleporter.context.OOutputStreamManager;
 import com.orientechnologies.teleporter.context.OTeleporterContext;
 import com.orientechnologies.teleporter.exception.OTeleporterIOException;
+import com.orientechnologies.teleporter.exception.OTeleporterRuntimeException;
 import com.orientechnologies.teleporter.factory.OStrategyFactory;
 import com.orientechnologies.teleporter.http.OServerCommandTeleporter;
 import com.orientechnologies.teleporter.importengine.rdbms.dbengine.ODBQueryEngine;
@@ -287,7 +290,37 @@ public class OTeleporter extends OServerPluginAbstract {
     // REGISTER THE BINARY RECORD SERIALIZER TO SUPPORT ANY OF THE EXTERNAL FIELDS
     ORecordSerializerFactory.instance().register("ORecordSerializerBinary", new ORecordSerializerBinary());
 
-    OTeleporterContext.newInstance().setOutputManager(outputManager);
+    OTeleporterContext.getInstance().setOutputManager(outputManager);
+
+
+    /**
+     * Checking if the execution is allowed:
+     * - in EE it's always allowed
+     * - in CE it's allowed if we are performing a first migration, not if a sync is requested
+     */
+
+    OrientDBVersion orientDBVersion;
+
+    try {
+      // trying loading OEnterpriseProfiler class, defined in the agent: if loaded we are in EE, otherwise CE
+      Class.forName("OEnterpriseProfiler");
+      orientDBVersion = OrientDBVersion.EE;
+    } catch(ClassNotFoundException e) {
+      orientDBVersion = OrientDBVersion.CE;
+    }
+
+    if(orientDBVersion.equals(OrientDBVersion.CE)) {
+
+      // check if the target database directory is already present. If yes terminate the execution with exception.
+      String targetDBPath = outDbUrl.substring(outDbUrl.indexOf(":")+1);
+      File targetDatabaseDirectory = new File(targetDBPath);
+      if(targetDatabaseDirectory.exists()) {
+        OTeleporterContext.getInstance().getOutputManager().error("Synchronization not allowed in OrientDB CE. Execution will be terminated.");
+        throw new OTeleporterRuntimeException();
+      }
+    }
+
+
     ODriverConfigurator driverConfig = new ODriverConfigurator();
     List<OSourceDatabaseInfo> sourcesInfo = null;
     boolean sourceInfoLoaded = false;
@@ -436,5 +469,9 @@ public class OTeleporter extends OServerPluginAbstract {
   @Override
   public void shutdown() {
     super.shutdown();
+  }
+
+  public enum OrientDBVersion {
+    CE, EE
   }
 }

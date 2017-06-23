@@ -60,7 +60,9 @@ public abstract class ODBMSModelBuildingStrategy implements OWorkflowStrategy {
     OConfigurationHandler configurationHandler = this.buildConfigurationHandler();
 
     /**
-     *     building configuration
+     * Building configuration
+     * - we cannot directly return migrationConfigDoc because between 2 executions the set of included tables could change
+     *   (configuration works as a patch to the basic inferred schema).
      */
     OConfiguration migrationConfig = null;
     if (migrationConfigDoc != null) {
