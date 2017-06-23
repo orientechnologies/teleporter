@@ -136,8 +136,8 @@ public class OGraphEngineForDB {
   }
 
   /**
-   * The method perform on the passed OrientBaseGraph a lookup for a OrientVertex starting from a record and from a vertex type.
-   * It return the vertex if present, null if not present.
+   * The method performs a lookup on the passed ODatabaseDocument for a OVertex, starting from a record and from a vertex type.
+   * It returns the vertex if present, null if not present.
    *
    * @param orientGraph
    * @param keys

@@ -272,7 +272,7 @@ public class OGraphModelWriter {
         String currentType = null;
         List<String> properties = null;
         iteration = 1;
-        OIndexManagerProxy indexManager = orientGraph.getRawGraph().getMetadata().getIndexManager();
+        OIndexManagerProxy indexManager = (OIndexManagerProxy) orientGraph.getRawGraph().getMetadata().getIndexManager();
         boolean isPresent;
         for (OVertexType currentVertexType : graphModel.getVerticesType()) {
 
