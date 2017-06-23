@@ -516,9 +516,9 @@ public class OGraphEngineForDB {
   }
 
   /**
+   * @param oldProperty
    * @param newProperty
    * @param currentPropertyType
-   * @param currentPropertyName
    *
    * @return
    */

@@ -48,13 +48,13 @@ public class OTeleporterContext {
   private String                 executionStrategy;
   private ODBQueryEngine         dbQueryEngine;
 
-  private OTeleporterContext(OrientDB orientDBInstance) {
+  public OTeleporterContext(OrientDB orientDBInstance) {
     this.statistics = new OTeleporterStatistics();
     this.orient = orientDBInstance;
     this.executionStrategy = "not_specified";
   }
 
-  private OTeleporterContext(String url) {
+  public OTeleporterContext(String url) {
     this.statistics = new OTeleporterStatistics();
     this.executionStrategy = "not_specified";
     this.initOrientDBInstance(url);

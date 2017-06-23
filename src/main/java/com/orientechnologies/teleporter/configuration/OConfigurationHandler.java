@@ -507,9 +507,9 @@ public class OConfigurationHandler {
       ODocument currVertexDoc = new ODocument();
       currVertexDoc.field("name", currConfiguredVertex.getName());
 
-            /*
-             * Setting vertex mapping
-             */
+      /*
+       * Setting vertex mapping
+       */
 
       OVertexMappingInformation currVertexMapping = currConfiguredVertex.getMapping();
       ODocument currVertexMappingDoc = new ODocument();
@@ -764,6 +764,8 @@ public class OConfigurationHandler {
 
   protected void buildConfigEdgesFromGraphModel(OER2GraphMapper mapper, OConfiguration configuration,
       Map<String, String> tableName2SourceIdName) {
+
+    String executionStrategy = OTeleporterContext.getInstance().getExecutionStrategy();
     List<OConfiguredEdgeClass> configuredEdgeClasses = new LinkedList<OConfiguredEdgeClass>();
 
     for (OEdgeType currEdgeType : mapper.getGraphModel().getEdgesType()) {
@@ -776,7 +778,7 @@ public class OConfigurationHandler {
       if (!currEdgeType.isSplittingEdge()) {
 
         // edge mapping info building
-        OEdgeMappingInformation currEdgeMappingInformation = new OEdgeMappingInformation(currConfiguredEdgeClass);
+        OEdgeMappingInformation currEdgeMappingInformation;
         List<ORelationship> relationships = mapper.getEdgeType2relationships().get(currEdgeType);
         List<OEdgeMappingInformation> edgeMappings = new LinkedList<OEdgeMappingInformation>();
         OAggregatorEdge aggregatorEdge = mapper.getAggregatorEdgeByEdgeTypeName(currEdgeType.getName());
@@ -792,22 +794,28 @@ public class OConfigurationHandler {
             }
 
             // building the edge mapping info
-            currEdgeMappingInformation.setFromTableName(currentRelationship.getForeignEntity().getName());
-            currEdgeMappingInformation.setToTableName(currentRelationship.getParentEntity().getName());
+            OVertexType startingVertexType = mapper.getVertexTypeByEntity(currentRelationship.getForeignEntity());
 
-            List<String> fromColumns = new LinkedList<String>();
-            for (OAttribute attribute : currentRelationship.getFromColumns()) {
-              fromColumns.add(attribute.getName());
-            }
-            List<String> toColumns = new LinkedList<String>();
-            for (OAttribute attribute : currentRelationship.getToColumns()) {
-              toColumns.add(attribute.getName());
-            }
-            currEdgeMappingInformation.setFromColumns(fromColumns);
-            currEdgeMappingInformation.setToColumns(toColumns);
-            currEdgeMappingInformation.setDirection(currentRelationship.getDirection());
+            // if the starting vertex is not contained in the join vertex list then the vertex will be present and the edge will not be aggregated, so mapping info must be added of course.
+            if (startingVertexType != null && !mapper.getJoinVertex2aggregatorEdges().keySet().contains(startingVertexType)) {
+              currEdgeMappingInformation = new OEdgeMappingInformation(currConfiguredEdgeClass);
+              currEdgeMappingInformation.setFromTableName(currentRelationship.getForeignEntity().getName());
+              currEdgeMappingInformation.setToTableName(currentRelationship.getParentEntity().getName());
 
-            edgeMappings.add(currEdgeMappingInformation);
+              List<String> fromColumns = new LinkedList<String>();
+              for (OAttribute attribute : currentRelationship.getFromColumns()) {
+                fromColumns.add(attribute.getName());
+              }
+              List<String> toColumns = new LinkedList<String>();
+              for (OAttribute attribute : currentRelationship.getToColumns()) {
+                toColumns.add(attribute.getName());
+              }
+              currEdgeMappingInformation.setFromColumns(fromColumns);
+              currEdgeMappingInformation.setToColumns(toColumns);
+              currEdgeMappingInformation.setDirection(currentRelationship.getDirection());
+
+              edgeMappings.add(currEdgeMappingInformation);
+            }
           }
         }
         // the current edge type represents a join table
@@ -818,6 +826,7 @@ public class OConfigurationHandler {
           OEntity startingTable = mapper.getEntityByVertexType(outVertexType);
           OEntity arrivalTable = mapper.getEntityByVertexType(inVertexType);
 
+          currEdgeMappingInformation = new OEdgeMappingInformation(currConfiguredEdgeClass);
           currEdgeMappingInformation.setFromTableName(startingTable.getName());
           currEdgeMappingInformation.setToTableName(arrivalTable.getName());
 
@@ -923,7 +932,14 @@ public class OConfigurationHandler {
       currConfiguredEdgeClass.setConfiguredProperties(configuredProperties);
 
       // adding configured edge to the list
-      configuredEdgeClasses.add(currConfiguredEdgeClass);
+      if(currConfiguredEdgeClass.getMappings() != null && currConfiguredEdgeClass.getMappings().size() > 0) {
+        // adding canonical edge iff there is at least 1 mapping info
+        configuredEdgeClasses.add(currConfiguredEdgeClass);
+      }
+      else {
+        // adding splitting edge
+        configuredEdgeClasses.add(currConfiguredEdgeClass);
+      }
     }
     configuration.setConfiguredEdges(configuredEdgeClasses);
   }

@@ -403,8 +403,6 @@ public class OGraphModelWriter {
       throw new OTeleporterRuntimeException();
     }
 
-//    OTeleporterContext.getInstance().getOrientDBInstance().close();
-
     return success;
   }
 
