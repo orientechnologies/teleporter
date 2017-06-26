@@ -339,23 +339,25 @@ public class OTeleporter extends OServerPluginAbstract {
 
     try {
       // trying loading OEnterpriseProfiler class, defined in the agent: if loaded we are in EE, otherwise CE
-      Class.forName("OEnterpriseProfiler");
+
+      ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+      Class.forName("com.orientechnologies.agent.profiler.OEnterpriseProfiler", false, classLoader);
       orientDBVersion = OrientDBVersion.EE;
     } catch(ClassNotFoundException e) {
       orientDBVersion = OrientDBVersion.CE;
     }
 
-    if(orientDBVersion.equals(OrientDBVersion.CE)) {
+    if(orientDBVersion.equals(OrientDBVersion.CE) && !chosenStrategy.startsWith("interactive")) {
 
       // check if the target database directory is already present. If yes terminate the execution with exception.
       String targetDBPath = outDbUrl.substring(outDbUrl.indexOf(":")+1);
       File targetDatabaseDirectory = new File(targetDBPath);
-      if(targetDatabaseDirectory.exists()) {
-        OTeleporterContext.getInstance().getOutputManager().error("Synchronization not allowed in OrientDB CE. Execution will be terminated.");
-        throw new OTeleporterRuntimeException();
+      if(targetDatabaseDirectory.exists() && targetDatabaseDirectory.listFiles().length > 1) {
+        String message = "Synchronization not allowed in OrientDB CE. Execution will be terminated.";
+        OTeleporterContext.getInstance().getOutputManager().error(message);
+        throw new OTeleporterRuntimeException(message);
       }
     }
-
 
     ODriverConfigurator driverConfig = new ODriverConfigurator();
     List<OSourceDatabaseInfo> sourcesInfo = null;
