@@ -18,6 +18,7 @@
 
 package com.orientechnologies.teleporter.http.handler;
 
+import com.orientechnologies.orient.server.OServer;
 import com.orientechnologies.teleporter.context.OOutputStreamManager;
 import com.orientechnologies.teleporter.exception.OTeleporterIOException;
 import com.orientechnologies.teleporter.main.OTeleporter;
@@ -40,16 +41,20 @@ public class OTeleporterJob implements Callable<ODocument> {
 
   public String id;
 
-  public Status      status;
-  public PrintStream stream;
+  private Status      status;
+  private PrintStream stream;
   private ByteArrayOutputStream baos;
 
-  public OTeleporterJob(ODocument cfg, OTeleporterListener listener) {
+  private OServer currentServerInstance;
+
+  public OTeleporterJob(ODocument cfg, OServer currentServerInstance, OTeleporterListener listener) {
     this.cfg = cfg;
     this.listener = listener;
 
     this.baos = new ByteArrayOutputStream();
     this.stream = new PrintStream(baos);
+
+    this.currentServerInstance = currentServerInstance;
   }
 
   @Override
@@ -57,12 +62,14 @@ public class OTeleporterJob implements Callable<ODocument> {
 
     id = UUID.randomUUID().toString();
 
+    String serverDatabaseDirectory = this.currentServerInstance.getDatabaseDirectory();
+
     final String driver = cfg.field("driver");
     final String jurl = cfg.field("jurl");
     final String username = cfg.field("username");
     final String password = cfg.field("password");
-    final String outDbUrl = cfg.field("outDbUrl");
-    final String chosenStrategy = cfg.field("strategy");
+    final String protocol = cfg.field("protocol");
+    final String outDbName = cfg.field("outDBName");    final String chosenStrategy = cfg.field("strategy");
     final String chosenMapper = cfg.field("mapper");
     final String xmlPath = cfg.field("xmlPath");
     final String nameResolver = cfg.field("nameResolver");
@@ -71,6 +78,15 @@ public class OTeleporterJob implements Callable<ODocument> {
     final List<String> excludedTable = null;
     final String migrationConfig = cfg.field("migrationConfig");
     status = Status.RUNNING;
+
+    final String outDbUrl;
+    if(protocol.equals("plocal")) {
+      outDbUrl = protocol + ":" + serverDatabaseDirectory + outDbName;
+    }
+    else {
+      // protocol.equals("memory")
+      outDbUrl = protocol + ":" + outDbName;
+    }
 
     ODocument executionResult = null;
     try {
