@@ -21,6 +21,7 @@ package com.orientechnologies.teleporter.http.handler;
 import com.orientechnologies.orient.server.OServer;
 import com.orientechnologies.teleporter.context.OOutputStreamManager;
 import com.orientechnologies.teleporter.exception.OTeleporterIOException;
+import com.orientechnologies.teleporter.exception.OTeleporterRuntimeException;
 import com.orientechnologies.teleporter.main.OTeleporter;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
@@ -127,6 +128,7 @@ public class OTeleporterJob implements Callable<ODocument> {
         executionResult = new ODocument();
       }
     } catch (Exception e) {
+      throw new OTeleporterRuntimeException(e.getMessage());
     }
 
     return executionResult;

@@ -49,7 +49,7 @@ public class OTeleporterHandler {
    * @param args
    * @param currentServerInstance
    */
-  public ODocument execute(ODocument args, OServer currentServerInstance) {
+  public ODocument execute(ODocument args, OServer currentServerInstance) throws Exception {
 
     OTeleporterJob job = new OTeleporterJob(args, currentServerInstance, new OTeleporterListener() {
       @Override
@@ -64,13 +64,9 @@ public class OTeleporterHandler {
     Future<ODocument> future = pool.submit(job);
     ODocument executionResult = null;
 
-    try {
-      //print the return value of Future, notice the output delay in console
-      // because Future.get() waits for task to get completed
-      executionResult = future.get();
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
+    //print the return value of Future, notice the output delay in console
+    // because Future.get() waits for task to get completed
+    executionResult = future.get();
 
     return executionResult;
   }
