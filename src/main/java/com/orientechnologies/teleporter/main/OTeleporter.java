@@ -311,7 +311,7 @@ public class OTeleporter extends OServerPluginAbstract {
       orientDBVersion = OrientDBVersion.CE;
     }
 
-    if(orientDBVersion.equals(OrientDBVersion.CE) && !chosenStrategy.startsWith("interactive")) {
+    if(orientDBVersion.equals(OrientDBVersion.CE) && (chosenStrategy == null || !chosenStrategy.startsWith("interactive"))) {   // if chosenStrategy is null, by default it's naive-aggregate
 
       // check if the target database directory is already present. If yes terminate the execution with exception.
       String targetDBPath = outDbUrl.substring(outDbUrl.indexOf(":")+1);
