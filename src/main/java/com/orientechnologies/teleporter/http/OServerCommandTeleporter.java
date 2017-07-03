@@ -63,7 +63,7 @@ public class OServerCommandTeleporter extends OServerCommandAuthenticatedServerA
 
       ODriverConfigurator configurator = new ODriverConfigurator();
 
-      ODocument drivers = configurator.readJsonFromUrl(ODriverConfigurator.DRIVERS);
+      ODocument drivers = configurator.readJsonFromRemoteUrl(ODriverConfigurator.DRIVERS);
       iResponse.send(OHttpUtils.STATUS_OK_CODE, "OK", OHttpUtils.CONTENT_JSON, drivers.toJSON("prettyPrint"), null);
     } else {
       throw new IllegalArgumentException("");

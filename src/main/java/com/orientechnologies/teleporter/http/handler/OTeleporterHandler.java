@@ -133,6 +133,8 @@ public class OTeleporterHandler {
     }
     OTeleporterContext.getInstance().setOutputManager(new OOutputStreamManager(2));
 
+    // checking configuration (driver will be downloaded if needed)
+    configurator.checkDriverConfiguration(driver);
     Connection connection = configurator.getDBMSConnection(driver, uri, username, password);
     DatabaseMetaData databaseMetaData = connection.getMetaData();
     String[] tableTypes = {"TABLE"};
