@@ -103,7 +103,7 @@ public class ODriverConfigurator {
 
       if (this.driverInfo == null) {
         // fetching online JSON
-        this.driverInfo = readJsonFromUrl(DRIVERS);
+        this.driverInfo = readJsonFromRemoteUrl(DRIVERS);
       }
 
       ODocument fields = null;
@@ -158,7 +158,7 @@ public class ODriverConfigurator {
 
       if (this.driverInfo == null) {
         // fetching online JSON
-        this.driverInfo = readJsonFromUrl(DRIVERS);
+        this.driverInfo = readJsonFromRemoteUrl(DRIVERS);
       }
 
       ODocument fields = null;
@@ -252,7 +252,15 @@ public class ODriverConfigurator {
     return null;
   }
 
-  public ODocument readJsonFromUrl(String url) {
+  /**
+   * It reads the driver config from remote url and saves it in local. Then it reads the local file to build the ODocument returned by the method.
+   * If the driver was not downloaded in local, last config version is considered. If there is not any local configuration (first execution forms scratch)
+   * an exception is thrown.
+   *
+   * @param url
+   * @return config
+   */
+  public ODocument readJsonFromRemoteUrl(String url) {
 
     InputStream is = null;
     ODocument json = null;
@@ -322,7 +330,7 @@ public class ODriverConfigurator {
   public void checkConnection(String driver, String uri, String username, String password) throws Exception {
 
     this.checkDriverConfiguration(driver);
-    checkConnectionSubRoutine(driver, uri, username, password);
+    this.checkConnectionSubRoutine(driver, uri, username, password);
   }
 
   /**
@@ -341,7 +349,7 @@ public class ODriverConfigurator {
       throws Exception {
 
     this.checkDriverConfiguration(driver, driverClassPath);
-    checkConnectionSubRoutine(driver, uri, username, password);
+    this.checkConnectionSubRoutine(driver, uri, username, password);
   }
 
   /**

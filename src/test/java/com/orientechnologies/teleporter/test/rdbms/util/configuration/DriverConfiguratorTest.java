@@ -50,7 +50,7 @@ public class DriverConfiguratorTest {
     this.outputManager = new OOutputStreamManager(2);
     this.context.setOutputManager(outputManager);
 
-    ODocument driversParams = this.driverConfigurator.readJsonFromUrl(DRIVERS);
+    ODocument driversParams = this.driverConfigurator.readJsonFromRemoteUrl(DRIVERS);
     ODocument hsqldbConfig = driversParams.field("HyperSQL");
     this.fileName = hsqldbConfig.field("url");
     fileName = fileName.substring(fileName.lastIndexOf("/") + 1);
