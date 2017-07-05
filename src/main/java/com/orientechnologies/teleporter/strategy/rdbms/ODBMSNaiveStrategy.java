@@ -54,7 +54,7 @@ import java.util.List;
  * @email <g.ponzi--at--orientdb.com>
  */
 
-public class ODBMSNaiveStrategy extends ODBMSImportStrategy {
+public class ODBMSNaiveStrategy extends OAbstractDBMSImportStrategy {
 
   public ODBMSNaiveStrategy() {
   }

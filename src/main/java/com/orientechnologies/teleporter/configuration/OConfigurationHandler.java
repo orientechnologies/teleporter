@@ -943,4 +943,103 @@ public class OConfigurationHandler {
     }
     configuration.setConfiguredEdges(configuredEdgeClasses);
   }
+
+  public void filterAccordingToWhiteList(ODocument jsonConfiguration, List<String> includedTables) {
+
+    /*
+     * Vertices filtering
+     */
+
+    List<ODocument> verticesDoc = jsonConfiguration.field("vertices");
+    Iterator<ODocument> it = verticesDoc.iterator();
+
+    while(it.hasNext()) {
+      ODocument currentVertexDoc = it.next();
+      String currentVertexDocName = currentVertexDoc.field("name");
+      if(!includedTables.contains(currentVertexDocName)) {
+        it.remove();
+      }
+    }
+
+    /*
+     * Edges filtering (mappings filtering)
+     */
+
+    List<ODocument> edgesDoc = jsonConfiguration.field("edges");
+    it = edgesDoc.iterator();
+
+    while(it.hasNext()) {
+      ODocument currentEdgeDoc = it.next();
+      String edgeName = currentEdgeDoc.fieldNames()[0];
+      ODocument currentEdgeDocInfo = currentEdgeDoc.field(edgeName);
+      List<ODocument> currentEdgeDocMappings = currentEdgeDocInfo.field("mapping");   // we have to filter out the mappings not allowed (having a parentEntity filtered out)
+
+      List<ODocument> newMappings = new ArrayList<ODocument>();
+
+      // filling the new list for the new array
+      for(ODocument currentMapping: currentEdgeDocMappings) {
+        if(includedTables.contains(currentMapping.field("fromTable")) && includedTables.contains(currentMapping.field("toTable"))) {
+          newMappings.add(currentMapping);
+        }
+      }
+
+      if(newMappings.size() == 0) {
+        // the edge represented just an relationship deleted as a filtered table was involved, then we remove the whole edge
+        it.remove();
+      }
+      else if(currentEdgeDocMappings.size() > newMappings.size()) {
+        // we have removed some mapping but the edge still represents some relationship in the source db, so we update the mappings info
+        currentEdgeDocInfo.field("mapping", newMappings.toArray());
+      }
+    }
+
+  }
+
+  public void filterAccordingToBlackList(ODocument jsonConfiguration, List<String> excludedTables) {
+
+    /*
+     * Vertices filtering
+     */
+
+    List<ODocument> verticesDoc = jsonConfiguration.field("vertices");
+    Iterator<ODocument> it = verticesDoc.iterator();
+
+    while(it.hasNext()) {
+      ODocument currentVertexDoc = it.next();
+      String currentVertexDocName = currentVertexDoc.field("name");
+      if(excludedTables.contains(currentVertexDocName)) {
+        it.remove();
+      }
+    }
+
+    /*
+     * Edges filtering (mappings filtering)
+     */
+
+    List<ODocument> edgesDoc = jsonConfiguration.field("edges");
+    it = edgesDoc.iterator();
+
+    while(it.hasNext()) {
+      ODocument currentEdgeDoc = it.next();
+      String edgeName = currentEdgeDoc.fieldNames()[0];
+      ODocument currentEdgeDocInfo = currentEdgeDoc.field(edgeName);
+      List<ODocument> currentEdgeDocMappings = currentEdgeDocInfo.field("mapping");   // we have to filter out the mappings not allowed (having a parentEntity filtered out)
+
+      List<ODocument> newMappings = new ArrayList<ODocument>();
+
+      // filling the new list for the new array
+      for(ODocument currentMapping: currentEdgeDocMappings) {
+        if(!excludedTables.contains(currentMapping.field("fromTable")) && !excludedTables.contains(currentMapping.field("toTable"))) {
+          newMappings.add(currentMapping);
+        }
+      }
+
+      if(currentEdgeDocMappings.size() > newMappings.size()) {
+        // we have removed some mapping, so we update the mappings info
+        currentEdgeDocInfo.field("mapping", newMappings.toArray());
+      }
+    }
+
+
+  }
 }

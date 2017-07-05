@@ -59,7 +59,7 @@ import java.util.List;
  * @email <g.ponzi--at--orientdb.com>
  */
 
-public class ODBMSNaiveAggregationStrategy extends ODBMSImportStrategy {
+public class ODBMSNaiveAggregationStrategy extends OAbstractDBMSImportStrategy {
 
   public ODBMSNaiveAggregationStrategy() {
   }
