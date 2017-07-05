@@ -20,18 +20,15 @@ package com.orientechnologies.teleporter.test.rdbms.mappingexport;
 
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.teleporter.configuration.OConfigurationHandler;
-import com.orientechnologies.teleporter.configuration.api.*;
 import com.orientechnologies.teleporter.context.OOutputStreamManager;
 import com.orientechnologies.teleporter.context.OTeleporterContext;
 import com.orientechnologies.teleporter.importengine.rdbms.dbengine.ODBQueryEngine;
 import com.orientechnologies.teleporter.mapper.rdbms.OER2GraphMapper;
 import com.orientechnologies.teleporter.model.dbschema.OSourceDatabaseInfo;
-import com.orientechnologies.teleporter.nameresolver.OJavaConventionNameResolver;
 import com.orientechnologies.teleporter.persistence.handler.ODBMSDataTypeHandler;
 import com.orientechnologies.teleporter.persistence.handler.OHSQLDBDataTypeHandler;
 import com.orientechnologies.teleporter.strategy.rdbms.ODBMSModelBuildingAggregationStrategy;
-import com.orientechnologies.teleporter.strategy.rdbms.ODBMSModelBuildingStrategy;
-import com.orientechnologies.teleporter.strategy.rdbms.ODBMSSimpleModelBuildingStrategy;
+import com.orientechnologies.teleporter.strategy.rdbms.OAbstractDBMSModelBuildingStrategy;
 import com.orientechnologies.teleporter.util.ODocumentComparator;
 import com.orientechnologies.teleporter.util.OFileManager;
 import org.junit.Before;
@@ -63,7 +60,7 @@ public class InteractiveStrategyTest {
   private String password = "";
   private String                     outOrientGraphUri;
   private OSourceDatabaseInfo        sourceDBInfo;
-  private ODBMSModelBuildingStrategy strategy;
+  private OAbstractDBMSModelBuildingStrategy strategy;
   private String outParentDirectory = "embedded:target/";
 
   @Before

@@ -18,7 +18,6 @@
 
 package com.orientechnologies.teleporter.strategy.rdbms;
 
-import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.teleporter.configuration.OConfigurationHandler;
 import com.orientechnologies.teleporter.configuration.api.OConfiguration;
 import com.orientechnologies.teleporter.context.OOutputStreamManager;
@@ -36,7 +35,7 @@ import java.util.List;
  * @email <g.ponzi--at--orientdb.com>
  */
 
-public class ODBMSModelBuildingAggregationStrategy extends ODBMSModelBuildingStrategy {
+public class ODBMSModelBuildingAggregationStrategy extends OAbstractDBMSModelBuildingStrategy {
 
   public ODBMSModelBuildingAggregationStrategy() {
   }

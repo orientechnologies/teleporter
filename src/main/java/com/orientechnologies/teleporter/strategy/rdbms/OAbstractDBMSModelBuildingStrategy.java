@@ -41,11 +41,11 @@ import java.util.List;
  * @email <g.ponzi--at--orientdb.com>
  */
 
-public abstract class ODBMSModelBuildingStrategy implements OWorkflowStrategy {
+public abstract class OAbstractDBMSModelBuildingStrategy implements OWorkflowStrategy {
 
   protected OER2GraphMapper mapper;
 
-  public ODBMSModelBuildingStrategy() {
+  public OAbstractDBMSModelBuildingStrategy() {
   }
 
   @Override
@@ -61,17 +61,27 @@ public abstract class ODBMSModelBuildingStrategy implements OWorkflowStrategy {
 
     /**
      * Building configuration
-     * - we cannot directly return migrationConfigDoc because between 2 executions the set of included tables could change
-     *   (configuration works as a patch to the basic inferred schema).
      */
+
     OConfiguration migrationConfig = null;
     if (migrationConfigDoc != null) {
+
+      // Applying filters to starting migrationConfigDoc
+      if(includedTables != null && includedTables.size() > 0) {
+        configurationHandler.filterAccordingToWhiteList(migrationConfigDoc, includedTables);
+      }
+      else if(excludedTables != null && excludedTables.size() > 0) {
+        configurationHandler.filterAccordingToBlackList(migrationConfigDoc, excludedTables);
+      }
+
       migrationConfig = configurationHandler.buildConfigurationFromJSONDoc(migrationConfigDoc);
     }
 
-        /*
-         * Step 1,2
-         */
+
+    /*
+     * Step 1,2
+     */
+
     ONameResolverFactory nameResolverFactory = new ONameResolverFactory();
     ONameResolver nameResolver = nameResolverFactory.buildNameResolver(nameResolverConvention);
     OTeleporterContext.getInstance().getStatistics().runningStepNumber = -1;

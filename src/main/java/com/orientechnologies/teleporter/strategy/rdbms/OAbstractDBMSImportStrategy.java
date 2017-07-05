@@ -55,14 +55,14 @@ import java.util.*;
  * @email <g.ponzi--at--orientdb.com>
  */
 
-public abstract class ODBMSImportStrategy implements OWorkflowStrategy {
+public abstract class OAbstractDBMSImportStrategy implements OWorkflowStrategy {
 
   protected OER2GraphMapper mapper;
   protected String protocol;
   protected String serverInitUrl;
   protected String dbName;
 
-  public ODBMSImportStrategy(String protocol, String serverInitUrl, String dbName) {
+  public OAbstractDBMSImportStrategy(String protocol, String serverInitUrl, String dbName) {
     this.protocol = protocol;
     this.serverInitUrl = serverInitUrl;
     this.dbName = dbName;
@@ -81,16 +81,28 @@ public abstract class ODBMSImportStrategy implements OWorkflowStrategy {
     OConfigurationHandler configurationHandler = this.buildConfigurationHandler();
 
     /**
-     *     building configuration
+     * Building configuration
      */
+
     OConfiguration migrationConfig = null;
     if (migrationConfigDoc != null) {
+
+      // Applying filters to starting migrationConfigDoc
+      if(includedTables != null && includedTables.size() > 0) {
+        configurationHandler.filterAccordingToWhiteList(migrationConfigDoc, includedTables);
+      }
+      else if(excludedTables != null && excludedTables.size() > 0) {
+        configurationHandler.filterAccordingToBlackList(migrationConfigDoc, excludedTables);
+      }
+
       migrationConfig = configurationHandler.buildConfigurationFromJSONDoc(migrationConfigDoc);
     }
+
 
     /*
      * Step 1,2,3
      */
+
     ONameResolverFactory nameResolverFactory = new ONameResolverFactory();
     ONameResolver nameResolver = nameResolverFactory.buildNameResolver(nameResolverConvention);
     OTeleporterContext.getInstance().getStatistics().runningStepNumber = -1;
