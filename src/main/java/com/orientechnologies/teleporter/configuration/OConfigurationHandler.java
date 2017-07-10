@@ -955,9 +955,13 @@ public class OConfigurationHandler {
 
     while(it.hasNext()) {
       ODocument currentVertexDoc = it.next();
-      String currentVertexDocName = currentVertexDoc.field("name");
-      if(!includedTables.contains(currentVertexDocName)) {
-        it.remove();
+      ODocument currentMapping = currentVertexDoc.field("mapping");
+      List<ODocument> sourceTables = currentMapping.field("sourceTables");
+      if(sourceTables.size() == 1) {    // SKIPPING AGGREGATION CASE, TO UPDATE !!!
+        String correspondentTableName = sourceTables.get(0).field("tableName");
+        if (!includedTables.contains(correspondentTableName)) {
+          it.remove();
+        }
       }
     }
 
@@ -1006,9 +1010,13 @@ public class OConfigurationHandler {
 
     while(it.hasNext()) {
       ODocument currentVertexDoc = it.next();
-      String currentVertexDocName = currentVertexDoc.field("name");
-      if(excludedTables.contains(currentVertexDocName)) {
-        it.remove();
+      ODocument currentMapping = currentVertexDoc.field("mapping");
+      List<ODocument> sourceTables = currentMapping.field("sourceTables");
+      if(sourceTables.size() == 1) {    // SKIPPING AGGREGATION CASE, TO UPDATE !!!
+        String correspondentTableName = sourceTables.get(0).field("tableName");
+        if (excludedTables.contains(correspondentTableName)) {
+          it.remove();
+        }
       }
     }
 
