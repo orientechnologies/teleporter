@@ -111,13 +111,7 @@ public class OMigrationConfigManager {
 
   public static void writeConfigurationInTargetDB(ODocument migrationConfig, String outOrientGraphUri) {
 
-    String outDBConfigPath = buildConfigurationFilePath(outOrientGraphUri, configFileName);
-    File confFileInOrientDB = new File(outDBConfigPath);
-
-    if (confFileInOrientDB.exists()) {
-      confFileInOrientDB.delete();
-    }
-
+    String outDBConfigPath = prepareConfigDirectoryForWriting(outOrientGraphUri);
     String jsonSourcesInfo = migrationConfig.toJSON("prettyPrint");
     try {
       OFileManager.writeFileFromText(jsonSourcesInfo, outDBConfigPath, false);
@@ -126,7 +120,24 @@ public class OMigrationConfigManager {
       OTeleporterContext.getInstance().printExceptionMessage(e, mess, "error");
       OTeleporterContext.getInstance().printExceptionStackTrace(e, "error");
     }
+  }
 
+
+  public static void writeConfigurationInTargetDB(String migrationConfig, String outOrientGraphUri) throws IOException {
+
+    String outDBConfigPath = prepareConfigDirectoryForWriting(outOrientGraphUri);
+    OFileManager.writeFileFromText(migrationConfig, outDBConfigPath, false);
+  }
+
+  private static String prepareConfigDirectoryForWriting(String outOrientGraphUri) {
+
+    String outDBConfigPath = buildConfigurationFilePath(outOrientGraphUri, configFileName);
+    File confFileInOrientDB = new File(outDBConfigPath);
+
+    if (confFileInOrientDB.exists()) {
+      confFileInOrientDB.delete();
+    }
+    return outDBConfigPath;
   }
 
   /**
