@@ -24,6 +24,7 @@ import com.orientechnologies.teleporter.context.OTeleporterContext;
 import com.orientechnologies.teleporter.persistence.util.ODBSourceConnection;
 import com.orientechnologies.teleporter.util.ODriverConfigurator;
 import com.orientechnologies.orient.core.record.impl.ODocument;
+import com.orientechnologies.teleporter.util.OMigrationConfigManager;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -156,5 +157,24 @@ public class OTeleporterHandler {
     ODocument result = new ODocument();
     result.field("tables", tables);
     return result;
+  }
+
+  public void saveConfiguration(ODocument args, OServer server) throws Exception {
+
+    final String outDbName = args.field("outDBName");
+    final String migrationConfig = args.field("migrationConfig");
+
+    if(migrationConfig == null) {
+      throw new IllegalArgumentException("Migration config is null.");
+    }
+
+    if(outDbName == null) {
+      throw new IllegalArgumentException("target database name is null.");
+    }
+
+    String serverDatabaseDirectory = server.getDatabaseDirectory();
+    String outDbUrl = serverDatabaseDirectory + outDbName;
+    OMigrationConfigManager.writeConfigurationInTargetDB(migrationConfig, outDbUrl);
+
   }
 }

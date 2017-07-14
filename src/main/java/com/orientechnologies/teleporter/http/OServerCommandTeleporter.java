@@ -107,6 +107,17 @@ public class OServerCommandTeleporter extends OServerCommandAuthenticatedServerA
         throw new IllegalArgumentException(e);
       }
       iResponse.send(OHttpUtils.STATUS_OK_CODE, "OK", OHttpUtils.CONTENT_JSON, tables.toJSON("prettyPrint"), null);
+    } else if ("save-config".equalsIgnoreCase(parts[1])) {
+      ODocument args = new ODocument().fromJSON(iRequest.content);
+      try {
+        handler.saveConfiguration(args, super.server);
+      } catch (IOException e) {
+        throw new IOException(e);
+      } catch (Exception e) {
+        throw new IllegalArgumentException(e);
+      }
+      iResponse.send(OHttpUtils.STATUS_OK_CODE, "OK", OHttpUtils.CONTENT_JSON, null, null);
+
     } else {
       throw new IllegalArgumentException("");
     }
