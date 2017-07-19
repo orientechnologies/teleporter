@@ -21,6 +21,7 @@ package com.orientechnologies.teleporter.strategy.rdbms;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.teleporter.configuration.OConfigurationHandler;
 import com.orientechnologies.teleporter.configuration.api.OConfiguration;
+import com.orientechnologies.teleporter.configuration.api.OConfiguredVertexClass;
 import com.orientechnologies.teleporter.context.OTeleporterContext;
 import com.orientechnologies.teleporter.factory.ODataTypeHandlerFactory;
 import com.orientechnologies.teleporter.factory.ONameResolverFactory;
@@ -63,6 +64,7 @@ public abstract class OAbstractDBMSModelBuildingStrategy implements OWorkflowStr
      * Building configuration
      */
 
+    boolean keepVerticesCoordinates = true;
     OConfiguration migrationConfig = null;
     if (migrationConfigDoc != null) {
 
@@ -74,7 +76,7 @@ public abstract class OAbstractDBMSModelBuildingStrategy implements OWorkflowStr
         configurationHandler.filterAccordingToBlackList(migrationConfigDoc, excludedTables);
       }
 
-      migrationConfig = configurationHandler.buildConfigurationFromJSONDoc(migrationConfigDoc);
+      migrationConfig = configurationHandler.buildConfigurationFromJSONDoc(migrationConfigDoc, keepVerticesCoordinates);
     }
 
 
@@ -98,8 +100,13 @@ public abstract class OAbstractDBMSModelBuildingStrategy implements OWorkflowStr
 
     // Building Graph Model mapping (for graph rendering too)
     OConfiguration configuredGraph = configurationHandler.buildConfigurationFromMapper(this.mapper);
-    ODocument configuredGraphDoc = configurationHandler.buildJSONDocFromConfiguration(configuredGraph);
 
+    if(keepVerticesCoordinates && migrationConfig != null) {
+      // update vertices contained in the new just built config adding the correspondent coordinates from the old configuration (if not null!)
+      addCoordinatesFromOldConfiguration(configuredGraph, migrationConfig);
+    }
+
+    ODocument configuredGraphDoc = configurationHandler.buildJSONDocFromConfiguration(configuredGraph);
     return configuredGraphDoc;
   }
 
@@ -108,5 +115,28 @@ public abstract class OAbstractDBMSModelBuildingStrategy implements OWorkflowStr
       List<String> excludedTables, OConfiguration migrationConfig);
 
   protected abstract OConfigurationHandler buildConfigurationHandler();
+
+  public void addCoordinatesFromOldConfiguration(OConfiguration newConfig, OConfiguration oldConfig) {
+
+    for(OConfiguredVertexClass currVertexClass: oldConfig.getConfiguredVertices()) {
+      Double x = currVertexClass.getX();
+      Double y = currVertexClass.getY();
+      Double px = currVertexClass.getPx();
+      Double py = currVertexClass.getPy();
+      Integer fixed = currVertexClass.getFixed();
+
+      OConfiguredVertexClass newVertexClass = newConfig.getVertexClassByName(currVertexClass.getName());
+      if(x != null && y != null && px != null && py != null) {
+        newVertexClass.setX(x);
+        newVertexClass.setY(y);
+        newVertexClass.setPx(px);
+        newVertexClass.setPy(py);
+      }
+      if(fixed != null) {
+        newVertexClass.setFixed(fixed);
+      }
+    }
+
+  }
 
 }

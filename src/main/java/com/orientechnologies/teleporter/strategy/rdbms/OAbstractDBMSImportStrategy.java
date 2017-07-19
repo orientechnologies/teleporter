@@ -84,6 +84,7 @@ public abstract class OAbstractDBMSImportStrategy implements OWorkflowStrategy {
      * Building configuration
      */
 
+    boolean keepVerticesCoordinates = true;
     OConfiguration migrationConfig = null;
     if (migrationConfigDoc != null) {
 
@@ -95,7 +96,7 @@ public abstract class OAbstractDBMSImportStrategy implements OWorkflowStrategy {
         configurationHandler.filterAccordingToBlackList(migrationConfigDoc, excludedTables);
       }
 
-      migrationConfig = configurationHandler.buildConfigurationFromJSONDoc(migrationConfigDoc);
+      migrationConfig = configurationHandler.buildConfigurationFromJSONDoc(migrationConfigDoc, keepVerticesCoordinates);
     }
 
 
