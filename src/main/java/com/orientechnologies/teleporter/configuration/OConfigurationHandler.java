@@ -50,6 +50,10 @@ public class OConfigurationHandler {
     this.runningAggregationStrategy = runningAggregationStrategy;
   }
 
+  public OConfiguration buildConfigurationFromJSONDoc(ODocument jsonConfiguration) {
+    return this.buildConfigurationFromJSONDoc(jsonConfiguration, true);
+  }
+
   /**
    * Parsing method. It returns a OConfiguration object starting from a JSON configuration.
    *
@@ -58,12 +62,12 @@ public class OConfigurationHandler {
    * @return
    */
 
-  public OConfiguration buildConfigurationFromJSONDoc(ODocument jsonConfiguration) {
+  public OConfiguration buildConfigurationFromJSONDoc(ODocument jsonConfiguration, boolean keepVerticesCoordinates) {
 
     OConfiguration configuration = new OConfiguration();
 
     // parsing vertices' migrationConfigDoc
-    this.buildConfiguredVertices(jsonConfiguration, configuration);
+    this.buildConfiguredVertices(jsonConfiguration, configuration, keepVerticesCoordinates);
 
     // parsing edges' migrationConfigDoc
     this.buildConfiguredEdges(jsonConfiguration, configuration);
@@ -71,7 +75,7 @@ public class OConfigurationHandler {
     return configuration;
   }
 
-  private void buildConfiguredVertices(ODocument jsonConfiguration, OConfiguration configuration) {
+  private void buildConfiguredVertices(ODocument jsonConfiguration, OConfiguration configuration, boolean keepVerticesCoordinates) {
 
     List<ODocument> verticesDoc = jsonConfiguration.field("vertices");
     List<OConfiguredVertexClass> configuredVertices = new LinkedList<OConfiguredVertexClass>();
@@ -185,6 +189,18 @@ public class OConfigurationHandler {
        */
       List<OConfiguredProperty> configuredProperties = this.extractProperties(currentVertexDoc, configuredVertexClassName);
       currentConfiguredVertex.setConfiguredProperties(configuredProperties);
+
+      /**
+       * Keeping vertex coordinates if requested
+       */
+      if(keepVerticesCoordinates) {
+        currentConfiguredVertex.setX((Double)currentVertexDoc.field("x"));
+        currentConfiguredVertex.setY((Double)currentVertexDoc.field("y"));
+        currentConfiguredVertex.setPx((Double)currentVertexDoc.field("px"));
+        currentConfiguredVertex.setPy((Double)currentVertexDoc.field("py"));
+        currentConfiguredVertex.setFixed((Integer)currentVertexDoc.field("fixed"));
+      }
+
       configuredVertices.add(currentConfiguredVertex);
     }
 
@@ -541,9 +557,9 @@ public class OConfigurationHandler {
       currVertexDoc.field("mapping", currVertexMappingDoc);
 
 
-            /*
-             * Setting properties
-             */
+      /*
+       * Setting properties
+       */
 
       ODocument propertiesDoc = this.writeConfiguredProperties(currConfiguredVertex.getConfiguredProperties());
       currVertexDoc.field("properties", propertiesDoc);
@@ -552,6 +568,25 @@ public class OConfigurationHandler {
       if (currConfiguredVertex.getExternalKeyProps().size() > 0) {
         currVertexDoc.field("externalKey", currConfiguredVertex.getExternalKeyProps());
       }
+
+      // setting coordinates (optional)
+      Double x = currConfiguredVertex.getX();
+      Double y = currConfiguredVertex.getY();
+      if(x != null && y != null) {
+        currVertexDoc.field("x", x);
+        currVertexDoc.field("y", y);
+      }
+      Double px = currConfiguredVertex.getPx();
+      Double py = currConfiguredVertex.getPy();
+      if(px != null && py != null) {
+        currVertexDoc.field("px", px);
+        currVertexDoc.field("py", py);
+      }
+      Integer fixed = currConfiguredVertex.getFixed();
+      if(fixed != null) {
+        currVertexDoc.field("fixed", fixed);
+      }
+
 
       vertices.add(currVertexDoc);
     }

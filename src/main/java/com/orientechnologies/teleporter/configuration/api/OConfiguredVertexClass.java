@@ -30,6 +30,11 @@ public class OConfiguredVertexClass extends OConfiguredClass {
 
   private List<String>              externalKeyProps;
   private OVertexMappingInformation mapping;                  // mandatory
+  private Double x;
+  private Double y;
+  private Double px;
+  private Double py;
+  private Integer fixed;
 
   // boolean value used to specify if the configured vertex was already analyzed and applied to the graph model
   private boolean alreadyAnalyzed;
@@ -62,5 +67,45 @@ public class OConfiguredVertexClass extends OConfiguredClass {
 
   public void setAlreadyAnalyzed(boolean alreadyAnalyzed) {
     this.alreadyAnalyzed = alreadyAnalyzed;
+  }
+
+  public Double getX() {
+    return this.x;
+  }
+
+  public void setX(Double x) {
+    this.x = x;
+  }
+
+  public Double getY() {
+    return this.y;
+  }
+
+  public void setY(Double y) {
+    this.y = y;
+  }
+
+  public Double getPx() {
+    return this.px;
+  }
+
+  public void setPx(Double px) {
+    this.px = px;
+  }
+
+  public Double getPy() {
+    return this.py;
+  }
+
+  public void setPy(Double py) {
+    this.py = py;
+  }
+
+  public Integer getFixed() {
+    return this.fixed;
+  }
+
+  public void setFixed(Integer fixed) {
+    this.fixed = fixed;
   }
 }

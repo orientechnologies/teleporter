@@ -1620,8 +1620,9 @@ public class OER2GraphMapper extends OSource2GraphMapper {
     OEntity currentParentEntity = currentRelationship.getParentEntity();
     OEntity currentForeignEntity = currentRelationship.getForeignEntity();
 
-    // retrieving edge type, if not present is created from scratch
-    OEdgeType currentEdgeType = this.relationship2edgeType.get(currentRelationship);
+    // retrieving the mapping between the relationship and the edge type
+    OEdgeType currentEdgeType = this.relationship2edgeType.get(currentRelationship);    // can't fetch according to the name, because not significant (think about edge renaming)
+//    OEdgeType currentEdgeType = this.graphModel.getEdgeTypeByName(edgeName);
     boolean edgeTypeAlreadyPresent = false;
 
     if (foreignEntityIsJoinTableToAggregate) {
@@ -1664,9 +1665,15 @@ public class OER2GraphMapper extends OSource2GraphMapper {
     OVertexType currentInVertexType;
     OVertexType currentOutVertexType;
 
+    // checking if the mapping between the relationship and the edge is already present
+    boolean mappingAlreadyPresent = true;
+    if(this.relationship2edgeType.get(currentRelationship) == null) {
+      mappingAlreadyPresent = false;
+    }
+
     if (edgeTypeAlreadyPresent) {
 
-      // If the edge type was already present and the direction is inverse (as to say if it was modified) the references with in-vertex and out-vertex must to be updated
+      // If the mapping between the edge type and the relationship is already present and the direction is inverse (as to say if it was modified) the references with in-vertex and out-vertex must to be updated
       // If the foreign table is a join table then the direction is referred to the aggregator edge and not to the left or right one. So direction field is always "direct"
       // as it is inferred from the left or right relationship.
       if (currentRelationshipDirection != null && currentRelationshipDirection.equals("inverse")) {
