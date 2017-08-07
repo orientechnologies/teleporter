@@ -363,14 +363,16 @@ public class ImportWithInputRelationshipConfigurationTest {
         String dbDropping = "drop schema public cascade";
         st.execute(dbDropping);
         connection.close();
+
+        if (orientGraph != null) {
+          orientGraph.drop();
+          orientGraph.shutdown();
+        }
+
         OFileManager.deleteResource(this.dbParentDirectoryPath);
       } catch (Exception e) {
         e.printStackTrace();
         fail();
-      }
-      if (orientGraph != null) {
-        orientGraph.drop();
-        orientGraph.shutdown();
       }
     }
   }
@@ -674,14 +676,16 @@ public class ImportWithInputRelationshipConfigurationTest {
         String dbDropping = "drop schema public cascade";
         st.execute(dbDropping);
         connection.close();
+
+        if (orientGraph != null) {
+          orientGraph.drop();
+          orientGraph.shutdown();
+        }
+
         OFileManager.deleteResource(this.dbParentDirectoryPath);
       } catch (Exception e) {
         e.printStackTrace();
         fail();
-      }
-      if (orientGraph != null) {
-        orientGraph.drop();
-        orientGraph.shutdown();
       }
     }
   }
@@ -1050,14 +1054,16 @@ public class ImportWithInputRelationshipConfigurationTest {
         String dbDropping = "drop schema public cascade";
         st.execute(dbDropping);
         connection.close();
+
+        if (orientGraph != null) {
+          orientGraph.drop();
+          orientGraph.shutdown();
+        }
+
         OFileManager.deleteResource(this.dbParentDirectoryPath);
       } catch (Exception e) {
         e.printStackTrace();
         fail();
-      }
-      if (orientGraph != null) {
-        orientGraph.drop();
-        orientGraph.shutdown();
       }
     }
   }
@@ -1428,14 +1434,16 @@ public class ImportWithInputRelationshipConfigurationTest {
         String dbDropping = "drop schema public cascade";
         st.execute(dbDropping);
         connection.close();
+
+        if (orientGraph != null) {
+          orientGraph.drop();
+          orientGraph.shutdown();
+        }
+
         OFileManager.deleteResource(this.dbParentDirectoryPath);
       } catch (Exception e) {
         e.printStackTrace();
         fail();
-      }
-      if (orientGraph != null) {
-        orientGraph.drop();
-        orientGraph.shutdown();
       }
     }
   }
@@ -1805,14 +1813,16 @@ public class ImportWithInputRelationshipConfigurationTest {
         String dbDropping = "drop schema public cascade";
         st.execute(dbDropping);
         connection.close();
+
+        if (orientGraph != null) {
+          orientGraph.drop();
+          orientGraph.shutdown();
+        }
+
         OFileManager.deleteResource(this.dbParentDirectoryPath);
       } catch (Exception e) {
         e.printStackTrace();
         fail();
-      }
-      if (orientGraph != null) {
-        orientGraph.drop();
-        orientGraph.shutdown();
       }
     }
   }
@@ -2184,14 +2194,17 @@ public class ImportWithInputRelationshipConfigurationTest {
         String dbDropping = "drop schema public cascade";
         st.execute(dbDropping);
         connection.close();
+
+        if (orientGraph != null) {
+          orientGraph.drop();
+          orientGraph.shutdown();
+        }
+
+
         OFileManager.deleteResource(this.dbParentDirectoryPath);
       } catch (Exception e) {
         e.printStackTrace();
         fail();
-      }
-      if (orientGraph != null) {
-        orientGraph.drop();
-        orientGraph.shutdown();
       }
     }
   }

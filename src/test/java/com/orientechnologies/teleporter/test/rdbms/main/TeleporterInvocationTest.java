@@ -60,7 +60,7 @@ public abstract class TeleporterInvocationTest {
     this.buildHSQLDBDatabaseToImport();
     try {
       OServerMain.create();
-      this.startServer(OServerMain.server());
+      //this.startServer(OServerMain.server());
     } catch (Exception e) {
       fail("Server instance not created correctly.");
     }

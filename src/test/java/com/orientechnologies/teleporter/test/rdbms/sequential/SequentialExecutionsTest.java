@@ -41,6 +41,8 @@ import java.sql.Statement;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.List;
+import java.util.LinkedList;
 
 import static org.junit.Assert.*;
 
@@ -1956,28 +1958,54 @@ public class SequentialExecutionsTest {
       }
       assertEquals(8, count);
 
+      List<Vertex> actorVertices = new LinkedList<Vertex>();
       count = 0;
       for (Vertex v : orientGraph.getVerticesOfClass("Actor")) {
         assertNotNull(v.getId());
+        actorVertices.add(v);
         count++;
       }
       assertEquals(8, count);
 
-      Iterator<Vertex> it = orientGraph.getVerticesOfClass("Actor").iterator();
-      Vertex currentVertex = it.next();
-      assertEquals("John", currentVertex.getProperty("name"));
-      assertEquals("Unaltravolta", currentVertex.getProperty("surname"));
-      currentVertex = it.next();
-      assertEquals("Samuel", currentVertex.getProperty("name"));
-      assertEquals("Lì Clacson", currentVertex.getProperty("surname"));
-      currentVertex = it.next();
-      currentVertex = it.next();
-      currentVertex = it.next();
-      currentVertex = it.next();
-      currentVertex = it.next();
-      currentVertex = it.next();
-      assertEquals("Matto", currentVertex.getProperty("name"));
-      assertEquals("Demone", currentVertex.getProperty("surname"));
+      String[] keys = {"id"};
+      String[] values = {"A001"};
+      Iterator<Vertex> it = orientGraph.getVertices("Actor", keys, values).iterator();
+      assertTrue(actorVertices.contains(it.next()));
+      assertFalse(it.hasNext());
+
+      values[0] = "A002";
+      it = orientGraph.getVertices("Actor", keys, values).iterator();
+      assertTrue(actorVertices.contains(it.next()));
+      assertFalse(it.hasNext());
+
+      values[0] = "A003";
+      it = orientGraph.getVertices("Actor", keys, values).iterator();
+      assertTrue(actorVertices.contains(it.next()));
+      assertFalse(it.hasNext());
+
+      values[0] = "A004";
+      it = orientGraph.getVertices("Actor", keys, values).iterator();
+      assertTrue(actorVertices.contains(it.next()));
+      assertFalse(it.hasNext());
+
+      values[0] = "A005";
+      it = orientGraph.getVertices("Actor", keys, values).iterator();
+      assertTrue(actorVertices.contains(it.next()));
+      assertFalse(it.hasNext());
+
+      values[0] = "A006";
+      it = orientGraph.getVertices("Actor", keys, values).iterator();
+      assertTrue(actorVertices.contains(it.next()));
+      assertFalse(it.hasNext());
+
+      values[0] = "A007";
+      it = orientGraph.getVertices("Actor", keys, values).iterator();
+      assertTrue(actorVertices.contains(it.next()));
+      assertFalse(it.hasNext());
+
+      values[0] = "A008";
+      it = orientGraph.getVertices("Actor", keys, values).iterator();
+      assertTrue(actorVertices.contains(it.next()));
       assertFalse(it.hasNext());
 
       // edges check
@@ -2020,13 +2048,16 @@ public class SequentialExecutionsTest {
       }
       assertEquals(8, count);
 
+      actorVertices = new LinkedList<Vertex>();
       count = 0;
       for (Vertex v : orientGraph.getVerticesOfClass("Actor")) {
         assertNotNull(v.getId());
+        actorVertices.add(v);
         count++;
       }
       assertEquals(8, count);
 
+      /*
       it = orientGraph.getVerticesOfClass("Actor").iterator();
       currentVertex = it.next();
       assertEquals("John", currentVertex.getProperty("name"));
@@ -2042,6 +2073,47 @@ public class SequentialExecutionsTest {
       currentVertex = it.next();
       assertEquals("Matt", currentVertex.getProperty("name"));
       assertEquals("Damon", currentVertex.getProperty("surname"));
+      assertFalse(it.hasNext());
+      */
+
+      values[0] = "A001";
+      it = orientGraph.getVertices("Actor", keys, values).iterator();
+      assertTrue(actorVertices.contains(it.next()));
+      assertFalse(it.hasNext());
+
+      values[0] = "A002";
+      it = orientGraph.getVertices("Actor", keys, values).iterator();
+      assertTrue(actorVertices.contains(it.next()));
+      assertFalse(it.hasNext());
+
+      values[0] = "A003";
+      it = orientGraph.getVertices("Actor", keys, values).iterator();
+      assertTrue(actorVertices.contains(it.next()));
+      assertFalse(it.hasNext());
+
+      values[0] = "A004";
+      it = orientGraph.getVertices("Actor", keys, values).iterator();
+      assertTrue(actorVertices.contains(it.next()));
+      assertFalse(it.hasNext());
+
+      values[0] = "A005";
+      it = orientGraph.getVertices("Actor", keys, values).iterator();
+      assertTrue(actorVertices.contains(it.next()));
+      assertFalse(it.hasNext());
+
+      values[0] = "A006";
+      it = orientGraph.getVertices("Actor", keys, values).iterator();
+      assertTrue(actorVertices.contains(it.next()));
+      assertFalse(it.hasNext());
+
+      values[0] = "A007";
+      it = orientGraph.getVertices("Actor", keys, values).iterator();
+      assertTrue(actorVertices.contains(it.next()));
+      assertFalse(it.hasNext());
+
+      values[0] = "A008";
+      it = orientGraph.getVertices("Actor", keys, values).iterator();
+      assertTrue(actorVertices.contains(it.next()));
       assertFalse(it.hasNext());
 
       // edges check

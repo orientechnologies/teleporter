@@ -35,6 +35,7 @@ import com.tinkerpop.blueprints.impls.orient.OrientGraphNoTx;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.io.File;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.Statement;
@@ -366,14 +367,16 @@ public class ImportWithAggregationTest {
         String dbDropping = "drop schema public cascade";
         st.execute(dbDropping);
         connection.close();
+
+        if (orientGraph != null) {
+          orientGraph.drop();
+          orientGraph.shutdown();
+        }
+
         OFileManager.deleteResource(this.dbParentDirectoryPath);
       } catch (Exception e) {
         e.printStackTrace();
         fail();
-      }
-      if (orientGraph != null) {
-        orientGraph.drop();
-        orientGraph.shutdown();
       }
     }
   }
