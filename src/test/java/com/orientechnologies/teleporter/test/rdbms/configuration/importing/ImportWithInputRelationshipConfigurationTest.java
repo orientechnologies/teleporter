@@ -56,7 +56,6 @@ public class ImportWithInputRelationshipConfigurationTest {
   private OTeleporterContext            context;
   private ODBMSNaiveStrategy            naiveStrategy;
   private ODBMSNaiveAggregationStrategy naiveAggregationStrategy;
-  private String                        dbParentDirectoryPath;
   private final String configDirectEdgesPath            = "src/test/resources/configuration-mapping/relationships-mapping-direct-edges.json";
   private final String configInverseEdgesPath           = "src/test/resources/configuration-mapping/relationships-mapping-inverted-edges.json";
   private final String configJoinTableDirectEdgesPath   = "src/test/resources/configuration-mapping/joint-table-relationships-mapping-direct-edges.json";
@@ -68,14 +67,15 @@ public class ImportWithInputRelationshipConfigurationTest {
   private String username = "SA";
   private String password = "";
   private String dbName = "testOrientDB";
-  private String outParentDirectory = "embedded:target/";
-  private String outOrientGraphUri = this.outParentDirectory + this.dbName;
+  private String protocol = "embedded:";
+  private String outParentDirectory = "target/";
+  private String outOrientGraphUri = this.protocol + this.outParentDirectory + this.dbName;
   private OSourceDatabaseInfo sourceDBInfo;
 
   @Before
   public void init() {
-    this.context = OTeleporterContext.newInstance(this.outParentDirectory);
-    this.context.initOrientDBInstance(outOrientGraphUri);
+    this.context = OTeleporterContext.newInstance(this.protocol + this.outParentDirectory);
+    this.context.initOrientDBInstance(this.protocol + this.outParentDirectory);
     this.dbQueryEngine = new ODBQueryEngine(this.driver);
     this.context.setDbQueryEngine(this.dbQueryEngine);
     this.context.setOutputManager(new OOutputStreamManager(0));
@@ -351,6 +351,13 @@ public class ImportWithInputRelationshipConfigurationTest {
         String dbDropping = "drop schema public cascade";
         st.execute(dbDropping);
         connection.close();
+
+        if (orientGraph != null) {
+          this.context.dropOrientDBDatabase(this.dbName);
+          this.context.closeOrientDBInstance();
+        }
+
+        OFileManager.deleteResource(this.outParentDirectory + this.dbName);
       } catch (Exception e) {
         e.printStackTrace();
         fail();
@@ -625,6 +632,13 @@ public class ImportWithInputRelationshipConfigurationTest {
         String dbDropping = "drop schema public cascade";
         st.execute(dbDropping);
         connection.close();
+
+        if (orientGraph != null) {
+          this.context.dropOrientDBDatabase(this.dbName);
+          this.context.closeOrientDBInstance();
+        }
+
+        OFileManager.deleteResource(this.outParentDirectory + this.dbName);
       } catch (Exception e) {
         e.printStackTrace();
         fail();
@@ -970,6 +984,13 @@ public class ImportWithInputRelationshipConfigurationTest {
         String dbDropping = "drop schema public cascade";
         st.execute(dbDropping);
         connection.close();
+
+        if (orientGraph != null) {
+          this.context.dropOrientDBDatabase(this.dbName);
+          this.context.closeOrientDBInstance();
+        }
+
+        OFileManager.deleteResource(this.outParentDirectory + this.dbName);
       } catch (Exception e) {
         e.printStackTrace();
         fail();
@@ -1318,6 +1339,13 @@ public class ImportWithInputRelationshipConfigurationTest {
         String dbDropping = "drop schema public cascade";
         st.execute(dbDropping);
         connection.close();
+
+        if (orientGraph != null) {
+          this.context.dropOrientDBDatabase(this.dbName);
+          this.context.closeOrientDBInstance();
+        }
+
+        OFileManager.deleteResource(this.outParentDirectory + this.dbName);
       } catch (Exception e) {
         e.printStackTrace();
         fail();
@@ -1663,6 +1691,13 @@ public class ImportWithInputRelationshipConfigurationTest {
         String dbDropping = "drop schema public cascade";
         st.execute(dbDropping);
         connection.close();
+
+        if (orientGraph != null) {
+          this.context.dropOrientDBDatabase(this.dbName);
+          this.context.closeOrientDBInstance();
+        }
+
+        OFileManager.deleteResource(this.outParentDirectory + this.dbName);
       } catch (Exception e) {
         e.printStackTrace();
         fail();
@@ -2011,6 +2046,13 @@ public class ImportWithInputRelationshipConfigurationTest {
         String dbDropping = "drop schema public cascade";
         st.execute(dbDropping);
         connection.close();
+
+        if (orientGraph != null) {
+          this.context.dropOrientDBDatabase(this.dbName);
+          this.context.closeOrientDBInstance();
+        }
+
+        OFileManager.deleteResource(this.outParentDirectory + this.dbName);
       } catch (Exception e) {
         e.printStackTrace();
         fail();

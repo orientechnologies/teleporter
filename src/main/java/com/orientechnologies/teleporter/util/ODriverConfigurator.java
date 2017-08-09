@@ -193,6 +193,7 @@ public class ODriverConfigurator {
         @SuppressWarnings("resource")
         FileOutputStream fos = new FileOutputStream(driverClassPath + fileName);
         fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
+        fos.close();
 
         driverPath = driverClassPath + fileName;
 

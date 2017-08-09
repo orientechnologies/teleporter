@@ -84,7 +84,7 @@ public abstract class TeleporterInvocationTest {
     this.buildHSQLDBDatabaseToImport();
     try {
       OServerMain.create();
-      this.startServer(OServerMain.server());
+      //this.startServer(OServerMain.server());
     } catch (Exception e) {
       fail("Server instance not created correctly.");
     }
@@ -96,7 +96,7 @@ public abstract class TeleporterInvocationTest {
     System.setProperty("ORIENTDB_HOME", this.serverHome);
     server.setServerRootDirectory(this.serverHome);
     server.startup(getClass().getClassLoader().getResourceAsStream(this.configurationPath));
- //   server.activate();
+    //   server.activate();
   }
 
   private String getDatabasePath(String databaseName) {

@@ -78,6 +78,10 @@ public class OTeleporterContext {
     return orient;
   }
 
+  /**
+   * Url contains: protocol + parentDBDirectory. Eg: "embedded:/tmp/"
+   * @param url
+   */
   public void initOrientDBInstance(String url) {
     this.orient = new OrientDB(url, OrientDBConfig.defaultConfig());
   }
@@ -88,6 +92,10 @@ public class OTeleporterContext {
 
   public void closeOrientDBInstance() {
     this.orient.close();
+  }
+
+  public void dropOrientDBDatabase(String databaseName) {
+    this.orient.drop(databaseName);
   }
 
   public OTeleporterStatistics getStatistics() {

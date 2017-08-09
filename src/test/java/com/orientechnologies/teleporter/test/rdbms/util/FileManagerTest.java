@@ -90,10 +90,12 @@ public class FileManagerTest {
       File dir = new File("src/test/resources/file-manager/sample/");
       File file = new File("src/test/resources/file-manager/sample/empty-file");
 
-      String fileContent = OFileManager.readAllTextFile(new FileReader(file));
+      FileReader fileReader = new FileReader(file);
+      String fileContent = OFileManager.readAllTextFile(fileReader);
 
       assertEquals("Hello, this is a sample file!\n", fileContent);
 
+      fileReader.close();
       OFileManager.deleteResource(dir.getPath());
 
     } catch (IOException e) {

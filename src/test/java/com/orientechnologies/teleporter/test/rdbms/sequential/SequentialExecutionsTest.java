@@ -48,6 +48,8 @@ import java.sql.Statement;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.List;
+import java.util.LinkedList;
 
 import static org.junit.Assert.*;
 
@@ -73,6 +75,7 @@ public class SequentialExecutionsTest {
 
   // Queries
   private String getElementsFromClassQuery = "select * from ?";
+  private String getElementFromActorByIdQuery = "select * from Actor where id = ?";
 
   @Before
   public void init() {
@@ -1599,22 +1602,58 @@ public class SequentialExecutionsTest {
       assertEquals(8, orientGraph.countClass("V"));
       assertEquals(8, orientGraph.countClass("Actor"));
 
+      List<OVertex> actorVertices = new LinkedList<OVertex>();
       OResultSet result = orientGraph.command(this.getElementsFromClassQuery, "Actor");
-      OVertex currentVertex = result.next().getVertex().get();
-      assertEquals("John", currentVertex.getProperty("name"));
-      assertEquals("Unaltravolta", currentVertex.getProperty("surname"));
-      currentVertex = result.next().getVertex().get();
-      assertEquals("Samuel", currentVertex.getProperty("name"));
-      assertEquals("Lì Clacson", currentVertex.getProperty("surname"));
-      currentVertex = result.next().getVertex().get();
-      currentVertex = result.next().getVertex().get();
-      currentVertex = result.next().getVertex().get();
-      currentVertex = result.next().getVertex().get();
-      currentVertex = result.next().getVertex().get();
-      currentVertex = result.next().getVertex().get();
-      assertEquals("Matto", currentVertex.getProperty("name"));
-      assertEquals("Demone", currentVertex.getProperty("surname"));
+
+      int count = 0;
+      while(result.hasNext()) {
+        OVertex currentVertex = result.next().getVertex().get();
+        assertNotNull(currentVertex);
+        actorVertices.add(currentVertex);
+        count++;
+      }
+      assertEquals(8, count);
+
+      String[] values = {"A001"};
+      result = orientGraph.command(this.getElementFromActorByIdQuery, values[0]);
+      assertTrue(actorVertices.contains(result.next().getVertex().get()));
       assertFalse(result.hasNext());
+
+      values[0] = "A002";
+      result = orientGraph.command(this.getElementFromActorByIdQuery, values[0]);
+      assertTrue(actorVertices.contains(result.next().getVertex().get()));
+      assertFalse(result.hasNext());
+
+      values[0] = "A003";
+      result = orientGraph.command(this.getElementFromActorByIdQuery, values[0]);
+      assertTrue(actorVertices.contains(result.next().getVertex().get()));
+      assertFalse(result.hasNext());
+
+      values[0] = "A004";
+      result = orientGraph.command(this.getElementFromActorByIdQuery, values[0]);
+      assertTrue(actorVertices.contains(result.next().getVertex().get()));
+      assertFalse(result.hasNext());
+
+      values[0] = "A005";
+      result = orientGraph.command(this.getElementFromActorByIdQuery, values[0]);
+      assertTrue(actorVertices.contains(result.next().getVertex().get()));
+      assertFalse(result.hasNext());
+
+      values[0] = "A006";
+      result = orientGraph.command(this.getElementFromActorByIdQuery, values[0]);
+      assertTrue(actorVertices.contains(result.next().getVertex().get()));
+      assertFalse(result.hasNext());
+
+      values[0] = "A007";
+      result = orientGraph.command(this.getElementFromActorByIdQuery, values[0]);
+      assertTrue(actorVertices.contains(result.next().getVertex().get()));
+      assertFalse(result.hasNext());
+
+      values[0] = "A008";
+      result = orientGraph.command(this.getElementFromActorByIdQuery, values[0]);
+      assertTrue(actorVertices.contains(result.next().getVertex().get()));
+      assertFalse(result.hasNext());
+
 
       // edges check
 
@@ -1647,21 +1686,56 @@ public class SequentialExecutionsTest {
       assertEquals(8, orientGraph.countClass("V"));
       assertEquals(8, orientGraph.countClass("Actor"));
 
+      actorVertices = new LinkedList<OVertex>();
       result = orientGraph.command(this.getElementsFromClassQuery, "Actor");
-      currentVertex = result.next().getVertex().get();
-      assertEquals("John", currentVertex.getProperty("name"));
-      assertEquals("Travolta", currentVertex.getProperty("surname"));
-      currentVertex = result.next().getVertex().get();
-      assertEquals("Samuel", currentVertex.getProperty("name"));
-      assertEquals("Lee Jackson", currentVertex.getProperty("surname"));
-      currentVertex = result.next().getVertex().get();
-      currentVertex = result.next().getVertex().get();
-      currentVertex = result.next().getVertex().get();
-      currentVertex = result.next().getVertex().get();
-      currentVertex = result.next().getVertex().get();
-      currentVertex = result.next().getVertex().get();
-      assertEquals("Matt", currentVertex.getProperty("name"));
-      assertEquals("Damon", currentVertex.getProperty("surname"));
+
+      count = 0;
+      while(result.hasNext()) {
+        OVertex currentVertex = result.next().getVertex().get();
+        assertNotNull(currentVertex);
+        actorVertices.add(currentVertex);
+        count++;
+      }
+      assertEquals(8, count);
+
+      values[0] = "A001";
+      result = orientGraph.command(this.getElementFromActorByIdQuery, values[0]);
+      assertTrue(actorVertices.contains(result.next().getVertex().get()));
+      assertFalse(result.hasNext());
+
+      values[0] = "A002";
+      result = orientGraph.command(this.getElementFromActorByIdQuery, values[0]);
+      assertTrue(actorVertices.contains(result.next().getVertex().get()));
+      assertFalse(result.hasNext());
+
+      values[0] = "A003";
+      result = orientGraph.command(this.getElementFromActorByIdQuery, values[0]);
+      assertTrue(actorVertices.contains(result.next().getVertex().get()));
+      assertFalse(result.hasNext());
+
+      values[0] = "A004";
+      result = orientGraph.command(this.getElementFromActorByIdQuery, values[0]);
+      assertTrue(actorVertices.contains(result.next().getVertex().get()));
+      assertFalse(result.hasNext());
+
+      values[0] = "A005";
+      result = orientGraph.command(this.getElementFromActorByIdQuery, values[0]);
+      assertTrue(actorVertices.contains(result.next().getVertex().get()));
+      assertFalse(result.hasNext());
+
+      values[0] = "A006";
+      result = orientGraph.command(this.getElementFromActorByIdQuery, values[0]);
+      assertTrue(actorVertices.contains(result.next().getVertex().get()));
+      assertFalse(result.hasNext());
+
+      values[0] = "A007";
+      result = orientGraph.command(this.getElementFromActorByIdQuery, values[0]);
+      assertTrue(actorVertices.contains(result.next().getVertex().get()));
+      assertFalse(result.hasNext());
+
+      values[0] = "A008";
+      result = orientGraph.command(this.getElementFromActorByIdQuery, values[0]);
+      assertTrue(actorVertices.contains(result.next().getVertex().get()));
       assertFalse(result.hasNext());
 
       // edges check

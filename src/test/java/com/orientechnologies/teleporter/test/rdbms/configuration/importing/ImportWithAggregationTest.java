@@ -40,6 +40,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.io.File;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.Statement;
@@ -63,14 +64,15 @@ public class ImportWithAggregationTest {
   private String username = "SA";
   private String password = "";
   private String dbName = "testOrientDB";
-  private String outParentDirectory = "embedded:target/";
-  private String outOrientGraphUri = this.outParentDirectory + this.dbName;
+  private String protocol = "embedded:";
+  private String outParentDirectory = "target/";
+  private String outOrientGraphUri = this.protocol + this.outParentDirectory + this.dbName;
   private OSourceDatabaseInfo sourceDBInfo;
 
   @Before
   public void init() {
-    this.context = OTeleporterContext.newInstance(this.outParentDirectory);
-    this.context.initOrientDBInstance(outOrientGraphUri);
+    this.context = OTeleporterContext.newInstance(this.protocol + this.outParentDirectory);
+    this.context.initOrientDBInstance(this.protocol + this.outParentDirectory);
     this.dbQueryEngine = new ODBQueryEngine(this.driver);
     this.context.setDbQueryEngine(this.dbQueryEngine);
     this.context.setOutputManager(new OOutputStreamManager(0));
@@ -358,6 +360,13 @@ public class ImportWithAggregationTest {
         String dbDropping = "drop schema public cascade";
         st.execute(dbDropping);
         connection.close();
+
+        if (orientGraph != null) {
+          this.context.dropOrientDBDatabase(this.dbName);
+          this.context.closeOrientDBInstance();
+        }
+
+        OFileManager.deleteResource(this.outParentDirectory + this.dbName);
       } catch (Exception e) {
         e.printStackTrace();
         fail();
