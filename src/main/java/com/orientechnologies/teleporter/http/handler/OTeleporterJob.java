@@ -1,23 +1,24 @@
 /*
  * Copyright 2015 OrientDB LTD (info--at--orientdb.com)
  * All Rights Reserved. Commercial License.
- * 
+ *
  * NOTICE:  All information contained herein is, and remains the property of
  * OrientDB LTD and its suppliers, if any.  The intellectual and
  * technical concepts contained herein are proprietary to
  * OrientDB LTD and its suppliers and may be covered by United
  * Kingdom and Foreign Patents, patents in process, and are protected by trade
  * secret or copyright law.
- * 
+ *
  * Dissemination of this information or reproduction of this material
  * is strictly forbidden unless prior written permission is obtained
  * from OrientDB LTD.
- * 
+ *
  * For more information: http://www.orientdb.com
  */
 
 package com.orientechnologies.teleporter.http.handler;
 
+import com.orientechnologies.common.log.OLogManager;
 import com.orientechnologies.orient.server.OServer;
 import com.orientechnologies.teleporter.context.OOutputStreamManager;
 import com.orientechnologies.teleporter.exception.OTeleporterIOException;
@@ -27,7 +28,6 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.Callable;
@@ -45,6 +45,7 @@ public class OTeleporterJob implements Callable<ODocument> {
   private Status      status;
   private PrintStream stream;
   private ByteArrayOutputStream baos;
+  private OOutputStreamManager outputMgr;
 
   private OServer currentServerInstance;
 
@@ -81,6 +82,8 @@ public class OTeleporterJob implements Callable<ODocument> {
     status = Status.RUNNING;
 
     final String outDbUrl;
+    this.outputMgr = new OOutputStreamManager(stream, Integer.parseInt(outputLevel));
+
     if(protocol.equals("plocal")) {
       outDbUrl = protocol + ":" + serverDatabaseDirectory + outDbName;
     }
@@ -94,7 +97,7 @@ public class OTeleporterJob implements Callable<ODocument> {
       if (chosenStrategy.equals("interactive") || chosenStrategy.equals("interactive-aggr")) {
         executionResult = OTeleporter
             .executeJob(driver, jurl, username, password, outDbUrl, chosenStrategy, chosenMapper, xmlPath, nameResolver,
-                outputLevel, includedTables, excludedTable, migrationConfig, new OOutputStreamManager(stream, 2));
+                outputLevel, includedTables, excludedTable, migrationConfig, this.outputMgr);
 
         synchronized (listener) {
           status = Status.FINISHED;
@@ -149,13 +152,39 @@ public class OTeleporterJob implements Callable<ODocument> {
       ODocument status = new ODocument();
       status.field("cfg", cfg);
       status.field("status", this.status);
-      status.field("log", baos.toString());
+
+      String lastBatchLog = extractBatchLog();
+      status.field("log", lastBatchLog);
+
       if (this.status == Status.FINISHED) {
         listener.notifyAll();
       }
       return status;
     }
 
+  }
+
+  private String extractBatchLog() {
+
+    String lastBatchLog = "Current status not correctly loaded.";
+
+    synchronized (this.outputMgr) {
+
+    // filling the last log batch
+    int baosInitSize = baos.size();
+    try {
+      lastBatchLog = baos.toString("UTF-8");
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+    int baosFinalSize = baos.size();
+    if (baosFinalSize - baosInitSize > 0) {
+      OLogManager.instance().info(this, "[Teleporter] Losing some buffer info.");
+    } else {
+      baos.reset();
+    }
+  }
+    return lastBatchLog;
   }
 
   public enum Status {
