@@ -19,8 +19,9 @@
 package com.orientechnologies.teleporter.test.rdbms.util.configuration;
 
 import com.orientechnologies.orient.core.record.impl.ODocument;
-import com.orientechnologies.teleporter.context.OOutputStreamManager;
+import com.orientechnologies.orient.output.OOutputStreamManager;
 import com.orientechnologies.teleporter.context.OTeleporterContext;
+import com.orientechnologies.teleporter.context.OTeleporterMessageHandler;
 import com.orientechnologies.teleporter.util.ODriverConfigurator;
 import com.orientechnologies.teleporter.util.OFileManager;
 import org.junit.Before;
@@ -49,7 +50,7 @@ public class DriverConfiguratorTest {
     this.context = OTeleporterContext.newInstance(outParentDirectory);
     this.driverConfigurator = new ODriverConfigurator();
     this.outputManager = new OOutputStreamManager(2);
-    this.context.setOutputManager(outputManager);
+    this.context.setMessageHandler(new OTeleporterMessageHandler(0));
 
     ODocument driversParams = this.driverConfigurator.readJsonFromRemoteUrl(DRIVERS);
     ODocument hsqldbConfig = driversParams.field("HyperSQL");

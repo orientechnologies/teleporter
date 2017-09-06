@@ -81,7 +81,7 @@ public class OConfigurationHandler {
     List<OConfiguredVertexClass> configuredVertices = new LinkedList<OConfiguredVertexClass>();
 
     if (verticesDoc == null) {
-      OTeleporterContext.getInstance().getOutputManager().error("Configuration error: 'vertices' field not found.");
+      OTeleporterContext.getInstance().getMessageHandler().error("Configuration error: 'vertices' field not found.");
       throw new OTeleporterRuntimeException();
     }
 
@@ -90,7 +90,7 @@ public class OConfigurationHandler {
 
       String configuredVertexClassName = currentVertexDoc.field("name");
       if (configuredVertexClassName == null) {
-        OTeleporterContext.getInstance().getOutputManager()
+        OTeleporterContext.getInstance().getMessageHandler()
             .error("Configuration error: 'name' field not found in vertex class definition.");
         throw new OTeleporterRuntimeException();
       }
@@ -106,7 +106,7 @@ public class OConfigurationHandler {
       ODocument mappingDoc = currentVertexDoc.field("mapping");
 
       if (mappingDoc == null) {
-        OTeleporterContext.getInstance().getOutputManager()
+        OTeleporterContext.getInstance().getMessageHandler()
             .error("Configuration error: 'mapping' field not found in the '%s' vertex-type definition.", configuredVertexClassName);
         throw new OTeleporterRuntimeException();
       }
@@ -122,7 +122,7 @@ public class OConfigurationHandler {
       // Source Tables building (mandatory)
       List<ODocument> sourceTableDocs = mappingDoc.field("sourceTables");
       if (sourceTableDocs == null) {
-        OTeleporterContext.getInstance().getOutputManager()
+        OTeleporterContext.getInstance().getMessageHandler()
             .error("Configuration error: 'sourceTables' field not found in the '%s' vertex-type mapping.",
                 configuredVertexClassName);
         throw new OTeleporterRuntimeException();
@@ -139,19 +139,19 @@ public class OConfigurationHandler {
         String dataSource = sourceTable.field("dataSource");
         List<String> primaryKey = sourceTable.field("primaryKey");
         if (sourceIdName == null) {
-          OTeleporterContext.getInstance().getOutputManager()
+          OTeleporterContext.getInstance().getMessageHandler()
               .error("Configuration error: 'name' field not found in the '%s' vertex-class mapping with the source table.",
                   configuredVertexClassName);
           throw new OTeleporterRuntimeException();
         }
         if (sourceTableName == null) {
-          OTeleporterContext.getInstance().getOutputManager()
+          OTeleporterContext.getInstance().getMessageHandler()
               .error("Configuration error: 'tableName' field not found in the '%s' vertex-class mapping with the source table.",
                   configuredVertexClassName);
           throw new OTeleporterRuntimeException();
         }
         if (dataSource == null) {
-          OTeleporterContext.getInstance().getOutputManager()
+          OTeleporterContext.getInstance().getMessageHandler()
               .error("Configuration error: 'dataSource' field not found in the '%s' vertex-class mapping with the source table.",
                   configuredVertexClassName);
           throw new OTeleporterRuntimeException();
@@ -162,7 +162,7 @@ public class OConfigurationHandler {
         List<String> primaryKeyColumns = sourceTable.field("primaryKey");
 
         if (aggregationFunction != null && aggregationColumns == null) {
-          OTeleporterContext.getInstance().getOutputManager().error(
+          OTeleporterContext.getInstance().getMessageHandler().error(
               "Configuration error: 'aggregationColumns' field not found in the '%s' vertex-class mapping with the source table "
                   + "('aggregationFunction' field is stated, thus 'aggregationColumns' field is expected for each source table).",
               configuredVertexClassName);
@@ -213,7 +213,7 @@ public class OConfigurationHandler {
     List<OConfiguredEdgeClass> configuredEdges = new LinkedList<OConfiguredEdgeClass>();
 
     if (edgesDoc == null) {
-      OTeleporterContext.getInstance().getOutputManager().error("Configuration error: 'edges' field not found.");
+      OTeleporterContext.getInstance().getMessageHandler().error("Configuration error: 'edges' field not found.");
       throw new OTeleporterRuntimeException();
     }
 
@@ -222,7 +222,7 @@ public class OConfigurationHandler {
 
       String[] edgeFields = currentEdgeDoc.fieldNames();
       if (edgeFields.length != 1) {
-        OTeleporterContext.getInstance().getOutputManager().error("Configuration error: wrong edge definition.");
+        OTeleporterContext.getInstance().getMessageHandler().error("Configuration error: wrong edge definition.");
       }
       String configuredEdgeClassName = edgeFields[0];
       OConfiguredEdgeClass currentConfiguredEdge = new OConfiguredEdgeClass(configuredEdgeClassName, configuration);
@@ -234,7 +234,7 @@ public class OConfigurationHandler {
 
       // building configured edges
       if (mappingDocs == null && splittingDoc == null) {
-        OTeleporterContext.getInstance().getOutputManager()
+        OTeleporterContext.getInstance().getMessageHandler()
             .error("Configuration error: neither 'mapping' nor 'splitting' fields found in the '%s' edge-type definition.",
                 configuredEdgeClassName);
         throw new OTeleporterRuntimeException();
@@ -242,7 +242,7 @@ public class OConfigurationHandler {
 
       // building configured edges
       if (mappingDocs != null && splittingDoc != null) {
-        OTeleporterContext.getInstance().getOutputManager().error(
+        OTeleporterContext.getInstance().getMessageHandler().error(
             "Configuration error: both 'mapping' and 'splitting' fields found in the '%s' edge-type definition. "
                 + "These fields are mutually exclusive.", configuredEdgeClassName);
         throw new OTeleporterRuntimeException();
@@ -263,23 +263,23 @@ public class OConfigurationHandler {
 
           // migrationConfigDoc errors managing (draconian approach)
           if (currentForeignEntityName == null) {
-            OTeleporterContext.getInstance().getOutputManager()
+            OTeleporterContext.getInstance().getMessageHandler()
                 .error("Configuration error: 'fromTable' field not found in the '%s' edge-type mapping.", configuredEdgeClassName);
             throw new OTeleporterRuntimeException();
           }
           if (currentParentEntityName == null) {
-            OTeleporterContext.getInstance().getOutputManager()
+            OTeleporterContext.getInstance().getMessageHandler()
                 .error("Configuration error: 'toTable' field not found in the '%s' edge-type mapping.", configuredEdgeClassName);
             throw new OTeleporterRuntimeException();
           }
           if (fromColumns == null) {
-            OTeleporterContext.getInstance().getOutputManager()
+            OTeleporterContext.getInstance().getMessageHandler()
                 .error("Configuration error: 'fromColumns' field not found in the '%s' edge-type mapping.",
                     configuredEdgeClassName);
             throw new OTeleporterRuntimeException();
           }
           if (toColumns == null) {
-            OTeleporterContext.getInstance().getOutputManager()
+            OTeleporterContext.getInstance().getMessageHandler()
                 .error("Configuration error: 'toColumns' field not found in the '%s' edge-type mapping.", configuredEdgeClassName);
             throw new OTeleporterRuntimeException();
           }
@@ -287,7 +287,7 @@ public class OConfigurationHandler {
           String direction = mappingDoc.field("direction");
 
           if (direction != null && !(direction.equals("direct") || direction.equals("inverse"))) {
-            OTeleporterContext.getInstance().getOutputManager()
+            OTeleporterContext.getInstance().getMessageHandler()
                 .error("Configuration error: direction for the edge %s cannot be '%s'. Allowed values: 'direct' or 'inverse' \n",
                     configuredEdgeClassName, direction);
             throw new OTeleporterRuntimeException();
@@ -300,7 +300,7 @@ public class OConfigurationHandler {
             String joinTableName = joinTableDoc.field("tableName");
 
             if (joinTableName == null) {
-              OTeleporterContext.getInstance().getOutputManager()
+              OTeleporterContext.getInstance().getMessageHandler()
                   .error("Configuration error: 'tableName' field not found in the join table mapping with the '%s' edge-type.",
                       configuredEdgeClassName);
               throw new OTeleporterRuntimeException();
@@ -314,13 +314,13 @@ public class OConfigurationHandler {
               List<String> joinTableToColumns = joinTableDoc.field("toColumns");
 
               if (joinTableFromColumns == null) {
-                OTeleporterContext.getInstance().getOutputManager()
+                OTeleporterContext.getInstance().getMessageHandler()
                     .error("Configuration error: 'fromColumns' field not found in the join table mapping with the '%s' edge-type.",
                         configuredEdgeClassName);
                 throw new OTeleporterRuntimeException();
               }
               if (joinTableToColumns == null) {
-                OTeleporterContext.getInstance().getOutputManager()
+                OTeleporterContext.getInstance().getMessageHandler()
                     .error("Configuration error: 'toColumns' field not found in the join table mapping with the '%s' edge-type.",
                         configuredEdgeClassName);
                 throw new OTeleporterRuntimeException();
@@ -329,7 +329,7 @@ public class OConfigurationHandler {
               joinTableMapping.setFromColumns(joinTableFromColumns);
               joinTableMapping.setToColumns(joinTableToColumns);
             } else {
-              OTeleporterContext.getInstance().getOutputManager().error(
+              OTeleporterContext.getInstance().getMessageHandler().error(
                   "Configuration not compliant with the chosen strategy: you cannot perform the aggregation declared in the migrationConfigDoc for the "
                       + "join table %s while executing migration with a not-aggregating strategy. Thus no aggregation will be performed.\n",
                   joinTableName);
@@ -351,21 +351,21 @@ public class OConfigurationHandler {
       } else if (splittingDoc != null) {
         String fromVertexClass = splittingDoc.field("fromVertexClass");
         if (fromVertexClass == null) {
-          OTeleporterContext.getInstance().getOutputManager().error(
+          OTeleporterContext.getInstance().getMessageHandler().error(
               "Configuration error: 'fromVertexClass' field not found in the 'splitting' area in the '%s' edge-type definition.",
               configuredEdgeClassName);
           throw new OTeleporterRuntimeException();
         }
         String toVertexClass = splittingDoc.field("toVertexClass");
         if (fromVertexClass == null) {
-          OTeleporterContext.getInstance().getOutputManager().error(
+          OTeleporterContext.getInstance().getMessageHandler().error(
               "Configuration error: 'toVertexClass' field not found in the 'splitting' area in the '%s' edge-type definition.",
               configuredEdgeClassName);
           throw new OTeleporterRuntimeException();
         }
         String sourceTable = splittingDoc.field("sourceTable");
         if (sourceTable == null) {
-          OTeleporterContext.getInstance().getOutputManager()
+          OTeleporterContext.getInstance().getMessageHandler()
               .error("Configuration error: 'sourceTable' field not found in the 'splitting' area in the '%s' edge-type definition.",
                   configuredEdgeClassName);
           throw new OTeleporterRuntimeException();
@@ -408,7 +408,7 @@ public class OConfigurationHandler {
         String propertyType = currentElementPropertyDoc.field("type");
         Integer ordinalPosition = currentElementPropertyDoc.field("ordinalPosition");
         if (isIncludedInMigration == null) {
-          OTeleporterContext.getInstance().getOutputManager()
+          OTeleporterContext.getInstance().getMessageHandler()
               .error("Configuration error: 'include' field not found in the '%s' property definition ('%s' Class).", propertyName,
                   className);
           throw new OTeleporterRuntimeException();
@@ -422,7 +422,7 @@ public class OConfigurationHandler {
         }
 
         if (ordinalPosition == null) {
-          OTeleporterContext.getInstance().getOutputManager()
+          OTeleporterContext.getInstance().getMessageHandler()
               .error("Configuration error: 'ordinalPosition' field not found in the '%s' property definition ('%s' Class).",
                   propertyName, className);
           throw new OTeleporterRuntimeException();
@@ -433,19 +433,19 @@ public class OConfigurationHandler {
         Boolean notNull = currentElementPropertyDoc.field("notNull");
 
         if (mandatory == null) {
-          OTeleporterContext.getInstance().getOutputManager()
+          OTeleporterContext.getInstance().getMessageHandler()
               .error("Configuration error: 'mandatory' field not found in the '%s' property definition ('%s' Class).", propertyName,
                   className);
           throw new OTeleporterRuntimeException();
         }
         if (readOnly == null) {
-          OTeleporterContext.getInstance().getOutputManager()
+          OTeleporterContext.getInstance().getMessageHandler()
               .error("Configuration error: 'readOnly' field not found in the '%s' property definition ('%s' Class).", propertyName,
                   className);
           throw new OTeleporterRuntimeException();
         }
         if (notNull == null) {
-          OTeleporterContext.getInstance().getOutputManager()
+          OTeleporterContext.getInstance().getMessageHandler()
               .error("Configuration error: 'notNull' field not found in the '%s' property definition ('%s' Class).", propertyName,
                   className);
           throw new OTeleporterRuntimeException();
@@ -459,19 +459,19 @@ public class OConfigurationHandler {
           String columnName = propertyMappingInfo.field("columnName");
           String type = propertyMappingInfo.field("type");
           if (source == null) {
-            OTeleporterContext.getInstance().getOutputManager()
+            OTeleporterContext.getInstance().getMessageHandler()
                 .error("Configuration error: 'source' field not found in the '%s' property mapping ('%s' Class).", propertyName,
                     className);
             throw new OTeleporterRuntimeException();
           }
           if (columnName == null) {
-            OTeleporterContext.getInstance().getOutputManager()
+            OTeleporterContext.getInstance().getMessageHandler()
                 .error("Configuration error: 'columnName' field not found in the '%s' property mapping ('%s' Class).", propertyName,
                     className);
             throw new OTeleporterRuntimeException();
           }
           if (type == null) {
-            OTeleporterContext.getInstance().getOutputManager()
+            OTeleporterContext.getInstance().getMessageHandler()
                 .error("Configuration error: 'type' field not found in the '%s' property mapping ('%s' Class).", propertyName,
                     className);
             throw new OTeleporterRuntimeException();
@@ -729,7 +729,7 @@ public class OConfigurationHandler {
       List<OEVClassMapper> currClassMappers = mapper.getVertexType2EVClassMappers().get(currVertexType);
       if (currClassMappers.size() == 0) {
         OTeleporterContext.getInstance().
-            getOutputManager()
+            getMessageHandler()
             .error("Error during the model building: the %s vertex class is not mapped to any table.", currVertexType.getName());
         throw new OTeleporterRuntimeException();
       }

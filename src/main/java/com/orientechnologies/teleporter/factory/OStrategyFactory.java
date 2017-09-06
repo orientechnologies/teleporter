@@ -66,7 +66,7 @@ public class OStrategyFactory {
         break;
 
       default:
-        OTeleporterContext.getInstance().getOutputManager()
+        OTeleporterContext.getInstance().getMessageHandler()
             .error("The typed strategy doesn't exist for migration from the chosen RDBMS.\n");
       }
 

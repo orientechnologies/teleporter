@@ -18,8 +18,8 @@
 
 package com.orientechnologies.teleporter.test.rdbms.exception;
 
-import com.orientechnologies.teleporter.context.OOutputStreamManager;
 import com.orientechnologies.teleporter.context.OTeleporterContext;
+import com.orientechnologies.teleporter.context.OTeleporterMessageHandler;
 import com.orientechnologies.teleporter.exception.OTeleporterIOException;
 import com.orientechnologies.teleporter.exception.OTeleporterRuntimeException;
 import org.junit.Before;
@@ -45,8 +45,7 @@ public class ExceptionPrintingTest {
   @Before
   public void init() {
     this.context = OTeleporterContext.newInstance(this.outParentDirectory);
-    this.context.setOutputManager(new OOutputStreamManager(0));
-    context.setOutputManager(new OOutputStreamManager(0));
+    this.context.setMessageHandler(new OTeleporterMessageHandler(0));
   }
 
   /**

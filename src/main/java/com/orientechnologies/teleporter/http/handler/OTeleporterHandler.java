@@ -19,9 +19,8 @@
 package com.orientechnologies.teleporter.http.handler;
 
 import com.orientechnologies.orient.server.OServer;
-import com.orientechnologies.teleporter.context.OOutputStreamManager;
 import com.orientechnologies.teleporter.context.OTeleporterContext;
-import com.orientechnologies.teleporter.persistence.util.ODBSourceConnection;
+import com.orientechnologies.teleporter.context.OTeleporterMessageHandler;
 import com.orientechnologies.teleporter.util.ODriverConfigurator;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.teleporter.util.OMigrationConfigManager;
@@ -91,7 +90,7 @@ public class OTeleporterHandler {
     if(OTeleporterContext.getInstance() == null) {
       OTeleporterContext.newInstance(currentServerInstance.getContext());
     }
-    OTeleporterContext.getInstance().setOutputManager(new OOutputStreamManager(2));
+    OTeleporterContext.getInstance().setMessageHandler(new OTeleporterMessageHandler(2));
 
     configurator.checkConnection(driver, jurl, username, password);
   }
@@ -132,7 +131,7 @@ public class OTeleporterHandler {
     if(OTeleporterContext.getInstance() == null) {
       OTeleporterContext.newInstance(currentServerInstance.getContext());
     }
-    OTeleporterContext.getInstance().setOutputManager(new OOutputStreamManager(2));
+    OTeleporterContext.getInstance().setMessageHandler(new OTeleporterMessageHandler(2));
 
     // checking configuration (driver will be downloaded if needed)
     configurator.checkDriverConfiguration(driver);

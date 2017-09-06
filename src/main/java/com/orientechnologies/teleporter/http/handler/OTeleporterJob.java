@@ -20,8 +20,9 @@ package com.orientechnologies.teleporter.http.handler;
 
 import com.orientechnologies.common.log.OLogManager;
 import com.orientechnologies.orient.core.db.OrientDB;
+import com.orientechnologies.orient.output.OPluginMessageHandler;
 import com.orientechnologies.orient.server.OServer;
-import com.orientechnologies.teleporter.context.OOutputStreamManager;
+import com.orientechnologies.teleporter.context.OTeleporterMessageHandler;
 import com.orientechnologies.teleporter.exception.OTeleporterIOException;
 import com.orientechnologies.teleporter.exception.OTeleporterRuntimeException;
 import com.orientechnologies.teleporter.main.OTeleporter;
@@ -43,10 +44,11 @@ public class OTeleporterJob implements Callable<ODocument> {
 
   private String id;
 
-  private Status      status;
-  private PrintStream stream;
+  private Status                status;
+  private PrintStream           stream;
   private ByteArrayOutputStream baos;
-  private OOutputStreamManager outputMgr;
+//  private OOutputStreamManager outputMgr;
+  private OPluginMessageHandler messageHandler;
 
   private OServer currentServerInstance;
 
@@ -84,7 +86,8 @@ public class OTeleporterJob implements Callable<ODocument> {
     status = Status.RUNNING;
 
     OrientDB orientDBInstance = currentServerInstance.getContext();
-    this.outputMgr = new OOutputStreamManager(stream, Integer.parseInt(outputLevel));
+    int msgHandlerLevel = Integer.parseInt(outputLevel);
+    this.messageHandler = new OTeleporterMessageHandler(this.stream, msgHandlerLevel);
 
     String outDbUrl;
     if(protocol.equals("plocal")) {
@@ -100,7 +103,7 @@ public class OTeleporterJob implements Callable<ODocument> {
       if (chosenStrategy.equals("interactive") || chosenStrategy.equals("interactive-aggr")) {
         executionResult = OTeleporter
             .executeJob(driver, jurl, username, password, outDbUrl, chosenStrategy, chosenMapper, xmlPath, nameResolver,
-                outputLevel, includedTables, excludedTable, migrationConfig, this.outputMgr, orientDBInstance);
+                outputLevel, includedTables, excludedTable, migrationConfig, this.messageHandler, orientDBInstance);
 
         synchronized (listener) {
           status = Status.FINISHED;
@@ -117,7 +120,7 @@ public class OTeleporterJob implements Callable<ODocument> {
             try {
               OTeleporter
                   .executeJob(driver, jurl, username, password, outDbUrl, chosenStrategy, chosenMapper, xmlPath, nameResolver,
-                      outputLevel, includedTables, excludedTable, migrationConfig, new OOutputStreamManager(stream, 2), orientDBInstance);
+                      outputLevel, includedTables, excludedTable, migrationConfig, new OTeleporterMessageHandler(stream, 2), orientDBInstance);
             } catch (OTeleporterIOException e) {
               e.printStackTrace();
             }
@@ -171,7 +174,7 @@ public class OTeleporterJob implements Callable<ODocument> {
 
     String lastBatchLog = "Current status not correctly loaded.";
 
-    synchronized (this.outputMgr) {
+    synchronized (this.messageHandler) {
 
     // filling the last log batch
     int baosInitSize = baos.size();

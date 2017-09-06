@@ -85,7 +85,7 @@ public class OHibernate2GraphMapper extends OER2GraphMapper {
         if (currentEntityElement.hasAttribute("table"))
           currentEntity = super.dataBaseSchema.getEntityByNameIgnoreCase(currentEntityElement.getAttribute("table"));
         else {
-          OTeleporterContext.getInstance().getOutputManager()
+          OTeleporterContext.getInstance().getMessageHandler()
               .error("XML Format error: problem in class definition, table attribute missing in the class node.\n");
           throw new OTeleporterRuntimeException();
         }
@@ -225,7 +225,7 @@ public class OHibernate2GraphMapper extends OER2GraphMapper {
         if (currentEntityElement.hasAttribute("name"))
           currentEntityElementName = currentEntityElement.getAttribute("name");
         else {
-          OTeleporterContext.getInstance().getOutputManager()
+          OTeleporterContext.getInstance().getMessageHandler()
               .error("XML Format error: problem in subclass definition, table attribute missing in the joined-subclass nodes.\n");
           throw new OTeleporterRuntimeException();
         }
@@ -293,7 +293,7 @@ public class OHibernate2GraphMapper extends OER2GraphMapper {
       if (currentChildElement.hasAttribute("table"))
         currentChildEntityName = currentChildElement.getAttribute("table");
       else {
-        OTeleporterContext.getInstance().getOutputManager()
+        OTeleporterContext.getInstance().getMessageHandler()
             .error("XML Format error: problem in subclass definition, table attribute missing in the joined-subclass nodes.\n");
         throw new OTeleporterRuntimeException();
       }
@@ -343,7 +343,7 @@ public class OHibernate2GraphMapper extends OER2GraphMapper {
       if (currentChildElement.hasAttribute("table"))
         currentChildEntityName = currentChildElement.getAttribute("table");
       else {
-        OTeleporterContext.getInstance().getOutputManager()
+        OTeleporterContext.getInstance().getMessageHandler()
             .error("XML Format error: problem in subclass definition, table attribute missing in the joined-subclass nodes.\n");
         throw new OTeleporterRuntimeException();
       }

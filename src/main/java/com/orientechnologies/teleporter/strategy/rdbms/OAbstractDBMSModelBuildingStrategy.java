@@ -94,9 +94,9 @@ public abstract class OAbstractDBMSModelBuildingStrategy implements OWorkflowStr
 
     Date globalEnd = new Date();
 
-    OTeleporterContext.getInstance().getOutputManager()
+    OTeleporterContext.getInstance().getMessageHandler()
         .info("\n\nGraph model building complete in %s\n", OFunctionsHandler.getHMSFormat(globalStart, globalEnd));
-    OTeleporterContext.getInstance().getOutputManager().info(OTeleporterContext.getInstance().getStatistics().toString());
+    OTeleporterContext.getInstance().getMessageHandler().info(OTeleporterContext.getInstance().getStatistics().toString());
 
     // Building Graph Model mapping (for graph rendering too)
     OConfiguration configuredGraph = configurationHandler.buildConfigurationFromMapper(this.mapper);
