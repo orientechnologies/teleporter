@@ -22,8 +22,8 @@ import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.teleporter.configuration.OConfigurationHandler;
 import com.orientechnologies.teleporter.configuration.api.OConfiguration;
-import com.orientechnologies.teleporter.context.OOutputStreamManager;
 import com.orientechnologies.teleporter.context.OTeleporterContext;
+import com.orientechnologies.teleporter.context.OTeleporterMessageHandler;
 import com.orientechnologies.teleporter.importengine.rdbms.dbengine.ODBQueryEngine;
 import com.orientechnologies.teleporter.mapper.rdbms.OER2GraphMapper;
 import com.orientechnologies.teleporter.model.dbschema.OSourceDatabaseInfo;
@@ -71,7 +71,7 @@ public class OrientDBSchemaWritingWithRelationshipConfigTest {
     this.context = OTeleporterContext.newInstance();
     this.dbQueryEngine = new ODBQueryEngine(this.driver);
     this.context.setDbQueryEngine(this.dbQueryEngine);
-    this.context.setOutputManager(new OOutputStreamManager(0));
+    this.context.setMessageHandler(new OTeleporterMessageHandler(0));
     this.context.setNameResolver(new OJavaConventionNameResolver());
     this.context.setDataTypeHandler(new OHSQLDBDataTypeHandler());
     this.sourceDBInfo = new OSourceDatabaseInfo("source", this.driver, this.jurl, this.username, this.password);

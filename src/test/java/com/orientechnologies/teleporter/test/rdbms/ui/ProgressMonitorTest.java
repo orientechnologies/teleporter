@@ -18,8 +18,9 @@
 
 package com.orientechnologies.teleporter.test.rdbms.ui;
 
-import com.orientechnologies.teleporter.context.OOutputStreamManager;
+import com.orientechnologies.orient.output.OOutputStreamManager;
 import com.orientechnologies.teleporter.context.OTeleporterContext;
+import com.orientechnologies.teleporter.context.OTeleporterMessageHandler;
 import com.orientechnologies.teleporter.context.OTeleporterStatistics;
 import com.orientechnologies.teleporter.ui.OProgressMonitor;
 import org.junit.Before;
@@ -48,7 +49,7 @@ public class ProgressMonitorTest {
     this.statistics = new OTeleporterStatistics();
     this.context.setStatistics(this.statistics);
     this.outputManager = new OOutputStreamManager(2);
-    this.context.setOutputManager(outputManager);
+    this.context.setMessageHandler(new OTeleporterMessageHandler(this.outputManager));
     this.progressMonitor = new OProgressMonitor();
   }
 

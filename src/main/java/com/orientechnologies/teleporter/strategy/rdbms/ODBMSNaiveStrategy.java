@@ -19,10 +19,10 @@
 package com.orientechnologies.teleporter.strategy.rdbms;
 
 import com.orientechnologies.orient.core.intent.OIntentMassiveInsert;
+import com.orientechnologies.orient.output.OOutputStreamManager;
 import com.orientechnologies.teleporter.configuration.OConfigurationHandler;
 import com.orientechnologies.teleporter.configuration.api.OConfiguration;
 import com.orientechnologies.teleporter.configuration.api.OConfiguredVertexClass;
-import com.orientechnologies.teleporter.context.OOutputStreamManager;
 import com.orientechnologies.teleporter.context.OTeleporterContext;
 import com.orientechnologies.teleporter.context.OTeleporterStatistics;
 import com.orientechnologies.teleporter.exception.OTeleporterRuntimeException;
@@ -75,17 +75,17 @@ public class ODBMSNaiveStrategy extends OAbstractDBMSImportStrategy {
     // Step 1: DataBase schema building
     mapper.buildSourceDatabaseSchema();
     OTeleporterContext.getInstance().getStatistics().notifyListeners();
-    OTeleporterContext.getInstance().getOutputManager().info("\n");
-    if(OTeleporterContext.getInstance().getOutputManager().getLevel() == OOutputStreamManager.DEBUG_LEVEL) {
-      OTeleporterContext.getInstance().getOutputManager().debug("\n%s\n", ((OER2GraphMapper) mapper).getDataBaseSchema().toString());
+    OTeleporterContext.getInstance().getMessageHandler().info("\n");
+    if(OTeleporterContext.getInstance().getMessageHandler().getLevel() == OOutputStreamManager.DEBUG_LEVEL) {
+      OTeleporterContext.getInstance().getMessageHandler().debug("\n%s\n", ((OER2GraphMapper) mapper).getDataBaseSchema().toString());
     }
 
     // Step 2: Graph model building
     mapper.buildGraphModel(nameResolver);
     OTeleporterContext.getInstance().getStatistics().notifyListeners();
-    OTeleporterContext.getInstance().getOutputManager().info("\n");
-    if(OTeleporterContext.getInstance().getOutputManager().getLevel() == OOutputStreamManager.DEBUG_LEVEL) {
-      OTeleporterContext.getInstance().getOutputManager().debug("\n%s\n", mapper.getGraphModel().toString());
+    OTeleporterContext.getInstance().getMessageHandler().info("\n");
+    if(OTeleporterContext.getInstance().getMessageHandler().getLevel() == OOutputStreamManager.DEBUG_LEVEL) {
+      OTeleporterContext.getInstance().getMessageHandler().debug("\n%s\n", mapper.getGraphModel().toString());
     }
 
     // Step 3: eventual migrationConfigDoc applying
@@ -96,14 +96,14 @@ public class ODBMSNaiveStrategy extends OAbstractDBMSImportStrategy {
     OGraphModel graphModel = ((OER2GraphMapper) mapper).getGraphModel();
     boolean success = graphModelWriter.writeModelOnOrient(mapper, handler, outOrientGraphUri);
     if (!success) {
-      OTeleporterContext.getInstance().getOutputManager().error("Writing not complete. Something gone wrong.\n");
+      OTeleporterContext.getInstance().getMessageHandler().error("Writing not complete. Something gone wrong.\n");
       throw new OTeleporterRuntimeException();
     }
     OTeleporterContext.getInstance().getStatistics().notifyListeners();
-    if(OTeleporterContext.getInstance().getOutputManager().getLevel() == OOutputStreamManager.DEBUG_LEVEL) {
-      OTeleporterContext.getInstance().getOutputManager().debug("\nOrientDB Schema writing complete.\n");
+    if(OTeleporterContext.getInstance().getMessageHandler().getLevel() == OOutputStreamManager.DEBUG_LEVEL) {
+      OTeleporterContext.getInstance().getMessageHandler().debug("\nOrientDB Schema writing complete.\n");
     }
-    OTeleporterContext.getInstance().getOutputManager().info("\n");
+    OTeleporterContext.getInstance().getMessageHandler().info("\n");
 
     return mapper;
   }
@@ -194,7 +194,7 @@ public class ODBMSNaiveStrategy extends OAbstractDBMSImportStrategy {
       statistics.notifyListeners();
       statistics.runningStepNumber = -1;
       orientGraph.shutdown();
-      OTeleporterContext.getInstance().getOutputManager().info("\n");
+      OTeleporterContext.getInstance().getMessageHandler().info("\n");
 
     } catch (OTeleporterRuntimeException e) {
       throw e;

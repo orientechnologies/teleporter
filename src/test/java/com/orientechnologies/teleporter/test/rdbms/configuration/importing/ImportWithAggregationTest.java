@@ -19,8 +19,8 @@
 package com.orientechnologies.teleporter.test.rdbms.configuration.importing;
 
 import com.orientechnologies.orient.core.record.impl.ODocument;
-import com.orientechnologies.teleporter.context.OOutputStreamManager;
 import com.orientechnologies.teleporter.context.OTeleporterContext;
+import com.orientechnologies.teleporter.context.OTeleporterMessageHandler;
 import com.orientechnologies.teleporter.importengine.rdbms.dbengine.ODBQueryEngine;
 import com.orientechnologies.teleporter.model.dbschema.OSourceDatabaseInfo;
 import com.orientechnologies.teleporter.nameresolver.OJavaConventionNameResolver;
@@ -35,7 +35,6 @@ import com.tinkerpop.blueprints.impls.orient.OrientGraphNoTx;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.io.File;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.Statement;
@@ -67,7 +66,7 @@ public class ImportWithAggregationTest {
     this.context = OTeleporterContext.newInstance();
     this.dbQueryEngine = new ODBQueryEngine(this.driver);
     this.context.setDbQueryEngine(this.dbQueryEngine);
-    this.context.setOutputManager(new OOutputStreamManager(0));
+    this.context.setMessageHandler(new OTeleporterMessageHandler(0));
     this.context.setNameResolver(new OJavaConventionNameResolver());
     this.context.setDataTypeHandler(new OHSQLDBDataTypeHandler());
     this.naiveStrategy = new ODBMSNaiveStrategy();

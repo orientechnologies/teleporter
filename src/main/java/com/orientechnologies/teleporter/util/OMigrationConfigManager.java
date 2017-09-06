@@ -55,7 +55,7 @@ public class OMigrationConfigManager {
       config = OFileManager.buildJsonFromFile(configurationPath);
       // (i)
       if (config != null) {
-        OTeleporterContext.getInstance().getOutputManager().info("Configuration correctly loaded from %s.\n", configurationPath);
+        OTeleporterContext.getInstance().getMessageHandler().info("Configuration correctly loaded from %s.\n", configurationPath);
       }
     } catch (Exception e) {
       String mess = "";
@@ -161,11 +161,11 @@ public class OMigrationConfigManager {
     try {
       if (configPresentInDB) {
         sourcesAccessInfo = OFileManager.buildJsonFromFile(outDBConfigPath);
-        OTeleporterContext.getInstance().getOutputManager()
+        OTeleporterContext.getInstance().getMessageHandler()
             .info("Sources' access info correctly loaded from %s.\n", outDBConfigPath);
       } else {
         // (iii)
-        OTeleporterContext.getInstance().getOutputManager().info("No sources' access info file was found.\n");
+        OTeleporterContext.getInstance().getMessageHandler().info("No sources' access info file was found.\n");
       }
     } catch (Exception e) {
       String mess = "";

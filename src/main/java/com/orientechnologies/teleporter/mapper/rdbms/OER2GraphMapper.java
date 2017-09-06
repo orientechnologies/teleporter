@@ -18,8 +18,8 @@
 
 package com.orientechnologies.teleporter.mapper.rdbms;
 
+import com.orientechnologies.orient.output.OOutputStreamManager;
 import com.orientechnologies.teleporter.configuration.api.*;
-import com.orientechnologies.teleporter.context.OOutputStreamManager;
 import com.orientechnologies.teleporter.context.OTeleporterContext;
 import com.orientechnologies.teleporter.context.OTeleporterStatistics;
 import com.orientechnologies.teleporter.exception.OTeleporterRuntimeException;
@@ -271,8 +271,8 @@ public class OER2GraphMapper extends OSource2GraphMapper {
 
     try {
       if (connection.isClosed()) {
-        if(OTeleporterContext.getInstance().getOutputManager().getLevel() == OOutputStreamManager.DEBUG_LEVEL) {
-          OTeleporterContext.getInstance().getOutputManager().debug("\nConnection to DB closed.\n");
+        if(OTeleporterContext.getInstance().getMessageHandler().getLevel() == OOutputStreamManager.DEBUG_LEVEL) {
+          OTeleporterContext.getInstance().getMessageHandler().debug("\nConnection to DB closed.\n");
         }
       }
       else {
@@ -333,8 +333,8 @@ public class OER2GraphMapper extends OSource2GraphMapper {
 
     // closing resultTable
     this.closeCursor(resultTable);
-    if(OTeleporterContext.getInstance().getOutputManager().getLevel() == OOutputStreamManager.DEBUG_LEVEL) {
-      OTeleporterContext.getInstance().getOutputManager().debug("\n%s tables found.\n", numberOfTables);
+    if(OTeleporterContext.getInstance().getMessageHandler().getLevel() == OOutputStreamManager.DEBUG_LEVEL) {
+      OTeleporterContext.getInstance().getMessageHandler().debug("\n%s tables found.\n", numberOfTables);
     }
 
     // Variables for records counting
@@ -345,8 +345,8 @@ public class OER2GraphMapper extends OSource2GraphMapper {
     int iteration = 1;
     for (String currentTableName : tablesName2schema.keySet()) {
 
-      if(OTeleporterContext.getInstance().getOutputManager().getLevel() == OOutputStreamManager.DEBUG_LEVEL) {
-        OTeleporterContext.getInstance().getOutputManager()
+      if(OTeleporterContext.getInstance().getMessageHandler().getLevel() == OOutputStreamManager.DEBUG_LEVEL) {
+        OTeleporterContext.getInstance().getMessageHandler()
             .debug("\nBuilding '%s' entity (%s/%s)...\n", currentTableName, iteration, numberOfTables);
       }
 
@@ -405,8 +405,8 @@ public class OER2GraphMapper extends OSource2GraphMapper {
       this.dataBaseSchema.getEntities().add(currentEntity);
 
       iteration++;
-      if(OTeleporterContext.getInstance().getOutputManager().getLevel() == OOutputStreamManager.DEBUG_LEVEL) {
-        OTeleporterContext.getInstance().getOutputManager().debug("\nEntity %s built.\n", currentTableName);
+      if(OTeleporterContext.getInstance().getMessageHandler().getLevel() == OOutputStreamManager.DEBUG_LEVEL) {
+        OTeleporterContext.getInstance().getMessageHandler().debug("\nEntity %s built.\n", currentTableName);
       }
       statistics.builtEntities++;
       statistics.totalNumberOfRecords = totalNumberOfRecord;
@@ -435,8 +435,8 @@ public class OER2GraphMapper extends OSource2GraphMapper {
 
       String currentForeignEntityName = currentForeignEntity.getName();
       String foreignSchema = currentForeignEntity.getSchemaName();
-      if(OTeleporterContext.getInstance().getOutputManager().getLevel() == OOutputStreamManager.DEBUG_LEVEL) {
-        OTeleporterContext.getInstance().getOutputManager()
+      if(OTeleporterContext.getInstance().getMessageHandler().getLevel() == OOutputStreamManager.DEBUG_LEVEL) {
+        OTeleporterContext.getInstance().getMessageHandler()
             .debug("\nBuilding OUT relationships starting from '%s' entity (%s/%s)...\n", currentForeignEntityName, iteration,
                 numberOfTables);
       }
@@ -502,8 +502,8 @@ public class OER2GraphMapper extends OSource2GraphMapper {
       }
 
       iteration++;
-      if(OTeleporterContext.getInstance().getOutputManager().getLevel() == OOutputStreamManager.DEBUG_LEVEL) {
-        OTeleporterContext.getInstance().getOutputManager().debug("\nOUT Relationships from %s built.\n", currentForeignEntityName);
+      if(OTeleporterContext.getInstance().getMessageHandler().getLevel() == OOutputStreamManager.DEBUG_LEVEL) {
+        OTeleporterContext.getInstance().getMessageHandler().debug("\nOUT Relationships from %s built.\n", currentForeignEntityName);
       }
       statistics.entitiesAnalyzedForRelationship++;
     }
@@ -519,8 +519,8 @@ public class OER2GraphMapper extends OSource2GraphMapper {
   private void buildInRelationships() {
 
     int iteration = 1;
-    if(OTeleporterContext.getInstance().getOutputManager().getLevel() == OOutputStreamManager.DEBUG_LEVEL) {
-      OTeleporterContext.getInstance().getOutputManager().debug("\nConnecting IN relationships...\n");
+    if(OTeleporterContext.getInstance().getMessageHandler().getLevel() == OOutputStreamManager.DEBUG_LEVEL) {
+      OTeleporterContext.getInstance().getMessageHandler().debug("\nConnecting IN relationships...\n");
     }
 
     for (ORelationship currentRelationship : this.dataBaseSchema.getCanonicalRelationships()) {
@@ -528,8 +528,8 @@ public class OER2GraphMapper extends OSource2GraphMapper {
       currentInEntity.getInCanonicalRelationships().add((OCanonicalRelationship) currentRelationship);
     }
 
-    if(OTeleporterContext.getInstance().getOutputManager().getLevel() == OOutputStreamManager.DEBUG_LEVEL) {
-      OTeleporterContext.getInstance().getOutputManager().debug("\nIN relationships built.\n");
+    if(OTeleporterContext.getInstance().getMessageHandler().getLevel() == OOutputStreamManager.DEBUG_LEVEL) {
+      OTeleporterContext.getInstance().getMessageHandler().debug("\nIN relationships built.\n");
     }
   }
 
@@ -641,8 +641,8 @@ public class OER2GraphMapper extends OSource2GraphMapper {
     int iteration = 1;
     for (OEntity currentEntity : this.dataBaseSchema.getEntities()) {
 
-      if(OTeleporterContext.getInstance().getOutputManager().getLevel() == OOutputStreamManager.DEBUG_LEVEL) {
-        OTeleporterContext.getInstance().getOutputManager()
+      if(OTeleporterContext.getInstance().getMessageHandler().getLevel() == OOutputStreamManager.DEBUG_LEVEL) {
+        OTeleporterContext.getInstance().getMessageHandler()
             .debug("\nBuilding '%s' vertex-type (%s/%s)...\n", currentEntity.getName(), iteration, numberOfVertexType);
       }
 
@@ -716,8 +716,8 @@ public class OER2GraphMapper extends OSource2GraphMapper {
       this.upsertEVClassMappingRules(currentEntity, currentVertexType, classMapper);
 
       iteration++;
-      if(OTeleporterContext.getInstance().getOutputManager().getLevel() == OOutputStreamManager.DEBUG_LEVEL) {
-        OTeleporterContext.getInstance().getOutputManager().debug("\nVertex-type %s built.\n", currentVertexTypeName);
+      if(OTeleporterContext.getInstance().getMessageHandler().getLevel() == OOutputStreamManager.DEBUG_LEVEL) {
+        OTeleporterContext.getInstance().getMessageHandler().debug("\nVertex-type %s built.\n", currentVertexTypeName);
       }
       statistics.builtModelVertexTypes++;
     }
@@ -752,8 +752,8 @@ public class OER2GraphMapper extends OSource2GraphMapper {
           OVertexType currentOutVertex = this.getVertexTypeByEntity(relationship.getForeignEntity());
           OVertexType currentInVertex = this.getVertexTypeByEntity(relationship.getParentEntity());
 
-          if(OTeleporterContext.getInstance().getOutputManager().getLevel() == OOutputStreamManager.DEBUG_LEVEL) {
-            OTeleporterContext.getInstance().getOutputManager()
+          if(OTeleporterContext.getInstance().getMessageHandler().getLevel() == OOutputStreamManager.DEBUG_LEVEL) {
+            OTeleporterContext.getInstance().getMessageHandler()
                 .debug("\nBuilding edge-type from '%s' to '%s' (%s/%s)...\n", currentOutVertex.getName(), currentInVertex.getName(),
                     iteration, numberOfEdgeType);
           }
@@ -779,8 +779,8 @@ public class OER2GraphMapper extends OSource2GraphMapper {
                   currentEdgeType = new OEdgeType(edgeType, null, currentInVertex);
                   this.graphModel.getEdgesType().add(currentEdgeType);
 
-                  if(OTeleporterContext.getInstance().getOutputManager().getLevel() == OOutputStreamManager.DEBUG_LEVEL) {
-                    OTeleporterContext.getInstance().getOutputManager().debug("\nEdge-type %s built.\n", currentEdgeType.getName());
+                  if(OTeleporterContext.getInstance().getMessageHandler().getLevel() == OOutputStreamManager.DEBUG_LEVEL) {
+                    OTeleporterContext.getInstance().getMessageHandler().debug("\nEdge-type %s built.\n", currentEdgeType.getName());
                   }
                   statistics.builtModelEdgeTypes++;
                 } else {
@@ -801,7 +801,7 @@ public class OER2GraphMapper extends OSource2GraphMapper {
               }
             }
           } else {
-            OTeleporterContext.getInstance().getOutputManager()
+            OTeleporterContext.getInstance().getMessageHandler()
                 .error("Error during graph model building phase: information loss, relationship missed. Edge-type not built.\n");
           }
 
@@ -814,8 +814,8 @@ public class OER2GraphMapper extends OSource2GraphMapper {
           OVertexType currentOutVertex = this.getVertexTypeByEntity(currentEntity);
           OVertexType currentInVertex = this.getVertexTypeByEntity(relationship.getParentEntity());
 
-          if(OTeleporterContext.getInstance().getOutputManager().getLevel() == OOutputStreamManager.DEBUG_LEVEL) {
-            OTeleporterContext.getInstance().getOutputManager()
+          if(OTeleporterContext.getInstance().getMessageHandler().getLevel() == OOutputStreamManager.DEBUG_LEVEL) {
+            OTeleporterContext.getInstance().getMessageHandler()
                 .debug("\nBuilding edge-type from '%s' to '%s' (%s/%s)...\n", currentOutVertex.getName(), currentInVertex.getName(),
                     iteration, numberOfEdgeType);
           }
@@ -828,11 +828,11 @@ public class OER2GraphMapper extends OSource2GraphMapper {
             currentOutVertex.getOutEdgesType().add(currentEdgeType);
             currentInVertex.getInEdgesType().add(currentEdgeType);
 
-            if(OTeleporterContext.getInstance().getOutputManager().getLevel() == OOutputStreamManager.DEBUG_LEVEL) {
-              OTeleporterContext.getInstance().getOutputManager().debug("\nEdge-type built.\n");
+            if(OTeleporterContext.getInstance().getMessageHandler().getLevel() == OOutputStreamManager.DEBUG_LEVEL) {
+              OTeleporterContext.getInstance().getMessageHandler().debug("\nEdge-type built.\n");
             }
           } else {
-            OTeleporterContext.getInstance().getOutputManager()
+            OTeleporterContext.getInstance().getMessageHandler()
                 .error("Error during graph model building phase: information loss, relationship missed. Edge-type not built.\n");
           }
         }
@@ -916,7 +916,7 @@ public class OER2GraphMapper extends OSource2GraphMapper {
           else if (tableName2mappedConfiguredVertices.get(tableName).size() > 1) {
             performSplittingMapping(sourceId2tableName, tableName2mappedConfiguredVertices);
           } else {
-            OTeleporterContext.getInstance().getOutputManager()
+            OTeleporterContext.getInstance().getMessageHandler()
                 .error("Mapping error: No vertices are mapped with '%s' table.", tableName);
             throw new OTeleporterRuntimeException();
           }
@@ -1374,22 +1374,22 @@ public class OER2GraphMapper extends OSource2GraphMapper {
 
           // migrationConfigDoc errors managing (draconian approach)
           if (currentForeignEntityName == null) {
-            OTeleporterContext.getInstance().getOutputManager()
+            OTeleporterContext.getInstance().getMessageHandler()
                 .error("Configuration error: 'fromTable' field not found in the '%s' edge-type definition.", edgeName);
             throw new OTeleporterRuntimeException();
           }
           if (currentParentEntityName == null) {
-            OTeleporterContext.getInstance().getOutputManager()
+            OTeleporterContext.getInstance().getMessageHandler()
                 .error("Configuration error: 'toTable' field not found in the '%s' edge-type definition.", edgeName);
             throw new OTeleporterRuntimeException();
           }
           if (fromColumns == null) {
-            OTeleporterContext.getInstance().getOutputManager()
+            OTeleporterContext.getInstance().getMessageHandler()
                 .error("Configuration error: 'fromColumns' field not found in the '%s' edge-type definition.", edgeName);
             throw new OTeleporterRuntimeException();
           }
           if (toColumns == null) {
-            OTeleporterContext.getInstance().getOutputManager()
+            OTeleporterContext.getInstance().getMessageHandler()
                 .error("Configuration error: 'toColumns' field not found in the '%s' edge-type definition.", edgeName);
             throw new OTeleporterRuntimeException();
           }
@@ -1397,7 +1397,7 @@ public class OER2GraphMapper extends OSource2GraphMapper {
           String direction = edgeMapping.getDirection();
 
           if (direction != null && !(direction.equals("direct") || direction.equals("inverse"))) {
-            OTeleporterContext.getInstance().getOutputManager()
+            OTeleporterContext.getInstance().getMessageHandler()
                 .error("Configuration error: direction for the edge %s cannot be '%s'. Allowed values: 'direct' or 'inverse' \n",
                     edgeName, direction);
             throw new OTeleporterRuntimeException();
@@ -1451,7 +1451,7 @@ public class OER2GraphMapper extends OSource2GraphMapper {
               correspondentVertexType.setIsFromJoinTable(true);
 
             } else if (OTeleporterContext.getInstance().getExecutionStrategy().equals("naive")) {
-              OTeleporterContext.getInstance().getOutputManager().error(
+              OTeleporterContext.getInstance().getMessageHandler().error(
                   "Configuration not compliant with the chosen strategy: you cannot perform the aggregation declared in the migrationConfigDoc for the "
                       + "join table %s while executing migration with a not-aggregating strategy. Thus no aggregation will be performed.\n",
                   joinTableName);
@@ -1596,7 +1596,7 @@ public class OER2GraphMapper extends OSource2GraphMapper {
       if ((direction.equals("direct") || direction.equals("inverse"))) {
         currentRelationship.setDirection(direction);
       } else {
-        OTeleporterContext.getInstance().getOutputManager().error(
+        OTeleporterContext.getInstance().getMessageHandler().error(
             "Wrong value for the direction of the relationship between %s and %s: \"%s\" is not a valid direction. "
                 + "Direction \"direct\" will be adopted for the current migration/synchronization.\n",
             currentRelationship.getForeignEntity(), currentRelationship.getParentEntity(), direction);
@@ -1635,8 +1635,8 @@ public class OER2GraphMapper extends OSource2GraphMapper {
       currentEdgeType = new OEdgeType(edgeName, null, null);
       this.graphModel.getEdgesType().add(currentEdgeType);
 
-      if(OTeleporterContext.getInstance().getOutputManager().getLevel() == OOutputStreamManager.DEBUG_LEVEL) {
-        OTeleporterContext.getInstance().getOutputManager().debug("\nEdge-type %s built.\n", currentEdgeType.getName());
+      if(OTeleporterContext.getInstance().getMessageHandler().getLevel() == OOutputStreamManager.DEBUG_LEVEL) {
+        OTeleporterContext.getInstance().getMessageHandler().debug("\nEdge-type %s built.\n", currentEdgeType.getName());
       }
       statistics.builtModelEdgeTypes++;
       statistics.totalNumberOfModelEdges++;
@@ -1645,8 +1645,8 @@ public class OER2GraphMapper extends OSource2GraphMapper {
         currentEdgeType = new OEdgeType(edgeName, null, null);
         this.graphModel.getEdgesType().add(currentEdgeType);
 
-        if(OTeleporterContext.getInstance().getOutputManager().getLevel() == OOutputStreamManager.DEBUG_LEVEL) {
-          OTeleporterContext.getInstance().getOutputManager().debug("\nEdge-type %s built.\n", currentEdgeType.getName());
+        if(OTeleporterContext.getInstance().getMessageHandler().getLevel() == OOutputStreamManager.DEBUG_LEVEL) {
+          OTeleporterContext.getInstance().getMessageHandler().debug("\nEdge-type %s built.\n", currentEdgeType.getName());
         }
         statistics.builtModelEdgeTypes++;
         statistics.totalNumberOfModelEdges++;
@@ -1795,8 +1795,8 @@ public class OER2GraphMapper extends OSource2GraphMapper {
     OEEClassMapper classMapper = new OEEClassMapper(entity, edgeType, attribute2property, property2attribute);
     this.upsertEEClassMappingRules(entity, edgeType, classMapper);
 
-    if(OTeleporterContext.getInstance().getOutputManager().getLevel() == OOutputStreamManager.DEBUG_LEVEL) {
-      OTeleporterContext.getInstance().getOutputManager().debug("\nEdge-type %s built.\n", edgeType.getName());
+    if(OTeleporterContext.getInstance().getMessageHandler().getLevel() == OOutputStreamManager.DEBUG_LEVEL) {
+      OTeleporterContext.getInstance().getMessageHandler().debug("\nEdge-type %s built.\n", edgeType.getName());
     }
     statistics.builtModelEdgeTypes++;
     statistics.totalNumberOfModelEdges++;
@@ -1873,8 +1873,8 @@ public class OER2GraphMapper extends OSource2GraphMapper {
     OTeleporterStatistics statistics = OTeleporterContext.getInstance().getStatistics();
     Iterator<OVertexType> it = this.graphModel.getVerticesType().iterator();
 
-    if(OTeleporterContext.getInstance().getOutputManager().getLevel() == OOutputStreamManager.DEBUG_LEVEL) {
-      OTeleporterContext.getInstance().getOutputManager().debug("\n\nJoin Table aggregation phase...\n");
+    if(OTeleporterContext.getInstance().getMessageHandler().getLevel() == OOutputStreamManager.DEBUG_LEVEL) {
+      OTeleporterContext.getInstance().getMessageHandler().debug("\n\nJoin Table aggregation phase...\n");
     }
 
     while (it.hasNext()) {
@@ -2003,8 +2003,8 @@ public class OER2GraphMapper extends OSource2GraphMapper {
       }
     }
 
-    if(OTeleporterContext.getInstance().getOutputManager().getLevel() == OOutputStreamManager.DEBUG_LEVEL) {
-      OTeleporterContext.getInstance().getOutputManager().debug("\nAggregation performed.\n");
+    if(OTeleporterContext.getInstance().getMessageHandler().getLevel() == OOutputStreamManager.DEBUG_LEVEL) {
+      OTeleporterContext.getInstance().getMessageHandler().debug("\nAggregation performed.\n");
     }
   }
 

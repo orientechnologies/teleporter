@@ -1,6 +1,6 @@
 package com.orientechnologies.teleporter.test.rdbms.synch;
 
-import com.orientechnologies.teleporter.context.OOutputStreamManager;
+import com.orientechnologies.orient.output.OOutputStreamManager;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -19,8 +19,8 @@ import static org.junit.Assert.fail;
  */
 public class SynchOutputStreamTest {
 
-  private OOutputStreamManager streamManager;
-  private PrintStream stream;
+  private OOutputStreamManager  streamManager;
+  private PrintStream           stream;
   private ByteArrayOutputStream baos;
 
   @Before

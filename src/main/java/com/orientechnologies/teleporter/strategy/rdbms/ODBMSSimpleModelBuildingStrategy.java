@@ -18,9 +18,9 @@
 
 package com.orientechnologies.teleporter.strategy.rdbms;
 
+import com.orientechnologies.orient.output.OOutputStreamManager;
 import com.orientechnologies.teleporter.configuration.OConfigurationHandler;
 import com.orientechnologies.teleporter.configuration.api.OConfiguration;
-import com.orientechnologies.teleporter.context.OOutputStreamManager;
 import com.orientechnologies.teleporter.context.OTeleporterContext;
 import com.orientechnologies.teleporter.factory.OMapperFactory;
 import com.orientechnologies.teleporter.mapper.rdbms.OER2GraphMapper;
@@ -57,17 +57,17 @@ public class ODBMSSimpleModelBuildingStrategy extends OAbstractDBMSModelBuilding
     // Step 1: DataBase schema building
     mapper.buildSourceDatabaseSchema();
     OTeleporterContext.getInstance().getStatistics().notifyListeners();
-    OTeleporterContext.getInstance().getOutputManager().info("\n");
-    if(OTeleporterContext.getInstance().getOutputManager().getLevel() == OOutputStreamManager.DEBUG_LEVEL) {
-      OTeleporterContext.getInstance().getOutputManager().debug("\n%s\n", ((OER2GraphMapper) mapper).getDataBaseSchema().toString());
+    OTeleporterContext.getInstance().getMessageHandler().info("\n");
+    if(OTeleporterContext.getInstance().getMessageHandler().getLevel() == OOutputStreamManager.DEBUG_LEVEL) {
+      OTeleporterContext.getInstance().getMessageHandler().debug("\n%s\n", ((OER2GraphMapper) mapper).getDataBaseSchema().toString());
     }
 
     // Step 2: Graph model building
     mapper.buildGraphModel(nameResolver);
     OTeleporterContext.getInstance().getStatistics().notifyListeners();
-    OTeleporterContext.getInstance().getOutputManager().info("\n");
-    if(OTeleporterContext.getInstance().getOutputManager().getLevel() == OOutputStreamManager.DEBUG_LEVEL) {
-      OTeleporterContext.getInstance().getOutputManager().debug("\n%s\n", mapper.getGraphModel().toString());
+    OTeleporterContext.getInstance().getMessageHandler().info("\n");
+    if(OTeleporterContext.getInstance().getMessageHandler().getLevel() == OOutputStreamManager.DEBUG_LEVEL) {
+      OTeleporterContext.getInstance().getMessageHandler().debug("\n%s\n", mapper.getGraphModel().toString());
     }
 
     // Step 3: eventual migrationConfigDoc applying

@@ -18,6 +18,7 @@
 
 package com.orientechnologies.teleporter.context;
 
+import com.orientechnologies.orient.output.OPluginMessageHandler;
 import com.orientechnologies.teleporter.importengine.rdbms.dbengine.ODBQueryEngine;
 import com.orientechnologies.teleporter.nameresolver.ONameResolver;
 import com.orientechnologies.teleporter.persistence.handler.ODriverDataTypeHandler;
@@ -38,7 +39,7 @@ public class OTeleporterContext {
   private static OTeleporterContext instance = null;
 
   private OTeleporterStatistics  statistics;
-  private OOutputStreamManager   outputManager;
+  private OPluginMessageHandler messageHandler;
   private ODriverDataTypeHandler dataTypeHandler;
   private ONameResolver          nameResolver;
   private String                 driverDependencyPath;
@@ -69,12 +70,12 @@ public class OTeleporterContext {
     this.statistics = statistics;
   }
 
-  public OOutputStreamManager getOutputManager() {
-    return this.outputManager;
+  public OPluginMessageHandler getMessageHandler() {
+    return this.messageHandler;
   }
 
-  public void setOutputManager(OOutputStreamManager outputManager) {
-    this.outputManager = outputManager;
+  public void setMessageHandler(OPluginMessageHandler messageHandler) {
+    this.messageHandler = messageHandler;
   }
 
   public ODriverDataTypeHandler getDataTypeHandler() {
@@ -137,16 +138,16 @@ public class OTeleporterContext {
 
     switch (level) {
     case "debug":
-      this.outputManager.debug(message);
+      this.messageHandler.debug(message);
       break;
     case "info":
-      this.outputManager.info(message);
+      this.messageHandler.info(message);
       break;
     case "warn":
-      this.outputManager.warn(message);
+      this.messageHandler.warn(message);
       break;
     case "error":
-      this.outputManager.error(message);
+      this.messageHandler.error(message);
       break;
     }
 
@@ -170,16 +171,16 @@ public class OTeleporterContext {
 
     switch (level) {
     case "debug":
-      this.outputManager.debug("\n" + s + "\n");
+      this.messageHandler.debug("\n" + s + "\n");
       break;
     case "info":
-      this.outputManager.info("\n" + s + "\n");
+      this.messageHandler.info("\n" + s + "\n");
       break;
     case "warn":
-      this.outputManager.warn("\n" + s + "\n");
+      this.messageHandler.warn("\n" + s + "\n");
       break;
     case "error":
-      this.outputManager.error("\n" + s + "\n");
+      this.messageHandler.error("\n" + s + "\n");
       break;
     }
 

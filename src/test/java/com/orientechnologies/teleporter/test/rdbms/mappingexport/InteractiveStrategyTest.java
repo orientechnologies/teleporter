@@ -20,8 +20,8 @@ package com.orientechnologies.teleporter.test.rdbms.mappingexport;
 
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.teleporter.configuration.OConfigurationHandler;
-import com.orientechnologies.teleporter.context.OOutputStreamManager;
 import com.orientechnologies.teleporter.context.OTeleporterContext;
+import com.orientechnologies.teleporter.context.OTeleporterMessageHandler;
 import com.orientechnologies.teleporter.importengine.rdbms.dbengine.ODBQueryEngine;
 import com.orientechnologies.teleporter.mapper.rdbms.OER2GraphMapper;
 import com.orientechnologies.teleporter.model.dbschema.OSourceDatabaseInfo;
@@ -71,7 +71,7 @@ public class InteractiveStrategyTest {
     this.context.setDataTypeHandler(dataTypeHandler);
     this.dbQueryEngine = new ODBQueryEngine(this.driver);
     this.context.setDbQueryEngine(this.dbQueryEngine);
-    this.context.setOutputManager(new OOutputStreamManager(0));
+    this.context.setMessageHandler(new OTeleporterMessageHandler(0));
     this.sourceDBInfo = new OSourceDatabaseInfo("hsqldb", this.driver, this.jurl, this.username, this.password);
     this.strategy = new ODBMSModelBuildingAggregationStrategy();
   }

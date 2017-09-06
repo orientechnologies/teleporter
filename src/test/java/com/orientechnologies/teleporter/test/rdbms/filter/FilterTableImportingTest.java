@@ -18,8 +18,8 @@
 
 package com.orientechnologies.teleporter.test.rdbms.filter;
 
-import com.orientechnologies.teleporter.context.OOutputStreamManager;
 import com.orientechnologies.teleporter.context.OTeleporterContext;
+import com.orientechnologies.teleporter.context.OTeleporterMessageHandler;
 import com.orientechnologies.teleporter.importengine.rdbms.dbengine.ODBQueryEngine;
 import com.orientechnologies.teleporter.model.dbschema.OSourceDatabaseInfo;
 import com.orientechnologies.teleporter.nameresolver.OJavaConventionNameResolver;
@@ -70,7 +70,7 @@ public class FilterTableImportingTest {
     this.context = OTeleporterContext.newInstance();
     this.dbQueryEngine = new ODBQueryEngine(this.driver);
     this.context.setDbQueryEngine(this.dbQueryEngine);
-    this.context.setOutputManager(new OOutputStreamManager(0));
+    this.context.setMessageHandler(new OTeleporterMessageHandler(0));
     this.context.setNameResolver(new OJavaConventionNameResolver());
     this.context.setDataTypeHandler(new OHSQLDBDataTypeHandler());
     this.importStrategy = new ODBMSNaiveStrategy();

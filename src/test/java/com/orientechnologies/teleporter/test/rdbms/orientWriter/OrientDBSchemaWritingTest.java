@@ -18,8 +18,8 @@
 
 package com.orientechnologies.teleporter.test.rdbms.orientWriter;
 
-import com.orientechnologies.teleporter.context.OOutputStreamManager;
 import com.orientechnologies.teleporter.context.OTeleporterContext;
+import com.orientechnologies.teleporter.context.OTeleporterMessageHandler;
 import com.orientechnologies.teleporter.importengine.rdbms.dbengine.ODBQueryEngine;
 import com.orientechnologies.teleporter.mapper.rdbms.OER2GraphMapper;
 import com.orientechnologies.teleporter.model.dbschema.OSourceDatabaseInfo;
@@ -66,7 +66,7 @@ public class OrientDBSchemaWritingTest {
     this.context = OTeleporterContext.newInstance();
     this.dbQueryEngine = new ODBQueryEngine(this.driver);
     this.context.setDbQueryEngine(this.dbQueryEngine);
-    this.context.setOutputManager(new OOutputStreamManager(0));
+    this.context.setMessageHandler(new OTeleporterMessageHandler(0));
     this.context.setDataTypeHandler(new OHSQLDBDataTypeHandler());
     this.modelWriter = new OGraphModelWriter();
     this.outOrientGraphUri = "plocal:target/testOrientDB";
