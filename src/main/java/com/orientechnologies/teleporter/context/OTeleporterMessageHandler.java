@@ -32,7 +32,7 @@ public class OTeleporterMessageHandler implements OPluginMessageHandler {
     this.level = this.outputManager.getLevel();
   }
 
-  public OOutputStreamManager getMessageHandler() {
+  public OOutputStreamManager getOutputManager() {
     return this.outputManager;
   }
 
