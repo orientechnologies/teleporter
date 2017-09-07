@@ -46,7 +46,6 @@ public class OTeleporterJob implements Callable<ODocument> {
   private Status                status;
   private PrintStream           stream;
   private ByteArrayOutputStream baos;
-//  private OOutputStreamManager outputMgr;
   private OPluginMessageHandler messageHandler;
 
   private OServer currentServerInstance;
