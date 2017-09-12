@@ -14,22 +14,22 @@ import java.io.PrintStream;
  */
 public class OTeleporterMessageHandler implements OPluginMessageHandler {
 
-  private int                  level;    // affects OutputStreamManager level
+  private int                  outputManagerLevel;    // affects OutputStreamManager level
   private OOutputStreamManager outputManager;
 
   public OTeleporterMessageHandler(PrintStream outputStream, int level) {
-    this.level = level;
+    this.outputManagerLevel = level;
     this.outputManager = new OOutputStreamManager(outputStream, level);
   }
 
   public OTeleporterMessageHandler(int level) {
-    this.level = level;
+    this.outputManagerLevel = level;
     this.outputManager = new OOutputStreamManager(level);
   }
 
   public OTeleporterMessageHandler(OOutputStreamManager outputStreamManager) {
     this.outputManager = outputStreamManager;
-    this.level = this.outputManager.getLevel();
+    this.outputManagerLevel = this.outputManager.getLevel();
   }
 
   public OOutputStreamManager getOutputManager() {
@@ -42,57 +42,57 @@ public class OTeleporterMessageHandler implements OPluginMessageHandler {
 
 
   @Override
-  public int getLevel() {
-    return this.level;
+  public int getOutputManagerLevel() {
+    return this.outputManagerLevel;
   }
 
   @Override
-  public void setLevel(int level) {
-    this.level = level;
+  public void setOutputManagerLevel(int level) {
+    this.outputManagerLevel = level;
     this.updateOutputStreamManagerLevel();
   }
 
   private synchronized void updateOutputStreamManagerLevel() {
-    this.outputManager.setLevel(this.level);
+    this.outputManager.setLevel(this.outputManagerLevel);
   }
 
   @Override
-  public synchronized void debug(String message) {
+  public synchronized void debug(Object requester, String message) {
     this.outputManager.debug(message);
   }
 
   @Override
-  public synchronized void debug(String format, Object... args) {
+  public synchronized void debug(Object requester, String format, Object... args) {
     this.outputManager.debug(format, args);
   }
 
   @Override
-  public synchronized void info(String message) {
+  public synchronized void info(Object requester, String message) {
     this.outputManager.info(message);
   }
 
   @Override
-  public synchronized void info(String format, Object... args) {
+  public synchronized void info(Object requester, String format, Object... args) {
     this.outputManager.info(format, args);
   }
 
   @Override
-  public synchronized void warn(String message) {
+  public synchronized void warn(Object requester, String message) {
     this.outputManager.warn(message);
   }
 
   @Override
-  public synchronized void warn(String format, Object... args) {
+  public synchronized void warn(Object requester, String format, Object... args) {
     this.outputManager.warn(format, args);
   }
 
   @Override
-  public synchronized void error(String message) {
+  public synchronized void error(Object requester, String message) {
     this.outputManager.error(message);
   }
 
   @Override
-  public synchronized void error(String format, Object... args) {
+  public synchronized void error(Object requester, String format, Object... args) {
     this.outputManager.error(format, args);
   }
 }

@@ -74,7 +74,7 @@ public class OProgressMonitor implements OStatisticsListener {
   public String updateOnEvent(OTeleporterStatistics statistics) {
 
     if (firstPrint) {
-      OTeleporterContext.getInstance().getMessageHandler().info("\n");
+      OTeleporterContext.getInstance().getMessageHandler().info(this, "\n");
       this.firstPrint = false;
     }
 
@@ -293,7 +293,7 @@ public class OProgressMonitor implements OStatisticsListener {
     String message = String
         .format(format, workTitle, workDonePercentage, progressBarWork, " Elapsed:", elapsedHMSTime, " Remaining:",
             remainingHMSTime, " Warnings:", occurredWarnings, " Records:", importedRecords + "/" + totalRecords);
-    OTeleporterContext.getInstance().getMessageHandler().info(message);
+    OTeleporterContext.getInstance().getMessageHandler().info(this, message);
 
     if (message.length() > 500) {
       System.out.println();

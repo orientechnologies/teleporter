@@ -72,16 +72,16 @@ public class ODBMSNaiveStrategy extends OAbstractDBMSImportStrategy {
     // Step 1: DataBase schema building
     mapper.buildSourceDatabaseSchema();
     OTeleporterContext.getInstance().getStatistics().notifyListeners();
-    OTeleporterContext.getInstance().getMessageHandler().info("\n");
-    if(OTeleporterContext.getInstance().getMessageHandler().getLevel() == OOutputStreamManager.DEBUG_LEVEL) {
+    OTeleporterContext.getInstance().getMessageHandler().info(this, "\n");
+    if(OTeleporterContext.getInstance().getMessageHandler().getOutputManagerLevel() == OOutputStreamManager.DEBUG_LEVEL) {
       OTeleporterContext.getInstance().getMessageHandler().debug("\n%s\n", ((OER2GraphMapper) mapper).getDataBaseSchema().toString());
     }
 
     // Step 2: Graph model building
     mapper.buildGraphModel(nameResolver);
     OTeleporterContext.getInstance().getStatistics().notifyListeners();
-    OTeleporterContext.getInstance().getMessageHandler().info("\n");
-    if(OTeleporterContext.getInstance().getMessageHandler().getLevel() == OOutputStreamManager.DEBUG_LEVEL) {
+    OTeleporterContext.getInstance().getMessageHandler().info(this, "\n");
+    if(OTeleporterContext.getInstance().getMessageHandler().getOutputManagerLevel() == OOutputStreamManager.DEBUG_LEVEL) {
       OTeleporterContext.getInstance().getMessageHandler().debug("\n%s\n", mapper.getGraphModel().toString());
     }
 
@@ -93,14 +93,14 @@ public class ODBMSNaiveStrategy extends OAbstractDBMSImportStrategy {
     boolean success = graphModelWriter.writeModelOnOrient(mapper, handler, dbName, protocol);
 
     if (!success) {
-      OTeleporterContext.getInstance().getMessageHandler().error("Writing not complete. Something gone wrong.\n");
+      OTeleporterContext.getInstance().getMessageHandler().error(this, "Writing not complete. Something gone wrong.\n");
       throw new OTeleporterRuntimeException();
     }
     OTeleporterContext.getInstance().getStatistics().notifyListeners();
-    if(OTeleporterContext.getInstance().getMessageHandler().getLevel() == OOutputStreamManager.DEBUG_LEVEL) {
-      OTeleporterContext.getInstance().getMessageHandler().debug("\nOrientDB Schema writing complete.\n");
+    if(OTeleporterContext.getInstance().getMessageHandler().getOutputManagerLevel() == OOutputStreamManager.DEBUG_LEVEL) {
+      OTeleporterContext.getInstance().getMessageHandler().debug(this, "\nOrientDB Schema writing complete.\n");
     }
-    OTeleporterContext.getInstance().getMessageHandler().info("\n");
+    OTeleporterContext.getInstance().getMessageHandler().info(this, "\n");
 
     return mapper;
   }
@@ -198,7 +198,7 @@ public class ODBMSNaiveStrategy extends OAbstractDBMSImportStrategy {
       statistics.runningStepNumber = -1;
       orientGraph.close();
 
-      OTeleporterContext.getInstance().getMessageHandler().info("\n");
+      OTeleporterContext.getInstance().getMessageHandler().info(this, "\n");
 
     } catch (OTeleporterRuntimeException e) {
       throw e;
