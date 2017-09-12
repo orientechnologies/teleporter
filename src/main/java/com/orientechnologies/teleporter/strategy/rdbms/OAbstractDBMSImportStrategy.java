@@ -117,14 +117,14 @@ public abstract class OAbstractDBMSImportStrategy implements OWorkflowStrategy {
 
     this.executeImport(sourceDBInfo, dbName, mapper, handler);
     OTeleporterContext.getInstance().getStatistics().notifyListeners();
-    OTeleporterContext.getInstance().getMessageHandler().info(this, "\n");
+    OTeleporterContext.getInstance().getMessageHandler().info("\n");
     OTeleporterContext.getInstance().getStatistics().runningStepNumber = -1;
 
     Date globalEnd = new Date();
 
     OTeleporterContext.getInstance().getMessageHandler()
         .info("\n\nImporting complete in %s\n", OFunctionsHandler.getHMSFormat(globalStart, globalEnd));
-    OTeleporterContext.getInstance().getMessageHandler().info(this, OTeleporterContext.getInstance().getStatistics().toString());
+    OTeleporterContext.getInstance().getMessageHandler().info(OTeleporterContext.getInstance().getStatistics().toString());
 
     // Building Graph Model mapping (for graph rendering too)
     // It must remain until the config will follow a delta definition approach, and not a full definition approach
@@ -299,7 +299,7 @@ public abstract class OAbstractDBMSImportStrategy implements OWorkflowStrategy {
       int numberOfEdges = classMappers.size();
       int numberOfVertices = mappedVertices.size();
       if (numberOfEdges != numberOfVertices - 1) {
-        OTeleporterContext.getInstance().getMessageHandler().error(this,
+        OTeleporterContext.getInstance().getMessageHandler().error(
             "There are %s edges-type and %s vertices-type detected for the split entity %s. "
                 + "For a correct splitting you must have: total number of edges = number of mapped vertices -1.", numberOfEdges,
             numberOfVertices, entity.getName());
@@ -491,7 +491,7 @@ public abstract class OAbstractDBMSImportStrategy implements OWorkflowStrategy {
       }
       statistics.notifyListeners();
       statistics.runningStepNumber = -1;
-      OTeleporterContext.getInstance().getMessageHandler().info(this, "\n");
+      OTeleporterContext.getInstance().getMessageHandler().info("\n");
 
       // setting the vertex type as 'analyzed'
       currentOutVertexType.setAnalyzedInLastMigration(true);
@@ -651,7 +651,7 @@ public abstract class OAbstractDBMSImportStrategy implements OWorkflowStrategy {
       }
       statistics.notifyListeners();
       statistics.runningStepNumber = -1;
-      OTeleporterContext.getInstance().getMessageHandler().info(this, "\n");
+      OTeleporterContext.getInstance().getMessageHandler().info("\n");
 
       // setting the vertex type as 'analyzed'
       currentOutVertexType.setAnalyzedInLastMigration(true);
@@ -782,7 +782,7 @@ public abstract class OAbstractDBMSImportStrategy implements OWorkflowStrategy {
       }
       statistics.notifyListeners();
       statistics.runningStepNumber = -1;
-      OTeleporterContext.getInstance().getMessageHandler().info(this, "\n");
+      OTeleporterContext.getInstance().getMessageHandler().info("\n");
 
       // setting the vertex type as 'analyzed'
       currentOutVertexType.setAnalyzedInLastMigration(true);

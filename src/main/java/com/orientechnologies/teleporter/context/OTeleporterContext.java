@@ -175,16 +175,16 @@ public class OTeleporterContext {
 
     switch (level) {
     case "debug":
-      this.messageHandler.debug(this, message);
+      this.messageHandler.debug(message);
       break;
     case "info":
-      this.messageHandler.info(this, message);
+      this.messageHandler.info(message);
       break;
     case "warn":
-      this.messageHandler.warn(this, message);
+      this.messageHandler.warn(message);
       break;
     case "error":
-      this.messageHandler.error(this, message);
+      this.messageHandler.error(message);
       break;
     }
 
@@ -208,16 +208,16 @@ public class OTeleporterContext {
 
     switch (level) {
     case "debug":
-      this.messageHandler.debug(this, "\n" + s + "\n");
+      this.messageHandler.debug("\n" + s + "\n");
       break;
     case "info":
-      this.messageHandler.info(this, "\n" + s + "\n");
+      this.messageHandler.info("\n" + s + "\n");
       break;
     case "warn":
-      this.messageHandler.warn(this, "\n" + s + "\n");
+      this.messageHandler.warn("\n" + s + "\n");
       break;
     case "error":
-      this.messageHandler.error(this, "\n" + s + "\n");
+      this.messageHandler.error("\n" + s + "\n");
       break;
     }
 

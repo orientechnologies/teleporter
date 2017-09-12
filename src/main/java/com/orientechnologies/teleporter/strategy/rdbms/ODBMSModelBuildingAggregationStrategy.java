@@ -52,16 +52,16 @@ public class ODBMSModelBuildingAggregationStrategy extends OAbstractDBMSModelBui
     // Step 1: DataBase schema building
     mapper.buildSourceDatabaseSchema();
     OTeleporterContext.getInstance().getStatistics().notifyListeners();
-    OTeleporterContext.getInstance().getMessageHandler().info(this, "\n");
-    if(OTeleporterContext.getInstance().getMessageHandler().getOutputManagerLevel() == OOutputStreamManager.DEBUG_LEVEL) {
-      OTeleporterContext.getInstance().getMessageHandler().debug(this, "\n%s\n", ((OER2GraphMapper) mapper).getDataBaseSchema().toString());
+    OTeleporterContext.getInstance().getMessageHandler().info("\n");
+    if(OTeleporterContext.getInstance().getMessageHandler().getLevel() == OOutputStreamManager.DEBUG_LEVEL) {
+      OTeleporterContext.getInstance().getMessageHandler().debug("\n%s\n", ((OER2GraphMapper) mapper).getDataBaseSchema().toString());
     }
 
     // Step 2: Graph model building
     mapper.buildGraphModel(nameResolver);
     OTeleporterContext.getInstance().getStatistics().notifyListeners();
-    OTeleporterContext.getInstance().getMessageHandler().info(this, "\n");
-    if(OTeleporterContext.getInstance().getMessageHandler().getOutputManagerLevel() == OOutputStreamManager.DEBUG_LEVEL) {
+    OTeleporterContext.getInstance().getMessageHandler().info("\n");
+    if(OTeleporterContext.getInstance().getMessageHandler().getLevel() == OOutputStreamManager.DEBUG_LEVEL) {
       OTeleporterContext.getInstance().getMessageHandler().debug("\n%s\n", ((OER2GraphMapper) mapper).getGraphModel().toString());
     }
 
@@ -70,9 +70,9 @@ public class ODBMSModelBuildingAggregationStrategy extends OAbstractDBMSModelBui
 
     // Step 4: Aggregation
     ((OER2GraphMapper) mapper).performAggregations();
-    if(OTeleporterContext.getInstance().getMessageHandler().getOutputManagerLevel() == OOutputStreamManager.DEBUG_LEVEL) {
-      OTeleporterContext.getInstance().getMessageHandler().debug(this, "\n'Junction-Entity' aggregation complete.\n");
-      OTeleporterContext.getInstance().getMessageHandler().debug(this, "\n%s\n", ((OER2GraphMapper) mapper).getGraphModel().toString());
+    if(OTeleporterContext.getInstance().getMessageHandler().getLevel() == OOutputStreamManager.DEBUG_LEVEL) {
+      OTeleporterContext.getInstance().getMessageHandler().debug("\n'Junction-Entity' aggregation complete.\n");
+      OTeleporterContext.getInstance().getMessageHandler().debug("\n%s\n", ((OER2GraphMapper) mapper).getGraphModel().toString());
     }
 
     return mapper;

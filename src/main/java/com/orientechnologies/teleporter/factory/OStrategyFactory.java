@@ -67,7 +67,7 @@ public class OStrategyFactory {
 
       default:
         OTeleporterContext.getInstance().getMessageHandler()
-            .error(this, "The typed strategy doesn't exist for migration from the chosen RDBMS.\n");
+            .error("The typed strategy doesn't exist for migration from the chosen RDBMS.\n");
       }
 
       OTeleporterContext.getInstance().setExecutionStrategy(chosenStrategy);
