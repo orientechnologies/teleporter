@@ -1,7 +1,7 @@
 {
     "Oracle": {
         "className": "oracle.jdbc.driver.OracleDriver",
-        "url": "http://svn.ets.berkeley.edu/nexus/content/repositories/myberkeley/com/oracle/ojdbc7/12.1.0.1/ojdbc7-12.1.0.1.jar",
+        "url": "https://github.com/p6spy/p6spy-it-mvnrepo/raw/master/com/oracle/ojdbc7/12.1.0.1/ojdbc7-12.1.0.1.jar",
         "version": "7-12.1.0.1",
         "format": [
             "jdbc:oracle:thin:@<HOST>:<PORT>:<SID>"
