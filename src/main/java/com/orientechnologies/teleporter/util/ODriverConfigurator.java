@@ -44,11 +44,16 @@ import java.util.*;
 
 public class ODriverConfigurator {
 
-  public static final String DRIVERS         = "http://orientdb.com/jdbc-drivers.json";
+  public static final String DRIVERS         = "https://raw.githubusercontent.com/orientechnologies/teleporter/develop/jdbc-drivers.json";
   private final       String localJsonPath   = "../config/jdbc-drivers.json";
   private final       String driverClassPath = "../lib/";
   private ODocument                 driverInfo;
   private Map<String, List<String>> driver2filesIdentifier;
+
+  private final static String oracleLicenseDriverWarningMessage =
+      "In order to connect Teleporter to your Oracle database, you need to download the Oracle Database JDBC Driver.\n"
+          + "By downloading this driver, you are implicitly accepting the OTN License Agreement terms.\n"
+          + "For more info about the OTN License Agreement please visit the link http://www.oracle.com/technetwork/licenses/distribution-license-152002.html.\n";
 
   public ODriverConfigurator() {
     this.driver2filesIdentifier = new LinkedHashMap<String, List<String>>();
@@ -183,6 +188,10 @@ public class ODriverConfigurator {
       String driverPath = isDriverAlreadyPresent(driverName, driverClassPath);
 
       if (driverPath == null) {
+
+        if(driverName.equals("oracle")) {
+          OTeleporterContext.getInstance().getMessageHandler().warn(this.oracleLicenseDriverWarningMessage);
+        }
 
         OTeleporterContext.getInstance().getMessageHandler()
             .info("\nDownloading the necessary JDBC driver in ORIENTDB_HOME/lib ...\n");
