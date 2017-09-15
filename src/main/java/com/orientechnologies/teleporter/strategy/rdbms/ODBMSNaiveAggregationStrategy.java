@@ -80,17 +80,17 @@ public class ODBMSNaiveAggregationStrategy extends OAbstractDBMSImportStrategy {
     // Step 1: DataBase schema building
     mapper.buildSourceDatabaseSchema();
     OTeleporterContext.getInstance().getStatistics().notifyListeners();
-    OTeleporterContext.getInstance().getMessageHandler().info("\n");
-    if(OTeleporterContext.getInstance().getMessageHandler().getLevel() == OOutputStreamManager.DEBUG_LEVEL) {
-      OTeleporterContext.getInstance().getMessageHandler().debug("\n%s\n", ((OER2GraphMapper) mapper).getDataBaseSchema().toString());
+    OTeleporterContext.getInstance().getMessageHandler().info(this, "\n");
+    if(OTeleporterContext.getInstance().getMessageHandler().getOutputManagerLevel() == OOutputStreamManager.DEBUG_LEVEL) {
+      OTeleporterContext.getInstance().getMessageHandler().debug(this, "\n%s\n", ((OER2GraphMapper) mapper).getDataBaseSchema().toString());
     }
 
     // Step 2: Graph model building
     mapper.buildGraphModel(nameResolver);
     OTeleporterContext.getInstance().getStatistics().notifyListeners();
-    OTeleporterContext.getInstance().getMessageHandler().info("\n");
-    if(OTeleporterContext.getInstance().getMessageHandler().getLevel() == OOutputStreamManager.DEBUG_LEVEL) {
-      OTeleporterContext.getInstance().getMessageHandler().debug("\n%s\n", ((OER2GraphMapper) mapper).getGraphModel().toString());
+    OTeleporterContext.getInstance().getMessageHandler().info(this, "\n");
+    if(OTeleporterContext.getInstance().getMessageHandler().getOutputManagerLevel() == OOutputStreamManager.DEBUG_LEVEL) {
+      OTeleporterContext.getInstance().getMessageHandler().debug(this, "\n%s\n", ((OER2GraphMapper) mapper).getGraphModel().toString());
     }
 
     // Step 3: Eventual migrationConfigDoc applying
@@ -98,9 +98,9 @@ public class ODBMSNaiveAggregationStrategy extends OAbstractDBMSImportStrategy {
 
     // Step 4: Aggregation
     ((OER2GraphMapper) mapper).performAggregations();
-    if(OTeleporterContext.getInstance().getMessageHandler().getLevel() == OOutputStreamManager.DEBUG_LEVEL) {
-      OTeleporterContext.getInstance().getMessageHandler().debug("\n'Junction-Entity' aggregation complete.\n");
-      OTeleporterContext.getInstance().getMessageHandler().debug("\n%s\n", ((OER2GraphMapper) mapper).getGraphModel().toString());
+    if(OTeleporterContext.getInstance().getMessageHandler().getOutputManagerLevel() == OOutputStreamManager.DEBUG_LEVEL) {
+      OTeleporterContext.getInstance().getMessageHandler().debug(this, "\n'Junction-Entity' aggregation complete.\n");
+      OTeleporterContext.getInstance().getMessageHandler().debug(this, "\n%s\n", ((OER2GraphMapper) mapper).getGraphModel().toString());
     }
 
     // Step 5: Writing schema on OrientDB
@@ -108,14 +108,14 @@ public class ODBMSNaiveAggregationStrategy extends OAbstractDBMSImportStrategy {
     boolean success = graphModelWriter.writeModelOnOrient(mapper, handler, dbName, protocol);
 
     if (!success) {
-      OTeleporterContext.getInstance().getMessageHandler().error("Writing not complete. Something gone wrong.\n");
+      OTeleporterContext.getInstance().getMessageHandler().error(this, "Writing not complete. Something gone wrong.\n");
       throw new OTeleporterRuntimeException();
     }
     OTeleporterContext.getInstance().getStatistics().notifyListeners();
-    if(OTeleporterContext.getInstance().getMessageHandler().getLevel() == OOutputStreamManager.DEBUG_LEVEL) {
-      OTeleporterContext.getInstance().getMessageHandler().debug("\nOrientDB Schema writing complete.\n");
+    if(OTeleporterContext.getInstance().getMessageHandler().getOutputManagerLevel() == OOutputStreamManager.DEBUG_LEVEL) {
+      OTeleporterContext.getInstance().getMessageHandler().debug(this, "\nOrientDB Schema writing complete.\n");
     }
-    OTeleporterContext.getInstance().getMessageHandler().info("\n");
+    OTeleporterContext.getInstance().getMessageHandler().info(this, "\n");
 
     return mapper;
   }
@@ -230,7 +230,7 @@ public class ODBMSNaiveAggregationStrategy extends OAbstractDBMSImportStrategy {
         // join tables are not aggregable with other join tables, so for each vertex type we can have just one join table
         if (mappedEntities.size() > 1) {
           OTeleporterContext.getInstance().getMessageHandler()
-              .error("The '%s' vertex type is mapped with several join tables: you cannot aggregate multiple join tables.");
+              .error(this, "The '%s' vertex type is mapped with several join tables: you cannot aggregate multiple join tables.");
           break;
         }
 
@@ -242,7 +242,7 @@ public class ODBMSNaiveAggregationStrategy extends OAbstractDBMSImportStrategy {
       statistics.notifyListeners();
       statistics.runningStepNumber = -1;
       orientGraph.close();
-      OTeleporterContext.getInstance().getMessageHandler().info("\n");
+      OTeleporterContext.getInstance().getMessageHandler().info(this, "\n");
 
     } catch (OTeleporterRuntimeException e) {
       throw e;

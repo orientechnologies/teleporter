@@ -75,7 +75,7 @@ public class OTeleporter extends OServerPluginAbstract {
 
     // Message Handler setting
     messageHandler = new OTeleporterMessageHandler(2);
-    messageHandler.info("\n\n" + teleport + "\n\n");
+    messageHandler.info(OTeleporter.class, "\n\n" + teleport + "\n\n");
 
     /*
      * Input args validation
@@ -84,7 +84,7 @@ public class OTeleporter extends OServerPluginAbstract {
     // Missing argument validation
 
     if (args.length < 6) {
-      messageHandler.error(
+      messageHandler.error(OTeleporter.class,
           "Syntax error, missing argument. Use:\n ./oteleporter.sh -jdriver <jdbc-driver> -jurl <jdbc-url> -juser <username> -jpasswd <password> -ourl <orientdb-url>.\n");
       throw new OTeleporterIOException();
     }
@@ -114,7 +114,7 @@ public class OTeleporter extends OServerPluginAbstract {
 
     if (!arguments.containsKey("-ourl")) {
       messageHandler
-          .error("Argument -ourl is mandatory, please try again with expected argument: -ourl <output-orientdb-desired-URL>\n");
+          .error(OTeleporter.class, "Argument -ourl is mandatory, please try again with expected argument: -ourl <output-orientdb-desired-URL>\n");
       throw new OTeleporterIOException();
     }
 
@@ -123,7 +123,7 @@ public class OTeleporter extends OServerPluginAbstract {
       if (!arguments.get("-jdriver").equalsIgnoreCase("Oracle") && !arguments.get("-jdriver").equalsIgnoreCase("SQLServer")
           && !arguments.get("-jdriver").equalsIgnoreCase("MySQL") && !arguments.get("-jdriver").equalsIgnoreCase("PostgreSQL")
           && !arguments.get("-jdriver").equalsIgnoreCase("HyperSQL")) {
-        messageHandler.error(
+        messageHandler.error(OTeleporter.class,
             "Not valid db-driver name. Type one of the following driver names: 'Oracle','SQLServer','MySQL','PostgreSQL','HyperSQL'\n");
         throw new OTeleporterIOException();
       }
@@ -131,20 +131,20 @@ public class OTeleporter extends OServerPluginAbstract {
 
     if (arguments.get("-jurl") != null) {
       if (!arguments.get("-jurl").contains("jdbc:")) {
-        messageHandler.error("Not valid db-url.\n");
+        messageHandler.error(OTeleporter.class, "Not valid db-url.\n");
         throw new OTeleporterIOException();
       }
     }
 
     if (!(arguments.get("-ourl").contains("plocal:") || arguments.get("-ourl").contains("embedded:") ||
         arguments.get("-ourl").contains("remote:") || arguments.get("-ourl").contains("memory:"))) {
-      messageHandler.error("Not valid output orient db uri.\n");
+      messageHandler.error(OTeleporter.class, "Not valid output orient db uri.\n");
       throw new OTeleporterIOException();
     }
 
     if (arguments.get("-s") != null) {
       if (!(arguments.get("-s").equals("naive") | arguments.get("-s").equals("naive-aggregate"))) {
-        messageHandler.error("Not valid strategy.\n");
+        messageHandler.error(OTeleporter.class, "Not valid strategy.\n");
         throw new OTeleporterIOException();
       }
     }
@@ -153,20 +153,20 @@ public class OTeleporter extends OServerPluginAbstract {
       if (!(arguments.get("-v").equals("0") | arguments.get("-v").equals("1") | arguments.get("-v").equals("2") | arguments
           .get("-v").equals("3"))) {
         messageHandler
-            .error("Not valid output level. Available levels:\n0 - No messages\n1 - Debug\n2 - Info\n3 - Warning \n4 - Error\n");
+            .error(OTeleporter.class, "Not valid output level. Available levels:\n0 - No messages\n1 - Debug\n2 - Info\n3 - Warning \n4 - Error\n");
         throw new OTeleporterIOException();
       }
     }
 
     if (arguments.get("-inheritance") != null) {
       if (!(arguments.get("-inheritance").contains("hibernate:"))) {
-        messageHandler.error("Not valid inheritance argument. Syntax: -inheritance hibernate:<xml-path>\n");
+        messageHandler.error(OTeleporter.class, "Not valid inheritance argument. Syntax: -inheritance hibernate:<xml-path>\n");
         throw new OTeleporterIOException();
       }
     }
 
     if (arguments.get("-include") != null && arguments.get("-exclude") != null) {
-      messageHandler.error("It's not possible to use both 'include' and 'exclude' arguments.\n");
+      messageHandler.error(OTeleporter.class, "It's not possible to use both 'include' and 'exclude' arguments.\n");
       throw new OTeleporterIOException();
     }
 
@@ -175,7 +175,7 @@ public class OTeleporter extends OServerPluginAbstract {
       try {
         file.getCanonicalPath();
       } catch (IOException e) {
-        messageHandler.error("Configuration file path not valid.\n");
+        messageHandler.error(OTeleporter.class, "Configuration file path not valid.\n");
         throw new OTeleporterIOException(e);
       }
     }
@@ -252,7 +252,7 @@ public class OTeleporter extends OServerPluginAbstract {
       if (migrationConfigDoc != null) {
         jsonMigrationConfig = migrationConfigDoc.toJSON("");
       } else {
-        OTeleporterContext.getInstance().getMessageHandler().info(
+        OTeleporterContext.getInstance().getMessageHandler().info(OTeleporter.class,
             "No migration configuration file was found in the suggested path. Migration will be performed according "
                 + "to standard mapping rules or to the latest configured policies if any.\n");
       }
@@ -352,7 +352,7 @@ public class OTeleporter extends OServerPluginAbstract {
       File targetDatabaseDirectory = new File(targetDBPath);
       if(targetDatabaseDirectory.exists() && targetDatabaseDirectory.listFiles().length > 1) {
         String message = "Synchronization not allowed in OrientDB CE. Execution will be terminated.";
-        OTeleporterContext.getInstance().getMessageHandler().error(message);
+        OTeleporterContext.getInstance().getMessageHandler().error(OTeleporter.class, message);
         throw new OTeleporterRuntimeException(message);
       }
     }
@@ -366,7 +366,7 @@ public class OTeleporter extends OServerPluginAbstract {
       // try to get args from config files in the target orientdb db (if already present)
       ODocument sourcesInfoDoc = OMigrationConfigManager.loadSourceInfo(outDbUrl);
       if (sourcesInfoDoc == null) {
-        OTeleporterContext.getInstance().getMessageHandler().error(
+        OTeleporterContext.getInstance().getMessageHandler().error(OTeleporter.class,
             "Arguments -jdriver, -jurl, -juser and -jpasswd, necessary to access the source databases, were not specified and "
                 + "no previous sources's info were found in the target OrientDB graph database.\n");
         throw new OTeleporterIOException();
@@ -402,7 +402,7 @@ public class OTeleporter extends OServerPluginAbstract {
     } else {
       // try to load a previous file configuration in the target db
       OTeleporterContext.getInstance().getMessageHandler()
-          .info("\nTrying to load a previous configuration file in the target OrientDB database...\n");
+          .info(OTeleporter.class, "\nTrying to load a previous configuration file in the target OrientDB database...\n");
       String configurationPath = OMigrationConfigManager
           .buildConfigurationFilePath(outDbUrl, OMigrationConfigManager.getConfigFileName());
       String configDirPath = configurationPath.substring(0, configurationPath.lastIndexOf("/") + 1);
@@ -415,7 +415,7 @@ public class OTeleporter extends OServerPluginAbstract {
       }
       // else no migration will be used for the migration/sync
       else {
-        OTeleporterContext.getInstance().getMessageHandler().info(
+        OTeleporterContext.getInstance().getMessageHandler().info(OTeleporter.class,
             "No previous configuration in the %s path was found.\nMigration will be performed according to standard mapping rules.\n\n",
             configurationPath);
       }
@@ -426,7 +426,7 @@ public class OTeleporter extends OServerPluginAbstract {
 
     // OutputStream setting
     if (outputLevel != null)
-      messageHandler.setLevel(Integer.parseInt(outputLevel));
+      messageHandler.setOutputManagerLevel(Integer.parseInt(outputLevel));
 
     // Progress Monitor initialization
     OProgressMonitor progressMonitor = new OProgressMonitor();
