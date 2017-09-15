@@ -190,11 +190,11 @@ public class ODriverConfigurator {
       if (driverPath == null) {
 
         if(driverName.equals("oracle")) {
-          OTeleporterContext.getInstance().getMessageHandler().warn(this.oracleLicenseDriverWarningMessage);
+          OTeleporterContext.getInstance().getMessageHandler().warn(this, this.oracleLicenseDriverWarningMessage);
         }
 
         OTeleporterContext.getInstance().getMessageHandler()
-            .info("\nDownloading the necessary JDBC driver in ORIENTDB_HOME/lib ...\n");
+            .info(this, "\nDownloading the necessary JDBC driver in ORIENTDB_HOME/lib ...\n");
 
         // download last available jdbc driver version
         String driverDownldUrl = (String) fields.field("url");
@@ -214,13 +214,13 @@ public class ODriverConfigurator {
             OFileManager.deleteResource(driverPath);
           } catch (IOException e) {
             OTeleporterContext.getInstance().getMessageHandler()
-                .info("The %s package file was not correctly deleted from the %s path.", driverPath, driverClassPath);
+                .info(this, "The %s package file was not correctly deleted from the %s path.", driverPath, driverClassPath);
           }
           String[] split = driverPath.split(".jar");
           driverPath = split[0] + ".jar";
         }
 
-        OTeleporterContext.getInstance().getMessageHandler().info("Driver JDBC downloaded.\n");
+        OTeleporterContext.getInstance().getMessageHandler().info(this, "Driver JDBC downloaded.\n");
       }
 
       // saving driver

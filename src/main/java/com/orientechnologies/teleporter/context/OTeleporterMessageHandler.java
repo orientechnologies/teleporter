@@ -62,12 +62,12 @@ public class OTeleporterMessageHandler implements OPluginMessageHandler {
 
 
   @Override
-  public int getLevel() {
+  public int getOutputManagerLevel() {
     return this.level;
   }
 
   @Override
-  public void setLevel(int level) {
+  public void setOutputManagerLevel(int level) {
     this.level = level;
     this.updateOutputStreamManagerLevel();
   }
@@ -77,42 +77,42 @@ public class OTeleporterMessageHandler implements OPluginMessageHandler {
   }
 
   @Override
-  public synchronized void debug(String message) {
+  public synchronized void debug(Object requester, String message) {
     this.outputManager.debug(message);
   }
 
   @Override
-  public synchronized void debug(String format, Object... args) {
+  public synchronized void debug(Object requester, String format, Object... args) {
     this.outputManager.debug(format, args);
   }
 
   @Override
-  public synchronized void info(String message) {
+  public synchronized void info(Object requester, String message) {
     this.outputManager.info(message);
   }
 
   @Override
-  public synchronized void info(String format, Object... args) {
+  public synchronized void info(Object requester, String format, Object... args) {
     this.outputManager.info(format, args);
   }
 
   @Override
-  public synchronized void warn(String message) {
+  public synchronized void warn(Object requester, String message) {
     this.outputManager.warn(message);
   }
 
   @Override
-  public synchronized void warn(String format, Object... args) {
+  public synchronized void warn(Object requester, String format, Object... args) {
     this.outputManager.warn(format, args);
   }
 
   @Override
-  public synchronized void error(String message) {
+  public synchronized void error(Object requester, String message) {
     this.outputManager.error(message);
   }
 
   @Override
-  public synchronized void error(String format, Object... args) {
+  public synchronized void error(Object requester, String format, Object... args) {
     this.outputManager.error(format, args);
   }
 }

@@ -215,8 +215,8 @@ public class OGraphEngineForDB {
       else
         propsAndValuesOfKey = "no identifier for the current record.";
       s += propsAndValuesOfKey;
-      if(OTeleporterContext.getInstance().getMessageHandler().getLevel() == OOutputStreamManager.DEBUG_LEVEL) {
-        OTeleporterContext.getInstance().getMessageHandler().debug("\n" + s + "\n");
+      if(OTeleporterContext.getInstance().getMessageHandler().getOutputManagerLevel() == OOutputStreamManager.DEBUG_LEVEL) {
+        OTeleporterContext.getInstance().getMessageHandler().debug(this, "\n" + s + "\n");
       }
 
       // lookup (only if properties and values are different from null)
@@ -256,9 +256,9 @@ public class OGraphEngineForDB {
         String classAndClusterName = vertexType.getName();
         vertex = this.addVertexToGraph(orientGraph, classAndClusterName, properties);
         statistics.orientAddedVertices++;
-        if(OTeleporterContext.getInstance().getMessageHandler().getLevel() == OOutputStreamManager.DEBUG_LEVEL) {
-          OTeleporterContext.getInstance().getMessageHandler().debug("\nLoaded properties: %s\n", properties.toString());
-          OTeleporterContext.getInstance().getMessageHandler().debug("\nNew vertex inserted (all props set): %s\n", vertex.toString());
+        if(OTeleporterContext.getInstance().getMessageHandler().getOutputManagerLevel() == OOutputStreamManager.DEBUG_LEVEL) {
+          OTeleporterContext.getInstance().getMessageHandler().debug(this, "\nLoaded properties: %s\n", properties.toString());
+          OTeleporterContext.getInstance().getMessageHandler().debug(this, "\nNew vertex inserted (all props set): %s\n", vertex.toString());
         }
       } else {
 
@@ -286,9 +286,9 @@ public class OGraphEngineForDB {
           // setting new properties and save
           this.setElementProperties(vertex, properties);
           vertex.save();
-          if(OTeleporterContext.getInstance().getMessageHandler().getLevel() == OOutputStreamManager.DEBUG_LEVEL) {
-            OTeleporterContext.getInstance().getMessageHandler().debug("\nLoaded properties: %s\n", properties.toString());
-            OTeleporterContext.getInstance().getMessageHandler().debug("\nNew vertex inserted (all props set): %s\n", vertex.toString());
+          if(OTeleporterContext.getInstance().getMessageHandler().getOutputManagerLevel() == OOutputStreamManager.DEBUG_LEVEL) {
+            OTeleporterContext.getInstance().getMessageHandler().debug(this, "\nLoaded properties: %s\n", properties.toString());
+            OTeleporterContext.getInstance().getMessageHandler().debug(this, "\nNew vertex inserted (all props set): %s\n", vertex.toString());
           }
         }
 
@@ -341,9 +341,9 @@ public class OGraphEngineForDB {
             // setting new properties and save
             this.setElementProperties(vertex, properties);
             statistics.orientUpdatedVertices++;
-            if(OTeleporterContext.getInstance().getMessageHandler().getLevel() == OOutputStreamManager.DEBUG_LEVEL) {
-              OTeleporterContext.getInstance().getMessageHandler().debug("\nLoaded properties: %s\n", properties.toString());
-              OTeleporterContext.getInstance().getMessageHandler().debug("\nNew vertex upserted (all props set): %s\n", vertex.toString());
+            if(OTeleporterContext.getInstance().getMessageHandler().getOutputManagerLevel() == OOutputStreamManager.DEBUG_LEVEL) {
+              OTeleporterContext.getInstance().getMessageHandler().debug(this, "\nLoaded properties: %s\n", properties.toString());
+              OTeleporterContext.getInstance().getMessageHandler().debug(this, "\nNew vertex upserted (all props set): %s\n", vertex.toString());
             }
           }
         }
@@ -599,7 +599,7 @@ public class OGraphEngineForDB {
         index++;
       }
 
-      if(OTeleporterContext.getInstance().getMessageHandler().getLevel() == OOutputStreamManager.DEBUG_LEVEL) {
+      if(OTeleporterContext.getInstance().getMessageHandler().getOutputManagerLevel() == OOutputStreamManager.DEBUG_LEVEL) {
         String s = "Keys and values in the lookup (upsertVisitedVertex):\t";
         for (int i = 0; i < propertyOfKey.length; i++) {
           propsAndValuesOfKey += propertyOfKey[i] + ":" + valueOfKey[i] + ",";
@@ -609,7 +609,7 @@ public class OGraphEngineForDB {
         else
           propsAndValuesOfKey = "no identifier for the current record.";
         s += propsAndValuesOfKey;
-        OTeleporterContext.getInstance().getMessageHandler().debug("\n" + s + "\n");
+        OTeleporterContext.getInstance().getMessageHandler().debug(this, "\n" + s + "\n");
       }
 
       // new vertex is added only if all the values in the foreign key are different from null
@@ -643,15 +643,15 @@ public class OGraphEngineForDB {
           String classAndClusterName = currentInVertexType.getName();
           currentInVertex = this.addVertexToGraph(orientGraph, classAndClusterName, partialProperties);
           statistics.orientAddedVertices++;
-          if(OTeleporterContext.getInstance().getMessageHandler().getLevel() == OOutputStreamManager.DEBUG_LEVEL) {
-            OTeleporterContext.getInstance().getMessageHandler().debug("\nNEW Reached vertex (id:value) --> %s:%s\n", Arrays.toString(propertyOfKey), Arrays.toString(valueOfKey));
-            OTeleporterContext.getInstance().getMessageHandler().debug("\nNew vertex inserted (only pk props set): %s\n", currentInVertex.toString());
+          if(OTeleporterContext.getInstance().getMessageHandler().getOutputManagerLevel() == OOutputStreamManager.DEBUG_LEVEL) {
+            OTeleporterContext.getInstance().getMessageHandler().debug(this, "\nNEW Reached vertex (id:value) --> %s:%s\n", Arrays.toString(propertyOfKey), Arrays.toString(valueOfKey));
+            OTeleporterContext.getInstance().getMessageHandler().debug(this, "\nNew vertex inserted (only pk props set): %s\n", currentInVertex.toString());
           }
 
         } else {
-          if(OTeleporterContext.getInstance().getMessageHandler().getLevel() == OOutputStreamManager.DEBUG_LEVEL) {
+          if(OTeleporterContext.getInstance().getMessageHandler().getOutputManagerLevel() == OOutputStreamManager.DEBUG_LEVEL) {
             OTeleporterContext.getInstance().getMessageHandler()
-                .debug("\nNOT NEW Reached vertex, vertex %s:%s already present in the Orient Graph.\n", Arrays.toString(propertyOfKey), Arrays.toString(valueOfKey));
+                .debug(this, "\nNOT NEW Reached vertex, vertex %s:%s already present in the Orient Graph.\n", Arrays.toString(propertyOfKey), Arrays.toString(valueOfKey));
           }
         }
 
@@ -706,7 +706,7 @@ public class OGraphEngineForDB {
         index++;
       }
 
-      if(OTeleporterContext.getInstance().getMessageHandler().getLevel() == OOutputStreamManager.DEBUG_LEVEL) {
+      if(OTeleporterContext.getInstance().getMessageHandler().getOutputManagerLevel() == OOutputStreamManager.DEBUG_LEVEL) {
         String s = "Keys and values in the lookup (upsertVisitedVertex):\t";
         for (int i = 0; i < propertyOfKey.length; i++) {
           propsAndValuesOfKey += propertyOfKey[i] + ":" + valueOfKey[i] + ",";
@@ -716,7 +716,7 @@ public class OGraphEngineForDB {
         else
           propsAndValuesOfKey = "no identifier for the current record.";
         s += propsAndValuesOfKey;
-        OTeleporterContext.getInstance().getMessageHandler().debug("\n" + s + "\n");
+        OTeleporterContext.getInstance().getMessageHandler().debug(this, "\n" + s + "\n");
       }
 
       // new vertex is added only if all the values in the foreign key are different from null
@@ -777,8 +777,8 @@ public class OGraphEngineForDB {
           }
         }
         if (edgeAlreadyPresent) {
-          if(OTeleporterContext.getInstance().getMessageHandler().getLevel() == OOutputStreamManager.DEBUG_LEVEL) {
-            OTeleporterContext.getInstance().getMessageHandler().debug("\nEdge between '%s' and '%s' already present.\n", currentOutVertex.toString(), currentInVertex.toString());
+          if(OTeleporterContext.getInstance().getMessageHandler().getOutputManagerLevel() == OOutputStreamManager.DEBUG_LEVEL) {
+            OTeleporterContext.getInstance().getMessageHandler().debug(this, "\nEdge between '%s' and '%s' already present.\n", currentOutVertex.toString(), currentInVertex.toString());
           }
         } else {
           OrientEdge edge = null;
@@ -789,8 +789,8 @@ public class OGraphEngineForDB {
           }
           this.setElementProperties(edge, properties);
           statistics.orientAddedEdges++;
-          if(OTeleporterContext.getInstance().getMessageHandler().getLevel() == OOutputStreamManager.DEBUG_LEVEL) {
-            OTeleporterContext.getInstance().getMessageHandler().debug("\nNew edge inserted: %s\n", edge.toString());
+          if(OTeleporterContext.getInstance().getMessageHandler().getOutputManagerLevel() == OOutputStreamManager.DEBUG_LEVEL) {
+            OTeleporterContext.getInstance().getMessageHandler().debug(this, "\nNew edge inserted: %s\n", edge.toString());
           }
         }
       } else {
@@ -802,8 +802,8 @@ public class OGraphEngineForDB {
         }
         this.setElementProperties(edge, properties);
         statistics.orientAddedEdges++;
-        if(OTeleporterContext.getInstance().getMessageHandler().getLevel() == OOutputStreamManager.DEBUG_LEVEL) {
-          OTeleporterContext.getInstance().getMessageHandler().debug("\nNew edge inserted: %s\n", edge.toString());
+        if(OTeleporterContext.getInstance().getMessageHandler().getOutputManagerLevel() == OOutputStreamManager.DEBUG_LEVEL) {
+          OTeleporterContext.getInstance().getMessageHandler().debug(this, "\nNew edge inserted: %s\n", edge.toString());
         }
       }
     } catch (Exception e) {
@@ -842,8 +842,8 @@ public class OGraphEngineForDB {
       this.setElementProperties(edge, properties);
       statistics.orientAddedEdges++;
       statistics.doneLeftVerticesCurrentLogicalRelationship++;
-      if(OTeleporterContext.getInstance().getMessageHandler().getLevel() == OOutputStreamManager.DEBUG_LEVEL) {
-        OTeleporterContext.getInstance().getMessageHandler().debug("\nNew edge inserted: %s\n", edge.toString());
+      if(OTeleporterContext.getInstance().getMessageHandler().getOutputManagerLevel() == OOutputStreamManager.DEBUG_LEVEL) {
+        OTeleporterContext.getInstance().getMessageHandler().debug(this, "\nNew edge inserted: %s\n", edge.toString());
       }
 
     } catch (Exception e) {

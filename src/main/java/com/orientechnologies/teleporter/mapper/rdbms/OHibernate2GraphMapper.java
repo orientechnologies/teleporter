@@ -88,7 +88,7 @@ public class OHibernate2GraphMapper extends OER2GraphMapper {
           currentEntity = super.dataBaseSchema.getEntityByNameIgnoreCase(currentEntityElement.getAttribute("table"));
         else {
           OTeleporterContext.getInstance().getMessageHandler()
-              .error("XML Format error: problem in class definition, table attribute missing in the class node.\n");
+              .error(this, "XML Format error: problem in class definition, table attribute missing in the class node.\n");
           throw new OTeleporterRuntimeException();
         }
 
@@ -228,7 +228,7 @@ public class OHibernate2GraphMapper extends OER2GraphMapper {
           currentEntityElementName = currentEntityElement.getAttribute("name");
         else {
           OTeleporterContext.getInstance().getMessageHandler()
-              .error("XML Format error: problem in subclass definition, table attribute missing in the joined-subclass nodes.\n");
+              .error(this, "XML Format error: problem in subclass definition, table attribute missing in the joined-subclass nodes.\n");
           throw new OTeleporterRuntimeException();
         }
         currentChildEntity = new OEntity(currentEntityElementName, null, super.sourceDBInfo);
@@ -296,7 +296,7 @@ public class OHibernate2GraphMapper extends OER2GraphMapper {
         currentChildEntityName = currentChildElement.getAttribute("table");
       else {
         OTeleporterContext.getInstance().getMessageHandler()
-            .error("XML Format error: problem in subclass definition, table attribute missing in the joined-subclass nodes.\n");
+            .error(this, "XML Format error: problem in subclass definition, table attribute missing in the joined-subclass nodes.\n");
         throw new OTeleporterRuntimeException();
       }
       currentChildEntity = super.dataBaseSchema.getEntityByNameIgnoreCase(currentChildEntityName);
@@ -346,7 +346,7 @@ public class OHibernate2GraphMapper extends OER2GraphMapper {
         currentChildEntityName = currentChildElement.getAttribute("table");
       else {
         OTeleporterContext.getInstance().getMessageHandler()
-            .error("XML Format error: problem in subclass definition, table attribute missing in the joined-subclass nodes.\n");
+            .error(this, "XML Format error: problem in subclass definition, table attribute missing in the joined-subclass nodes.\n");
         throw new OTeleporterRuntimeException();
       }
 
