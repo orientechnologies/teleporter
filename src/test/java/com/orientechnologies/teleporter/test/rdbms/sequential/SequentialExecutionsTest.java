@@ -1072,7 +1072,7 @@ public class SequentialExecutionsTest {
 
       // edges check
 
-      ODatabaseRecordThreadLocal.INSTANCE.set((ODatabaseDocumentInternal) orientGraph);
+      ODatabaseRecordThreadLocal.instance().set((ODatabaseDocumentInternal) orientGraph);
       assertEquals(2, orientGraph.countClass("E"));
       assertEquals(2, orientGraph.countClass("HasDirector"));
 
