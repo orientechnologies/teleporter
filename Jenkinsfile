@@ -1,5 +1,10 @@
 #!groovy
 node("master") {
+    
+    properties([[$class: 'BuildDiscarderProperty', 
+                 strategy: [$class: 'LogRotator', artifactDaysToKeepStr: '', 
+                            artifactNumToKeepStr: '', daysToKeepStr: '', numToKeepStr: '10']]])
+    
     def mvnHome = tool 'mvn'
     def mvnJdk7Image = "orientdb/mvn-gradle-zulu-jdk-7"
 
