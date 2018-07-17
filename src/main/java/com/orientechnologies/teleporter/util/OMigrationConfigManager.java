@@ -21,6 +21,7 @@
 package com.orientechnologies.teleporter.util;
 
 import com.orientechnologies.orient.core.record.impl.ODocument;
+import com.orientechnologies.orient.output.OPluginMessageHandler;
 import com.orientechnologies.teleporter.context.OTeleporterContext;
 import com.orientechnologies.teleporter.exception.OTeleporterRuntimeException;
 import com.orientechnologies.teleporter.model.dbschema.OSourceDatabaseInfo;
@@ -51,18 +52,30 @@ public class OMigrationConfigManager {
    * (ii) - else execute strategy without migration config
    **/
   public static ODocument loadMigrationConfigFromFile(String configurationPath) {
+    return loadMigrationConfigFromFile(null, configurationPath, OTeleporterContext.getInstance().getMessageHandler());
+  }
+
+  /**
+   * Loading eventual migrationConfigDoc from an external configuration file.
+   * Look for the config in the <db-path>/teleporter-config/ path:
+   * (i)  - if the external config path is available then load the config and use it for the steps 1,2,3
+   * in the <db-path>/teleporter-config/ path (migrationConfigDoc.json)
+   * (ii) - else execute strategy without migration config
+   **/
+  public static ODocument loadMigrationConfigFromFile(Object requester, String configurationPath,
+      OPluginMessageHandler messageHandler) {
 
     ODocument config = null;
     try {
       config = OFileManager.buildJsonFromFile(configurationPath);
       // (i)
       if (config != null) {
-        OTeleporterContext.getInstance().getMessageHandler().info(OMigrationConfigManager.class, "Configuration correctly loaded from %s.\n", configurationPath);
+        messageHandler.info(OMigrationConfigManager.class, "Configuration correctly loaded from %s.\n", configurationPath);
       }
     } catch (Exception e) {
       String mess = "";
-      OTeleporterContext.getInstance().printExceptionMessage(e, mess, "error");
-      OTeleporterContext.getInstance().printExceptionStackTrace(e, "error");
+      OTeleporterContext.printExceptionMessage(requester, messageHandler, e, mess, "error");
+      OTeleporterContext.printExceptionStackTrace(requester, messageHandler, e, "error");
       throw new OTeleporterRuntimeException(e);
     }
 
@@ -79,10 +92,9 @@ public class OMigrationConfigManager {
       outOrientGraphUri += "/";
     }
     String outDBConfigPath = outOrientGraphUri + configurationDirectoryName + configFileName;
-    if(outDBConfigPath.contains("plocal:")) {
+    if (outDBConfigPath.contains("plocal:")) {
       outDBConfigPath = outDBConfigPath.replace("plocal:", "");
-    }
-    else if(outDBConfigPath.contains("embedded:")) {
+    } else if (outDBConfigPath.contains("embedded:")) {
       outDBConfigPath = outDBConfigPath.replace("embedded:", "");
     }
     return outDBConfigPath;
@@ -129,7 +141,6 @@ public class OMigrationConfigManager {
     }
   }
 
-
   public static void writeConfigurationInTargetDB(String migrationConfig, String outOrientGraphUri) throws IOException {
 
     String outDBConfigPath = prepareConfigDirectoryForWriting(outOrientGraphUri);
@@ -172,7 +183,8 @@ public class OMigrationConfigManager {
             .info(OMigrationConfigManager.class, "Sources' access info correctly loaded from %s.\n", outDBConfigPath);
       } else {
         // (iii)
-        OTeleporterContext.getInstance().getMessageHandler().info(OMigrationConfigManager.class, "No sources' access info file was found.\n");
+        OTeleporterContext.getInstance().getMessageHandler()
+            .info(OMigrationConfigManager.class, "No sources' access info file was found.\n");
       }
     } catch (Exception e) {
       String mess = "";
