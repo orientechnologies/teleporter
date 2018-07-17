@@ -113,8 +113,8 @@ public class OTeleporter extends OServerPluginAbstract {
     }*/
 
     if (!arguments.containsKey("-ourl")) {
-      messageHandler
-          .error(OTeleporter.class, "Argument -ourl is mandatory, please try again with expected argument: -ourl <output-orientdb-desired-URL>\n");
+      messageHandler.error(OTeleporter.class,
+          "Argument -ourl is mandatory, please try again with expected argument: -ourl <output-orientdb-desired-URL>\n");
       throw new OTeleporterIOException();
     }
 
@@ -136,8 +136,8 @@ public class OTeleporter extends OServerPluginAbstract {
       }
     }
 
-    if (!(arguments.get("-ourl").contains("plocal:") || arguments.get("-ourl").contains("embedded:") ||
-        arguments.get("-ourl").contains("remote:") || arguments.get("-ourl").contains("memory:"))) {
+    if (!(arguments.get("-ourl").contains("plocal:") || arguments.get("-ourl").contains("embedded:") || arguments.get("-ourl")
+        .contains("remote:") || arguments.get("-ourl").contains("memory:"))) {
       messageHandler.error(OTeleporter.class, "Not valid output orient db uri.\n");
       throw new OTeleporterIOException();
     }
@@ -152,8 +152,8 @@ public class OTeleporter extends OServerPluginAbstract {
     if (arguments.get("-v") != null) {
       if (!(arguments.get("-v").equals("0") | arguments.get("-v").equals("1") | arguments.get("-v").equals("2") | arguments
           .get("-v").equals("3"))) {
-        messageHandler
-            .error(OTeleporter.class, "Not valid output level. Available levels:\n0 - No messages\n1 - Debug\n2 - Info\n3 - Warning \n4 - Error\n");
+        messageHandler.error(OTeleporter.class,
+            "Not valid output level. Available levels:\n0 - No messages\n1 - Debug\n2 - Info\n3 - Warning \n4 - Error\n");
         throw new OTeleporterIOException();
       }
     }
@@ -236,7 +236,6 @@ public class OTeleporter extends OServerPluginAbstract {
    * @param excludedTables
    * @param includedTables
    * @param configurationPath
-   *
    * @throws OTeleporterIOException
    */
 
@@ -248,11 +247,11 @@ public class OTeleporter extends OServerPluginAbstract {
     ODocument migrationConfigDoc = null;
     String jsonMigrationConfig = null;
     if (configurationPath != null) {
-      migrationConfigDoc = OMigrationConfigManager.loadMigrationConfigFromFile(configurationPath);
+      migrationConfigDoc = OMigrationConfigManager.loadMigrationConfigFromFile(null, configurationPath, messageHandler);
       if (migrationConfigDoc != null) {
         jsonMigrationConfig = migrationConfigDoc.toJSON("");
       } else {
-        OTeleporterContext.getInstance().getMessageHandler().info(OTeleporter.class,
+        messageHandler.info(OTeleporter.class,
             "No migration configuration file was found in the suggested path. Migration will be performed according "
                 + "to standard mapping rules or to the latest configured policies if any.\n");
       }
@@ -277,18 +276,16 @@ public class OTeleporter extends OServerPluginAbstract {
    * @param excludedTables
    * @param includedTables
    * @param jsonMigrationConfig
-   *
    * @throws OTeleporterIOException
    */
 
   public static ODocument executeJob(String driver, String jurl, String username, String password, String outDbUrl,
       String chosenStrategy, String chosenMapper, String xmlPath, String nameResolver, String outputLevel,
-      List<String> includedTables, List<String> excludedTables, String jsonMigrationConfig, OPluginMessageHandler messageHandler, OrientDB orientDBInstance)
-      throws OTeleporterIOException {
+      List<String> includedTables, List<String> excludedTables, String jsonMigrationConfig, OPluginMessageHandler messageHandler,
+      OrientDB orientDBInstance) throws OTeleporterIOException {
 
     // REGISTER THE BINARY RECORD SERIALIZER TO SUPPORT ANY OF THE EXTERNAL FIELDS
     ORecordSerializerFactory.instance().register("ORecordSerializerBinary", new ORecordSerializerBinary());
-
 
     /**
      * Urls handling
@@ -298,23 +295,20 @@ public class OTeleporter extends OServerPluginAbstract {
     String serverInitUrl;
     String protocol;
 
-    if(outDbUrl.contains("embedded") || outDbUrl.contains("plocal")) {
+    if (outDbUrl.contains("embedded") || outDbUrl.contains("plocal")) {
       protocol = "embedded";
-      outDbUrl = outDbUrl.replace("plocal","embedded");
+      outDbUrl = outDbUrl.replace("plocal", "embedded");
       serverInitUrl = outDbUrl.substring(0, outDbUrl.lastIndexOf('/') + 1);
-      dbName = outDbUrl.substring(outDbUrl.lastIndexOf('/')+1);
-    }
-
-    else if(outDbUrl.contains("remote")) {
+      dbName = outDbUrl.substring(outDbUrl.lastIndexOf('/') + 1);
+    } else if (outDbUrl.contains("remote")) {
       protocol = "remote";
       serverInitUrl = outDbUrl.substring(0, outDbUrl.lastIndexOf('/') + 1);
-      dbName = outDbUrl.substring(outDbUrl.lastIndexOf('/')+1);
-    }
-    else {
+      dbName = outDbUrl.substring(outDbUrl.lastIndexOf('/') + 1);
+    } else {
       // memory protocol
       protocol = "memory";
       serverInitUrl = outDbUrl;
-      dbName = outDbUrl.substring(outDbUrl.lastIndexOf(':')+1);
+      dbName = outDbUrl.substring(outDbUrl.lastIndexOf(':') + 1);
     }
 
     if (orientDBInstance == null) {
@@ -325,7 +319,6 @@ public class OTeleporter extends OServerPluginAbstract {
       OTeleporterContext.newInstance(orientDBInstance);
     }
     OTeleporterContext.getInstance().setMessageHandler(messageHandler);
-
 
     /**
      * Checking if the execution is allowed:
@@ -341,16 +334,17 @@ public class OTeleporter extends OServerPluginAbstract {
       ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
       Class.forName("com.orientechnologies.agent.profiler.OEnterpriseProfiler", false, classLoader);
       orientDBVersion = OrientDBVersion.EE;
-    } catch(ClassNotFoundException e) {
+    } catch (ClassNotFoundException e) {
       orientDBVersion = OrientDBVersion.CE;
     }
 
-    if(orientDBVersion.equals(OrientDBVersion.CE) && (chosenStrategy == null || !chosenStrategy.startsWith("interactive"))) {   // if chosenStrategy is null, by default it's naive-aggregate
+    if (orientDBVersion.equals(OrientDBVersion.CE) && (chosenStrategy == null || !chosenStrategy
+        .startsWith("interactive"))) {   // if chosenStrategy is null, by default it's naive-aggregate
 
       // check if the target database directory is already present. If yes terminate the execution with exception.
-      String targetDBPath = outDbUrl.substring(outDbUrl.indexOf(":")+1);
+      String targetDBPath = outDbUrl.substring(outDbUrl.indexOf(":") + 1);
       File targetDatabaseDirectory = new File(targetDBPath);
-      if(targetDatabaseDirectory.exists() && targetDatabaseDirectory.listFiles().length > 1) {
+      if (targetDatabaseDirectory.exists() && targetDatabaseDirectory.listFiles().length > 1) {
         String message = "Synchronization not allowed in OrientDB CE. Execution will be terminated.";
         OTeleporterContext.getInstance().getMessageHandler().error(OTeleporter.class, message);
         throw new OTeleporterRuntimeException(message);
@@ -382,7 +376,6 @@ public class OTeleporter extends OServerPluginAbstract {
     }
     // checking driver configuration
     driverConfig.checkDriverConfiguration(sourcesInfo.get(0).getSourceIdName());
-
 
     /**
      * Handling configuration files (source access info and migration configuration file)
@@ -451,8 +444,9 @@ public class OTeleporter extends OServerPluginAbstract {
       }, 0, 1000);
 
       // the last argument represents the nameResolver
-      executionResult = strategy.executeStrategy(sourceInfo, outDbUrl, chosenMapper, xmlPath, nameResolver, includedTables, excludedTables,
-          migrationConfig);
+      executionResult = strategy
+          .executeStrategy(sourceInfo, outDbUrl, chosenMapper, xmlPath, nameResolver, includedTables, excludedTables,
+              migrationConfig);
 
       // Disabling query scan threshold tip
       OGlobalConfiguration.QUERY_SCAN_THRESHOLD_TIP.setValue(50000);
@@ -475,7 +469,8 @@ public class OTeleporter extends OServerPluginAbstract {
 
   public static ODocument execute(String driver, String jurl, String username, String password, String outDbUrl,
       String chosenStrategy, String chosenMapper, String xmlPath, String nameResolver, String outputLevel,
-      List<String> includedTables, List<String> excludedTables, OPluginMessageHandler messageHandler) throws OTeleporterIOException {
+      List<String> includedTables, List<String> excludedTables, OPluginMessageHandler messageHandler)
+      throws OTeleporterIOException {
 
     return executeJob(driver, jurl, username, password, outDbUrl, chosenStrategy, chosenMapper, xmlPath, nameResolver, outputLevel,
         includedTables, excludedTables, null, messageHandler, null);

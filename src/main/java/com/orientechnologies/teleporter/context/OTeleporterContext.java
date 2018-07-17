@@ -42,9 +42,9 @@ public class OTeleporterContext {
 
   private static OTeleporterContext instance = null;
 
-  private OrientDB orient;
+  private OrientDB               orient;
   private OTeleporterStatistics  statistics;
-  private OPluginMessageHandler messageHandler;
+  private OPluginMessageHandler  messageHandler;
   private ODriverDataTypeHandler dataTypeHandler;
   private ONameResolver          nameResolver;
   private String                 driverDependencyPath;
@@ -83,6 +83,7 @@ public class OTeleporterContext {
 
   /**
    * Url contains: protocol + parentDBDirectory. Eg: "embedded:/tmp/"
+   *
    * @param url
    */
   public void initOrientDBInstance(String url) {
@@ -165,10 +166,24 @@ public class OTeleporterContext {
    * @param e
    * @param message
    * @param level
-   *
    * @return printedMessage
    */
   public String printExceptionMessage(Exception e, String message, String level) {
+    return printExceptionMessage(this, this.messageHandler, e, message, level);
+  }
+
+  /**
+   * Prints the error message for a caught exception according to a level passed as argument. It's composed of:
+   * - defined error message
+   * - exception message
+   *
+   * @param e
+   * @param message
+   * @param level
+   * @return printedMessage
+   */
+  public static String printExceptionMessage(Object requester, OPluginMessageHandler messageHandler, Exception e, String message,
+      String level) {
 
     if (e.getMessage() != null)
       message += "\n" + e.getClass().getName() + " - " + e.getMessage();
@@ -177,16 +192,16 @@ public class OTeleporterContext {
 
     switch (level) {
     case "debug":
-      this.messageHandler.debug(this, message);
+      messageHandler.debug(requester, message);
       break;
     case "info":
-      this.messageHandler.info(this, message);
+      messageHandler.info(requester, message);
       break;
     case "warn":
-      this.messageHandler.warn(this, message);
+      messageHandler.warn(requester, message);
       break;
     case "error":
-      this.messageHandler.error(this, message);
+      messageHandler.error(requester, message);
       break;
     }
 
@@ -198,10 +213,20 @@ public class OTeleporterContext {
    *
    * @param e
    * @param level
-   *
    * @return printedMessage
    */
   public String printExceptionStackTrace(Exception e, String level) {
+    return printExceptionStackTrace(this, this.messageHandler, e, level);
+  }
+
+  /**
+   * Builds the exception stack trace and prints it according to a level passed as argument.
+   *
+   * @param e
+   * @param level
+   * @return printedMessage
+   */
+  public static String printExceptionStackTrace(Object requester, OPluginMessageHandler messageHandler, Exception e, String level) {
 
     // copying the exception stack trace in the string
     Writer writer = new StringWriter();
@@ -210,16 +235,16 @@ public class OTeleporterContext {
 
     switch (level) {
     case "debug":
-      this.messageHandler.debug(this, "\n" + s + "\n");
+      messageHandler.debug(requester, "\n" + s + "\n");
       break;
     case "info":
-      this.messageHandler.info(this, "\n" + s + "\n");
+      messageHandler.info(requester, "\n" + s + "\n");
       break;
     case "warn":
-      this.messageHandler.warn(this, "\n" + s + "\n");
+      messageHandler.warn(requester, "\n" + s + "\n");
       break;
     case "error":
-      this.messageHandler.error(this, "\n" + s + "\n");
+      messageHandler.error(requester, "\n" + s + "\n");
       break;
     }
 
