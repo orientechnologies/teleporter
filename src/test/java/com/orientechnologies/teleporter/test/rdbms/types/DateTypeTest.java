@@ -31,7 +31,6 @@ import com.orientechnologies.teleporter.strategy.rdbms.ODBMSNaiveStrategy;
 import com.orientechnologies.teleporter.util.OFileManager;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Test;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -94,7 +93,7 @@ public class DateTypeTest {
    * Conversion to OType.STRING.
    */
 
-  @Test
+//  @Test
   public void test1() {
 
     Connection connection = null;
@@ -154,7 +153,7 @@ public class DateTypeTest {
    * Date type test.
    * Conversion to OType.DATETIME.
    */
-  @Test
+//  @Test
   public void test2() {
 
     Connection connection = null;
@@ -216,7 +215,7 @@ public class DateTypeTest {
    * Timestamp test.
    * Conversion to OType.DATETIME.
    */
-  @Test
+//  @Test
   public void test3() {
 
     Connection connection = null;
@@ -280,7 +279,7 @@ public class DateTypeTest {
    * Timestamp with time zone test.
    * Conversion to OType.DATETIME.
    */
-  @Test
+//  @Test
   public void test4() {
 
     Connection connection = null;
@@ -344,7 +343,7 @@ public class DateTypeTest {
    * Time test.
    * Conversion to OType.STRING.
    */
-  @Test
+//  @Test
   public void test5() {
 
     Connection connection = null;
@@ -408,7 +407,7 @@ public class DateTypeTest {
    * Time with time zone test.
    * Conversion to OType.STRING.
    */
-  @Test
+//  @Test
   public void test6() {
 
     Connection connection = null;

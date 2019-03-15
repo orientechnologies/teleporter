@@ -37,7 +37,6 @@ import com.orientechnologies.teleporter.util.OFileManager;
 import com.orientechnologies.teleporter.util.OGraphCommands;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Test;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -100,7 +99,7 @@ public class HibernateImportTest {
     }
   }
 
-  @Test
+  //@Test
   /*
    * Import from tables with "table-per-hierarchy" inheritance strategy.
    * Relationships both to simple table and table in a hierarchical bag ("table-per-hierarchy" bag).
@@ -355,7 +354,7 @@ public class HibernateImportTest {
     }
   }
 
-  @Test
+  //@Test
   /*
    * Import from tables with "table-per-type" inheritance strategy.
    * Relationships both to simple table and table in a hierarchical bag ("table-per-type" bag).
@@ -682,7 +681,7 @@ public class HibernateImportTest {
     }
   }
 
-  @Test
+  //@Test
   /*
    * Import from tables with "table-per-type" inheritance strategy.
    * Relationships both to simple table and table in a hierarchical bag ("table-per-type" bag).
@@ -952,7 +951,7 @@ public class HibernateImportTest {
     }
   }
 
-  @Test
+  //@Test
   /*
    * Import from tables with "table-per-concrete-type" inheritance strategy.
    * Relationships both to simple table and table in a hierarchical bag ("table-per-concrete-type" bag).

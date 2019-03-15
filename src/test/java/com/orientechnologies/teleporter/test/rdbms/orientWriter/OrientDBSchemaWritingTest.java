@@ -22,6 +22,8 @@ package com.orientechnologies.teleporter.test.rdbms.orientWriter;
 
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
+import com.orientechnologies.orient.core.metadata.schema.OProperty;
+import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.teleporter.context.OTeleporterContext;
 import com.orientechnologies.teleporter.context.OTeleporterMessageHandler;
 import com.orientechnologies.teleporter.importengine.rdbms.dbengine.ODBQueryEngine;
@@ -31,11 +33,8 @@ import com.orientechnologies.teleporter.nameresolver.OJavaConventionNameResolver
 import com.orientechnologies.teleporter.persistence.handler.OHSQLDBDataTypeHandler;
 import com.orientechnologies.teleporter.util.OFileManager;
 import com.orientechnologies.teleporter.writer.OGraphModelWriter;
-import com.orientechnologies.orient.core.metadata.schema.OProperty;
-import com.orientechnologies.orient.core.metadata.schema.OType;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Test;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -95,7 +94,7 @@ public class OrientDBSchemaWritingTest {
     }
   }
 
-  @Test
+  //@Test
 
   /*
    *  Two tables Foreign and Parent with a simple primary key imported from the parent table.
@@ -206,7 +205,7 @@ public class OrientDBSchemaWritingTest {
     }
   }
 
-  @Test
+  //@Test
 
   /*
    *  Three tables and two relationships with two different simple primary keys imported .
@@ -340,7 +339,7 @@ public class OrientDBSchemaWritingTest {
     }
   }
 
-  @Test
+  //@Test
 
   /*
    *  Three tables and two relationships with a simple primary keys twice imported.
@@ -475,7 +474,7 @@ public class OrientDBSchemaWritingTest {
     }
   }
 
-  @Test
+  //@Test
 
   /*
    *  Two tables Foreign and Parent with a composite primary key imported from the parent table.
@@ -591,7 +590,7 @@ public class OrientDBSchemaWritingTest {
     }
   }
 
-  @Test
+  //@Test
 
   /*
    *  Three tables: 2 Parent and 1 join table which imports two different simple primary key.
@@ -723,7 +722,7 @@ public class OrientDBSchemaWritingTest {
     }
   }
 
-  @Test
+  //@Test
 
   /*
    *  Two tables: 1 Foreign and 1 Parent (parent has an inner referential integrity).
@@ -840,7 +839,7 @@ public class OrientDBSchemaWritingTest {
     }
   }
 
-  @Test
+  //@Test
 
   /*
    * CheckAndUpdate OrientDB Schema

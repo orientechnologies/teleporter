@@ -24,6 +24,8 @@ import com.orientechnologies.orient.core.db.ODatabaseDocumentInternal;
 import com.orientechnologies.orient.core.db.ODatabaseRecordThreadLocal;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
+import com.orientechnologies.orient.core.metadata.schema.OProperty;
+import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.record.OVertex;
 import com.orientechnologies.orient.core.sql.executor.OResultSet;
 import com.orientechnologies.teleporter.context.OTeleporterContext;
@@ -34,21 +36,14 @@ import com.orientechnologies.teleporter.nameresolver.OJavaConventionNameResolver
 import com.orientechnologies.teleporter.persistence.handler.OHSQLDBDataTypeHandler;
 import com.orientechnologies.teleporter.strategy.rdbms.ODBMSNaiveAggregationStrategy;
 import com.orientechnologies.teleporter.strategy.rdbms.ODBMSNaiveStrategy;
-import com.orientechnologies.orient.core.metadata.schema.OProperty;
-import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.teleporter.util.OFileManager;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Test;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.Statement;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.List;
-import java.util.LinkedList;
+import java.util.*;
 
 import static org.junit.Assert.*;
 
@@ -107,7 +102,7 @@ public class SequentialExecutionsTest {
   }
 
 
-  @Test
+//  //@Test
 
   /*
    *  Adding a column to a table.
@@ -231,7 +226,7 @@ public class SequentialExecutionsTest {
     }
   }
 
-  @Test
+//  //@Test
 
   /*
    *  Removing a column from a table.
@@ -355,7 +350,7 @@ public class SequentialExecutionsTest {
     }
   }
 
-  @Test
+//  //@Test
 
   /*
    *  Modify of a column.
@@ -485,7 +480,7 @@ public class SequentialExecutionsTest {
     }
   }
 
-  @Test
+//  //@Test
 
   /*
    *  Modify of a relationship (foreign key).
@@ -596,7 +591,7 @@ public class SequentialExecutionsTest {
     }
   }
 
-  @Test
+//  //@Test
 
   /*
    *  Adding a table.
@@ -750,7 +745,7 @@ public class SequentialExecutionsTest {
     }
   }
 
-  @Test
+//  //@Test
 
   /*
    *  Adding a relationship (foreign key).
@@ -854,7 +849,7 @@ public class SequentialExecutionsTest {
     }
   }
 
-  @Test
+//  //@Test
 
   /*
    *  Removing a table.
@@ -1015,7 +1010,7 @@ public class SequentialExecutionsTest {
     }
   }
 
-  @Test
+  //@Test
 
   /*
    *  Removing a relationship (foreign key).
@@ -1123,7 +1118,7 @@ public class SequentialExecutionsTest {
 
   }
 
-  @Test
+  //@Test
 
   /*
    * Adding records to a table.
@@ -1218,7 +1213,7 @@ public class SequentialExecutionsTest {
     }
   }
 
-  @Test
+  //@Test
 
   /*
    * Adding records to a join table (aggregation strategy).
@@ -1341,7 +1336,7 @@ public class SequentialExecutionsTest {
     }
   }
 
-  @Test
+  //@Test
 
   /*
    * Adding a table with records.
@@ -1441,7 +1436,7 @@ public class SequentialExecutionsTest {
 
   }
 
-  @Test
+  //@Test
 
   /*
    * Adding a join table with records (aggregation strategy).
@@ -1554,7 +1549,7 @@ public class SequentialExecutionsTest {
     }
   }
 
-  @Test
+  //@Test
 
   /*
    * Update of n records of a table.

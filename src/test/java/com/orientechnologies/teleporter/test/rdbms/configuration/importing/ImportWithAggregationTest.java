@@ -38,7 +38,6 @@ import com.orientechnologies.teleporter.util.OGraphCommands;
 import com.orientechnologies.teleporter.util.OMigrationConfigManager;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Test;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -98,7 +97,7 @@ public class ImportWithAggregationTest {
     }
   }
 
-  @Test
+  //@Test
 
   /**
    *  Source DB schema:

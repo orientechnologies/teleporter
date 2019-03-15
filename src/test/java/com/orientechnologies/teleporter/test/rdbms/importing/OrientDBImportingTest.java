@@ -36,7 +36,6 @@ import com.orientechnologies.teleporter.util.OFileManager;
 import com.orientechnologies.teleporter.util.OGraphCommands;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Test;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -94,7 +93,7 @@ public class OrientDBImportingTest {
     }
   }
 
-  @Test
+//  @Test
   public void test1() {
 
     Connection connection = null;

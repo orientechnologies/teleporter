@@ -20,6 +20,7 @@
 
 package com.orientechnologies.teleporter.test.rdbms.configuration.mapping;
 
+import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.teleporter.configuration.OConfigurationHandler;
 import com.orientechnologies.teleporter.configuration.api.OConfiguration;
 import com.orientechnologies.teleporter.context.OTeleporterContext;
@@ -36,9 +37,7 @@ import com.orientechnologies.teleporter.model.graphmodel.OVertexType;
 import com.orientechnologies.teleporter.nameresolver.OJavaConventionNameResolver;
 import com.orientechnologies.teleporter.persistence.handler.OHSQLDBDataTypeHandler;
 import com.orientechnologies.teleporter.util.OFileManager;
-import com.orientechnologies.orient.core.record.impl.ODocument;
 import org.junit.Before;
-import org.junit.Test;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -80,7 +79,7 @@ public class RelationshipConfigurationMappingTest {
     this.sourceDBInfo = new OSourceDatabaseInfo("source", this.driver, this.jurl, this.username, this.password);
   }
 
-  @Test
+  //@Test
 
   /*
    *  Two tables: 2 relationships not declared through foreign keys.
@@ -432,7 +431,7 @@ public class RelationshipConfigurationMappingTest {
     }
   }
 
-  @Test
+  //@Test
 
   /*
    *  Two tables: 2 relationships declared through foreign keys but the first one is overridden through a migrationConfigDoc.
@@ -792,7 +791,7 @@ public class RelationshipConfigurationMappingTest {
     }
   }
 
-  @Test
+  //@Test
 
   /*
    *  Three tables: 1  N-N relationship, no foreign keys declared for the join table in the db.
@@ -1391,7 +1390,7 @@ public class RelationshipConfigurationMappingTest {
     }
   }
 
-  @Test
+  //@Test
 
   /*
    *  Three tables: 1  N-N relationship, no foreign keys declared for the join table in the db.
@@ -1993,7 +1992,7 @@ public class RelationshipConfigurationMappingTest {
     }
   }
 
-  @Test
+  //@Test
 
   /*
    *  Three tables: 1  N-N relationship, foreign keys declared for the join table in the db:
@@ -2593,7 +2592,7 @@ public class RelationshipConfigurationMappingTest {
     }
   }
 
-  @Test
+  //@Test
 
    /*
    *  Three tables: 1  N-N relationship, foreign keys declared for the join table in the db:

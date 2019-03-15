@@ -29,19 +29,19 @@ import com.orientechnologies.teleporter.mapper.rdbms.OER2GraphMapper;
 import com.orientechnologies.teleporter.model.dbschema.OSourceDatabaseInfo;
 import com.orientechnologies.teleporter.persistence.handler.ODBMSDataTypeHandler;
 import com.orientechnologies.teleporter.persistence.handler.OHSQLDBDataTypeHandler;
-import com.orientechnologies.teleporter.strategy.rdbms.ODBMSModelBuildingAggregationStrategy;
 import com.orientechnologies.teleporter.strategy.rdbms.OAbstractDBMSModelBuildingStrategy;
+import com.orientechnologies.teleporter.strategy.rdbms.ODBMSModelBuildingAggregationStrategy;
 import com.orientechnologies.teleporter.util.ODocumentComparator;
 import com.orientechnologies.teleporter.util.OFileManager;
 import org.junit.Before;
-import org.junit.Test;
 
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.Statement;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 /**
  * @author Gabriele Ponzi
@@ -79,7 +79,7 @@ public class InteractiveStrategyTest {
     this.strategy = new ODBMSModelBuildingAggregationStrategy();
   }
 
-  @Test
+  //@Test
   /**
    * Testing:
    * - Interactive strategy with aggregation
