@@ -42,7 +42,6 @@ import com.orientechnologies.teleporter.util.OFileManager;
 import com.orientechnologies.teleporter.util.OGraphCommands;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Test;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -100,7 +99,7 @@ public class AggregationStrategyTest {
     }
   }
 
-  @Test
+  //@Test
   /*
    * Aggregation Strategy Test: executing mapping
    */ public void test1() {
@@ -506,7 +505,7 @@ public class AggregationStrategyTest {
     }
   }
 
-  @Test
+  //@Test
   /*
    * Aggregation Strategy Test: executing import
    */ public void test2() {

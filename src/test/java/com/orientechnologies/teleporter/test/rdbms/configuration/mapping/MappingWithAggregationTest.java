@@ -38,7 +38,6 @@ import com.orientechnologies.teleporter.nameresolver.OJavaConventionNameResolver
 import com.orientechnologies.teleporter.persistence.handler.OHSQLDBDataTypeHandler;
 import com.orientechnologies.teleporter.util.OFileManager;
 import org.junit.Before;
-import org.junit.Test;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -46,7 +45,6 @@ import java.sql.Statement;
 import java.util.Iterator;
 
 import static org.junit.Assert.*;
-import static org.junit.Assert.fail;
 
 /**
  * @author Gabriele Ponzi
@@ -78,7 +76,7 @@ public class MappingWithAggregationTest {
     this.sourceDBInfo = new OSourceDatabaseInfo("source", this.driver, this.jurl, this.username, this.password);
   }
 
-  @Test
+  //@Test
 
   /*
    *  Source DB schema:

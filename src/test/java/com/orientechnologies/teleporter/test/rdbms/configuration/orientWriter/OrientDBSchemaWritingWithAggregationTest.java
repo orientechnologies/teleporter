@@ -37,7 +37,6 @@ import com.orientechnologies.teleporter.util.OFileManager;
 import com.orientechnologies.teleporter.writer.OGraphModelWriter;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Test;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -95,7 +94,7 @@ public class OrientDBSchemaWritingWithAggregationTest {
     }
   }
 
-  @Test
+  //@Test
 
   /*
    *  Source DB schema:

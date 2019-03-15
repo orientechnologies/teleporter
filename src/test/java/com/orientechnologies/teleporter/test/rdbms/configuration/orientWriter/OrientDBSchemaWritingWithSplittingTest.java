@@ -37,14 +37,12 @@ import com.orientechnologies.teleporter.util.OFileManager;
 import com.orientechnologies.teleporter.writer.OGraphModelWriter;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Test;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.Statement;
 
 import static org.junit.Assert.*;
-import static org.junit.Assert.fail;
 
 /**
  * @author Gabriele Ponzi
@@ -98,7 +96,7 @@ public class OrientDBSchemaWritingWithSplittingTest {
 
   }
 
-  @Test
+  //@Test
   /*
    *  Source DB schema:
    *

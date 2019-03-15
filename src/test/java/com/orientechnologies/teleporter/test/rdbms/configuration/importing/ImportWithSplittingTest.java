@@ -39,16 +39,16 @@ import com.orientechnologies.teleporter.util.OGraphCommands;
 import com.orientechnologies.teleporter.util.OMigrationConfigManager;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Test;
 
 import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.Statement;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 import static org.junit.Assert.*;
-import static org.junit.Assert.fail;
 
 /**
  * @author Gabriele Ponzi
@@ -102,7 +102,7 @@ public class ImportWithSplittingTest {
   }
 
 
-  @Test
+//  @Test
   /*
    *  Source DB schema:
    *

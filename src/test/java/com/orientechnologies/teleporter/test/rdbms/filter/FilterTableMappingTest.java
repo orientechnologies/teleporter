@@ -80,7 +80,7 @@ public class FilterTableMappingTest {
     this.sourceDBInfo = new OSourceDatabaseInfo("source", this.driver, this.jurl, this.username, this.password);
   }
 
-  @Test
+//  //@Test
   /*
    * Filtering out a table through include-tables (without inheritance).
    */ public void test1() {
@@ -460,7 +460,7 @@ public class FilterTableMappingTest {
     }
   }
 
-  @Test
+//  //@Test
   /*
    * Filtering out a table through exclude-tables (without inheritance).
    */ public void test2() {
@@ -836,7 +836,7 @@ public class FilterTableMappingTest {
     }
   }
 
-  @Test
+//  //@Test
   /*
    * Filtering out a table through include-tables (with Table per Hierarchy inheritance).
    */ public void test3() {
@@ -1579,7 +1579,7 @@ public class FilterTableMappingTest {
     }
   }
 
-  @Test
+  //@Test
   /*
    * Filtering out a table through include-tables (with Table per Type inheritance).
    */ public void test4() {
@@ -2345,7 +2345,7 @@ public class FilterTableMappingTest {
     }
   }
 
-  @Test
+  //@Test
   /*
    * Filtering out a table through exclude-tables (with Table per Type inheritance).
    */ public void test5() {
@@ -3106,7 +3106,7 @@ public class FilterTableMappingTest {
     }
   }
 
-  @Test
+  //@Test
   /*
    * Filtering out a table through include-tables (with Table per Concrete Type inheritance).
    */ public void test6() {

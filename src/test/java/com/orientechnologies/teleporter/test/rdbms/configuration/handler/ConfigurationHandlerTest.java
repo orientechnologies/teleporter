@@ -20,23 +20,11 @@
 
 package com.orientechnologies.teleporter.test.rdbms.configuration.handler;
 
-import static org.junit.Assert.*;
-
-import java.io.IOException;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.List;
-
-import com.orientechnologies.teleporter.context.OTeleporterMessageHandler;
-import org.junit.Before;
-import org.junit.Test;
-
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.teleporter.configuration.OConfigurationHandler;
 import com.orientechnologies.teleporter.configuration.api.*;
 import com.orientechnologies.teleporter.context.OTeleporterContext;
+import com.orientechnologies.teleporter.context.OTeleporterMessageHandler;
 import com.orientechnologies.teleporter.importengine.rdbms.dbengine.ODBQueryEngine;
 import com.orientechnologies.teleporter.mapper.rdbms.OER2GraphMapper;
 import com.orientechnologies.teleporter.model.dbschema.OSourceDatabaseInfo;
@@ -45,6 +33,16 @@ import com.orientechnologies.teleporter.persistence.handler.ODBMSDataTypeHandler
 import com.orientechnologies.teleporter.persistence.handler.OHSQLDBDataTypeHandler;
 import com.orientechnologies.teleporter.util.ODocumentComparator;
 import com.orientechnologies.teleporter.util.OFileManager;
+import org.junit.Before;
+
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.junit.Assert.*;
 
 /**
  * @author Gabriele Ponzi
@@ -81,7 +79,7 @@ public class ConfigurationHandlerTest {
     this.sourceDBInfo = new OSourceDatabaseInfo("hsqldb", this.driver, this.jurl, this.username, this.password);
   }
 
-  @Test
+  //@Test
   /**
    * Testing OConfiguration building from JSON (case 1)
    */
@@ -364,7 +362,7 @@ public class ConfigurationHandlerTest {
     assertTrue(ODocumentComparator.areEquals(inputConfigurationDoc, writtenJsonConfiguration));
   }
 
-  @Test
+  //@Test
   /**
    * Testing OConfiguration building from JSON (case 2)
    */
@@ -442,7 +440,7 @@ public class ConfigurationHandlerTest {
 
   }
 
-  @Test
+  //@Test
   /**
    * Testing: - OConfiguration building from Graph Model (case 1)
    */
@@ -824,7 +822,7 @@ public class ConfigurationHandlerTest {
     }
   }
 
-  @Test
+  //@Test
   /**
    * Testing: - JSON building from OConfiguration (case 1)
    */
@@ -905,7 +903,7 @@ public class ConfigurationHandlerTest {
     }
   }
 
-  @Test
+  //@Test
   /**
    * Testing: - JSON building from OConfiguration (splitting case)
    */

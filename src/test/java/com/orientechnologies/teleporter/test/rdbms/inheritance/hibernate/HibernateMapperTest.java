@@ -34,7 +34,6 @@ import com.orientechnologies.teleporter.nameresolver.OJavaConventionNameResolver
 import com.orientechnologies.teleporter.persistence.handler.OHSQLDBDataTypeHandler;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Test;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -76,7 +75,7 @@ public class HibernateMapperTest {
     this.sourceDBInfo = new OSourceDatabaseInfo("source", this.driver, this.jurl, this.username, this.password);
   }
 
-  @Test
+  //@Test
 
   /*
    * Table per Class Hierarchy Inheritance (<subclass> tag)
@@ -508,7 +507,7 @@ public class HibernateMapperTest {
     }
   }
 
-  @Test
+  //@Test
 
   /*
    * Table per Subclass Inheritance (<joined-subclass> tag)
@@ -965,7 +964,7 @@ public class HibernateMapperTest {
     }
   }
 
-  @Test
+  //@Test
 
   /*
    * Table per Subclass Inheritance (<subclass> <join/> </subclass> tags)
@@ -1420,7 +1419,7 @@ public class HibernateMapperTest {
     }
   }
 
-  @Test
+  //@Test
 
   /*
    * Table per Concrete Class Inheritance (<union-subclass> tag)

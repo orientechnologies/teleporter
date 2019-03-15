@@ -29,7 +29,6 @@ import com.orientechnologies.teleporter.model.dbschema.OEntity;
 import com.orientechnologies.teleporter.model.dbschema.OSourceDatabaseInfo;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Test;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -66,7 +65,7 @@ public class SourceSchemaBuildingTest {
     this.mapper = new OER2GraphMapper(sourceDBInfo, null, null, null);
   }
 
-  @Test
+  //@Test
 
   /*
    *  Two Foreign tables and one Parent with a simple primary key imported from the parent table.
@@ -193,7 +192,7 @@ public class SourceSchemaBuildingTest {
     }
   }
 
-  @Test
+  //@Test
 
   /*
    *  Two Foreign tables and one Parent with a composite primary key imported from the parent table.
@@ -329,7 +328,7 @@ public class SourceSchemaBuildingTest {
     }
   }
 
-  @Test
+  //@Test
 
   /*
    *  Two Foreign tables and one Parent with a simple primary key imported twice from the parent table.
@@ -472,7 +471,7 @@ public class SourceSchemaBuildingTest {
     }
   }
 
-  @Test
+  //@Test
 
   /*
    *  Two Foreign tables and one Parent with a composite primary key imported twice from the parent table.
@@ -631,7 +630,7 @@ public class SourceSchemaBuildingTest {
     }
   }
 
-  @Test
+  //@Test
 
   /*
    *  Two tables: 1 Foreign and 1 Parent (parent has an inner referential integrity).
@@ -782,7 +781,7 @@ public class SourceSchemaBuildingTest {
     }
   }
 
-  @Test
+  //@Test
 
   /*
    * Join table and 2 parent tables.

@@ -37,7 +37,6 @@ import com.orientechnologies.teleporter.util.OFileManager;
 import com.orientechnologies.teleporter.writer.OGraphModelWriter;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Test;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -99,7 +98,7 @@ public class OrientDBSchemaWritingWithRelationshipConfigTest {
     }
   }
 
-  @Test
+  //@Test
 
   /*
    *  Two tables: 2 relationships not declared through foreign keys.
@@ -271,7 +270,7 @@ public class OrientDBSchemaWritingWithRelationshipConfigTest {
 
   }
 
-  @Test
+  //@Test
 
   /*
    *  Two tables: 2 relationships declared through foreign keys but the first one is overridden through a migrationConfigDoc.
@@ -453,7 +452,7 @@ public class OrientDBSchemaWritingWithRelationshipConfigTest {
     }
   }
 
-  @Test
+  //@Test
 
   /*
    *  Three tables: 1  N-N relationship, no foreign keys declared for the join table in the db.
@@ -622,7 +621,7 @@ public class OrientDBSchemaWritingWithRelationshipConfigTest {
     }
   }
 
-  @Test
+  //@Test
 
   /*
    *  Three tables: 1  N-N relationship, no foreign keys declared for the join table in the db.
@@ -793,7 +792,7 @@ public class OrientDBSchemaWritingWithRelationshipConfigTest {
     }
   }
 
-  @Test
+  //@Test
 
   /*
    *  Three tables: 1  N-N relationship, foreign keys declared for the join table in the db:
@@ -963,7 +962,7 @@ public class OrientDBSchemaWritingWithRelationshipConfigTest {
     }
   }
 
-  @Test
+  //@Test
 
    /*
    *  Three tables: 1  N-N relationship, foreign keys declared for the join table in the db:

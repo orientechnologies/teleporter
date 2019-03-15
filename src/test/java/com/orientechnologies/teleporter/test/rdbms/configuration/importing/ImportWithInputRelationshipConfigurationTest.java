@@ -39,7 +39,6 @@ import com.orientechnologies.teleporter.util.OGraphCommands;
 import com.orientechnologies.teleporter.util.OMigrationConfigManager;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Test;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -104,7 +103,7 @@ public class ImportWithInputRelationshipConfigurationTest {
     }
   }
 
-  @Test
+  //@Test
 
   /*
    *  Two tables: 2 relationships not declared through foreign keys.
@@ -367,7 +366,7 @@ public class ImportWithInputRelationshipConfigurationTest {
     }
   }
 
-  @Test
+  //@Test
 
   /*
    *  Two tables: 2 relationships declared through foreign keys but the first one is overridden through a migrationConfigDoc.
@@ -648,7 +647,7 @@ public class ImportWithInputRelationshipConfigurationTest {
     }
   }
 
-  @Test
+  //@Test
 
   /*
    *  Three tables: 1  N-N relationship, no foreign keys declared for the join table in the db.
@@ -1000,7 +999,7 @@ public class ImportWithInputRelationshipConfigurationTest {
     }
   }
 
-  @Test
+  //@Test
 
   /*
    *  Three tables: 1  N-N relationship, no foreign keys declared for the join table in the db.
@@ -1355,7 +1354,7 @@ public class ImportWithInputRelationshipConfigurationTest {
     }
   }
 
-  @Test
+  //@Test
 
   /*
    *  Three tables: 1  N-N relationship, foreign keys declared for the join table in the db:
@@ -1707,7 +1706,7 @@ public class ImportWithInputRelationshipConfigurationTest {
     }
   }
 
-  @Test
+  //@Test
 
    /*
    *  Three tables: 1  N-N relationship, foreign keys declared for the join table in the db:

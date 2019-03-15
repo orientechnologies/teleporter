@@ -70,7 +70,7 @@
 
     <properties>
         <maven.compiler.sourceTable>1.7</maven.compiler.sourceTable>
-        <hsqldb.version>2.3.3</hsqldb.version>
+        <!--<hsqldb.version>2.3.3</hsqldb.version>-->
     </properties>
 
     <repositories>
@@ -181,12 +181,12 @@
             <version>${project.parent.version}</version>
             <scope>compile</scope>
         </dependency>
-        <dependency>
-            <groupId>org.hsqldb</groupId>
-            <artifactId>hsqldb</artifactId>
-            <version>${hsqldb.version}</version>
-            <scope>test</scope>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>org.hsqldb</groupId>-->
+            <!--<artifactId>hsqldb</artifactId>-->
+            <!--<version>${hsqldb.version}</version>-->
+            <!--<scope>test</scope>-->
+        <!--</dependency>-->
     </dependencies>
 
 </project>
