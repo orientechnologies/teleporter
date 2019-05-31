@@ -157,7 +157,7 @@ public class ODBMSNaiveStrategy extends OAbstractDBMSImportStrategy {
 
         if (allEntitiesNotBelongingToHierarchies) {
 
-          String aggregationColumns[][] = null;
+          String[][] aggregationColumns = null;
 
           //  classes' aggregation case
           if (mappedEntities.size() > 1) {

@@ -39,9 +39,9 @@ import java.util.List;
 public class OMigrationConfigManager {
 
   // config info
-  private final static String configurationDirectoryName = "teleporter-config/";
-  private final static String configFileName             = "migration-config.json";           // path ORIENTDB_HOME/<db-name>/teleporter-config/migration-config.json
-  private final static String sourceInfoFileName         = "sources-access-info.json";    // path ORIENTDB_HOME/<db-name>/teleporter-config/sources-access-info.json
+  private static final String configurationDirectoryName = "teleporter-config/";
+  private static final String configFileName             = "migration-config.json";           // path ORIENTDB_HOME/<db-name>/teleporter-config/migration-config.json
+  private static final String sourceInfoFileName         = "sources-access-info.json";    // path ORIENTDB_HOME/<db-name>/teleporter-config/sources-access-info.json
   private static boolean configPresentInDB;
 
   /**

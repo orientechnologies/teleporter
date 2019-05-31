@@ -73,7 +73,7 @@ public class OER2GraphMapper extends OSource2GraphMapper {
   // supplementary migrationConfigDoc
   protected OConfiguration migrationConfig;
 
-  public final int DEFAULT_CLASS_MAPPER_INDEX = 0;
+  public static final int DEFAULT_CLASS_MAPPER_INDEX = 0;
 
   public OER2GraphMapper(OSourceDatabaseInfo sourceDatabaseInfo, List<String> includedTables, List<String> excludedTables,
       OConfiguration migrationConfig) {
@@ -399,8 +399,8 @@ public class OER2GraphMapper extends OSource2GraphMapper {
 
       // if the primary key doesn't involve any attribute, a warning message is generated
       if (pKey.getInvolvedAttributes().size() == 0)
-        OTeleporterContext.getInstance().getStatistics().
-            warningMessages.add("It's not declared a primary key for the Entity " + currentEntity.getName()
+        OTeleporterContext.getInstance().getStatistics()
+            .warningMessages.add("It's not declared a primary key for the Entity " + currentEntity.getName()
             + ", this might lead to issues during the migration or the sync executions " + "(the first importing is quite safe).");
 
       // adding entity to db schema
@@ -1784,7 +1784,7 @@ public class OER2GraphMapper extends OSource2GraphMapper {
     String sourceTableName = splittingEdgeInfo.getSourceTable();
     OEntity entity = this.getDataBaseSchema().getEntityByName(sourceTableName);
     Map<String, String> attribute2property = new LinkedHashMap<String, String>();   // map to maintain the mapping between the attributes of the current entity and the properties of the correspondent edge type
-    Map<String, String> property2attribute = new LinkedHashMap<String, String>();               // map to maintain the mapping between the properties of the current edge type and the attributes of the correspondent entity
+    Map<String, String> property2attribute = new LinkedHashMap<String, String>();   // map to maintain the mapping between the properties of the current edge type and the attributes of the correspondent entity
 
     // filling the 2 maps
     for (OConfiguredProperty currConfiguredProperty : currentEdgeClass.getConfiguredProperties()) {

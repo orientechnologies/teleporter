@@ -50,7 +50,7 @@ public class ODriverConfigurator {
   private ODocument                 driverInfo;
   private Map<String, List<String>> driver2filesIdentifier;
 
-  private final static String oracleLicenseDriverWarningMessage =
+  private static final String oracleLicenseDriverWarningMessage =
       "In order to connect Teleporter to your Oracle database, you need to download the Oracle Database JDBC Driver.\n"
           + "By downloading this driver, you are implicitly accepting the OTN License Agreement terms.\n"
           + "For more info about the OTN License Agreement please visit the link http://www.oracle.com/technetwork/licenses/distribution-license-152002.html.\n";

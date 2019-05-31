@@ -730,8 +730,8 @@ public class OConfigurationHandler {
       OSourceDatabaseInfo currSourceDBInfo = currentEntity.getSourceDataseInfo();
       List<OEVClassMapper> currClassMappers = mapper.getVertexType2EVClassMappers().get(currVertexType);
       if (currClassMappers.size() == 0) {
-        OTeleporterContext.getInstance().
-            getMessageHandler()
+        OTeleporterContext.getInstance()
+            .getMessageHandler()
             .error("Error during the model building: the %s vertex class is not mapped to any table.", currVertexType.getName());
         throw new OTeleporterRuntimeException();
       }
