@@ -61,7 +61,7 @@ public class OFileManager {
 
   }
 
-  public static void unZipAll(File inputZipFile, String destinationFolderPath) throws IOException {
+  public static void unZipAll(File inputZipFile, String destinationFolderPath) throws IOException, IllegalArgumentException {
 
     byte[] buffer = new byte[1024];
 
@@ -73,6 +73,9 @@ public class OFileManager {
     while (zipEntry != null) {
 
       String fileName = zipEntry.getName();
+      if(fileName.contains("..")){
+        throw new IllegalArgumentException("Cannot unzip file: "+fileName+" as its name contains a potentially dangerous character");
+      }
       String newFilePath = destinationFolderPath + File.separator + fileName;
       File newFile = new File(newFilePath);
 
