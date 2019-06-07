@@ -20,6 +20,7 @@
 
 package com.orientechnologies.teleporter.mapper.rdbms;
 
+import com.orientechnologies.common.log.OLogManager;
 import com.orientechnologies.teleporter.configuration.api.OConfiguration;
 import com.orientechnologies.teleporter.context.OTeleporterContext;
 import com.orientechnologies.teleporter.exception.OTeleporterRuntimeException;
@@ -33,12 +34,13 @@ import org.w3c.dom.NodeList;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
 import java.util.*;
 
 /**
- * Extends OER2GraphMapper thus manages the source DB schema and the destination graph model with their correspondences.
- * Unlike the superclass, this class builds the source DB schema starting from Hibernate's XML migrationConfigDoc file.
+ * Extends OER2GraphMapper thus manages the source DB schema and the destination graph model with their correspondences. Unlike the
+ * superclass, this class builds the source DB schema starting from Hibernate's XML migrationConfigDoc file.
  *
  * @author Gabriele Ponzi
  * @email <g.ponzi--at--orientdb.com>
@@ -74,6 +76,26 @@ public class OHibernate2GraphMapper extends OER2GraphMapper {
 
       File xmlFile = new File(this.xmlPath);
       DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+
+      String feature = null;
+      try {
+        feature = "http://apache.org/xml/features/disallow-doctype-decl";
+        dbFactory.setFeature(feature, true);
+        feature = "http://xml.org/sax/features/external-general-entities";
+        dbFactory.setFeature(feature, false);
+        feature = "http://xml.org/sax/features/external-parameter-entities";
+        dbFactory.setFeature(feature, false);
+        feature = "http://apache.org/xml/features/nonvalidating/load-external-dtd";
+        dbFactory.setFeature(feature, false);
+        
+        dbFactory.setXIncludeAware(false);
+        dbFactory.setExpandEntityReferences(false);
+
+      } catch (ParserConfigurationException e) {
+        OLogManager.instance().info(this, "ParserConfigurationException was thrown. The feature '" + feature
+            + "' is probably not supported by your XML processor.");
+      }
+
       DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
       Document dom = dBuilder.parse(xmlFile);
 
@@ -227,8 +249,8 @@ public class OHibernate2GraphMapper extends OER2GraphMapper {
         if (currentEntityElement.hasAttribute("name"))
           currentEntityElementName = currentEntityElement.getAttribute("name");
         else {
-          OTeleporterContext.getInstance().getMessageHandler()
-              .error(this, "XML Format error: problem in subclass definition, table attribute missing in the joined-subclass nodes.\n");
+          OTeleporterContext.getInstance().getMessageHandler().error(this,
+              "XML Format error: problem in subclass definition, table attribute missing in the joined-subclass nodes.\n");
           throw new OTeleporterRuntimeException();
         }
         currentChildEntity = new OEntity(currentEntityElementName, null, super.sourceDBInfo);
@@ -295,8 +317,8 @@ public class OHibernate2GraphMapper extends OER2GraphMapper {
       if (currentChildElement.hasAttribute("table"))
         currentChildEntityName = currentChildElement.getAttribute("table");
       else {
-        OTeleporterContext.getInstance().getMessageHandler()
-            .error(this, "XML Format error: problem in subclass definition, table attribute missing in the joined-subclass nodes.\n");
+        OTeleporterContext.getInstance().getMessageHandler().error(this,
+            "XML Format error: problem in subclass definition, table attribute missing in the joined-subclass nodes.\n");
         throw new OTeleporterRuntimeException();
       }
       currentChildEntity = super.dataBaseSchema.getEntityByNameIgnoreCase(currentChildEntityName);
@@ -345,8 +367,8 @@ public class OHibernate2GraphMapper extends OER2GraphMapper {
       if (currentChildElement.hasAttribute("table"))
         currentChildEntityName = currentChildElement.getAttribute("table");
       else {
-        OTeleporterContext.getInstance().getMessageHandler()
-            .error(this, "XML Format error: problem in subclass definition, table attribute missing in the joined-subclass nodes.\n");
+        OTeleporterContext.getInstance().getMessageHandler().error(this,
+            "XML Format error: problem in subclass definition, table attribute missing in the joined-subclass nodes.\n");
         throw new OTeleporterRuntimeException();
       }
 
