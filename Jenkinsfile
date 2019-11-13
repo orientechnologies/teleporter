@@ -47,7 +47,7 @@ node {
                 withMaven(mavenLocalRepo: '${HOME}/.m2/repository', globalMavenSettingsFilePath: 'settings.xml') {
                     sh "cd orientdb-studio && mvn clean install -DskipTests"
                     sh "cd orientdb && mvn clean install -DskipTests"
-                    sh "cd teleporter && mvn clean test"
+                    sh "cd teleporter && mvn clean deploy"
 
                 }
 
