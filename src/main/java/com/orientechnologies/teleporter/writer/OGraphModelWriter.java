@@ -428,7 +428,7 @@ public class OGraphModelWriter {
 
     // checking if the old index is based on the same properties of the current Class, if not it will be deleted
     String indexClassName = currentType + ".pkey";
-    OIndex<?> classIndex = indexManager.getClassIndex(currentType, indexClassName);
+    OIndex classIndex = indexManager.getClassIndex(currentType, indexClassName);
     if (classIndex != null) {
       List<String> fieldNames = classIndex.getDefinition().getFields();
 
