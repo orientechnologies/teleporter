@@ -46,10 +46,10 @@ public class OServerCommandTeleporter extends OServerCommandAuthenticatedServerA
   public boolean execute(OHttpRequest iRequest, OHttpResponse iResponse) throws Exception {
     final String[] parts = checkSyntax(iRequest.getUrl(), 2, "Syntax error: auditing/<db>/<action>");
 
-    if ("POST".equalsIgnoreCase(iRequest.httpMethod)) {
+    if ("POST".equalsIgnoreCase(iRequest.getHttpMethod())) {
       doPost(iRequest, iResponse, parts);
     }
-    if ("GET".equalsIgnoreCase(iRequest.httpMethod)) {
+    if ("GET".equalsIgnoreCase(iRequest.getHttpMethod())) {
       doGet(iRequest, iResponse, parts);
     }
     return false;
@@ -75,7 +75,7 @@ public class OServerCommandTeleporter extends OServerCommandAuthenticatedServerA
   private void doPost(OHttpRequest iRequest, OHttpResponse iResponse, String[] parts) throws IOException {
 
     if ("job".equalsIgnoreCase(parts[1])) {
-      ODocument args = new ODocument().fromJSON(iRequest.content);
+      ODocument args = new ODocument().fromJSON(iRequest.getContent());
       ODocument executionResult;
       try {
         executionResult = handler.execute(args, super.server);
@@ -92,7 +92,7 @@ public class OServerCommandTeleporter extends OServerCommandAuthenticatedServerA
       }
 
     } else if ("test".equalsIgnoreCase(parts[1])) {
-      ODocument args = new ODocument().fromJSON(iRequest.content);
+      ODocument args = new ODocument().fromJSON(iRequest.getContent());
       try {
         handler.checkConnection(args, super.server);
       } catch (Exception e) {
@@ -101,7 +101,7 @@ public class OServerCommandTeleporter extends OServerCommandAuthenticatedServerA
       iResponse.send(OHttpUtils.STATUS_OK_CODE, "OK", OHttpUtils.CONTENT_JSON, null, null);
 
     } else if ("tables".equalsIgnoreCase(parts[1])) {
-      ODocument params = new ODocument().fromJSON(iRequest.content);
+      ODocument params = new ODocument().fromJSON(iRequest.getContent());
       ODocument tables;
       try {
         tables = handler.getTables(params, super.server);
@@ -110,7 +110,7 @@ public class OServerCommandTeleporter extends OServerCommandAuthenticatedServerA
       }
       iResponse.send(OHttpUtils.STATUS_OK_CODE, "OK", OHttpUtils.CONTENT_JSON, tables.toJSON("prettyPrint"), null);
     } else if ("save-config".equalsIgnoreCase(parts[1])) {
-      ODocument args = new ODocument().fromJSON(iRequest.content);
+      ODocument args = new ODocument().fromJSON(iRequest.getContent());
       try {
         handler.saveConfiguration(args, super.server);
       } catch (IOException e) {
