@@ -20,6 +20,8 @@
 
 package com.orientechnologies.teleporter.test.rdbms.orientWriter;
 
+import static org.junit.Assert.*;
+
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
@@ -33,31 +35,27 @@ import com.orientechnologies.teleporter.nameresolver.OJavaConventionNameResolver
 import com.orientechnologies.teleporter.persistence.handler.OHSQLDBDataTypeHandler;
 import com.orientechnologies.teleporter.util.OFileManager;
 import com.orientechnologies.teleporter.writer.OGraphModelWriter;
-import org.junit.After;
-import org.junit.Before;
-
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.Statement;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-
-import static org.junit.Assert.*;
+import org.junit.After;
+import org.junit.Before;
 
 /**
  * @author Gabriele Ponzi
  * @email gabriele.ponzi--at--gmail.com
  */
-
 public class OrientDBSchemaWritingTest {
 
-  private OER2GraphMapper    mapper;
+  private OER2GraphMapper mapper;
   private OTeleporterContext context;
-  private OGraphModelWriter  modelWriter;
-  private ODBQueryEngine     dbQueryEngine;
-  private String driver   = "org.hsqldb.jdbc.JDBCDriver";
-  private String jurl     = "jdbc:hsqldb:mem:mydb";
+  private OGraphModelWriter modelWriter;
+  private ODBQueryEngine dbQueryEngine;
+  private String driver = "org.hsqldb.jdbc.JDBCDriver";
+  private String jurl = "jdbc:hsqldb:mem:mydb";
   private String username = "SA";
   private String password = "";
   private String dbName = "testOrientDB";
@@ -75,7 +73,8 @@ public class OrientDBSchemaWritingTest {
     this.context.setMessageHandler(new OTeleporterMessageHandler(0));
     this.context.setDataTypeHandler(new OHSQLDBDataTypeHandler());
     this.modelWriter = new OGraphModelWriter();
-    this.sourceDBInfo = new OSourceDatabaseInfo("source", this.driver, this.jurl, this.username, this.password);
+    this.sourceDBInfo =
+        new OSourceDatabaseInfo("source", this.driver, this.jurl, this.username, this.password);
   }
 
   @After
@@ -87,14 +86,14 @@ public class OrientDBSchemaWritingTest {
     try {
 
       // Deleting database directory
-      OFileManager.deleteResource(this.outOrientGraphUri.replace("embedded:",""));
+      OFileManager.deleteResource(this.outOrientGraphUri.replace("embedded:", ""));
 
     } catch (Exception e) {
       e.printStackTrace();
     }
   }
 
-  //@Test
+  // @Test
 
   /*
    *  Two tables Foreign and Parent with a simple primary key imported from the parent table.
@@ -111,20 +110,22 @@ public class OrientDBSchemaWritingTest {
       Class.forName(this.driver);
       connection = DriverManager.getConnection(this.jurl, this.username, this.password);
 
-      String parentTableBuilding = "create memory table BOOK_AUTHOR (ID varchar(256) not null,"
-          + " NAME varchar(256) not null, AGE integer not null, primary key (ID))";
+      String parentTableBuilding =
+          "create memory table BOOK_AUTHOR (ID varchar(256) not null,"
+              + " NAME varchar(256) not null, AGE integer not null, primary key (ID))";
       st = connection.createStatement();
       st.execute(parentTableBuilding);
 
-      String foreignTableBuilding = "create memory table BOOK (ID varchar(256) not null, TITLE  varchar(256),"
-          + " AUTHOR_ID varchar(256) not null, primary key (ID), foreign key (AUTHOR_ID) references BOOK_AUTHOR(ID))";
+      String foreignTableBuilding =
+          "create memory table BOOK (ID varchar(256) not null, TITLE  varchar(256),"
+              + " AUTHOR_ID varchar(256) not null, primary key (ID), foreign key (AUTHOR_ID) references BOOK_AUTHOR(ID))";
       st.execute(foreignTableBuilding);
 
       this.mapper = new OER2GraphMapper(this.sourceDBInfo, null, null, null);
       mapper.buildSourceDatabaseSchema();
       mapper.buildGraphModel(new OJavaConventionNameResolver());
-      modelWriter.writeModelOnOrient(mapper, new OHSQLDBDataTypeHandler(), this.dbName, this.protocol);
-
+      modelWriter.writeModelOnOrient(
+          mapper, new OHSQLDBDataTypeHandler(), this.dbName, this.protocol);
 
       /*
        *  Testing context information
@@ -141,7 +142,7 @@ public class OrientDBSchemaWritingTest {
        *  Testing built OrientDB schema
        */
 
-      orientGraph = this.context.getOrientDBInstance().open(this.dbName,"admin","admin");
+      orientGraph = this.context.getOrientDBInstance().open(this.dbName, "admin", "admin");
 
       OClass authorVertexType = orientGraph.getClass("BookAuthor");
       OClass bookVertexType = orientGraph.getClass("Book");
@@ -182,8 +183,10 @@ public class OrientDBSchemaWritingTest {
       assertEquals("HasAuthor", authorEdgeType.getName());
 
       // Indices check
-      assertEquals(true, orientGraph.getMetadata().getIndexManager().existsIndex("BookAuthor.pkey"));
-      assertEquals(true, orientGraph.getMetadata().getIndexManager().areIndexed("BookAuthor", "id"));
+      assertEquals(
+          true, orientGraph.getMetadata().getIndexManager().existsIndex("BookAuthor.pkey"));
+      assertEquals(
+          true, orientGraph.getMetadata().getIndexManager().areIndexed("BookAuthor", "id"));
 
       assertEquals(true, orientGraph.getMetadata().getIndexManager().existsIndex("Book.pkey"));
       assertEquals(true, orientGraph.getMetadata().getIndexManager().areIndexed("Book", "id"));
@@ -205,7 +208,7 @@ public class OrientDBSchemaWritingTest {
     }
   }
 
-  //@Test
+  // @Test
 
   /*
    *  Three tables and two relationships with two different simple primary keys imported .
@@ -222,24 +225,27 @@ public class OrientDBSchemaWritingTest {
       Class.forName(this.driver);
       connection = DriverManager.getConnection(this.jurl, this.username, this.password);
 
-      String authorTableBuilding = "create memory table AUTHOR (ID varchar(256) not null,"
-          + " NAME varchar(256) not null, AGE integer not null, primary key (ID))";
+      String authorTableBuilding =
+          "create memory table AUTHOR (ID varchar(256) not null,"
+              + " NAME varchar(256) not null, AGE integer not null, primary key (ID))";
       st = connection.createStatement();
       st.execute(authorTableBuilding);
 
-      String bookTableBuilding = "create memory table BOOK (ID varchar(256) not null, TITLE  varchar(256),"
-          + " AUTHOR_ID varchar(256) not null, primary key (ID), foreign key (AUTHOR_ID) references AUTHOR(ID))";
+      String bookTableBuilding =
+          "create memory table BOOK (ID varchar(256) not null, TITLE  varchar(256),"
+              + " AUTHOR_ID varchar(256) not null, primary key (ID), foreign key (AUTHOR_ID) references AUTHOR(ID))";
       st.execute(bookTableBuilding);
 
-      String itemTableBuilding = "create memory table ITEM (ID varchar(256) not null, BOOK_ID  varchar(256),"
-          + " PRICE varchar(256) not null, primary key (ID), foreign key (BOOK_ID) references BOOK(ID))";
+      String itemTableBuilding =
+          "create memory table ITEM (ID varchar(256) not null, BOOK_ID  varchar(256),"
+              + " PRICE varchar(256) not null, primary key (ID), foreign key (BOOK_ID) references BOOK(ID))";
       st.execute(itemTableBuilding);
 
       this.mapper = new OER2GraphMapper(this.sourceDBInfo, null, null, null);
       mapper.buildSourceDatabaseSchema();
       mapper.buildGraphModel(new OJavaConventionNameResolver());
-      modelWriter.writeModelOnOrient(mapper, new OHSQLDBDataTypeHandler(), this.dbName, this.protocol);
-
+      modelWriter.writeModelOnOrient(
+          mapper, new OHSQLDBDataTypeHandler(), this.dbName, this.protocol);
 
       /*
        *  Testing context information
@@ -256,7 +262,7 @@ public class OrientDBSchemaWritingTest {
        *  Testing built OrientDB schema
        */
 
-      orientGraph = this.context.getOrientDBInstance().open(this.dbName,"admin","admin");
+      orientGraph = this.context.getOrientDBInstance().open(this.dbName, "admin", "admin");
 
       OClass authorVertexType = orientGraph.getClass("Author");
       OClass bookVertexType = orientGraph.getClass("Book");
@@ -339,7 +345,7 @@ public class OrientDBSchemaWritingTest {
     }
   }
 
-  //@Test
+  // @Test
 
   /*
    *  Three tables and two relationships with a simple primary keys twice imported.
@@ -356,24 +362,27 @@ public class OrientDBSchemaWritingTest {
       Class.forName(this.driver);
       connection = DriverManager.getConnection(this.jurl, this.username, this.password);
 
-      String authorTableBuilding = "create memory table AUTHOR (ID varchar(256) not null,"
-          + " NAME varchar(256) not null, AGE integer not null, primary key (ID))";
+      String authorTableBuilding =
+          "create memory table AUTHOR (ID varchar(256) not null,"
+              + " NAME varchar(256) not null, AGE integer not null, primary key (ID))";
       st = connection.createStatement();
       st.execute(authorTableBuilding);
 
-      String bookTableBuilding = "create memory table BOOK (ID varchar(256) not null, TITLE  varchar(256),"
-          + " AUTHOR_ID varchar(256) not null, primary key (ID), foreign key (AUTHOR_ID) references AUTHOR(ID))";
+      String bookTableBuilding =
+          "create memory table BOOK (ID varchar(256) not null, TITLE  varchar(256),"
+              + " AUTHOR_ID varchar(256) not null, primary key (ID), foreign key (AUTHOR_ID) references AUTHOR(ID))";
       st.execute(bookTableBuilding);
 
-      String articleTableBuilding = "create memory table ARTICLE (ID varchar(256) not null, TITLE  varchar(256),"
-          + " DATE  date, AUTHOR_ID varchar(256) not null, primary key (ID), foreign key (AUTHOR_ID) references AUTHOR(ID))";
+      String articleTableBuilding =
+          "create memory table ARTICLE (ID varchar(256) not null, TITLE  varchar(256),"
+              + " DATE  date, AUTHOR_ID varchar(256) not null, primary key (ID), foreign key (AUTHOR_ID) references AUTHOR(ID))";
       st.execute(articleTableBuilding);
 
       this.mapper = new OER2GraphMapper(this.sourceDBInfo, null, null, null);
       mapper.buildSourceDatabaseSchema();
       mapper.buildGraphModel(new OJavaConventionNameResolver());
-      modelWriter.writeModelOnOrient(mapper, new OHSQLDBDataTypeHandler(), this.dbName, this.protocol);
-
+      modelWriter.writeModelOnOrient(
+          mapper, new OHSQLDBDataTypeHandler(), this.dbName, this.protocol);
 
       /*
        *  Testing context information
@@ -390,7 +399,7 @@ public class OrientDBSchemaWritingTest {
        *  Testing built OrientDB schema
        */
 
-      orientGraph = this.context.getOrientDBInstance().open(this.dbName,"admin","admin");
+      orientGraph = this.context.getOrientDBInstance().open(this.dbName, "admin", "admin");
 
       OClass authorVertexType = orientGraph.getClass("Author");
       OClass bookVertexType = orientGraph.getClass("Book");
@@ -474,7 +483,7 @@ public class OrientDBSchemaWritingTest {
     }
   }
 
-  //@Test
+  // @Test
 
   /*
    *  Two tables Foreign and Parent with a composite primary key imported from the parent table.
@@ -491,21 +500,23 @@ public class OrientDBSchemaWritingTest {
       Class.forName(this.driver);
       connection = DriverManager.getConnection(this.jurl, this.username, this.password);
 
-      String authorTableBuilding = "create memory table AUTHOR (NAME varchar(256) not null,"
-          + " SURNAME varchar(256) not null, AGE integer, primary key (NAME,SURNAME))";
+      String authorTableBuilding =
+          "create memory table AUTHOR (NAME varchar(256) not null,"
+              + " SURNAME varchar(256) not null, AGE integer, primary key (NAME,SURNAME))";
       st = connection.createStatement();
       st.execute(authorTableBuilding);
 
-      String bookTableBuilding = "create memory table BOOK (ID varchar(256) not null, TITLE  varchar(256),"
-          + " AUTHOR_NAME varchar(256) not null, AUTHOR_SURNAME varchar(256) not null, primary key (ID),"
-          + " foreign key (AUTHOR_NAME,AUTHOR_SURNAME) references AUTHOR(NAME,SURNAME))";
+      String bookTableBuilding =
+          "create memory table BOOK (ID varchar(256) not null, TITLE  varchar(256),"
+              + " AUTHOR_NAME varchar(256) not null, AUTHOR_SURNAME varchar(256) not null, primary key (ID),"
+              + " foreign key (AUTHOR_NAME,AUTHOR_SURNAME) references AUTHOR(NAME,SURNAME))";
       st.execute(bookTableBuilding);
 
       this.mapper = new OER2GraphMapper(this.sourceDBInfo, null, null, null);
       mapper.buildSourceDatabaseSchema();
       mapper.buildGraphModel(new OJavaConventionNameResolver());
-      modelWriter.writeModelOnOrient(mapper, new OHSQLDBDataTypeHandler(), this.dbName, this.protocol);
-
+      modelWriter.writeModelOnOrient(
+          mapper, new OHSQLDBDataTypeHandler(), this.dbName, this.protocol);
 
       /*
        *  Testing context information
@@ -522,7 +533,7 @@ public class OrientDBSchemaWritingTest {
        *  Testing built OrientDB schema
        */
 
-      orientGraph = this.context.getOrientDBInstance().open(this.dbName,"admin","admin");
+      orientGraph = this.context.getOrientDBInstance().open(this.dbName, "admin", "admin");
 
       OClass authorVertexType = orientGraph.getClass("Author");
       OClass bookVertexType = orientGraph.getClass("Book");
@@ -568,7 +579,9 @@ public class OrientDBSchemaWritingTest {
 
       // Indices check
       assertEquals(true, orientGraph.getMetadata().getIndexManager().existsIndex("Author.pkey"));
-      assertEquals(true, orientGraph.getMetadata().getIndexManager().areIndexed("Author", "name", "surname"));
+      assertEquals(
+          true,
+          orientGraph.getMetadata().getIndexManager().areIndexed("Author", "name", "surname"));
 
       assertEquals(true, orientGraph.getMetadata().getIndexManager().existsIndex("Book.pkey"));
       assertEquals(true, orientGraph.getMetadata().getIndexManager().areIndexed("Book", "id"));
@@ -590,7 +603,7 @@ public class OrientDBSchemaWritingTest {
     }
   }
 
-  //@Test
+  // @Test
 
   /*
    *  Three tables: 2 Parent and 1 join table which imports two different simple primary key.
@@ -608,24 +621,28 @@ public class OrientDBSchemaWritingTest {
       connection = DriverManager.getConnection(this.jurl, this.username, this.password);
 
       String filmTableBuilding =
-          "create memory table FILM (ID varchar(256) not null," + " TITLE varchar(256) not null, YEAR date, primary key (ID))";
+          "create memory table FILM (ID varchar(256) not null,"
+              + " TITLE varchar(256) not null, YEAR date, primary key (ID))";
       st = connection.createStatement();
       st.execute(filmTableBuilding);
 
-      String actorTableBuilding = "create memory table ACTOR (ID varchar(256) not null,"
-          + " NAME varchar(256) not null, SURNAME varchar(256) not null, primary key (ID))";
+      String actorTableBuilding =
+          "create memory table ACTOR (ID varchar(256) not null,"
+              + " NAME varchar(256) not null, SURNAME varchar(256) not null, primary key (ID))";
       st.execute(actorTableBuilding);
 
-      String film2actorTableBuilding = "create memory table FILM_ACTOR (FILM_ID varchar(256) not null,"
-          + " ACTOR_ID varchar(256) not null, primary key (FILM_ID,ACTOR_ID)," + " foreign key (FILM_ID) references FILM(ID),"
-          + " foreign key (ACTOR_ID) references ACTOR(ID))";
+      String film2actorTableBuilding =
+          "create memory table FILM_ACTOR (FILM_ID varchar(256) not null,"
+              + " ACTOR_ID varchar(256) not null, primary key (FILM_ID,ACTOR_ID),"
+              + " foreign key (FILM_ID) references FILM(ID),"
+              + " foreign key (ACTOR_ID) references ACTOR(ID))";
       st.execute(film2actorTableBuilding);
 
       this.mapper = new OER2GraphMapper(this.sourceDBInfo, null, null, null);
       mapper.buildSourceDatabaseSchema();
       mapper.buildGraphModel(new OJavaConventionNameResolver());
-      modelWriter.writeModelOnOrient(mapper, new OHSQLDBDataTypeHandler(), this.dbName, this.protocol);
-
+      modelWriter.writeModelOnOrient(
+          mapper, new OHSQLDBDataTypeHandler(), this.dbName, this.protocol);
 
       /*
        *  Testing context information
@@ -642,7 +659,7 @@ public class OrientDBSchemaWritingTest {
        *  Testing built OrientDB schema
        */
 
-      orientGraph = this.context.getOrientDBInstance().open(this.dbName,"admin","admin");
+      orientGraph = this.context.getOrientDBInstance().open(this.dbName, "admin", "admin");
 
       OClass actorVertexType = orientGraph.getClass("Actor");
       OClass filmVertexType = orientGraph.getClass("Film");
@@ -703,7 +720,9 @@ public class OrientDBSchemaWritingTest {
       assertEquals(true, orientGraph.getMetadata().getIndexManager().areIndexed("Film", "id"));
 
       assertEquals(true, orientGraph.getMetadata().getIndexManager().existsIndex("FilmActor.pkey"));
-      assertEquals(true, orientGraph.getMetadata().getIndexManager().areIndexed("FilmActor", "filmId", "actorId"));
+      assertEquals(
+          true,
+          orientGraph.getMetadata().getIndexManager().areIndexed("FilmActor", "filmId", "actorId"));
 
     } catch (Exception e) {
       e.printStackTrace();
@@ -722,7 +741,7 @@ public class OrientDBSchemaWritingTest {
     }
   }
 
-  //@Test
+  // @Test
 
   /*
    *  Two tables: 1 Foreign and 1 Parent (parent has an inner referential integrity).
@@ -740,22 +759,24 @@ public class OrientDBSchemaWritingTest {
       Class.forName(this.driver);
       connection = DriverManager.getConnection(this.jurl, this.username, this.password);
 
-      String parentTableBuilding = "create memory table EMPLOYEE (EMP_ID varchar(256) not null,"
-          + " MGR_ID varchar(256) not null, NAME varchar(256) not null, primary key (EMP_ID), "
-          + " foreign key (MGR_ID) references EMPLOYEE(EMP_ID))";
+      String parentTableBuilding =
+          "create memory table EMPLOYEE (EMP_ID varchar(256) not null,"
+              + " MGR_ID varchar(256) not null, NAME varchar(256) not null, primary key (EMP_ID), "
+              + " foreign key (MGR_ID) references EMPLOYEE(EMP_ID))";
       st = connection.createStatement();
       st.execute(parentTableBuilding);
 
-      String foreignTableBuilding = "create memory table PROJECT (ID  varchar(256),"
-          + " TITLE varchar(256) not null, PROJECT_MANAGER varchar(256) not null, primary key (ID),"
-          + " foreign key (PROJECT_MANAGER) references EMPLOYEE(EMP_ID))";
+      String foreignTableBuilding =
+          "create memory table PROJECT (ID  varchar(256),"
+              + " TITLE varchar(256) not null, PROJECT_MANAGER varchar(256) not null, primary key (ID),"
+              + " foreign key (PROJECT_MANAGER) references EMPLOYEE(EMP_ID))";
       st.execute(foreignTableBuilding);
 
       this.mapper = new OER2GraphMapper(this.sourceDBInfo, null, null, null);
       mapper.buildSourceDatabaseSchema();
       mapper.buildGraphModel(new OJavaConventionNameResolver());
-      modelWriter.writeModelOnOrient(mapper, new OHSQLDBDataTypeHandler(), this.dbName, this.protocol);
-
+      modelWriter.writeModelOnOrient(
+          mapper, new OHSQLDBDataTypeHandler(), this.dbName, this.protocol);
 
       /*
        *  Testing context information
@@ -772,7 +793,7 @@ public class OrientDBSchemaWritingTest {
        *  Testing built OrientDB schema
        */
 
-      orientGraph = this.context.getOrientDBInstance().open(this.dbName,"admin","admin");
+      orientGraph = this.context.getOrientDBInstance().open(this.dbName, "admin", "admin");
 
       OClass employeeVertexType = orientGraph.getClass("Employee");
       OClass projectVertexType = orientGraph.getClass("Project");
@@ -817,7 +838,8 @@ public class OrientDBSchemaWritingTest {
 
       // Indices check
       assertEquals(true, orientGraph.getMetadata().getIndexManager().existsIndex("Employee.pkey"));
-      assertEquals(true, orientGraph.getMetadata().getIndexManager().areIndexed("Employee", "empId"));
+      assertEquals(
+          true, orientGraph.getMetadata().getIndexManager().areIndexed("Employee", "empId"));
 
       assertEquals(true, orientGraph.getMetadata().getIndexManager().existsIndex("Project.pkey"));
       assertEquals(true, orientGraph.getMetadata().getIndexManager().areIndexed("Project", "id"));
@@ -839,7 +861,7 @@ public class OrientDBSchemaWritingTest {
     }
   }
 
-  //@Test
+  // @Test
 
   /*
    * CheckAndUpdate OrientDB Schema
@@ -856,27 +878,31 @@ public class OrientDBSchemaWritingTest {
       Class.forName(this.driver);
       connection = DriverManager.getConnection(this.jurl, this.username, this.password);
 
-      String authorTableBuilding = "create memory table AUTHOR (ID varchar(256) not null,"
-          + " NAME varchar(256) not null, AGE integer not null, primary key (ID))";
+      String authorTableBuilding =
+          "create memory table AUTHOR (ID varchar(256) not null,"
+              + " NAME varchar(256) not null, AGE integer not null, primary key (ID))";
       st = connection.createStatement();
       st.execute(authorTableBuilding);
 
-      String bookTableBuilding = "create memory table BOOK (ID varchar(256) not null, TITLE  varchar(256),"
-          + " AUTHOR_ID varchar(256) not null, primary key (ID), foreign key (AUTHOR_ID) references AUTHOR(ID))";
+      String bookTableBuilding =
+          "create memory table BOOK (ID varchar(256) not null, TITLE  varchar(256),"
+              + " AUTHOR_ID varchar(256) not null, primary key (ID), foreign key (AUTHOR_ID) references AUTHOR(ID))";
       st.execute(bookTableBuilding);
 
-      String articleTableBuilding = "create memory table ARTICLE (ID varchar(256) not null, TITLE  varchar(256),"
-          + " DATE  date, AUTHOR_ID varchar(256) not null, primary key (ID), foreign key (AUTHOR_ID) references AUTHOR(ID))";
+      String articleTableBuilding =
+          "create memory table ARTICLE (ID varchar(256) not null, TITLE  varchar(256),"
+              + " DATE  date, AUTHOR_ID varchar(256) not null, primary key (ID), foreign key (AUTHOR_ID) references AUTHOR(ID))";
       st.execute(articleTableBuilding);
 
       this.mapper = new OER2GraphMapper(this.sourceDBInfo, null, null, null);
       mapper.buildSourceDatabaseSchema();
       mapper.buildGraphModel(new OJavaConventionNameResolver());
-      modelWriter.writeModelOnOrient(mapper, new OHSQLDBDataTypeHandler(), this.dbName, this.protocol);
+      modelWriter.writeModelOnOrient(
+          mapper, new OHSQLDBDataTypeHandler(), this.dbName, this.protocol);
 
       // dropping property from OrientDB Schema (from Author)
 
-      orientGraph = this.context.getOrientDBInstance().open(this.dbName,"admin","admin");
+      orientGraph = this.context.getOrientDBInstance().open(this.dbName, "admin", "admin");
 
       OClass authorVertexType = orientGraph.getClass("Author");
 
@@ -895,9 +921,10 @@ public class OrientDBSchemaWritingTest {
       assertEquals(true, props.contains("name"));
       assertEquals(true, props.contains("surname"));
 
-      modelWriter.writeModelOnOrient(mapper, new OHSQLDBDataTypeHandler(), this.dbName, this.protocol);
+      modelWriter.writeModelOnOrient(
+          mapper, new OHSQLDBDataTypeHandler(), this.dbName, this.protocol);
 
-      orientGraph = this.context.getOrientDBInstance().open(this.dbName,"admin","admin");
+      orientGraph = this.context.getOrientDBInstance().open(this.dbName, "admin", "admin");
 
       authorVertexType = orientGraph.getClass("Author");
       assertEquals(3, authorVertexType.properties().size());
@@ -917,9 +944,15 @@ public class OrientDBSchemaWritingTest {
 
       mapper.getGraphModel().getVertexTypeByName("Article").removePropertyByName("title");
       assertEquals(3, mapper.getGraphModel().getVertexTypeByName("Article").getProperties().size());
-      assertEquals("id", mapper.getGraphModel().getVertexTypeByName("Article").getProperties().get(0).getName());
-      assertEquals("date", mapper.getGraphModel().getVertexTypeByName("Article").getProperties().get(1).getName());
-      assertEquals("authorId", mapper.getGraphModel().getVertexTypeByName("Article").getProperties().get(2).getName());
+      assertEquals(
+          "id",
+          mapper.getGraphModel().getVertexTypeByName("Article").getProperties().get(0).getName());
+      assertEquals(
+          "date",
+          mapper.getGraphModel().getVertexTypeByName("Article").getProperties().get(1).getName());
+      assertEquals(
+          "authorId",
+          mapper.getGraphModel().getVertexTypeByName("Article").getProperties().get(2).getName());
 
       assertEquals(4, articleVertexType.properties().size());
       it = articleVertexType.properties().iterator();
@@ -934,9 +967,10 @@ public class OrientDBSchemaWritingTest {
       assertEquals(true, props.contains("authorId"));
       assertEquals(true, props.contains("date"));
 
-      modelWriter.writeModelOnOrient(mapper, new OHSQLDBDataTypeHandler(), this.dbName, this.protocol);
+      modelWriter.writeModelOnOrient(
+          mapper, new OHSQLDBDataTypeHandler(), this.dbName, this.protocol);
 
-      orientGraph = this.context.getOrientDBInstance().open(this.dbName,"admin","admin");
+      orientGraph = this.context.getOrientDBInstance().open(this.dbName, "admin", "admin");
 
       articleVertexType = orientGraph.getClass("Article");
       assertEquals(3, articleVertexType.properties().size());
@@ -960,9 +994,10 @@ public class OrientDBSchemaWritingTest {
       assertEquals("date", it.next().getName());
       assertFalse(it.hasNext());
 
-      modelWriter.writeModelOnOrient(mapper, new OHSQLDBDataTypeHandler(), this.dbName, this.protocol);
+      modelWriter.writeModelOnOrient(
+          mapper, new OHSQLDBDataTypeHandler(), this.dbName, this.protocol);
 
-      orientGraph = this.context.getOrientDBInstance().open(this.dbName,"admin","admin");
+      orientGraph = this.context.getOrientDBInstance().open(this.dbName, "admin", "admin");
       authorEdgeType = orientGraph.getClass("HasAuthor");
       assertEquals(0, authorEdgeType.properties().size());
 
@@ -982,5 +1017,4 @@ public class OrientDBSchemaWritingTest {
       }
     }
   }
-
 }

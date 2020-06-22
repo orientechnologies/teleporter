@@ -24,12 +24,11 @@ package com.orientechnologies.teleporter.configuration.api;
  * @author Gabriele Ponzi
  * @email <g.ponzi--at--orientdb.com>
  */
-
 public class OConfiguredPropertyMapping {
 
   private String sourceName; // mandatory
   private String columnName; // mandatory
-  private String type;       // mandatory
+  private String type; // mandatory
 
   public OConfiguredPropertyMapping(final String sourceName) {
     this.sourceName = sourceName;

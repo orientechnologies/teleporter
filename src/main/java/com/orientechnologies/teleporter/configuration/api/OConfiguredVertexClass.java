@@ -27,18 +27,18 @@ import java.util.List;
  * @author Gabriele Ponzi
  * @email <g.ponzi--at--orientdb.com>
  */
-
 public class OConfiguredVertexClass extends OConfiguredClass {
 
-  private List<String>              externalKeyProps;
-  private OVertexMappingInformation mapping;                  // mandatory
+  private List<String> externalKeyProps;
+  private OVertexMappingInformation mapping; // mandatory
   private Double x;
   private Double y;
   private Double px;
   private Double py;
   private Integer fixed;
 
-  // boolean value used to specify if the configured vertex was already analyzed and applied to the graph model
+  // boolean value used to specify if the configured vertex was already analyzed and applied to the
+  // graph model
   private boolean alreadyAnalyzed;
 
   public OConfiguredVertexClass(String vertexName, OConfiguration globalConfiguration) {

@@ -20,9 +20,5 @@
 
 package com.orientechnologies.teleporter.model;
 
-/**
- * Represents a source with all its related info for accessing it.
- */
-
-public interface OSourceInfo {
-}
+/** Represents a source with all its related info for accessing it. */
+public interface OSourceInfo {}

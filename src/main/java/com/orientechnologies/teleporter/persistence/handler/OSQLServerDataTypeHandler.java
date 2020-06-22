@@ -20,20 +20,18 @@
 
 package com.orientechnologies.teleporter.persistence.handler;
 
+import com.orientechnologies.orient.core.metadata.schema.OType;
+import com.orientechnologies.teleporter.context.OTeleporterContext;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.orientechnologies.teleporter.context.OTeleporterContext;
-import com.orientechnologies.orient.core.metadata.schema.OType;
-
 /**
- * Handler that executes type conversions from SQLServer DBMS to the OrientDB types.
- * No Geospatial implemented.
+ * Handler that executes type conversions from SQLServer DBMS to the OrientDB types. No Geospatial
+ * implemented.
  *
  * @author Gabriele Ponzi
  * @email <g.ponzi--at--orientdb.com>
  */
-
 public class OSQLServerDataTypeHandler extends ODBMSDataTypeHandler {
 
   public OSQLServerDataTypeHandler() {
@@ -49,14 +47,18 @@ public class OSQLServerDataTypeHandler extends ODBMSDataTypeHandler {
     type = type.replace("identity", "").trim();
 
     // Defined Types
-    if (this.dbmsType2OrientType.keySet().contains(type))
-      return this.dbmsType2OrientType.get(type);
+    if (this.dbmsType2OrientType.keySet().contains(type)) return this.dbmsType2OrientType.get(type);
 
-      // Undefined Types
+    // Undefined Types
     else {
-      OTeleporterContext.getInstance().getStatistics().warningMessages.add(
-          "The original type '" + type + "' is not convertible into any OrientDB type thus, in order to prevent data loss, "
-              + "it will be converted to the OrientDB Type String.");
+      OTeleporterContext.getInstance()
+          .getStatistics()
+          .warningMessages
+          .add(
+              "The original type '"
+                  + type
+                  + "' is not convertible into any OrientDB type thus, in order to prevent data loss, "
+                  + "it will be converted to the OrientDB Type String.");
       return OType.STRING;
     }
   }
@@ -84,7 +86,6 @@ public class OSQLServerDataTypeHandler extends ODBMSDataTypeHandler {
     dbmsType2OrientType.put("national char varying", OType.STRING);
     dbmsType2OrientType.put("national character varying", OType.STRING);
 
-
     /*
      * Numeric Types
      * (doc at https://msdn.microsoft.com/en-us/library/ms187745.aspx,
@@ -100,7 +101,6 @@ public class OSQLServerDataTypeHandler extends ODBMSDataTypeHandler {
     dbmsType2OrientType.put("real", OType.FLOAT);
     dbmsType2OrientType.put("float", OType.FLOAT);
 
-
     /*
      * Monetary Types
      * (doc at https://msdn.microsoft.com/en-us/library/ms179882.aspx )
@@ -108,13 +108,11 @@ public class OSQLServerDataTypeHandler extends ODBMSDataTypeHandler {
     dbmsType2OrientType.put("money", OType.DOUBLE);
     dbmsType2OrientType.put("smallmoney", OType.FLOAT);
 
-
     /*
      * Bit String Types
      * (doc at https://msdn.microsoft.com/en-us/library/ms177603.aspx )
      */
     dbmsType2OrientType.put("bit", OType.STRING);
-
 
     /*
      * Date/Time Types
@@ -128,7 +126,6 @@ public class OSQLServerDataTypeHandler extends ODBMSDataTypeHandler {
     dbmsType2OrientType.put("datetime2", OType.DATETIME);
     dbmsType2OrientType.put("datetimeoffset", OType.DATETIME);
 
-
     /*
      * Binary Data Types
      * (doc at https://msdn.microsoft.com/en-us/library/ms188362.aspx, https://msdn.microsoft.com/en-us/library/ms187993.aspx )
@@ -140,5 +137,4 @@ public class OSQLServerDataTypeHandler extends ODBMSDataTypeHandler {
 
     return dbmsType2OrientType;
   }
-
 }

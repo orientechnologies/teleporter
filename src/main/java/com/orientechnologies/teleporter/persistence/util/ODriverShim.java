@@ -24,7 +24,6 @@ package com.orientechnologies.teleporter.persistence.util;
  * @author Gabriele Ponzi
  * @email <g.ponzi--at--orientdb.com>
  */
-
 import java.sql.*;
 import java.util.Properties;
 import java.util.logging.Logger;
@@ -72,5 +71,4 @@ class ODriverShim implements Driver {
     // TODO Auto-generated method stub
     return null;
   }
-
 }

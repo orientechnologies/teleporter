@@ -28,12 +28,10 @@ import java.io.IOException;
  * @author Gabriele Ponzi
  * @email <g.ponzi--at--orientdb.com>
  */
-
 @SuppressWarnings("serial")
 public class OTeleporterIOException extends IOException {
 
-  public OTeleporterIOException() {
-  }
+  public OTeleporterIOException() {}
 
   public OTeleporterIOException(String message) {
     super(message);
@@ -46,5 +44,4 @@ public class OTeleporterIOException extends IOException {
   public OTeleporterIOException(Throwable cause) {
     super(cause);
   }
-
 }

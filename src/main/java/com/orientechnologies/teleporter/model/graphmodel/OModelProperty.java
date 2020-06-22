@@ -21,29 +21,32 @@
 package com.orientechnologies.teleporter.model.graphmodel;
 
 /**
- * Class which holds all the attributes of a vertex property obtained from
- * the transformation of an attribute belonging to an entity of the source DB schema.
+ * Class which holds all the attributes of a vertex property obtained from the transformation of an
+ * attribute belonging to an entity of the source DB schema.
  *
  * @author Gabriele Ponzi
  * @email <g.ponzi--at--orientdb.com>
  */
-
 public class OModelProperty {
 
-  private String       name;
-  private int          ordinalPosition;
-  private String       originalType;
-  private String       orientdbType;
-  private boolean      fromPrimaryKey;
+  private String name;
+  private int ordinalPosition;
+  private String originalType;
+  private String orientdbType;
+  private boolean fromPrimaryKey;
   private OElementType belongingElementType;
-  private boolean      includedInMigration;
+  private boolean includedInMigration;
 
   // costraints
   private Boolean mandatory;
   private Boolean readOnly;
   private Boolean notNull;
 
-  public OModelProperty(String name, int ordinalPosition, String originalType, boolean fromPrimaryKey,
+  public OModelProperty(
+      String name,
+      int ordinalPosition,
+      String originalType,
+      boolean fromPrimaryKey,
       OElementType belongingElementType) {
     this.name = name;
     this.ordinalPosition = ordinalPosition;
@@ -54,8 +57,16 @@ public class OModelProperty {
     this.includedInMigration = true;
   }
 
-  public OModelProperty(String name, int ordinalPosition, String originalType, String orientdbType, boolean fromPrimaryKey,
-      OElementType belongingElementType, boolean mandatory, boolean readOnly, boolean notNull) {
+  public OModelProperty(
+      String name,
+      int ordinalPosition,
+      String originalType,
+      String orientdbType,
+      boolean fromPrimaryKey,
+      OElementType belongingElementType,
+      boolean mandatory,
+      boolean readOnly,
+      boolean notNull) {
     this.name = name;
     this.ordinalPosition = ordinalPosition;
     this.originalType = originalType;
@@ -162,8 +173,9 @@ public class OModelProperty {
   @Override
   public boolean equals(Object obj) {
     OModelProperty that = (OModelProperty) obj;
-    if (!(this.name.equals(that.getName()) && this.ordinalPosition == that.getOrdinalPosition() && this.isFromPrimaryKey() == that
-        .isFromPrimaryKey())) {
+    if (!(this.name.equals(that.getName())
+        && this.ordinalPosition == that.getOrdinalPosition()
+        && this.isFromPrimaryKey() == that.isFromPrimaryKey())) {
       return false;
     }
     if (this.originalType != null && that.originalType != null) {
@@ -188,5 +200,4 @@ public class OModelProperty {
     }
     return s;
   }
-
 }

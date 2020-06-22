@@ -26,11 +26,10 @@ import com.orientechnologies.teleporter.model.graphmodel.OEdgeType;
  * @author Gabriele Ponzi
  * @email <g.ponzi--at--orientdb.com>
  */
-
 public class OAggregatorEdge {
 
-  private String    outVertexClassName;
-  private String    inVertexClassName;
+  private String outVertexClassName;
+  private String inVertexClassName;
   private OEdgeType edgeType;
 
   public OAggregatorEdge(String outVertexClassName, String inVertexClassName, OEdgeType edgeType) {
@@ -62,5 +61,4 @@ public class OAggregatorEdge {
   public void setEdgeType(OEdgeType edgeType) {
     this.edgeType = edgeType;
   }
-
 }

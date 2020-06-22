@@ -29,18 +29,15 @@ import com.orientechnologies.teleporter.mapper.rdbms.OER2GraphMapper;
 import com.orientechnologies.teleporter.model.dbschema.OSourceDatabaseInfo;
 import com.orientechnologies.teleporter.nameresolver.ONameResolver;
 import com.orientechnologies.teleporter.persistence.handler.ODBMSDataTypeHandler;
-
 import java.util.List;
 
 /**
  * @author Gabriele Ponzi
  * @email <g.ponzi--at--orientdb.com>
  */
-
 public class ODBMSSimpleModelBuildingStrategy extends OAbstractDBMSModelBuildingStrategy {
 
-  public ODBMSSimpleModelBuildingStrategy() {
-  }
+  public ODBMSSimpleModelBuildingStrategy() {}
 
   @Override
   protected OConfigurationHandler buildConfigurationHandler() {
@@ -48,28 +45,48 @@ public class ODBMSSimpleModelBuildingStrategy extends OAbstractDBMSModelBuilding
   }
 
   @Override
-  public OER2GraphMapper createSchemaMapper(OSourceDatabaseInfo sourceDBInfo, String outOrientGraphUri, String chosenMapper,
-      String xmlPath, ONameResolver nameResolver, ODBMSDataTypeHandler handler, List<String> includedTables,
-      List<String> excludedTables, OConfiguration migrationConfig) {
+  public OER2GraphMapper createSchemaMapper(
+      OSourceDatabaseInfo sourceDBInfo,
+      String outOrientGraphUri,
+      String chosenMapper,
+      String xmlPath,
+      ONameResolver nameResolver,
+      ODBMSDataTypeHandler handler,
+      List<String> includedTables,
+      List<String> excludedTables,
+      OConfiguration migrationConfig) {
 
     OMapperFactory mapperFactory = new OMapperFactory();
-    OER2GraphMapper mapper = (OER2GraphMapper) mapperFactory
-        .buildMapper(chosenMapper, sourceDBInfo, xmlPath, includedTables, excludedTables, migrationConfig);
+    OER2GraphMapper mapper =
+        (OER2GraphMapper)
+            mapperFactory.buildMapper(
+                chosenMapper,
+                sourceDBInfo,
+                xmlPath,
+                includedTables,
+                excludedTables,
+                migrationConfig);
 
     // Step 1: DataBase schema building
     mapper.buildSourceDatabaseSchema();
     OTeleporterContext.getInstance().getStatistics().notifyListeners();
     OTeleporterContext.getInstance().getMessageHandler().info(this, "\n");
-    if(OTeleporterContext.getInstance().getMessageHandler().getOutputManagerLevel() == OOutputStreamManager.DEBUG_LEVEL) {
-      OTeleporterContext.getInstance().getMessageHandler().debug(this, "\n%s\n", ((OER2GraphMapper) mapper).getDataBaseSchema().toString());
+    if (OTeleporterContext.getInstance().getMessageHandler().getOutputManagerLevel()
+        == OOutputStreamManager.DEBUG_LEVEL) {
+      OTeleporterContext.getInstance()
+          .getMessageHandler()
+          .debug(this, "\n%s\n", ((OER2GraphMapper) mapper).getDataBaseSchema().toString());
     }
 
     // Step 2: Graph model building
     mapper.buildGraphModel(nameResolver);
     OTeleporterContext.getInstance().getStatistics().notifyListeners();
     OTeleporterContext.getInstance().getMessageHandler().info(this, "\n");
-    if(OTeleporterContext.getInstance().getMessageHandler().getOutputManagerLevel() == OOutputStreamManager.DEBUG_LEVEL) {
-      OTeleporterContext.getInstance().getMessageHandler().debug(this, "\n%s\n", mapper.getGraphModel().toString());
+    if (OTeleporterContext.getInstance().getMessageHandler().getOutputManagerLevel()
+        == OOutputStreamManager.DEBUG_LEVEL) {
+      OTeleporterContext.getInstance()
+          .getMessageHandler()
+          .debug(this, "\n%s\n", mapper.getGraphModel().toString());
     }
 
     // Step 3: eventual migrationConfigDoc applying
@@ -77,5 +94,4 @@ public class ODBMSSimpleModelBuildingStrategy extends OAbstractDBMSModelBuilding
 
     return mapper;
   }
-
 }

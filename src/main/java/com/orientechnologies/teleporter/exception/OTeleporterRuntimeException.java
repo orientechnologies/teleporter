@@ -26,7 +26,6 @@ package com.orientechnologies.teleporter.exception;
  * @author Gabriele Ponzi
  * @email <g.ponzi--at--orientdb.com>
  */
-
 @SuppressWarnings("serial")
 public class OTeleporterRuntimeException extends RuntimeException {
 

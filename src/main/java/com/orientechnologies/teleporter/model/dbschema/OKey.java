@@ -24,16 +24,15 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * It represents a generic key of the source DB. It's extended from OPrimaryKey
- * and OForeignKey that differ each other only by their usage.
+ * It represents a generic key of the source DB. It's extended from OPrimaryKey and OForeignKey that
+ * differ each other only by their usage.
  *
  * @author Gabriele Ponzi
  * @email <g.ponzi--at--orientdb.com>
  */
-
 public class OKey {
 
-  protected OEntity          belongingEntity;
+  protected OEntity belongingEntity;
   protected List<OAttribute> involvedAttributes;
 
   public OKey() {
@@ -99,7 +98,8 @@ public class OKey {
   public int hashCode() {
     final int prime = 31;
     int result = 1;
-    result = prime * result + ((belongingEntity == null) ? 0 : belongingEntity.getName().hashCode());
+    result =
+        prime * result + ((belongingEntity == null) ? 0 : belongingEntity.getName().hashCode());
     result = prime * result + ((involvedAttributes == null) ? 0 : involvedAttributes.hashCode());
     return result;
   }
@@ -128,5 +128,4 @@ public class OKey {
 
     return s;
   }
-
 }

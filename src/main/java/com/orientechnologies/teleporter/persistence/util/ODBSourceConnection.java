@@ -23,7 +23,6 @@ package com.orientechnologies.teleporter.persistence.util;
 import com.orientechnologies.teleporter.context.OTeleporterContext;
 import com.orientechnologies.teleporter.exception.OTeleporterRuntimeException;
 import com.orientechnologies.teleporter.model.dbschema.OSourceDatabaseInfo;
-
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.sql.Connection;
@@ -36,7 +35,6 @@ import java.sql.DriverManager;
  * @author Gabriele Ponzi
  * @email <g.ponzi--at--orientdb.com>
  */
-
 public class ODBSourceConnection {
 
   public static Connection getConnection(OSourceDatabaseInfo sourceDBInfo) {
@@ -48,8 +46,9 @@ public class ODBSourceConnection {
     String password = sourceDBInfo.getPassword();
 
     try {
-      URL u = new URL("jar:file:" + OTeleporterContext.getInstance().getDriverDependencyPath() + "!/");
-      URLClassLoader ucl = new URLClassLoader(new URL[] { u });
+      URL u =
+          new URL("jar:file:" + OTeleporterContext.getInstance().getDriverDependencyPath() + "!/");
+      URLClassLoader ucl = new URLClassLoader(new URL[] {u});
       Driver d = (Driver) Class.forName(driver, true, ucl).newInstance();
       DriverManager.registerDriver(new ODriverShim(d));
       connection = DriverManager.getConnection(uri, username, password);
@@ -63,13 +62,15 @@ public class ODBSourceConnection {
     return connection;
   }
 
-  public static Connection getConnection(String driver, String uri, String username, String password) {
+  public static Connection getConnection(
+      String driver, String uri, String username, String password) {
 
     Connection connection = null;
 
     try {
-      URL u = new URL("jar:file:" + OTeleporterContext.getInstance().getDriverDependencyPath() + "!/");
-      URLClassLoader ucl = new URLClassLoader(new URL[] { u });
+      URL u =
+          new URL("jar:file:" + OTeleporterContext.getInstance().getDriverDependencyPath() + "!/");
+      URLClassLoader ucl = new URLClassLoader(new URL[] {u});
       Driver d = (Driver) Class.forName(driver, true, ucl).newInstance();
       DriverManager.registerDriver(new ODriverShim(d));
       connection = DriverManager.getConnection(uri, username, password);
@@ -82,5 +83,4 @@ public class ODBSourceConnection {
     }
     return connection;
   }
-
 }

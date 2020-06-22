@@ -21,27 +21,29 @@
 package com.orientechnologies.teleporter.model.dbschema;
 
 import com.orientechnologies.teleporter.model.OSourceInfo;
-
 import java.util.List;
 
-/**
- * Represents a source database with all its related info for accessing it.
- */
-
+/** Represents a source database with all its related info for accessing it. */
 public class OSourceDatabaseInfo implements OSourceInfo {
 
-  private String       sourceIdName;
-  private String       driverName;
-  private String       url;
-  private String       username;
-  private String       password;
+  private String sourceIdName;
+  private String driverName;
+  private String url;
+  private String username;
+  private String password;
   private List<String> primaryKey;
 
-  public OSourceDatabaseInfo(String sourceIdName, String driverName, String url, String username, String password) {
+  public OSourceDatabaseInfo(
+      String sourceIdName, String driverName, String url, String username, String password) {
     this(sourceIdName, driverName, url, username, password, null);
   }
 
-  public OSourceDatabaseInfo(String sourceIdName, String driverName, String url, String username, String password,
+  public OSourceDatabaseInfo(
+      String sourceIdName,
+      String driverName,
+      String url,
+      String username,
+      String password,
       List<String> primaryKey) {
     this.sourceIdName = sourceIdName;
     this.driverName = driverName;
@@ -105,19 +107,14 @@ public class OSourceDatabaseInfo implements OSourceInfo {
 
   @Override
   public boolean equals(Object o) {
-    if (this == o)
-      return true;
-    if (o == null || getClass() != o.getClass())
-      return false;
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
 
     OSourceDatabaseInfo that = (OSourceDatabaseInfo) o;
 
-    if (!sourceIdName.equals(that.sourceIdName))
-      return false;
-    if (!driverName.equals(that.driverName))
-      return false;
+    if (!sourceIdName.equals(that.sourceIdName)) return false;
+    if (!driverName.equals(that.driverName)) return false;
     return url.equals(that.url);
-
   }
 
   public List<String> getPrimaryKey() {

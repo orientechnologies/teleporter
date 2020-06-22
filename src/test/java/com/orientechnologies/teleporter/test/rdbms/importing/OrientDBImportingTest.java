@@ -20,6 +20,8 @@
 
 package com.orientechnologies.teleporter.test.rdbms.importing;
 
+import static org.junit.Assert.*;
+
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.record.ODirection;
 import com.orientechnologies.orient.core.record.OEdge;
@@ -34,35 +36,30 @@ import com.orientechnologies.teleporter.persistence.handler.OHSQLDBDataTypeHandl
 import com.orientechnologies.teleporter.strategy.rdbms.ODBMSNaiveStrategy;
 import com.orientechnologies.teleporter.util.OFileManager;
 import com.orientechnologies.teleporter.util.OGraphCommands;
-import org.junit.After;
-import org.junit.Before;
-
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.Statement;
 import java.util.Iterator;
-
-import static org.junit.Assert.*;
+import org.junit.After;
+import org.junit.Before;
 
 /**
  * @author Gabriele Ponzi
  * @email gabriele.ponzi--at--gmail.com
  */
-
 public class OrientDBImportingTest {
 
   private OTeleporterContext context;
   private ODBMSNaiveStrategy importStrategy;
-  private ODBQueryEngine     dbQueryEngine;
-  private String driver   = "org.hsqldb.jdbc.JDBCDriver";
-  private String jurl     = "jdbc:hsqldb:mem:mydb";
+  private ODBQueryEngine dbQueryEngine;
+  private String driver = "org.hsqldb.jdbc.JDBCDriver";
+  private String jurl = "jdbc:hsqldb:mem:mydb";
   private String username = "SA";
   private String password = "";
   private String dbName = "testOrientDB";
   private String outParentDirectory = "embedded:target/";
   private String outOrientGraphUri = this.outParentDirectory + this.dbName;
   private OSourceDatabaseInfo sourceDBInfo;
-
 
   @Before
   public void init() {
@@ -74,7 +71,8 @@ public class OrientDBImportingTest {
     this.context.setNameResolver(new OJavaConventionNameResolver());
     this.context.setDataTypeHandler(new OHSQLDBDataTypeHandler());
     this.importStrategy = new ODBMSNaiveStrategy("embedded", this.outParentDirectory, this.dbName);
-    this.sourceDBInfo = new OSourceDatabaseInfo("source", this.driver, this.jurl, this.username, this.password);
+    this.sourceDBInfo =
+        new OSourceDatabaseInfo("source", this.driver, this.jurl, this.username, this.password);
   }
 
   @After
@@ -86,14 +84,14 @@ public class OrientDBImportingTest {
     try {
 
       // Deleting database directory
-      OFileManager.deleteResource(this.outOrientGraphUri.replace("embedded:",""));
+      OFileManager.deleteResource(this.outOrientGraphUri.replace("embedded:", ""));
 
     } catch (Exception e) {
       e.printStackTrace();
     }
   }
 
-//  @Test
+  //  @Test
   public void test1() {
 
     Connection connection = null;
@@ -107,57 +105,94 @@ public class OrientDBImportingTest {
 
       // Tables Building
 
-      String directorTableBuilding = "create memory table DIRECTOR (ID varchar(256) not null, NAME  varchar(256),"
-          + " SURNAME varchar(256) not null, primary key (ID))";
+      String directorTableBuilding =
+          "create memory table DIRECTOR (ID varchar(256) not null, NAME  varchar(256),"
+              + " SURNAME varchar(256) not null, primary key (ID))";
       st = connection.createStatement();
       st.execute(directorTableBuilding);
 
-      String categoryTableBuilding = "create memory table CATEGORY (ID varchar(256) not null, NAME  varchar(256), primary key (ID))";
+      String categoryTableBuilding =
+          "create memory table CATEGORY (ID varchar(256) not null, NAME  varchar(256), primary key (ID))";
       st.execute(categoryTableBuilding);
 
-      String filmTableBuilding = "create memory table FILM (ID varchar(256) not null,"
-          + " TITLE varchar(256) not null, DIRECTOR varchar(256) not null, CATEGORY varchar(256) not null," + " primary key (ID), "
-          + " foreign key (DIRECTOR) references DIRECTOR(ID)," + " foreign key (CATEGORY) references CATEGORY(ID))";
+      String filmTableBuilding =
+          "create memory table FILM (ID varchar(256) not null,"
+              + " TITLE varchar(256) not null, DIRECTOR varchar(256) not null, CATEGORY varchar(256) not null,"
+              + " primary key (ID), "
+              + " foreign key (DIRECTOR) references DIRECTOR(ID),"
+              + " foreign key (CATEGORY) references CATEGORY(ID))";
       st.execute(filmTableBuilding);
 
-      String actorTableBuilding = "create memory table ACTOR (ID varchar(256) not null, NAME  varchar(256),"
-          + " SURNAME varchar(256) not null, primary key (ID))";
+      String actorTableBuilding =
+          "create memory table ACTOR (ID varchar(256) not null, NAME  varchar(256),"
+              + " SURNAME varchar(256) not null, primary key (ID))";
       st.execute(actorTableBuilding);
 
-      String film2actorTableBuilding = "create memory table FILM_ACTOR (FILM_ID varchar(256) not null, ACTOR_ID  varchar(256),"
-          + " primary key (FILM_ID,ACTOR_ID), foreign key (FILM_ID) references FILM(ID), foreign key (ACTOR_ID) references ACTOR(ID))";
+      String film2actorTableBuilding =
+          "create memory table FILM_ACTOR (FILM_ID varchar(256) not null, ACTOR_ID  varchar(256),"
+              + " primary key (FILM_ID,ACTOR_ID), foreign key (FILM_ID) references FILM(ID), foreign key (ACTOR_ID) references ACTOR(ID))";
       st.execute(film2actorTableBuilding);
 
       // Records Inserting
 
       String directorFilling =
-          "insert into DIRECTOR (ID,NAME,SURNAME) values (" + "('D001','Quentin','Tarantino')," + "('D002','Martin','Scorsese'))";
+          "insert into DIRECTOR (ID,NAME,SURNAME) values ("
+              + "('D001','Quentin','Tarantino'),"
+              + "('D002','Martin','Scorsese'))";
       st.execute(directorFilling);
 
       String categoryFilling =
-          "insert into CATEGORY (ID,NAME) values (" + "('C001','Thriller')," + "('C002','Action')," + "('C003','Sci-Fi'),"
-              + "('C004','Fantasy')," + "('C005','Comedy')," + "('C006','Drama')," + "('C007','War'))";
+          "insert into CATEGORY (ID,NAME) values ("
+              + "('C001','Thriller'),"
+              + "('C002','Action'),"
+              + "('C003','Sci-Fi'),"
+              + "('C004','Fantasy'),"
+              + "('C005','Comedy'),"
+              + "('C006','Drama'),"
+              + "('C007','War'))";
       st.execute(categoryFilling);
 
-      String filmFilling = "insert into FILM (ID,TITLE,DIRECTOR,CATEGORY) values (" + "('F001','Pulp Fiction','D001','C002'),"
-          + "('F002','Shutter Island','D002','C001')," + "('F003','The Departed','D002','C001'))";
+      String filmFilling =
+          "insert into FILM (ID,TITLE,DIRECTOR,CATEGORY) values ("
+              + "('F001','Pulp Fiction','D001','C002'),"
+              + "('F002','Shutter Island','D002','C001'),"
+              + "('F003','The Departed','D002','C001'))";
       st.execute(filmFilling);
 
       String actorFilling =
-          "insert into ACTOR (ID,NAME,SURNAME) values (" + "('A001','John','Travolta')," + "('A002','Samuel','Lee Jackson'),"
-              + "('A003','Bruce','Willis')," + "('A004','Leonardo','Di Caprio')," + "('A005','Ben','Kingsley'),"
-              + "('A006','Mark','Ruffalo')," + "('A007','Jack','Nicholson')," + "('A008','Matt','Damon'))";
+          "insert into ACTOR (ID,NAME,SURNAME) values ("
+              + "('A001','John','Travolta'),"
+              + "('A002','Samuel','Lee Jackson'),"
+              + "('A003','Bruce','Willis'),"
+              + "('A004','Leonardo','Di Caprio'),"
+              + "('A005','Ben','Kingsley'),"
+              + "('A006','Mark','Ruffalo'),"
+              + "('A007','Jack','Nicholson'),"
+              + "('A008','Matt','Damon'))";
       st.execute(actorFilling);
 
       String film2actorFilling =
-          "insert into FILM_ACTOR (FILM_ID,ACTOR_ID) values (" + "('F001','A001')," + "('F001','A002')," + "('F001','A003'),"
-              + "('F002','A004')," + "('F002','A005')," + "('F002','A006')," + "('F003','A004')," + "('F003','A007'),"
+          "insert into FILM_ACTOR (FILM_ID,ACTOR_ID) values ("
+              + "('F001','A001'),"
+              + "('F001','A002'),"
+              + "('F001','A003'),"
+              + "('F002','A004'),"
+              + "('F002','A005'),"
+              + "('F002','A006'),"
+              + "('F003','A004'),"
+              + "('F003','A007'),"
               + "('F003','A008'))";
       st.execute(film2actorFilling);
 
-      this.importStrategy
-          .executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "basicDBMapper", null, "java", null, null, null);
-
+      this.importStrategy.executeStrategy(
+          this.sourceDBInfo,
+          this.outOrientGraphUri,
+          "basicDBMapper",
+          null,
+          "java",
+          null,
+          null,
+          null);
 
       /*
        *  Testing context information
@@ -168,12 +203,11 @@ public class OrientDBImportingTest {
       assertEquals(29, context.getStatistics().orientAddedVertices);
       assertEquals(24, context.getStatistics().orientAddedEdges);
 
-
       /*
        *  Testing built OrientDB
        */
 
-      orientGraph = this.context.getOrientDBInstance().open(this.dbName,"admin","admin");
+      orientGraph = this.context.getOrientDBInstance().open(this.dbName, "admin", "admin");
 
       // vertices check
 
@@ -193,9 +227,9 @@ public class OrientDBImportingTest {
       assertEquals(9, orientGraph.countClass("HasActor"));
 
       // vertex properties and connections check
-      Iterator<OEdge>  edgesIt = null;
-      String[] keys = { "id" };
-      String[] values = { "D001" };
+      Iterator<OEdge> edgesIt = null;
+      String[] keys = {"id"};
+      String[] values = {"D001"};
 
       OVertex v = null;
       OResultSet result = OGraphCommands.getVertices(orientGraph, "Director", keys, values);
@@ -492,8 +526,8 @@ public class OrientDBImportingTest {
         fail("Query fail!");
       }
 
-      String[] keys2 = { "filmId", "actorId" };
-      String[] values2 = { "F001", "A001" };
+      String[] keys2 = {"filmId", "actorId"};
+      String[] values2 = {"F001", "A001"};
       result = OGraphCommands.getVertices(orientGraph, "FilmActor", keys2, values2);
       assertTrue(result.hasNext());
       if (result.hasNext()) {
@@ -615,7 +649,5 @@ public class OrientDBImportingTest {
         fail();
       }
     }
-
   }
-
 }

@@ -26,7 +26,4 @@ package com.orientechnologies.teleporter.model;
  * @author Gabriele Ponzi
  * @email <g.ponzi--at--orientdb.com>
  */
-
-public interface ODataSourceSchemaInfo {
-
-}
+public interface ODataSourceSchemaInfo {}

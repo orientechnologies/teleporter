@@ -21,24 +21,22 @@
 package com.orientechnologies.teleporter.model.graphmodel;
 
 import com.orientechnologies.orient.core.record.ODirection;
-
 import java.util.*;
 
 /**
- * It represents an Orient class of a specific type that extends the Orient Vertex Class.
- * It's a simple vertex-type in the graph model.
+ * It represents an Orient class of a specific type that extends the Orient Vertex Class. It's a
+ * simple vertex-type in the graph model.
  *
  * @author Gabriele Ponzi
  * @email <g.ponzi--at--orientdb.com>
  */
-
 public class OVertexType extends OElementType {
 
   private List<OEdgeType> inEdgesType;
   private List<OEdgeType> outEdgesType;
-  private boolean         isFromJoinTable;
-  private Set<String>     externalKey;
-  private boolean         analyzedInLastMigration;
+  private boolean isFromJoinTable;
+  private Set<String> externalKey;
+  private boolean analyzedInLastMigration;
 
   public OVertexType(String vertexType) {
     super(vertexType);
@@ -87,30 +85,25 @@ public class OVertexType extends OElementType {
   public OEdgeType getEdgeByName(String edgeName) {
 
     for (OEdgeType currentEdgeType : this.inEdgesType) {
-      if (currentEdgeType.getName().equals(edgeName))
-        return currentEdgeType;
+      if (currentEdgeType.getName().equals(edgeName)) return currentEdgeType;
     }
 
     for (OEdgeType currentEdgeType : this.outEdgesType) {
-      if (currentEdgeType.getName().equals(edgeName))
-        return currentEdgeType;
+      if (currentEdgeType.getName().equals(edgeName)) return currentEdgeType;
     }
 
     return null;
-
   }
 
   public OEdgeType getEdgeByName(String name, ODirection direction) {
 
     if (direction.equals(ODirection.IN)) {
       for (OEdgeType currentEdgeType : this.inEdgesType) {
-        if (currentEdgeType.getName().equals(name))
-          return currentEdgeType;
+        if (currentEdgeType.getName().equals(name)) return currentEdgeType;
       }
     } else if (direction.equals(ODirection.OUT)) {
       for (OEdgeType currentEdgeType : this.outEdgesType) {
-        if (currentEdgeType.getName().equals(name))
-          return currentEdgeType;
+        if (currentEdgeType.getName().equals(name)) return currentEdgeType;
       }
     } else if (direction.equals(ODirection.BOTH)) {
       return this.getEdgeByName(name);
@@ -145,30 +138,39 @@ public class OVertexType extends OElementType {
       return false;
 
     // check on properties
-    if (!(this.properties.equals(that.getProperties())))
-      return false;
+    if (!(this.properties.equals(that.getProperties()))) return false;
 
     // in&out edges
-    if (!(this.inEdgesType.equals(that.getInEdgesType()) && this.outEdgesType.equals(that.getOutEdgesType())))
-      return false;
+    if (!(this.inEdgesType.equals(that.getInEdgesType())
+        && this.outEdgesType.equals(that.getOutEdgesType()))) return false;
 
     return true;
   }
 
   public String toString() {
     String s =
-        "Vertex-type [type = " + super.name + ", # attributes = " + this.properties.size() + ", # inEdges: " + this.inEdgesType
-            .size() + ", # outEdges: " + this.outEdgesType.size() + "]\nAttributes:\n";
+        "Vertex-type [type = "
+            + super.name
+            + ", # attributes = "
+            + this.properties.size()
+            + ", # inEdges: "
+            + this.inEdgesType.size()
+            + ", # outEdges: "
+            + this.outEdgesType.size()
+            + "]\nAttributes:\n";
 
     for (OModelProperty currentProperty : this.properties) {
-      s += currentProperty.getOrdinalPosition() + ": " + currentProperty.getName() + " --> " + currentProperty.toString();
+      s +=
+          currentProperty.getOrdinalPosition()
+              + ": "
+              + currentProperty.getName()
+              + " --> "
+              + currentProperty.toString();
 
-      if (currentProperty.isFromPrimaryKey())
-        s += "(from PK)";
+      if (currentProperty.isFromPrimaryKey()) s += "(from PK)";
 
       s += "\t";
     }
     return s;
   }
-
 }

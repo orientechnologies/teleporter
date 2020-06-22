@@ -29,11 +29,11 @@ import java.util.Map;
  * @author Gabriele Ponzi
  * @email <g.ponzi--at--orientdb.com>
  */
-
 public class OConfiguredClass {
 
-  protected String name;                                                  // mandatory
-  protected final Map<String, OConfiguredProperty> configuredProperties = new LinkedHashMap<String, OConfiguredProperty>();         // mandatory
+  protected String name; // mandatory
+  protected final Map<String, OConfiguredProperty> configuredProperties =
+      new LinkedHashMap<String, OConfiguredProperty>(); // mandatory
   protected OConfiguration globalConfiguration;
 
   public OConfiguredClass(String elementName, OConfiguration globalConfiguration) {

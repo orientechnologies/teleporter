@@ -24,14 +24,14 @@ package com.orientechnologies.teleporter.configuration.api;
  * @author Gabriele Ponzi
  * @email <g.ponzi--at--orientdb.com>
  */
-
 public class OSplittingEdgeInformation {
 
-  private String fromVertexClass;     // mandatory
-  private String toVertexClass;       // mandatory
-  private String sourceTable;         // mandatory
+  private String fromVertexClass; // mandatory
+  private String toVertexClass; // mandatory
+  private String sourceTable; // mandatory
 
-  public OSplittingEdgeInformation(String fromVertexClass, String toVertexClass, String sourceTable) {
+  public OSplittingEdgeInformation(
+      String fromVertexClass, String toVertexClass, String sourceTable) {
     this.fromVertexClass = fromVertexClass;
     this.toVertexClass = toVertexClass;
     this.sourceTable = sourceTable;
@@ -60,5 +60,4 @@ public class OSplittingEdgeInformation {
   public void setSourceTable(String sourceTable) {
     this.sourceTable = sourceTable;
   }
-
 }

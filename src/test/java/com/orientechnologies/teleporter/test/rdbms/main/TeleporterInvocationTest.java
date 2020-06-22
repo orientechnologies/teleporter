@@ -20,6 +20,8 @@
 
 package com.orientechnologies.teleporter.test.rdbms.main;
 
+import static org.junit.Assert.fail;
+
 import com.orientechnologies.orient.core.Orient;
 import com.orientechnologies.orient.core.serialization.serializer.record.ORecordSerializerFactory;
 import com.orientechnologies.orient.core.serialization.serializer.record.binary.ORecordSerializerBinary;
@@ -29,41 +31,35 @@ import com.orientechnologies.orient.server.OServer;
 import com.orientechnologies.orient.server.OServerMain;
 import com.orientechnologies.teleporter.context.OTeleporterContext;
 import com.orientechnologies.teleporter.util.OFileManager;
-import org.junit.After;
-import org.junit.Before;
-
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.Statement;
 import java.util.HashMap;
 import java.util.Map;
-
-import static org.junit.Assert.fail;
+import org.junit.After;
+import org.junit.Before;
 
 /**
  * @author Gabriele Ponzi
  * @email <g.ponzi--at--orientdb.com>
  */
-
 public abstract class TeleporterInvocationTest {
 
   // arguments
   protected Map<String, String> arguments = new HashMap<String, String>();
-  protected String[]   args;
+  protected String[] args;
   protected Connection dbConnection;
-  protected String driver   = "org.hsqldb.jdbc.JDBCDriver";
-  protected String jurl     = "jdbc:hsqldb:mem:mydb";
+  protected String driver = "org.hsqldb.jdbc.JDBCDriver";
+  protected String jurl = "jdbc:hsqldb:mem:mydb";
   protected String username = "SA";
   protected String password = "";
   protected String dbName = "testOrientDB";
-  protected final String serverHome        = "target/server/";
+  protected final String serverHome = "target/server/";
   protected String outParentDirectory = "embedded:" + this.serverHome + "databases";
   protected OTeleporterContext context = OTeleporterContext.newInstance(this.outParentDirectory);
 
   // server configuration path
   private final String configurationPath = "orientdb-server-config.xml";
-
-
 
   @Before
   public void init() {
@@ -78,12 +74,11 @@ public abstract class TeleporterInvocationTest {
     this.closeEnvironment();
   }
 
-
   protected void buildEnvironmentForExecution() {
     this.buildHSQLDBDatabaseToImport();
     try {
       OServerMain.create();
-      //this.startServer(OServerMain.server());
+      // this.startServer(OServerMain.server());
     } catch (Exception e) {
       fail("Server instance not created correctly.");
     }
@@ -109,51 +104,82 @@ public abstract class TeleporterInvocationTest {
 
       // Tables Building
 
-      String directorTableBuilding = "create memory table DIRECTOR (ID varchar(256) not null, NAME  varchar(256),"
-          + " SURNAME varchar(256) not null, primary key (ID))";
+      String directorTableBuilding =
+          "create memory table DIRECTOR (ID varchar(256) not null, NAME  varchar(256),"
+              + " SURNAME varchar(256) not null, primary key (ID))";
       Statement st = this.dbConnection.createStatement();
       st.execute(directorTableBuilding);
 
-      String categoryTableBuilding = "create memory table CATEGORY (ID varchar(256) not null, NAME  varchar(256), primary key (ID))";
+      String categoryTableBuilding =
+          "create memory table CATEGORY (ID varchar(256) not null, NAME  varchar(256), primary key (ID))";
       st.execute(categoryTableBuilding);
 
-      String filmTableBuilding = "create memory table FILM (ID varchar(256) not null,"
-          + " TITLE varchar(256) not null, DIRECTOR varchar(256) not null, CATEGORY varchar(256) not null," + " primary key (ID), "
-          + " foreign key (DIRECTOR) references DIRECTOR(ID)," + " foreign key (CATEGORY) references CATEGORY(ID))";
+      String filmTableBuilding =
+          "create memory table FILM (ID varchar(256) not null,"
+              + " TITLE varchar(256) not null, DIRECTOR varchar(256) not null, CATEGORY varchar(256) not null,"
+              + " primary key (ID), "
+              + " foreign key (DIRECTOR) references DIRECTOR(ID),"
+              + " foreign key (CATEGORY) references CATEGORY(ID))";
       st.execute(filmTableBuilding);
 
-      String actorTableBuilding = "create memory table ACTOR (ID varchar(256) not null, NAME  varchar(256),"
-          + " SURNAME varchar(256) not null, primary key (ID))";
+      String actorTableBuilding =
+          "create memory table ACTOR (ID varchar(256) not null, NAME  varchar(256),"
+              + " SURNAME varchar(256) not null, primary key (ID))";
       st.execute(actorTableBuilding);
 
-      String film2actorTableBuilding = "create memory table FILM_ACTOR (FILM_ID varchar(256) not null, ACTOR_ID  varchar(256),"
-          + " primary key (FILM_ID,ACTOR_ID), foreign key (FILM_ID) references FILM(ID), foreign key (ACTOR_ID) references ACTOR(ID))";
+      String film2actorTableBuilding =
+          "create memory table FILM_ACTOR (FILM_ID varchar(256) not null, ACTOR_ID  varchar(256),"
+              + " primary key (FILM_ID,ACTOR_ID), foreign key (FILM_ID) references FILM(ID), foreign key (ACTOR_ID) references ACTOR(ID))";
       st.execute(film2actorTableBuilding);
 
       // Records Inserting
 
       String directorFilling =
-          "insert into DIRECTOR (ID,NAME,SURNAME) values (" + "('D001','Quentin','Tarantino')," + "('D002','Martin','Scorsese'))";
+          "insert into DIRECTOR (ID,NAME,SURNAME) values ("
+              + "('D001','Quentin','Tarantino'),"
+              + "('D002','Martin','Scorsese'))";
       st.execute(directorFilling);
 
       String categoryFilling =
-          "insert into CATEGORY (ID,NAME) values (" + "('C001','Thriller')," + "('C002','Action')," + "('C003','Sci-Fi'),"
-              + "('C004','Fantasy')," + "('C005','Comedy')," + "('C006','Drama')," + "('C007','War'))";
+          "insert into CATEGORY (ID,NAME) values ("
+              + "('C001','Thriller'),"
+              + "('C002','Action'),"
+              + "('C003','Sci-Fi'),"
+              + "('C004','Fantasy'),"
+              + "('C005','Comedy'),"
+              + "('C006','Drama'),"
+              + "('C007','War'))";
       st.execute(categoryFilling);
 
-      String filmFilling = "insert into FILM (ID,TITLE,DIRECTOR,CATEGORY) values (" + "('F001','Pulp Fiction','D001','C002'),"
-          + "('F002','Shutter Island','D002','C001')," + "('F003','The Departed','D002','C001'))";
+      String filmFilling =
+          "insert into FILM (ID,TITLE,DIRECTOR,CATEGORY) values ("
+              + "('F001','Pulp Fiction','D001','C002'),"
+              + "('F002','Shutter Island','D002','C001'),"
+              + "('F003','The Departed','D002','C001'))";
       st.execute(filmFilling);
 
       String actorFilling =
-          "insert into ACTOR (ID,NAME,SURNAME) values (" + "('A001','John','Travolta')," + "('A002','Samuel','Lee Jackson'),"
-              + "('A003','Bruce','Willis')," + "('A004','Leonardo','Di Caprio')," + "('A005','Ben','Kingsley'),"
-              + "('A006','Mark','Ruffalo')," + "('A007','Jack','Nicholson')," + "('A008','Matt','Damon'))";
+          "insert into ACTOR (ID,NAME,SURNAME) values ("
+              + "('A001','John','Travolta'),"
+              + "('A002','Samuel','Lee Jackson'),"
+              + "('A003','Bruce','Willis'),"
+              + "('A004','Leonardo','Di Caprio'),"
+              + "('A005','Ben','Kingsley'),"
+              + "('A006','Mark','Ruffalo'),"
+              + "('A007','Jack','Nicholson'),"
+              + "('A008','Matt','Damon'))";
       st.execute(actorFilling);
 
       String film2actorFilling =
-          "insert into FILM_ACTOR (FILM_ID,ACTOR_ID) values (" + "('F001','A001')," + "('F001','A002')," + "('F001','A003'),"
-              + "('F002','A004')," + "('F002','A005')," + "('F002','A006')," + "('F003','A004')," + "('F003','A007'),"
+          "insert into FILM_ACTOR (FILM_ID,ACTOR_ID) values ("
+              + "('F001','A001'),"
+              + "('F001','A002'),"
+              + "('F001','A003'),"
+              + "('F002','A004'),"
+              + "('F002','A005'),"
+              + "('F002','A006'),"
+              + "('F003','A004'),"
+              + "('F003','A007'),"
               + "('F003','A008'))";
       st.execute(film2actorFilling);
     } catch (Exception e) {
@@ -180,17 +206,17 @@ public abstract class TeleporterInvocationTest {
       args[i + 1] = arguments.get(key);
       i = i + 2;
     }
-
   }
 
   protected void closeEnvironment() {
 
     this.closeAndDropSourceDatabase();
-    //this.closeServer(OServerMain.server());
+    // this.closeServer(OServerMain.server());
     this.purgeOrientdbServer();
 
     // REGISTER THE BINARY RECORD SERIALIZER TO SUPPORT ANY OF THE EXTERNAL FIELDS
-    ORecordSerializerFactory.instance().register("ORecordSerializerBinary", new ORecordSerializerBinary());
+    ORecordSerializerFactory.instance()
+        .register("ORecordSerializerBinary", new ORecordSerializerBinary());
   }
 
   public void closeServer(OServer server) {
@@ -202,9 +228,10 @@ public abstract class TeleporterInvocationTest {
 
   public void closeStorages() {
     for (OStorage s : Orient.instance().getStorages()) {
-      if (s instanceof OLocalPaginatedStorage && ((OLocalPaginatedStorage) s).getStoragePath().startsWith(getDatabasePath(""))) {
+      if (s instanceof OLocalPaginatedStorage
+          && ((OLocalPaginatedStorage) s).getStoragePath().startsWith(getDatabasePath(""))) {
         s.close(true, false);
-//        Orient.instance().unregisterStorage(s);
+        //        Orient.instance().unregisterStorage(s);
       }
     }
   }
@@ -222,9 +249,7 @@ public abstract class TeleporterInvocationTest {
       e.printStackTrace();
       fail();
     }
-
   }
-
 
   private void purgeOrientdbServer() {
 
@@ -235,5 +260,4 @@ public abstract class TeleporterInvocationTest {
       fail();
     }
   }
-
 }

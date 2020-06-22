@@ -26,7 +26,6 @@ import com.orientechnologies.orient.output.OPluginMessageHandler;
 import com.orientechnologies.teleporter.importengine.rdbms.dbengine.ODBQueryEngine;
 import com.orientechnologies.teleporter.nameresolver.ONameResolver;
 import com.orientechnologies.teleporter.persistence.handler.ODriverDataTypeHandler;
-
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;
@@ -37,19 +36,18 @@ import java.io.Writer;
  * @author Gabriele Ponzi
  * @email <g.ponzi--at--orientdb.com>
  */
-
 public class OTeleporterContext {
 
   private static OTeleporterContext instance = null;
 
-  private OrientDB               orient;
-  private OTeleporterStatistics  statistics;
-  private OPluginMessageHandler  messageHandler;
+  private OrientDB orient;
+  private OTeleporterStatistics statistics;
+  private OPluginMessageHandler messageHandler;
   private ODriverDataTypeHandler dataTypeHandler;
-  private ONameResolver          nameResolver;
-  private String                 driverDependencyPath;
-  private String                 executionStrategy;
-  private ODBQueryEngine         dbQueryEngine;
+  private ONameResolver nameResolver;
+  private String driverDependencyPath;
+  private String executionStrategy;
+  private ODBQueryEngine dbQueryEngine;
 
   public OTeleporterContext(OrientDB orientDBInstance) {
     this.statistics = new OTeleporterStatistics();
@@ -159,9 +157,8 @@ public class OTeleporterContext {
   }
 
   /**
-   * Prints the error message for a caught exception according to a level passed as argument. It's composed of:
-   * - defined error message
-   * - exception message
+   * Prints the error message for a caught exception according to a level passed as argument. It's
+   * composed of: - defined error message - exception message
    *
    * @param e
    * @param message
@@ -173,36 +170,37 @@ public class OTeleporterContext {
   }
 
   /**
-   * Prints the error message for a caught exception according to a level passed as argument. It's composed of:
-   * - defined error message
-   * - exception message
+   * Prints the error message for a caught exception according to a level passed as argument. It's
+   * composed of: - defined error message - exception message
    *
    * @param e
    * @param message
    * @param level
    * @return printedMessage
    */
-  public static String printExceptionMessage(Object requester, OPluginMessageHandler messageHandler, Exception e, String message,
+  public static String printExceptionMessage(
+      Object requester,
+      OPluginMessageHandler messageHandler,
+      Exception e,
+      String message,
       String level) {
 
-    if (e.getMessage() != null)
-      message += "\n" + e.getClass().getName() + " - " + e.getMessage();
-    else
-      message += "\n" + e.getClass().getName();
+    if (e.getMessage() != null) message += "\n" + e.getClass().getName() + " - " + e.getMessage();
+    else message += "\n" + e.getClass().getName();
 
     switch (level) {
-    case "debug":
-      messageHandler.debug(requester, message);
-      break;
-    case "info":
-      messageHandler.info(requester, message);
-      break;
-    case "warn":
-      messageHandler.warn(requester, message);
-      break;
-    case "error":
-      messageHandler.error(requester, message);
-      break;
+      case "debug":
+        messageHandler.debug(requester, message);
+        break;
+      case "info":
+        messageHandler.info(requester, message);
+        break;
+      case "warn":
+        messageHandler.warn(requester, message);
+        break;
+      case "error":
+        messageHandler.error(requester, message);
+        break;
     }
 
     return message;
@@ -226,7 +224,8 @@ public class OTeleporterContext {
    * @param level
    * @return printedMessage
    */
-  public static String printExceptionStackTrace(Object requester, OPluginMessageHandler messageHandler, Exception e, String level) {
+  public static String printExceptionStackTrace(
+      Object requester, OPluginMessageHandler messageHandler, Exception e, String level) {
 
     // copying the exception stack trace in the string
     Writer writer = new StringWriter();
@@ -234,21 +233,20 @@ public class OTeleporterContext {
     String s = writer.toString();
 
     switch (level) {
-    case "debug":
-      messageHandler.debug(requester, "\n" + s + "\n");
-      break;
-    case "info":
-      messageHandler.info(requester, "\n" + s + "\n");
-      break;
-    case "warn":
-      messageHandler.warn(requester, "\n" + s + "\n");
-      break;
-    case "error":
-      messageHandler.error(requester, "\n" + s + "\n");
-      break;
+      case "debug":
+        messageHandler.debug(requester, "\n" + s + "\n");
+        break;
+      case "info":
+        messageHandler.info(requester, "\n" + s + "\n");
+        break;
+      case "warn":
+        messageHandler.warn(requester, "\n" + s + "\n");
+        break;
+      case "error":
+        messageHandler.error(requester, "\n" + s + "\n");
+        break;
     }
 
     return s;
   }
-
 }

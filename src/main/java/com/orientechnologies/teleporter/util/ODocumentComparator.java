@@ -21,19 +21,16 @@
 package com.orientechnologies.teleporter.util;
 
 import com.orientechnologies.orient.core.record.impl.ODocument;
-
 import java.util.Arrays;
 import java.util.List;
 
-/**
- * Created by gabriele on 05/10/16.
- */
+/** Created by gabriele on 05/10/16. */
 public class ODocumentComparator {
   private static int invocation = 0;
 
   public static boolean areEquals(ODocument doc1, ODocument doc2) {
 
-    //JSONDocument doc1 = new JSONDocument()
+    // JSONDocument doc1 = new JSONDocument()
 
     List<String> doc1FieldNames = Arrays.asList(doc1.fieldNames());
     List<String> doc2FieldNames = Arrays.asList(doc2.fieldNames());
@@ -59,7 +56,7 @@ public class ODocumentComparator {
           || (doc1CurrValue instanceof ODocument) && !(doc2CurrValue instanceof ODocument)) {
         return false;
       } else if (!(doc1CurrValue instanceof ODocument) && !(doc2CurrValue instanceof ODocument)) {
-        if (!doc1CurrValue.equals(doc2CurrValue)) {  //???? primitives ????
+        if (!doc1CurrValue.equals(doc2CurrValue)) { // ???? primitives ????
           return false;
         }
       } else if (doc1CurrValue instanceof ODocument && doc2CurrValue instanceof ODocument) {
@@ -71,7 +68,8 @@ public class ODocumentComparator {
     return true;
   }
 
-  private static boolean areListEquals(List<ODocument> doc1CurrValues, List<ODocument> doc2CurrValues) {
+  private static boolean areListEquals(
+      List<ODocument> doc1CurrValues, List<ODocument> doc2CurrValues) {
 
     if (doc1CurrValues.size() != doc2CurrValues.size()) {
       return false;
@@ -81,12 +79,15 @@ public class ODocumentComparator {
       boolean docPresentInSecondList = false;
 
       for (Object currentDocFromList2 : doc2CurrValues) {
-        if (!(currentDocFromList1 instanceof ODocument) && (currentDocFromList2 instanceof ODocument)
-            || (currentDocFromList1 instanceof ODocument) && !(currentDocFromList2 instanceof ODocument)) {
+        if (!(currentDocFromList1 instanceof ODocument)
+                && (currentDocFromList2 instanceof ODocument)
+            || (currentDocFromList1 instanceof ODocument)
+                && !(currentDocFromList2 instanceof ODocument)) {
           continue;
         }
-        if (!(currentDocFromList1 instanceof ODocument) && !(currentDocFromList2 instanceof ODocument)) {
-          if (currentDocFromList1.equals(currentDocFromList2)) {  //???? primitives ????
+        if (!(currentDocFromList1 instanceof ODocument)
+            && !(currentDocFromList2 instanceof ODocument)) {
+          if (currentDocFromList1.equals(currentDocFromList2)) { // ???? primitives ????
             docPresentInSecondList = true;
             break;
           }

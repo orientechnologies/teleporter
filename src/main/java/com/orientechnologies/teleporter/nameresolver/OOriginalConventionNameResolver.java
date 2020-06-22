@@ -28,7 +28,6 @@ import com.orientechnologies.teleporter.model.dbschema.OCanonicalRelationship;
  * @author Gabriele Ponzi
  * @email <g.ponzi--at--orientdb.com>
  */
-
 public class OOriginalConventionNameResolver implements ONameResolver {
 
   @Override
@@ -66,10 +65,12 @@ public class OOriginalConventionNameResolver implements ONameResolver {
 
     // Foreign Key composed of multiple attribute
     else {
-      finalName = relationship.getForeignEntity().getName() + "2" + relationship.getParentEntity().getName();
+      finalName =
+          relationship.getForeignEntity().getName()
+              + "2"
+              + relationship.getParentEntity().getName();
     }
 
     return finalName;
   }
-
 }

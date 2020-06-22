@@ -20,10 +20,7 @@
 
 package com.orientechnologies.teleporter.http.handler;
 
-/**
- * Created by Enrico Risa on 27/11/15.
- */
-
+/** Created by Enrico Risa on 27/11/15. */
 public interface OTeleporterListener {
 
   public void onEnd(OTeleporterJob oTeleporterJob);

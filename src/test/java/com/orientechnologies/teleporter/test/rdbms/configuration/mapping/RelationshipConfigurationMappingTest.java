@@ -20,6 +20,8 @@
 
 package com.orientechnologies.teleporter.test.rdbms.configuration.mapping;
 
+import static org.junit.Assert.*;
+
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.teleporter.configuration.OConfigurationHandler;
 import com.orientechnologies.teleporter.configuration.api.OConfiguration;
@@ -37,32 +39,33 @@ import com.orientechnologies.teleporter.model.graphmodel.OVertexType;
 import com.orientechnologies.teleporter.nameresolver.OJavaConventionNameResolver;
 import com.orientechnologies.teleporter.persistence.handler.OHSQLDBDataTypeHandler;
 import com.orientechnologies.teleporter.util.OFileManager;
-import org.junit.Before;
-
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.Statement;
 import java.util.Iterator;
-
-import static org.junit.Assert.*;
+import org.junit.Before;
 
 /**
  * @author Gabriele Ponzi
  * @email <g.ponzi--at--orientdb.com>
  */
-
 public class RelationshipConfigurationMappingTest {
 
-  private OER2GraphMapper    mapper;
+  private OER2GraphMapper mapper;
   private OTeleporterContext context;
-  private final String configDirectEdgesPath            = "src/test/resources/configuration-mapping/relationships-mapping-direct-edges.json";
-  private final String configInverseEdgesPath           = "src/test/resources/configuration-mapping/relationships-mapping-inverted-edges.json";
-  private final String configJoinTableDirectEdgesPath   = "src/test/resources/configuration-mapping/joint-table-relationships-mapping-direct-edges.json";
-  private final String configJoinTableInverseEdgesPath  = "src/test/resources/configuration-mapping/joint-table-relationships-mapping-inverted-edges.json";
-  private final String configJoinTableInverseEdgesPath2 = "src/test/resources/configuration-mapping/join-table-relationship-mapping-inverted-edges2.json";
+  private final String configDirectEdgesPath =
+      "src/test/resources/configuration-mapping/relationships-mapping-direct-edges.json";
+  private final String configInverseEdgesPath =
+      "src/test/resources/configuration-mapping/relationships-mapping-inverted-edges.json";
+  private final String configJoinTableDirectEdgesPath =
+      "src/test/resources/configuration-mapping/joint-table-relationships-mapping-direct-edges.json";
+  private final String configJoinTableInverseEdgesPath =
+      "src/test/resources/configuration-mapping/joint-table-relationships-mapping-inverted-edges.json";
+  private final String configJoinTableInverseEdgesPath2 =
+      "src/test/resources/configuration-mapping/join-table-relationship-mapping-inverted-edges2.json";
   private ODBQueryEngine dbQueryEngine;
-  private String driver   = "org.hsqldb.jdbc.JDBCDriver";
-  private String jurl     = "jdbc:hsqldb:mem:mydb";
+  private String driver = "org.hsqldb.jdbc.JDBCDriver";
+  private String jurl = "jdbc:hsqldb:mem:mydb";
   private String username = "SA";
   private String password = "";
   private OSourceDatabaseInfo sourceDBInfo;
@@ -76,10 +79,11 @@ public class RelationshipConfigurationMappingTest {
     this.context.setMessageHandler(new OTeleporterMessageHandler(0));
     this.context.setNameResolver(new OJavaConventionNameResolver());
     this.context.setDataTypeHandler(new OHSQLDBDataTypeHandler());
-    this.sourceDBInfo = new OSourceDatabaseInfo("source", this.driver, this.jurl, this.username, this.password);
+    this.sourceDBInfo =
+        new OSourceDatabaseInfo("source", this.driver, this.jurl, this.username, this.password);
   }
 
-  //@Test
+  // @Test
 
   /*
    *  Two tables: 2 relationships not declared through foreign keys.
@@ -105,13 +109,15 @@ public class RelationshipConfigurationMappingTest {
       Class.forName(this.driver);
       connection = DriverManager.getConnection(this.jurl, this.username, this.password);
 
-      String parentTableBuilding = "create memory table EMPLOYEE (EMP_ID varchar(256) not null,"
-          + " FIRST_NAME varchar(256) not null, LAST_NAME varchar(256) not null, PROJECT varchar(256) not null, primary key (EMP_ID))";
+      String parentTableBuilding =
+          "create memory table EMPLOYEE (EMP_ID varchar(256) not null,"
+              + " FIRST_NAME varchar(256) not null, LAST_NAME varchar(256) not null, PROJECT varchar(256) not null, primary key (EMP_ID))";
       st = connection.createStatement();
       st.execute(parentTableBuilding);
 
-      String foreignTableBuilding = "create memory table PROJECT (ID  varchar(256),"
-          + " TITLE varchar(256) not null, PROJECT_MANAGER varchar(256) not null, primary key (ID))";
+      String foreignTableBuilding =
+          "create memory table PROJECT (ID  varchar(256),"
+              + " TITLE varchar(256) not null, PROJECT_MANAGER varchar(256) not null, primary key (ID))";
       st.execute(foreignTableBuilding);
 
       ODocument config = OFileManager.buildJsonFromFile(this.configDirectEdgesPath);
@@ -122,7 +128,6 @@ public class RelationshipConfigurationMappingTest {
       mapper.buildSourceDatabaseSchema();
       mapper.buildGraphModel(new OJavaConventionNameResolver());
       mapper.applyImportConfiguration();
-
 
       /*
        *  Testing context information
@@ -138,7 +143,7 @@ public class RelationshipConfigurationMappingTest {
       assertEquals(2, context.getStatistics().totalNumberOfModelEdges);
       assertEquals(2, context.getStatistics().builtModelEdgeTypes);
 
-       /*
+      /*
        *  Testing built source db schema
        */
 
@@ -158,25 +163,31 @@ public class RelationshipConfigurationMappingTest {
       assertEquals("EMP_ID", employeeEntity.getAttributeByName("EMP_ID").getName());
       assertEquals("VARCHAR", employeeEntity.getAttributeByName("EMP_ID").getDataType());
       assertEquals(1, employeeEntity.getAttributeByName("EMP_ID").getOrdinalPosition());
-      assertEquals("EMPLOYEE", employeeEntity.getAttributeByName("EMP_ID").getBelongingEntity().getName());
+      assertEquals(
+          "EMPLOYEE", employeeEntity.getAttributeByName("EMP_ID").getBelongingEntity().getName());
 
       assertNotNull(employeeEntity.getAttributeByName("FIRST_NAME"));
       assertEquals("FIRST_NAME", employeeEntity.getAttributeByName("FIRST_NAME").getName());
       assertEquals("VARCHAR", employeeEntity.getAttributeByName("FIRST_NAME").getDataType());
       assertEquals(2, employeeEntity.getAttributeByName("FIRST_NAME").getOrdinalPosition());
-      assertEquals("EMPLOYEE", employeeEntity.getAttributeByName("FIRST_NAME").getBelongingEntity().getName());
+      assertEquals(
+          "EMPLOYEE",
+          employeeEntity.getAttributeByName("FIRST_NAME").getBelongingEntity().getName());
 
       assertNotNull(employeeEntity.getAttributeByName("LAST_NAME"));
       assertEquals("LAST_NAME", employeeEntity.getAttributeByName("LAST_NAME").getName());
       assertEquals("VARCHAR", employeeEntity.getAttributeByName("LAST_NAME").getDataType());
       assertEquals(3, employeeEntity.getAttributeByName("LAST_NAME").getOrdinalPosition());
-      assertEquals("EMPLOYEE", employeeEntity.getAttributeByName("LAST_NAME").getBelongingEntity().getName());
+      assertEquals(
+          "EMPLOYEE",
+          employeeEntity.getAttributeByName("LAST_NAME").getBelongingEntity().getName());
 
       assertNotNull(employeeEntity.getAttributeByName("PROJECT"));
       assertEquals("PROJECT", employeeEntity.getAttributeByName("PROJECT").getName());
       assertEquals("VARCHAR", employeeEntity.getAttributeByName("PROJECT").getDataType());
       assertEquals(4, employeeEntity.getAttributeByName("PROJECT").getOrdinalPosition());
-      assertEquals("EMPLOYEE", employeeEntity.getAttributeByName("PROJECT").getBelongingEntity().getName());
+      assertEquals(
+          "EMPLOYEE", employeeEntity.getAttributeByName("PROJECT").getBelongingEntity().getName());
 
       assertEquals(3, projectEntity.getAttributes().size());
 
@@ -184,19 +195,24 @@ public class RelationshipConfigurationMappingTest {
       assertEquals("ID", projectEntity.getAttributeByName("ID").getName());
       assertEquals("VARCHAR", projectEntity.getAttributeByName("ID").getDataType());
       assertEquals(1, projectEntity.getAttributeByName("ID").getOrdinalPosition());
-      assertEquals("PROJECT", projectEntity.getAttributeByName("ID").getBelongingEntity().getName());
+      assertEquals(
+          "PROJECT", projectEntity.getAttributeByName("ID").getBelongingEntity().getName());
 
       assertNotNull(projectEntity.getAttributeByName("TITLE"));
       assertEquals("TITLE", projectEntity.getAttributeByName("TITLE").getName());
       assertEquals("VARCHAR", projectEntity.getAttributeByName("TITLE").getDataType());
       assertEquals(2, projectEntity.getAttributeByName("TITLE").getOrdinalPosition());
-      assertEquals("PROJECT", projectEntity.getAttributeByName("TITLE").getBelongingEntity().getName());
+      assertEquals(
+          "PROJECT", projectEntity.getAttributeByName("TITLE").getBelongingEntity().getName());
 
       assertNotNull(projectEntity.getAttributeByName("PROJECT_MANAGER"));
-      assertEquals("PROJECT_MANAGER", projectEntity.getAttributeByName("PROJECT_MANAGER").getName());
+      assertEquals(
+          "PROJECT_MANAGER", projectEntity.getAttributeByName("PROJECT_MANAGER").getName());
       assertEquals("VARCHAR", projectEntity.getAttributeByName("PROJECT_MANAGER").getDataType());
       assertEquals(3, projectEntity.getAttributeByName("PROJECT_MANAGER").getOrdinalPosition());
-      assertEquals("PROJECT", projectEntity.getAttributeByName("PROJECT_MANAGER").getBelongingEntity().getName());
+      assertEquals(
+          "PROJECT",
+          projectEntity.getAttributeByName("PROJECT_MANAGER").getBelongingEntity().getName());
 
       // relationship, primary and foreign key check
       assertEquals(2, mapper.getDataBaseSchema().getCanonicalRelationships().size());
@@ -214,12 +230,16 @@ public class RelationshipConfigurationMappingTest {
       assertEquals(employeeEntity.getPrimaryKey(), currentRelationship.getPrimaryKey());
       assertEquals(projectEntity.getForeignKeys().get(0), currentRelationship.getForeignKey());
 
-      Iterator<OCanonicalRelationship> it2 = employeeEntity.getInCanonicalRelationships().iterator();
+      Iterator<OCanonicalRelationship> it2 =
+          employeeEntity.getInCanonicalRelationships().iterator();
       OCanonicalRelationship currentRelationship2 = it2.next();
       assertEquals(currentRelationship, currentRelationship2);
 
-      assertEquals("PROJECT_MANAGER", projectEntity.getForeignKeys().get(0).getInvolvedAttributes().get(0).getName());
-      assertEquals("EMP_ID", employeeEntity.getPrimaryKey().getInvolvedAttributes().get(0).getName());
+      assertEquals(
+          "PROJECT_MANAGER",
+          projectEntity.getForeignKeys().get(0).getInvolvedAttributes().get(0).getName());
+      assertEquals(
+          "EMP_ID", employeeEntity.getPrimaryKey().getInvolvedAttributes().get(0).getName());
 
       assertFalse(it.hasNext());
 
@@ -234,11 +254,12 @@ public class RelationshipConfigurationMappingTest {
       currentRelationship2 = it2.next();
       assertEquals(currentRelationship, currentRelationship2);
 
-      assertEquals("PROJECT", employeeEntity.getForeignKeys().get(0).getInvolvedAttributes().get(0).getName());
+      assertEquals(
+          "PROJECT",
+          employeeEntity.getForeignKeys().get(0).getInvolvedAttributes().get(0).getName());
       assertEquals("ID", projectEntity.getPrimaryKey().getInvolvedAttributes().get(0).getName());
 
       assertFalse(it.hasNext());
-
 
       /*
        *  Testing built graph model
@@ -300,8 +321,10 @@ public class RelationshipConfigurationMappingTest {
       assertEquals(false, projectVertexType.getPropertyByName("title").isFromPrimaryKey());
 
       assertNotNull(projectVertexType.getPropertyByName("projectManager"));
-      assertEquals("projectManager", projectVertexType.getPropertyByName("projectManager").getName());
-      assertEquals("VARCHAR", projectVertexType.getPropertyByName("projectManager").getOriginalType());
+      assertEquals(
+          "projectManager", projectVertexType.getPropertyByName("projectManager").getName());
+      assertEquals(
+          "VARCHAR", projectVertexType.getPropertyByName("projectManager").getOriginalType());
       assertEquals(3, projectVertexType.getPropertyByName("projectManager").getOrdinalPosition());
       assertEquals(false, projectVertexType.getPropertyByName("projectManager").isFromPrimaryKey());
 
@@ -357,7 +380,8 @@ public class RelationshipConfigurationMappingTest {
       assertEquals(2, mapper.getEntity2EVClassMappers().size());
 
       assertEquals(1, mapper.getEVClassMappersByVertex(employeeVertexType).size());
-      OEVClassMapper employeeClassMapper = mapper.getEVClassMappersByVertex(employeeVertexType).get(0);
+      OEVClassMapper employeeClassMapper =
+          mapper.getEVClassMappersByVertex(employeeVertexType).get(0);
       assertEquals(1, mapper.getEVClassMappersByEntity(employeeEntity).size());
       assertEquals(employeeClassMapper, mapper.getEVClassMappersByEntity(employeeEntity).get(0));
       assertEquals(employeeClassMapper.getEntity(), employeeEntity);
@@ -375,9 +399,11 @@ public class RelationshipConfigurationMappingTest {
       assertEquals("PROJECT", employeeClassMapper.getProperty2attribute().get("project"));
 
       assertEquals(1, mapper.getEVClassMappersByVertex(projectVertexType).size());
-      OEVClassMapper projectEmployeeClassMapper = mapper.getEVClassMappersByVertex(projectVertexType).get(0);
+      OEVClassMapper projectEmployeeClassMapper =
+          mapper.getEVClassMappersByVertex(projectVertexType).get(0);
       assertEquals(1, mapper.getEVClassMappersByEntity(projectEntity).size());
-      assertEquals(projectEmployeeClassMapper, mapper.getEVClassMappersByEntity(projectEntity).get(0));
+      assertEquals(
+          projectEmployeeClassMapper, mapper.getEVClassMappersByEntity(projectEntity).get(0));
       assertEquals(projectEmployeeClassMapper.getEntity(), projectEntity);
       assertEquals(projectEmployeeClassMapper.getVertexType(), projectVertexType);
 
@@ -385,14 +411,19 @@ public class RelationshipConfigurationMappingTest {
       assertEquals(3, projectEmployeeClassMapper.getProperty2attribute().size());
       assertEquals("id", projectEmployeeClassMapper.getAttribute2property().get("ID"));
       assertEquals("title", projectEmployeeClassMapper.getAttribute2property().get("TITLE"));
-      assertEquals("projectManager", projectEmployeeClassMapper.getAttribute2property().get("PROJECT_MANAGER"));
+      assertEquals(
+          "projectManager",
+          projectEmployeeClassMapper.getAttribute2property().get("PROJECT_MANAGER"));
       assertEquals("ID", projectEmployeeClassMapper.getProperty2attribute().get("id"));
       assertEquals("TITLE", projectEmployeeClassMapper.getProperty2attribute().get("title"));
-      assertEquals("PROJECT_MANAGER", projectEmployeeClassMapper.getProperty2attribute().get("projectManager"));
+      assertEquals(
+          "PROJECT_MANAGER",
+          projectEmployeeClassMapper.getProperty2attribute().get("projectManager"));
 
       // Relationships-Edges Mapping
 
-      Iterator<OCanonicalRelationship> itRelationships = employeeEntity.getOutCanonicalRelationships().iterator();
+      Iterator<OCanonicalRelationship> itRelationships =
+          employeeEntity.getOutCanonicalRelationships().iterator();
       OCanonicalRelationship worksAtRelationship = itRelationships.next();
       assertFalse(itRelationships.hasNext());
 
@@ -401,14 +432,24 @@ public class RelationshipConfigurationMappingTest {
       assertFalse(itRelationships.hasNext());
 
       assertEquals(2, mapper.getRelationship2edgeType().size());
-      assertEquals(hasManagerEdgeType, mapper.getRelationship2edgeType().get(hasManagerRelationship));
-      assertEquals(worksAtProjectEdgeType, mapper.getRelationship2edgeType().get(worksAtRelationship));
+      assertEquals(
+          hasManagerEdgeType, mapper.getRelationship2edgeType().get(hasManagerRelationship));
+      assertEquals(
+          worksAtProjectEdgeType, mapper.getRelationship2edgeType().get(worksAtRelationship));
 
       assertEquals(2, mapper.getEdgeType2relationships().size());
       assertEquals(1, mapper.getEdgeType2relationships().get(hasManagerEdgeType).size());
-      assertTrue(mapper.getEdgeType2relationships().get(hasManagerEdgeType).contains(hasManagerRelationship));
+      assertTrue(
+          mapper
+              .getEdgeType2relationships()
+              .get(hasManagerEdgeType)
+              .contains(hasManagerRelationship));
       assertEquals(1, mapper.getEdgeType2relationships().get(worksAtProjectEdgeType).size());
-      assertTrue(mapper.getEdgeType2relationships().get(worksAtProjectEdgeType).contains(worksAtRelationship));
+      assertTrue(
+          mapper
+              .getEdgeType2relationships()
+              .get(worksAtProjectEdgeType)
+              .contains(worksAtRelationship));
 
       // JoinVertexes-AggregatorEdges Mapping
 
@@ -431,7 +472,7 @@ public class RelationshipConfigurationMappingTest {
     }
   }
 
-  //@Test
+  // @Test
 
   /*
    *  Two tables: 2 relationships declared through foreign keys but the first one is overridden through a migrationConfigDoc.
@@ -470,14 +511,16 @@ public class RelationshipConfigurationMappingTest {
       Class.forName(this.driver);
       connection = DriverManager.getConnection(this.jurl, this.username, this.password);
 
-      String parentTableBuilding = "create memory table EMPLOYEE (EMP_ID varchar(256) not null,"
-          + " FIRST_NAME varchar(256) not null, LAST_NAME varchar(256) not null, PROJECT varchar(256) not null, primary key (EMP_ID))";
+      String parentTableBuilding =
+          "create memory table EMPLOYEE (EMP_ID varchar(256) not null,"
+              + " FIRST_NAME varchar(256) not null, LAST_NAME varchar(256) not null, PROJECT varchar(256) not null, primary key (EMP_ID))";
       st = connection.createStatement();
       st.execute(parentTableBuilding);
 
-      String foreignTableBuilding = "create memory table PROJECT (ID  varchar(256),"
-          + " TITLE varchar(256) not null, PROJECT_MANAGER varchar(256) not null, primary key (ID), "
-          + "foreign key (PROJECT_MANAGER) references EMPLOYEE(EMP_ID))";
+      String foreignTableBuilding =
+          "create memory table PROJECT (ID  varchar(256),"
+              + " TITLE varchar(256) not null, PROJECT_MANAGER varchar(256) not null, primary key (ID), "
+              + "foreign key (PROJECT_MANAGER) references EMPLOYEE(EMP_ID))";
       st.execute(foreignTableBuilding);
 
       parentTableBuilding = "alter table EMPLOYEE add foreign key (PROJECT) references PROJECT(ID)";
@@ -492,7 +535,6 @@ public class RelationshipConfigurationMappingTest {
       mapper.buildSourceDatabaseSchema();
       mapper.buildGraphModel(new OJavaConventionNameResolver());
       mapper.applyImportConfiguration();
-
 
       /*
        *  Testing context information
@@ -528,25 +570,31 @@ public class RelationshipConfigurationMappingTest {
       assertEquals("EMP_ID", employeeEntity.getAttributeByName("EMP_ID").getName());
       assertEquals("VARCHAR", employeeEntity.getAttributeByName("EMP_ID").getDataType());
       assertEquals(1, employeeEntity.getAttributeByName("EMP_ID").getOrdinalPosition());
-      assertEquals("EMPLOYEE", employeeEntity.getAttributeByName("EMP_ID").getBelongingEntity().getName());
+      assertEquals(
+          "EMPLOYEE", employeeEntity.getAttributeByName("EMP_ID").getBelongingEntity().getName());
 
       assertNotNull(employeeEntity.getAttributeByName("FIRST_NAME"));
       assertEquals("FIRST_NAME", employeeEntity.getAttributeByName("FIRST_NAME").getName());
       assertEquals("VARCHAR", employeeEntity.getAttributeByName("FIRST_NAME").getDataType());
       assertEquals(2, employeeEntity.getAttributeByName("FIRST_NAME").getOrdinalPosition());
-      assertEquals("EMPLOYEE", employeeEntity.getAttributeByName("FIRST_NAME").getBelongingEntity().getName());
+      assertEquals(
+          "EMPLOYEE",
+          employeeEntity.getAttributeByName("FIRST_NAME").getBelongingEntity().getName());
 
       assertNotNull(employeeEntity.getAttributeByName("LAST_NAME"));
       assertEquals("LAST_NAME", employeeEntity.getAttributeByName("LAST_NAME").getName());
       assertEquals("VARCHAR", employeeEntity.getAttributeByName("LAST_NAME").getDataType());
       assertEquals(3, employeeEntity.getAttributeByName("LAST_NAME").getOrdinalPosition());
-      assertEquals("EMPLOYEE", employeeEntity.getAttributeByName("LAST_NAME").getBelongingEntity().getName());
+      assertEquals(
+          "EMPLOYEE",
+          employeeEntity.getAttributeByName("LAST_NAME").getBelongingEntity().getName());
 
       assertNotNull(employeeEntity.getAttributeByName("PROJECT"));
       assertEquals("PROJECT", employeeEntity.getAttributeByName("PROJECT").getName());
       assertEquals("VARCHAR", employeeEntity.getAttributeByName("PROJECT").getDataType());
       assertEquals(4, employeeEntity.getAttributeByName("PROJECT").getOrdinalPosition());
-      assertEquals("EMPLOYEE", employeeEntity.getAttributeByName("PROJECT").getBelongingEntity().getName());
+      assertEquals(
+          "EMPLOYEE", employeeEntity.getAttributeByName("PROJECT").getBelongingEntity().getName());
 
       assertEquals(3, projectEntity.getAttributes().size());
 
@@ -554,19 +602,24 @@ public class RelationshipConfigurationMappingTest {
       assertEquals("ID", projectEntity.getAttributeByName("ID").getName());
       assertEquals("VARCHAR", projectEntity.getAttributeByName("ID").getDataType());
       assertEquals(1, projectEntity.getAttributeByName("ID").getOrdinalPosition());
-      assertEquals("PROJECT", projectEntity.getAttributeByName("ID").getBelongingEntity().getName());
+      assertEquals(
+          "PROJECT", projectEntity.getAttributeByName("ID").getBelongingEntity().getName());
 
       assertNotNull(projectEntity.getAttributeByName("TITLE"));
       assertEquals("TITLE", projectEntity.getAttributeByName("TITLE").getName());
       assertEquals("VARCHAR", projectEntity.getAttributeByName("TITLE").getDataType());
       assertEquals(2, projectEntity.getAttributeByName("TITLE").getOrdinalPosition());
-      assertEquals("PROJECT", projectEntity.getAttributeByName("TITLE").getBelongingEntity().getName());
+      assertEquals(
+          "PROJECT", projectEntity.getAttributeByName("TITLE").getBelongingEntity().getName());
 
       assertNotNull(projectEntity.getAttributeByName("PROJECT_MANAGER"));
-      assertEquals("PROJECT_MANAGER", projectEntity.getAttributeByName("PROJECT_MANAGER").getName());
+      assertEquals(
+          "PROJECT_MANAGER", projectEntity.getAttributeByName("PROJECT_MANAGER").getName());
       assertEquals("VARCHAR", projectEntity.getAttributeByName("PROJECT_MANAGER").getDataType());
       assertEquals(3, projectEntity.getAttributeByName("PROJECT_MANAGER").getOrdinalPosition());
-      assertEquals("PROJECT", projectEntity.getAttributeByName("PROJECT_MANAGER").getBelongingEntity().getName());
+      assertEquals(
+          "PROJECT",
+          projectEntity.getAttributeByName("PROJECT_MANAGER").getBelongingEntity().getName());
 
       // relationship, primary and foreign key check
       assertEquals(2, mapper.getDataBaseSchema().getCanonicalRelationships().size());
@@ -584,12 +637,16 @@ public class RelationshipConfigurationMappingTest {
       assertEquals(employeeEntity.getPrimaryKey(), currentRelationship.getPrimaryKey());
       assertEquals(projectEntity.getForeignKeys().get(0), currentRelationship.getForeignKey());
 
-      Iterator<OCanonicalRelationship> it2 = employeeEntity.getInCanonicalRelationships().iterator();
+      Iterator<OCanonicalRelationship> it2 =
+          employeeEntity.getInCanonicalRelationships().iterator();
       OCanonicalRelationship currentRelationship2 = it2.next();
       assertEquals(currentRelationship, currentRelationship2);
 
-      assertEquals("PROJECT_MANAGER", projectEntity.getForeignKeys().get(0).getInvolvedAttributes().get(0).getName());
-      assertEquals("EMP_ID", employeeEntity.getPrimaryKey().getInvolvedAttributes().get(0).getName());
+      assertEquals(
+          "PROJECT_MANAGER",
+          projectEntity.getForeignKeys().get(0).getInvolvedAttributes().get(0).getName());
+      assertEquals(
+          "EMP_ID", employeeEntity.getPrimaryKey().getInvolvedAttributes().get(0).getName());
 
       assertFalse(it.hasNext());
 
@@ -604,11 +661,12 @@ public class RelationshipConfigurationMappingTest {
       currentRelationship2 = it2.next();
       assertEquals(currentRelationship, currentRelationship2);
 
-      assertEquals("PROJECT", employeeEntity.getForeignKeys().get(0).getInvolvedAttributes().get(0).getName());
+      assertEquals(
+          "PROJECT",
+          employeeEntity.getForeignKeys().get(0).getInvolvedAttributes().get(0).getName());
       assertEquals("ID", projectEntity.getPrimaryKey().getInvolvedAttributes().get(0).getName());
 
       assertFalse(it.hasNext());
-
 
       /*
        *  Testing built graph model
@@ -617,7 +675,8 @@ public class RelationshipConfigurationMappingTest {
       OVertexType employeeVertexType = mapper.getGraphModel().getVertexTypeByName("Employee");
       OVertexType projectVertexType = mapper.getGraphModel().getVertexTypeByName("Project");
       OEdgeType hasEmployeeEdgeType = mapper.getGraphModel().getEdgeTypeByName("HasEmployee");
-      OEdgeType hasProjectManagerEdgeType = mapper.getGraphModel().getEdgeTypeByName("HasProjectManager");
+      OEdgeType hasProjectManagerEdgeType =
+          mapper.getGraphModel().getEdgeTypeByName("HasProjectManager");
 
       // vertices check
       assertEquals(2, mapper.getGraphModel().getVerticesType().size());
@@ -671,8 +730,10 @@ public class RelationshipConfigurationMappingTest {
       assertEquals(false, projectVertexType.getPropertyByName("title").isFromPrimaryKey());
 
       assertNotNull(projectVertexType.getPropertyByName("projectManager"));
-      assertEquals("projectManager", projectVertexType.getPropertyByName("projectManager").getName());
-      assertEquals("VARCHAR", projectVertexType.getPropertyByName("projectManager").getOriginalType());
+      assertEquals(
+          "projectManager", projectVertexType.getPropertyByName("projectManager").getName());
+      assertEquals(
+          "VARCHAR", projectVertexType.getPropertyByName("projectManager").getOriginalType());
       assertEquals(3, projectVertexType.getPropertyByName("projectManager").getOrdinalPosition());
       assertEquals(false, projectVertexType.getPropertyByName("projectManager").isFromPrimaryKey());
 
@@ -717,7 +778,8 @@ public class RelationshipConfigurationMappingTest {
       assertEquals(2, mapper.getEntity2EVClassMappers().size());
 
       assertEquals(1, mapper.getEVClassMappersByVertex(employeeVertexType).size());
-      OEVClassMapper employeeClassMapper = mapper.getEVClassMappersByVertex(employeeVertexType).get(0);
+      OEVClassMapper employeeClassMapper =
+          mapper.getEVClassMappersByVertex(employeeVertexType).get(0);
       assertEquals(1, mapper.getEVClassMappersByEntity(employeeEntity).size());
       assertEquals(employeeClassMapper, mapper.getEVClassMappersByEntity(employeeEntity).get(0));
       assertEquals(employeeClassMapper.getEntity(), employeeEntity);
@@ -735,9 +797,11 @@ public class RelationshipConfigurationMappingTest {
       assertEquals("PROJECT", employeeClassMapper.getProperty2attribute().get("project"));
 
       assertEquals(1, mapper.getEVClassMappersByVertex(projectVertexType).size());
-      OEVClassMapper projectEmployeeClassMapper = mapper.getEVClassMappersByVertex(projectVertexType).get(0);
+      OEVClassMapper projectEmployeeClassMapper =
+          mapper.getEVClassMappersByVertex(projectVertexType).get(0);
       assertEquals(1, mapper.getEVClassMappersByEntity(projectEntity).size());
-      assertEquals(projectEmployeeClassMapper, mapper.getEVClassMappersByEntity(projectEntity).get(0));
+      assertEquals(
+          projectEmployeeClassMapper, mapper.getEVClassMappersByEntity(projectEntity).get(0));
       assertEquals(projectEmployeeClassMapper.getEntity(), projectEntity);
       assertEquals(projectEmployeeClassMapper.getVertexType(), projectVertexType);
 
@@ -745,14 +809,19 @@ public class RelationshipConfigurationMappingTest {
       assertEquals(3, projectEmployeeClassMapper.getProperty2attribute().size());
       assertEquals("id", projectEmployeeClassMapper.getAttribute2property().get("ID"));
       assertEquals("title", projectEmployeeClassMapper.getAttribute2property().get("TITLE"));
-      assertEquals("projectManager", projectEmployeeClassMapper.getAttribute2property().get("PROJECT_MANAGER"));
+      assertEquals(
+          "projectManager",
+          projectEmployeeClassMapper.getAttribute2property().get("PROJECT_MANAGER"));
       assertEquals("ID", projectEmployeeClassMapper.getProperty2attribute().get("id"));
       assertEquals("TITLE", projectEmployeeClassMapper.getProperty2attribute().get("title"));
-      assertEquals("PROJECT_MANAGER", projectEmployeeClassMapper.getProperty2attribute().get("projectManager"));
+      assertEquals(
+          "PROJECT_MANAGER",
+          projectEmployeeClassMapper.getProperty2attribute().get("projectManager"));
 
       // Relationships-Edges Mapping
 
-      Iterator<OCanonicalRelationship> itRelationships = employeeEntity.getOutCanonicalRelationships().iterator();
+      Iterator<OCanonicalRelationship> itRelationships =
+          employeeEntity.getOutCanonicalRelationships().iterator();
       OCanonicalRelationship projectRelationship = itRelationships.next();
       assertFalse(itRelationships.hasNext());
 
@@ -761,14 +830,24 @@ public class RelationshipConfigurationMappingTest {
       assertFalse(itRelationships.hasNext());
 
       assertEquals(2, mapper.getRelationship2edgeType().size());
-      assertEquals(hasProjectManagerEdgeType, mapper.getRelationship2edgeType().get(hasProjectManagerRelationship));
+      assertEquals(
+          hasProjectManagerEdgeType,
+          mapper.getRelationship2edgeType().get(hasProjectManagerRelationship));
       assertEquals(hasEmployeeEdgeType, mapper.getRelationship2edgeType().get(projectRelationship));
 
       assertEquals(2, mapper.getEdgeType2relationships().size());
       assertEquals(1, mapper.getEdgeType2relationships().get(hasProjectManagerEdgeType).size());
-      assertTrue(mapper.getEdgeType2relationships().get(hasProjectManagerEdgeType).contains(hasProjectManagerRelationship));
+      assertTrue(
+          mapper
+              .getEdgeType2relationships()
+              .get(hasProjectManagerEdgeType)
+              .contains(hasProjectManagerRelationship));
       assertEquals(1, mapper.getEdgeType2relationships().get(hasEmployeeEdgeType).size());
-      assertTrue(mapper.getEdgeType2relationships().get(hasEmployeeEdgeType).contains(projectRelationship));
+      assertTrue(
+          mapper
+              .getEdgeType2relationships()
+              .get(hasEmployeeEdgeType)
+              .contains(projectRelationship));
 
       // JoinVertexes-AggregatorEdges Mapping
 
@@ -791,7 +870,7 @@ public class RelationshipConfigurationMappingTest {
     }
   }
 
-  //@Test
+  // @Test
 
   /*
    *  Three tables: 1  N-N relationship, no foreign keys declared for the join table in the db.
@@ -823,17 +902,20 @@ public class RelationshipConfigurationMappingTest {
       Class.forName(this.driver);
       connection = DriverManager.getConnection(this.jurl, this.username, this.password);
 
-      String parentTableBuilding = "create memory table ACTOR (ID varchar(256) not null,"
-          + " FIRST_NAME varchar(256) not null, LAST_NAME varchar(256) not null, primary key (ID))";
+      String parentTableBuilding =
+          "create memory table ACTOR (ID varchar(256) not null,"
+              + " FIRST_NAME varchar(256) not null, LAST_NAME varchar(256) not null, primary key (ID))";
       st = connection.createStatement();
       st.execute(parentTableBuilding);
 
       String foreignTableBuilding =
-          "create memory table FILM (ID varchar(256)," + " TITLE varchar(256) not null, CATEGORY varchar(256), primary key (ID))";
+          "create memory table FILM (ID varchar(256),"
+              + " TITLE varchar(256) not null, CATEGORY varchar(256), primary key (ID))";
       st.execute(foreignTableBuilding);
 
-      String actorFilmTableBuilding = "create memory table ACTOR_FILM (ACTOR_ID  varchar(256),"
-          + " FILM_ID varchar(256) not null, PAYMENT integer, primary key (ACTOR_ID, FILM_ID))";
+      String actorFilmTableBuilding =
+          "create memory table ACTOR_FILM (ACTOR_ID  varchar(256),"
+              + " FILM_ID varchar(256) not null, PAYMENT integer, primary key (ACTOR_ID, FILM_ID))";
       st.execute(actorFilmTableBuilding);
 
       ODocument config = OFileManager.buildJsonFromFile(this.configJoinTableDirectEdgesPath);
@@ -844,7 +926,6 @@ public class RelationshipConfigurationMappingTest {
       mapper.buildSourceDatabaseSchema();
       mapper.buildGraphModel(new OJavaConventionNameResolver());
       mapper.applyImportConfiguration();
-
 
       /*
        *  Testing context information
@@ -888,13 +969,15 @@ public class RelationshipConfigurationMappingTest {
       assertEquals("FIRST_NAME", actorEntity.getAttributeByName("FIRST_NAME").getName());
       assertEquals("VARCHAR", actorEntity.getAttributeByName("FIRST_NAME").getDataType());
       assertEquals(2, actorEntity.getAttributeByName("FIRST_NAME").getOrdinalPosition());
-      assertEquals("ACTOR", actorEntity.getAttributeByName("FIRST_NAME").getBelongingEntity().getName());
+      assertEquals(
+          "ACTOR", actorEntity.getAttributeByName("FIRST_NAME").getBelongingEntity().getName());
 
       assertNotNull(actorEntity.getAttributeByName("LAST_NAME"));
       assertEquals("LAST_NAME", actorEntity.getAttributeByName("LAST_NAME").getName());
       assertEquals("VARCHAR", actorEntity.getAttributeByName("LAST_NAME").getDataType());
       assertEquals(3, actorEntity.getAttributeByName("LAST_NAME").getOrdinalPosition());
-      assertEquals("ACTOR", actorEntity.getAttributeByName("LAST_NAME").getBelongingEntity().getName());
+      assertEquals(
+          "ACTOR", actorEntity.getAttributeByName("LAST_NAME").getBelongingEntity().getName());
 
       assertEquals(3, filmEntity.getAttributes().size());
 
@@ -914,7 +997,8 @@ public class RelationshipConfigurationMappingTest {
       assertEquals("CATEGORY", filmEntity.getAttributeByName("CATEGORY").getName());
       assertEquals("VARCHAR", filmEntity.getAttributeByName("CATEGORY").getDataType());
       assertEquals(3, filmEntity.getAttributeByName("CATEGORY").getOrdinalPosition());
-      assertEquals("FILM", filmEntity.getAttributeByName("CATEGORY").getBelongingEntity().getName());
+      assertEquals(
+          "FILM", filmEntity.getAttributeByName("CATEGORY").getBelongingEntity().getName());
 
       assertEquals(3, actorFilmEntity.getAttributes().size());
 
@@ -922,19 +1006,25 @@ public class RelationshipConfigurationMappingTest {
       assertEquals("ACTOR_ID", actorFilmEntity.getAttributeByName("ACTOR_ID").getName());
       assertEquals("VARCHAR", actorFilmEntity.getAttributeByName("ACTOR_ID").getDataType());
       assertEquals(1, actorFilmEntity.getAttributeByName("ACTOR_ID").getOrdinalPosition());
-      assertEquals("ACTOR_FILM", actorFilmEntity.getAttributeByName("ACTOR_ID").getBelongingEntity().getName());
+      assertEquals(
+          "ACTOR_FILM",
+          actorFilmEntity.getAttributeByName("ACTOR_ID").getBelongingEntity().getName());
 
       assertNotNull(actorFilmEntity.getAttributeByName("FILM_ID"));
       assertEquals("FILM_ID", actorFilmEntity.getAttributeByName("FILM_ID").getName());
       assertEquals("VARCHAR", actorFilmEntity.getAttributeByName("FILM_ID").getDataType());
       assertEquals(2, actorFilmEntity.getAttributeByName("FILM_ID").getOrdinalPosition());
-      assertEquals("ACTOR_FILM", actorFilmEntity.getAttributeByName("FILM_ID").getBelongingEntity().getName());
+      assertEquals(
+          "ACTOR_FILM",
+          actorFilmEntity.getAttributeByName("FILM_ID").getBelongingEntity().getName());
 
       assertNotNull(actorFilmEntity.getAttributeByName("PAYMENT"));
       assertEquals("PAYMENT", actorFilmEntity.getAttributeByName("PAYMENT").getName());
       assertEquals("INTEGER", actorFilmEntity.getAttributeByName("PAYMENT").getDataType());
       assertEquals(3, actorFilmEntity.getAttributeByName("PAYMENT").getOrdinalPosition());
-      assertEquals("ACTOR_FILM", actorFilmEntity.getAttributeByName("PAYMENT").getBelongingEntity().getName());
+      assertEquals(
+          "ACTOR_FILM",
+          actorFilmEntity.getAttributeByName("PAYMENT").getBelongingEntity().getName());
 
       // relationship, primary and foreign key check
       assertEquals(2, mapper.getDataBaseSchema().getCanonicalRelationships().size());
@@ -948,7 +1038,8 @@ public class RelationshipConfigurationMappingTest {
       assertEquals(0, filmEntity.getForeignKeys().size());
       assertEquals(2, actorFilmEntity.getForeignKeys().size());
 
-      Iterator<OCanonicalRelationship> it = actorFilmEntity.getOutCanonicalRelationships().iterator();
+      Iterator<OCanonicalRelationship> it =
+          actorFilmEntity.getOutCanonicalRelationships().iterator();
       OCanonicalRelationship currentRelationship = it.next();
       assertEquals("ACTOR", currentRelationship.getParentEntity().getName());
       assertEquals("ACTOR_FILM", currentRelationship.getForeignEntity().getName());
@@ -959,7 +1050,9 @@ public class RelationshipConfigurationMappingTest {
       OCanonicalRelationship currentRelationship2 = it2.next();
       assertEquals(currentRelationship, currentRelationship2);
 
-      assertEquals("ACTOR_ID", actorFilmEntity.getForeignKeys().get(0).getInvolvedAttributes().get(0).getName());
+      assertEquals(
+          "ACTOR_ID",
+          actorFilmEntity.getForeignKeys().get(0).getInvolvedAttributes().get(0).getName());
       assertEquals("ID", actorEntity.getPrimaryKey().getInvolvedAttributes().get(0).getName());
 
       currentRelationship = it.next();
@@ -972,12 +1065,14 @@ public class RelationshipConfigurationMappingTest {
       currentRelationship2 = it2.next();
       assertEquals(currentRelationship, currentRelationship2);
 
-      assertEquals("FILM_ID", actorFilmEntity.getForeignKeys().get(1).getInvolvedAttributes().get(0).getName());
+      assertEquals(
+          "FILM_ID",
+          actorFilmEntity.getForeignKeys().get(1).getInvolvedAttributes().get(0).getName());
       assertEquals("ID", filmEntity.getPrimaryKey().getInvolvedAttributes().get(0).getName());
 
       assertFalse(it.hasNext());
 
-       /*
+      /*
        *  Testing built graph model
        */
 
@@ -1144,7 +1239,8 @@ public class RelationshipConfigurationMappingTest {
       assertEquals("CATEGORY", filmClassMapper.getProperty2attribute().get("category"));
 
       assertEquals(1, mapper.getEVClassMappersByVertex(actorFilmVertexType).size());
-      OEVClassMapper actorFilmClassMapper = mapper.getEVClassMappersByVertex(actorFilmVertexType).get(0);
+      OEVClassMapper actorFilmClassMapper =
+          mapper.getEVClassMappersByVertex(actorFilmVertexType).get(0);
       assertEquals(1, mapper.getEVClassMappersByEntity(actorFilmEntity).size());
       assertEquals(actorFilmClassMapper, mapper.getEVClassMappersByEntity(actorFilmEntity).get(0));
       assertEquals(actorFilmClassMapper.getEntity(), actorFilmEntity);
@@ -1161,30 +1257,38 @@ public class RelationshipConfigurationMappingTest {
 
       // Relationships-Edges Mapping
 
-      Iterator<OCanonicalRelationship> itRelationships = actorFilmEntity.getOutCanonicalRelationships().iterator();
+      Iterator<OCanonicalRelationship> itRelationships =
+          actorFilmEntity.getOutCanonicalRelationships().iterator();
       OCanonicalRelationship performsLeftRelationship = itRelationships.next();
       OCanonicalRelationship performsRightRelationship = itRelationships.next();
       assertFalse(itRelationships.hasNext());
 
       assertEquals(2, mapper.getRelationship2edgeType().size());
-      assertEquals(performsLeftEdgeType, mapper.getRelationship2edgeType().get(performsLeftRelationship));
-      assertEquals(performsRightEdgeType, mapper.getRelationship2edgeType().get(performsRightRelationship));
+      assertEquals(
+          performsLeftEdgeType, mapper.getRelationship2edgeType().get(performsLeftRelationship));
+      assertEquals(
+          performsRightEdgeType, mapper.getRelationship2edgeType().get(performsRightRelationship));
 
       assertEquals(2, mapper.getEdgeType2relationships().size());
       assertEquals(1, mapper.getEdgeType2relationships().get(performsLeftEdgeType).size());
-      assertTrue(mapper.getEdgeType2relationships().get(performsLeftEdgeType).contains(performsLeftRelationship));
+      assertTrue(
+          mapper
+              .getEdgeType2relationships()
+              .get(performsLeftEdgeType)
+              .contains(performsLeftRelationship));
       assertEquals(1, mapper.getEdgeType2relationships().get(performsRightEdgeType).size());
-      assertTrue(mapper.getEdgeType2relationships().get(performsRightEdgeType).contains(performsRightRelationship));
+      assertTrue(
+          mapper
+              .getEdgeType2relationships()
+              .get(performsRightEdgeType)
+              .contains(performsRightRelationship));
 
       // JoinVertexes-AggregatorEdges Mapping
 
       assertEquals(0, mapper.getJoinVertex2aggregatorEdges().size());
 
-      /**
-       * performing aggregations
-       */
+      /** performing aggregations */
       mapper.performAggregations();
-
 
       /*
        *  Testing context information
@@ -1194,7 +1298,6 @@ public class RelationshipConfigurationMappingTest {
       assertEquals(2, context.getStatistics().builtModelVertexTypes);
       assertEquals(1, context.getStatistics().totalNumberOfModelEdges);
       assertEquals(1, context.getStatistics().builtModelEdgeTypes);
-
 
       /*
        *  Testing built graph model
@@ -1271,7 +1374,7 @@ public class RelationshipConfigurationMappingTest {
       assertEquals(1, performsEdgeType.getNumberRelationshipsRepresented());
 
       assertEquals(2, performsEdgeType.getAllProperties().size());
-       OModelProperty paymentProperty = performsEdgeType.getPropertyByName("payment");
+      OModelProperty paymentProperty = performsEdgeType.getPropertyByName("payment");
       assertNotNull(paymentProperty);
       assertEquals("payment", paymentProperty.getName());
       assertEquals(1, paymentProperty.getOrdinalPosition());
@@ -1356,22 +1459,38 @@ public class RelationshipConfigurationMappingTest {
       assertFalse(itRelationships.hasNext());
 
       assertEquals(2, mapper.getRelationship2edgeType().size());
-      assertEquals(performsLeftEdgeType, mapper.getRelationship2edgeType().get(performsLeftRelationship));
-      assertEquals(performsRightEdgeType, mapper.getRelationship2edgeType().get(performsRightRelationship));
+      assertEquals(
+          performsLeftEdgeType, mapper.getRelationship2edgeType().get(performsLeftRelationship));
+      assertEquals(
+          performsRightEdgeType, mapper.getRelationship2edgeType().get(performsRightRelationship));
 
       assertEquals(2, mapper.getEdgeType2relationships().size());
       assertEquals(1, mapper.getEdgeType2relationships().get(performsLeftEdgeType).size());
-      assertTrue(mapper.getEdgeType2relationships().get(performsLeftEdgeType).contains(performsLeftRelationship));
+      assertTrue(
+          mapper
+              .getEdgeType2relationships()
+              .get(performsLeftEdgeType)
+              .contains(performsLeftRelationship));
       assertEquals(1, mapper.getEdgeType2relationships().get(performsRightEdgeType).size());
-      assertTrue(mapper.getEdgeType2relationships().get(performsRightEdgeType).contains(performsRightRelationship));
+      assertTrue(
+          mapper
+              .getEdgeType2relationships()
+              .get(performsRightEdgeType)
+              .contains(performsRightRelationship));
 
       // JoinVertexes-AggregatorEdges Mapping
 
       assertEquals(1, mapper.getJoinVertex2aggregatorEdges().size());
       assertTrue(mapper.getJoinVertex2aggregatorEdges().containsKey(actorFilmVertexType));
-      assertEquals(performsEdgeType, mapper.getJoinVertex2aggregatorEdges().get(actorFilmVertexType).getEdgeType());
-      assertEquals("Actor", mapper.getJoinVertex2aggregatorEdges().get(actorFilmVertexType).getOutVertexClassName());
-      assertEquals("Film", mapper.getJoinVertex2aggregatorEdges().get(actorFilmVertexType).getInVertexClassName());
+      assertEquals(
+          performsEdgeType,
+          mapper.getJoinVertex2aggregatorEdges().get(actorFilmVertexType).getEdgeType());
+      assertEquals(
+          "Actor",
+          mapper.getJoinVertex2aggregatorEdges().get(actorFilmVertexType).getOutVertexClassName());
+      assertEquals(
+          "Film",
+          mapper.getJoinVertex2aggregatorEdges().get(actorFilmVertexType).getInVertexClassName());
 
     } catch (Exception e) {
       e.printStackTrace();
@@ -1390,7 +1509,7 @@ public class RelationshipConfigurationMappingTest {
     }
   }
 
-  //@Test
+  // @Test
 
   /*
    *  Three tables: 1  N-N relationship, no foreign keys declared for the join table in the db.
@@ -1424,17 +1543,20 @@ public class RelationshipConfigurationMappingTest {
       Class.forName(this.driver);
       connection = DriverManager.getConnection(this.jurl, this.username, this.password);
 
-      String parentTableBuilding = "create memory table ACTOR (ID varchar(256) not null,"
-          + " FIRST_NAME varchar(256) not null, LAST_NAME varchar(256) not null, primary key (ID))";
+      String parentTableBuilding =
+          "create memory table ACTOR (ID varchar(256) not null,"
+              + " FIRST_NAME varchar(256) not null, LAST_NAME varchar(256) not null, primary key (ID))";
       st = connection.createStatement();
       st.execute(parentTableBuilding);
 
       String foreignTableBuilding =
-          "create memory table FILM (ID varchar(256)," + " TITLE varchar(256) not null, CATEGORY varchar(256), primary key (ID))";
+          "create memory table FILM (ID varchar(256),"
+              + " TITLE varchar(256) not null, CATEGORY varchar(256), primary key (ID))";
       st.execute(foreignTableBuilding);
 
-      String actorFilmTableBuilding = "create memory table FILM_ACTOR (ACTOR_ID  varchar(256),"
-          + " FILM_ID varchar(256) not null, PAYMENT integer, primary key (ACTOR_ID, FILM_ID))";
+      String actorFilmTableBuilding =
+          "create memory table FILM_ACTOR (ACTOR_ID  varchar(256),"
+              + " FILM_ID varchar(256) not null, PAYMENT integer, primary key (ACTOR_ID, FILM_ID))";
       st.execute(actorFilmTableBuilding);
 
       ODocument config = OFileManager.buildJsonFromFile(this.configJoinTableInverseEdgesPath);
@@ -1445,7 +1567,6 @@ public class RelationshipConfigurationMappingTest {
       mapper.buildSourceDatabaseSchema();
       mapper.buildGraphModel(new OJavaConventionNameResolver());
       mapper.applyImportConfiguration();
-
 
       /*
        *  Testing context information
@@ -1489,13 +1610,15 @@ public class RelationshipConfigurationMappingTest {
       assertEquals("FIRST_NAME", actorEntity.getAttributeByName("FIRST_NAME").getName());
       assertEquals("VARCHAR", actorEntity.getAttributeByName("FIRST_NAME").getDataType());
       assertEquals(2, actorEntity.getAttributeByName("FIRST_NAME").getOrdinalPosition());
-      assertEquals("ACTOR", actorEntity.getAttributeByName("FIRST_NAME").getBelongingEntity().getName());
+      assertEquals(
+          "ACTOR", actorEntity.getAttributeByName("FIRST_NAME").getBelongingEntity().getName());
 
       assertNotNull(actorEntity.getAttributeByName("LAST_NAME"));
       assertEquals("LAST_NAME", actorEntity.getAttributeByName("LAST_NAME").getName());
       assertEquals("VARCHAR", actorEntity.getAttributeByName("LAST_NAME").getDataType());
       assertEquals(3, actorEntity.getAttributeByName("LAST_NAME").getOrdinalPosition());
-      assertEquals("ACTOR", actorEntity.getAttributeByName("LAST_NAME").getBelongingEntity().getName());
+      assertEquals(
+          "ACTOR", actorEntity.getAttributeByName("LAST_NAME").getBelongingEntity().getName());
 
       assertEquals(3, filmEntity.getAttributes().size());
 
@@ -1515,7 +1638,8 @@ public class RelationshipConfigurationMappingTest {
       assertEquals("CATEGORY", filmEntity.getAttributeByName("CATEGORY").getName());
       assertEquals("VARCHAR", filmEntity.getAttributeByName("CATEGORY").getDataType());
       assertEquals(3, filmEntity.getAttributeByName("CATEGORY").getOrdinalPosition());
-      assertEquals("FILM", filmEntity.getAttributeByName("CATEGORY").getBelongingEntity().getName());
+      assertEquals(
+          "FILM", filmEntity.getAttributeByName("CATEGORY").getBelongingEntity().getName());
 
       assertEquals(3, filmActorEntity.getAttributes().size());
 
@@ -1523,19 +1647,25 @@ public class RelationshipConfigurationMappingTest {
       assertEquals("ACTOR_ID", filmActorEntity.getAttributeByName("ACTOR_ID").getName());
       assertEquals("VARCHAR", filmActorEntity.getAttributeByName("ACTOR_ID").getDataType());
       assertEquals(1, filmActorEntity.getAttributeByName("ACTOR_ID").getOrdinalPosition());
-      assertEquals("FILM_ACTOR", filmActorEntity.getAttributeByName("ACTOR_ID").getBelongingEntity().getName());
+      assertEquals(
+          "FILM_ACTOR",
+          filmActorEntity.getAttributeByName("ACTOR_ID").getBelongingEntity().getName());
 
       assertNotNull(filmActorEntity.getAttributeByName("FILM_ID"));
       assertEquals("FILM_ID", filmActorEntity.getAttributeByName("FILM_ID").getName());
       assertEquals("VARCHAR", filmActorEntity.getAttributeByName("FILM_ID").getDataType());
       assertEquals(2, filmActorEntity.getAttributeByName("FILM_ID").getOrdinalPosition());
-      assertEquals("FILM_ACTOR", filmActorEntity.getAttributeByName("FILM_ID").getBelongingEntity().getName());
+      assertEquals(
+          "FILM_ACTOR",
+          filmActorEntity.getAttributeByName("FILM_ID").getBelongingEntity().getName());
 
       assertNotNull(filmActorEntity.getAttributeByName("PAYMENT"));
       assertEquals("PAYMENT", filmActorEntity.getAttributeByName("PAYMENT").getName());
       assertEquals("INTEGER", filmActorEntity.getAttributeByName("PAYMENT").getDataType());
       assertEquals(3, filmActorEntity.getAttributeByName("PAYMENT").getOrdinalPosition());
-      assertEquals("FILM_ACTOR", filmActorEntity.getAttributeByName("PAYMENT").getBelongingEntity().getName());
+      assertEquals(
+          "FILM_ACTOR",
+          filmActorEntity.getAttributeByName("PAYMENT").getBelongingEntity().getName());
 
       // relationship, primary and foreign key check
       assertEquals(2, mapper.getDataBaseSchema().getCanonicalRelationships().size());
@@ -1549,7 +1679,8 @@ public class RelationshipConfigurationMappingTest {
       assertEquals(0, filmEntity.getForeignKeys().size());
       assertEquals(2, filmActorEntity.getForeignKeys().size());
 
-      Iterator<OCanonicalRelationship> it = filmActorEntity.getOutCanonicalRelationships().iterator();
+      Iterator<OCanonicalRelationship> it =
+          filmActorEntity.getOutCanonicalRelationships().iterator();
       OCanonicalRelationship currentRelationship = it.next();
       assertEquals("FILM", currentRelationship.getParentEntity().getName());
       assertEquals("FILM_ACTOR", currentRelationship.getForeignEntity().getName());
@@ -1560,7 +1691,9 @@ public class RelationshipConfigurationMappingTest {
       OCanonicalRelationship currentRelationship2 = it2.next();
       assertEquals(currentRelationship, currentRelationship2);
 
-      assertEquals("FILM_ID", filmActorEntity.getForeignKeys().get(0).getInvolvedAttributes().get(0).getName());
+      assertEquals(
+          "FILM_ID",
+          filmActorEntity.getForeignKeys().get(0).getInvolvedAttributes().get(0).getName());
       assertEquals("ID", filmEntity.getPrimaryKey().getInvolvedAttributes().get(0).getName());
 
       currentRelationship = it.next();
@@ -1574,12 +1707,14 @@ public class RelationshipConfigurationMappingTest {
       currentRelationship2 = it2.next();
       assertEquals(currentRelationship, currentRelationship2);
 
-      assertEquals("ACTOR_ID", filmActorEntity.getForeignKeys().get(1).getInvolvedAttributes().get(0).getName());
+      assertEquals(
+          "ACTOR_ID",
+          filmActorEntity.getForeignKeys().get(1).getInvolvedAttributes().get(0).getName());
       assertEquals("ID", actorEntity.getPrimaryKey().getInvolvedAttributes().get(0).getName());
 
       assertFalse(it.hasNext());
 
-       /*
+      /*
        *  Testing built graph model
        */
 
@@ -1746,7 +1881,8 @@ public class RelationshipConfigurationMappingTest {
       assertEquals("CATEGORY", filmClassMapper.getProperty2attribute().get("category"));
 
       assertEquals(1, mapper.getEVClassMappersByVertex(filmActorVertexType).size());
-      OEVClassMapper filmActorClassMapper = mapper.getEVClassMappersByVertex(filmActorVertexType).get(0);
+      OEVClassMapper filmActorClassMapper =
+          mapper.getEVClassMappersByVertex(filmActorVertexType).get(0);
       assertEquals(1, mapper.getEVClassMappersByEntity(filmActorEntity).size());
       assertEquals(filmActorClassMapper, mapper.getEVClassMappersByEntity(filmActorEntity).get(0));
       assertEquals(filmActorClassMapper.getEntity(), filmActorEntity);
@@ -1763,30 +1899,38 @@ public class RelationshipConfigurationMappingTest {
 
       // Relationships-Edges Mapping
 
-      Iterator<OCanonicalRelationship> itRelationships = filmActorEntity.getOutCanonicalRelationships().iterator();
+      Iterator<OCanonicalRelationship> itRelationships =
+          filmActorEntity.getOutCanonicalRelationships().iterator();
       OCanonicalRelationship performsLeftRelationship = itRelationships.next();
       OCanonicalRelationship performsRightRelationship = itRelationships.next();
       assertFalse(itRelationships.hasNext());
 
       assertEquals(2, mapper.getRelationship2edgeType().size());
-      assertEquals(performsLeftEdgeType, mapper.getRelationship2edgeType().get(performsLeftRelationship));
-      assertEquals(performsRightEdgeType, mapper.getRelationship2edgeType().get(performsRightRelationship));
+      assertEquals(
+          performsLeftEdgeType, mapper.getRelationship2edgeType().get(performsLeftRelationship));
+      assertEquals(
+          performsRightEdgeType, mapper.getRelationship2edgeType().get(performsRightRelationship));
 
       assertEquals(2, mapper.getEdgeType2relationships().size());
       assertEquals(1, mapper.getEdgeType2relationships().get(performsLeftEdgeType).size());
-      assertTrue(mapper.getEdgeType2relationships().get(performsLeftEdgeType).contains(performsLeftRelationship));
+      assertTrue(
+          mapper
+              .getEdgeType2relationships()
+              .get(performsLeftEdgeType)
+              .contains(performsLeftRelationship));
       assertEquals(1, mapper.getEdgeType2relationships().get(performsRightEdgeType).size());
-      assertTrue(mapper.getEdgeType2relationships().get(performsRightEdgeType).contains(performsRightRelationship));
+      assertTrue(
+          mapper
+              .getEdgeType2relationships()
+              .get(performsRightEdgeType)
+              .contains(performsRightRelationship));
 
       // JoinVertexes-AggregatorEdges Mapping
 
       assertEquals(0, mapper.getJoinVertex2aggregatorEdges().size());
 
-      /**
-       * performing aggregations
-       */
+      /** performing aggregations */
       mapper.performAggregations();
-
 
       /*
        *  Testing context information
@@ -1796,7 +1940,6 @@ public class RelationshipConfigurationMappingTest {
       assertEquals(2, context.getStatistics().builtModelVertexTypes);
       assertEquals(1, context.getStatistics().totalNumberOfModelEdges);
       assertEquals(1, context.getStatistics().builtModelEdgeTypes);
-
 
       /*
        *  Testing built graph model
@@ -1893,7 +2036,7 @@ public class RelationshipConfigurationMappingTest {
       assertEquals(false, yearProperty.isReadOnly());
       assertEquals(false, yearProperty.isNotNull());
 
-            /*
+      /*
        * Rules check
        */
 
@@ -1958,22 +2101,38 @@ public class RelationshipConfigurationMappingTest {
       assertFalse(itRelationships.hasNext());
 
       assertEquals(2, mapper.getRelationship2edgeType().size());
-      assertEquals(performsLeftEdgeType, mapper.getRelationship2edgeType().get(performsLeftRelationship));
-      assertEquals(performsRightEdgeType, mapper.getRelationship2edgeType().get(performsRightRelationship));
+      assertEquals(
+          performsLeftEdgeType, mapper.getRelationship2edgeType().get(performsLeftRelationship));
+      assertEquals(
+          performsRightEdgeType, mapper.getRelationship2edgeType().get(performsRightRelationship));
 
       assertEquals(2, mapper.getEdgeType2relationships().size());
       assertEquals(1, mapper.getEdgeType2relationships().get(performsLeftEdgeType).size());
-      assertTrue(mapper.getEdgeType2relationships().get(performsLeftEdgeType).contains(performsLeftRelationship));
+      assertTrue(
+          mapper
+              .getEdgeType2relationships()
+              .get(performsLeftEdgeType)
+              .contains(performsLeftRelationship));
       assertEquals(1, mapper.getEdgeType2relationships().get(performsRightEdgeType).size());
-      assertTrue(mapper.getEdgeType2relationships().get(performsRightEdgeType).contains(performsRightRelationship));
+      assertTrue(
+          mapper
+              .getEdgeType2relationships()
+              .get(performsRightEdgeType)
+              .contains(performsRightRelationship));
 
       // JoinVertexes-AggregatorEdges Mapping
 
       assertEquals(1, mapper.getJoinVertex2aggregatorEdges().size());
       assertTrue(mapper.getJoinVertex2aggregatorEdges().containsKey(filmActorVertexType));
-      assertEquals(performsEdgeType, mapper.getJoinVertex2aggregatorEdges().get(filmActorVertexType).getEdgeType());
-      assertEquals("Actor", mapper.getJoinVertex2aggregatorEdges().get(filmActorVertexType).getOutVertexClassName());
-      assertEquals("Film", mapper.getJoinVertex2aggregatorEdges().get(filmActorVertexType).getInVertexClassName());
+      assertEquals(
+          performsEdgeType,
+          mapper.getJoinVertex2aggregatorEdges().get(filmActorVertexType).getEdgeType());
+      assertEquals(
+          "Actor",
+          mapper.getJoinVertex2aggregatorEdges().get(filmActorVertexType).getOutVertexClassName());
+      assertEquals(
+          "Film",
+          mapper.getJoinVertex2aggregatorEdges().get(filmActorVertexType).getInVertexClassName());
 
     } catch (Exception e) {
       e.printStackTrace();
@@ -1992,7 +2151,7 @@ public class RelationshipConfigurationMappingTest {
     }
   }
 
-  //@Test
+  // @Test
 
   /*
    *  Three tables: 1  N-N relationship, foreign keys declared for the join table in the db:
@@ -2024,18 +2183,21 @@ public class RelationshipConfigurationMappingTest {
       Class.forName(this.driver);
       connection = DriverManager.getConnection(this.jurl, this.username, this.password);
 
-      String parentTableBuilding = "create memory table ACTOR (ID varchar(256) not null,"
-          + " FIRST_NAME varchar(256) not null, LAST_NAME varchar(256) not null, primary key (ID))";
+      String parentTableBuilding =
+          "create memory table ACTOR (ID varchar(256) not null,"
+              + " FIRST_NAME varchar(256) not null, LAST_NAME varchar(256) not null, primary key (ID))";
       st = connection.createStatement();
       st.execute(parentTableBuilding);
 
       String foreignTableBuilding =
-          "create memory table FILM (ID varchar(256)," + " TITLE varchar(256) not null, CATEGORY varchar(256), primary key (ID))";
+          "create memory table FILM (ID varchar(256),"
+              + " TITLE varchar(256) not null, CATEGORY varchar(256), primary key (ID))";
       st.execute(foreignTableBuilding);
 
-      String actorFilmTableBuilding = "create memory table ACTOR_FILM (ACTOR_ID  varchar(256),"
-          + " FILM_ID varchar(256) not null, PAYMENT integer, primary key (ACTOR_ID, FILM_ID),"
-          + " foreign key (ACTOR_ID) references ACTOR(ID), foreign key (FILM_ID) references FILM(ID))";
+      String actorFilmTableBuilding =
+          "create memory table ACTOR_FILM (ACTOR_ID  varchar(256),"
+              + " FILM_ID varchar(256) not null, PAYMENT integer, primary key (ACTOR_ID, FILM_ID),"
+              + " foreign key (ACTOR_ID) references ACTOR(ID), foreign key (FILM_ID) references FILM(ID))";
       st.execute(actorFilmTableBuilding);
 
       ODocument config = OFileManager.buildJsonFromFile(this.configJoinTableDirectEdgesPath);
@@ -2046,7 +2208,6 @@ public class RelationshipConfigurationMappingTest {
       mapper.buildSourceDatabaseSchema();
       mapper.buildGraphModel(new OJavaConventionNameResolver());
       mapper.applyImportConfiguration();
-
 
       /*
        *  Testing context information
@@ -2090,13 +2251,15 @@ public class RelationshipConfigurationMappingTest {
       assertEquals("FIRST_NAME", actorEntity.getAttributeByName("FIRST_NAME").getName());
       assertEquals("VARCHAR", actorEntity.getAttributeByName("FIRST_NAME").getDataType());
       assertEquals(2, actorEntity.getAttributeByName("FIRST_NAME").getOrdinalPosition());
-      assertEquals("ACTOR", actorEntity.getAttributeByName("FIRST_NAME").getBelongingEntity().getName());
+      assertEquals(
+          "ACTOR", actorEntity.getAttributeByName("FIRST_NAME").getBelongingEntity().getName());
 
       assertNotNull(actorEntity.getAttributeByName("LAST_NAME"));
       assertEquals("LAST_NAME", actorEntity.getAttributeByName("LAST_NAME").getName());
       assertEquals("VARCHAR", actorEntity.getAttributeByName("LAST_NAME").getDataType());
       assertEquals(3, actorEntity.getAttributeByName("LAST_NAME").getOrdinalPosition());
-      assertEquals("ACTOR", actorEntity.getAttributeByName("LAST_NAME").getBelongingEntity().getName());
+      assertEquals(
+          "ACTOR", actorEntity.getAttributeByName("LAST_NAME").getBelongingEntity().getName());
 
       assertEquals(3, filmEntity.getAttributes().size());
 
@@ -2116,7 +2279,8 @@ public class RelationshipConfigurationMappingTest {
       assertEquals("CATEGORY", filmEntity.getAttributeByName("CATEGORY").getName());
       assertEquals("VARCHAR", filmEntity.getAttributeByName("CATEGORY").getDataType());
       assertEquals(3, filmEntity.getAttributeByName("CATEGORY").getOrdinalPosition());
-      assertEquals("FILM", filmEntity.getAttributeByName("CATEGORY").getBelongingEntity().getName());
+      assertEquals(
+          "FILM", filmEntity.getAttributeByName("CATEGORY").getBelongingEntity().getName());
 
       assertEquals(3, actorFilmEntity.getAttributes().size());
 
@@ -2124,19 +2288,25 @@ public class RelationshipConfigurationMappingTest {
       assertEquals("ACTOR_ID", actorFilmEntity.getAttributeByName("ACTOR_ID").getName());
       assertEquals("VARCHAR", actorFilmEntity.getAttributeByName("ACTOR_ID").getDataType());
       assertEquals(1, actorFilmEntity.getAttributeByName("ACTOR_ID").getOrdinalPosition());
-      assertEquals("ACTOR_FILM", actorFilmEntity.getAttributeByName("ACTOR_ID").getBelongingEntity().getName());
+      assertEquals(
+          "ACTOR_FILM",
+          actorFilmEntity.getAttributeByName("ACTOR_ID").getBelongingEntity().getName());
 
       assertNotNull(actorFilmEntity.getAttributeByName("FILM_ID"));
       assertEquals("FILM_ID", actorFilmEntity.getAttributeByName("FILM_ID").getName());
       assertEquals("VARCHAR", actorFilmEntity.getAttributeByName("FILM_ID").getDataType());
       assertEquals(2, actorFilmEntity.getAttributeByName("FILM_ID").getOrdinalPosition());
-      assertEquals("ACTOR_FILM", actorFilmEntity.getAttributeByName("FILM_ID").getBelongingEntity().getName());
+      assertEquals(
+          "ACTOR_FILM",
+          actorFilmEntity.getAttributeByName("FILM_ID").getBelongingEntity().getName());
 
       assertNotNull(actorFilmEntity.getAttributeByName("PAYMENT"));
       assertEquals("PAYMENT", actorFilmEntity.getAttributeByName("PAYMENT").getName());
       assertEquals("INTEGER", actorFilmEntity.getAttributeByName("PAYMENT").getDataType());
       assertEquals(3, actorFilmEntity.getAttributeByName("PAYMENT").getOrdinalPosition());
-      assertEquals("ACTOR_FILM", actorFilmEntity.getAttributeByName("PAYMENT").getBelongingEntity().getName());
+      assertEquals(
+          "ACTOR_FILM",
+          actorFilmEntity.getAttributeByName("PAYMENT").getBelongingEntity().getName());
 
       // relationship, primary and foreign key check
       assertEquals(2, mapper.getDataBaseSchema().getCanonicalRelationships().size());
@@ -2150,7 +2320,8 @@ public class RelationshipConfigurationMappingTest {
       assertEquals(0, filmEntity.getForeignKeys().size());
       assertEquals(2, actorFilmEntity.getForeignKeys().size());
 
-      Iterator<OCanonicalRelationship> it = actorFilmEntity.getOutCanonicalRelationships().iterator();
+      Iterator<OCanonicalRelationship> it =
+          actorFilmEntity.getOutCanonicalRelationships().iterator();
       OCanonicalRelationship currentRelationship = it.next();
       assertEquals("ACTOR", currentRelationship.getParentEntity().getName());
       assertEquals("ACTOR_FILM", currentRelationship.getForeignEntity().getName());
@@ -2161,7 +2332,9 @@ public class RelationshipConfigurationMappingTest {
       OCanonicalRelationship currentRelationship2 = it2.next();
       assertEquals(currentRelationship, currentRelationship2);
 
-      assertEquals("ACTOR_ID", actorFilmEntity.getForeignKeys().get(0).getInvolvedAttributes().get(0).getName());
+      assertEquals(
+          "ACTOR_ID",
+          actorFilmEntity.getForeignKeys().get(0).getInvolvedAttributes().get(0).getName());
       assertEquals("ID", actorEntity.getPrimaryKey().getInvolvedAttributes().get(0).getName());
 
       currentRelationship = it.next();
@@ -2174,12 +2347,14 @@ public class RelationshipConfigurationMappingTest {
       currentRelationship2 = it2.next();
       assertEquals(currentRelationship, currentRelationship2);
 
-      assertEquals("FILM_ID", actorFilmEntity.getForeignKeys().get(1).getInvolvedAttributes().get(0).getName());
+      assertEquals(
+          "FILM_ID",
+          actorFilmEntity.getForeignKeys().get(1).getInvolvedAttributes().get(0).getName());
       assertEquals("ID", filmEntity.getPrimaryKey().getInvolvedAttributes().get(0).getName());
 
       assertFalse(it.hasNext());
 
-       /*
+      /*
        *  Testing built graph model
        */
 
@@ -2346,7 +2521,8 @@ public class RelationshipConfigurationMappingTest {
       assertEquals("CATEGORY", filmClassMapper.getProperty2attribute().get("category"));
 
       assertEquals(1, mapper.getEVClassMappersByVertex(actorFilmVertexType).size());
-      OEVClassMapper actorFilmClassMapper = mapper.getEVClassMappersByVertex(actorFilmVertexType).get(0);
+      OEVClassMapper actorFilmClassMapper =
+          mapper.getEVClassMappersByVertex(actorFilmVertexType).get(0);
       assertEquals(1, mapper.getEVClassMappersByEntity(actorFilmEntity).size());
       assertEquals(actorFilmClassMapper, mapper.getEVClassMappersByEntity(actorFilmEntity).get(0));
       assertEquals(actorFilmClassMapper.getEntity(), actorFilmEntity);
@@ -2363,30 +2539,38 @@ public class RelationshipConfigurationMappingTest {
 
       // Relationships-Edges Mapping
 
-      Iterator<OCanonicalRelationship> itRelationships = actorFilmEntity.getOutCanonicalRelationships().iterator();
+      Iterator<OCanonicalRelationship> itRelationships =
+          actorFilmEntity.getOutCanonicalRelationships().iterator();
       OCanonicalRelationship performsLeftRelationship = itRelationships.next();
       OCanonicalRelationship performsRightRelationship = itRelationships.next();
       assertFalse(itRelationships.hasNext());
 
       assertEquals(2, mapper.getRelationship2edgeType().size());
-      assertEquals(performsLeftEdgeType, mapper.getRelationship2edgeType().get(performsLeftRelationship));
-      assertEquals(performsRightEdgeType, mapper.getRelationship2edgeType().get(performsRightRelationship));
+      assertEquals(
+          performsLeftEdgeType, mapper.getRelationship2edgeType().get(performsLeftRelationship));
+      assertEquals(
+          performsRightEdgeType, mapper.getRelationship2edgeType().get(performsRightRelationship));
 
       assertEquals(2, mapper.getEdgeType2relationships().size());
       assertEquals(1, mapper.getEdgeType2relationships().get(performsLeftEdgeType).size());
-      assertTrue(mapper.getEdgeType2relationships().get(performsLeftEdgeType).contains(performsLeftRelationship));
+      assertTrue(
+          mapper
+              .getEdgeType2relationships()
+              .get(performsLeftEdgeType)
+              .contains(performsLeftRelationship));
       assertEquals(1, mapper.getEdgeType2relationships().get(performsRightEdgeType).size());
-      assertTrue(mapper.getEdgeType2relationships().get(performsRightEdgeType).contains(performsRightRelationship));
+      assertTrue(
+          mapper
+              .getEdgeType2relationships()
+              .get(performsRightEdgeType)
+              .contains(performsRightRelationship));
 
       // JoinVertexes-AggregatorEdges Mapping
 
       assertEquals(0, mapper.getJoinVertex2aggregatorEdges().size());
 
-      /**
-       * performing aggregations
-       */
+      /** performing aggregations */
       mapper.performAggregations();
-
 
       /*
        *  Testing context information
@@ -2396,7 +2580,6 @@ public class RelationshipConfigurationMappingTest {
       assertEquals(2, context.getStatistics().builtModelVertexTypes);
       assertEquals(1, context.getStatistics().totalNumberOfModelEdges);
       assertEquals(1, context.getStatistics().builtModelEdgeTypes);
-
 
       /*
        *  Testing built graph model
@@ -2558,22 +2741,38 @@ public class RelationshipConfigurationMappingTest {
       assertFalse(itRelationships.hasNext());
 
       assertEquals(2, mapper.getRelationship2edgeType().size());
-      assertEquals(performsLeftEdgeType, mapper.getRelationship2edgeType().get(performsLeftRelationship));
-      assertEquals(performsRightEdgeType, mapper.getRelationship2edgeType().get(performsRightRelationship));
+      assertEquals(
+          performsLeftEdgeType, mapper.getRelationship2edgeType().get(performsLeftRelationship));
+      assertEquals(
+          performsRightEdgeType, mapper.getRelationship2edgeType().get(performsRightRelationship));
 
       assertEquals(2, mapper.getEdgeType2relationships().size());
       assertEquals(1, mapper.getEdgeType2relationships().get(performsLeftEdgeType).size());
-      assertTrue(mapper.getEdgeType2relationships().get(performsLeftEdgeType).contains(performsLeftRelationship));
+      assertTrue(
+          mapper
+              .getEdgeType2relationships()
+              .get(performsLeftEdgeType)
+              .contains(performsLeftRelationship));
       assertEquals(1, mapper.getEdgeType2relationships().get(performsRightEdgeType).size());
-      assertTrue(mapper.getEdgeType2relationships().get(performsRightEdgeType).contains(performsRightRelationship));
+      assertTrue(
+          mapper
+              .getEdgeType2relationships()
+              .get(performsRightEdgeType)
+              .contains(performsRightRelationship));
 
       // JoinVertexes-AggregatorEdges Mapping
 
       assertEquals(1, mapper.getJoinVertex2aggregatorEdges().size());
       assertTrue(mapper.getJoinVertex2aggregatorEdges().containsKey(actorFilmVertexType));
-      assertEquals(performsEdgeType, mapper.getJoinVertex2aggregatorEdges().get(actorFilmVertexType).getEdgeType());
-      assertEquals("Actor", mapper.getJoinVertex2aggregatorEdges().get(actorFilmVertexType).getOutVertexClassName());
-      assertEquals("Film", mapper.getJoinVertex2aggregatorEdges().get(actorFilmVertexType).getInVertexClassName());
+      assertEquals(
+          performsEdgeType,
+          mapper.getJoinVertex2aggregatorEdges().get(actorFilmVertexType).getEdgeType());
+      assertEquals(
+          "Actor",
+          mapper.getJoinVertex2aggregatorEdges().get(actorFilmVertexType).getOutVertexClassName());
+      assertEquals(
+          "Film",
+          mapper.getJoinVertex2aggregatorEdges().get(actorFilmVertexType).getInVertexClassName());
 
     } catch (Exception e) {
       e.printStackTrace();
@@ -2592,9 +2791,9 @@ public class RelationshipConfigurationMappingTest {
     }
   }
 
-  //@Test
+  // @Test
 
-   /*
+  /*
    *  Three tables: 1  N-N relationship, foreign keys declared for the join table in the db:
    *
    *  ACTOR
@@ -2626,18 +2825,21 @@ public class RelationshipConfigurationMappingTest {
       Class.forName(this.driver);
       connection = DriverManager.getConnection(this.jurl, this.username, this.password);
 
-      String parentTableBuilding = "create memory table ACTOR (ID varchar(256) not null,"
-          + " FIRST_NAME varchar(256) not null, LAST_NAME varchar(256) not null, primary key (ID))";
+      String parentTableBuilding =
+          "create memory table ACTOR (ID varchar(256) not null,"
+              + " FIRST_NAME varchar(256) not null, LAST_NAME varchar(256) not null, primary key (ID))";
       st = connection.createStatement();
       st.execute(parentTableBuilding);
 
       String foreignTableBuilding =
-          "create memory table FILM (ID varchar(256)," + " TITLE varchar(256) not null, CATEGORY varchar(256), primary key (ID))";
+          "create memory table FILM (ID varchar(256),"
+              + " TITLE varchar(256) not null, CATEGORY varchar(256), primary key (ID))";
       st.execute(foreignTableBuilding);
 
-      String actorFilmTableBuilding = "create memory table FILM_ACTOR (ACTOR_ID  varchar(256),"
-          + " FILM_ID varchar(256) not null, PAYMENT integer, primary key (ACTOR_ID, FILM_ID),"
-          + " foreign key (ACTOR_ID) references ACTOR(ID), foreign key (FILM_ID) references FILM(ID))";
+      String actorFilmTableBuilding =
+          "create memory table FILM_ACTOR (ACTOR_ID  varchar(256),"
+              + " FILM_ID varchar(256) not null, PAYMENT integer, primary key (ACTOR_ID, FILM_ID),"
+              + " foreign key (ACTOR_ID) references ACTOR(ID), foreign key (FILM_ID) references FILM(ID))";
       st.execute(actorFilmTableBuilding);
 
       ODocument config = OFileManager.buildJsonFromFile(this.configJoinTableInverseEdgesPath2);
@@ -2648,7 +2850,6 @@ public class RelationshipConfigurationMappingTest {
       mapper.buildSourceDatabaseSchema();
       mapper.buildGraphModel(new OJavaConventionNameResolver());
       mapper.applyImportConfiguration();
-
 
       /*
        *  Testing context information
@@ -2692,13 +2893,15 @@ public class RelationshipConfigurationMappingTest {
       assertEquals("FIRST_NAME", actorEntity.getAttributeByName("FIRST_NAME").getName());
       assertEquals("VARCHAR", actorEntity.getAttributeByName("FIRST_NAME").getDataType());
       assertEquals(2, actorEntity.getAttributeByName("FIRST_NAME").getOrdinalPosition());
-      assertEquals("ACTOR", actorEntity.getAttributeByName("FIRST_NAME").getBelongingEntity().getName());
+      assertEquals(
+          "ACTOR", actorEntity.getAttributeByName("FIRST_NAME").getBelongingEntity().getName());
 
       assertNotNull(actorEntity.getAttributeByName("LAST_NAME"));
       assertEquals("LAST_NAME", actorEntity.getAttributeByName("LAST_NAME").getName());
       assertEquals("VARCHAR", actorEntity.getAttributeByName("LAST_NAME").getDataType());
       assertEquals(3, actorEntity.getAttributeByName("LAST_NAME").getOrdinalPosition());
-      assertEquals("ACTOR", actorEntity.getAttributeByName("LAST_NAME").getBelongingEntity().getName());
+      assertEquals(
+          "ACTOR", actorEntity.getAttributeByName("LAST_NAME").getBelongingEntity().getName());
 
       assertEquals(3, filmEntity.getAttributes().size());
 
@@ -2718,7 +2921,8 @@ public class RelationshipConfigurationMappingTest {
       assertEquals("CATEGORY", filmEntity.getAttributeByName("CATEGORY").getName());
       assertEquals("VARCHAR", filmEntity.getAttributeByName("CATEGORY").getDataType());
       assertEquals(3, filmEntity.getAttributeByName("CATEGORY").getOrdinalPosition());
-      assertEquals("FILM", filmEntity.getAttributeByName("CATEGORY").getBelongingEntity().getName());
+      assertEquals(
+          "FILM", filmEntity.getAttributeByName("CATEGORY").getBelongingEntity().getName());
 
       assertEquals(3, filmActorEntity.getAttributes().size());
 
@@ -2726,19 +2930,25 @@ public class RelationshipConfigurationMappingTest {
       assertEquals("ACTOR_ID", filmActorEntity.getAttributeByName("ACTOR_ID").getName());
       assertEquals("VARCHAR", filmActorEntity.getAttributeByName("ACTOR_ID").getDataType());
       assertEquals(1, filmActorEntity.getAttributeByName("ACTOR_ID").getOrdinalPosition());
-      assertEquals("FILM_ACTOR", filmActorEntity.getAttributeByName("ACTOR_ID").getBelongingEntity().getName());
+      assertEquals(
+          "FILM_ACTOR",
+          filmActorEntity.getAttributeByName("ACTOR_ID").getBelongingEntity().getName());
 
       assertNotNull(filmActorEntity.getAttributeByName("FILM_ID"));
       assertEquals("FILM_ID", filmActorEntity.getAttributeByName("FILM_ID").getName());
       assertEquals("VARCHAR", filmActorEntity.getAttributeByName("FILM_ID").getDataType());
       assertEquals(2, filmActorEntity.getAttributeByName("FILM_ID").getOrdinalPosition());
-      assertEquals("FILM_ACTOR", filmActorEntity.getAttributeByName("FILM_ID").getBelongingEntity().getName());
+      assertEquals(
+          "FILM_ACTOR",
+          filmActorEntity.getAttributeByName("FILM_ID").getBelongingEntity().getName());
 
       assertNotNull(filmActorEntity.getAttributeByName("PAYMENT"));
       assertEquals("PAYMENT", filmActorEntity.getAttributeByName("PAYMENT").getName());
       assertEquals("INTEGER", filmActorEntity.getAttributeByName("PAYMENT").getDataType());
       assertEquals(3, filmActorEntity.getAttributeByName("PAYMENT").getOrdinalPosition());
-      assertEquals("FILM_ACTOR", filmActorEntity.getAttributeByName("PAYMENT").getBelongingEntity().getName());
+      assertEquals(
+          "FILM_ACTOR",
+          filmActorEntity.getAttributeByName("PAYMENT").getBelongingEntity().getName());
 
       // relationship, primary and foreign key check
       assertEquals(2, mapper.getDataBaseSchema().getCanonicalRelationships().size());
@@ -2752,7 +2962,8 @@ public class RelationshipConfigurationMappingTest {
       assertEquals(0, filmEntity.getForeignKeys().size());
       assertEquals(2, filmActorEntity.getForeignKeys().size());
 
-      Iterator<OCanonicalRelationship> it = filmActorEntity.getOutCanonicalRelationships().iterator();
+      Iterator<OCanonicalRelationship> it =
+          filmActorEntity.getOutCanonicalRelationships().iterator();
       OCanonicalRelationship currentRelationship = it.next();
       assertEquals("ACTOR", currentRelationship.getParentEntity().getName());
       assertEquals("FILM_ACTOR", currentRelationship.getForeignEntity().getName());
@@ -2763,7 +2974,9 @@ public class RelationshipConfigurationMappingTest {
       OCanonicalRelationship currentRelationship2 = it2.next();
       assertEquals(currentRelationship, currentRelationship2);
 
-      assertEquals("ACTOR_ID", filmActorEntity.getForeignKeys().get(0).getInvolvedAttributes().get(0).getName());
+      assertEquals(
+          "ACTOR_ID",
+          filmActorEntity.getForeignKeys().get(0).getInvolvedAttributes().get(0).getName());
       assertEquals("ID", actorEntity.getPrimaryKey().getInvolvedAttributes().get(0).getName());
 
       currentRelationship = it.next();
@@ -2777,12 +2990,14 @@ public class RelationshipConfigurationMappingTest {
       currentRelationship2 = it2.next();
       assertEquals(currentRelationship, currentRelationship2);
 
-      assertEquals("FILM_ID", filmActorEntity.getForeignKeys().get(1).getInvolvedAttributes().get(0).getName());
+      assertEquals(
+          "FILM_ID",
+          filmActorEntity.getForeignKeys().get(1).getInvolvedAttributes().get(0).getName());
       assertEquals("ID", filmEntity.getPrimaryKey().getInvolvedAttributes().get(0).getName());
 
       assertFalse(it.hasNext());
 
-       /*
+      /*
        *  Testing built graph model
        */
 
@@ -2949,7 +3164,8 @@ public class RelationshipConfigurationMappingTest {
       assertEquals("CATEGORY", filmClassMapper.getProperty2attribute().get("category"));
 
       assertEquals(1, mapper.getEVClassMappersByVertex(filmActorVertexType).size());
-      OEVClassMapper actorFilmClassMapper = mapper.getEVClassMappersByVertex(filmActorVertexType).get(0);
+      OEVClassMapper actorFilmClassMapper =
+          mapper.getEVClassMappersByVertex(filmActorVertexType).get(0);
       assertEquals(1, mapper.getEVClassMappersByEntity(filmActorEntity).size());
       assertEquals(actorFilmClassMapper, mapper.getEVClassMappersByEntity(filmActorEntity).get(0));
       assertEquals(actorFilmClassMapper.getEntity(), filmActorEntity);
@@ -2966,30 +3182,38 @@ public class RelationshipConfigurationMappingTest {
 
       // Relationships-Edges Mapping
 
-      Iterator<OCanonicalRelationship> itRelationships = filmActorEntity.getOutCanonicalRelationships().iterator();
+      Iterator<OCanonicalRelationship> itRelationships =
+          filmActorEntity.getOutCanonicalRelationships().iterator();
       OCanonicalRelationship performsLeftRelationship = itRelationships.next();
       OCanonicalRelationship performsRightRelationship = itRelationships.next();
       assertFalse(itRelationships.hasNext());
 
       assertEquals(2, mapper.getRelationship2edgeType().size());
-      assertEquals(featuresLeftEdgeType, mapper.getRelationship2edgeType().get(performsLeftRelationship));
-      assertEquals(featuresRightEdgeType, mapper.getRelationship2edgeType().get(performsRightRelationship));
+      assertEquals(
+          featuresLeftEdgeType, mapper.getRelationship2edgeType().get(performsLeftRelationship));
+      assertEquals(
+          featuresRightEdgeType, mapper.getRelationship2edgeType().get(performsRightRelationship));
 
       assertEquals(2, mapper.getEdgeType2relationships().size());
       assertEquals(1, mapper.getEdgeType2relationships().get(featuresLeftEdgeType).size());
-      assertTrue(mapper.getEdgeType2relationships().get(featuresLeftEdgeType).contains(performsLeftRelationship));
+      assertTrue(
+          mapper
+              .getEdgeType2relationships()
+              .get(featuresLeftEdgeType)
+              .contains(performsLeftRelationship));
       assertEquals(1, mapper.getEdgeType2relationships().get(featuresRightEdgeType).size());
-      assertTrue(mapper.getEdgeType2relationships().get(featuresRightEdgeType).contains(performsRightRelationship));
+      assertTrue(
+          mapper
+              .getEdgeType2relationships()
+              .get(featuresRightEdgeType)
+              .contains(performsRightRelationship));
 
       // JoinVertexes-AggregatorEdges Mapping
 
       assertEquals(0, mapper.getJoinVertex2aggregatorEdges().size());
 
-      /**
-       * performing aggregations
-       */
+      /** performing aggregations */
       mapper.performAggregations();
-
 
       /*
        *  Testing context information
@@ -2999,7 +3223,6 @@ public class RelationshipConfigurationMappingTest {
       assertEquals(2, context.getStatistics().builtModelVertexTypes);
       assertEquals(1, context.getStatistics().totalNumberOfModelEdges);
       assertEquals(1, context.getStatistics().builtModelEdgeTypes);
-
 
       /*
        *  Testing built graph model
@@ -3161,22 +3384,38 @@ public class RelationshipConfigurationMappingTest {
       assertFalse(itRelationships.hasNext());
 
       assertEquals(2, mapper.getRelationship2edgeType().size());
-      assertEquals(featuresLeftEdgeType, mapper.getRelationship2edgeType().get(performsLeftRelationship));
-      assertEquals(featuresRightEdgeType, mapper.getRelationship2edgeType().get(performsRightRelationship));
+      assertEquals(
+          featuresLeftEdgeType, mapper.getRelationship2edgeType().get(performsLeftRelationship));
+      assertEquals(
+          featuresRightEdgeType, mapper.getRelationship2edgeType().get(performsRightRelationship));
 
       assertEquals(2, mapper.getEdgeType2relationships().size());
       assertEquals(1, mapper.getEdgeType2relationships().get(featuresLeftEdgeType).size());
-      assertTrue(mapper.getEdgeType2relationships().get(featuresLeftEdgeType).contains(performsLeftRelationship));
+      assertTrue(
+          mapper
+              .getEdgeType2relationships()
+              .get(featuresLeftEdgeType)
+              .contains(performsLeftRelationship));
       assertEquals(1, mapper.getEdgeType2relationships().get(featuresRightEdgeType).size());
-      assertTrue(mapper.getEdgeType2relationships().get(featuresRightEdgeType).contains(performsRightRelationship));
+      assertTrue(
+          mapper
+              .getEdgeType2relationships()
+              .get(featuresRightEdgeType)
+              .contains(performsRightRelationship));
 
       // JoinVertexes-AggregatorEdges Mapping
 
       assertEquals(1, mapper.getJoinVertex2aggregatorEdges().size());
       assertTrue(mapper.getJoinVertex2aggregatorEdges().containsKey(filmActorVertexType));
-      assertEquals(featuresEdgeType, mapper.getJoinVertex2aggregatorEdges().get(filmActorVertexType).getEdgeType());
-      assertEquals("Film", mapper.getJoinVertex2aggregatorEdges().get(filmActorVertexType).getOutVertexClassName());
-      assertEquals("Actor", mapper.getJoinVertex2aggregatorEdges().get(filmActorVertexType).getInVertexClassName());
+      assertEquals(
+          featuresEdgeType,
+          mapper.getJoinVertex2aggregatorEdges().get(filmActorVertexType).getEdgeType());
+      assertEquals(
+          "Film",
+          mapper.getJoinVertex2aggregatorEdges().get(filmActorVertexType).getOutVertexClassName());
+      assertEquals(
+          "Actor",
+          mapper.getJoinVertex2aggregatorEdges().get(filmActorVertexType).getInVertexClassName());
 
     } catch (Exception e) {
       e.printStackTrace();
@@ -3194,5 +3433,4 @@ public class RelationshipConfigurationMappingTest {
       }
     }
   }
-
 }

@@ -21,7 +21,6 @@
 package com.orientechnologies.teleporter.configuration.api;
 
 import com.orientechnologies.teleporter.model.dbschema.OEntity;
-
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -33,13 +32,12 @@ import java.util.Map;
  * @author Gabriele Ponzi
  * @email <g.ponzi--at--orientdb.com>
  */
-
 public class OConfiguration {
 
   private static OConfiguration instance = null;
 
-  private List<OConfiguredVertexClass> configuredVertices;  // may be empty but not null
-  private List<OConfiguredEdgeClass>   configuredEdges;       // may be empty but not null
+  private List<OConfiguredVertexClass> configuredVertices; // may be empty but not null
+  private List<OConfiguredEdgeClass> configuredEdges; // may be empty but not null
 
   public OConfiguration() {
     this.configuredVertices = new LinkedList<OConfiguredVertexClass>();
@@ -101,7 +99,8 @@ public class OConfiguration {
     return null;
   }
 
-  private boolean isTargetVertex(OConfiguredVertexClass currConfiguredVertex, List<OEntity> mappedEntities) {
+  private boolean isTargetVertex(
+      OConfiguredVertexClass currConfiguredVertex, List<OEntity> mappedEntities) {
 
     List<OSourceTable> sourceTables = currConfiguredVertex.getMapping().getSourceTables();
 
@@ -138,12 +137,15 @@ public class OConfiguration {
 
   public Map<String, List<OConfiguredVertexClass>> buildTableName2MappedConfiguredVertices() {
 
-    Map<String, List<OConfiguredVertexClass>> tableName2mappedConfiguredVertices = new HashMap<String, List<OConfiguredVertexClass>>();
+    Map<String, List<OConfiguredVertexClass>> tableName2mappedConfiguredVertices =
+        new HashMap<String, List<OConfiguredVertexClass>>();
 
     for (OConfiguredVertexClass currConfiguredVertexClass : this.configuredVertices) {
-      for (OSourceTable currSourceTable : currConfiguredVertexClass.getMapping().getSourceTables()) {
+      for (OSourceTable currSourceTable :
+          currConfiguredVertexClass.getMapping().getSourceTables()) {
         String tableName = currSourceTable.getTableName();
-        List<OConfiguredVertexClass> mappedVertices = tableName2mappedConfiguredVertices.get(tableName);
+        List<OConfiguredVertexClass> mappedVertices =
+            tableName2mappedConfiguredVertices.get(tableName);
         if (mappedVertices == null) {
           mappedVertices = new LinkedList<OConfiguredVertexClass>();
         }

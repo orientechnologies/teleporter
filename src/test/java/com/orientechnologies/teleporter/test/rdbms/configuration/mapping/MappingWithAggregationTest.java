@@ -20,6 +20,8 @@
 
 package com.orientechnologies.teleporter.test.rdbms.configuration.mapping;
 
+import static org.junit.Assert.*;
+
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.teleporter.configuration.OConfigurationHandler;
 import com.orientechnologies.teleporter.configuration.api.OConfiguration;
@@ -37,33 +39,29 @@ import com.orientechnologies.teleporter.model.graphmodel.OVertexType;
 import com.orientechnologies.teleporter.nameresolver.OJavaConventionNameResolver;
 import com.orientechnologies.teleporter.persistence.handler.OHSQLDBDataTypeHandler;
 import com.orientechnologies.teleporter.util.OFileManager;
-import org.junit.Before;
-
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.Statement;
 import java.util.Iterator;
-
-import static org.junit.Assert.*;
+import org.junit.Before;
 
 /**
  * @author Gabriele Ponzi
  * @email <g.ponzi--at--orientdb.com>
  */
-
 public class MappingWithAggregationTest {
 
-  private OER2GraphMapper    mapper;
+  private OER2GraphMapper mapper;
   private OTeleporterContext context;
-  private final String config = "src/test/resources/configuration-mapping/aggregation-from2tables-mapping.json";
+  private final String config =
+      "src/test/resources/configuration-mapping/aggregation-from2tables-mapping.json";
   private ODBQueryEngine dbQueryEngine;
-  private String driver   = "org.hsqldb.jdbc.JDBCDriver";
-  private String jurl     = "jdbc:hsqldb:mem:mydb";
+  private String driver = "org.hsqldb.jdbc.JDBCDriver";
+  private String jurl = "jdbc:hsqldb:mem:mydb";
   private String username = "SA";
   private String password = "";
   private OSourceDatabaseInfo sourceDBInfo;
   private String outParentDirectory = "embedded:target/";
-
 
   @Before
   public void init() {
@@ -73,10 +71,11 @@ public class MappingWithAggregationTest {
     this.context.setMessageHandler(new OTeleporterMessageHandler(0));
     this.context.setNameResolver(new OJavaConventionNameResolver());
     this.context.setDataTypeHandler(new OHSQLDBDataTypeHandler());
-    this.sourceDBInfo = new OSourceDatabaseInfo("source", this.driver, this.jurl, this.username, this.password);
+    this.sourceDBInfo =
+        new OSourceDatabaseInfo("source", this.driver, this.jurl, this.username, this.password);
   }
 
-  //@Test
+  // @Test
 
   /*
    *  Source DB schema:
@@ -108,17 +107,20 @@ public class MappingWithAggregationTest {
       Class.forName(this.driver);
       connection = DriverManager.getConnection(this.jurl, this.username, this.password);
 
-      String personTableBuilding = "create memory table PERSON (ID varchar(256) not null,"
-          + " NAME varchar(256) not null, SURNAME varchar(256) not null, DEP_ID varchar(256) not null, primary key (ID))";
+      String personTableBuilding =
+          "create memory table PERSON (ID varchar(256) not null,"
+              + " NAME varchar(256) not null, SURNAME varchar(256) not null, DEP_ID varchar(256) not null, primary key (ID))";
       st = connection.createStatement();
       st.execute(personTableBuilding);
 
-      String vatProfileTableBuilding = "create memory table VAT_PROFILE (ID varchar(256),"
-          + " VAT varchar(256) not null, UPDATED_ON date not null, primary key (ID))";
+      String vatProfileTableBuilding =
+          "create memory table VAT_PROFILE (ID varchar(256),"
+              + " VAT varchar(256) not null, UPDATED_ON date not null, primary key (ID))";
       st.execute(vatProfileTableBuilding);
 
-      String departmentTableBuilding = "create memory table DEPARTMENT (ID varchar(256),"
-          + " NAME varchar(256) not null, LOCATION varchar(256) not null, UPDATED_ON date not null, primary key (ID))";
+      String departmentTableBuilding =
+          "create memory table DEPARTMENT (ID varchar(256),"
+              + " NAME varchar(256) not null, LOCATION varchar(256) not null, UPDATED_ON date not null, primary key (ID))";
       st.execute(departmentTableBuilding);
 
       ODocument config = OFileManager.buildJsonFromFile(this.config);
@@ -130,10 +132,9 @@ public class MappingWithAggregationTest {
       this.mapper.buildGraphModel(new OJavaConventionNameResolver());
       this.mapper.applyImportConfiguration();
 
-
-            /*
-             *  Testing context information
-             */
+      /*
+       *  Testing context information
+       */
 
       assertEquals(3, context.getStatistics().totalNumberOfEntities);
       assertEquals(3, context.getStatistics().builtEntities);
@@ -145,9 +146,9 @@ public class MappingWithAggregationTest {
       assertEquals(1, context.getStatistics().totalNumberOfModelEdges);
       assertEquals(1, context.getStatistics().builtModelEdgeTypes);
 
-            /*
-             *  Testing built source db schema
-             */
+      /*
+       *  Testing built source db schema
+       */
 
       OEntity personEntity = mapper.getDataBaseSchema().getEntityByName("PERSON");
       OEntity vatProfileEntity = mapper.getDataBaseSchema().getEntityByName("VAT_PROFILE");
@@ -173,19 +174,22 @@ public class MappingWithAggregationTest {
       assertEquals("NAME", personEntity.getAttributeByName("NAME").getName());
       assertEquals("VARCHAR", personEntity.getAttributeByName("NAME").getDataType());
       assertEquals(2, personEntity.getAttributeByName("NAME").getOrdinalPosition());
-      assertEquals("PERSON", personEntity.getAttributeByName("NAME").getBelongingEntity().getName());
+      assertEquals(
+          "PERSON", personEntity.getAttributeByName("NAME").getBelongingEntity().getName());
 
       assertNotNull(personEntity.getAttributeByName("SURNAME"));
       assertEquals("SURNAME", personEntity.getAttributeByName("SURNAME").getName());
       assertEquals("VARCHAR", personEntity.getAttributeByName("SURNAME").getDataType());
       assertEquals(3, personEntity.getAttributeByName("SURNAME").getOrdinalPosition());
-      assertEquals("PERSON", personEntity.getAttributeByName("SURNAME").getBelongingEntity().getName());
+      assertEquals(
+          "PERSON", personEntity.getAttributeByName("SURNAME").getBelongingEntity().getName());
 
       assertNotNull(personEntity.getAttributeByName("DEP_ID"));
       assertEquals("DEP_ID", personEntity.getAttributeByName("DEP_ID").getName());
       assertEquals("VARCHAR", personEntity.getAttributeByName("DEP_ID").getDataType());
       assertEquals(4, personEntity.getAttributeByName("DEP_ID").getOrdinalPosition());
-      assertEquals("PERSON", personEntity.getAttributeByName("DEP_ID").getBelongingEntity().getName());
+      assertEquals(
+          "PERSON", personEntity.getAttributeByName("DEP_ID").getBelongingEntity().getName());
 
       assertEquals(3, vatProfileEntity.getAttributes().size());
 
@@ -193,19 +197,23 @@ public class MappingWithAggregationTest {
       assertEquals("ID", vatProfileEntity.getAttributeByName("ID").getName());
       assertEquals("VARCHAR", vatProfileEntity.getAttributeByName("ID").getDataType());
       assertEquals(1, vatProfileEntity.getAttributeByName("ID").getOrdinalPosition());
-      assertEquals("VAT_PROFILE", vatProfileEntity.getAttributeByName("ID").getBelongingEntity().getName());
+      assertEquals(
+          "VAT_PROFILE", vatProfileEntity.getAttributeByName("ID").getBelongingEntity().getName());
 
       assertNotNull(vatProfileEntity.getAttributeByName("VAT"));
       assertEquals("VAT", vatProfileEntity.getAttributeByName("VAT").getName());
       assertEquals("VARCHAR", vatProfileEntity.getAttributeByName("VAT").getDataType());
       assertEquals(2, vatProfileEntity.getAttributeByName("VAT").getOrdinalPosition());
-      assertEquals("VAT_PROFILE", vatProfileEntity.getAttributeByName("VAT").getBelongingEntity().getName());
+      assertEquals(
+          "VAT_PROFILE", vatProfileEntity.getAttributeByName("VAT").getBelongingEntity().getName());
 
       assertNotNull(vatProfileEntity.getAttributeByName("UPDATED_ON"));
       assertEquals("UPDATED_ON", vatProfileEntity.getAttributeByName("UPDATED_ON").getName());
       assertEquals("DATE", vatProfileEntity.getAttributeByName("UPDATED_ON").getDataType());
       assertEquals(3, vatProfileEntity.getAttributeByName("UPDATED_ON").getOrdinalPosition());
-      assertEquals("VAT_PROFILE", vatProfileEntity.getAttributeByName("UPDATED_ON").getBelongingEntity().getName());
+      assertEquals(
+          "VAT_PROFILE",
+          vatProfileEntity.getAttributeByName("UPDATED_ON").getBelongingEntity().getName());
 
       assertEquals(4, departmentEntity.getAttributes().size());
 
@@ -213,25 +221,31 @@ public class MappingWithAggregationTest {
       assertEquals("ID", departmentEntity.getAttributeByName("ID").getName());
       assertEquals("VARCHAR", departmentEntity.getAttributeByName("ID").getDataType());
       assertEquals(1, departmentEntity.getAttributeByName("ID").getOrdinalPosition());
-      assertEquals("DEPARTMENT", departmentEntity.getAttributeByName("ID").getBelongingEntity().getName());
+      assertEquals(
+          "DEPARTMENT", departmentEntity.getAttributeByName("ID").getBelongingEntity().getName());
 
       assertNotNull(departmentEntity.getAttributeByName("NAME"));
       assertEquals("NAME", departmentEntity.getAttributeByName("NAME").getName());
       assertEquals("VARCHAR", departmentEntity.getAttributeByName("NAME").getDataType());
       assertEquals(2, departmentEntity.getAttributeByName("NAME").getOrdinalPosition());
-      assertEquals("DEPARTMENT", departmentEntity.getAttributeByName("NAME").getBelongingEntity().getName());
+      assertEquals(
+          "DEPARTMENT", departmentEntity.getAttributeByName("NAME").getBelongingEntity().getName());
 
       assertNotNull(departmentEntity.getAttributeByName("LOCATION"));
       assertEquals("LOCATION", departmentEntity.getAttributeByName("LOCATION").getName());
       assertEquals("VARCHAR", departmentEntity.getAttributeByName("LOCATION").getDataType());
       assertEquals(3, departmentEntity.getAttributeByName("LOCATION").getOrdinalPosition());
-      assertEquals("DEPARTMENT", departmentEntity.getAttributeByName("LOCATION").getBelongingEntity().getName());
+      assertEquals(
+          "DEPARTMENT",
+          departmentEntity.getAttributeByName("LOCATION").getBelongingEntity().getName());
 
       assertNotNull(departmentEntity.getAttributeByName("UPDATED_ON"));
       assertEquals("UPDATED_ON", departmentEntity.getAttributeByName("UPDATED_ON").getName());
       assertEquals("DATE", departmentEntity.getAttributeByName("UPDATED_ON").getDataType());
       assertEquals(4, departmentEntity.getAttributeByName("UPDATED_ON").getOrdinalPosition());
-      assertEquals("DEPARTMENT", departmentEntity.getAttributeByName("UPDATED_ON").getBelongingEntity().getName());
+      assertEquals(
+          "DEPARTMENT",
+          departmentEntity.getAttributeByName("UPDATED_ON").getBelongingEntity().getName());
 
       // relationship, primary and foreign key check
       assertEquals(1, mapper.getDataBaseSchema().getCanonicalRelationships().size());
@@ -252,20 +266,21 @@ public class MappingWithAggregationTest {
       assertEquals(departmentEntity.getPrimaryKey(), currentRelationship.getPrimaryKey());
       assertEquals(personEntity.getForeignKeys().get(0), currentRelationship.getForeignKey());
 
-      Iterator<OCanonicalRelationship> it2 = departmentEntity.getInCanonicalRelationships().iterator();
+      Iterator<OCanonicalRelationship> it2 =
+          departmentEntity.getInCanonicalRelationships().iterator();
       OCanonicalRelationship currentRelationship2 = it2.next();
       assertEquals(currentRelationship, currentRelationship2);
 
-      assertEquals("DEP_ID", personEntity.getForeignKeys().get(0).getInvolvedAttributes().get(0).getName());
+      assertEquals(
+          "DEP_ID", personEntity.getForeignKeys().get(0).getInvolvedAttributes().get(0).getName());
       assertEquals("ID", departmentEntity.getPrimaryKey().getInvolvedAttributes().get(0).getName());
 
       assertFalse(it.hasNext());
       assertFalse(it2.hasNext());
 
-
-            /*
-             *  Testing built graph model
-             */
+      /*
+       *  Testing built graph model
+       */
 
       OVertexType personVertexType = mapper.getGraphModel().getVertexTypeByName("Person");
       OVertexType departmentVertexType = mapper.getGraphModel().getVertexTypeByName("Department");
@@ -350,12 +365,18 @@ public class MappingWithAggregationTest {
       assertEquals(true, departmentVertexType.getPropertyByName("id").isIncludedInMigration());
 
       assertNotNull(departmentVertexType.getPropertyByName("departmentName"));
-      assertEquals("departmentName", departmentVertexType.getPropertyByName("departmentName").getName());
-      assertEquals("VARCHAR", departmentVertexType.getPropertyByName("departmentName").getOriginalType());
-      assertEquals("STRING", departmentVertexType.getPropertyByName("departmentName").getOrientdbType());
-      assertEquals(2, departmentVertexType.getPropertyByName("departmentName").getOrdinalPosition());
-      assertEquals(false, departmentVertexType.getPropertyByName("departmentName").isFromPrimaryKey());
-      assertEquals(true, departmentVertexType.getPropertyByName("departmentName").isIncludedInMigration());
+      assertEquals(
+          "departmentName", departmentVertexType.getPropertyByName("departmentName").getName());
+      assertEquals(
+          "VARCHAR", departmentVertexType.getPropertyByName("departmentName").getOriginalType());
+      assertEquals(
+          "STRING", departmentVertexType.getPropertyByName("departmentName").getOrientdbType());
+      assertEquals(
+          2, departmentVertexType.getPropertyByName("departmentName").getOrdinalPosition());
+      assertEquals(
+          false, departmentVertexType.getPropertyByName("departmentName").isFromPrimaryKey());
+      assertEquals(
+          true, departmentVertexType.getPropertyByName("departmentName").isIncludedInMigration());
 
       assertNotNull(departmentVertexType.getPropertyByName("location"));
       assertEquals("location", departmentVertexType.getPropertyByName("location").getName());
@@ -363,7 +384,8 @@ public class MappingWithAggregationTest {
       assertEquals("STRING", departmentVertexType.getPropertyByName("location").getOrientdbType());
       assertEquals(3, departmentVertexType.getPropertyByName("location").getOrdinalPosition());
       assertEquals(false, departmentVertexType.getPropertyByName("location").isFromPrimaryKey());
-      assertEquals(true, departmentVertexType.getPropertyByName("location").isIncludedInMigration());
+      assertEquals(
+          true, departmentVertexType.getPropertyByName("location").isIncludedInMigration());
 
       assertNotNull(departmentVertexType.getPropertyByName("updatedOn"));
       assertEquals("updatedOn", departmentVertexType.getPropertyByName("updatedOn").getName());
@@ -371,7 +393,8 @@ public class MappingWithAggregationTest {
       assertEquals("DATE", departmentVertexType.getPropertyByName("updatedOn").getOrientdbType());
       assertEquals(4, departmentVertexType.getPropertyByName("updatedOn").getOrdinalPosition());
       assertEquals(false, departmentVertexType.getPropertyByName("updatedOn").isFromPrimaryKey());
-      assertEquals(false, departmentVertexType.getPropertyByName("updatedOn").isIncludedInMigration());
+      assertEquals(
+          false, departmentVertexType.getPropertyByName("updatedOn").isIncludedInMigration());
 
       assertEquals(0, departmentVertexType.getOutEdgesType().size());
       assertEquals(1, departmentVertexType.getInEdgesType().size());
@@ -397,10 +420,9 @@ public class MappingWithAggregationTest {
       assertEquals(false, sinceProperty.isReadOnly());
       assertEquals(false, sinceProperty.isNotNull());
 
-
-            /*
-             * Rules check
-             */
+      /*
+       * Rules check
+       */
 
       // Classes Mapping
 
@@ -425,9 +447,11 @@ public class MappingWithAggregationTest {
       assertEquals("SURNAME", personClassMapper.getProperty2attribute().get("lastName"));
       assertEquals("DEP_ID", personClassMapper.getProperty2attribute().get("depId"));
 
-      OEVClassMapper vatProfileClassMapper = mapper.getEVClassMappersByVertex(personVertexType).get(1);
+      OEVClassMapper vatProfileClassMapper =
+          mapper.getEVClassMappersByVertex(personVertexType).get(1);
       assertEquals(1, mapper.getEVClassMappersByEntity(vatProfileEntity).size());
-      assertEquals(vatProfileClassMapper, mapper.getEVClassMappersByEntity(vatProfileEntity).get(0));
+      assertEquals(
+          vatProfileClassMapper, mapper.getEVClassMappersByEntity(vatProfileEntity).get(0));
       assertEquals(vatProfileClassMapper.getEntity(), vatProfileEntity);
       assertEquals(vatProfileClassMapper.getVertexType(), personVertexType);
 
@@ -441,9 +465,11 @@ public class MappingWithAggregationTest {
       assertEquals("UPDATED_ON", vatProfileClassMapper.getProperty2attribute().get("updatedOn"));
 
       assertEquals(1, mapper.getEVClassMappersByVertex(departmentVertexType).size());
-      OEVClassMapper departmentClassMapper = mapper.getEVClassMappersByVertex(departmentVertexType).get(0);
+      OEVClassMapper departmentClassMapper =
+          mapper.getEVClassMappersByVertex(departmentVertexType).get(0);
       assertEquals(1, mapper.getEVClassMappersByEntity(departmentEntity).size());
-      assertEquals(departmentClassMapper, mapper.getEVClassMappersByEntity(departmentEntity).get(0));
+      assertEquals(
+          departmentClassMapper, mapper.getEVClassMappersByEntity(departmentEntity).get(0));
       assertEquals(departmentClassMapper.getEntity(), departmentEntity);
       assertEquals(departmentClassMapper.getVertexType(), departmentVertexType);
 
@@ -460,7 +486,8 @@ public class MappingWithAggregationTest {
 
       // Relationships-Edges Mapping
 
-      Iterator<OCanonicalRelationship> itRelationships = personEntity.getOutCanonicalRelationships().iterator();
+      Iterator<OCanonicalRelationship> itRelationships =
+          personEntity.getOutCanonicalRelationships().iterator();
       OCanonicalRelationship worksAtRelationship = itRelationships.next();
       assertFalse(itRelationships.hasNext());
 
@@ -469,7 +496,8 @@ public class MappingWithAggregationTest {
 
       assertEquals(1, mapper.getEdgeType2relationships().size());
       assertEquals(1, mapper.getEdgeType2relationships().get(worksAtEdgeType).size());
-      assertTrue(mapper.getEdgeType2relationships().get(worksAtEdgeType).contains(worksAtRelationship));
+      assertTrue(
+          mapper.getEdgeType2relationships().get(worksAtEdgeType).contains(worksAtRelationship));
 
       // JoinVertexes-AggregatorEdges Mapping
 
@@ -491,5 +519,4 @@ public class MappingWithAggregationTest {
       }
     }
   }
-
 }

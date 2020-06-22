@@ -26,12 +26,11 @@ package com.orientechnologies.teleporter.model.dbschema;
  * @author Gabriele Ponzi
  * @email <g.ponzi--at--orientdb.com>
  */
-
 public class OAttribute implements Comparable<OAttribute> {
 
-  private String  name;
-  private int     ordinalPosition;
-  private String  dataType;
+  private String name;
+  private int ordinalPosition;
+  private String dataType;
   private OEntity belongingEntity;
 
   public OAttribute(String name, int ordinalPosition, String dataType, OEntity belongingEntity) {
@@ -86,22 +85,15 @@ public class OAttribute implements Comparable<OAttribute> {
     OAttribute that = (OAttribute) o;
     if (this.name.equals(that.getName()) && this.dataType.equals(that.getDataType())) {
       return true;
-    } else
-      return false;
-
+    } else return false;
   }
 
   @Override
   public int compareTo(OAttribute attributeToCompare) {
 
-    if (this.ordinalPosition > attributeToCompare.getOrdinalPosition())
-      return 0;
-
-    else if (this.ordinalPosition < attributeToCompare.getOrdinalPosition())
-      return -1;
-
-    else
-      return 1;
+    if (this.ordinalPosition > attributeToCompare.getOrdinalPosition()) return 0;
+    else if (this.ordinalPosition < attributeToCompare.getOrdinalPosition()) return -1;
+    else return 1;
   }
 
   public String toString() {
@@ -109,5 +101,4 @@ public class OAttribute implements Comparable<OAttribute> {
     s += this.ordinalPosition + ": " + this.name + " ( " + this.dataType + " )";
     return s;
   }
-
 }

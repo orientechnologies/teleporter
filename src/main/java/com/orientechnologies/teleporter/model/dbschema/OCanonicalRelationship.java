@@ -23,13 +23,12 @@ package com.orientechnologies.teleporter.model.dbschema;
 import java.util.List;
 
 /**
- * It represents a canonical relationship between two entities (foreign and parent entity)
- * based on the importing of a single primary key (composite or not) through a foreign key.
+ * It represents a canonical relationship between two entities (foreign and parent entity) based on
+ * the importing of a single primary key (composite or not) through a foreign key.
  *
  * @author Gabriele Ponzi
  * @email <g.ponzi--at--orientdb.com>
  */
-
 public class OCanonicalRelationship extends ORelationship {
 
   private OForeignKey foreignKey;
@@ -41,7 +40,8 @@ public class OCanonicalRelationship extends ORelationship {
     this.direction = "direct";
   }
 
-  public OCanonicalRelationship(OEntity foreignEntity, OEntity parentEntity, OForeignKey foreignKey, OPrimaryKey primaryKey) {
+  public OCanonicalRelationship(
+      OEntity foreignEntity, OEntity parentEntity, OForeignKey foreignKey, OPrimaryKey primaryKey) {
     this.foreignEntity = foreignEntity;
     this.parentEntity = parentEntity;
     this.foreignKey = foreignKey;
@@ -78,8 +78,10 @@ public class OCanonicalRelationship extends ORelationship {
   @Override
   public boolean equals(Object obj) {
     OCanonicalRelationship that = (OCanonicalRelationship) obj;
-    if (this.foreignEntity.equals(that.getForeignEntity()) && this.parentEntity.equals(that.getParentEntity())) {
-      if (this.foreignKey.equals(that.getForeignKey()) && this.primaryKey.equals(that.getPrimaryKey())) {
+    if (this.foreignEntity.equals(that.getForeignEntity())
+        && this.parentEntity.equals(that.getParentEntity())) {
+      if (this.foreignKey.equals(that.getForeignKey())
+          && this.primaryKey.equals(that.getPrimaryKey())) {
         return true;
       }
     }
@@ -88,8 +90,14 @@ public class OCanonicalRelationship extends ORelationship {
 
   @Override
   public String toString() {
-    return "OCanonicalRelationship [foreignEntity=" + foreignEntity.getName() + ", parentEntity=" + parentEntity.getName()
-        + ", Foreign key=" + this.foreignKey.toString() + ", Primary key=" + this.primaryKey.toString() + "]";
+    return "OCanonicalRelationship [foreignEntity="
+        + foreignEntity.getName()
+        + ", parentEntity="
+        + parentEntity.getName()
+        + ", Foreign key="
+        + this.foreignKey.toString()
+        + ", Primary key="
+        + this.primaryKey.toString()
+        + "]";
   }
-
 }

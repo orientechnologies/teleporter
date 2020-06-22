@@ -20,30 +20,30 @@
 
 package com.orientechnologies.teleporter.test.rdbms.util.configuration;
 
+import static org.junit.Assert.fail;
+
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.orient.output.OOutputStreamManager;
 import com.orientechnologies.teleporter.context.OTeleporterContext;
 import com.orientechnologies.teleporter.context.OTeleporterMessageHandler;
 import com.orientechnologies.teleporter.util.ODriverConfigurator;
 import com.orientechnologies.teleporter.util.OFileManager;
-import org.junit.Before;
-
 import java.io.IOException;
-
-import static org.junit.Assert.fail;
+import org.junit.Before;
 
 /**
  * @author Gabriele Ponzi
  * @email <g.ponzi--at--orientdb.com>
  */
-
 public class DriverConfiguratorTest {
 
-  private OTeleporterContext  context;
+  private OTeleporterContext context;
   private ODriverConfigurator driverConfigurator;
-  public static final String DRIVERS = "http://orientdb.com/jdbc-drivers.json";  // it must be coherent with the instance variable "DRIVERS" of the class ODriverConfigurator
+  public static final String DRIVERS =
+      "http://orientdb.com/jdbc-drivers.json"; // it must be coherent with the instance variable
+  // "DRIVERS" of the class ODriverConfigurator
   private OOutputStreamManager outputManager;
-  private String               fileName;
+  private String fileName;
   private String outParentDirectory = "embedded:target/";
 
   @Before
@@ -59,7 +59,7 @@ public class DriverConfiguratorTest {
     fileName = fileName.substring(fileName.lastIndexOf("/") + 1);
   }
 
-//  @Test
+  //  @Test
   public void checkConfigurationTest() {
 
     try {
@@ -78,10 +78,9 @@ public class DriverConfiguratorTest {
       e.printStackTrace();
       fail(e.getMessage());
     }
-
   }
 
-//  @Test
+  //  @Test
   public void checkConnectionTest() {
 
     try {
@@ -98,7 +97,5 @@ public class DriverConfiguratorTest {
       e.printStackTrace();
       fail(e.getMessage());
     }
-
   }
-
 }

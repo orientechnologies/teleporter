@@ -10,7 +10,8 @@
         <handler class="com.orientechnologies.orient.server.hazelcast.OHazelcastPlugin">
             <parameters>
                 <parameter value="${distributed}" name="enabled"/>
-                <parameter value="${ORIENTDB_HOME}/config/default-distributed-db-config.json" name="configuration.db.default"/>
+                <parameter value="${ORIENTDB_HOME}/config/default-distributed-db-config.json"
+                           name="configuration.db.default"/>
                 <parameter value="${ORIENTDB_HOME}/config/hazelcast.xml" name="configuration.hazelcast"/>
             </parameters>
         </handler>
@@ -55,8 +56,9 @@
             </socket>
         </sockets>
         <protocols>
-            <protocol implementation="com.orientechnologies.orient.server.network.protocol.binary.ONetworkProtocolBinary"
-                      name="binary"/>
+            <protocol
+                    implementation="com.orientechnologies.orient.server.network.protocol.binary.ONetworkProtocolBinary"
+                    name="binary"/>
             <protocol implementation="com.orientechnologies.orient.server.network.protocol.http.ONetworkProtocolHttpDb"
                       name="http"/>
         </protocols>

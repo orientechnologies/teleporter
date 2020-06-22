@@ -26,12 +26,11 @@ import java.util.List;
  * @author Gabriele Ponzi
  * @email <g.ponzi--at--orientdb.com>
  */
-
 public class OVertexMappingInformation {
 
-  private OConfiguredVertexClass belongingVertex;  // mandatory
-  private List<OSourceTable>     sourceTables;         // must be not empty!
-  private String                 aggregationFunction;              // optional (not present when there is not any aggregation)
+  private OConfiguredVertexClass belongingVertex; // mandatory
+  private List<OSourceTable> sourceTables; // must be not empty!
+  private String aggregationFunction; // optional (not present when there is not any aggregation)
 
   public OVertexMappingInformation(OConfiguredVertexClass belongingVertex) {
     this.belongingVertex = belongingVertex;

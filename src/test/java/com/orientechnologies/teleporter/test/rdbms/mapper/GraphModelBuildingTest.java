@@ -20,6 +20,8 @@
 
 package com.orientechnologies.teleporter.test.rdbms.mapper;
 
+import static org.junit.Assert.*;
+
 import com.orientechnologies.teleporter.context.OTeleporterContext;
 import com.orientechnologies.teleporter.context.OTeleporterMessageHandler;
 import com.orientechnologies.teleporter.importengine.rdbms.dbengine.ODBQueryEngine;
@@ -32,28 +34,24 @@ import com.orientechnologies.teleporter.model.graphmodel.OEdgeType;
 import com.orientechnologies.teleporter.model.graphmodel.OVertexType;
 import com.orientechnologies.teleporter.nameresolver.OJavaConventionNameResolver;
 import com.orientechnologies.teleporter.persistence.handler.OHSQLDBDataTypeHandler;
-import org.junit.Assert;
-import org.junit.Before;
-
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.Statement;
 import java.util.Iterator;
-
-import static org.junit.Assert.*;
+import org.junit.Assert;
+import org.junit.Before;
 
 /**
  * @author Gabriele Ponzi
  * @email <g.ponzi--at--orientdb.com>
  */
-
 public class GraphModelBuildingTest {
 
-  private OER2GraphMapper    mapper;
+  private OER2GraphMapper mapper;
   private OTeleporterContext context;
-  private ODBQueryEngine     dbQueryEngine;
-  private String driver   = "org.hsqldb.jdbc.JDBCDriver";
-  private String jurl     = "jdbc:hsqldb:mem:mydb";
+  private ODBQueryEngine dbQueryEngine;
+  private String driver = "org.hsqldb.jdbc.JDBCDriver";
+  private String jurl = "jdbc:hsqldb:mem:mydb";
   private String username = "SA";
   private String password = "";
   private OSourceDatabaseInfo sourceDBInfo;
@@ -66,10 +64,11 @@ public class GraphModelBuildingTest {
     this.context.setDbQueryEngine(this.dbQueryEngine);
     this.context.setMessageHandler(new OTeleporterMessageHandler(0));
     this.context.setDataTypeHandler(new OHSQLDBDataTypeHandler());
-    this.sourceDBInfo = new OSourceDatabaseInfo("source", this.driver, this.jurl, this.username, this.password);
+    this.sourceDBInfo =
+        new OSourceDatabaseInfo("source", this.driver, this.jurl, this.username, this.password);
   }
 
-  //@Test
+  // @Test
 
   /*
    *  Two tables Foreign and Parent with a simple primary key imported from the parent table.
@@ -85,19 +84,20 @@ public class GraphModelBuildingTest {
       Class.forName(this.driver);
       connection = DriverManager.getConnection(this.jurl, this.username, this.password);
 
-      String parentTableBuilding = "create memory table BOOK_AUTHOR (ID varchar(256) not null,"
-          + " NAME varchar(256) not null, AGE integer not null, primary key (ID))";
+      String parentTableBuilding =
+          "create memory table BOOK_AUTHOR (ID varchar(256) not null,"
+              + " NAME varchar(256) not null, AGE integer not null, primary key (ID))";
       st = connection.createStatement();
       st.execute(parentTableBuilding);
 
-      String foreignTableBuilding = "create memory table BOOK (ID varchar(256) not null, TITLE  varchar(256),"
-          + " AUTHOR_ID varchar(256) not null, primary key (ID), foreign key (AUTHOR_ID) references BOOK_AUTHOR(ID))";
+      String foreignTableBuilding =
+          "create memory table BOOK (ID varchar(256) not null, TITLE  varchar(256),"
+              + " AUTHOR_ID varchar(256) not null, primary key (ID), foreign key (AUTHOR_ID) references BOOK_AUTHOR(ID))";
       st.execute(foreignTableBuilding);
 
       this.mapper = new OER2GraphMapper(this.sourceDBInfo, null, null, null);
       mapper.buildSourceDatabaseSchema();
       mapper.buildGraphModel(new OJavaConventionNameResolver());
-
 
       /*
        *  Testing context information
@@ -107,7 +107,6 @@ public class GraphModelBuildingTest {
       assertEquals(2, context.getStatistics().builtModelVertexTypes);
       assertEquals(1, context.getStatistics().totalNumberOfModelEdges);
       assertEquals(1, context.getStatistics().builtModelEdgeTypes);
-
 
       /*
        *  Testing built graph model
@@ -199,9 +198,11 @@ public class GraphModelBuildingTest {
 
       OEntity bookAuthorEntity = mapper.getDataBaseSchema().getEntityByName("BOOK_AUTHOR");
       assertEquals(1, mapper.getEVClassMappersByVertex(authorVertexType).size());
-      OEVClassMapper bookAuthorClassMapper = mapper.getEVClassMappersByVertex(authorVertexType).get(0);
+      OEVClassMapper bookAuthorClassMapper =
+          mapper.getEVClassMappersByVertex(authorVertexType).get(0);
       assertEquals(1, mapper.getEVClassMappersByEntity(bookAuthorEntity).size());
-      assertEquals(bookAuthorClassMapper, mapper.getEVClassMappersByEntity(bookAuthorEntity).get(0));
+      assertEquals(
+          bookAuthorClassMapper, mapper.getEVClassMappersByEntity(bookAuthorEntity).get(0));
       assertEquals(bookAuthorClassMapper.getEntity(), bookAuthorEntity);
       assertEquals(bookAuthorClassMapper.getVertexType(), authorVertexType);
 
@@ -225,7 +226,8 @@ public class GraphModelBuildingTest {
 
       assertEquals(1, mapper.getEdgeType2relationships().size());
       assertEquals(1, mapper.getEdgeType2relationships().get(authorEdgeType).size());
-      assertTrue(mapper.getEdgeType2relationships().get(authorEdgeType).contains(hasAuthorRelationship));
+      assertTrue(
+          mapper.getEdgeType2relationships().get(authorEdgeType).contains(hasAuthorRelationship));
 
       // JoinVertexes-AggregatorEdges Mapping
 
@@ -248,7 +250,7 @@ public class GraphModelBuildingTest {
     }
   }
 
-  //@Test
+  // @Test
 
   /*
    *  Three tables and two relationships with two different simple primary keys imported .
@@ -264,23 +266,25 @@ public class GraphModelBuildingTest {
       Class.forName(this.driver);
       connection = DriverManager.getConnection(this.jurl, this.username, this.password);
 
-      String authorTableBuilding = "create memory table AUTHOR (ID varchar(256) not null,"
-          + " NAME varchar(256) not null, AGE integer not null, primary key (ID))";
+      String authorTableBuilding =
+          "create memory table AUTHOR (ID varchar(256) not null,"
+              + " NAME varchar(256) not null, AGE integer not null, primary key (ID))";
       st = connection.createStatement();
       st.execute(authorTableBuilding);
 
-      String bookTableBuilding = "create memory table BOOK (ID varchar(256) not null, TITLE  varchar(256),"
-          + " AUTHOR_ID varchar(256) not null, primary key (ID), foreign key (AUTHOR_ID) references AUTHOR(ID))";
+      String bookTableBuilding =
+          "create memory table BOOK (ID varchar(256) not null, TITLE  varchar(256),"
+              + " AUTHOR_ID varchar(256) not null, primary key (ID), foreign key (AUTHOR_ID) references AUTHOR(ID))";
       st.execute(bookTableBuilding);
 
-      String itemTableBuilding = "create memory table ITEM (ID varchar(256) not null, BOOK_ID  varchar(256),"
-          + " PRICE varchar(256) not null, primary key (ID), foreign key (BOOK_ID) references BOOK(ID))";
+      String itemTableBuilding =
+          "create memory table ITEM (ID varchar(256) not null, BOOK_ID  varchar(256),"
+              + " PRICE varchar(256) not null, primary key (ID), foreign key (BOOK_ID) references BOOK(ID))";
       st.execute(itemTableBuilding);
 
       this.mapper = new OER2GraphMapper(this.sourceDBInfo, null, null, null);
       mapper.buildSourceDatabaseSchema();
       mapper.buildGraphModel(new OJavaConventionNameResolver());
-
 
       /*
        *  Testing context information
@@ -290,7 +294,6 @@ public class GraphModelBuildingTest {
       assertEquals(3, context.getStatistics().builtModelVertexTypes);
       assertEquals(2, context.getStatistics().totalNumberOfModelEdges);
       assertEquals(2, context.getStatistics().builtModelEdgeTypes);
-
 
       /*
        *  Testing built graph model
@@ -457,9 +460,11 @@ public class GraphModelBuildingTest {
 
       assertEquals(2, mapper.getEdgeType2relationships().size());
       assertEquals(1, mapper.getEdgeType2relationships().get(authorEdgeType).size());
-      assertTrue(mapper.getEdgeType2relationships().get(authorEdgeType).contains(hasAuthorRelationship));
+      assertTrue(
+          mapper.getEdgeType2relationships().get(authorEdgeType).contains(hasAuthorRelationship));
       assertEquals(1, mapper.getEdgeType2relationships().get(bookEdgeType).size());
-      assertTrue(mapper.getEdgeType2relationships().get(bookEdgeType).contains(hasBookRelationship));
+      assertTrue(
+          mapper.getEdgeType2relationships().get(bookEdgeType).contains(hasBookRelationship));
 
       // JoinVertexes-AggregatorEdges Mapping
 
@@ -482,7 +487,7 @@ public class GraphModelBuildingTest {
     }
   }
 
-  //@Test
+  // @Test
 
   /*
    *  Three tables and two relationships with a simple primary keys twice imported.
@@ -498,23 +503,25 @@ public class GraphModelBuildingTest {
       Class.forName(this.driver);
       connection = DriverManager.getConnection(this.jurl, this.username, this.password);
 
-      String authorTableBuilding = "create memory table AUTHOR (ID varchar(256) not null,"
-          + " NAME varchar(256) not null, AGE integer not null, primary key (ID))";
+      String authorTableBuilding =
+          "create memory table AUTHOR (ID varchar(256) not null,"
+              + " NAME varchar(256) not null, AGE integer not null, primary key (ID))";
       st = connection.createStatement();
       st.execute(authorTableBuilding);
 
-      String bookTableBuilding = "create memory table BOOK (ID varchar(256) not null, TITLE  varchar(256),"
-          + " AUTHOR_ID varchar(256) not null, primary key (ID), foreign key (AUTHOR_ID) references AUTHOR(ID))";
+      String bookTableBuilding =
+          "create memory table BOOK (ID varchar(256) not null, TITLE  varchar(256),"
+              + " AUTHOR_ID varchar(256) not null, primary key (ID), foreign key (AUTHOR_ID) references AUTHOR(ID))";
       st.execute(bookTableBuilding);
 
-      String articleTableBuilding = "create memory table ARTICLE (ID varchar(256) not null, TITLE  varchar(256),"
-          + " DATE  date, AUTHOR_ID varchar(256) not null, primary key (ID), foreign key (AUTHOR_ID) references AUTHOR(ID))";
+      String articleTableBuilding =
+          "create memory table ARTICLE (ID varchar(256) not null, TITLE  varchar(256),"
+              + " DATE  date, AUTHOR_ID varchar(256) not null, primary key (ID), foreign key (AUTHOR_ID) references AUTHOR(ID))";
       st.execute(articleTableBuilding);
 
       this.mapper = new OER2GraphMapper(this.sourceDBInfo, null, null, null);
       mapper.buildSourceDatabaseSchema();
       mapper.buildGraphModel(new OJavaConventionNameResolver());
-
 
       /*
        *  Testing context information
@@ -524,7 +531,6 @@ public class GraphModelBuildingTest {
       assertEquals(3, context.getStatistics().builtModelVertexTypes);
       assertEquals(1, context.getStatistics().totalNumberOfModelEdges);
       assertEquals(1, context.getStatistics().builtModelEdgeTypes);
-
 
       /*
        *  Testing built graph model
@@ -660,7 +666,8 @@ public class GraphModelBuildingTest {
 
       OEntity articleEntity = mapper.getDataBaseSchema().getEntityByName("ARTICLE");
       assertEquals(1, mapper.getEVClassMappersByVertex(articleVertexType).size());
-      OEVClassMapper articleClassMapper = mapper.getEVClassMappersByVertex(articleVertexType).get(0);
+      OEVClassMapper articleClassMapper =
+          mapper.getEVClassMappersByVertex(articleVertexType).get(0);
       assertEquals(1, mapper.getEVClassMappersByEntity(articleEntity).size());
       assertEquals(articleClassMapper, mapper.getEVClassMappersByEntity(articleEntity).get(0));
       assertEquals(articleClassMapper.getEntity(), articleEntity);
@@ -692,8 +699,10 @@ public class GraphModelBuildingTest {
 
       assertEquals(1, mapper.getEdgeType2relationships().size());
       assertEquals(2, mapper.getEdgeType2relationships().get(authorEdgeType).size());
-      assertTrue(mapper.getEdgeType2relationships().get(authorEdgeType).contains(hasAuthorRelationship1));
-      assertTrue(mapper.getEdgeType2relationships().get(authorEdgeType).contains(hasAuthorRelationship2));
+      assertTrue(
+          mapper.getEdgeType2relationships().get(authorEdgeType).contains(hasAuthorRelationship1));
+      assertTrue(
+          mapper.getEdgeType2relationships().get(authorEdgeType).contains(hasAuthorRelationship2));
 
       // JoinVertexes-AggregatorEdges Mapping
 
@@ -716,7 +725,7 @@ public class GraphModelBuildingTest {
     }
   }
 
-  //@Test
+  // @Test
 
   /*
    *  Two tables Foreign and Parent with a composite primary key imported from the parent table.
@@ -732,20 +741,21 @@ public class GraphModelBuildingTest {
       Class.forName(this.driver);
       connection = DriverManager.getConnection(this.jurl, this.username, this.password);
 
-      String authorTableBuilding = "create memory table AUTHOR (NAME varchar(256) not null,"
-          + " SURNAME varchar(256) not null, AGE integer, primary key (NAME,SURNAME))";
+      String authorTableBuilding =
+          "create memory table AUTHOR (NAME varchar(256) not null,"
+              + " SURNAME varchar(256) not null, AGE integer, primary key (NAME,SURNAME))";
       st = connection.createStatement();
       st.execute(authorTableBuilding);
 
-      String bookTableBuilding = "create memory table BOOK (ID varchar(256) not null, TITLE  varchar(256),"
-          + " AUTHOR_NAME varchar(256) not null, AUTHOR_SURNAME varchar(256) not null, primary key (ID),"
-          + " foreign key (AUTHOR_NAME,AUTHOR_SURNAME) references AUTHOR(NAME,SURNAME))";
+      String bookTableBuilding =
+          "create memory table BOOK (ID varchar(256) not null, TITLE  varchar(256),"
+              + " AUTHOR_NAME varchar(256) not null, AUTHOR_SURNAME varchar(256) not null, primary key (ID),"
+              + " foreign key (AUTHOR_NAME,AUTHOR_SURNAME) references AUTHOR(NAME,SURNAME))";
       st.execute(bookTableBuilding);
 
       this.mapper = new OER2GraphMapper(this.sourceDBInfo, null, null, null);
       mapper.buildSourceDatabaseSchema();
       mapper.buildGraphModel(new OJavaConventionNameResolver());
-
 
       /*
        *  Testing context information
@@ -755,7 +765,6 @@ public class GraphModelBuildingTest {
       assertEquals(2, context.getStatistics().builtModelVertexTypes);
       assertEquals(1, context.getStatistics().totalNumberOfModelEdges);
       assertEquals(1, context.getStatistics().builtModelEdgeTypes);
-
 
       /*
        *  Testing built graph model
@@ -881,7 +890,8 @@ public class GraphModelBuildingTest {
 
       assertEquals(1, mapper.getEdgeType2relationships().size());
       assertEquals(1, mapper.getEdgeType2relationships().get(authorEdgeType).size());
-      assertTrue(mapper.getEdgeType2relationships().get(authorEdgeType).contains(hasAuthorRelationship));
+      assertTrue(
+          mapper.getEdgeType2relationships().get(authorEdgeType).contains(hasAuthorRelationship));
 
       // JoinVertexes-AggregatorEdges Mapping
 
@@ -904,7 +914,7 @@ public class GraphModelBuildingTest {
     }
   }
 
-  //@Test
+  // @Test
 
   /*
    *  Three tables: 2 Parent and 1 join table which imports two different simple primary key.
@@ -921,23 +931,26 @@ public class GraphModelBuildingTest {
       connection = DriverManager.getConnection(this.jurl, this.username, this.password);
 
       String filmTableBuilding =
-          "create memory table FILM (ID varchar(256) not null," + " TITLE varchar(256) not null, YEAR date, primary key (ID))";
+          "create memory table FILM (ID varchar(256) not null,"
+              + " TITLE varchar(256) not null, YEAR date, primary key (ID))";
       st = connection.createStatement();
       st.execute(filmTableBuilding);
 
-      String actorTableBuilding = "create memory table ACTOR (ID varchar(256) not null,"
-          + " NAME varchar(256) not null, SURNAME varchar(256) not null, primary key (ID))";
+      String actorTableBuilding =
+          "create memory table ACTOR (ID varchar(256) not null,"
+              + " NAME varchar(256) not null, SURNAME varchar(256) not null, primary key (ID))";
       st.execute(actorTableBuilding);
 
-      String film2actorTableBuilding = "create memory table FILM_ACTOR (FILM_ID varchar(256) not null,"
-          + " ACTOR_ID varchar(256) not null, primary key (FILM_ID,ACTOR_ID)," + " foreign key (FILM_ID) references FILM(ID),"
-          + " foreign key (ACTOR_ID) references ACTOR(ID))";
+      String film2actorTableBuilding =
+          "create memory table FILM_ACTOR (FILM_ID varchar(256) not null,"
+              + " ACTOR_ID varchar(256) not null, primary key (FILM_ID,ACTOR_ID),"
+              + " foreign key (FILM_ID) references FILM(ID),"
+              + " foreign key (ACTOR_ID) references ACTOR(ID))";
       st.execute(film2actorTableBuilding);
 
       this.mapper = new OER2GraphMapper(this.sourceDBInfo, null, null, null);
       mapper.buildSourceDatabaseSchema();
       mapper.buildGraphModel(new OJavaConventionNameResolver());
-
 
       /*
        *  Testing context information
@@ -947,7 +960,6 @@ public class GraphModelBuildingTest {
       assertEquals(3, context.getStatistics().builtModelVertexTypes);
       assertEquals(2, context.getStatistics().totalNumberOfModelEdges);
       assertEquals(2, context.getStatistics().builtModelEdgeTypes);
-
 
       /*
        *  Testing built graph model
@@ -1079,7 +1091,8 @@ public class GraphModelBuildingTest {
 
       OEntity filmActorEntity = mapper.getDataBaseSchema().getEntityByName("FILM_ACTOR");
       assertEquals(1, mapper.getEVClassMappersByVertex(film2actorVertexType).size());
-      OEVClassMapper filmActorClassMapper = mapper.getEVClassMappersByVertex(film2actorVertexType).get(0);
+      OEVClassMapper filmActorClassMapper =
+          mapper.getEVClassMappersByVertex(film2actorVertexType).get(0);
       assertEquals(1, mapper.getEVClassMappersByEntity(filmActorEntity).size());
       assertEquals(filmActorClassMapper, mapper.getEVClassMappersByEntity(filmActorEntity).get(0));
       assertEquals(filmActorClassMapper.getEntity(), filmActorEntity);
@@ -1094,7 +1107,8 @@ public class GraphModelBuildingTest {
 
       // Relationships-Edges Mapping
 
-      Iterator<OCanonicalRelationship> it = filmActorEntity.getOutCanonicalRelationships().iterator();
+      Iterator<OCanonicalRelationship> it =
+          filmActorEntity.getOutCanonicalRelationships().iterator();
       OCanonicalRelationship hasActorRelationship = it.next();
       OCanonicalRelationship hasFilmRelationship = it.next();
       assertFalse(it.hasNext());
@@ -1105,9 +1119,11 @@ public class GraphModelBuildingTest {
 
       assertEquals(2, mapper.getEdgeType2relationships().size());
       assertEquals(1, mapper.getEdgeType2relationships().get(filmEdgeType).size());
-      assertTrue(mapper.getEdgeType2relationships().get(filmEdgeType).contains(hasFilmRelationship));
+      assertTrue(
+          mapper.getEdgeType2relationships().get(filmEdgeType).contains(hasFilmRelationship));
       assertEquals(1, mapper.getEdgeType2relationships().get(actorEdgeType).size());
-      assertTrue(mapper.getEdgeType2relationships().get(actorEdgeType).contains(hasActorRelationship));
+      assertTrue(
+          mapper.getEdgeType2relationships().get(actorEdgeType).contains(hasActorRelationship));
 
       // JoinVertexes-AggregatorEdges Mapping
 
@@ -1130,7 +1146,7 @@ public class GraphModelBuildingTest {
     }
   }
 
-  //@Test
+  // @Test
 
   /*
    *  Two tables: 1 Foreign and 1 Parent (parent has an inner referential integrity).
@@ -1147,21 +1163,22 @@ public class GraphModelBuildingTest {
       Class.forName(this.driver);
       connection = DriverManager.getConnection(this.jurl, this.username, this.password);
 
-      String parentTableBuilding = "create memory table EMPLOYEE (EMP_ID varchar(256) not null,"
-          + " MGR_ID varchar(256) not null, NAME varchar(256) not null, primary key (EMP_ID), "
-          + " foreign key (MGR_ID) references EMPLOYEE(EMP_ID))";
+      String parentTableBuilding =
+          "create memory table EMPLOYEE (EMP_ID varchar(256) not null,"
+              + " MGR_ID varchar(256) not null, NAME varchar(256) not null, primary key (EMP_ID), "
+              + " foreign key (MGR_ID) references EMPLOYEE(EMP_ID))";
       st = connection.createStatement();
       st.execute(parentTableBuilding);
 
-      String foreignTableBuilding = "create memory table PROJECT (ID  varchar(256),"
-          + " TITLE varchar(256) not null, PROJECT_MANAGER varchar(256) not null, primary key (ID),"
-          + " foreign key (PROJECT_MANAGER) references EMPLOYEE(EMP_ID))";
+      String foreignTableBuilding =
+          "create memory table PROJECT (ID  varchar(256),"
+              + " TITLE varchar(256) not null, PROJECT_MANAGER varchar(256) not null, primary key (ID),"
+              + " foreign key (PROJECT_MANAGER) references EMPLOYEE(EMP_ID))";
       st.execute(foreignTableBuilding);
 
       this.mapper = new OER2GraphMapper(this.sourceDBInfo, null, null, null);
       mapper.buildSourceDatabaseSchema();
       mapper.buildGraphModel(new OJavaConventionNameResolver());
-
 
       /*
        *  Testing context information
@@ -1172,13 +1189,13 @@ public class GraphModelBuildingTest {
       assertEquals(2, context.getStatistics().totalNumberOfModelEdges);
       assertEquals(2, context.getStatistics().builtModelEdgeTypes);
 
-
       /*
        *  Testing built graph model
        */
       OVertexType employeeVertexType = mapper.getGraphModel().getVertexTypeByName("Employee");
       OVertexType projectVertexType = mapper.getGraphModel().getVertexTypeByName("Project");
-      OEdgeType projectManagerEdgeType = mapper.getGraphModel().getEdgeTypeByName("HasProjectManager");
+      OEdgeType projectManagerEdgeType =
+          mapper.getGraphModel().getEdgeTypeByName("HasProjectManager");
       OEdgeType mgrEdgeType = mapper.getGraphModel().getEdgeTypeByName("HasMgr");
 
       // vertices check
@@ -1222,8 +1239,10 @@ public class GraphModelBuildingTest {
       assertEquals(false, projectVertexType.getPropertyByName("title").isFromPrimaryKey());
 
       assertNotNull(projectVertexType.getPropertyByName("projectManager"));
-      assertEquals("projectManager", projectVertexType.getPropertyByName("projectManager").getName());
-      assertEquals("VARCHAR", projectVertexType.getPropertyByName("projectManager").getOriginalType());
+      assertEquals(
+          "projectManager", projectVertexType.getPropertyByName("projectManager").getName());
+      assertEquals(
+          "VARCHAR", projectVertexType.getPropertyByName("projectManager").getOriginalType());
       assertEquals(3, projectVertexType.getPropertyByName("projectManager").getOrdinalPosition());
       assertEquals(false, projectVertexType.getPropertyByName("projectManager").isFromPrimaryKey());
 
@@ -1253,7 +1272,8 @@ public class GraphModelBuildingTest {
 
       OEntity employeeEntity = mapper.getDataBaseSchema().getEntityByName("EMPLOYEE");
       assertEquals(1, mapper.getEVClassMappersByVertex(employeeVertexType).size());
-      OEVClassMapper employeeClassMapper = mapper.getEVClassMappersByVertex(employeeVertexType).get(0);
+      OEVClassMapper employeeClassMapper =
+          mapper.getEVClassMappersByVertex(employeeVertexType).get(0);
       assertEquals(1, mapper.getEVClassMappersByEntity(employeeEntity).size());
       assertEquals(employeeClassMapper, mapper.getEVClassMappersByEntity(employeeEntity).get(0));
       assertEquals(employeeClassMapper.getEntity(), employeeEntity);
@@ -1270,7 +1290,8 @@ public class GraphModelBuildingTest {
 
       OEntity projectEntity = mapper.getDataBaseSchema().getEntityByName("PROJECT");
       assertEquals(1, mapper.getEVClassMappersByVertex(projectVertexType).size());
-      OEVClassMapper projectClassMapper = mapper.getEVClassMappersByVertex(projectVertexType).get(0);
+      OEVClassMapper projectClassMapper =
+          mapper.getEVClassMappersByVertex(projectVertexType).get(0);
       assertEquals(1, mapper.getEVClassMappersByEntity(projectEntity).size());
       assertEquals(projectClassMapper, mapper.getEVClassMappersByEntity(projectEntity).get(0));
       assertEquals(projectClassMapper.getEntity(), projectEntity);
@@ -1280,14 +1301,17 @@ public class GraphModelBuildingTest {
       assertEquals(3, projectClassMapper.getProperty2attribute().size());
       assertEquals("id", projectClassMapper.getAttribute2property().get("ID"));
       assertEquals("title", projectClassMapper.getAttribute2property().get("TITLE"));
-      assertEquals("projectManager", projectClassMapper.getAttribute2property().get("PROJECT_MANAGER"));
+      assertEquals(
+          "projectManager", projectClassMapper.getAttribute2property().get("PROJECT_MANAGER"));
       assertEquals("ID", projectClassMapper.getProperty2attribute().get("id"));
       assertEquals("TITLE", projectClassMapper.getProperty2attribute().get("title"));
-      assertEquals("PROJECT_MANAGER", projectClassMapper.getProperty2attribute().get("projectManager"));
+      assertEquals(
+          "PROJECT_MANAGER", projectClassMapper.getProperty2attribute().get("projectManager"));
 
       // Relationships-Edges Mapping
 
-      Iterator<OCanonicalRelationship> it = employeeEntity.getOutCanonicalRelationships().iterator();
+      Iterator<OCanonicalRelationship> it =
+          employeeEntity.getOutCanonicalRelationships().iterator();
       OCanonicalRelationship hasManagerRelationship = it.next();
       assertFalse(it.hasNext());
       it = projectEntity.getOutCanonicalRelationships().iterator();
@@ -1296,13 +1320,20 @@ public class GraphModelBuildingTest {
 
       assertEquals(2, mapper.getRelationship2edgeType().size());
       assertEquals(mgrEdgeType, mapper.getRelationship2edgeType().get(hasManagerRelationship));
-      assertEquals(projectManagerEdgeType, mapper.getRelationship2edgeType().get(hasProjectManagerRelationship));
+      assertEquals(
+          projectManagerEdgeType,
+          mapper.getRelationship2edgeType().get(hasProjectManagerRelationship));
 
       assertEquals(2, mapper.getEdgeType2relationships().size());
       assertEquals(1, mapper.getEdgeType2relationships().get(mgrEdgeType).size());
-      assertTrue(mapper.getEdgeType2relationships().get(mgrEdgeType).contains(hasManagerRelationship));
+      assertTrue(
+          mapper.getEdgeType2relationships().get(mgrEdgeType).contains(hasManagerRelationship));
       assertEquals(1, mapper.getEdgeType2relationships().get(projectManagerEdgeType).size());
-      assertTrue(mapper.getEdgeType2relationships().get(projectManagerEdgeType).contains(hasProjectManagerRelationship));
+      assertTrue(
+          mapper
+              .getEdgeType2relationships()
+              .get(projectManagerEdgeType)
+              .contains(hasProjectManagerRelationship));
 
       // JoinVertexes-AggregatorEdges Mapping
 

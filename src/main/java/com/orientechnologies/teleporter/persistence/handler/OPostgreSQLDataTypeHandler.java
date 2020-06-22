@@ -20,21 +20,19 @@
 
 package com.orientechnologies.teleporter.persistence.handler;
 
+import com.orientechnologies.orient.core.metadata.schema.OType;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.orientechnologies.orient.core.metadata.schema.OType;
-
 /**
- * Handler that executes type conversions from PostgreSQL DBMS to the OrientDB types.
- * Geospatial implemented (PostGis).
+ * Handler that executes type conversions from PostgreSQL DBMS to the OrientDB types. Geospatial
+ * implemented (PostGis).
  *
  * @author Gabriele Ponzi
  * @email <g.ponzi--at--orientdb.com>
  */
-
 public class OPostgreSQLDataTypeHandler extends ODBMSDataTypeHandler {
 
   private List<String> geospatialTypes;
@@ -74,13 +72,11 @@ public class OPostgreSQLDataTypeHandler extends ODBMSDataTypeHandler {
     dbmsType2OrientType.put("bigserial", OType.LONG);
     dbmsType2OrientType.put("serial8", OType.LONG);
 
-
     /*
      * Monetary Types
      * (doc at http://www.postgresql.org/docs/9.6/static/datatype-money.html )
      */
     dbmsType2OrientType.put("money", OType.DOUBLE);
-
 
     /*
      * Character Types
@@ -98,7 +94,6 @@ public class OPostgreSQLDataTypeHandler extends ODBMSDataTypeHandler {
      */
     dbmsType2OrientType.put("bytea", OType.BINARY);
 
-
     /*
      * Date/Time Types
      * (doc at http://www.postgresql.org/docs/9.6/static/datatype-datetime.html )
@@ -106,7 +101,7 @@ public class OPostgreSQLDataTypeHandler extends ODBMSDataTypeHandler {
     dbmsType2OrientType.put("timestamp", OType.DATETIME);
     dbmsType2OrientType.put("date", OType.DATE);
     dbmsType2OrientType.put("time", OType.STRING);
-    dbmsType2OrientType.put("interval", OType.STRING);   
+    dbmsType2OrientType.put("interval", OType.STRING);
 
     /*
      * Boolean Type
@@ -115,14 +110,11 @@ public class OPostgreSQLDataTypeHandler extends ODBMSDataTypeHandler {
     dbmsType2OrientType.put("boolean", OType.BOOLEAN);
     dbmsType2OrientType.put("bool", OType.BOOLEAN);
 
-
     /*
      *  Enumerated Types
      * (doc at http://www.postgresql.org/docs/9.6/static/datatype-enum.html )
      */
-    //TODO?!
-
-
+    // TODO?!
 
     /*
      * Geometric Types
@@ -142,8 +134,6 @@ public class OPostgreSQLDataTypeHandler extends ODBMSDataTypeHandler {
     dbmsType2OrientType.put("geometry_dump", OType.EMBEDDED);
     dbmsType2OrientType.put("geography", OType.EMBEDDED);
 
-
-
     /*
      * Network Address Types
      * (doc at http://www.postgresql.org/docs/9.6/static/datatype-net-types.html )
@@ -151,7 +141,6 @@ public class OPostgreSQLDataTypeHandler extends ODBMSDataTypeHandler {
     dbmsType2OrientType.put("cidr", OType.STRING);
     dbmsType2OrientType.put("inet", OType.STRING);
     dbmsType2OrientType.put("macaddr", OType.STRING);
-
 
     /*
      * Bit String Types
@@ -161,13 +150,11 @@ public class OPostgreSQLDataTypeHandler extends ODBMSDataTypeHandler {
     dbmsType2OrientType.put("bit varying", OType.STRING);
     dbmsType2OrientType.put("varbit", OType.STRING);
 
-
     /*
      * Text Search Types
      * (doc at http://www.postgresql.org/docs/9.6/static/datatype-textsearch.html )
      */
-    //TODO
-
+    // TODO
 
     /*
      * UUID Type
@@ -175,13 +162,11 @@ public class OPostgreSQLDataTypeHandler extends ODBMSDataTypeHandler {
      */
     dbmsType2OrientType.put("uuid", OType.STRING);
 
-
     /*
      * XML Type
      * (doc at http://www.postgresql.org/docs/9.6/static/datatype-xml.html )
      */
     dbmsType2OrientType.put("xml", OType.STRING);
-
 
     /*
      * JSON Type
@@ -190,13 +175,11 @@ public class OPostgreSQLDataTypeHandler extends ODBMSDataTypeHandler {
     dbmsType2OrientType.put("json", OType.EMBEDDED);
     dbmsType2OrientType.put("jsonb", OType.EMBEDDED);
 
-
     /*
-     * Composite Types  
+     * Composite Types
      * (doc at http://www.postgresql.org/docs/9.6/static/rowtypes.html )
      */
     //    TODO! in EMBEDDED
-
 
     /*
      *  Range Types
@@ -224,5 +207,4 @@ public class OPostgreSQLDataTypeHandler extends ODBMSDataTypeHandler {
 
     return geospatialTypes;
   }
-
 }

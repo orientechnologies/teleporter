@@ -22,16 +22,15 @@ package com.orientechnologies.teleporter.importengine.rdbms.dbengine;
 
 import com.orientechnologies.teleporter.model.dbschema.OEntity;
 import com.orientechnologies.teleporter.model.dbschema.OHierarchicalBag;
-
 import java.util.List;
 
 /**
- * Interface representing the query builder used by the DB Query Engine, hiding specific implementation for each DBMS.
+ * Interface representing the query builder used by the DB Query Engine, hiding specific
+ * implementation for each DBMS.
  *
  * @author Gabriele Ponzi
  * @email <g.ponzi--at--orientdb.com>
  */
-
 public interface OQueryBuilder {
 
   String countTableRecords(String currentTableName, String currentTableSchema);
@@ -42,10 +41,11 @@ public interface OQueryBuilder {
 
   String getRecordsFromMultipleEntities(List<OEntity> mappedEntities, String[][] columns);
 
-  String getRecordsFromSingleTableByDiscriminatorValue(String discriminatorColumn, String currentDiscriminatorValue,
-      OEntity entity);
+  String getRecordsFromSingleTableByDiscriminatorValue(
+      String discriminatorColumn, String currentDiscriminatorValue, OEntity entity);
 
-  String getEntityTypeFromSingleTable(String discriminatorColumn, OEntity entity, String[] propertyOfKey, String[] valueOfKey);
+  String getEntityTypeFromSingleTable(
+      String discriminatorColumn, OEntity entity, String[] propertyOfKey, String[] valueOfKey);
 
   String buildAggregateTableFromHierarchicalBag(OHierarchicalBag bag);
 }

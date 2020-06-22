@@ -21,7 +21,6 @@
 package com.orientechnologies.teleporter.persistence.util;
 
 import com.orientechnologies.teleporter.context.OTeleporterContext;
-
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -33,12 +32,11 @@ import java.sql.Statement;
  * @author Gabriele Ponzi
  * @email <g.ponzi--at--orientdb.com>
  */
-
 public class OQueryResult {
 
   private Connection dbConnection;
-  private Statement  statement;
-  private ResultSet  result;
+  private Statement statement;
+  private ResultSet result;
 
   public OQueryResult(Connection connection, Statement statement, ResultSet result) {
     this.dbConnection = connection;
@@ -73,12 +71,9 @@ public class OQueryResult {
   public void closeAll() {
 
     try {
-      if (this.statement != null && !this.statement.isClosed())
-        this.statement.close();
-      if (this.result != null && !this.result.isClosed())
-        this.result.close();
-      if (this.dbConnection != null && !this.dbConnection.isClosed())
-        this.dbConnection.close();
+      if (this.statement != null && !this.statement.isClosed()) this.statement.close();
+      if (this.result != null && !this.result.isClosed()) this.result.close();
+      if (this.dbConnection != null && !this.dbConnection.isClosed()) this.dbConnection.close();
     } catch (SQLException e) {
       String mess = "";
       OTeleporterContext.getInstance().printExceptionMessage(e, mess, "error");
@@ -88,8 +83,7 @@ public class OQueryResult {
 
   public boolean isConnectionClosed(OTeleporterContext context) {
     try {
-      if (this.dbConnection != null)
-        return dbConnection.isClosed();
+      if (this.dbConnection != null) return dbConnection.isClosed();
     } catch (Exception e) {
       String mess = "";
       context.printExceptionMessage(e, mess, "error");
@@ -100,8 +94,7 @@ public class OQueryResult {
 
   public boolean isStatementClosed(OTeleporterContext context) {
     try {
-      if (this.statement != null)
-        return statement.isClosed();
+      if (this.statement != null) return statement.isClosed();
     } catch (Exception e) {
       String mess = "";
       context.printExceptionMessage(e, mess, "error");
@@ -112,8 +105,7 @@ public class OQueryResult {
 
   public boolean isResultSetClosed(OTeleporterContext context) {
     try {
-      if (this.result != null)
-        return result.isClosed();
+      if (this.result != null) return result.isClosed();
     } catch (Exception e) {
       String mess = "";
       context.printExceptionMessage(e, mess, "error");
@@ -126,8 +118,6 @@ public class OQueryResult {
 
     if (isConnectionClosed(context) && isStatementClosed(context) && isResultSetClosed(context))
       return true;
-    else
-      return false;
+    else return false;
   }
-
 }

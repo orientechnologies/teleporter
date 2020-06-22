@@ -30,50 +30,52 @@ import com.orientechnologies.teleporter.persistence.handler.OPostgreSQLDataTypeH
 import com.orientechnologies.teleporter.persistence.handler.OSQLServerDataTypeHandler;
 
 /**
- * Factory used to instantiate a specific DataTypeHandler according to the driver of the
- * DBMS from which the import is performed.
+ * Factory used to instantiate a specific DataTypeHandler according to the driver of the DBMS from
+ * which the import is performed.
  *
  * @author Gabriele Ponzi
  * @email <g.ponzi--at--orientdb.com>
  */
-
 public class ODataTypeHandlerFactory {
 
   public ODriverDataTypeHandler buildDataTypeHandler(String driver) {
     ODriverDataTypeHandler handler = null;
 
     switch (driver) {
+      case "oracle.jdbc.driver.OracleDriver":
+        handler = new OOracleDataTypeHandler();
+        break;
 
-    case "oracle.jdbc.driver.OracleDriver":
-      handler = new OOracleDataTypeHandler();
-      break;
+      case "com.microsoft.sqlserver.jdbc.SQLServerDriver":
+        handler = new OSQLServerDataTypeHandler();
+        break;
 
-    case "com.microsoft.sqlserver.jdbc.SQLServerDriver":
-      handler = new OSQLServerDataTypeHandler();
-      break;
+      case "com.mysql.jdbc.Driver":
+        handler = new OMySQLDataTypeHandler();
+        break;
 
-    case "com.mysql.jdbc.Driver":
-      handler = new OMySQLDataTypeHandler();
-      break;
+      case "org.postgresql.Driver":
+        handler = new OPostgreSQLDataTypeHandler();
+        break;
 
-    case "org.postgresql.Driver":
-      handler = new OPostgreSQLDataTypeHandler();
-      break;
+      case "org.hsqldb.jdbc.JDBCDriver":
+        handler = new OHSQLDBDataTypeHandler();
+        break;
 
-    case "org.hsqldb.jdbc.JDBCDriver":
-      handler = new OHSQLDBDataTypeHandler();
-      break;
-
-    default:
-      handler = new ODBMSDataTypeHandler();
-      OTeleporterContext.getInstance().getStatistics().warningMessages
-          .add("Driver " + driver + " is not completely supported. Thus problems may occur during type conversion.");
-      break;
+      default:
+        handler = new ODBMSDataTypeHandler();
+        OTeleporterContext.getInstance()
+            .getStatistics()
+            .warningMessages
+            .add(
+                "Driver "
+                    + driver
+                    + " is not completely supported. Thus problems may occur during type conversion.");
+        break;
     }
 
     OTeleporterContext.getInstance().setDataTypeHandler(handler);
 
     return handler;
   }
-
 }

@@ -27,20 +27,19 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * It represents a hierarchical tree of entities.
- * It collects the involved entities, the "inheritance strategy" adopted at the lower level (DBMS level) and other
- * meta-data useful for records importing.
+ * It represents a hierarchical tree of entities. It collects the involved entities, the
+ * "inheritance strategy" adopted at the lower level (DBMS level) and other meta-data useful for
+ * records importing.
  *
  * @author Gabriele Ponzi
  * @email <g.ponzi--at--orientdb.com>
  */
-
 public class OHierarchicalBag {
 
   private Map<Integer, Set<OEntity>> depth2entities;
-  private String                     inheritancePattern;
+  private String inheritancePattern;
 
-  private String              discriminatorColumn;
+  private String discriminatorColumn;
   private Map<String, String> entityName2discriminatorValue;
 
   public OHierarchicalBag() {
@@ -110,7 +109,8 @@ public class OHierarchicalBag {
     it = that.getDepth2entities().get(0).iterator();
     OEntity thatRootEntity = it.next();
 
-    if (this.inheritancePattern.equals(that.getInheritancePattern()) && rootEntity.getName().equals(thatRootEntity.getName())) {
+    if (this.inheritancePattern.equals(that.getInheritancePattern())
+        && rootEntity.getName().equals(thatRootEntity.getName())) {
       return true;
     }
     return false;

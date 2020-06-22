@@ -20,6 +20,8 @@
 
 package com.orientechnologies.teleporter.test.rdbms.configuration.handler;
 
+import static org.junit.Assert.*;
+
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.teleporter.configuration.OConfigurationHandler;
 import com.orientechnologies.teleporter.configuration.api.*;
@@ -33,35 +35,35 @@ import com.orientechnologies.teleporter.persistence.handler.ODBMSDataTypeHandler
 import com.orientechnologies.teleporter.persistence.handler.OHSQLDBDataTypeHandler;
 import com.orientechnologies.teleporter.util.ODocumentComparator;
 import com.orientechnologies.teleporter.util.OFileManager;
-import org.junit.Before;
-
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
-
-import static org.junit.Assert.*;
+import org.junit.Before;
 
 /**
  * @author Gabriele Ponzi
  * @email gabriele.ponzi--at--gmail.com
  */
-
 public class ConfigurationHandlerTest {
 
-  private final String config1 = "src/test/resources/configuration-mapping/aggregation-from2tables-mapping.json";
-  private final String config2 = "src/test/resources/configuration-mapping/joint-table-relationships-mapping-direct-edges.json";
-  private final String config3 = "src/test/resources/configuration-mapping/config-handler-output.json";
-  private final String config4 = "src/test/resources/configuration-mapping/splitting-into2tables-mapping.json";
-  private OTeleporterContext   context;
+  private final String config1 =
+      "src/test/resources/configuration-mapping/aggregation-from2tables-mapping.json";
+  private final String config2 =
+      "src/test/resources/configuration-mapping/joint-table-relationships-mapping-direct-edges.json";
+  private final String config3 =
+      "src/test/resources/configuration-mapping/config-handler-output.json";
+  private final String config4 =
+      "src/test/resources/configuration-mapping/splitting-into2tables-mapping.json";
+  private OTeleporterContext context;
   private ODBMSDataTypeHandler dataTypeHandler;
 
   private OER2GraphMapper mapper;
-  private ODBQueryEngine  dbQueryEngine;
-  private String driver   = "org.hsqldb.jdbc.JDBCDriver";
-  private String jurl     = "jdbc:hsqldb:mem:mydb";
+  private ODBQueryEngine dbQueryEngine;
+  private String driver = "org.hsqldb.jdbc.JDBCDriver";
+  private String jurl = "jdbc:hsqldb:mem:mydb";
   private String username = "SA";
   private String password = "";
   private OSourceDatabaseInfo sourceDBInfo;
@@ -76,14 +78,12 @@ public class ConfigurationHandlerTest {
     this.dbQueryEngine = new ODBQueryEngine(this.driver);
     this.context.setDbQueryEngine(this.dbQueryEngine);
     this.context.setMessageHandler(new OTeleporterMessageHandler(0));
-    this.sourceDBInfo = new OSourceDatabaseInfo("hsqldb", this.driver, this.jurl, this.username, this.password);
+    this.sourceDBInfo =
+        new OSourceDatabaseInfo("hsqldb", this.driver, this.jurl, this.username, this.password);
   }
 
-  //@Test
-  /**
-   * Testing OConfiguration building from JSON (case 1)
-   */
-
+  // @Test
+  /** Testing OConfiguration building from JSON (case 1) */
   public void test1() {
 
     OConfigurationHandler configurationHandler = new OConfigurationHandler(false);
@@ -96,12 +96,10 @@ public class ConfigurationHandlerTest {
       fail();
     }
 
-    OConfiguration configuration = configurationHandler.buildConfigurationFromJSONDoc(inputConfigurationDoc);
+    OConfiguration configuration =
+        configurationHandler.buildConfigurationFromJSONDoc(inputConfigurationDoc);
 
-    /**
-     * Checking configured vertices
-     */
-
+    /** Checking configured vertices */
     assertEquals(2, configuration.getConfiguredVertices().size());
 
     // person vertex class
@@ -134,12 +132,14 @@ public class ConfigurationHandlerTest {
     assertEquals(1, vatProfileSourceTable.getAggregationColumns().size());
     assertEquals("ID", vatProfileSourceTable.getAggregationColumns().get(0));
 
-    List<OConfiguredProperty> properties = new ArrayList<>(personVertexClass.getConfiguredProperties());
+    List<OConfiguredProperty> properties =
+        new ArrayList<>(personVertexClass.getConfiguredProperties());
     assertNotNull(properties);
     assertEquals(7, properties.size());
 
     OConfiguredProperty currentConfiguredProperty = properties.get(0);
-    OConfiguredPropertyMapping currentPropertyMapping = currentConfiguredProperty.getPropertyMapping();
+    OConfiguredPropertyMapping currentPropertyMapping =
+        currentConfiguredProperty.getPropertyMapping();
     assertNotNull(currentConfiguredProperty);
     assertNotNull(currentPropertyMapping);
     assertEquals("extKey1", currentConfiguredProperty.getPropertyName());
@@ -256,7 +256,8 @@ public class ConfigurationHandlerTest {
     assertEquals("DEPARTMENT", departmentSourceTable.getTableName());
     assertNull(departmentSourceTable.getAggregationColumns());
 
-    properties = new ArrayList<OConfiguredProperty>(departmentVertexClass.getConfiguredProperties());
+    properties =
+        new ArrayList<OConfiguredProperty>(departmentVertexClass.getConfiguredProperties());
     assertNotNull(properties);
     assertEquals(4, properties.size());
 
@@ -316,10 +317,7 @@ public class ConfigurationHandlerTest {
     assertEquals("UPDATED_ON", currentPropertyMapping.getColumnName());
     assertEquals("DATE", currentPropertyMapping.getType());
 
-    /**
-     * Checking configured edges
-     */
-
+    /** Checking configured edges */
     assertEquals(1, configuration.getConfiguredEdges().size());
 
     OConfiguredEdgeClass worksAtEdgeClass = configuration.getConfiguredEdges().get(0);
@@ -355,18 +353,17 @@ public class ConfigurationHandlerTest {
     assertEquals(false, currentConfiguredProperty.isNotNull());
 
     /**
-     * 1. Writing the configuration on a second JSON document through the configurationHandler. 2. Checking that the original JSON
-     * configuration and the final just written configuration are equal.
+     * 1. Writing the configuration on a second JSON document through the configurationHandler. 2.
+     * Checking that the original JSON configuration and the final just written configuration are
+     * equal.
      */
-    ODocument writtenJsonConfiguration = configurationHandler.buildJSONDocFromConfiguration(configuration);
+    ODocument writtenJsonConfiguration =
+        configurationHandler.buildJSONDocFromConfiguration(configuration);
     assertTrue(ODocumentComparator.areEquals(inputConfigurationDoc, writtenJsonConfiguration));
   }
 
-  //@Test
-  /**
-   * Testing OConfiguration building from JSON (case 2)
-   */
-
+  // @Test
+  /** Testing OConfiguration building from JSON (case 2) */
   public void test2() {
 
     OConfigurationHandler configurationHandler = new OConfigurationHandler(true);
@@ -379,18 +376,13 @@ public class ConfigurationHandlerTest {
       fail();
     }
 
-    OConfiguration configuration = configurationHandler.buildConfigurationFromJSONDoc(inputConfigurationDoc);
+    OConfiguration configuration =
+        configurationHandler.buildConfigurationFromJSONDoc(inputConfigurationDoc);
 
-    /**
-     * Checking configured vertices
-     */
-
+    /** Checking configured vertices */
     assertEquals(0, configuration.getConfiguredVertices().size());
 
-    /**
-     * Checking configured edges
-     */
-
+    /** Checking configured edges */
     assertEquals(1, configuration.getConfiguredEdges().size());
 
     OConfiguredEdgeClass performsEdgeClass = configuration.getConfiguredEdges().get(0);
@@ -411,16 +403,20 @@ public class ConfigurationHandlerTest {
     assertNotNull(performsMapping1.getRepresentedJoinTableMapping());
     assertEquals("ACTOR_FILM", performsMapping1.getRepresentedJoinTableMapping().getTableName());
     assertEquals(1, performsMapping1.getRepresentedJoinTableMapping().getFromColumns().size());
-    assertEquals("ACTOR_ID", performsMapping1.getRepresentedJoinTableMapping().getFromColumns().get(0));
+    assertEquals(
+        "ACTOR_ID", performsMapping1.getRepresentedJoinTableMapping().getFromColumns().get(0));
     assertEquals(1, performsMapping1.getRepresentedJoinTableMapping().getToColumns().size());
-    assertEquals("FILM_ID", performsMapping1.getRepresentedJoinTableMapping().getToColumns().get(0));
+    assertEquals(
+        "FILM_ID", performsMapping1.getRepresentedJoinTableMapping().getToColumns().get(0));
 
-    List<OConfiguredProperty> properties = new ArrayList<OConfiguredProperty>(performsEdgeClass.getConfiguredProperties());
+    List<OConfiguredProperty> properties =
+        new ArrayList<OConfiguredProperty>(performsEdgeClass.getConfiguredProperties());
     assertNotNull(properties);
     assertEquals(1, properties.size());
 
     OConfiguredProperty currentConfiguredProperty = properties.get(0);
-    OConfiguredPropertyMapping currentPropertyMapping = currentConfiguredProperty.getPropertyMapping();
+    OConfiguredPropertyMapping currentPropertyMapping =
+        currentConfiguredProperty.getPropertyMapping();
     assertNotNull(currentConfiguredProperty);
     assertNull(currentPropertyMapping);
     assertEquals("year", currentConfiguredProperty.getPropertyName());
@@ -430,21 +426,18 @@ public class ConfigurationHandlerTest {
     assertEquals(false, currentConfiguredProperty.isReadOnly());
     assertEquals(false, currentConfiguredProperty.isNotNull());
 
-
     /**
-     * 1. Writing the configuration on a second JSON document through the configurationHandler. 2. Checking that the original JSON
-     * configuration and the final just written configuration are equal.
+     * 1. Writing the configuration on a second JSON document through the configurationHandler. 2.
+     * Checking that the original JSON configuration and the final just written configuration are
+     * equal.
      */
-    ODocument writtenJsonConfiguration = configurationHandler.buildJSONDocFromConfiguration(configuration);
+    ODocument writtenJsonConfiguration =
+        configurationHandler.buildJSONDocFromConfiguration(configuration);
     assertTrue(ODocumentComparator.areEquals(inputConfigurationDoc, writtenJsonConfiguration));
-
   }
 
-  //@Test
-  /**
-   * Testing: - OConfiguration building from Graph Model (case 1)
-   */
-
+  // @Test
+  /** Testing: - OConfiguration building from Graph Model (case 1) */
   public void test3() {
 
     OConfigurationHandler configurationHandler = new OConfigurationHandler(true);
@@ -453,10 +446,7 @@ public class ConfigurationHandlerTest {
 
     try {
 
-      /**
-       * Graph model building
-       */
-
+      /** Graph model building */
       Class.forName(this.driver);
       connection = DriverManager.getConnection(this.jurl, this.username, this.password);
 
@@ -466,14 +456,16 @@ public class ConfigurationHandlerTest {
       st = connection.createStatement();
       st.execute(departmentTableBuilding);
 
-      String employeeTableBuilding = "create memory table EMPLOYEE (ID varchar(256) not null,"
-          + " FIRST_NAME varchar(256) not null, LAST_NAME varchar(256) not null, SALARY double not null,"
-          + " EMAIL varchar(256) not null, DEPARTMENT varchar(256) not null, primary key (ID),"
-          + " foreign key (DEPARTMENT) references DEPARTMENT(ID))";
+      String employeeTableBuilding =
+          "create memory table EMPLOYEE (ID varchar(256) not null,"
+              + " FIRST_NAME varchar(256) not null, LAST_NAME varchar(256) not null, SALARY double not null,"
+              + " EMAIL varchar(256) not null, DEPARTMENT varchar(256) not null, primary key (ID),"
+              + " foreign key (DEPARTMENT) references DEPARTMENT(ID))";
       st.execute(employeeTableBuilding);
 
-      String projectTableBuilding = "create memory table PROJECT (ID varchar(256) not null, PROJECT_NAME  varchar(256),"
-          + " DESCRIPTION varchar(256) not null, START_DATE date not null, EXPECTED_END_DATE date not null, primary key (ID))";
+      String projectTableBuilding =
+          "create memory table PROJECT (ID varchar(256) not null, PROJECT_NAME  varchar(256),"
+              + " DESCRIPTION varchar(256) not null, START_DATE date not null, EXPECTED_END_DATE date not null, primary key (ID))";
       st.execute(projectTableBuilding);
 
       String projectEmployeeTableBuilding =
@@ -487,25 +479,25 @@ public class ConfigurationHandlerTest {
       this.mapper.buildGraphModel(new OJavaConventionNameResolver());
       this.mapper.performMany2ManyAggregation();
 
-      /**
-       * Testing OConfiguration building
-       */
-
-      OConfiguration configuredGraph = configurationHandler.buildConfigurationFromMapper(this.mapper);
+      /** Testing OConfiguration building */
+      OConfiguration configuredGraph =
+          configurationHandler.buildConfigurationFromMapper(this.mapper);
 
       assertEquals(3, configuredGraph.getConfiguredVertices().size());
       assertEquals(2, configuredGraph.getConfiguredEdges().size());
 
-      OConfiguredVertexClass employeeConfiguredVertex = configuredGraph.getVertexClassByName("Employee");
-      OConfiguredVertexClass projectConfiguredVertex = configuredGraph.getVertexClassByName("Project");
-      OConfiguredVertexClass departmentConfiguredVertex = configuredGraph.getVertexClassByName("Department");
-      OConfiguredEdgeClass employee2projectConfiguredEdge = configuredGraph.getEdgeClassByName("EmployeeProject");
-      OConfiguredEdgeClass hasDepartmentConfiguredEdge = configuredGraph.getEdgeClassByName("HasDepartment");
+      OConfiguredVertexClass employeeConfiguredVertex =
+          configuredGraph.getVertexClassByName("Employee");
+      OConfiguredVertexClass projectConfiguredVertex =
+          configuredGraph.getVertexClassByName("Project");
+      OConfiguredVertexClass departmentConfiguredVertex =
+          configuredGraph.getVertexClassByName("Department");
+      OConfiguredEdgeClass employee2projectConfiguredEdge =
+          configuredGraph.getEdgeClassByName("EmployeeProject");
+      OConfiguredEdgeClass hasDepartmentConfiguredEdge =
+          configuredGraph.getEdgeClassByName("HasDepartment");
 
-      /**
-       * Employee vertex check
-       */
-
+      /** Employee vertex check */
       assertEquals("Employee", employeeConfiguredVertex.getName());
 
       // mapping and source tables
@@ -521,8 +513,8 @@ public class ConfigurationHandlerTest {
       assertEquals("EMPLOYEE", sourceTable.getTableName());
 
       // properties check
-      List<OConfiguredProperty> configuredProperties = new ArrayList<OConfiguredProperty>(
-          employeeConfiguredVertex.getConfiguredProperties());
+      List<OConfiguredProperty> configuredProperties =
+          new ArrayList<OConfiguredProperty>(employeeConfiguredVertex.getConfiguredProperties());
       assertEquals(6, configuredProperties.size());
 
       OConfiguredProperty currConfiguredProperty = configuredProperties.get(0);
@@ -597,10 +589,7 @@ public class ConfigurationHandlerTest {
       assertEquals("DEPARTMENT", currPropertyMapping.getColumnName());
       assertEquals("VARCHAR", currPropertyMapping.getType());
 
-      /**
-       * Project vertex check
-       */
-
+      /** Project vertex check */
       assertEquals("Project", projectConfiguredVertex.getName());
 
       // mapping and source tables
@@ -616,7 +605,8 @@ public class ConfigurationHandlerTest {
       assertEquals("PROJECT", sourceTable.getTableName());
 
       // properties check
-      configuredProperties = new ArrayList<OConfiguredProperty>(projectConfiguredVertex.getConfiguredProperties());
+      configuredProperties =
+          new ArrayList<OConfiguredProperty>(projectConfiguredVertex.getConfiguredProperties());
       assertEquals(5, configuredProperties.size());
 
       currConfiguredProperty = configuredProperties.get(0);
@@ -679,10 +669,7 @@ public class ConfigurationHandlerTest {
       assertEquals("EXPECTED_END_DATE", currPropertyMapping.getColumnName());
       assertEquals("DATE", currPropertyMapping.getType());
 
-      /**
-       * Department vertex check
-       */
-
+      /** Department vertex check */
       assertEquals("Department", departmentConfiguredVertex.getName());
 
       // mapping and source tables
@@ -698,7 +685,8 @@ public class ConfigurationHandlerTest {
       assertEquals("DEPARTMENT", sourceTable.getTableName());
 
       // properties check
-      configuredProperties = new ArrayList<OConfiguredProperty>(departmentConfiguredVertex.getConfiguredProperties());
+      configuredProperties =
+          new ArrayList<OConfiguredProperty>(departmentConfiguredVertex.getConfiguredProperties());
       assertEquals(3, configuredProperties.size());
 
       currConfiguredProperty = configuredProperties.get(0);
@@ -737,10 +725,7 @@ public class ConfigurationHandlerTest {
       assertEquals("LOCATION", currPropertyMapping.getColumnName());
       assertEquals("VARCHAR", currPropertyMapping.getType());
 
-      /**
-       * Project2Employee edge check
-       */
-
+      /** Project2Employee edge check */
       assertEquals("EmployeeProject", employee2projectConfiguredEdge.getName());
 
       // mapping check
@@ -764,7 +749,9 @@ public class ConfigurationHandlerTest {
       assertEquals("PROJECT_ID", joinTableMapping.getToColumns().get(0));
 
       // properties check
-      configuredProperties = new ArrayList<OConfiguredProperty>(employee2projectConfiguredEdge.getConfiguredProperties());
+      configuredProperties =
+          new ArrayList<OConfiguredProperty>(
+              employee2projectConfiguredEdge.getConfiguredProperties());
       assertEquals(1, configuredProperties.size());
 
       currConfiguredProperty = configuredProperties.get(0);
@@ -780,10 +767,7 @@ public class ConfigurationHandlerTest {
       assertEquals("ROLE", currPropertyMapping.getColumnName());
       assertEquals("VARCHAR", currPropertyMapping.getType());
 
-      /**
-       * HasDepartment edge check
-       */
-
+      /** HasDepartment edge check */
       assertEquals("HasDepartment", hasDepartmentConfiguredEdge.getName());
 
       // mapping check
@@ -802,7 +786,8 @@ public class ConfigurationHandlerTest {
       assertNull(joinTableMapping);
 
       // properties check
-      configuredProperties = new ArrayList<OConfiguredProperty>(hasDepartmentConfiguredEdge.getConfiguredProperties());
+      configuredProperties =
+          new ArrayList<OConfiguredProperty>(hasDepartmentConfiguredEdge.getConfiguredProperties());
       assertEquals(0, configuredProperties.size());
 
     } catch (Exception e) {
@@ -822,11 +807,8 @@ public class ConfigurationHandlerTest {
     }
   }
 
-  //@Test
-  /**
-   * Testing: - JSON building from OConfiguration (case 1)
-   */
-
+  // @Test
+  /** Testing: - JSON building from OConfiguration (case 1) */
   public void test4() {
 
     OConfigurationHandler configurationHandler = new OConfigurationHandler(true);
@@ -835,10 +817,7 @@ public class ConfigurationHandlerTest {
 
     try {
 
-      /**
-       * Graph model building
-       */
-
+      /** Graph model building */
       Class.forName(this.driver);
       connection = DriverManager.getConnection(this.jurl, this.username, this.password);
 
@@ -848,14 +827,16 @@ public class ConfigurationHandlerTest {
       st = connection.createStatement();
       st.execute(departmentTableBuilding);
 
-      String employeeTableBuilding = "create memory table EMPLOYEE (ID varchar(256) not null,"
-          + " FIRST_NAME varchar(256) not null, LAST_NAME varchar(256) not null, SALARY double not null,"
-          + " EMAIL varchar(256) not null, DEPARTMENT varchar(256) not null, primary key (ID),"
-          + " foreign key (DEPARTMENT) references DEPARTMENT(ID))";
+      String employeeTableBuilding =
+          "create memory table EMPLOYEE (ID varchar(256) not null,"
+              + " FIRST_NAME varchar(256) not null, LAST_NAME varchar(256) not null, SALARY double not null,"
+              + " EMAIL varchar(256) not null, DEPARTMENT varchar(256) not null, primary key (ID),"
+              + " foreign key (DEPARTMENT) references DEPARTMENT(ID))";
       st.execute(employeeTableBuilding);
 
-      String projectTableBuilding = "create memory table PROJECT (ID varchar(256) not null, PROJECT_NAME  varchar(256),"
-          + " DESCRIPTION varchar(256) not null, START_DATE date not null, EXPECTED_END_DATE date not null, primary key (ID))";
+      String projectTableBuilding =
+          "create memory table PROJECT (ID varchar(256) not null, PROJECT_NAME  varchar(256),"
+              + " DESCRIPTION varchar(256) not null, START_DATE date not null, EXPECTED_END_DATE date not null, primary key (ID))";
       st.execute(projectTableBuilding);
 
       String projectEmployeeTableBuilding =
@@ -869,12 +850,10 @@ public class ConfigurationHandlerTest {
       this.mapper.buildGraphModel(new OJavaConventionNameResolver());
       this.mapper.performMany2ManyAggregation();
 
-      OConfiguration configuredGraph = configurationHandler.buildConfigurationFromMapper(this.mapper);
+      OConfiguration configuredGraph =
+          configurationHandler.buildConfigurationFromMapper(this.mapper);
 
-      /**
-       * Testing JSON building
-       */
-
+      /** Testing JSON building */
       ODocument inputConfigurationDoc = null;
       try {
         inputConfigurationDoc = OFileManager.buildJsonFromFile(this.config3);
@@ -883,7 +862,8 @@ public class ConfigurationHandlerTest {
         fail();
       }
 
-      ODocument configuredGraphDoc = configurationHandler.buildJSONDocFromConfiguration(configuredGraph);
+      ODocument configuredGraphDoc =
+          configurationHandler.buildJSONDocFromConfiguration(configuredGraph);
       assertTrue(ODocumentComparator.areEquals(inputConfigurationDoc, configuredGraphDoc));
 
     } catch (Exception e) {
@@ -903,11 +883,8 @@ public class ConfigurationHandlerTest {
     }
   }
 
-  //@Test
-  /**
-   * Testing: - JSON building from OConfiguration (splitting case)
-   */
-
+  // @Test
+  /** Testing: - JSON building from OConfiguration (splitting case) */
   public void test5() {
 
     OConfigurationHandler configurationHandler = new OConfigurationHandler(true);
@@ -916,21 +893,20 @@ public class ConfigurationHandlerTest {
 
     try {
 
-      /**
-       * Graph model building
-       */
-
+      /** Graph model building */
       Class.forName(this.driver);
       connection = DriverManager.getConnection(this.jurl, this.username, this.password);
 
-      String employeeTableBuilding = "create memory table EMPLOYEE_PROJECT (FIRST_NAME varchar(256) not null,"
-          + " LAST_NAME varchar(256) not null, SALARY double not null, DEPARTMENT varchar(256) not null,"
-          + " PROJECT varchar(256) not null, BALANCE double not null, ROLE varchar(256), primary key (FIRST_NAME,LAST_NAME,PROJECT))";
+      String employeeTableBuilding =
+          "create memory table EMPLOYEE_PROJECT (FIRST_NAME varchar(256) not null,"
+              + " LAST_NAME varchar(256) not null, SALARY double not null, DEPARTMENT varchar(256) not null,"
+              + " PROJECT varchar(256) not null, BALANCE double not null, ROLE varchar(256), primary key (FIRST_NAME,LAST_NAME,PROJECT))";
       st = connection.createStatement();
       st.execute(employeeTableBuilding);
 
-      String departmentTableBuilding = "create memory table DEPARTMENT (ID varchar(256),"
-          + " NAME varchar(256) not null, LOCATION varchar(256) not null, UPDATED_ON date not null, primary key (ID))";
+      String departmentTableBuilding =
+          "create memory table DEPARTMENT (ID varchar(256),"
+              + " NAME varchar(256) not null, LOCATION varchar(256) not null, UPDATED_ON date not null, primary key (ID))";
       st.execute(departmentTableBuilding);
 
       String chiefTableBuilding =
@@ -947,12 +923,10 @@ public class ConfigurationHandlerTest {
       this.mapper.applyImportConfiguration();
       this.mapper.performMany2ManyAggregation();
 
-      OConfiguration configuredGraph = configurationHandler.buildConfigurationFromMapper(this.mapper);
+      OConfiguration configuredGraph =
+          configurationHandler.buildConfigurationFromMapper(this.mapper);
 
-      /**
-       * Testing JSON building
-       */
-
+      /** Testing JSON building */
       ODocument inputConfigurationDoc = null;
       try {
         inputConfigurationDoc = OFileManager.buildJsonFromFile(this.config4);
@@ -961,7 +935,8 @@ public class ConfigurationHandlerTest {
         fail();
       }
 
-      ODocument configuredGraphDoc = configurationHandler.buildJSONDocFromConfiguration(configuredGraph);
+      ODocument configuredGraphDoc =
+          configurationHandler.buildJSONDocFromConfiguration(configuredGraph);
       String input = inputConfigurationDoc.toJSON("");
       String configured = configuredGraphDoc.toJSON("");
       assertTrue(ODocumentComparator.areEquals(inputConfigurationDoc, configuredGraphDoc));
@@ -982,5 +957,4 @@ public class ConfigurationHandlerTest {
       }
     }
   }
-
 }

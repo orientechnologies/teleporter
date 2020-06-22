@@ -20,21 +20,19 @@
 
 package com.orientechnologies.teleporter.test.rdbms.util;
 
+import static org.junit.Assert.*;
+
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.teleporter.util.OFileManager;
-import org.junit.Test;
-
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-
-import static org.junit.Assert.*;
+import org.junit.Test;
 
 /**
  * @author Gabriele Ponzi
  * @email <g.ponzi--at--orientdb.com>
  */
-
 public class FileManagerTest {
 
   @Test
@@ -59,7 +57,6 @@ public class FileManagerTest {
       e.printStackTrace();
       fail(e.getMessage());
     }
-
   }
 
   @Test
@@ -67,7 +64,8 @@ public class FileManagerTest {
 
     try {
 
-      OFileManager.extractAll("src/test/resources/file-manager/sample.zip", "src/test/resources/file-manager/");
+      OFileManager.extractAll(
+          "src/test/resources/file-manager/sample.zip", "src/test/resources/file-manager/");
       File dir = new File("src/test/resources/file-manager/sample/");
       File file = new File("src/test/resources/file-manager/sample/empty-file");
 
@@ -80,7 +78,6 @@ public class FileManagerTest {
       e.printStackTrace();
       fail(e.getMessage());
     }
-
   }
 
   @Test
@@ -88,7 +85,8 @@ public class FileManagerTest {
 
     try {
 
-      OFileManager.extractAll("src/test/resources/file-manager/sample.zip", "src/test/resources/file-manager/");
+      OFileManager.extractAll(
+          "src/test/resources/file-manager/sample.zip", "src/test/resources/file-manager/");
       File dir = new File("src/test/resources/file-manager/sample/");
       File file = new File("src/test/resources/file-manager/sample/empty-file");
 
@@ -111,7 +109,8 @@ public class FileManagerTest {
 
     try {
 
-      ODocument document = OFileManager.buildJsonFromFile("src/test/resources/file-manager/sample.json");
+      ODocument document =
+          OFileManager.buildJsonFromFile("src/test/resources/file-manager/sample.json");
       assertNotNull(document);
 
       ODocument person = document.field("Person");
@@ -141,5 +140,4 @@ public class FileManagerTest {
       fail(e.getMessage());
     }
   }
-
 }

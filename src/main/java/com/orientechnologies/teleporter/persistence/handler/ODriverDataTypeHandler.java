@@ -23,15 +23,13 @@ package com.orientechnologies.teleporter.persistence.handler;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 
 /**
- * Interface that executes the right type conversions between DBMS and OrientDB types according
- * to the specific driver of the source DB.
+ * Interface that executes the right type conversions between DBMS and OrientDB types according to
+ * the specific driver of the source DB.
  *
  * @author Gabriele Ponzi
  * @email <g.ponzi--at--orientdb.com>
  */
-
 public interface ODriverDataTypeHandler {
 
   public OType resolveType(String type);
-
 }

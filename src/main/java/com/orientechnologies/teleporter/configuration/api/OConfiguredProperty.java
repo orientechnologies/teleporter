@@ -24,17 +24,18 @@ package com.orientechnologies.teleporter.configuration.api;
  * @author Gabriele Ponzi
  * @email <g.ponzi--at--orientdb.com>
  */
-
 public class OConfiguredProperty {
 
-  private String                     propertyName;                // mandatory
-  private boolean                    isIncludedInMigration;      // mandatory
-  private String                     propertyType;                // mandatory
-  private int                        ordinalPosition;                // mandatory
-  private boolean                    isMandatory;                // mandatory
-  private boolean                    isReadOnly;                 // mandatory
-  private boolean                    isNotNull;                  // mandatory
-  private OConfiguredPropertyMapping propertyMapping;   // may be null if the property is defined from scratch (only schema definition)
+  private String propertyName; // mandatory
+  private boolean isIncludedInMigration; // mandatory
+  private String propertyType; // mandatory
+  private int ordinalPosition; // mandatory
+  private boolean isMandatory; // mandatory
+  private boolean isReadOnly; // mandatory
+  private boolean isNotNull; // mandatory
+  private OConfiguredPropertyMapping
+      propertyMapping; // may be null if the property is defined from scratch (only schema
+  // definition)
 
   public OConfiguredProperty(String propertyName) {
     this.propertyName = propertyName;

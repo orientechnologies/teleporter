@@ -34,13 +34,13 @@ import com.orientechnologies.teleporter.strategy.rdbms.ODBMSSimpleModelBuildingS
  * @author Gabriele Ponzi
  * @email <g.ponzi--at--orientdb.com>
  */
-
 public class OStrategyFactory {
 
-  public OStrategyFactory() {
-  }
+  public OStrategyFactory() {}
 
-  public OWorkflowStrategy buildStrategy(String chosenStrategy, String protocol, String serverInitUrl, String dbName) throws OTeleporterIOException {
+  public OWorkflowStrategy buildStrategy(
+      String chosenStrategy, String protocol, String serverInitUrl, String dbName)
+      throws OTeleporterIOException {
 
     OWorkflowStrategy strategy = null;
 
@@ -50,26 +50,27 @@ public class OStrategyFactory {
       strategy = new ODBMSNaiveAggregationStrategy(protocol, serverInitUrl, dbName);
     } else {
       switch (chosenStrategy) {
+        case "naive":
+          strategy = new ODBMSNaiveStrategy(protocol, serverInitUrl, dbName);
+          break;
 
-      case "naive":
-        strategy = new ODBMSNaiveStrategy(protocol, serverInitUrl, dbName);
-        break;
+        case "naive-aggregate":
+          strategy = new ODBMSNaiveAggregationStrategy(protocol, serverInitUrl, dbName);
+          break;
 
-      case "naive-aggregate":
-        strategy = new ODBMSNaiveAggregationStrategy(protocol, serverInitUrl, dbName);
-        break;
+        case "interactive":
+          strategy = new ODBMSSimpleModelBuildingStrategy();
+          break;
 
-      case "interactive":
-        strategy = new ODBMSSimpleModelBuildingStrategy();
-        break;
+        case "interactive-aggr":
+          strategy = new ODBMSModelBuildingAggregationStrategy();
+          break;
 
-      case "interactive-aggr":
-        strategy = new ODBMSModelBuildingAggregationStrategy();
-        break;
-
-      default:
-        OTeleporterContext.getInstance().getMessageHandler()
-            .error(this, "The typed strategy doesn't exist for migration from the chosen RDBMS.\n");
+        default:
+          OTeleporterContext.getInstance()
+              .getMessageHandler()
+              .error(
+                  this, "The typed strategy doesn't exist for migration from the chosen RDBMS.\n");
       }
 
       OTeleporterContext.getInstance().setExecutionStrategy(chosenStrategy);
@@ -80,5 +81,4 @@ public class OStrategyFactory {
 
     return strategy;
   }
-
 }

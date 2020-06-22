@@ -26,13 +26,12 @@ import com.orientechnologies.teleporter.nameresolver.ONameResolver;
 import com.orientechnologies.teleporter.nameresolver.OOriginalConventionNameResolver;
 
 /**
- * Factory used to instantiate a specific NameResolver starting from its name.
- * If the name is not specified (null value) a JavaConventionNameResolver is instantiated.
+ * Factory used to instantiate a specific NameResolver starting from its name. If the name is not
+ * specified (null value) a JavaConventionNameResolver is instantiated.
  *
  * @author Gabriele Ponzi
  * @email <g.ponzi--at--orientdb.com>
  */
-
 public class ONameResolverFactory {
 
   public ONameResolver buildNameResolver(String nameResolverConvention) {
@@ -42,21 +41,24 @@ public class ONameResolverFactory {
       nameResolver = new OOriginalConventionNameResolver();
     } else {
       switch (nameResolverConvention) {
+        case "java":
+          nameResolver = new OJavaConventionNameResolver();
+          break;
 
-      case "java":
-        nameResolver = new OJavaConventionNameResolver();
-        break;
+        case "original":
+          nameResolver = new OOriginalConventionNameResolver();
+          break;
 
-      case "original":
-        nameResolver = new OOriginalConventionNameResolver();
-        break;
-
-      default:
-        nameResolver = new OOriginalConventionNameResolver();
-        OTeleporterContext.getInstance().getStatistics().warningMessages.add(
-            "Name resolver convention '" + nameResolverConvention + "' not found, the original name convention will be adopted.");
-        break;
-
+        default:
+          nameResolver = new OOriginalConventionNameResolver();
+          OTeleporterContext.getInstance()
+              .getStatistics()
+              .warningMessages
+              .add(
+                  "Name resolver convention '"
+                      + nameResolverConvention
+                      + "' not found, the original name convention will be adopted.");
+          break;
       }
     }
 
@@ -64,5 +66,4 @@ public class ONameResolverFactory {
 
     return nameResolver;
   }
-
 }

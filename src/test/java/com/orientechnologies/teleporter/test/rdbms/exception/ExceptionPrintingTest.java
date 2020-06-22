@@ -20,29 +20,26 @@
 
 package com.orientechnologies.teleporter.test.rdbms.exception;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import com.orientechnologies.teleporter.context.OTeleporterContext;
 import com.orientechnologies.teleporter.context.OTeleporterMessageHandler;
 import com.orientechnologies.teleporter.exception.OTeleporterIOException;
 import com.orientechnologies.teleporter.exception.OTeleporterRuntimeException;
+import java.io.IOException;
 import org.junit.Before;
 import org.junit.Test;
-
-import java.io.IOException;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 /**
  * @author Gabriele Ponzi
  * @email <g.ponzi--at--orientdb.com>
  */
-
 public class ExceptionPrintingTest {
 
   private OTeleporterContext context;
   private String outParentDirectory = "embedded:target/";
-
 
   @Before
   public void init() {
@@ -61,8 +58,12 @@ public class ExceptionPrintingTest {
      */
 
     Exception e1 = new OTeleporterIOException("Teleporter IO Exception raised");
-    Exception e2 = new OTeleporterIOException(new IOException("(cause-exception message) IO Exception raised"));
-    Exception e3 = new OTeleporterIOException("Teleporter IO Exception raised", new IOException("IO Exception raised"));
+    Exception e2 =
+        new OTeleporterIOException(
+            new IOException("(cause-exception message) IO Exception raised"));
+    Exception e3 =
+        new OTeleporterIOException(
+            "Teleporter IO Exception raised", new IOException("IO Exception raised"));
     Exception e4 = new OTeleporterIOException();
 
     String message1 = this.context.printExceptionMessage(e1, "Error during execution:", "info");
@@ -70,15 +71,22 @@ public class ExceptionPrintingTest {
     String message3 = this.context.printExceptionMessage(e3, "Error during execution:", "info");
     String message4 = this.context.printExceptionMessage(e4, "Error during execution:", "info");
 
-    assertEquals("Error during execution:\n"
-        + "com.orientechnologies.teleporter.exception.OTeleporterIOException - Teleporter IO Exception raised", message1);
-    assertEquals("Error during execution:\n"
+    assertEquals(
+        "Error during execution:\n"
+            + "com.orientechnologies.teleporter.exception.OTeleporterIOException - Teleporter IO Exception raised",
+        message1);
+    assertEquals(
+        "Error during execution:\n"
             + "com.orientechnologies.teleporter.exception.OTeleporterIOException - java.io.IOException: (cause-exception message) IO Exception raised",
         message2);
-    assertEquals("Error during execution:\n"
-        + "com.orientechnologies.teleporter.exception.OTeleporterIOException - Teleporter IO Exception raised", message3);
-    assertEquals("Error during execution:\n" + "com.orientechnologies.teleporter.exception.OTeleporterIOException", message4);
-
+    assertEquals(
+        "Error during execution:\n"
+            + "com.orientechnologies.teleporter.exception.OTeleporterIOException - Teleporter IO Exception raised",
+        message3);
+    assertEquals(
+        "Error during execution:\n"
+            + "com.orientechnologies.teleporter.exception.OTeleporterIOException",
+        message4);
 
     /*
      * Printing with DEBUG level
@@ -89,15 +97,22 @@ public class ExceptionPrintingTest {
     message3 = this.context.printExceptionMessage(e3, "Error during execution:", "debug");
     message4 = this.context.printExceptionMessage(e4, "Error during execution:", "debug");
 
-    assertEquals("Error during execution:\n"
-        + "com.orientechnologies.teleporter.exception.OTeleporterIOException - Teleporter IO Exception raised", message1);
-    assertEquals("Error during execution:\n"
+    assertEquals(
+        "Error during execution:\n"
+            + "com.orientechnologies.teleporter.exception.OTeleporterIOException - Teleporter IO Exception raised",
+        message1);
+    assertEquals(
+        "Error during execution:\n"
             + "com.orientechnologies.teleporter.exception.OTeleporterIOException - java.io.IOException: (cause-exception message) IO Exception raised",
         message2);
-    assertEquals("Error during execution:\n"
-        + "com.orientechnologies.teleporter.exception.OTeleporterIOException - Teleporter IO Exception raised", message3);
-    assertEquals("Error during execution:\n" + "com.orientechnologies.teleporter.exception.OTeleporterIOException", message4);
-
+    assertEquals(
+        "Error during execution:\n"
+            + "com.orientechnologies.teleporter.exception.OTeleporterIOException - Teleporter IO Exception raised",
+        message3);
+    assertEquals(
+        "Error during execution:\n"
+            + "com.orientechnologies.teleporter.exception.OTeleporterIOException",
+        message4);
 
     /*
      * Printing with WARNING level
@@ -108,17 +123,24 @@ public class ExceptionPrintingTest {
     message3 = this.context.printExceptionMessage(e3, "Error during execution:", "warn");
     message4 = this.context.printExceptionMessage(e4, "Error during execution:", "warn");
 
-    assertEquals("Error during execution:\n"
-        + "com.orientechnologies.teleporter.exception.OTeleporterIOException - Teleporter IO Exception raised", message1);
-    assertEquals("Error during execution:\n"
+    assertEquals(
+        "Error during execution:\n"
+            + "com.orientechnologies.teleporter.exception.OTeleporterIOException - Teleporter IO Exception raised",
+        message1);
+    assertEquals(
+        "Error during execution:\n"
             + "com.orientechnologies.teleporter.exception.OTeleporterIOException - java.io.IOException: (cause-exception message) IO Exception raised",
         message2);
-    assertEquals("Error during execution:\n"
-        + "com.orientechnologies.teleporter.exception.OTeleporterIOException - Teleporter IO Exception raised", message3);
-    assertEquals("Error during execution:\n" + "com.orientechnologies.teleporter.exception.OTeleporterIOException", message4);
+    assertEquals(
+        "Error during execution:\n"
+            + "com.orientechnologies.teleporter.exception.OTeleporterIOException - Teleporter IO Exception raised",
+        message3);
+    assertEquals(
+        "Error during execution:\n"
+            + "com.orientechnologies.teleporter.exception.OTeleporterIOException",
+        message4);
 
-
-     /*
+    /*
      * Printing with ERROR level
      */
 
@@ -127,19 +149,27 @@ public class ExceptionPrintingTest {
     message3 = this.context.printExceptionMessage(e3, "Error during execution:", "error");
     message4 = this.context.printExceptionMessage(e4, "Error during execution:", "error");
 
-    assertEquals("Error during execution:\n"
-        + "com.orientechnologies.teleporter.exception.OTeleporterIOException - Teleporter IO Exception raised", message1);
-    assertEquals("Error during execution:\n"
+    assertEquals(
+        "Error during execution:\n"
+            + "com.orientechnologies.teleporter.exception.OTeleporterIOException - Teleporter IO Exception raised",
+        message1);
+    assertEquals(
+        "Error during execution:\n"
             + "com.orientechnologies.teleporter.exception.OTeleporterIOException - java.io.IOException: (cause-exception message) IO Exception raised",
         message2);
-    assertEquals("Error during execution:\n"
-        + "com.orientechnologies.teleporter.exception.OTeleporterIOException - Teleporter IO Exception raised", message3);
-    assertEquals("Error during execution:\n" + "com.orientechnologies.teleporter.exception.OTeleporterIOException", message4);
-
+    assertEquals(
+        "Error during execution:\n"
+            + "com.orientechnologies.teleporter.exception.OTeleporterIOException - Teleporter IO Exception raised",
+        message3);
+    assertEquals(
+        "Error during execution:\n"
+            + "com.orientechnologies.teleporter.exception.OTeleporterIOException",
+        message4);
   }
 
   /**
-   * Tests behaviour of method printExceptionMessage(..) with the exception OTeleporterRuntimeException
+   * Tests behaviour of method printExceptionMessage(..) with the exception
+   * OTeleporterRuntimeException
    */
   @Test
   public void test2() {
@@ -149,9 +179,12 @@ public class ExceptionPrintingTest {
      */
 
     Exception e1 = new OTeleporterRuntimeException("Teleporter Runtime Exception raised");
-    Exception e2 = new OTeleporterRuntimeException(new RuntimeException("(cause-exception message) Runtime Exception raised"));
-    Exception e3 = new OTeleporterRuntimeException("Teleporter Runtime Exception raised",
-        new IOException("Runtime Exception raised"));
+    Exception e2 =
+        new OTeleporterRuntimeException(
+            new RuntimeException("(cause-exception message) Runtime Exception raised"));
+    Exception e3 =
+        new OTeleporterRuntimeException(
+            "Teleporter Runtime Exception raised", new IOException("Runtime Exception raised"));
     Exception e4 = new OTeleporterRuntimeException();
 
     String message1 = this.context.printExceptionMessage(e1, "Error during execution:", "info");
@@ -159,15 +192,22 @@ public class ExceptionPrintingTest {
     String message3 = this.context.printExceptionMessage(e3, "Error during execution:", "info");
     String message4 = this.context.printExceptionMessage(e4, "Error during execution:", "info");
 
-    assertEquals("Error during execution:\n"
-        + "com.orientechnologies.teleporter.exception.OTeleporterRuntimeException - Teleporter Runtime Exception raised", message1);
-    assertEquals("Error during execution:\n"
+    assertEquals(
+        "Error during execution:\n"
+            + "com.orientechnologies.teleporter.exception.OTeleporterRuntimeException - Teleporter Runtime Exception raised",
+        message1);
+    assertEquals(
+        "Error during execution:\n"
             + "com.orientechnologies.teleporter.exception.OTeleporterRuntimeException - java.lang.RuntimeException: (cause-exception message) Runtime Exception raised",
         message2);
-    assertEquals("Error during execution:\n"
-        + "com.orientechnologies.teleporter.exception.OTeleporterRuntimeException - Teleporter Runtime Exception raised", message3);
-    assertEquals("Error during execution:\n" + "com.orientechnologies.teleporter.exception.OTeleporterRuntimeException", message4);
-
+    assertEquals(
+        "Error during execution:\n"
+            + "com.orientechnologies.teleporter.exception.OTeleporterRuntimeException - Teleporter Runtime Exception raised",
+        message3);
+    assertEquals(
+        "Error during execution:\n"
+            + "com.orientechnologies.teleporter.exception.OTeleporterRuntimeException",
+        message4);
 
     /*
      * Printing with DEBUG level
@@ -178,15 +218,22 @@ public class ExceptionPrintingTest {
     message3 = this.context.printExceptionMessage(e3, "Error during execution:", "debug");
     message4 = this.context.printExceptionMessage(e4, "Error during execution:", "debug");
 
-    assertEquals("Error during execution:\n"
-        + "com.orientechnologies.teleporter.exception.OTeleporterRuntimeException - Teleporter Runtime Exception raised", message1);
-    assertEquals("Error during execution:\n"
+    assertEquals(
+        "Error during execution:\n"
+            + "com.orientechnologies.teleporter.exception.OTeleporterRuntimeException - Teleporter Runtime Exception raised",
+        message1);
+    assertEquals(
+        "Error during execution:\n"
             + "com.orientechnologies.teleporter.exception.OTeleporterRuntimeException - java.lang.RuntimeException: (cause-exception message) Runtime Exception raised",
         message2);
-    assertEquals("Error during execution:\n"
-        + "com.orientechnologies.teleporter.exception.OTeleporterRuntimeException - Teleporter Runtime Exception raised", message3);
-    assertEquals("Error during execution:\n" + "com.orientechnologies.teleporter.exception.OTeleporterRuntimeException", message4);
-
+    assertEquals(
+        "Error during execution:\n"
+            + "com.orientechnologies.teleporter.exception.OTeleporterRuntimeException - Teleporter Runtime Exception raised",
+        message3);
+    assertEquals(
+        "Error during execution:\n"
+            + "com.orientechnologies.teleporter.exception.OTeleporterRuntimeException",
+        message4);
 
     /*
      * Printing with WARNING level
@@ -197,15 +244,22 @@ public class ExceptionPrintingTest {
     message3 = this.context.printExceptionMessage(e3, "Error during execution:", "warn");
     message4 = this.context.printExceptionMessage(e4, "Error during execution:", "warn");
 
-    assertEquals("Error during execution:\n"
-        + "com.orientechnologies.teleporter.exception.OTeleporterRuntimeException - Teleporter Runtime Exception raised", message1);
-    assertEquals("Error during execution:\n"
+    assertEquals(
+        "Error during execution:\n"
+            + "com.orientechnologies.teleporter.exception.OTeleporterRuntimeException - Teleporter Runtime Exception raised",
+        message1);
+    assertEquals(
+        "Error during execution:\n"
             + "com.orientechnologies.teleporter.exception.OTeleporterRuntimeException - java.lang.RuntimeException: (cause-exception message) Runtime Exception raised",
         message2);
-    assertEquals("Error during execution:\n"
-        + "com.orientechnologies.teleporter.exception.OTeleporterRuntimeException - Teleporter Runtime Exception raised", message3);
-    assertEquals("Error during execution:\n" + "com.orientechnologies.teleporter.exception.OTeleporterRuntimeException", message4);
-
+    assertEquals(
+        "Error during execution:\n"
+            + "com.orientechnologies.teleporter.exception.OTeleporterRuntimeException - Teleporter Runtime Exception raised",
+        message3);
+    assertEquals(
+        "Error during execution:\n"
+            + "com.orientechnologies.teleporter.exception.OTeleporterRuntimeException",
+        message4);
 
     /*
      * Printing with ERROR level
@@ -216,19 +270,27 @@ public class ExceptionPrintingTest {
     message3 = this.context.printExceptionMessage(e3, "Error during execution:", "error");
     message4 = this.context.printExceptionMessage(e4, "Error during execution:", "error");
 
-    assertEquals("Error during execution:\n"
-        + "com.orientechnologies.teleporter.exception.OTeleporterRuntimeException - Teleporter Runtime Exception raised", message1);
-    assertEquals("Error during execution:\n"
+    assertEquals(
+        "Error during execution:\n"
+            + "com.orientechnologies.teleporter.exception.OTeleporterRuntimeException - Teleporter Runtime Exception raised",
+        message1);
+    assertEquals(
+        "Error during execution:\n"
             + "com.orientechnologies.teleporter.exception.OTeleporterRuntimeException - java.lang.RuntimeException: (cause-exception message) Runtime Exception raised",
         message2);
-    assertEquals("Error during execution:\n"
-        + "com.orientechnologies.teleporter.exception.OTeleporterRuntimeException - Teleporter Runtime Exception raised", message3);
-    assertEquals("Error during execution:\n" + "com.orientechnologies.teleporter.exception.OTeleporterRuntimeException", message4);
-
+    assertEquals(
+        "Error during execution:\n"
+            + "com.orientechnologies.teleporter.exception.OTeleporterRuntimeException - Teleporter Runtime Exception raised",
+        message3);
+    assertEquals(
+        "Error during execution:\n"
+            + "com.orientechnologies.teleporter.exception.OTeleporterRuntimeException",
+        message4);
   }
 
   /**
-   * Tests behaviour of method printExceptionStackTrace(..) with the exception OTeleporterIOException
+   * Tests behaviour of method printExceptionStackTrace(..) with the exception
+   * OTeleporterIOException
    */
   @Test
   public void test3() {
@@ -238,8 +300,12 @@ public class ExceptionPrintingTest {
      */
 
     Exception e1 = new OTeleporterIOException("Teleporter IO Exception raised");
-    Exception e2 = new OTeleporterIOException(new IOException("(cause-exception message) IO Exception raised"));
-    Exception e3 = new OTeleporterIOException("Teleporter IO Exception raised", new IOException("IO Exception raised"));
+    Exception e2 =
+        new OTeleporterIOException(
+            new IOException("(cause-exception message) IO Exception raised"));
+    Exception e3 =
+        new OTeleporterIOException(
+            "Teleporter IO Exception raised", new IOException("IO Exception raised"));
     Exception e4 = new OTeleporterIOException();
 
     String message1 = this.context.printExceptionStackTrace(e1, "info");
@@ -274,7 +340,6 @@ public class ExceptionPrintingTest {
     assertNotNull(message4);
     assertTrue(message4.length() > 1000);
 
-
     /*
      * Printing with WARNING level
      */
@@ -293,8 +358,7 @@ public class ExceptionPrintingTest {
     assertNotNull(message4);
     assertTrue(message4.length() > 1000);
 
-
-     /*
+    /*
      * Printing with ERROR level
      */
 
@@ -311,11 +375,11 @@ public class ExceptionPrintingTest {
     assertTrue(message3.length() > 1000);
     assertNotNull(message4);
     assertTrue(message4.length() > 1000);
-
   }
 
   /**
-   * Tests behaviour of method printExceptionStackTrace(..) with the exception OTeleporterRuntimeException
+   * Tests behaviour of method printExceptionStackTrace(..) with the exception
+   * OTeleporterRuntimeException
    */
   @Test
   public void test4() {
@@ -325,9 +389,12 @@ public class ExceptionPrintingTest {
      */
 
     Exception e1 = new OTeleporterRuntimeException("Teleporter Runtime Exception raised");
-    Exception e2 = new OTeleporterRuntimeException(new RuntimeException("(cause-exception message) Runtime Exception raised"));
-    Exception e3 = new OTeleporterRuntimeException("Teleporter Runtime Exception raised",
-        new IOException("Runtime Exception raised"));
+    Exception e2 =
+        new OTeleporterRuntimeException(
+            new RuntimeException("(cause-exception message) Runtime Exception raised"));
+    Exception e3 =
+        new OTeleporterRuntimeException(
+            "Teleporter Runtime Exception raised", new IOException("Runtime Exception raised"));
     Exception e4 = new OTeleporterRuntimeException();
 
     String message1 = this.context.printExceptionStackTrace(e1, "info");
@@ -343,7 +410,6 @@ public class ExceptionPrintingTest {
     assertTrue(message3.length() > 1000);
     assertNotNull(message4);
     assertTrue(message4.length() > 1000);
-
 
     /*
      * Printing with DEBUG level
@@ -363,7 +429,6 @@ public class ExceptionPrintingTest {
     assertNotNull(message4);
     assertTrue(message4.length() > 1000);
 
-
     /*
      * Printing with WARNING level
      */
@@ -382,7 +447,6 @@ public class ExceptionPrintingTest {
     assertNotNull(message4);
     assertTrue(message4.length() > 1000);
 
-
     /*
      * Printing with ERROR level
      */
@@ -400,6 +464,5 @@ public class ExceptionPrintingTest {
     assertTrue(message3.length() > 1000);
     assertNotNull(message4);
     assertTrue(message4.length() > 1000);
-
   }
 }

@@ -21,25 +21,21 @@
 package com.orientechnologies.teleporter.nameresolver;
 
 import com.orientechnologies.teleporter.model.dbschema.OCanonicalRelationship;
-
 import java.util.Locale;
 
 /**
- * Implementation of ONameResolver that performs name transformations on the elements
- * of the data source according to the Java convention.
+ * Implementation of ONameResolver that performs name transformations on the elements of the data
+ * source according to the Java convention.
  *
  * @author Gabriele Ponzi
  * @email <g.ponzi--at--orientdb.com>
  */
-
 public class OJavaConventionNameResolver implements ONameResolver {
 
   @Override
   public String resolveVertexName(String candidateName) {
 
-    if (this.isCompliantToJavaClassConvention(candidateName))
-      return candidateName;
-
+    if (this.isCompliantToJavaClassConvention(candidateName)) return candidateName;
     else {
 
       // manipulating name (Java Convention)
@@ -52,9 +48,7 @@ public class OJavaConventionNameResolver implements ONameResolver {
   @Override
   public String resolveVertexProperty(String candidateName) {
 
-    if (this.isCompliantToJavaVariableConvention(candidateName))
-      return candidateName;
-
+    if (this.isCompliantToJavaVariableConvention(candidateName)) return candidateName;
     else {
 
       // manipulating name (Java Convention)
@@ -89,12 +83,13 @@ public class OJavaConventionNameResolver implements ONameResolver {
 
     // Foreign Key composed of multiple attribute
     else {
-      finalName = this.toJavaClassConvention(relationship.getForeignEntity().getName()) + "2" + this
-          .toJavaClassConvention(relationship.getParentEntity().getName());
+      finalName =
+          this.toJavaClassConvention(relationship.getForeignEntity().getName())
+              + "2"
+              + this.toJavaClassConvention(relationship.getParentEntity().getName());
     }
 
     return finalName;
-
   }
 
   public String toJavaClassConvention(String name) {
@@ -117,7 +112,10 @@ public class OJavaConventionNameResolver implements ONameResolver {
       int pos;
       while (name.contains(" ")) {
         pos = name.indexOf(" ");
-        name = name.substring(0, pos) + (name.charAt(pos + 1) + "").toUpperCase(Locale.ENGLISH) + name.substring(pos + 2);
+        name =
+            name.substring(0, pos)
+                + (name.charAt(pos + 1) + "").toUpperCase(Locale.ENGLISH)
+                + name.substring(pos + 2);
       }
     }
 
@@ -125,13 +123,15 @@ public class OJavaConventionNameResolver implements ONameResolver {
       int pos;
       while (name.contains("_")) {
         pos = name.indexOf("_");
-        if(pos < name.length()-1) {
+        if (pos < name.length() - 1) {
           // the '_' char is not in last position
-          name = name.substring(0, pos) + (name.charAt(pos + 1) + "").toUpperCase(Locale.ENGLISH) + name.substring(pos + 2);
-        }
-        else {
+          name =
+              name.substring(0, pos)
+                  + (name.charAt(pos + 1) + "").toUpperCase(Locale.ENGLISH)
+                  + name.substring(pos + 2);
+        } else {
           // the '_' char is in last position
-          name = name.substring(0,name.length()-1);
+          name = name.substring(0, name.length() - 1);
         }
       }
     }
@@ -140,7 +140,10 @@ public class OJavaConventionNameResolver implements ONameResolver {
       int pos;
       while (name.contains("-")) {
         pos = name.indexOf("-");
-        name = name.substring(0, pos) + (name.charAt(pos + 1) + "").toUpperCase(Locale.ENGLISH) + name.substring(pos + 2);
+        name =
+            name.substring(0, pos)
+                + (name.charAt(pos + 1) + "").toUpperCase(Locale.ENGLISH)
+                + name.substring(pos + 2);
       }
     }
 
@@ -149,7 +152,6 @@ public class OJavaConventionNameResolver implements ONameResolver {
       name = name.substring(0, 1).toUpperCase(Locale.ENGLISH) + name.substring(1);
 
     return name;
-
   }
 
   public String toJavaVariableConvention(String name) {
@@ -172,7 +174,10 @@ public class OJavaConventionNameResolver implements ONameResolver {
       int pos;
       while (name.contains(" ")) {
         pos = name.indexOf(" ");
-        name = name.substring(0, pos) + (name.charAt(pos + 1) + "").toUpperCase(Locale.ENGLISH) + name.substring(pos + 2);
+        name =
+            name.substring(0, pos)
+                + (name.charAt(pos + 1) + "").toUpperCase(Locale.ENGLISH)
+                + name.substring(pos + 2);
       }
     }
 
@@ -180,7 +185,10 @@ public class OJavaConventionNameResolver implements ONameResolver {
       int pos;
       while (name.contains("_")) {
         pos = name.indexOf("_");
-        name = name.substring(0, pos) + (name.charAt(pos + 1) + "").toUpperCase(Locale.ENGLISH) + name.substring(pos + 2);
+        name =
+            name.substring(0, pos)
+                + (name.charAt(pos + 1) + "").toUpperCase(Locale.ENGLISH)
+                + name.substring(pos + 2);
       }
     }
 
@@ -188,7 +196,10 @@ public class OJavaConventionNameResolver implements ONameResolver {
       int pos;
       while (name.contains("-")) {
         pos = name.indexOf("-");
-        name = name.substring(0, pos) + (name.charAt(pos + 1) + "").toUpperCase(Locale.ENGLISH) + name.substring(pos + 2);
+        name =
+            name.substring(0, pos)
+                + (name.charAt(pos + 1) + "").toUpperCase(Locale.ENGLISH)
+                + name.substring(pos + 2);
       }
     }
 
@@ -201,8 +212,8 @@ public class OJavaConventionNameResolver implements ONameResolver {
 
   public boolean isCompliantToJavaClassConvention(String candidateName) {
 
-    if (!(candidateName.contains(" ") || candidateName.contains("_") || candidateName.contains("-")) && Character
-        .isUpperCase(candidateName.charAt(0))) {
+    if (!(candidateName.contains(" ") || candidateName.contains("_") || candidateName.contains("-"))
+        && Character.isUpperCase(candidateName.charAt(0))) {
 
       // if all chars are uppercase, then name is transformed in a lowercase version
 
@@ -214,22 +225,15 @@ public class OJavaConventionNameResolver implements ONameResolver {
         }
       }
 
-      if (allUpperCase)
-        return false;
-      else
-        return true;
-    } else
-      return false;
+      if (allUpperCase) return false;
+      else return true;
+    } else return false;
   }
 
   public boolean isCompliantToJavaVariableConvention(String candidateName) {
 
-    if (!(candidateName.contains(" ") || candidateName.contains("_") || candidateName.contains("-")) && Character
-        .isLowerCase(candidateName.charAt(0)))
-      return true;
-    else
-      return false;
-
+    if (!(candidateName.contains(" ") || candidateName.contains("_") || candidateName.contains("-"))
+        && Character.isLowerCase(candidateName.charAt(0))) return true;
+    else return false;
   }
-
 }

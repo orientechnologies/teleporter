@@ -32,18 +32,16 @@ import com.orientechnologies.teleporter.model.dbschema.*;
 import com.orientechnologies.teleporter.model.graphmodel.OEdgeType;
 import com.orientechnologies.teleporter.model.graphmodel.OModelProperty;
 import com.orientechnologies.teleporter.model.graphmodel.OVertexType;
-
 import java.util.*;
 
 /**
- * It handles the configuration of the Teleporter workflow. It allows:
- * 1. translation from OConfiguration object to JSON format and vice versa.
- * 2. the OConfiguration object building starting from a mapping between dbms and graph models.
+ * It handles the configuration of the Teleporter workflow. It allows: 1. translation from
+ * OConfiguration object to JSON format and vice versa. 2. the OConfiguration object building
+ * starting from a mapping between dbms and graph models.
  *
  * @author Gabriele Ponzi
  * @email <g.ponzi--at--orientdb.com>
  */
-
 public class OConfigurationHandler {
 
   private boolean runningAggregationStrategy;
@@ -60,11 +58,10 @@ public class OConfigurationHandler {
    * Parsing method. It returns a OConfiguration object starting from a JSON configuration.
    *
    * @param jsonConfiguration
-   *
    * @return
    */
-
-  public OConfiguration buildConfigurationFromJSONDoc(ODocument jsonConfiguration, boolean keepVerticesCoordinates) {
+  public OConfiguration buildConfigurationFromJSONDoc(
+      ODocument jsonConfiguration, boolean keepVerticesCoordinates) {
 
     OConfiguration configuration = new OConfiguration();
 
@@ -77,13 +74,16 @@ public class OConfigurationHandler {
     return configuration;
   }
 
-  private void buildConfiguredVertices(ODocument jsonConfiguration, OConfiguration configuration, boolean keepVerticesCoordinates) {
+  private void buildConfiguredVertices(
+      ODocument jsonConfiguration, OConfiguration configuration, boolean keepVerticesCoordinates) {
 
     List<ODocument> verticesDoc = jsonConfiguration.field("vertices");
     List<OConfiguredVertexClass> configuredVertices = new LinkedList<OConfiguredVertexClass>();
 
     if (verticesDoc == null) {
-      OTeleporterContext.getInstance().getMessageHandler().error(this, "Configuration error: 'vertices' field not found.");
+      OTeleporterContext.getInstance()
+          .getMessageHandler()
+          .error(this, "Configuration error: 'vertices' field not found.");
       throw new OTeleporterRuntimeException();
     }
 
@@ -92,13 +92,16 @@ public class OConfigurationHandler {
 
       String configuredVertexClassName = currentVertexDoc.field("name");
       if (configuredVertexClassName == null) {
-        OTeleporterContext.getInstance().getMessageHandler()
+        OTeleporterContext.getInstance()
+            .getMessageHandler()
             .error(this, "Configuration error: 'name' field not found in vertex class definition.");
         throw new OTeleporterRuntimeException();
       }
 
-      OConfiguredVertexClass currentConfiguredVertex = new OConfiguredVertexClass(configuredVertexClassName, configuration);
-      OVertexMappingInformation currentMapping = new OVertexMappingInformation(currentConfiguredVertex);
+      OConfiguredVertexClass currentConfiguredVertex =
+          new OConfiguredVertexClass(configuredVertexClassName, configuration);
+      OVertexMappingInformation currentMapping =
+          new OVertexMappingInformation(currentConfiguredVertex);
 
       List<String> externalKeyProps = currentVertexDoc.field("externalKey");
       if (externalKeyProps != null) {
@@ -108,14 +111,16 @@ public class OConfigurationHandler {
       ODocument mappingDoc = currentVertexDoc.field("mapping");
 
       if (mappingDoc == null) {
-        OTeleporterContext.getInstance().getMessageHandler()
-            .error(this, "Configuration error: 'mapping' field not found in the '%s' vertex-type definition.", configuredVertexClassName);
+        OTeleporterContext.getInstance()
+            .getMessageHandler()
+            .error(
+                this,
+                "Configuration error: 'mapping' field not found in the '%s' vertex-type definition.",
+                configuredVertexClassName);
         throw new OTeleporterRuntimeException();
       }
 
-      /**
-       * Mapping building
-       */
+      /** Mapping building */
 
       // Aggregation function (optional)
       String aggregationFunction = mappingDoc.field("aggregationFunction");
@@ -124,8 +129,11 @@ public class OConfigurationHandler {
       // Source Tables building (mandatory)
       List<ODocument> sourceTableDocs = mappingDoc.field("sourceTables");
       if (sourceTableDocs == null) {
-        OTeleporterContext.getInstance().getMessageHandler()
-            .error(this, "Configuration error: 'sourceTables' field not found in the '%s' vertex-type mapping.",
+        OTeleporterContext.getInstance()
+            .getMessageHandler()
+            .error(
+                this,
+                "Configuration error: 'sourceTables' field not found in the '%s' vertex-type mapping.",
                 configuredVertexClassName);
         throw new OTeleporterRuntimeException();
       }
@@ -141,20 +149,29 @@ public class OConfigurationHandler {
         String dataSource = sourceTable.field("dataSource");
         List<String> primaryKey = sourceTable.field("primaryKey");
         if (sourceIdName == null) {
-          OTeleporterContext.getInstance().getMessageHandler()
-              .error(this, "Configuration error: 'name' field not found in the '%s' vertex-class mapping with the source table.",
+          OTeleporterContext.getInstance()
+              .getMessageHandler()
+              .error(
+                  this,
+                  "Configuration error: 'name' field not found in the '%s' vertex-class mapping with the source table.",
                   configuredVertexClassName);
           throw new OTeleporterRuntimeException();
         }
         if (sourceTableName == null) {
-          OTeleporterContext.getInstance().getMessageHandler()
-              .error(this, "Configuration error: 'tableName' field not found in the '%s' vertex-class mapping with the source table.",
+          OTeleporterContext.getInstance()
+              .getMessageHandler()
+              .error(
+                  this,
+                  "Configuration error: 'tableName' field not found in the '%s' vertex-class mapping with the source table.",
                   configuredVertexClassName);
           throw new OTeleporterRuntimeException();
         }
         if (dataSource == null) {
-          OTeleporterContext.getInstance().getMessageHandler()
-              .error(this, "Configuration error: 'dataSource' field not found in the '%s' vertex-class mapping with the source table.",
+          OTeleporterContext.getInstance()
+              .getMessageHandler()
+              .error(
+                  this,
+                  "Configuration error: 'dataSource' field not found in the '%s' vertex-class mapping with the source table.",
                   configuredVertexClassName);
           throw new OTeleporterRuntimeException();
         }
@@ -164,10 +181,13 @@ public class OConfigurationHandler {
         List<String> primaryKeyColumns = sourceTable.field("primaryKey");
 
         if (aggregationFunction != null && aggregationColumns == null) {
-          OTeleporterContext.getInstance().getMessageHandler().error(this,
-              "Configuration error: 'aggregationColumns' field not found in the '%s' vertex-class mapping with the source table "
-                  + "('aggregationFunction' field is stated, thus 'aggregationColumns' field is expected for each source table).",
-              configuredVertexClassName);
+          OTeleporterContext.getInstance()
+              .getMessageHandler()
+              .error(
+                  this,
+                  "Configuration error: 'aggregationColumns' field not found in the '%s' vertex-class mapping with the source table "
+                      + "('aggregationFunction' field is stated, thus 'aggregationColumns' field is expected for each source table).",
+                  configuredVertexClassName);
           throw new OTeleporterRuntimeException();
         }
 
@@ -186,21 +206,18 @@ public class OConfigurationHandler {
       currentMapping.setSourceTables(sourceTables);
       currentConfiguredVertex.setMapping(currentMapping);
 
-      /**
-       *  extract and set configured properties
-       */
-      List<OConfiguredProperty> configuredProperties = this.extractProperties(currentVertexDoc, configuredVertexClassName);
+      /** extract and set configured properties */
+      List<OConfiguredProperty> configuredProperties =
+          this.extractProperties(currentVertexDoc, configuredVertexClassName);
       currentConfiguredVertex.setConfiguredProperties(configuredProperties);
 
-      /**
-       * Keeping vertex coordinates if requested
-       */
-      if(keepVerticesCoordinates) {
-        currentConfiguredVertex.setX((Double)currentVertexDoc.field("x"));
-        currentConfiguredVertex.setY((Double)currentVertexDoc.field("y"));
-        currentConfiguredVertex.setPx((Double)currentVertexDoc.field("px"));
-        currentConfiguredVertex.setPy((Double)currentVertexDoc.field("py"));
-        currentConfiguredVertex.setFixed((Integer)currentVertexDoc.field("fixed"));
+      /** Keeping vertex coordinates if requested */
+      if (keepVerticesCoordinates) {
+        currentConfiguredVertex.setX((Double) currentVertexDoc.field("x"));
+        currentConfiguredVertex.setY((Double) currentVertexDoc.field("y"));
+        currentConfiguredVertex.setPx((Double) currentVertexDoc.field("px"));
+        currentConfiguredVertex.setPy((Double) currentVertexDoc.field("py"));
+        currentConfiguredVertex.setFixed((Integer) currentVertexDoc.field("fixed"));
       }
 
       configuredVertices.add(currentConfiguredVertex);
@@ -215,7 +232,9 @@ public class OConfigurationHandler {
     List<OConfiguredEdgeClass> configuredEdges = new LinkedList<OConfiguredEdgeClass>();
 
     if (edgesDoc == null) {
-      OTeleporterContext.getInstance().getMessageHandler().error(this, "Configuration error: 'edges' field not found.");
+      OTeleporterContext.getInstance()
+          .getMessageHandler()
+          .error(this, "Configuration error: 'edges' field not found.");
       throw new OTeleporterRuntimeException();
     }
 
@@ -224,10 +243,13 @@ public class OConfigurationHandler {
 
       String[] edgeFields = currentEdgeDoc.fieldNames();
       if (edgeFields.length != 1) {
-        OTeleporterContext.getInstance().getMessageHandler().error(this, "Configuration error: wrong edge definition.");
+        OTeleporterContext.getInstance()
+            .getMessageHandler()
+            .error(this, "Configuration error: wrong edge definition.");
       }
       String configuredEdgeClassName = edgeFields[0];
-      OConfiguredEdgeClass currentConfiguredEdge = new OConfiguredEdgeClass(configuredEdgeClassName, configuration);
+      OConfiguredEdgeClass currentConfiguredEdge =
+          new OConfiguredEdgeClass(configuredEdgeClassName, configuration);
       OAggregatedJoinTableMapping joinTableMapping = null;
       List<OEdgeMappingInformation> edgeMappings = new LinkedList<OEdgeMappingInformation>();
       ODocument currentEdgeInfo = currentEdgeDoc.field(configuredEdgeClassName);
@@ -236,17 +258,24 @@ public class OConfigurationHandler {
 
       // building configured edges
       if (mappingDocs == null && splittingDoc == null) {
-        OTeleporterContext.getInstance().getMessageHandler()
-            .error(this, "Configuration error: neither 'mapping' nor 'splitting' fields found in the '%s' edge-type definition.",
+        OTeleporterContext.getInstance()
+            .getMessageHandler()
+            .error(
+                this,
+                "Configuration error: neither 'mapping' nor 'splitting' fields found in the '%s' edge-type definition.",
                 configuredEdgeClassName);
         throw new OTeleporterRuntimeException();
       }
 
       // building configured edges
       if (mappingDocs != null && splittingDoc != null) {
-        OTeleporterContext.getInstance().getMessageHandler().error(this,
-            "Configuration error: both 'mapping' and 'splitting' fields found in the '%s' edge-type definition. "
-                + "These fields are mutually exclusive.", configuredEdgeClassName);
+        OTeleporterContext.getInstance()
+            .getMessageHandler()
+            .error(
+                this,
+                "Configuration error: both 'mapping' and 'splitting' fields found in the '%s' edge-type definition. "
+                    + "These fields are mutually exclusive.",
+                configuredEdgeClassName);
         throw new OTeleporterRuntimeException();
       }
 
@@ -255,7 +284,8 @@ public class OConfigurationHandler {
         // for each relationship represented by the edge a mapping is built
         for (ODocument mappingDoc : mappingDocs) {
 
-          OEdgeMappingInformation currentMapping = new OEdgeMappingInformation(currentConfiguredEdge);
+          OEdgeMappingInformation currentMapping =
+              new OEdgeMappingInformation(currentConfiguredEdge);
           String currentForeignEntityName = mappingDoc.field("fromTable");
           String currentParentEntityName = mappingDoc.field("toTable");
           List<String> fromColumns = mappingDoc.field("fromColumns");
@@ -265,33 +295,52 @@ public class OConfigurationHandler {
 
           // migrationConfigDoc errors managing (draconian approach)
           if (currentForeignEntityName == null) {
-            OTeleporterContext.getInstance().getMessageHandler()
-                .error(this, "Configuration error: 'fromTable' field not found in the '%s' edge-type mapping.", configuredEdgeClassName);
+            OTeleporterContext.getInstance()
+                .getMessageHandler()
+                .error(
+                    this,
+                    "Configuration error: 'fromTable' field not found in the '%s' edge-type mapping.",
+                    configuredEdgeClassName);
             throw new OTeleporterRuntimeException();
           }
           if (currentParentEntityName == null) {
-            OTeleporterContext.getInstance().getMessageHandler()
-                .error(this, "Configuration error: 'toTable' field not found in the '%s' edge-type mapping.", configuredEdgeClassName);
+            OTeleporterContext.getInstance()
+                .getMessageHandler()
+                .error(
+                    this,
+                    "Configuration error: 'toTable' field not found in the '%s' edge-type mapping.",
+                    configuredEdgeClassName);
             throw new OTeleporterRuntimeException();
           }
           if (fromColumns == null) {
-            OTeleporterContext.getInstance().getMessageHandler()
-                .error(this, "Configuration error: 'fromColumns' field not found in the '%s' edge-type mapping.",
+            OTeleporterContext.getInstance()
+                .getMessageHandler()
+                .error(
+                    this,
+                    "Configuration error: 'fromColumns' field not found in the '%s' edge-type mapping.",
                     configuredEdgeClassName);
             throw new OTeleporterRuntimeException();
           }
           if (toColumns == null) {
-            OTeleporterContext.getInstance().getMessageHandler()
-                .error(this, "Configuration error: 'toColumns' field not found in the '%s' edge-type mapping.", configuredEdgeClassName);
+            OTeleporterContext.getInstance()
+                .getMessageHandler()
+                .error(
+                    this,
+                    "Configuration error: 'toColumns' field not found in the '%s' edge-type mapping.",
+                    configuredEdgeClassName);
             throw new OTeleporterRuntimeException();
           }
 
           String direction = mappingDoc.field("direction");
 
           if (direction != null && !(direction.equals("direct") || direction.equals("inverse"))) {
-            OTeleporterContext.getInstance().getMessageHandler()
-                .error(this, "Configuration error: direction for the edge %s cannot be '%s'. Allowed values: 'direct' or 'inverse' \n",
-                    configuredEdgeClassName, direction);
+            OTeleporterContext.getInstance()
+                .getMessageHandler()
+                .error(
+                    this,
+                    "Configuration error: direction for the edge %s cannot be '%s'. Allowed values: 'direct' or 'inverse' \n",
+                    configuredEdgeClassName,
+                    direction);
             throw new OTeleporterRuntimeException();
           }
 
@@ -302,8 +351,11 @@ public class OConfigurationHandler {
             String joinTableName = joinTableDoc.field("tableName");
 
             if (joinTableName == null) {
-              OTeleporterContext.getInstance().getMessageHandler()
-                  .error(this, "Configuration error: 'tableName' field not found in the join table mapping with the '%s' edge-type.",
+              OTeleporterContext.getInstance()
+                  .getMessageHandler()
+                  .error(
+                      this,
+                      "Configuration error: 'tableName' field not found in the join table mapping with the '%s' edge-type.",
                       configuredEdgeClassName);
               throw new OTeleporterRuntimeException();
             }
@@ -316,14 +368,20 @@ public class OConfigurationHandler {
               List<String> joinTableToColumns = joinTableDoc.field("toColumns");
 
               if (joinTableFromColumns == null) {
-                OTeleporterContext.getInstance().getMessageHandler()
-                    .error(this, "Configuration error: 'fromColumns' field not found in the join table mapping with the '%s' edge-type.",
+                OTeleporterContext.getInstance()
+                    .getMessageHandler()
+                    .error(
+                        this,
+                        "Configuration error: 'fromColumns' field not found in the join table mapping with the '%s' edge-type.",
                         configuredEdgeClassName);
                 throw new OTeleporterRuntimeException();
               }
               if (joinTableToColumns == null) {
-                OTeleporterContext.getInstance().getMessageHandler()
-                    .error(this, "Configuration error: 'toColumns' field not found in the join table mapping with the '%s' edge-type.",
+                OTeleporterContext.getInstance()
+                    .getMessageHandler()
+                    .error(
+                        this,
+                        "Configuration error: 'toColumns' field not found in the join table mapping with the '%s' edge-type.",
                         configuredEdgeClassName);
                 throw new OTeleporterRuntimeException();
               }
@@ -331,10 +389,13 @@ public class OConfigurationHandler {
               joinTableMapping.setFromColumns(joinTableFromColumns);
               joinTableMapping.setToColumns(joinTableToColumns);
             } else {
-              OTeleporterContext.getInstance().getMessageHandler().error(this,
-                  "Configuration not compliant with the chosen strategy: you cannot perform the aggregation declared in the migrationConfigDoc for the "
-                      + "join table %s while executing migration with a not-aggregating strategy. Thus no aggregation will be performed.\n",
-                  joinTableName);
+              OTeleporterContext.getInstance()
+                  .getMessageHandler()
+                  .error(
+                      this,
+                      "Configuration not compliant with the chosen strategy: you cannot perform the aggregation declared in the migrationConfigDoc for the "
+                          + "join table %s while executing migration with a not-aggregating strategy. Thus no aggregation will be performed.\n",
+                      joinTableName);
               throw new OTeleporterRuntimeException();
             }
           }
@@ -353,22 +414,31 @@ public class OConfigurationHandler {
       } else if (splittingDoc != null) {
         String fromVertexClass = splittingDoc.field("fromVertexClass");
         if (fromVertexClass == null) {
-          OTeleporterContext.getInstance().getMessageHandler().error(this,
-              "Configuration error: 'fromVertexClass' field not found in the 'splitting' area in the '%s' edge-type definition.",
-              configuredEdgeClassName);
+          OTeleporterContext.getInstance()
+              .getMessageHandler()
+              .error(
+                  this,
+                  "Configuration error: 'fromVertexClass' field not found in the 'splitting' area in the '%s' edge-type definition.",
+                  configuredEdgeClassName);
           throw new OTeleporterRuntimeException();
         }
         String toVertexClass = splittingDoc.field("toVertexClass");
         if (fromVertexClass == null) {
-          OTeleporterContext.getInstance().getMessageHandler().error(this,
-              "Configuration error: 'toVertexClass' field not found in the 'splitting' area in the '%s' edge-type definition.",
-              configuredEdgeClassName);
+          OTeleporterContext.getInstance()
+              .getMessageHandler()
+              .error(
+                  this,
+                  "Configuration error: 'toVertexClass' field not found in the 'splitting' area in the '%s' edge-type definition.",
+                  configuredEdgeClassName);
           throw new OTeleporterRuntimeException();
         }
         String sourceTable = splittingDoc.field("sourceTable");
         if (sourceTable == null) {
-          OTeleporterContext.getInstance().getMessageHandler()
-              .error(this, "Configuration error: 'sourceTable' field not found in the 'splitting' area in the '%s' edge-type definition.",
+          OTeleporterContext.getInstance()
+              .getMessageHandler()
+              .error(
+                  this,
+                  "Configuration error: 'sourceTable' field not found in the 'splitting' area in the '%s' edge-type definition.",
                   configuredEdgeClassName);
           throw new OTeleporterRuntimeException();
         }
@@ -376,7 +446,8 @@ public class OConfigurationHandler {
         if (direction == null) {
           direction = "direct";
         }
-        OSplittingEdgeInformation splittingEdgeInfo = new OSplittingEdgeInformation(fromVertexClass, toVertexClass, sourceTable);
+        OSplittingEdgeInformation splittingEdgeInfo =
+            new OSplittingEdgeInformation(fromVertexClass, toVertexClass, sourceTable);
         currentConfiguredEdge.setSplittingEdgeInfo(splittingEdgeInfo);
       }
 
@@ -386,14 +457,16 @@ public class OConfigurationHandler {
       }
 
       // extract and set configured properties
-      List<OConfiguredProperty> configuredProperties = this.extractProperties(currentEdgeInfo, configuredEdgeClassName);
+      List<OConfiguredProperty> configuredProperties =
+          this.extractProperties(currentEdgeInfo, configuredEdgeClassName);
       currentConfiguredEdge.setConfiguredProperties(configuredProperties);
       configuredEdges.add(currentConfiguredEdge);
     }
     configuration.setConfiguredEdges(configuredEdges);
   }
 
-  private List<OConfiguredProperty> extractProperties(ODocument currentElementInfo, String className) {
+  private List<OConfiguredProperty> extractProperties(
+      ODocument currentElementInfo, String className) {
 
     // extracting properties info if present and adding them to the current edge-type
     ODocument elementPropsDoc = currentElementInfo.field("properties");
@@ -410,23 +483,38 @@ public class OConfigurationHandler {
         String propertyType = currentElementPropertyDoc.field("type");
         Integer ordinalPosition = currentElementPropertyDoc.field("ordinalPosition");
         if (isIncludedInMigration == null) {
-          OTeleporterContext.getInstance().getMessageHandler()
-              .error(this, "Configuration error: 'include' field not found in the '%s' property definition ('%s' Class).", propertyName,
+          OTeleporterContext.getInstance()
+              .getMessageHandler()
+              .error(
+                  this,
+                  "Configuration error: 'include' field not found in the '%s' property definition ('%s' Class).",
+                  propertyName,
                   className);
           throw new OTeleporterRuntimeException();
         }
         if (propertyType == null) {
-          OTeleporterContext.getInstance().getStatistics().warningMessages.add("Configuration ERROR: the property " + propertyName
-              + " will not added to the correspondent Class because the type is badly defined or not defined at all.");
+          OTeleporterContext.getInstance()
+              .getStatistics()
+              .warningMessages
+              .add(
+                  "Configuration ERROR: the property "
+                      + propertyName
+                      + " will not added to the correspondent Class because the type is badly defined or not defined at all.");
           continue;
         } else {
-          propertyType = propertyType.toUpperCase(Locale.ENGLISH);        // normalization: orientdb types are upper case
+          propertyType =
+              propertyType.toUpperCase(
+                  Locale.ENGLISH); // normalization: orientdb types are upper case
         }
 
         if (ordinalPosition == null) {
-          OTeleporterContext.getInstance().getMessageHandler()
-              .error(this, "Configuration error: 'ordinalPosition' field not found in the '%s' property definition ('%s' Class).",
-                  propertyName, className);
+          OTeleporterContext.getInstance()
+              .getMessageHandler()
+              .error(
+                  this,
+                  "Configuration error: 'ordinalPosition' field not found in the '%s' property definition ('%s' Class).",
+                  propertyName,
+                  className);
           throw new OTeleporterRuntimeException();
         }
 
@@ -435,25 +523,38 @@ public class OConfigurationHandler {
         Boolean notNull = currentElementPropertyDoc.field("notNull");
 
         if (mandatory == null) {
-          OTeleporterContext.getInstance().getMessageHandler()
-              .error(this, "Configuration error: 'mandatory' field not found in the '%s' property definition ('%s' Class).", propertyName,
+          OTeleporterContext.getInstance()
+              .getMessageHandler()
+              .error(
+                  this,
+                  "Configuration error: 'mandatory' field not found in the '%s' property definition ('%s' Class).",
+                  propertyName,
                   className);
           throw new OTeleporterRuntimeException();
         }
         if (readOnly == null) {
-          OTeleporterContext.getInstance().getMessageHandler()
-              .error(this, "Configuration error: 'readOnly' field not found in the '%s' property definition ('%s' Class).", propertyName,
+          OTeleporterContext.getInstance()
+              .getMessageHandler()
+              .error(
+                  this,
+                  "Configuration error: 'readOnly' field not found in the '%s' property definition ('%s' Class).",
+                  propertyName,
                   className);
           throw new OTeleporterRuntimeException();
         }
         if (notNull == null) {
-          OTeleporterContext.getInstance().getMessageHandler()
-              .error(this, "Configuration error: 'notNull' field not found in the '%s' property definition ('%s' Class).", propertyName,
+          OTeleporterContext.getInstance()
+              .getMessageHandler()
+              .error(
+                  this,
+                  "Configuration error: 'notNull' field not found in the '%s' property definition ('%s' Class).",
+                  propertyName,
                   className);
           throw new OTeleporterRuntimeException();
         }
 
-        // extracting mapping info (optional: may be null if the property is defined from scratch (only schema definition))
+        // extracting mapping info (optional: may be null if the property is defined from scratch
+        // (only schema definition))
         ODocument propertyMappingInfo = currentElementPropertyDoc.field("mapping");
         OConfiguredPropertyMapping propertyMapping = null;
         if (propertyMappingInfo != null) {
@@ -461,20 +562,32 @@ public class OConfigurationHandler {
           String columnName = propertyMappingInfo.field("columnName");
           String type = propertyMappingInfo.field("type");
           if (source == null) {
-            OTeleporterContext.getInstance().getMessageHandler()
-                .error(this, "Configuration error: 'source' field not found in the '%s' property mapping ('%s' Class).", propertyName,
+            OTeleporterContext.getInstance()
+                .getMessageHandler()
+                .error(
+                    this,
+                    "Configuration error: 'source' field not found in the '%s' property mapping ('%s' Class).",
+                    propertyName,
                     className);
             throw new OTeleporterRuntimeException();
           }
           if (columnName == null) {
-            OTeleporterContext.getInstance().getMessageHandler()
-                .error(this, "Configuration error: 'columnName' field not found in the '%s' property mapping ('%s' Class).", propertyName,
+            OTeleporterContext.getInstance()
+                .getMessageHandler()
+                .error(
+                    this,
+                    "Configuration error: 'columnName' field not found in the '%s' property mapping ('%s' Class).",
+                    propertyName,
                     className);
             throw new OTeleporterRuntimeException();
           }
           if (type == null) {
-            OTeleporterContext.getInstance().getMessageHandler()
-                .error(this, "Configuration error: 'type' field not found in the '%s' property mapping ('%s' Class).", propertyName,
+            OTeleporterContext.getInstance()
+                .getMessageHandler()
+                .error(
+                    this,
+                    "Configuration error: 'type' field not found in the '%s' property mapping ('%s' Class).",
+                    propertyName,
                     className);
             throw new OTeleporterRuntimeException();
           }
@@ -499,10 +612,10 @@ public class OConfigurationHandler {
   }
 
   /**
-   * It returns a ODocument object containing the configuration (JSON format) starting from a OConfiguration object.
+   * It returns a ODocument object containing the configuration (JSON format) starting from a
+   * OConfiguration object.
    *
    * @param configuration
-   *
    * @return
    */
   public ODocument buildJSONDocFromConfiguration(OConfiguration configuration) {
@@ -518,7 +631,8 @@ public class OConfigurationHandler {
     return jsonConfiguration;
   }
 
-  private void writeConfiguredVerticesOnJsonDocument(OConfiguration configuration, ODocument jsonConfiguration) {
+  private void writeConfiguredVerticesOnJsonDocument(
+      OConfiguration configuration, ODocument jsonConfiguration) {
     List<ODocument> vertices = new LinkedList<ODocument>();
 
     for (OConfiguredVertexClass currConfiguredVertex : configuration.getConfiguredVertices()) {
@@ -558,12 +672,12 @@ public class OConfigurationHandler {
       }
       currVertexDoc.field("mapping", currVertexMappingDoc);
 
-
       /*
        * Setting properties
        */
 
-      ODocument propertiesDoc = this.writeConfiguredProperties(currConfiguredVertex.getConfiguredProperties());
+      ODocument propertiesDoc =
+          this.writeConfiguredProperties(currConfiguredVertex.getConfiguredProperties());
       currVertexDoc.field("properties", propertiesDoc);
 
       // setting external key
@@ -574,21 +688,20 @@ public class OConfigurationHandler {
       // setting coordinates (optional)
       Double x = currConfiguredVertex.getX();
       Double y = currConfiguredVertex.getY();
-      if(x != null && y != null) {
+      if (x != null && y != null) {
         currVertexDoc.field("x", x);
         currVertexDoc.field("y", y);
       }
       Double px = currConfiguredVertex.getPx();
       Double py = currConfiguredVertex.getPy();
-      if(px != null && py != null) {
+      if (px != null && py != null) {
         currVertexDoc.field("px", px);
         currVertexDoc.field("py", py);
       }
       Integer fixed = currConfiguredVertex.getFixed();
-      if(fixed != null) {
+      if (fixed != null) {
         currVertexDoc.field("fixed", fixed);
       }
-
 
       vertices.add(currVertexDoc);
     }
@@ -597,7 +710,8 @@ public class OConfigurationHandler {
     jsonConfiguration.field("vertices", vertices);
   }
 
-  private void writeConfiguredEdgesOnJsonDocument(OConfiguration configuration, ODocument jsonConfiguration) {
+  private void writeConfiguredEdgesOnJsonDocument(
+      OConfiguration configuration, ODocument jsonConfiguration) {
     List<ODocument> edges = new LinkedList<ODocument>();
 
     for (OConfiguredEdgeClass currConfiguredEdge : configuration.getConfiguredEdges()) {
@@ -605,9 +719,9 @@ public class OConfigurationHandler {
       ODocument currEdgeInfoDoc = new ODocument();
       String edgeClassName = currConfiguredEdge.getName();
 
-            /*
-             * Setting edge mapping or splitting edge info (they are mutually exclusive)
-             */
+      /*
+       * Setting edge mapping or splitting edge info (they are mutually exclusive)
+       */
 
       List<OEdgeMappingInformation> edgeMappings = currConfiguredEdge.getMappings();
       OSplittingEdgeInformation splittingEdgeInfo = currConfiguredEdge.getSplittingEdgeInfo();
@@ -620,7 +734,8 @@ public class OConfigurationHandler {
           currEdgeMappingDoc.field("fromColumns", currEdgeMapping.getFromColumns());
           currEdgeMappingDoc.field("toTable", currEdgeMapping.getToTableName());
           currEdgeMappingDoc.field("toColumns", currEdgeMapping.getToColumns());
-          OAggregatedJoinTableMapping representedJoinTableMapping = currEdgeMapping.getRepresentedJoinTableMapping();
+          OAggregatedJoinTableMapping representedJoinTableMapping =
+              currEdgeMapping.getRepresentedJoinTableMapping();
           if (representedJoinTableMapping != null) {
             ODocument joinTableMapping = new ODocument();
             joinTableMapping.field("tableName", representedJoinTableMapping.getTableName());
@@ -643,11 +758,12 @@ public class OConfigurationHandler {
 
       currEdgeInfoDoc.field("isLogical", currConfiguredEdge.isLogical());
 
-            /*
-             * Setting properties
-             */
+      /*
+       * Setting properties
+       */
 
-      ODocument propertiesDoc = this.writeConfiguredProperties(currConfiguredEdge.getConfiguredProperties());
+      ODocument propertiesDoc =
+          this.writeConfiguredProperties(currConfiguredEdge.getConfiguredProperties());
       currEdgeInfoDoc.field("properties", propertiesDoc);
 
       currEdgeDoc.field(edgeClassName, currEdgeInfoDoc);
@@ -658,15 +774,18 @@ public class OConfigurationHandler {
     jsonConfiguration.field("edges", edges);
   }
 
-  private ODocument writeConfiguredProperties(Collection<OConfiguredProperty> configuredProperties) {
+  private ODocument writeConfiguredProperties(
+      Collection<OConfiguredProperty> configuredProperties) {
     ODocument propertiesDoc = new ODocument();
 
     for (OConfiguredProperty currConfiguredProperty : configuredProperties) {
       ODocument currConfiguredPropertyInfoDoc = new ODocument();
       String propertyName = currConfiguredProperty.getPropertyName();
-      currConfiguredPropertyInfoDoc.field("include", currConfiguredProperty.isIncludedInMigration());
+      currConfiguredPropertyInfoDoc.field(
+          "include", currConfiguredProperty.isIncludedInMigration());
       currConfiguredPropertyInfoDoc.field("type", currConfiguredProperty.getPropertyType());
-      currConfiguredPropertyInfoDoc.field("ordinalPosition", currConfiguredProperty.getOrdinalPosition());
+      currConfiguredPropertyInfoDoc.field(
+          "ordinalPosition", currConfiguredProperty.getOrdinalPosition());
       currConfiguredPropertyInfoDoc.field("mandatory", currConfiguredProperty.isMandatory());
       currConfiguredPropertyInfoDoc.field("readOnly", currConfiguredProperty.isReadOnly());
       currConfiguredPropertyInfoDoc.field("notNull", currConfiguredProperty.isNotNull());
@@ -690,26 +809,23 @@ public class OConfigurationHandler {
 
     OConfiguration configuration = new OConfiguration();
 
-    /**
-     * Building configured vertices starting from Vertices-Type
-     */
+    /** Building configured vertices starting from Vertices-Type */
+    Map<String, String> tableName2SourceIdName =
+        buildConfigVerticesFromGraphModel(mapper, configuration);
 
-    Map<String, String> tableName2SourceIdName = buildConfigVerticesFromGraphModel(mapper, configuration);
-
-    /**
-     * Building configured edges starting from Edges-Type
-     */
-
+    /** Building configured edges starting from Edges-Type */
     buildConfigEdgesFromGraphModel(mapper, configuration, tableName2SourceIdName);
 
     return configuration;
   }
 
-  protected Map<String, String> buildConfigVerticesFromGraphModel(OER2GraphMapper mapper, OConfiguration configuration) {
+  protected Map<String, String> buildConfigVerticesFromGraphModel(
+      OER2GraphMapper mapper, OConfiguration configuration) {
 
     Map<String, String> tableName2SourceIdName = new HashMap<String, String>();
 
-    // populating tableName2SourceIdName map with all the tables in every case (with aggregation or not)
+    // populating tableName2SourceIdName map with all the tables in every case (with aggregation or
+    // not)
     for (OVertexType currVertexType : mapper.getVertexType2EVClassMappers().keySet()) {
       OEntity currentEntity = mapper.getEntityByVertexType(currVertexType);
       OSourceDatabaseInfo currSourceDBInfo = currentEntity.getSourceDataseInfo();
@@ -728,18 +844,23 @@ public class OConfigurationHandler {
 
       OEntity currentEntity = mapper.getEntityByVertexType(currVertexType);
       OSourceDatabaseInfo currSourceDBInfo = currentEntity.getSourceDataseInfo();
-      List<OEVClassMapper> currClassMappers = mapper.getVertexType2EVClassMappers().get(currVertexType);
+      List<OEVClassMapper> currClassMappers =
+          mapper.getVertexType2EVClassMappers().get(currVertexType);
       if (currClassMappers.size() == 0) {
         OTeleporterContext.getInstance()
             .getMessageHandler()
-            .error("Error during the model building: the %s vertex class is not mapped to any table.", currVertexType.getName());
+            .error(
+                "Error during the model building: the %s vertex class is not mapped to any table.",
+                currVertexType.getName());
         throw new OTeleporterRuntimeException();
       }
 
-      OConfiguredVertexClass currConfiguredVertexClass = new OConfiguredVertexClass(currVertexType.getName(), configuration);
+      OConfiguredVertexClass currConfiguredVertexClass =
+          new OConfiguredVertexClass(currVertexType.getName(), configuration);
 
       // building vertex mapping info
-      OVertexMappingInformation vertexMappingInfo = new OVertexMappingInformation(currConfiguredVertexClass);
+      OVertexMappingInformation vertexMappingInfo =
+          new OVertexMappingInformation(currConfiguredVertexClass);
       List<OSourceTable> sourceTables = new LinkedList<OSourceTable>();
 
       List<String> primaryKeyColumns = new LinkedList<String>();
@@ -759,7 +880,8 @@ public class OConfigurationHandler {
       // building configured properties
       List<OConfiguredProperty> configuredProperties = new LinkedList<OConfiguredProperty>();
       for (OModelProperty currModelProperty : currVertexType.getProperties()) {
-        OConfiguredProperty currConfiguredProperty = new OConfiguredProperty(currModelProperty.getName());
+        OConfiguredProperty currConfiguredProperty =
+            new OConfiguredProperty(currModelProperty.getName());
         currConfiguredProperty.setIncludedInMigration(currModelProperty.isIncludedInMigration());
         currConfiguredProperty.setPropertyType(currModelProperty.getOrientdbType());
         currConfiguredProperty.setOrdinalPosition(currModelProperty.getOrdinalPosition());
@@ -772,12 +894,15 @@ public class OConfigurationHandler {
         if (currModelProperty.isNotNull() != null) {
           currConfiguredProperty.setNotNull(currModelProperty.isNotNull());
         }
-        String correspondentAttributeName = mapper
-            .getAttributeByPropertyAboveMappers(currModelProperty.getName(), currClassMappers);
-        OAttribute correspondentAttribute = currentEntity.getAttributeByName(correspondentAttributeName);
+        String correspondentAttributeName =
+            mapper.getAttributeByPropertyAboveMappers(
+                currModelProperty.getName(), currClassMappers);
+        OAttribute correspondentAttribute =
+            currentEntity.getAttributeByName(correspondentAttributeName);
 
         if (correspondentAttribute != null) {
-          OConfiguredPropertyMapping propertyMappingInfo = new OConfiguredPropertyMapping(sourceTable.getSourceIdName());
+          OConfiguredPropertyMapping propertyMappingInfo =
+              new OConfiguredPropertyMapping(sourceTable.getSourceIdName());
           propertyMappingInfo.setColumnName(correspondentAttributeName);
           propertyMappingInfo.setType(correspondentAttribute.getDataType());
           currConfiguredProperty.setPropertyMapping(propertyMappingInfo);
@@ -799,7 +924,9 @@ public class OConfigurationHandler {
     return tableName2SourceIdName;
   }
 
-  protected void buildConfigEdgesFromGraphModel(OER2GraphMapper mapper, OConfiguration configuration,
+  protected void buildConfigEdgesFromGraphModel(
+      OER2GraphMapper mapper,
+      OConfiguration configuration,
       Map<String, String> tableName2SourceIdName) {
 
     String executionStrategy = OTeleporterContext.getInstance().getExecutionStrategy();
@@ -807,7 +934,8 @@ public class OConfigurationHandler {
 
     for (OEdgeType currEdgeType : mapper.getGraphModel().getEdgesType()) {
 
-      OConfiguredEdgeClass currConfiguredEdgeClass = new OConfiguredEdgeClass(currEdgeType.getName(), configuration);
+      OConfiguredEdgeClass currConfiguredEdgeClass =
+          new OConfiguredEdgeClass(currEdgeType.getName(), configuration);
       OVertexType aggregatedVertexType = null;
       OEntity joinTable = null;
       boolean isLogicalEdge = false;
@@ -818,7 +946,8 @@ public class OConfigurationHandler {
         OEdgeMappingInformation currEdgeMappingInformation;
         List<ORelationship> relationships = mapper.getEdgeType2relationships().get(currEdgeType);
         List<OEdgeMappingInformation> edgeMappings = new LinkedList<OEdgeMappingInformation>();
-        OAggregatorEdge aggregatorEdge = mapper.getAggregatorEdgeByEdgeTypeName(currEdgeType.getName());
+        OAggregatorEdge aggregatorEdge =
+            mapper.getAggregatorEdgeByEdgeTypeName(currEdgeType.getName());
 
         // the current edge type does not represent any join table
         if (aggregatorEdge == null) {
@@ -831,13 +960,19 @@ public class OConfigurationHandler {
             }
 
             // building the edge mapping info
-            OVertexType startingVertexType = mapper.getVertexTypeByEntity(currentRelationship.getForeignEntity());
+            OVertexType startingVertexType =
+                mapper.getVertexTypeByEntity(currentRelationship.getForeignEntity());
 
-            // if the starting vertex is not contained in the join vertex list then the vertex will be present and the edge will not be aggregated, so mapping info must be added of course.
-            if (startingVertexType != null && !mapper.getJoinVertex2aggregatorEdges().keySet().contains(startingVertexType)) {
+            // if the starting vertex is not contained in the join vertex list then the vertex will
+            // be present and the edge will not be aggregated, so mapping info must be added of
+            // course.
+            if (startingVertexType != null
+                && !mapper.getJoinVertex2aggregatorEdges().keySet().contains(startingVertexType)) {
               currEdgeMappingInformation = new OEdgeMappingInformation(currConfiguredEdgeClass);
-              currEdgeMappingInformation.setFromTableName(currentRelationship.getForeignEntity().getName());
-              currEdgeMappingInformation.setToTableName(currentRelationship.getParentEntity().getName());
+              currEdgeMappingInformation.setFromTableName(
+                  currentRelationship.getForeignEntity().getName());
+              currEdgeMappingInformation.setToTableName(
+                  currentRelationship.getParentEntity().getName());
 
               List<String> fromColumns = new LinkedList<String>();
               for (OAttribute attribute : currentRelationship.getFromColumns()) {
@@ -880,11 +1015,14 @@ public class OConfigurationHandler {
           currEdgeMappingInformation.setDirection("direct");
 
           // the edgeType corresponds to a join table, so the join table mapping will be built
-          aggregatedVertexType = mapper.getJoinVertexTypeByAggregatorEdge(aggregatorEdge.getEdgeType().getName());
+          aggregatedVertexType =
+              mapper.getJoinVertexTypeByAggregatorEdge(aggregatorEdge.getEdgeType().getName());
           joinTable = mapper.getEntityByVertexType(aggregatedVertexType);
-          OAggregatedJoinTableMapping joinTableMappingInfo = new OAggregatedJoinTableMapping(joinTable.getName());
+          OAggregatedJoinTableMapping joinTableMappingInfo =
+              new OAggregatedJoinTableMapping(joinTable.getName());
 
-          Iterator<OCanonicalRelationship> outRelationshipsIterator = joinTable.getOutCanonicalRelationships().iterator();
+          Iterator<OCanonicalRelationship> outRelationshipsIterator =
+              joinTable.getOutCanonicalRelationships().iterator();
           OCanonicalRelationship currRelationship = outRelationshipsIterator.next();
           fromColumns = new LinkedList<String>();
           for (OAttribute attribute : currRelationship.getFromColumns()) {
@@ -906,10 +1044,15 @@ public class OConfigurationHandler {
         // Splitting edge information writing
         OVertexType inVertexType = currEdgeType.getInVertexType();
         OVertexType outVertexType = currEdgeType.getOutVertexType();
-        String sourceTable = mapper.getEEClassMappersByEdge(currEdgeType).get(0).getEntity()
-            .getName();     // we have just a class mapper in the splitting case
-        OSplittingEdgeInformation splittingInfo = new OSplittingEdgeInformation(outVertexType.getName(), inVertexType.getName(),
-            sourceTable);
+        String sourceTable =
+            mapper
+                .getEEClassMappersByEdge(currEdgeType)
+                .get(0)
+                .getEntity()
+                .getName(); // we have just a class mapper in the splitting case
+        OSplittingEdgeInformation splittingInfo =
+            new OSplittingEdgeInformation(
+                outVertexType.getName(), inVertexType.getName(), sourceTable);
         currConfiguredEdgeClass.setSplittingEdgeInfo(splittingInfo);
       }
 
@@ -918,7 +1061,8 @@ public class OConfigurationHandler {
       // building configured properties
       List<OConfiguredProperty> configuredProperties = new LinkedList<OConfiguredProperty>();
       for (OModelProperty currModelProperty : currEdgeType.getProperties()) {
-        OConfiguredProperty currConfiguredProperty = new OConfiguredProperty(currModelProperty.getName());
+        OConfiguredProperty currConfiguredProperty =
+            new OConfiguredProperty(currModelProperty.getName());
         currConfiguredProperty.setIncludedInMigration(true);
         currConfiguredProperty.setPropertyType(currModelProperty.getOrientdbType());
         currConfiguredProperty.setOrdinalPosition(currModelProperty.getOrdinalPosition());
@@ -927,38 +1071,48 @@ public class OConfigurationHandler {
         currConfiguredProperty.setNotNull(false);
 
         // the property mapping is present iff it comes from a column of an aggregated join table
-        // => the property mapping is present if there was a join table aggregation but not always vice versa.
+        // => the property mapping is present if there was a join table aggregation but not always
+        // vice versa.
         if (joinTable != null) {
-          OEVClassMapper currClassMapper = mapper.getEVClassMappersByEntity(joinTable)
-              .get(0);  // join table is mapped with just a vertex class
-          String correspondentAttributeName = currClassMapper.getAttributeByProperty(currModelProperty.getName());
-          OAttribute correspondentAttribute = joinTable.getAttributeByName(correspondentAttributeName);
+          OEVClassMapper currClassMapper =
+              mapper
+                  .getEVClassMappersByEntity(joinTable)
+                  .get(0); // join table is mapped with just a vertex class
+          String correspondentAttributeName =
+              currClassMapper.getAttributeByProperty(currModelProperty.getName());
+          OAttribute correspondentAttribute =
+              joinTable.getAttributeByName(correspondentAttributeName);
 
           // if correspondent attribute != null the property comes from a column of the join table
           // otherwise it was added, so there is not mapping with the source database.
           if (correspondentAttribute != null) {
-            OConfiguredPropertyMapping propertyMappingInfo = new OConfiguredPropertyMapping(
-                tableName2SourceIdName.get(joinTable.getName()));
+            OConfiguredPropertyMapping propertyMappingInfo =
+                new OConfiguredPropertyMapping(tableName2SourceIdName.get(joinTable.getName()));
             propertyMappingInfo.setColumnName(correspondentAttributeName);
             propertyMappingInfo.setType(correspondentAttribute.getDataType());
             currConfiguredProperty.setPropertyMapping(propertyMappingInfo);
           }
         } else if (currEdgeType.isSplittingEdge()) {
-          OEEClassMapper currClassMapper = mapper.getEEClassMappersByEdge(currEdgeType)
-              .get(0);  // the edge type is mapped with just a table
-          String correspondentAttributeName = currClassMapper.getAttributeByProperty(currModelProperty.getName());
+          OEEClassMapper currClassMapper =
+              mapper
+                  .getEEClassMappersByEdge(currEdgeType)
+                  .get(0); // the edge type is mapped with just a table
+          String correspondentAttributeName =
+              currClassMapper.getAttributeByProperty(currModelProperty.getName());
           OEntity correspondentEntity = currClassMapper.getEntity();
 
           OAttribute correspondentAttribute = null;
           if (correspondentEntity != null) {
-            correspondentAttribute = correspondentEntity.getAttributeByName(correspondentAttributeName);
+            correspondentAttribute =
+                correspondentEntity.getAttributeByName(correspondentAttributeName);
           }
 
           // if correspondent attribute != null the property comes from a column of the split table
           // otherwise it was added, so there is not mapping with the source database.
           if (correspondentAttribute != null) {
-            OConfiguredPropertyMapping propertyMappingInfo = new OConfiguredPropertyMapping(
-                tableName2SourceIdName.get(correspondentEntity.getName()));
+            OConfiguredPropertyMapping propertyMappingInfo =
+                new OConfiguredPropertyMapping(
+                    tableName2SourceIdName.get(correspondentEntity.getName()));
             propertyMappingInfo.setColumnName(correspondentAttributeName);
             propertyMappingInfo.setType(correspondentAttribute.getDataType());
             currConfiguredProperty.setPropertyMapping(propertyMappingInfo);
@@ -969,11 +1123,11 @@ public class OConfigurationHandler {
       currConfiguredEdgeClass.setConfiguredProperties(configuredProperties);
 
       // adding configured edge to the list
-      if(currConfiguredEdgeClass.getMappings() != null && currConfiguredEdgeClass.getMappings().size() > 0) {
+      if (currConfiguredEdgeClass.getMappings() != null
+          && currConfiguredEdgeClass.getMappings().size() > 0) {
         // adding canonical edge iff there is at least 1 mapping info
         configuredEdgeClasses.add(currConfiguredEdgeClass);
-      }
-      else {
+      } else {
         // adding splitting edge
         configuredEdgeClasses.add(currConfiguredEdgeClass);
       }
@@ -990,11 +1144,11 @@ public class OConfigurationHandler {
     List<ODocument> verticesDoc = jsonConfiguration.field("vertices");
     Iterator<ODocument> it = verticesDoc.iterator();
 
-    while(it.hasNext()) {
+    while (it.hasNext()) {
       ODocument currentVertexDoc = it.next();
       ODocument currentMapping = currentVertexDoc.field("mapping");
       List<ODocument> sourceTables = currentMapping.field("sourceTables");
-      if(sourceTables.size() == 1) {    // SKIPPING AGGREGATION CASE, TO UPDATE !!!
+      if (sourceTables.size() == 1) { // SKIPPING AGGREGATION CASE, TO UPDATE !!!
         String correspondentTableName = sourceTables.get(0).field("tableName");
         if (!includedTables.contains(correspondentTableName)) {
           it.remove();
@@ -1009,31 +1163,35 @@ public class OConfigurationHandler {
     List<ODocument> edgesDoc = jsonConfiguration.field("edges");
     it = edgesDoc.iterator();
 
-    while(it.hasNext()) {
+    while (it.hasNext()) {
       ODocument currentEdgeDoc = it.next();
       String edgeName = currentEdgeDoc.fieldNames()[0];
       ODocument currentEdgeDocInfo = currentEdgeDoc.field(edgeName);
-      List<ODocument> currentEdgeDocMappings = currentEdgeDocInfo.field("mapping");   // we have to filter out the mappings not allowed (having a parentEntity filtered out)
+      List<ODocument> currentEdgeDocMappings =
+          currentEdgeDocInfo.field(
+              "mapping"); // we have to filter out the mappings not allowed (having a parentEntity
+      // filtered out)
 
       List<ODocument> newMappings = new ArrayList<ODocument>();
 
       // filling the new list for the new array
-      for(ODocument currentMapping: currentEdgeDocMappings) {
-        if(includedTables.contains(currentMapping.field("fromTable")) && includedTables.contains(currentMapping.field("toTable"))) {
+      for (ODocument currentMapping : currentEdgeDocMappings) {
+        if (includedTables.contains(currentMapping.field("fromTable"))
+            && includedTables.contains(currentMapping.field("toTable"))) {
           newMappings.add(currentMapping);
         }
       }
 
-      if(newMappings.size() == 0) {
-        // the edge represented just an relationship deleted as a filtered table was involved, then we remove the whole edge
+      if (newMappings.size() == 0) {
+        // the edge represented just an relationship deleted as a filtered table was involved, then
+        // we remove the whole edge
         it.remove();
-      }
-      else if(currentEdgeDocMappings.size() > newMappings.size()) {
-        // we have removed some mapping but the edge still represents some relationship in the source db, so we update the mappings info
+      } else if (currentEdgeDocMappings.size() > newMappings.size()) {
+        // we have removed some mapping but the edge still represents some relationship in the
+        // source db, so we update the mappings info
         currentEdgeDocInfo.field("mapping", newMappings.toArray());
       }
     }
-
   }
 
   public void filterAccordingToBlackList(ODocument jsonConfiguration, List<String> excludedTables) {
@@ -1045,11 +1203,11 @@ public class OConfigurationHandler {
     List<ODocument> verticesDoc = jsonConfiguration.field("vertices");
     Iterator<ODocument> it = verticesDoc.iterator();
 
-    while(it.hasNext()) {
+    while (it.hasNext()) {
       ODocument currentVertexDoc = it.next();
       ODocument currentMapping = currentVertexDoc.field("mapping");
       List<ODocument> sourceTables = currentMapping.field("sourceTables");
-      if(sourceTables.size() == 1) {    // SKIPPING AGGREGATION CASE, TO UPDATE !!!
+      if (sourceTables.size() == 1) { // SKIPPING AGGREGATION CASE, TO UPDATE !!!
         String correspondentTableName = sourceTables.get(0).field("tableName");
         if (excludedTables.contains(correspondentTableName)) {
           it.remove();
@@ -1064,27 +1222,29 @@ public class OConfigurationHandler {
     List<ODocument> edgesDoc = jsonConfiguration.field("edges");
     it = edgesDoc.iterator();
 
-    while(it.hasNext()) {
+    while (it.hasNext()) {
       ODocument currentEdgeDoc = it.next();
       String edgeName = currentEdgeDoc.fieldNames()[0];
       ODocument currentEdgeDocInfo = currentEdgeDoc.field(edgeName);
-      List<ODocument> currentEdgeDocMappings = currentEdgeDocInfo.field("mapping");   // we have to filter out the mappings not allowed (having a parentEntity filtered out)
+      List<ODocument> currentEdgeDocMappings =
+          currentEdgeDocInfo.field(
+              "mapping"); // we have to filter out the mappings not allowed (having a parentEntity
+      // filtered out)
 
       List<ODocument> newMappings = new ArrayList<ODocument>();
 
       // filling the new list for the new array
-      for(ODocument currentMapping: currentEdgeDocMappings) {
-        if(!excludedTables.contains(currentMapping.field("fromTable")) && !excludedTables.contains(currentMapping.field("toTable"))) {
+      for (ODocument currentMapping : currentEdgeDocMappings) {
+        if (!excludedTables.contains(currentMapping.field("fromTable"))
+            && !excludedTables.contains(currentMapping.field("toTable"))) {
           newMappings.add(currentMapping);
         }
       }
 
-      if(currentEdgeDocMappings.size() > newMappings.size()) {
+      if (currentEdgeDocMappings.size() > newMappings.size()) {
         // we have removed some mapping, so we update the mappings info
         currentEdgeDocInfo.field("mapping", newMappings.toArray());
       }
     }
-
-
   }
 }

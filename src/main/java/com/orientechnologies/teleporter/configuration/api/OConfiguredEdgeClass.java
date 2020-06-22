@@ -26,14 +26,13 @@ import java.util.List;
  * @author Gabriele Ponzi
  * @email <g.ponzi--at--orientdb.com>
  */
-
 public class OConfiguredEdgeClass extends OConfiguredClass {
 
   // mappings and splittingEdgeInfo are mutually exclusive
-  private List<OEdgeMappingInformation> mappings;                  // mandatory
-  private OSplittingEdgeInformation     splittingEdgeInfo;             // mandatory
+  private List<OEdgeMappingInformation> mappings; // mandatory
+  private OSplittingEdgeInformation splittingEdgeInfo; // mandatory
 
-  private boolean isLogical;                                       // optional
+  private boolean isLogical; // optional
 
   public OConfiguredEdgeClass(String edgeName, OConfiguration globalConfiguration) {
     super(edgeName, globalConfiguration);

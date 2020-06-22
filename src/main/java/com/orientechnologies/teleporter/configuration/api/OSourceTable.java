@@ -26,14 +26,14 @@ import java.util.List;
  * @author Gabriele Ponzi
  * @email <g.ponzi--at--orientdb.com>
  */
-
 public class OSourceTable {
 
-  private String                    sourceIdName;       // mandatory
-  private String                    dataSource;         // mandatory
-  private String                    tableName;          // mandatory
-  private List<String>              aggregationColumns; // optional (not present when there is not any aggregation)
-  private List<String>              primaryKeyColumns;
+  private String sourceIdName; // mandatory
+  private String dataSource; // mandatory
+  private String tableName; // mandatory
+  private List<String>
+      aggregationColumns; // optional (not present when there is not any aggregation)
+  private List<String> primaryKeyColumns;
   private OVertexMappingInformation belongingMapping;
 
   public OSourceTable(String sourceIdName, OVertexMappingInformation belongingMapping) {
@@ -88,5 +88,4 @@ public class OSourceTable {
   public void setBelongingMapping(OVertexMappingInformation belongingMapping) {
     this.belongingMapping = belongingMapping;
   }
-
 }

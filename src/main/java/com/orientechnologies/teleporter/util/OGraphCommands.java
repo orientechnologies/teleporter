@@ -24,26 +24,23 @@ import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.record.OVertex;
 import com.orientechnologies.orient.core.sql.executor.OResultSet;
 
-/**
- * Collects several commands executable on a OrientDb database.
- */
-
+/** Collects several commands executable on a OrientDb database. */
 public class OGraphCommands {
 
-  private static String quote =  "\"";
+  private static String quote = "\"";
 
   /**
-   * The method performs a lookup on the passed ODatabaseDocument for a OVertex, starting from a record and from a vertex type.
-   * It returns the vertex if present, null if not present.
+   * The method performs a lookup on the passed ODatabaseDocument for a OVertex, starting from a
+   * record and from a vertex type. It returns the vertex if present, null if not present.
    *
    * @param orientGraph
    * @param keys
    * @param values
    * @param vertexClassName
-   *
    * @return
    */
-  public static OVertex getVertexByIndexedKey(ODatabaseDocument orientGraph, String[] keys, String[] values, String vertexClassName) {
+  public static OVertex getVertexByIndexedKey(
+      ODatabaseDocument orientGraph, String[] keys, String[] values, String vertexClassName) {
 
     OVertex vertex = null;
 
@@ -58,7 +55,8 @@ public class OGraphCommands {
     return vertex;
   }
 
-  public static OResultSet getVertices(ODatabaseDocument orientGraph, String vertexClassName, String[] keys, String[] values) {
+  public static OResultSet getVertices(
+      ODatabaseDocument orientGraph, String vertexClassName, String[] keys, String[] values) {
 
     Object[] params = new Object[values.length];
 
@@ -70,7 +68,7 @@ public class OGraphCommands {
     query += keys[0] + " = ?";
 
     int i;
-    for(i=1; i<keys.length; i++) {
+    for (i = 1; i < keys.length; i++) {
       query += " and " + keys[i] + " = ?";
     }
     return orientGraph.command(query, params);

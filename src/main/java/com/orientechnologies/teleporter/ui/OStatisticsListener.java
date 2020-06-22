@@ -28,9 +28,7 @@ import com.orientechnologies.teleporter.context.OTeleporterStatistics;
  * @author Gabriele Ponzi
  * @email <g.ponzi--at--orientdb.com>
  */
-
 public interface OStatisticsListener {
 
   public String updateOnEvent(OTeleporterStatistics statistics);
-
 }

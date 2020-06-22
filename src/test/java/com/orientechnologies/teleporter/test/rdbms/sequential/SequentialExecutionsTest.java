@@ -20,6 +20,8 @@
 
 package com.orientechnologies.teleporter.test.rdbms.sequential;
 
+import static org.junit.Assert.*;
+
 import com.orientechnologies.orient.core.db.ODatabaseDocumentInternal;
 import com.orientechnologies.orient.core.db.ODatabaseRecordThreadLocal;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
@@ -37,29 +39,25 @@ import com.orientechnologies.teleporter.persistence.handler.OHSQLDBDataTypeHandl
 import com.orientechnologies.teleporter.strategy.rdbms.ODBMSNaiveAggregationStrategy;
 import com.orientechnologies.teleporter.strategy.rdbms.ODBMSNaiveStrategy;
 import com.orientechnologies.teleporter.util.OFileManager;
-import org.junit.After;
-import org.junit.Before;
-
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.Statement;
 import java.util.*;
-
-import static org.junit.Assert.*;
+import org.junit.After;
+import org.junit.Before;
 
 /**
  * @author Gabriele Ponzi
  * @email <g.ponzi--at--orientdb.com>
  */
-
 public class SequentialExecutionsTest {
 
-  private OTeleporterContext            context;
-  private ODBMSNaiveStrategy            naiveImportStrategy;
+  private OTeleporterContext context;
+  private ODBMSNaiveStrategy naiveImportStrategy;
   private ODBMSNaiveAggregationStrategy naiveAggregationImportStrategy;
-  private ODBQueryEngine                dbQueryEngine;
-  private String driver   = "org.hsqldb.jdbc.JDBCDriver";
-  private String jurl     = "jdbc:hsqldb:mem:mydb";
+  private ODBQueryEngine dbQueryEngine;
+  private String driver = "org.hsqldb.jdbc.JDBCDriver";
+  private String jurl = "jdbc:hsqldb:mem:mydb";
   private String username = "SA";
   private String password = "";
   private String dbName = "testOrientDB";
@@ -80,9 +78,12 @@ public class SequentialExecutionsTest {
     this.context.setMessageHandler(new OTeleporterMessageHandler(0));
     this.context.setNameResolver(new OJavaConventionNameResolver());
     this.context.setDataTypeHandler(new OHSQLDBDataTypeHandler());
-    this.naiveImportStrategy = new ODBMSNaiveStrategy("embedded", this.outParentDirectory, this.dbName);
-    this.naiveAggregationImportStrategy = new ODBMSNaiveAggregationStrategy("embedded", this.outParentDirectory, this.dbName);
-    this.sourceDBInfo = new OSourceDatabaseInfo("source", this.driver, this.jurl, this.username, this.password);
+    this.naiveImportStrategy =
+        new ODBMSNaiveStrategy("embedded", this.outParentDirectory, this.dbName);
+    this.naiveAggregationImportStrategy =
+        new ODBMSNaiveAggregationStrategy("embedded", this.outParentDirectory, this.dbName);
+    this.sourceDBInfo =
+        new OSourceDatabaseInfo("source", this.driver, this.jurl, this.username, this.password);
   }
 
   @After
@@ -94,15 +95,14 @@ public class SequentialExecutionsTest {
     try {
 
       // Deleting database directory
-      OFileManager.deleteResource(this.outOrientGraphUri.replace("embedded:",""));
+      OFileManager.deleteResource(this.outOrientGraphUri.replace("embedded:", ""));
 
     } catch (Exception e) {
       e.printStackTrace();
     }
   }
 
-
-//  //@Test
+  //  //@Test
 
   /*
    *  Adding a column to a table.
@@ -121,20 +121,27 @@ public class SequentialExecutionsTest {
 
       // Tables Building
 
-      String actorTableBuilding = "create memory table ACTOR (ID varchar(256) not null, NAME  varchar(256),"
-          + " SURNAME varchar(256) not null, primary key (ID))";
+      String actorTableBuilding =
+          "create memory table ACTOR (ID varchar(256) not null, NAME  varchar(256),"
+              + " SURNAME varchar(256) not null, primary key (ID))";
       st = connection.createStatement();
       st.execute(actorTableBuilding);
 
-      this.naiveImportStrategy
-          .executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "basicDBMapper", null, "java", null, null, null);
-
+      this.naiveImportStrategy.executeStrategy(
+          this.sourceDBInfo,
+          this.outOrientGraphUri,
+          "basicDBMapper",
+          null,
+          "java",
+          null,
+          null,
+          null);
 
       /*
        *  Testing built OrientDB
        */
 
-      orientGraph = this.context.getOrientDBInstance().open(this.dbName,"admin","admin");
+      orientGraph = this.context.getOrientDBInstance().open(this.dbName, "admin", "admin");
 
       OClass actorVertexType = orientGraph.getClass("Actor");
 
@@ -162,7 +169,6 @@ public class SequentialExecutionsTest {
       assertEquals("surname", currentProperty.getName());
       assertEquals(OType.STRING, currentProperty.getType());
 
-
       /*
        * Modify of the db schema, adding a column
        */
@@ -170,15 +176,21 @@ public class SequentialExecutionsTest {
       String addColumn = "alter table ACTOR " + "add BIRTHDAY date";
       st.execute(addColumn);
 
-      this.naiveImportStrategy
-          .executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "basicDBMapper", null, "java", null, null, null);
-
+      this.naiveImportStrategy.executeStrategy(
+          this.sourceDBInfo,
+          this.outOrientGraphUri,
+          "basicDBMapper",
+          null,
+          "java",
+          null,
+          null,
+          null);
 
       /*
        *  Testing built OrientDB
        */
 
-      orientGraph = this.context.getOrientDBInstance().open(this.dbName,"admin","admin");
+      orientGraph = this.context.getOrientDBInstance().open(this.dbName, "admin", "admin");
 
       actorVertexType = orientGraph.getClass("Actor");
 
@@ -226,7 +238,7 @@ public class SequentialExecutionsTest {
     }
   }
 
-//  //@Test
+  //  //@Test
 
   /*
    *  Removing a column from a table.
@@ -245,20 +257,27 @@ public class SequentialExecutionsTest {
 
       // Tables Building
 
-      String actorTableBuilding = "create memory table ACTOR (ID varchar(256) not null, NAME  varchar(256),"
-          + " SURNAME varchar(256) not null, birthday date, primary key (ID))";
+      String actorTableBuilding =
+          "create memory table ACTOR (ID varchar(256) not null, NAME  varchar(256),"
+              + " SURNAME varchar(256) not null, birthday date, primary key (ID))";
       st = connection.createStatement();
       st.execute(actorTableBuilding);
 
-      this.naiveImportStrategy
-          .executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "basicDBMapper", null, "java", null, null, null);
-
+      this.naiveImportStrategy.executeStrategy(
+          this.sourceDBInfo,
+          this.outOrientGraphUri,
+          "basicDBMapper",
+          null,
+          "java",
+          null,
+          null,
+          null);
 
       /*
        *  Testing built OrientDB
        */
 
-      orientGraph = this.context.getOrientDBInstance().open(this.dbName,"admin","admin");
+      orientGraph = this.context.getOrientDBInstance().open(this.dbName, "admin", "admin");
 
       OClass actorVertexType = orientGraph.getClass("Actor");
 
@@ -289,7 +308,6 @@ public class SequentialExecutionsTest {
       assertEquals("surname", currentProperty.getName());
       assertEquals(OType.STRING, currentProperty.getType());
 
-
       /*
        * Modify of the db schema, removing a column
        */
@@ -297,15 +315,21 @@ public class SequentialExecutionsTest {
       String removeColumn = "alter table ACTOR " + "drop column BIRTHDAY";
       st.execute(removeColumn);
 
-      this.naiveImportStrategy
-          .executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "basicDBMapper", null, "java", null, null, null);
-
+      this.naiveImportStrategy.executeStrategy(
+          this.sourceDBInfo,
+          this.outOrientGraphUri,
+          "basicDBMapper",
+          null,
+          "java",
+          null,
+          null,
+          null);
 
       /*
        *  Testing built OrientDB
        */
 
-      orientGraph = this.context.getOrientDBInstance().open(this.dbName,"admin","admin");
+      orientGraph = this.context.getOrientDBInstance().open(this.dbName, "admin", "admin");
 
       actorVertexType = orientGraph.getClass("Actor");
 
@@ -350,7 +374,7 @@ public class SequentialExecutionsTest {
     }
   }
 
-//  //@Test
+  //  //@Test
 
   /*
    *  Modify of a column.
@@ -369,20 +393,27 @@ public class SequentialExecutionsTest {
 
       // Tables Building
 
-      String actorTableBuilding = "create memory table ACTOR (ID varchar(256) not null, NAME  varchar(256),"
-          + " SURNAME varchar(256) not null, birthday varchar(256), primary key (ID))";
+      String actorTableBuilding =
+          "create memory table ACTOR (ID varchar(256) not null, NAME  varchar(256),"
+              + " SURNAME varchar(256) not null, birthday varchar(256), primary key (ID))";
       st = connection.createStatement();
       st.execute(actorTableBuilding);
 
-      this.naiveImportStrategy
-          .executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "basicDBMapper", null, "java", null, null, null);
-
+      this.naiveImportStrategy.executeStrategy(
+          this.sourceDBInfo,
+          this.outOrientGraphUri,
+          "basicDBMapper",
+          null,
+          "java",
+          null,
+          null,
+          null);
 
       /*
        *  Testing built OrientDB
        */
 
-      orientGraph = this.context.getOrientDBInstance().open(this.dbName,"admin","admin");
+      orientGraph = this.context.getOrientDBInstance().open(this.dbName, "admin", "admin");
 
       OClass actorVertexType = orientGraph.getClass("Actor");
 
@@ -413,7 +444,6 @@ public class SequentialExecutionsTest {
       assertEquals("surname", currentProperty.getName());
       assertEquals(OType.STRING, currentProperty.getType());
 
-
       /*
        * Modify of the db schema, changing a column (name and type)
        */
@@ -424,15 +454,21 @@ public class SequentialExecutionsTest {
       modifyColumn = "alter table ACTOR " + "alter column BIRTHDAY rename to ANNIVERSARY";
       st.execute(modifyColumn);
 
-      this.naiveImportStrategy
-          .executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "basicDBMapper", null, "java", null, null, null);
-
+      this.naiveImportStrategy.executeStrategy(
+          this.sourceDBInfo,
+          this.outOrientGraphUri,
+          "basicDBMapper",
+          null,
+          "java",
+          null,
+          null,
+          null);
 
       /*
        *  Testing built OrientDB
        */
 
-      orientGraph = this.context.getOrientDBInstance().open(this.dbName,"admin","admin");
+      orientGraph = this.context.getOrientDBInstance().open(this.dbName, "admin", "admin");
 
       actorVertexType = orientGraph.getClass("Actor");
 
@@ -480,7 +516,7 @@ public class SequentialExecutionsTest {
     }
   }
 
-//  //@Test
+  //  //@Test
 
   /*
    *  Modify of a relationship (foreign key).
@@ -499,35 +535,47 @@ public class SequentialExecutionsTest {
 
       // Tables Building
 
-      String directorTableBuilding = "create memory table DIRECTOR (ID varchar(256) not null, NAME  varchar(256),"
-          + " SURNAME varchar(256) not null, BESTFILM varchar(256) not null, primary key (ID))";
+      String directorTableBuilding =
+          "create memory table DIRECTOR (ID varchar(256) not null, NAME  varchar(256),"
+              + " SURNAME varchar(256) not null, BESTFILM varchar(256) not null, primary key (ID))";
       st = connection.createStatement();
       st.execute(directorTableBuilding);
 
       String filmTableBuilding =
-          "create memory table FILM (ID varchar(256) not null," + " TITLE varchar(256) not null, DIRECTOR varchar(256) not null,"
+          "create memory table FILM (ID varchar(256) not null,"
+              + " TITLE varchar(256) not null, DIRECTOR varchar(256) not null,"
               + " primary key (ID), constraint director foreign key (DIRECTOR) references DIRECTOR(ID))";
       st.execute(filmTableBuilding);
 
       // Records Inserting
 
-      String directorFilling = "insert into DIRECTOR (ID,NAME,SURNAME,BESTFILM) values (" + "('D001','Quentin','Tarantino','F001'),"
-          + "('D002','Martin','Scorsese','F002'))";
+      String directorFilling =
+          "insert into DIRECTOR (ID,NAME,SURNAME,BESTFILM) values ("
+              + "('D001','Quentin','Tarantino','F001'),"
+              + "('D002','Martin','Scorsese','F002'))";
       st.execute(directorFilling);
 
       String filmFilling =
-          "insert into FILM (ID,TITLE,DIRECTOR) values (" + "('F001','Pulp Fiction','D001')," + "('F002','Shutter Island','D002'))";
+          "insert into FILM (ID,TITLE,DIRECTOR) values ("
+              + "('F001','Pulp Fiction','D001'),"
+              + "('F002','Shutter Island','D002'))";
       st.execute(filmFilling);
 
-      this.naiveImportStrategy
-          .executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "basicDBMapper", null, "java", null, null, null);
-
+      this.naiveImportStrategy.executeStrategy(
+          this.sourceDBInfo,
+          this.outOrientGraphUri,
+          "basicDBMapper",
+          null,
+          "java",
+          null,
+          null,
+          null);
 
       /*
        *  Testing built OrientDB
        */
 
-      orientGraph = this.context.getOrientDBInstance().open(this.dbName,"admin","admin");
+      orientGraph = this.context.getOrientDBInstance().open(this.dbName, "admin", "admin");
 
       // vertices check
 
@@ -540,7 +588,6 @@ public class SequentialExecutionsTest {
       assertEquals(2, orientGraph.countClass("E"));
       assertEquals(2, orientGraph.countClass("HasDirector"));
 
-
       /*
        * Modify of the db schema, adding a table
        */
@@ -548,18 +595,25 @@ public class SequentialExecutionsTest {
       String dropOldForeignKey = "alter table FILM drop constraint director";
       st.execute(dropOldForeignKey);
 
-      String addNewForeignKey = "alter table DIRECTOR add foreign key (BESTFILM) references FILM(ID)";
+      String addNewForeignKey =
+          "alter table DIRECTOR add foreign key (BESTFILM) references FILM(ID)";
       st.execute(addNewForeignKey);
 
-      this.naiveImportStrategy
-          .executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "basicDBMapper", null, "java", null, null, null);
-
+      this.naiveImportStrategy.executeStrategy(
+          this.sourceDBInfo,
+          this.outOrientGraphUri,
+          "basicDBMapper",
+          null,
+          "java",
+          null,
+          null,
+          null);
 
       /*
        *  Testing built OrientDB
        */
 
-      orientGraph = this.context.getOrientDBInstance().open(this.dbName,"admin","admin");
+      orientGraph = this.context.getOrientDBInstance().open(this.dbName, "admin", "admin");
 
       // vertices check
 
@@ -591,7 +645,7 @@ public class SequentialExecutionsTest {
     }
   }
 
-//  //@Test
+  //  //@Test
 
   /*
    *  Adding a table.
@@ -610,20 +664,27 @@ public class SequentialExecutionsTest {
 
       // Tables Building
 
-      String actorTableBuilding = "create memory table ACTOR (ID varchar(256) not null, NAME  varchar(256),"
-          + " SURNAME varchar(256) not null, birthday varchar(256), primary key (ID))";
+      String actorTableBuilding =
+          "create memory table ACTOR (ID varchar(256) not null, NAME  varchar(256),"
+              + " SURNAME varchar(256) not null, birthday varchar(256), primary key (ID))";
       st = connection.createStatement();
       st.execute(actorTableBuilding);
 
-      this.naiveImportStrategy
-          .executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "basicDBMapper", null, "java", null, null, null);
-
+      this.naiveImportStrategy.executeStrategy(
+          this.sourceDBInfo,
+          this.outOrientGraphUri,
+          "basicDBMapper",
+          null,
+          "java",
+          null,
+          null,
+          null);
 
       /*
        *  Testing built OrientDB
        */
 
-      orientGraph = this.context.getOrientDBInstance().open(this.dbName,"admin","admin");
+      orientGraph = this.context.getOrientDBInstance().open(this.dbName, "admin", "admin");
 
       OClass actorVertexType = orientGraph.getClass("Actor");
 
@@ -654,24 +715,30 @@ public class SequentialExecutionsTest {
       assertEquals("surname", currentProperty.getName());
       assertEquals(OType.STRING, currentProperty.getType());
 
-
       /*
        * Modify of the db schema, adding a table
        */
 
-      String addTable = "create memory table FILM (ID varchar(256) not null, "
-          + "TITLE varchar(256) not null, DIRECTOR varchar(256) not null, primary key (ID))";
+      String addTable =
+          "create memory table FILM (ID varchar(256) not null, "
+              + "TITLE varchar(256) not null, DIRECTOR varchar(256) not null, primary key (ID))";
       st.execute(addTable);
 
-      this.naiveImportStrategy
-          .executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "basicDBMapper", null, "java", null, null, null);
-
+      this.naiveImportStrategy.executeStrategy(
+          this.sourceDBInfo,
+          this.outOrientGraphUri,
+          "basicDBMapper",
+          null,
+          "java",
+          null,
+          null,
+          null);
 
       /*
        *  Testing built OrientDB
        */
 
-      orientGraph = this.context.getOrientDBInstance().open(this.dbName,"admin","admin");
+      orientGraph = this.context.getOrientDBInstance().open(this.dbName, "admin", "admin");
 
       actorVertexType = orientGraph.getClass("Actor");
 
@@ -745,7 +812,7 @@ public class SequentialExecutionsTest {
     }
   }
 
-//  //@Test
+  //  //@Test
 
   /*
    *  Adding a relationship (foreign key).
@@ -764,34 +831,46 @@ public class SequentialExecutionsTest {
 
       // Tables Building
 
-      String directorTableBuilding = "create memory table DIRECTOR (ID varchar(256) not null, NAME  varchar(256),"
-          + " SURNAME varchar(256) not null, primary key (ID))";
+      String directorTableBuilding =
+          "create memory table DIRECTOR (ID varchar(256) not null, NAME  varchar(256),"
+              + " SURNAME varchar(256) not null, primary key (ID))";
       st = connection.createStatement();
       st.execute(directorTableBuilding);
 
-      String filmTableBuilding = "create memory table FILM (ID varchar(256) not null,"
-          + " TITLE varchar(256) not null, DIRECTOR varchar(256) not null, primary key (ID))";
+      String filmTableBuilding =
+          "create memory table FILM (ID varchar(256) not null,"
+              + " TITLE varchar(256) not null, DIRECTOR varchar(256) not null, primary key (ID))";
       st.execute(filmTableBuilding);
 
       // Records Inserting
 
       String directorFilling =
-          "insert into DIRECTOR (ID,NAME,SURNAME) values (" + "('D001','Quentin','Tarantino')," + "('D002','Martin','Scorsese'))";
+          "insert into DIRECTOR (ID,NAME,SURNAME) values ("
+              + "('D001','Quentin','Tarantino'),"
+              + "('D002','Martin','Scorsese'))";
       st.execute(directorFilling);
 
       String filmFilling =
-          "insert into FILM (ID,TITLE,DIRECTOR) values (" + "('F001','Pulp Fiction','D001')," + "('F002','Shutter Island','D002'))";
+          "insert into FILM (ID,TITLE,DIRECTOR) values ("
+              + "('F001','Pulp Fiction','D001'),"
+              + "('F002','Shutter Island','D002'))";
       st.execute(filmFilling);
 
-      this.naiveImportStrategy
-          .executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "basicDBMapper", null, "java", null, null, null);
-
+      this.naiveImportStrategy.executeStrategy(
+          this.sourceDBInfo,
+          this.outOrientGraphUri,
+          "basicDBMapper",
+          null,
+          "java",
+          null,
+          null,
+          null);
 
       /*
        *  Testing built OrientDB
        */
 
-      orientGraph = this.context.getOrientDBInstance().open(this.dbName,"admin","admin");
+      orientGraph = this.context.getOrientDBInstance().open(this.dbName, "admin", "admin");
 
       // vertices check
 
@@ -803,23 +882,29 @@ public class SequentialExecutionsTest {
 
       assertEquals(0, orientGraph.countClass("E"));
 
-
       /*
        *  Adding a relationship (foreign key).
        */
 
-      String addNewForeignKey = "alter table FILM add foreign key (DIRECTOR) references DIRECTOR(ID)";
+      String addNewForeignKey =
+          "alter table FILM add foreign key (DIRECTOR) references DIRECTOR(ID)";
       st.execute(addNewForeignKey);
 
-      this.naiveImportStrategy
-          .executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "basicDBMapper", null, "java", null, null, null);
-
+      this.naiveImportStrategy.executeStrategy(
+          this.sourceDBInfo,
+          this.outOrientGraphUri,
+          "basicDBMapper",
+          null,
+          "java",
+          null,
+          null,
+          null);
 
       /*
        *  Testing built OrientDB
        */
 
-      orientGraph = this.context.getOrientDBInstance().open(this.dbName,"admin","admin");
+      orientGraph = this.context.getOrientDBInstance().open(this.dbName, "admin", "admin");
 
       // vertices check
 
@@ -849,7 +934,7 @@ public class SequentialExecutionsTest {
     }
   }
 
-//  //@Test
+  //  //@Test
 
   /*
    *  Removing a table.
@@ -868,24 +953,32 @@ public class SequentialExecutionsTest {
 
       // Tables Building
 
-      String actorTableBuilding = "create memory table ACTOR (ID varchar(256) not null, NAME  varchar(256),"
-          + " SURNAME varchar(256) not null, birthday varchar(256), primary key (ID))";
+      String actorTableBuilding =
+          "create memory table ACTOR (ID varchar(256) not null, NAME  varchar(256),"
+              + " SURNAME varchar(256) not null, birthday varchar(256), primary key (ID))";
       st = connection.createStatement();
       st.execute(actorTableBuilding);
 
-      String filmTableBuilding = "create memory table FILM (ID varchar(256) not null,"
-          + " TITLE varchar(256) not null, DIRECTOR varchar(256) not null, primary key (ID))";
+      String filmTableBuilding =
+          "create memory table FILM (ID varchar(256) not null,"
+              + " TITLE varchar(256) not null, DIRECTOR varchar(256) not null, primary key (ID))";
       st.execute(filmTableBuilding);
 
-      this.naiveImportStrategy
-          .executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "basicDBMapper", null, "java", null, null, null);
-
+      this.naiveImportStrategy.executeStrategy(
+          this.sourceDBInfo,
+          this.outOrientGraphUri,
+          "basicDBMapper",
+          null,
+          "java",
+          null,
+          null,
+          null);
 
       /*
        *  Testing built OrientDB
        */
 
-      orientGraph = this.context.getOrientDBInstance().open(this.dbName,"admin","admin");
+      orientGraph = this.context.getOrientDBInstance().open(this.dbName, "admin", "admin");
 
       OClass actorVertexType = orientGraph.getClass("Actor");
 
@@ -942,7 +1035,6 @@ public class SequentialExecutionsTest {
       assertEquals("director", currentProperty.getName());
       assertEquals(OType.STRING, currentProperty.getType());
 
-
       /*
        * Modify of the db schema, removing a table
        */
@@ -950,15 +1042,21 @@ public class SequentialExecutionsTest {
       String removeTable = "drop table FILM";
       st.execute(removeTable);
 
-      this.naiveImportStrategy
-          .executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "basicDBMapper", null, "java", null, null, null);
-
+      this.naiveImportStrategy.executeStrategy(
+          this.sourceDBInfo,
+          this.outOrientGraphUri,
+          "basicDBMapper",
+          null,
+          "java",
+          null,
+          null,
+          null);
 
       /*
        *  Testing built OrientDB
        */
 
-      orientGraph = this.context.getOrientDBInstance().open(this.dbName,"admin","admin");
+      orientGraph = this.context.getOrientDBInstance().open(this.dbName, "admin", "admin");
 
       actorVertexType = orientGraph.getClass("Actor");
 
@@ -1010,7 +1108,7 @@ public class SequentialExecutionsTest {
     }
   }
 
-  //@Test
+  // @Test
 
   /*
    *  Removing a relationship (foreign key).
@@ -1029,35 +1127,47 @@ public class SequentialExecutionsTest {
 
       // Tables Building
 
-      String directorTableBuilding = "create memory table DIRECTOR (ID varchar(256) not null, NAME  varchar(256),"
-          + " SURNAME varchar(256) not null, primary key (ID))";
+      String directorTableBuilding =
+          "create memory table DIRECTOR (ID varchar(256) not null, NAME  varchar(256),"
+              + " SURNAME varchar(256) not null, primary key (ID))";
       st = connection.createStatement();
       st.execute(directorTableBuilding);
 
-      String filmTableBuilding = "create memory table FILM (ID varchar(256) not null,"
-          + " TITLE varchar(256) not null, DIRECTOR varchar(256) not null, primary key (ID),"
-          + " constraint director foreign key (DIRECTOR) references DIRECTOR(ID))";
+      String filmTableBuilding =
+          "create memory table FILM (ID varchar(256) not null,"
+              + " TITLE varchar(256) not null, DIRECTOR varchar(256) not null, primary key (ID),"
+              + " constraint director foreign key (DIRECTOR) references DIRECTOR(ID))";
       st.execute(filmTableBuilding);
 
       // Records Inserting
 
       String directorFilling =
-          "insert into DIRECTOR (ID,NAME,SURNAME) values (" + "('D001','Quentin','Tarantino')," + "('D002','Martin','Scorsese'))";
+          "insert into DIRECTOR (ID,NAME,SURNAME) values ("
+              + "('D001','Quentin','Tarantino'),"
+              + "('D002','Martin','Scorsese'))";
       st.execute(directorFilling);
 
       String filmFilling =
-          "insert into FILM (ID,TITLE,DIRECTOR) values (" + "('F001','Pulp Fiction','D001')," + "('F002','Shutter Island','D002'))";
+          "insert into FILM (ID,TITLE,DIRECTOR) values ("
+              + "('F001','Pulp Fiction','D001'),"
+              + "('F002','Shutter Island','D002'))";
       st.execute(filmFilling);
 
-      this.naiveImportStrategy
-          .executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "basicDBMapper", null, "java", null, null, null);
-
+      this.naiveImportStrategy.executeStrategy(
+          this.sourceDBInfo,
+          this.outOrientGraphUri,
+          "basicDBMapper",
+          null,
+          "java",
+          null,
+          null,
+          null);
 
       /*
        *  Testing built OrientDB
        */
 
-      orientGraph = this.context.getOrientDBInstance().open(this.dbName,"admin","admin");
+      orientGraph = this.context.getOrientDBInstance().open(this.dbName, "admin", "admin");
 
       // vertices check
 
@@ -1071,7 +1181,6 @@ public class SequentialExecutionsTest {
       assertEquals(2, orientGraph.countClass("E"));
       assertEquals(2, orientGraph.countClass("HasDirector"));
 
-
       /*
        *  Removing a relationship
        */
@@ -1079,15 +1188,21 @@ public class SequentialExecutionsTest {
       String dropForeignKey = "alter table FILM drop constraint director";
       st.execute(dropForeignKey);
 
-      this.naiveImportStrategy
-          .executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "basicDBMapper", null, "java", null, null, null);
-
+      this.naiveImportStrategy.executeStrategy(
+          this.sourceDBInfo,
+          this.outOrientGraphUri,
+          "basicDBMapper",
+          null,
+          "java",
+          null,
+          null,
+          null);
 
       /*
        *  Testing built OrientDB
        */
 
-      orientGraph = this.context.getOrientDBInstance().open(this.dbName,"admin","admin");
+      orientGraph = this.context.getOrientDBInstance().open(this.dbName, "admin", "admin");
 
       // vertices check
 
@@ -1115,10 +1230,9 @@ public class SequentialExecutionsTest {
         fail();
       }
     }
-
   }
 
-  //@Test
+  // @Test
 
   /*
    * Adding records to a table.
@@ -1137,28 +1251,41 @@ public class SequentialExecutionsTest {
 
       // Tables Building
 
-      String actorTableBuilding = "create memory table ACTOR (ID varchar(256) not null, NAME  varchar(256),"
-          + " SURNAME varchar(256) not null, birthday varchar(256), primary key (ID))";
+      String actorTableBuilding =
+          "create memory table ACTOR (ID varchar(256) not null, NAME  varchar(256),"
+              + " SURNAME varchar(256) not null, birthday varchar(256), primary key (ID))";
       st = connection.createStatement();
       st.execute(actorTableBuilding);
 
       // Records Inserting
 
       String actorFilling =
-          "insert into ACTOR (ID,NAME,SURNAME) values (" + "('A001','John','Travolta')," + "('A002','Samuel','Lee Jackson'),"
-              + "('A003','Bruce','Willis')," + "('A004','Leonardo','Di Caprio')," + "('A005','Ben','Kingsley'),"
-              + "('A006','Mark','Ruffalo')," + "('A007','Jack','Nicholson')," + "('A008','Matt','Damon'))";
+          "insert into ACTOR (ID,NAME,SURNAME) values ("
+              + "('A001','John','Travolta'),"
+              + "('A002','Samuel','Lee Jackson'),"
+              + "('A003','Bruce','Willis'),"
+              + "('A004','Leonardo','Di Caprio'),"
+              + "('A005','Ben','Kingsley'),"
+              + "('A006','Mark','Ruffalo'),"
+              + "('A007','Jack','Nicholson'),"
+              + "('A008','Matt','Damon'))";
       st.execute(actorFilling);
 
-      this.naiveImportStrategy
-          .executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "basicDBMapper", null, "java", null, null, null);
-
+      this.naiveImportStrategy.executeStrategy(
+          this.sourceDBInfo,
+          this.outOrientGraphUri,
+          "basicDBMapper",
+          null,
+          "java",
+          null,
+          null,
+          null);
 
       /*
        *  Testing built OrientDB
        */
 
-      orientGraph = this.context.getOrientDBInstance().open(this.dbName,"admin","admin");
+      orientGraph = this.context.getOrientDBInstance().open(this.dbName, "admin", "admin");
 
       // vertices check
 
@@ -1169,23 +1296,31 @@ public class SequentialExecutionsTest {
 
       assertEquals(0, orientGraph.countClass("E"));
 
-
       /*
        * Adding records to the film table
        */
 
-      actorFilling = "insert into ACTOR (ID,NAME,SURNAME) values (" + "('A009','Christian','Bale')," + "('A010','Hugh','Jackman'))";
+      actorFilling =
+          "insert into ACTOR (ID,NAME,SURNAME) values ("
+              + "('A009','Christian','Bale'),"
+              + "('A010','Hugh','Jackman'))";
       st.executeQuery(actorFilling);
 
-      this.naiveImportStrategy
-          .executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "basicDBMapper", null, "java", null, null, null);
-
+      this.naiveImportStrategy.executeStrategy(
+          this.sourceDBInfo,
+          this.outOrientGraphUri,
+          "basicDBMapper",
+          null,
+          "java",
+          null,
+          null,
+          null);
 
       /*
        *  Testing built OrientDB
        */
 
-      orientGraph = this.context.getOrientDBInstance().open(this.dbName,"admin","admin");
+      orientGraph = this.context.getOrientDBInstance().open(this.dbName, "admin", "admin");
 
       // vertices check
 
@@ -1213,7 +1348,7 @@ public class SequentialExecutionsTest {
     }
   }
 
-  //@Test
+  // @Test
 
   /*
    * Adding records to a join table (aggregation strategy).
@@ -1233,45 +1368,67 @@ public class SequentialExecutionsTest {
       // Tables Building
 
       String filmTableBuilding =
-          "create memory table FILM (ID varchar(256) not null," + " TITLE varchar(256) not null, primary key (ID))";
+          "create memory table FILM (ID varchar(256) not null,"
+              + " TITLE varchar(256) not null, primary key (ID))";
       st = connection.createStatement();
       st.execute(filmTableBuilding);
 
-      String actorTableBuilding = "create memory table ACTOR (ID varchar(256) not null, NAME  varchar(256),"
-          + " SURNAME varchar(256) not null, primary key (ID))";
+      String actorTableBuilding =
+          "create memory table ACTOR (ID varchar(256) not null, NAME  varchar(256),"
+              + " SURNAME varchar(256) not null, primary key (ID))";
       st.execute(actorTableBuilding);
 
-      String film2actorTableBuilding = "create memory table FILM_ACTOR (FILM_ID varchar(256) not null, ACTOR_ID  varchar(256),"
-          + " primary key (FILM_ID,ACTOR_ID), foreign key (FILM_ID) references FILM(ID), foreign key (ACTOR_ID) references ACTOR(ID))";
+      String film2actorTableBuilding =
+          "create memory table FILM_ACTOR (FILM_ID varchar(256) not null, ACTOR_ID  varchar(256),"
+              + " primary key (FILM_ID,ACTOR_ID), foreign key (FILM_ID) references FILM(ID), foreign key (ACTOR_ID) references ACTOR(ID))";
       st.execute(film2actorTableBuilding);
 
       // Records Inserting
 
       String filmFilling =
-          "insert into FILM (ID,TITLE) values (" + "('F001','The Wolf Of Wall Street')," + "('F002','Shutter Island'),"
+          "insert into FILM (ID,TITLE) values ("
+              + "('F001','The Wolf Of Wall Street'),"
+              + "('F002','Shutter Island'),"
               + "('F003','The Departed'))";
       st.execute(filmFilling);
 
       String actorFilling =
-          "insert into ACTOR (ID,NAME,SURNAME) values (" + "('A001','Leonardo','Di Caprio')," + "('A002','Matthew', 'McConaughey'),"
-              + "('A003','Ben','Kingsley')," + "('A004','Mark','Ruffalo')," + "('A005','Jack','Nicholson'),"
+          "insert into ACTOR (ID,NAME,SURNAME) values ("
+              + "('A001','Leonardo','Di Caprio'),"
+              + "('A002','Matthew', 'McConaughey'),"
+              + "('A003','Ben','Kingsley'),"
+              + "('A004','Mark','Ruffalo'),"
+              + "('A005','Jack','Nicholson'),"
               + "('A006','Matt','Damon'))";
       st.execute(actorFilling);
 
       String film2actorFilling =
-          "insert into FILM_ACTOR (FILM_ID,ACTOR_ID) values (" + "('F001','A001')," + "('F001','A002')," + "('F002','A001'),"
-              + "('F002','A003')," + "('F002','A004')," + "('F003','A001')," + "('F003','A005')," + "('F003','A006'))";
+          "insert into FILM_ACTOR (FILM_ID,ACTOR_ID) values ("
+              + "('F001','A001'),"
+              + "('F001','A002'),"
+              + "('F002','A001'),"
+              + "('F002','A003'),"
+              + "('F002','A004'),"
+              + "('F003','A001'),"
+              + "('F003','A005'),"
+              + "('F003','A006'))";
       st.execute(film2actorFilling);
 
-      this.naiveAggregationImportStrategy
-          .executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "basicDBMapper", null, "java", null, null, null);
-
+      this.naiveAggregationImportStrategy.executeStrategy(
+          this.sourceDBInfo,
+          this.outOrientGraphUri,
+          "basicDBMapper",
+          null,
+          "java",
+          null,
+          null,
+          null);
 
       /*
        *  Testing built OrientDB
        */
 
-      orientGraph = this.context.getOrientDBInstance().open(this.dbName,"admin","admin");
+      orientGraph = this.context.getOrientDBInstance().open(this.dbName, "admin", "admin");
 
       // vertices check
 
@@ -1284,7 +1441,6 @@ public class SequentialExecutionsTest {
       assertEquals(8, orientGraph.countClass("E"));
       assertEquals(8, orientGraph.countClass("FilmActor"));
 
-
       /*
        * Adding records to the film, actor and join tables
        */
@@ -1295,18 +1451,27 @@ public class SequentialExecutionsTest {
       filmFilling = "insert into FILM (ID,TITLE) values (" + "('F004','Inception'))";
       st.executeQuery(filmFilling);
 
-      film2actorFilling = "insert into FILM_ACTOR (FILM_ID,ACTOR_ID) values (" + "('F004','A001')," + "('F004','A007'))";
+      film2actorFilling =
+          "insert into FILM_ACTOR (FILM_ID,ACTOR_ID) values ("
+              + "('F004','A001'),"
+              + "('F004','A007'))";
       st.executeQuery(film2actorFilling);
 
-      this.naiveAggregationImportStrategy
-          .executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "basicDBMapper", null, "java", null, null, null);
-
+      this.naiveAggregationImportStrategy.executeStrategy(
+          this.sourceDBInfo,
+          this.outOrientGraphUri,
+          "basicDBMapper",
+          null,
+          "java",
+          null,
+          null,
+          null);
 
       /*
        *  Testing built OrientDB
        */
 
-      orientGraph = this.context.getOrientDBInstance().open(this.dbName,"admin","admin");
+      orientGraph = this.context.getOrientDBInstance().open(this.dbName, "admin", "admin");
 
       // vertices check
 
@@ -1336,7 +1501,7 @@ public class SequentialExecutionsTest {
     }
   }
 
-  //@Test
+  // @Test
 
   /*
    * Adding a table with records.
@@ -1355,57 +1520,74 @@ public class SequentialExecutionsTest {
 
       // Tables Building
 
-      String directorTableBuilding = "create memory table DIRECTOR (ID varchar(256) not null, NAME  varchar(256),"
-          + " SURNAME varchar(256) not null, primary key (ID))";
+      String directorTableBuilding =
+          "create memory table DIRECTOR (ID varchar(256) not null, NAME  varchar(256),"
+              + " SURNAME varchar(256) not null, primary key (ID))";
       st = connection.createStatement();
       st.execute(directorTableBuilding);
 
       // Records Inserting
 
       String directorFilling =
-          "insert into DIRECTOR (ID,NAME,SURNAME) values (" + "('D001','Quentin','Tarantino')," + "('D002','Martin','Scorsese'))";
+          "insert into DIRECTOR (ID,NAME,SURNAME) values ("
+              + "('D001','Quentin','Tarantino'),"
+              + "('D002','Martin','Scorsese'))";
       st.execute(directorFilling);
 
-      this.naiveImportStrategy
-          .executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "basicDBMapper", null, "java", null, null, null);
-
+      this.naiveImportStrategy.executeStrategy(
+          this.sourceDBInfo,
+          this.outOrientGraphUri,
+          "basicDBMapper",
+          null,
+          "java",
+          null,
+          null,
+          null);
 
       /*
        *  Testing built OrientDB
        */
 
-      orientGraph = this.context.getOrientDBInstance().open(this.dbName,"admin","admin");
+      orientGraph = this.context.getOrientDBInstance().open(this.dbName, "admin", "admin");
 
       // vertices check
 
       assertEquals(2, orientGraph.countClass("V"));
       assertEquals(2, orientGraph.countClass("Director"));
 
-
       /*
        * Adding a table with records e foreign key
        */
 
-      String filmTableBuilding = "create memory table FILM (ID varchar(256) not null,"
-          + " TITLE varchar(256) not null, DIRECTOR varchar(256) not null, primary key (ID), "
-          + " foreign key (DIRECTOR) references DIRECTOR(ID))";
+      String filmTableBuilding =
+          "create memory table FILM (ID varchar(256) not null,"
+              + " TITLE varchar(256) not null, DIRECTOR varchar(256) not null, primary key (ID), "
+              + " foreign key (DIRECTOR) references DIRECTOR(ID))";
       st.executeQuery(filmTableBuilding);
 
       // Records Inserting
 
       String filmFilling =
-          "insert into FILM (ID,TITLE,DIRECTOR) values (" + "('F001','Pulp Fiction','D001')," + "('F002','Shutter Island','D002'),"
+          "insert into FILM (ID,TITLE,DIRECTOR) values ("
+              + "('F001','Pulp Fiction','D001'),"
+              + "('F002','Shutter Island','D002'),"
               + "('F003','The Departed','D002'))";
       st.execute(filmFilling);
 
-      this.naiveImportStrategy
-          .executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "basicDBMapper", null, "java", null, null, null);
-
+      this.naiveImportStrategy.executeStrategy(
+          this.sourceDBInfo,
+          this.outOrientGraphUri,
+          "basicDBMapper",
+          null,
+          "java",
+          null,
+          null,
+          null);
 
       /*
        *  Testing built OrientDB
        */
-      orientGraph = this.context.getOrientDBInstance().open(this.dbName,"admin","admin");
+      orientGraph = this.context.getOrientDBInstance().open(this.dbName, "admin", "admin");
 
       // vertices check
 
@@ -1433,10 +1615,9 @@ public class SequentialExecutionsTest {
         fail();
       }
     }
-
   }
 
-  //@Test
+  // @Test
 
   /*
    * Adding a join table with records (aggregation strategy).
@@ -1456,36 +1637,50 @@ public class SequentialExecutionsTest {
       // Tables Building
 
       String filmTableBuilding =
-          "create memory table FILM (ID varchar(256) not null," + " TITLE varchar(256) not null, primary key (ID))";
+          "create memory table FILM (ID varchar(256) not null,"
+              + " TITLE varchar(256) not null, primary key (ID))";
       st = connection.createStatement();
       st.execute(filmTableBuilding);
 
-      String actorTableBuilding = "create memory table ACTOR (ID varchar(256) not null, NAME  varchar(256),"
-          + " SURNAME varchar(256) not null, primary key (ID))";
+      String actorTableBuilding =
+          "create memory table ACTOR (ID varchar(256) not null, NAME  varchar(256),"
+              + " SURNAME varchar(256) not null, primary key (ID))";
       st.execute(actorTableBuilding);
 
       // Records Inserting
 
       String filmFilling =
-          "insert into FILM (ID,TITLE) values (" + "('F001','The Wolf Of Wall Street')," + "('F002','Shutter Island'),"
+          "insert into FILM (ID,TITLE) values ("
+              + "('F001','The Wolf Of Wall Street'),"
+              + "('F002','Shutter Island'),"
               + "('F003','The Departed'))";
       st.execute(filmFilling);
 
       String actorFilling =
-          "insert into ACTOR (ID,NAME,SURNAME) values (" + "('A001','Leonardo','Di Caprio')," + "('A002','Matthew', 'McConaughey'),"
-              + "('A003','Ben','Kingsley')," + "('A004','Mark','Ruffalo')," + "('A005','Jack','Nicholson'),"
+          "insert into ACTOR (ID,NAME,SURNAME) values ("
+              + "('A001','Leonardo','Di Caprio'),"
+              + "('A002','Matthew', 'McConaughey'),"
+              + "('A003','Ben','Kingsley'),"
+              + "('A004','Mark','Ruffalo'),"
+              + "('A005','Jack','Nicholson'),"
               + "('A006','Matt','Damon'))";
       st.execute(actorFilling);
 
-      this.naiveAggregationImportStrategy
-          .executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "basicDBMapper", null, "java", null, null, null);
-
+      this.naiveAggregationImportStrategy.executeStrategy(
+          this.sourceDBInfo,
+          this.outOrientGraphUri,
+          "basicDBMapper",
+          null,
+          "java",
+          null,
+          null,
+          null);
 
       /*
        *  Testing built OrientDB
        */
 
-      orientGraph = this.context.getOrientDBInstance().open(this.dbName,"admin","admin");
+      orientGraph = this.context.getOrientDBInstance().open(this.dbName, "admin", "admin");
 
       // vertices check
 
@@ -1497,29 +1692,42 @@ public class SequentialExecutionsTest {
 
       assertEquals(0, orientGraph.countClass("E"));
 
-
       /*
        * Adding a join table with records (aggregation strategy).
        */
 
-      String film2actorTableBuilding = "create memory table FILM_ACTOR (FILM_ID varchar(256) not null, ACTOR_ID  varchar(256),"
-          + " primary key (FILM_ID,ACTOR_ID), foreign key (FILM_ID) references FILM(ID), foreign key (ACTOR_ID) references ACTOR(ID))";
+      String film2actorTableBuilding =
+          "create memory table FILM_ACTOR (FILM_ID varchar(256) not null, ACTOR_ID  varchar(256),"
+              + " primary key (FILM_ID,ACTOR_ID), foreign key (FILM_ID) references FILM(ID), foreign key (ACTOR_ID) references ACTOR(ID))";
       st.execute(film2actorTableBuilding);
 
       String film2actorFilling =
-          "insert into FILM_ACTOR (FILM_ID,ACTOR_ID) values (" + "('F001','A001')," + "('F001','A002')," + "('F002','A001'),"
-              + "('F002','A003')," + "('F002','A004')," + "('F003','A001')," + "('F003','A005')," + "('F003','A006'))";
+          "insert into FILM_ACTOR (FILM_ID,ACTOR_ID) values ("
+              + "('F001','A001'),"
+              + "('F001','A002'),"
+              + "('F002','A001'),"
+              + "('F002','A003'),"
+              + "('F002','A004'),"
+              + "('F003','A001'),"
+              + "('F003','A005'),"
+              + "('F003','A006'))";
       st.execute(film2actorFilling);
 
-      this.naiveAggregationImportStrategy
-          .executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "basicDBMapper", null, "java", null, null, null);
-
+      this.naiveAggregationImportStrategy.executeStrategy(
+          this.sourceDBInfo,
+          this.outOrientGraphUri,
+          "basicDBMapper",
+          null,
+          "java",
+          null,
+          null,
+          null);
 
       /*
        *  Testing built OrientDB
        */
 
-      orientGraph = this.context.getOrientDBInstance().open(this.dbName,"admin","admin");
+      orientGraph = this.context.getOrientDBInstance().open(this.dbName, "admin", "admin");
 
       // vertices check
 
@@ -1549,7 +1757,7 @@ public class SequentialExecutionsTest {
     }
   }
 
-  //@Test
+  // @Test
 
   /*
    * Update of n records of a table.
@@ -1568,28 +1776,41 @@ public class SequentialExecutionsTest {
 
       // Tables Building
 
-      String actorTableBuilding = "create memory table ACTOR (ID varchar(256) not null, NAME  varchar(256),"
-          + " SURNAME varchar(256) not null, birthday varchar(256), primary key (ID))";
+      String actorTableBuilding =
+          "create memory table ACTOR (ID varchar(256) not null, NAME  varchar(256),"
+              + " SURNAME varchar(256) not null, birthday varchar(256), primary key (ID))";
       st = connection.createStatement();
       st.execute(actorTableBuilding);
 
       // Records Inserting
 
       String actorFilling =
-          "insert into ACTOR (ID,NAME,SURNAME) values (" + "('A001','John','Unaltravolta')," + "('A002','Samuel','Lì Clacson'),"
-              + "('A003','Bruce','Willis')," + "('A004','Leonardo','Di Caprio')," + "('A005','Ben','Kingsley'),"
-              + "('A006','Mark','Ruffalo')," + "('A007','Jack','Nicholson')," + "('A008','Matto','Demone'))";
+          "insert into ACTOR (ID,NAME,SURNAME) values ("
+              + "('A001','John','Unaltravolta'),"
+              + "('A002','Samuel','Lì Clacson'),"
+              + "('A003','Bruce','Willis'),"
+              + "('A004','Leonardo','Di Caprio'),"
+              + "('A005','Ben','Kingsley'),"
+              + "('A006','Mark','Ruffalo'),"
+              + "('A007','Jack','Nicholson'),"
+              + "('A008','Matto','Demone'))";
       st.execute(actorFilling);
 
-      this.naiveImportStrategy
-          .executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "basicDBMapper", null, "java", null, null, null);
-
+      this.naiveImportStrategy.executeStrategy(
+          this.sourceDBInfo,
+          this.outOrientGraphUri,
+          "basicDBMapper",
+          null,
+          "java",
+          null,
+          null,
+          null);
 
       /*
        *  Testing built OrientDB
        */
 
-      orientGraph = this.context.getOrientDBInstance().open(this.dbName,"admin","admin");
+      orientGraph = this.context.getOrientDBInstance().open(this.dbName, "admin", "admin");
 
       // vertices check
 
@@ -1600,7 +1821,7 @@ public class SequentialExecutionsTest {
       OResultSet result = orientGraph.command(this.getElementsFromClassQuery, "Actor");
 
       int count = 0;
-      while(result.hasNext()) {
+      while (result.hasNext()) {
         OVertex currentVertex = result.next().getVertex().get();
         assertNotNull(currentVertex);
         actorVertices.add(currentVertex);
@@ -1648,11 +1869,9 @@ public class SequentialExecutionsTest {
       assertTrue(actorVertices.contains(result.next().getVertex().get()));
       assertFalse(result.hasNext());
 
-
       // edges check
 
       assertEquals(0, orientGraph.countClass("E"));
-
 
       /*
        * Update of n records of a table.
@@ -1665,15 +1884,21 @@ public class SequentialExecutionsTest {
       update = "update ACTOR set name='Matt', surname='Damon' where id='A008'";
       st.executeQuery(update);
 
-      this.naiveImportStrategy
-          .executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "basicDBMapper", null, "java", null, null, null);
-
+      this.naiveImportStrategy.executeStrategy(
+          this.sourceDBInfo,
+          this.outOrientGraphUri,
+          "basicDBMapper",
+          null,
+          "java",
+          null,
+          null,
+          null);
 
       /*
        *  Testing built OrientDB
        */
 
-      orientGraph = this.context.getOrientDBInstance().open(this.dbName,"admin","admin");
+      orientGraph = this.context.getOrientDBInstance().open(this.dbName, "admin", "admin");
 
       // vertices check
 
@@ -1684,7 +1909,7 @@ public class SequentialExecutionsTest {
       result = orientGraph.command(this.getElementsFromClassQuery, "Actor");
 
       count = 0;
-      while(result.hasNext()) {
+      while (result.hasNext()) {
         OVertex currentVertex = result.next().getVertex().get();
         assertNotNull(currentVertex);
         actorVertices.add(currentVertex);
@@ -1752,5 +1977,4 @@ public class SequentialExecutionsTest {
       }
     }
   }
-
 }

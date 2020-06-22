@@ -26,12 +26,11 @@ import java.util.List;
  * @author Gabriele Ponzi
  * @email <g.ponzi--at--orientdb.com>
  */
-
 public class OAggregatedJoinTableMapping {
 
-  private String       tableName;           // mandatory
-  private List<String> fromColumns;   // mandatory
-  private List<String> toColumns;     // mandatory
+  private String tableName; // mandatory
+  private List<String> fromColumns; // mandatory
+  private List<String> toColumns; // mandatory
 
   public OAggregatedJoinTableMapping(String tableName) {
     this.tableName = tableName;

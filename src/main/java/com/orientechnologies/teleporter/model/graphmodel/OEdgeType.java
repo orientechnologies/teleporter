@@ -21,19 +21,18 @@
 package com.orientechnologies.teleporter.model.graphmodel;
 
 /**
- * It represents an Orient class of a specific type that extends the Orient Edge Class.
- * It's a simple edge-type in the graph model.
+ * It represents an Orient class of a specific type that extends the Orient Edge Class. It's a
+ * simple edge-type in the graph model.
  *
  * @author Gabriele Ponzi
  * @email <g.ponzi--at--orientdb.com>
  */
-
 public class OEdgeType extends OElementType {
 
   private OVertexType inVertexType;
   private OVertexType outVertexType;
-  private int         numberRelationshipsRepresented;  // the number of relationships represented by the edge
-  private boolean     isSplittingEdge;
+  private int numberRelationshipsRepresented; // the number of relationships represented by the edge
+  private boolean isSplittingEdge;
 
   public OEdgeType(String edgeType) {
     super(edgeType);
@@ -49,7 +48,11 @@ public class OEdgeType extends OElementType {
     this.isSplittingEdge = false;
   }
 
-  public OEdgeType(String edgeType, OVertexType outVertexType, OVertexType inVertexType, int numberRelationshipsRepresented,
+  public OEdgeType(
+      String edgeType,
+      OVertexType outVertexType,
+      OVertexType inVertexType,
+      int numberRelationshipsRepresented,
       boolean isSplittingEdge) {
     super(edgeType);
     this.outVertexType = outVertexType;
@@ -107,17 +110,15 @@ public class OEdgeType extends OElementType {
     OEdgeType that = (OEdgeType) obj;
 
     // check on type and in/out vertex
-    if (!(super.name.equals(that.getName()) && this.inVertexType.getName().equals(that.getInVertexType().getName())))
-      return false;
+    if (!(super.name.equals(that.getName())
+        && this.inVertexType.getName().equals(that.getInVertexType().getName()))) return false;
 
     // check on properties
     for (OModelProperty currentProperty : this.properties) {
-      if (!(that.getProperties().contains(currentProperty)))
-        return false;
+      if (!(that.getProperties().contains(currentProperty))) return false;
     }
 
     return true;
-
   }
 
   public String toString() {
@@ -125,11 +126,15 @@ public class OEdgeType extends OElementType {
     String s = "";
 
     if (this.outVertexType != null && this.inVertexType != null)
-      s = "Edge-type [type = " + super.name + ", out-vertex-type = " + this.getOutVertexType().getName() + ", in-vertex-type = "
-          + this.getInVertexType().getName() + " ]";
-
-    else
-      s = "Edge-type [type = " + super.name + " ]";
+      s =
+          "Edge-type [type = "
+              + super.name
+              + ", out-vertex-type = "
+              + this.getOutVertexType().getName()
+              + ", in-vertex-type = "
+              + this.getInVertexType().getName()
+              + " ]";
+    else s = "Edge-type [type = " + super.name + " ]";
 
     if (this.properties.size() > 0) {
       s += "\nEdge's properties (" + this.properties.size() + "):\n";
@@ -139,6 +144,5 @@ public class OEdgeType extends OElementType {
     }
     s += "\n";
     return s;
-
   }
 }

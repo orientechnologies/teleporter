@@ -34,20 +34,19 @@ import com.orientechnologies.teleporter.model.graphmodel.*;
 import com.orientechnologies.teleporter.nameresolver.ONameResolver;
 import com.orientechnologies.teleporter.persistence.util.ODBSourceConnection;
 import com.orientechnologies.teleporter.persistence.util.OQueryResult;
-
 import java.sql.*;
 import java.util.*;
 import java.util.Date;
 
 /**
- * Implementation of OSource2GraphMapper that manages the source DB schema and the destination graph model with their
- * correspondences. It has the responsibility to build in memory the two models: the first is built from the source DB meta-data
- * through the JDBC driver, the second from the source DB schema just created.
+ * Implementation of OSource2GraphMapper that manages the source DB schema and the destination graph
+ * model with their correspondences. It has the responsibility to build in memory the two models:
+ * the first is built from the source DB meta-data through the JDBC driver, the second from the
+ * source DB schema just created.
  *
  * @author Gabriele Ponzi
  * @email <g.ponzi--at--orientdb.com>
  */
-
 public class OER2GraphMapper extends OSource2GraphMapper {
 
   // single source database
@@ -57,14 +56,14 @@ public class OER2GraphMapper extends OSource2GraphMapper {
   protected ODataBaseSchema dataBaseSchema;
 
   // rules
-  protected Map<OEntity, List<OEVClassMapper>>        entity2EVClassMappers;
-  protected Map<OVertexType, List<OEVClassMapper>>    vertexType2EVClassMappers;
-  protected Map<String, List<OEEClassMapper>>         entity2EEClassMappers;
-  protected Map<String, List<OEEClassMapper>>         edgeType2EEClassMappers;
-  protected Map<ORelationship, OEdgeType>             relationship2edgeType;
+  protected Map<OEntity, List<OEVClassMapper>> entity2EVClassMappers;
+  protected Map<OVertexType, List<OEVClassMapper>> vertexType2EVClassMappers;
+  protected Map<String, List<OEEClassMapper>> entity2EEClassMappers;
+  protected Map<String, List<OEEClassMapper>> edgeType2EEClassMappers;
+  protected Map<ORelationship, OEdgeType> relationship2edgeType;
   protected Map<OEdgeType, LinkedList<ORelationship>> edgeType2relationships;
-  protected Map<String, Integer>                      edgeTypeName2count;
-  protected Map<OVertexType, OAggregatorEdge>         joinVertex2aggregatorEdges;
+  protected Map<String, Integer> edgeTypeName2count;
+  protected Map<OVertexType, OAggregatorEdge> joinVertex2aggregatorEdges;
 
   // filters
   protected List<String> includedTables;
@@ -75,7 +74,10 @@ public class OER2GraphMapper extends OSource2GraphMapper {
 
   public static final int DEFAULT_CLASS_MAPPER_INDEX = 0;
 
-  public OER2GraphMapper(OSourceDatabaseInfo sourceDatabaseInfo, List<String> includedTables, List<String> excludedTables,
+  public OER2GraphMapper(
+      OSourceDatabaseInfo sourceDatabaseInfo,
+      List<String> includedTables,
+      List<String> excludedTables,
       OConfiguration migrationConfig) {
 
     this.sourceDBInfo = sourceDatabaseInfo;
@@ -91,15 +93,11 @@ public class OER2GraphMapper extends OSource2GraphMapper {
     this.entity2EEClassMappers = new LinkedHashMap<String, List<OEEClassMapper>>();
     this.edgeType2EEClassMappers = new LinkedHashMap<String, List<OEEClassMapper>>();
 
-    if (includedTables != null)
-      this.includedTables = includedTables;
-    else
-      this.includedTables = new ArrayList<String>();
+    if (includedTables != null) this.includedTables = includedTables;
+    else this.includedTables = new ArrayList<String>();
 
-    if (excludedTables != null)
-      this.excludedTables = excludedTables;
-    else
-      this.excludedTables = new ArrayList<String>();
+    if (excludedTables != null) this.excludedTables = excludedTables;
+    else this.excludedTables = new ArrayList<String>();
 
     // creating the two empty models
     this.dataBaseSchema = new ODataBaseSchema();
@@ -108,10 +106,12 @@ public class OER2GraphMapper extends OSource2GraphMapper {
   }
 
   // old map managing
-  public void upsertRelationshipEdgeRules(ORelationship currentRelationship, OEdgeType currentEdgeType) {
+  public void upsertRelationshipEdgeRules(
+      ORelationship currentRelationship, OEdgeType currentEdgeType) {
     this.relationship2edgeType.put(currentRelationship, currentEdgeType);
 
-    LinkedList<ORelationship> representedRelationships = this.edgeType2relationships.get(currentEdgeType);
+    LinkedList<ORelationship> representedRelationships =
+        this.edgeType2relationships.get(currentEdgeType);
     if (representedRelationships == null) {
       representedRelationships = new LinkedList<ORelationship>();
     }
@@ -119,7 +119,8 @@ public class OER2GraphMapper extends OSource2GraphMapper {
     this.edgeType2relationships.put(currentEdgeType, representedRelationships);
   }
 
-  public void upsertEVClassMappingRules(OEntity currentEntity, OVertexType currentVertexType, OEVClassMapper classMapper) {
+  public void upsertEVClassMappingRules(
+      OEntity currentEntity, OVertexType currentVertexType, OEVClassMapper classMapper) {
 
     List<OEVClassMapper> classMappings = this.entity2EVClassMappers.get(currentEntity);
     if (classMappings == null) {
@@ -136,7 +137,8 @@ public class OER2GraphMapper extends OSource2GraphMapper {
     this.vertexType2EVClassMappers.put(currentVertexType, classMappings);
   }
 
-  public void upsertEEClassMappingRules(OEntity currentEntity, OEdgeType currentEdgeType, OEEClassMapper classMapper) {
+  public void upsertEEClassMappingRules(
+      OEntity currentEntity, OEdgeType currentEdgeType, OEEClassMapper classMapper) {
 
     List<OEEClassMapper> classMappings = this.entity2EEClassMappers.get(currentEntity.getName());
     if (classMappings == null) {
@@ -185,7 +187,8 @@ public class OER2GraphMapper extends OSource2GraphMapper {
     return edgeType2EEClassMappers;
   }
 
-  public String getAttributeByPropertyAboveMappers(String propertyName, List<OEVClassMapper> classMappers) {
+  public String getAttributeByPropertyAboveMappers(
+      String propertyName, List<OEVClassMapper> classMappers) {
 
     for (OEVClassMapper currClassMapper : classMappers) {
       String attributeName = currClassMapper.getAttributeByProperty(propertyName);
@@ -197,13 +200,10 @@ public class OER2GraphMapper extends OSource2GraphMapper {
   }
 
   /**
-   * MACRO EXECUTION BLOCK: BUILD SOURCE DATABASE SCHEMA
-   * Builds the database schema and the rules for the mapping with the graph model through 3 micro execution blocks:
-   * - Build Entities
-   * - Build Out-Relationships
-   * - Build In-Relationships
+   * MACRO EXECUTION BLOCK: BUILD SOURCE DATABASE SCHEMA Builds the database schema and the rules
+   * for the mapping with the graph model through 3 micro execution blocks: - Build Entities - Build
+   * Out-Relationships - Build In-Relationships
    */
-
   public void buildSourceDatabaseSchema() {
 
     Connection connection = null;
@@ -247,7 +247,6 @@ public class OER2GraphMapper extends OSource2GraphMapper {
 
       buildOutRelationships(databaseMetaData, numberOfTables);
 
-
       /*
        *  Building In-relationships
        */
@@ -273,11 +272,13 @@ public class OER2GraphMapper extends OSource2GraphMapper {
 
     try {
       if (connection.isClosed()) {
-        if(OTeleporterContext.getInstance().getMessageHandler().getOutputManagerLevel() == OOutputStreamManager.DEBUG_LEVEL) {
-          OTeleporterContext.getInstance().getMessageHandler().debug(this, "\nConnection to DB closed.\n");
+        if (OTeleporterContext.getInstance().getMessageHandler().getOutputManagerLevel()
+            == OOutputStreamManager.DEBUG_LEVEL) {
+          OTeleporterContext.getInstance()
+              .getMessageHandler()
+              .debug(this, "\nConnection to DB closed.\n");
         }
-      }
-      else {
+      } else {
         statistics.warningMessages.add("\nConnection to DB not closed.\n");
       }
     } catch (SQLException e) {
@@ -290,18 +291,16 @@ public class OER2GraphMapper extends OSource2GraphMapper {
   }
 
   /**
-   * MICRO EXECUTION BLOCK: BUILD SOURCE DATABASE SCHEMA - BUILD ENTITIES
-   * Builds the Entities starting from the source database metadata.
+   * MICRO EXECUTION BLOCK: BUILD SOURCE DATABASE SCHEMA - BUILD ENTITIES Builds the Entities
+   * starting from the source database metadata.
    *
    * @param databaseMetaData
    * @param sourceDBConnection
-   *
    * @return
-   *
    * @throws SQLException
    */
-
-  private int buildEntities(DatabaseMetaData databaseMetaData, Connection sourceDBConnection) throws SQLException {
+  private int buildEntities(DatabaseMetaData databaseMetaData, Connection sourceDBConnection)
+      throws SQLException {
 
     OTeleporterStatistics statistics = OTeleporterContext.getInstance().getStatistics();
     Map<String, String> tablesName2schema = new LinkedHashMap<String, String>();
@@ -309,7 +308,7 @@ public class OER2GraphMapper extends OSource2GraphMapper {
     String tableCatalog = null;
     String tableSchemaPattern = null;
     String tableNamePattern = null;
-    String[] tableTypes = { "TABLE" };
+    String[] tableTypes = {"TABLE"};
     if (this.sourceDBInfo.getDriverName().contains("Oracle")) {
       ResultSet schemas = databaseMetaData.getSchemas();
       while (schemas.next()) {
@@ -319,15 +318,17 @@ public class OER2GraphMapper extends OSource2GraphMapper {
         }
       }
     }
-    ResultSet resultTable = databaseMetaData.getTables(tableCatalog, tableSchemaPattern, tableNamePattern, tableTypes);
+    ResultSet resultTable =
+        databaseMetaData.getTables(tableCatalog, tableSchemaPattern, tableNamePattern, tableTypes);
 
     // Giving db's table names
     while (resultTable.next()) {
       String tableSchema = resultTable.getString("TABLE_SCHEM");
       String tableName = resultTable.getString("TABLE_NAME");
 
-      if (this.isTableAllowed(tableName))  // filtering tables according to "include-list" and "exclude-list"
-        tablesName2schema.put(tableName, tableSchema);
+      if (this.isTableAllowed(
+          tableName)) // filtering tables according to "include-list" and "exclude-list"
+      tablesName2schema.put(tableName, tableSchema);
     }
 
     int numberOfTables = tablesName2schema.size();
@@ -335,8 +336,11 @@ public class OER2GraphMapper extends OSource2GraphMapper {
 
     // closing resultTable
     this.closeCursor(resultTable);
-    if(OTeleporterContext.getInstance().getMessageHandler().getOutputManagerLevel() == OOutputStreamManager.DEBUG_LEVEL) {
-      OTeleporterContext.getInstance().getMessageHandler().debug(this, "\n%s tables found.\n", numberOfTables);
+    if (OTeleporterContext.getInstance().getMessageHandler().getOutputManagerLevel()
+        == OOutputStreamManager.DEBUG_LEVEL) {
+      OTeleporterContext.getInstance()
+          .getMessageHandler()
+          .debug(this, "\n%s tables found.\n", numberOfTables);
     }
 
     // Variables for records counting
@@ -347,16 +351,20 @@ public class OER2GraphMapper extends OSource2GraphMapper {
     int iteration = 1;
     for (String currentTableName : tablesName2schema.keySet()) {
 
-      if(OTeleporterContext.getInstance().getMessageHandler().getOutputManagerLevel() == OOutputStreamManager.DEBUG_LEVEL) {
-        OTeleporterContext.getInstance().getMessageHandler()
-            .debug("\nBuilding '%s' entity (%s/%s)...\n", currentTableName, iteration, numberOfTables);
+      if (OTeleporterContext.getInstance().getMessageHandler().getOutputManagerLevel()
+          == OOutputStreamManager.DEBUG_LEVEL) {
+        OTeleporterContext.getInstance()
+            .getMessageHandler()
+            .debug(
+                "\nBuilding '%s' entity (%s/%s)...\n", currentTableName, iteration, numberOfTables);
       }
 
       // Counting current-table's record
       String currentTableSchema = tablesName2schema.get(currentTableName);
       String sql;
 
-      OQueryResult result = dbQueryEngine.countTableRecords(sourceDBInfo, currentTableName, currentTableSchema);
+      OQueryResult result =
+          dbQueryEngine.countTableRecords(sourceDBInfo, currentTableName, currentTableSchema);
 
       ResultSet currentTableRecordAmount = result.getResult();
       if (currentTableRecordAmount.next()) {
@@ -376,18 +384,25 @@ public class OER2GraphMapper extends OSource2GraphMapper {
       String primaryKeyCatalog = null;
       String primaryKeySchema = currentTableSchema;
 
-      ResultSet resultColumns = databaseMetaData
-          .getColumns(columnCatalog, columnSchemaPattern, currentTableName, columnNamePattern);
-      ResultSet resultPrimaryKeys = databaseMetaData.getPrimaryKeys(primaryKeyCatalog, primaryKeySchema, currentTableName);
+      ResultSet resultColumns =
+          databaseMetaData.getColumns(
+              columnCatalog, columnSchemaPattern, currentTableName, columnNamePattern);
+      ResultSet resultPrimaryKeys =
+          databaseMetaData.getPrimaryKeys(primaryKeyCatalog, primaryKeySchema, currentTableName);
 
       List<String> currentPrimaryKeys = this.getPrimaryKeysFromResulset(resultPrimaryKeys);
 
       while (resultColumns.next()) {
-        OAttribute currentAttribute = new OAttribute(resultColumns.getString("COLUMN_NAME"),
-            resultColumns.getInt("ORDINAL_POSITION"), resultColumns.getString("TYPE_NAME"), currentEntity);
+        OAttribute currentAttribute =
+            new OAttribute(
+                resultColumns.getString("COLUMN_NAME"),
+                resultColumns.getInt("ORDINAL_POSITION"),
+                resultColumns.getString("TYPE_NAME"),
+                currentEntity);
         currentEntity.addAttribute(currentAttribute);
 
-        // if the current attribute is involved in the primary key, it will be added to the attributes of pKey.
+        // if the current attribute is involved in the primary key, it will be added to the
+        // attributes of pKey.
         if (currentPrimaryKeys.contains(currentAttribute.getName())) {
           pKey.addAttribute(currentAttribute);
         }
@@ -399,16 +414,24 @@ public class OER2GraphMapper extends OSource2GraphMapper {
 
       // if the primary key doesn't involve any attribute, a warning message is generated
       if (pKey.getInvolvedAttributes().size() == 0)
-        OTeleporterContext.getInstance().getStatistics()
-            .warningMessages.add("It's not declared a primary key for the Entity " + currentEntity.getName()
-            + ", this might lead to issues during the migration or the sync executions " + "(the first importing is quite safe).");
+        OTeleporterContext.getInstance()
+            .getStatistics()
+            .warningMessages
+            .add(
+                "It's not declared a primary key for the Entity "
+                    + currentEntity.getName()
+                    + ", this might lead to issues during the migration or the sync executions "
+                    + "(the first importing is quite safe).");
 
       // adding entity to db schema
       this.dataBaseSchema.getEntities().add(currentEntity);
 
       iteration++;
-      if(OTeleporterContext.getInstance().getMessageHandler().getOutputManagerLevel() == OOutputStreamManager.DEBUG_LEVEL) {
-        OTeleporterContext.getInstance().getMessageHandler().debug(this, "\nEntity %s built.\n", currentTableName);
+      if (OTeleporterContext.getInstance().getMessageHandler().getOutputManagerLevel()
+          == OOutputStreamManager.DEBUG_LEVEL) {
+        OTeleporterContext.getInstance()
+            .getMessageHandler()
+            .debug(this, "\nEntity %s built.\n", currentTableName);
       }
       statistics.builtEntities++;
       statistics.totalNumberOfRecords = totalNumberOfRecord;
@@ -419,16 +442,15 @@ public class OER2GraphMapper extends OSource2GraphMapper {
   }
 
   /**
-   * MICRO EXECUTION BLOCK: BUILD SOURCE DATABASE SCHEMA - BUILD OUT-RELATIONSHIPS
-   * Builds the references to the "Out Relationships" starting from the source database metadata.
+   * MICRO EXECUTION BLOCK: BUILD SOURCE DATABASE SCHEMA - BUILD OUT-RELATIONSHIPS Builds the
+   * references to the "Out Relationships" starting from the source database metadata.
    *
    * @param databaseMetaData
    * @param numberOfTables
-   *
    * @throws SQLException
    */
-
-  private void buildOutRelationships(DatabaseMetaData databaseMetaData, int numberOfTables) throws SQLException {
+  private void buildOutRelationships(DatabaseMetaData databaseMetaData, int numberOfTables)
+      throws SQLException {
 
     OTeleporterStatistics statistics = OTeleporterContext.getInstance().getStatistics();
 
@@ -437,18 +459,24 @@ public class OER2GraphMapper extends OSource2GraphMapper {
 
       String currentForeignEntityName = currentForeignEntity.getName();
       String foreignSchema = currentForeignEntity.getSchemaName();
-      if(OTeleporterContext.getInstance().getMessageHandler().getOutputManagerLevel() == OOutputStreamManager.DEBUG_LEVEL) {
-        OTeleporterContext.getInstance().getMessageHandler()
-            .debug("\nBuilding OUT relationships starting from '%s' entity (%s/%s)...\n", currentForeignEntityName, iteration,
-                numberOfTables);
+      if (OTeleporterContext.getInstance().getMessageHandler().getOutputManagerLevel()
+          == OOutputStreamManager.DEBUG_LEVEL) {
+        OTeleporterContext.getInstance()
+            .getMessageHandler()
+            .debug(
+                "\nBuilding OUT relationships starting from '%s' entity (%s/%s)...\n",
+                currentForeignEntityName, iteration, numberOfTables);
       }
 
       String foreignCatalog = null;
-      ResultSet resultForeignKeys = databaseMetaData.getImportedKeys(foreignCatalog, foreignSchema, currentForeignEntityName);
+      ResultSet resultForeignKeys =
+          databaseMetaData.getImportedKeys(foreignCatalog, foreignSchema, currentForeignEntityName);
 
       // copy of Resultset in a HashLinkedMap
-      List<LinkedHashMap<String, String>> currentEntityRelationships1 = this.fromResultSetToList(resultForeignKeys);
-      List<LinkedHashMap<String, String>> currentEntityRelationships2 = new LinkedList<LinkedHashMap<String, String>>();
+      List<LinkedHashMap<String, String>> currentEntityRelationships1 =
+          this.fromResultSetToList(resultForeignKeys);
+      List<LinkedHashMap<String, String>> currentEntityRelationships2 =
+          new LinkedList<LinkedHashMap<String, String>>();
 
       for (LinkedHashMap<String, String> row : currentEntityRelationships1) {
         currentEntityRelationships2.add(row);
@@ -467,18 +495,22 @@ public class OER2GraphMapper extends OSource2GraphMapper {
           break;
         }
 
-        // the original relationship is fetched from the record through the 'parent table' and the 'key sequence numbers'
+        // the original relationship is fetched from the record through the 'parent table' and the
+        // 'key sequence numbers'
         String currentParentTableName = currentExternalRow.get("pktable_name");
         int currentKeySeq = Integer.parseInt(currentExternalRow.get("key_seq"));
 
         // building each single relationship from each correspondent foreign key
         OEntity currentParentTable = this.dataBaseSchema.getEntityByName(currentParentTableName);
-        OCanonicalRelationship currentRelationship = new OCanonicalRelationship(currentForeignEntity, currentParentTable);
+        OCanonicalRelationship currentRelationship =
+            new OCanonicalRelationship(currentForeignEntity, currentParentTable);
         OForeignKey currentFk = new OForeignKey(currentForeignEntity);
         while (it2.hasNext()) {
           LinkedHashMap<String, String> row = it2.next();
-          if (row.get("pktable_name").equals(currentParentTableName) && Integer.parseInt(row.get("key_seq")) == currentKeySeq) {
-            currentFk.addAttribute(currentForeignEntity.getAttributeByName((String) row.get("fkcolumn_name")));
+          if (row.get("pktable_name").equals(currentParentTableName)
+              && Integer.parseInt(row.get("key_seq")) == currentKeySeq) {
+            currentFk.addAttribute(
+                currentForeignEntity.getAttributeByName((String) row.get("fkcolumn_name")));
             it2.remove();
             currentKeySeq++;
           }
@@ -488,9 +520,11 @@ public class OER2GraphMapper extends OSource2GraphMapper {
         it2 = currentEntityRelationships2.iterator();
 
         // searching correspondent primary key
-        OPrimaryKey currentPk = this.dataBaseSchema.getEntityByName(currentParentTableName).getPrimaryKey();
+        OPrimaryKey currentPk =
+            this.dataBaseSchema.getEntityByName(currentParentTableName).getPrimaryKey();
 
-        // adding foreign key to the entity and the relationship, and adding the foreign key to the 'foreign entity'
+        // adding foreign key to the entity and the relationship, and adding the foreign key to the
+        // 'foreign entity'
         currentRelationship.setPrimaryKey(currentPk);
         currentRelationship.setForeignKey(currentFk);
         currentForeignEntity.getForeignKeys().add(currentFk);
@@ -504,8 +538,11 @@ public class OER2GraphMapper extends OSource2GraphMapper {
       }
 
       iteration++;
-      if(OTeleporterContext.getInstance().getMessageHandler().getOutputManagerLevel() == OOutputStreamManager.DEBUG_LEVEL) {
-        OTeleporterContext.getInstance().getMessageHandler().debug(this, "\nOUT Relationships from %s built.\n", currentForeignEntityName);
+      if (OTeleporterContext.getInstance().getMessageHandler().getOutputManagerLevel()
+          == OOutputStreamManager.DEBUG_LEVEL) {
+        OTeleporterContext.getInstance()
+            .getMessageHandler()
+            .debug(this, "\nOUT Relationships from %s built.\n", currentForeignEntityName);
       }
       statistics.entitiesAnalyzedForRelationship++;
     }
@@ -514,24 +551,32 @@ public class OER2GraphMapper extends OSource2GraphMapper {
   }
 
   /**
-   * MICRO EXECUTION BLOCK: BUILD SOURCE DATABASE SCHEMA - BUILD IN-RELATIONSHIPS
-   * Builds the references to the "In Relationships" starting from the references to the "Out Relationships".
+   * MICRO EXECUTION BLOCK: BUILD SOURCE DATABASE SCHEMA - BUILD IN-RELATIONSHIPS Builds the
+   * references to the "In Relationships" starting from the references to the "Out Relationships".
    */
-
   private void buildInRelationships() {
 
     int iteration = 1;
-    if(OTeleporterContext.getInstance().getMessageHandler().getOutputManagerLevel() == OOutputStreamManager.DEBUG_LEVEL) {
-      OTeleporterContext.getInstance().getMessageHandler().debug(this, "\nConnecting IN relationships...\n");
+    if (OTeleporterContext.getInstance().getMessageHandler().getOutputManagerLevel()
+        == OOutputStreamManager.DEBUG_LEVEL) {
+      OTeleporterContext.getInstance()
+          .getMessageHandler()
+          .debug(this, "\nConnecting IN relationships...\n");
     }
 
     for (ORelationship currentRelationship : this.dataBaseSchema.getCanonicalRelationships()) {
-      OEntity currentInEntity = this.getDataBaseSchema().getEntityByName(currentRelationship.getParentEntity().getName());
-      currentInEntity.getInCanonicalRelationships().add((OCanonicalRelationship) currentRelationship);
+      OEntity currentInEntity =
+          this.getDataBaseSchema().getEntityByName(currentRelationship.getParentEntity().getName());
+      currentInEntity
+          .getInCanonicalRelationships()
+          .add((OCanonicalRelationship) currentRelationship);
     }
 
-    if(OTeleporterContext.getInstance().getMessageHandler().getOutputManagerLevel() == OOutputStreamManager.DEBUG_LEVEL) {
-      OTeleporterContext.getInstance().getMessageHandler().debug(this, "\nIN relationships built.\n");
+    if (OTeleporterContext.getInstance().getMessageHandler().getOutputManagerLevel()
+        == OOutputStreamManager.DEBUG_LEVEL) {
+      OTeleporterContext.getInstance()
+          .getMessageHandler()
+          .debug(this, "\nIN relationships built.\n");
     }
   }
 
@@ -545,20 +590,16 @@ public class OER2GraphMapper extends OSource2GraphMapper {
     return currentPrimaryKeys;
   }
 
-  /**
-   * @param result
-   */
+  /** @param result */
   private void closeCursor(ResultSet result) {
     try {
-      if (result != null)
-        result.close();
+      if (result != null) result.close();
     } catch (SQLException e) {
       String mess = "";
       OTeleporterContext.getInstance().printExceptionMessage(e, mess, "error");
       OTeleporterContext.getInstance().printExceptionStackTrace(e, "debug");
     }
   }
-
 
   /*
    * Transforms a ResultSet in a List, filtering relationships according to "include/exclude-lists"
@@ -574,12 +615,17 @@ public class OER2GraphMapper extends OSource2GraphMapper {
       while (resultForeignKeys.next()) {
 
         if (this.isTableAllowed(resultForeignKeys.getString("pktable_name"))
-            && this.dataBaseSchema.getEntityByName(resultForeignKeys.getString("pktable_name")) != null) {
-          //          if(this.isTableAllowed(resultForeignKeys.getString("pktable_name")) && this.dataBaseSchema.getEntityByName(resultForeignKeys.getString("pktable_name")) != null) {
+            && this.dataBaseSchema.getEntityByName(resultForeignKeys.getString("pktable_name"))
+                != null) {
+          //          if(this.isTableAllowed(resultForeignKeys.getString("pktable_name")) &&
+          // this.dataBaseSchema.getEntityByName(resultForeignKeys.getString("pktable_name")) !=
+          // null) {
 
           LinkedHashMap<String, String> row = new LinkedHashMap<String, String>();
           for (int i = 1; i <= columnsAmount; i++) {
-            row.put(resultForeignKeys.getMetaData().getColumnName(i).toLowerCase(Locale.ENGLISH), resultForeignKeys.getString(i));
+            row.put(
+                resultForeignKeys.getMetaData().getColumnName(i).toLowerCase(Locale.ENGLISH),
+                resultForeignKeys.getString(i));
           }
           rows.add(row);
         }
@@ -595,27 +641,23 @@ public class OER2GraphMapper extends OSource2GraphMapper {
 
   @Override
   /**
-   * MACRO EXECUTION BLOCK: BUILD GRAPH MODEL
-   * Builds the graph model and the rules for the mapping with the source database schema through 2 micro execution blocks:
-   *  - Build Vertex Types
-   *  - Build Edge Types
+   * MACRO EXECUTION BLOCK: BUILD GRAPH MODEL Builds the graph model and the rules for the mapping
+   * with the source database schema through 2 micro execution blocks: - Build Vertex Types - Build
+   * Edge Types
    *
-   *  @param nameResolver
+   * @param nameResolver
    */
-
   public void buildGraphModel(ONameResolver nameResolver) {
 
     OTeleporterStatistics statistics = OTeleporterContext.getInstance().getStatistics();
     statistics.startWork2Time = new Date();
     statistics.runningStepNumber = 2;
 
-
     /*
      *  Vertex-types building
      */
 
     this.buildVertexTypes(nameResolver);
-
 
     /*
      *  Edge-types building
@@ -628,12 +670,11 @@ public class OER2GraphMapper extends OSource2GraphMapper {
   }
 
   /**
-   * MICRO EXECUTION BLOCK: BUILD GRAPH MODEL - BUILD VERTEX TYPES
-   * Builds the Vertex Types starting from the Entities in the source database schema.
+   * MICRO EXECUTION BLOCK: BUILD GRAPH MODEL - BUILD VERTEX TYPES Builds the Vertex Types starting
+   * from the Entities in the source database schema.
    *
    * @param nameResolver
    */
-
   private void buildVertexTypes(ONameResolver nameResolver) {
 
     OTeleporterStatistics statistics = OTeleporterContext.getInstance().getStatistics();
@@ -643,15 +684,20 @@ public class OER2GraphMapper extends OSource2GraphMapper {
     int iteration = 1;
     for (OEntity currentEntity : this.dataBaseSchema.getEntities()) {
 
-      if(OTeleporterContext.getInstance().getMessageHandler().getOutputManagerLevel() == OOutputStreamManager.DEBUG_LEVEL) {
-        OTeleporterContext.getInstance().getMessageHandler()
-            .debug("\nBuilding '%s' vertex-type (%s/%s)...\n", currentEntity.getName(), iteration, numberOfVertexType);
+      if (OTeleporterContext.getInstance().getMessageHandler().getOutputManagerLevel()
+          == OOutputStreamManager.DEBUG_LEVEL) {
+        OTeleporterContext.getInstance()
+            .getMessageHandler()
+            .debug(
+                "\nBuilding '%s' vertex-type (%s/%s)...\n",
+                currentEntity.getName(), iteration, numberOfVertexType);
       }
 
       // building correspondent vertex-type
       String currentVertexTypeName = nameResolver.resolveVertexName(currentEntity.getName());
 
-      // fetch the vertex type from the graph model (empty vertex, only name defined), if does not exist create it.
+      // fetch the vertex type from the graph model (empty vertex, only name defined), if does not
+      // exist create it.
       boolean alreadyPresentInGraphModel = true;
       OVertexType currentVertexType = this.graphModel.getVertexTypeByName(currentVertexTypeName);
       if (currentVertexType == null) {
@@ -660,20 +706,33 @@ public class OER2GraphMapper extends OSource2GraphMapper {
       }
 
       // recognizing joint tables of dimension 2
-      if (currentEntity.isAggregableJoinTable())
-        currentVertexType.setIsFromJoinTable(true);
-      else
-        currentVertexType.setIsFromJoinTable(false);
+      if (currentEntity.isAggregableJoinTable()) currentVertexType.setIsFromJoinTable(true);
+      else currentVertexType.setIsFromJoinTable(false);
 
       // adding attributes to vertex-type
-      Map<String, String> attribute2property = new LinkedHashMap<String, String>();   // map to maintain the mapping between the attributes of the current entity and the properties of the correspondent vertex type
-      Map<String, String> property2attribute = new LinkedHashMap<String, String>();   // map to maintain the mapping between the properties of the current vertex type and the attributes of the correspondent entity
+      Map<String, String> attribute2property =
+          new LinkedHashMap<
+              String,
+              String>(); // map to maintain the mapping between the attributes of the current entity
+      // and the properties of the correspondent vertex type
+      Map<String, String> property2attribute =
+          new LinkedHashMap<
+              String,
+              String>(); // map to maintain the mapping between the properties of the current vertex
+      // type and the attributes of the correspondent entity
       for (OAttribute currentAttribute : currentEntity.getAttributes()) {
-        String orientdbDataType = OTeleporterContext.getInstance().getDataTypeHandler()
-            .resolveType(currentAttribute.getDataType().toLowerCase(Locale.ENGLISH)).toString();
-        OModelProperty currentProperty = new OModelProperty(nameResolver.resolveVertexProperty(currentAttribute.getName()),
-            currentAttribute.getOrdinalPosition(), currentAttribute.getDataType(),
-            currentEntity.getPrimaryKey().getInvolvedAttributes().contains(currentAttribute), currentVertexType);
+        String orientdbDataType =
+            OTeleporterContext.getInstance()
+                .getDataTypeHandler()
+                .resolveType(currentAttribute.getDataType().toLowerCase(Locale.ENGLISH))
+                .toString();
+        OModelProperty currentProperty =
+            new OModelProperty(
+                nameResolver.resolveVertexProperty(currentAttribute.getName()),
+                currentAttribute.getOrdinalPosition(),
+                currentAttribute.getDataType(),
+                currentEntity.getPrimaryKey().getInvolvedAttributes().contains(currentAttribute),
+                currentVertexType);
         currentProperty.setOrientdbType(orientdbDataType);
         currentVertexType.getProperties().add(currentProperty);
 
@@ -683,9 +742,13 @@ public class OER2GraphMapper extends OSource2GraphMapper {
 
       // adding inherited attributes to vertex-type
       for (OAttribute attribute : currentEntity.getInheritedAttributes()) {
-        OModelProperty currentProperty = new OModelProperty(nameResolver.resolveVertexProperty(attribute.getName()),
-            attribute.getOrdinalPosition(), attribute.getDataType(),
-            currentEntity.getPrimaryKey().getInvolvedAttributes().contains(attribute), currentVertexType);
+        OModelProperty currentProperty =
+            new OModelProperty(
+                nameResolver.resolveVertexProperty(attribute.getName()),
+                attribute.getOrdinalPosition(),
+                attribute.getDataType(),
+                currentEntity.getPrimaryKey().getInvolvedAttributes().contains(attribute),
+                currentVertexType);
         currentVertexType.getInheritedProperties().add(currentProperty);
         // TODO: Adding inherited attributes and props to the maps?
       }
@@ -702,8 +765,9 @@ public class OER2GraphMapper extends OSource2GraphMapper {
 
       // adding parent vertex if the corresponding entity has a parent
       if (currentEntity.getParentEntity() != null) {
-        OElementType currentParentElement = this.graphModel
-            .getVertexTypeByNameIgnoreCase(currentEntity.getParentEntity().getName());
+        OElementType currentParentElement =
+            this.graphModel.getVertexTypeByNameIgnoreCase(
+                currentEntity.getParentEntity().getName());
         currentVertexType.setParentType(currentParentElement);
         currentVertexType.setInheritanceLevel(currentEntity.getInheritanceLevel());
       }
@@ -714,12 +778,17 @@ public class OER2GraphMapper extends OSource2GraphMapper {
       }
 
       // rules updating
-      OEVClassMapper classMapper = new OEVClassMapper(currentEntity, currentVertexType, attribute2property, property2attribute);
+      OEVClassMapper classMapper =
+          new OEVClassMapper(
+              currentEntity, currentVertexType, attribute2property, property2attribute);
       this.upsertEVClassMappingRules(currentEntity, currentVertexType, classMapper);
 
       iteration++;
-      if(OTeleporterContext.getInstance().getMessageHandler().getOutputManagerLevel() == OOutputStreamManager.DEBUG_LEVEL) {
-        OTeleporterContext.getInstance().getMessageHandler().debug(this, "\nVertex-type %s built.\n", currentVertexTypeName);
+      if (OTeleporterContext.getInstance().getMessageHandler().getOutputManagerLevel()
+          == OOutputStreamManager.DEBUG_LEVEL) {
+        OTeleporterContext.getInstance()
+            .getMessageHandler()
+            .debug(this, "\nVertex-type %s built.\n", currentVertexTypeName);
       }
       statistics.builtModelVertexTypes++;
     }
@@ -729,12 +798,11 @@ public class OER2GraphMapper extends OSource2GraphMapper {
   }
 
   /**
-   * MICRO EXECUTION BLOCK: BUILD GRAPH MODEL - BUILD EDGE TYPES
-   * Builds the Edge Types starting from the Relationships in the source database schema.
+   * MICRO EXECUTION BLOCK: BUILD GRAPH MODEL - BUILD EDGE TYPES Builds the Edge Types starting from
+   * the Relationships in the source database schema.
    *
    * @param nameResolver
    */
-
   private void buildEdgeTypes(ONameResolver nameResolver) {
 
     OTeleporterStatistics statistics = OTeleporterContext.getInstance().getStatistics();
@@ -751,27 +819,41 @@ public class OER2GraphMapper extends OSource2GraphMapper {
 
         for (OCanonicalRelationship relationship : currentEntity.getOutCanonicalRelationships()) {
 
-          OVertexType currentOutVertex = this.getVertexTypeByEntity(relationship.getForeignEntity());
+          OVertexType currentOutVertex =
+              this.getVertexTypeByEntity(relationship.getForeignEntity());
           OVertexType currentInVertex = this.getVertexTypeByEntity(relationship.getParentEntity());
 
-          if(OTeleporterContext.getInstance().getMessageHandler().getOutputManagerLevel() == OOutputStreamManager.DEBUG_LEVEL) {
-            OTeleporterContext.getInstance().getMessageHandler()
-                .debug("\nBuilding edge-type from '%s' to '%s' (%s/%s)...\n", currentOutVertex.getName(), currentInVertex.getName(),
-                    iteration, numberOfEdgeType);
+          if (OTeleporterContext.getInstance().getMessageHandler().getOutputManagerLevel()
+              == OOutputStreamManager.DEBUG_LEVEL) {
+            OTeleporterContext.getInstance()
+                .getMessageHandler()
+                .debug(
+                    "\nBuilding edge-type from '%s' to '%s' (%s/%s)...\n",
+                    currentOutVertex.getName(),
+                    currentInVertex.getName(),
+                    iteration,
+                    numberOfEdgeType);
           }
 
           if (currentOutVertex != null && currentInVertex != null) {
 
-            // check on the presence of the relationship in the map performed in order to avoid generating several edgeTypes for the same relationship.
-            // when the edge was built before from the migrationConfigDoc and the relationship was inserted with that edgeType in the map, the relationships
+            // check on the presence of the relationship in the map performed in order to avoid
+            // generating several edgeTypes for the same relationship.
+            // when the edge was built before from the migrationConfigDoc and the relationship was
+            // inserted with that edgeType in the map, the relationships
             // mustn't be analyzed at this point! CHANGE IT when you'll implement the pipeline
             if (!this.relationship2edgeType.containsKey(relationship)) {
 
-              // relationships which represents inheritance between different entities don't generate new edge-types,
-              // thus new edge type is created iff the parent-table's name (of the relationship) does not coincide
+              // relationships which represents inheritance between different entities don't
+              // generate new edge-types,
+              // thus new edge type is created iff the parent-table's name (of the relationship)
+              // does not coincide
               // with the name of the parent entity of the current entity.
-              if (currentEntity.getParentEntity() == null || !currentEntity.getParentEntity().getName()
-                  .equals(relationship.getParentEntity().getName())) {
+              if (currentEntity.getParentEntity() == null
+                  || !currentEntity
+                      .getParentEntity()
+                      .getName()
+                      .equals(relationship.getParentEntity().getName())) {
 
                 // if the class edge doesn't exists, it will be created
                 edgeType = nameResolver.resolveEdgeName(relationship);
@@ -781,13 +863,18 @@ public class OER2GraphMapper extends OSource2GraphMapper {
                   currentEdgeType = new OEdgeType(edgeType, null, currentInVertex);
                   this.graphModel.getEdgesType().add(currentEdgeType);
 
-                  if(OTeleporterContext.getInstance().getMessageHandler().getOutputManagerLevel() == OOutputStreamManager.DEBUG_LEVEL) {
-                    OTeleporterContext.getInstance().getMessageHandler().debug(this, "\nEdge-type %s built.\n", currentEdgeType.getName());
+                  if (OTeleporterContext.getInstance().getMessageHandler().getOutputManagerLevel()
+                      == OOutputStreamManager.DEBUG_LEVEL) {
+                    OTeleporterContext.getInstance()
+                        .getMessageHandler()
+                        .debug(this, "\nEdge-type %s built.\n", currentEdgeType.getName());
                   }
                   statistics.builtModelEdgeTypes++;
                 } else {
-                  // edge already present, the counter of relationships represented by the edge is incremented
-                  currentEdgeType.setNumberRelationshipsRepresented(currentEdgeType.getNumberRelationshipsRepresented() + 1);
+                  // edge already present, the counter of relationships represented by the edge is
+                  // incremented
+                  currentEdgeType.setNumberRelationshipsRepresented(
+                      currentEdgeType.getNumberRelationshipsRepresented() + 1);
                 }
 
                 // adding the edge to the two vertices
@@ -803,8 +890,11 @@ public class OER2GraphMapper extends OSource2GraphMapper {
               }
             }
           } else {
-            OTeleporterContext.getInstance().getMessageHandler()
-                .error(this, "Error during graph model building phase: information loss, relationship missed. Edge-type not built.\n");
+            OTeleporterContext.getInstance()
+                .getMessageHandler()
+                .error(
+                    this,
+                    "Error during graph model building phase: information loss, relationship missed. Edge-type not built.\n");
           }
 
           iteration++;
@@ -812,14 +902,21 @@ public class OER2GraphMapper extends OSource2GraphMapper {
 
         // building edges starting from inherited relationships
 
-        for (OCanonicalRelationship relationship : currentEntity.getInheritedOutCanonicalRelationships()) {
+        for (OCanonicalRelationship relationship :
+            currentEntity.getInheritedOutCanonicalRelationships()) {
           OVertexType currentOutVertex = this.getVertexTypeByEntity(currentEntity);
           OVertexType currentInVertex = this.getVertexTypeByEntity(relationship.getParentEntity());
 
-          if(OTeleporterContext.getInstance().getMessageHandler().getOutputManagerLevel() == OOutputStreamManager.DEBUG_LEVEL) {
-            OTeleporterContext.getInstance().getMessageHandler()
-                .debug("\nBuilding edge-type from '%s' to '%s' (%s/%s)...\n", currentOutVertex.getName(), currentInVertex.getName(),
-                    iteration, numberOfEdgeType);
+          if (OTeleporterContext.getInstance().getMessageHandler().getOutputManagerLevel()
+              == OOutputStreamManager.DEBUG_LEVEL) {
+            OTeleporterContext.getInstance()
+                .getMessageHandler()
+                .debug(
+                    "\nBuilding edge-type from '%s' to '%s' (%s/%s)...\n",
+                    currentOutVertex.getName(),
+                    currentInVertex.getName(),
+                    iteration,
+                    numberOfEdgeType);
           }
 
           if (currentOutVertex != null && currentInVertex != null) {
@@ -830,54 +927,59 @@ public class OER2GraphMapper extends OSource2GraphMapper {
             currentOutVertex.getOutEdgesType().add(currentEdgeType);
             currentInVertex.getInEdgesType().add(currentEdgeType);
 
-            if(OTeleporterContext.getInstance().getMessageHandler().getOutputManagerLevel() == OOutputStreamManager.DEBUG_LEVEL) {
-              OTeleporterContext.getInstance().getMessageHandler().debug(this, "\nEdge-type built.\n");
+            if (OTeleporterContext.getInstance().getMessageHandler().getOutputManagerLevel()
+                == OOutputStreamManager.DEBUG_LEVEL) {
+              OTeleporterContext.getInstance()
+                  .getMessageHandler()
+                  .debug(this, "\nEdge-type built.\n");
             }
           } else {
-            OTeleporterContext.getInstance().getMessageHandler()
-                .error(this, "Error during graph model building phase: information loss, relationship missed. Edge-type not built.\n");
+            OTeleporterContext.getInstance()
+                .getMessageHandler()
+                .error(
+                    this,
+                    "Error during graph model building phase: information loss, relationship missed. Edge-type not built.\n");
           }
         }
       }
 
-      // Updating the total number of model edges with the actual number of built model edges since it was initialized with the number of relationships in the source db schema.
-      // In fact if there are relationships representing hierarchy then the number of built edges is less than the number of relationships.
+      // Updating the total number of model edges with the actual number of built model edges since
+      // it was initialized with the number of relationships in the source db schema.
+      // In fact if there are relationships representing hierarchy then the number of built edges is
+      // less than the number of relationships.
       statistics.totalNumberOfModelEdges = statistics.builtModelEdgeTypes;
-
     }
   }
 
   /**
-   * MACRO EXECUTION BLOCK: APPLY IMPORT CONFIGURATION
-   * Builds the graph model and the rules for the mapping with the source database schema through 2 micro execution blocks:
-   * - upsert Relationships according to the migrationConfigDoc
+   * MACRO EXECUTION BLOCK: APPLY IMPORT CONFIGURATION Builds the graph model and the rules for the
+   * mapping with the source database schema through 2 micro execution blocks: - upsert
+   * Relationships according to the migrationConfigDoc
    */
-
   public void applyImportConfiguration() {
 
     if (this.migrationConfig != null) {
 
-    /*
-     * Adding/updating classes according to the manual migrationConfigDoc
-     */
+      /*
+       * Adding/updating classes according to the manual migrationConfigDoc
+       */
       this.upsertClassesFromConfiguration();
 
-    /*
-     * Adding/updating relationships according to the manual migrationConfigDoc
-     * Executing this step before updating vertex classes because we need that all the configured edges are already defined before the next step.
-     * In fact in certain cases, as table splitting, we move edges according to the configuration.
-     */
+      /*
+       * Adding/updating relationships according to the manual migrationConfigDoc
+       * Executing this step before updating vertex classes because we need that all the configured edges are already defined before the next step.
+       * In fact in certain cases, as table splitting, we move edges according to the configuration.
+       */
       this.upsertRelationshipsFromConfiguration();
-
     }
   }
 
   /**
-   * MICRO EXECUTION BLOCK: APPLY IMPORT CONFIGURATION - UPSERT CLASSES' MAPPING FROM CONFIGURATION Builds the Vertex Types starting
-   * from the Entities in the source database schema. Adds and/or updates Vertex Types and Entities in the source database schema
-   * according to the manual migrationConfigDoc passed to Teleporter.
+   * MICRO EXECUTION BLOCK: APPLY IMPORT CONFIGURATION - UPSERT CLASSES' MAPPING FROM CONFIGURATION
+   * Builds the Vertex Types starting from the Entities in the source database schema. Adds and/or
+   * updates Vertex Types and Entities in the source database schema according to the manual
+   * migrationConfigDoc passed to Teleporter.
    */
-
   private void upsertClassesFromConfiguration() {
 
     List<OConfiguredVertexClass> configuredVertices = this.migrationConfig.getConfiguredVertices();
@@ -892,12 +994,14 @@ public class OER2GraphMapper extends OSource2GraphMapper {
         OVertexMappingInformation currentMapping = currentConfiguredVertexClass.getMapping();
         List<String> externalKeyProps = currentConfiguredVertexClass.getExternalKeyProps();
         List<OSourceTable> sourceTables = currentMapping.getSourceTables();
-        String aggregationFunction = currentMapping
-            .getAggregationFunction();  // !! Now is redundant because just the "equality" aggregation function is implemented. !!
+        String aggregationFunction =
+            currentMapping
+                .getAggregationFunction(); // !! Now is redundant because just the "equality"
+        // aggregation function is implemented. !!
 
         Map<String, String> sourceId2tableName = new HashMap<String, String>();
-        Map<String, List<OConfiguredVertexClass>> tableName2mappedConfiguredVertices = this.migrationConfig
-            .buildTableName2MappedConfiguredVertices();
+        Map<String, List<OConfiguredVertexClass>> tableName2mappedConfiguredVertices =
+            this.migrationConfig.buildTableName2MappedConfiguredVertices();
 
         for (OSourceTable currentSourceTable : sourceTables) {
           String currSourceIdName = currentSourceTable.getSourceIdName();
@@ -912,13 +1016,15 @@ public class OER2GraphMapper extends OSource2GraphMapper {
 
           // one-to-one mapping case
           if (tableName2mappedConfiguredVertices.get(tableName).size() == 1) {
-            performOne2OneMapping(sourceId2tableName, currentConfiguredVertexClass, externalKeyProps);
+            performOne2OneMapping(
+                sourceId2tableName, currentConfiguredVertexClass, externalKeyProps);
           }
           // splitting case
           else if (tableName2mappedConfiguredVertices.get(tableName).size() > 1) {
             performSplittingMapping(sourceId2tableName, tableName2mappedConfiguredVertices);
           } else {
-            OTeleporterContext.getInstance().getMessageHandler()
+            OTeleporterContext.getInstance()
+                .getMessageHandler()
                 .error("Mapping error: No vertices are mapped with '%s' table.", tableName);
             throw new OTeleporterRuntimeException();
           }
@@ -926,25 +1032,29 @@ public class OER2GraphMapper extends OSource2GraphMapper {
 
         // aggregation case
         else if (sourceId2tableName.size() > 1) {
-          performAggregationMapping(sourceId2tableName, currentConfiguredVertexClass, externalKeyProps);
+          performAggregationMapping(
+              sourceId2tableName, currentConfiguredVertexClass, externalKeyProps);
         }
-
       }
     }
   }
 
-  private void performOne2OneMapping(Map<String, String> sourceId2tableName, OConfiguredVertexClass currentConfiguredVertexClass,
+  private void performOne2OneMapping(
+      Map<String, String> sourceId2tableName,
+      OConfiguredVertexClass currentConfiguredVertexClass,
       List<String> externalKeyProps) {
 
     String sourceTableName = sourceId2tableName.entrySet().iterator().next().getValue();
-    OEVClassMapper currentClassMapper = this.entity2EVClassMappers.get(this.dataBaseSchema.getEntityByName(sourceTableName)).get(0);
+    OEVClassMapper currentClassMapper =
+        this.entity2EVClassMappers.get(this.dataBaseSchema.getEntityByName(sourceTableName)).get(0);
 
     // updating vertex and table mapping according to the migrationConfigDoc
     OVertexType currentVertexType = currentClassMapper.getVertexType();
     currentVertexType.setName(currentConfiguredVertexClass.getName());
 
     List<OConfiguredProperty> configuredPropertiedToAdd = new LinkedList<OConfiguredProperty>();
-    for (OConfiguredProperty configuredProperty : currentConfiguredVertexClass.getConfiguredProperties()) {
+    for (OConfiguredProperty configuredProperty :
+        currentConfiguredVertexClass.getConfiguredProperties()) {
 
       OConfiguredPropertyMapping propertyMapping = configuredProperty.getPropertyMapping();
       OModelProperty propertyToUpsert = null;
@@ -956,11 +1066,13 @@ public class OER2GraphMapper extends OSource2GraphMapper {
         // fetch the property by name
         columnName = propertyMapping.getColumnName();
         originalType = propertyMapping.getType();
-        originalPropertyName = currentClassMapper.getPropertyByAttribute(propertyMapping.getColumnName());
+        originalPropertyName =
+            currentClassMapper.getPropertyByAttribute(propertyMapping.getColumnName());
         propertyToUpsert = currentVertexType.getPropertyByNameAmongAll(originalPropertyName);
       } else {
         // fetch the property by ordinalPosition
-        propertyToUpsert = currentVertexType.getPropertyByOrdinalPosition(configuredProperty.getOrdinalPosition());
+        propertyToUpsert =
+            currentVertexType.getPropertyByOrdinalPosition(configuredProperty.getOrdinalPosition());
       }
 
       String orientdbType = configuredProperty.getPropertyType();
@@ -1002,8 +1114,17 @@ public class OER2GraphMapper extends OSource2GraphMapper {
       }
       String orientdbType = configuredProperty.getPropertyType();
       int ordinalPosition = configuredProperty.getOrdinalPosition();
-      OModelProperty newProperty = new OModelProperty(propertyName, ordinalPosition, originalType, orientdbType, false,
-          currentVertexType, false, false, false);
+      OModelProperty newProperty =
+          new OModelProperty(
+              propertyName,
+              ordinalPosition,
+              originalType,
+              orientdbType,
+              false,
+              currentVertexType,
+              false,
+              false,
+              false);
       currentVertexType.getProperties().add(newProperty);
 
       // updating properties mapping
@@ -1014,8 +1135,10 @@ public class OER2GraphMapper extends OSource2GraphMapper {
     currentConfiguredVertexClass.setAlreadyAnalyzed(true);
   }
 
-  private void performAggregationMapping(Map<String, String> sourceId2tableName,
-      OConfiguredVertexClass currentConfiguredVertexClass, List<String> externalKeyProps) {
+  private void performAggregationMapping(
+      Map<String, String> sourceId2tableName,
+      OConfiguredVertexClass currentConfiguredVertexClass,
+      List<String> externalKeyProps) {
 
     OTeleporterStatistics statistics = OTeleporterContext.getInstance().getStatistics();
     List<OVertexType> verticesToMerge = new LinkedList<OVertexType>();
@@ -1023,19 +1146,18 @@ public class OER2GraphMapper extends OSource2GraphMapper {
 
     // merging vertices correspondent
     for (String sourceTableName : sourceId2tableName.values()) {
-      List<OEVClassMapper> currentClassMappers = this.entity2EVClassMappers
-          .get(this.dataBaseSchema.getEntityByName(sourceTableName));
+      List<OEVClassMapper> currentClassMappers =
+          this.entity2EVClassMappers.get(this.dataBaseSchema.getEntityByName(sourceTableName));
       for (OEVClassMapper currentClassMapper : currentClassMappers) {
         verticesToMerge.add(currentClassMapper.getVertexType());
       }
     }
 
     /**
-     * checking the vertex types are aggregable:
-     * (i)  not coming from join tables
-     * (ii) if they belong tho hierarchical bag, merge is allowed iff vertices are all siblings (they all have the same parentType)
+     * checking the vertex types are aggregable: (i) not coming from join tables (ii) if they belong
+     * tho hierarchical bag, merge is allowed iff vertices are all siblings (they all have the same
+     * parentType)
      */
-
     boolean aggregable = true;
     OVertexType currentParentType = null;
     String errorMsg = null;
@@ -1044,7 +1166,10 @@ public class OER2GraphMapper extends OSource2GraphMapper {
     for (OVertexType v : verticesToMerge) {
       if (v.isFromJoinTable()) {
         aggregable = false;
-        errorMsg = "'" + v.getName() + "' comes from a join table, thus the requested aggregation will be skipped.";
+        errorMsg =
+            "'"
+                + v.getName()
+                + "' comes from a join table, thus the requested aggregation will be skipped.";
         break;
       }
     }
@@ -1069,10 +1194,7 @@ public class OER2GraphMapper extends OSource2GraphMapper {
 
     if (aggregable) {
 
-      /**
-       *  merging in and out edges
-       */
-
+      /** merging in and out edges */
       for (OVertexType currentVertexType : verticesToMerge) {
 
         // updating in edges
@@ -1088,20 +1210,20 @@ public class OER2GraphMapper extends OSource2GraphMapper {
         }
       }
 
-      /**
-       *  merging properties
-       */
-
+      /** merging properties */
       int ordinalPosition = 1;
-      Map<String, List<OConfiguredProperty>> originalTable2configuredProperties = new LinkedHashMap<String, List<OConfiguredProperty>>();
+      Map<String, List<OConfiguredProperty>> originalTable2configuredProperties =
+          new LinkedHashMap<String, List<OConfiguredProperty>>();
 
-      for (OConfiguredProperty configuredProperty : currentConfiguredVertexClass.getConfiguredProperties()) {
+      for (OConfiguredProperty configuredProperty :
+          currentConfiguredVertexClass.getConfiguredProperties()) {
 
         // clustering configured properties by original table they are coming from
         OConfiguredPropertyMapping propertyMapping = configuredProperty.getPropertyMapping();
         String source = propertyMapping.getSourceName();
         String tableName = sourceId2tableName.get(source);
-        List<OConfiguredProperty> configuredproperties = originalTable2configuredProperties.get(tableName);
+        List<OConfiguredProperty> configuredproperties =
+            originalTable2configuredProperties.get(tableName);
         if (configuredproperties == null) {
           configuredproperties = new LinkedList<OConfiguredProperty>();
         }
@@ -1121,15 +1243,26 @@ public class OER2GraphMapper extends OSource2GraphMapper {
         String originalSourceTableName = sourceId2tableName.get(originalSource);
 
         boolean fromPrimaryKey = false;
-        OEVClassMapper currentClassMapper = this.entity2EVClassMappers
-            .get(this.dataBaseSchema.getEntityByName(originalSourceTableName)).get(0);
+        OEVClassMapper currentClassMapper =
+            this.entity2EVClassMappers
+                .get(this.dataBaseSchema.getEntityByName(originalSourceTableName))
+                .get(0);
         OEntity currentEntity = currentClassMapper.getEntity();
         if (currentEntity.getPrimaryKey().getAttributeByName(columnName) != null) {
           fromPrimaryKey = true;
         }
 
-        OModelProperty property = new OModelProperty(propertyName, ordinalPosition, originalType, orientdbType, fromPrimaryKey,
-            newAggregatedVertexType, isMandatory, isReadOnly, isNotNull);
+        OModelProperty property =
+            new OModelProperty(
+                propertyName,
+                ordinalPosition,
+                originalType,
+                orientdbType,
+                fromPrimaryKey,
+                newAggregatedVertexType,
+                isMandatory,
+                isReadOnly,
+                isNotNull);
         property.setIncludedInMigration(include);
 
         // adding the property to the new aggregated vertex type
@@ -1140,9 +1273,7 @@ public class OER2GraphMapper extends OSource2GraphMapper {
       // setting the external key
       addExternalKeyToVertexType(externalKeyProps, newAggregatedVertexType);
 
-      /**
-       *  updating rules
-       */
+      /** updating rules */
 
       // removing old vertices' rules
       for (OVertexType v : verticesToMerge) {
@@ -1163,8 +1294,9 @@ public class OER2GraphMapper extends OSource2GraphMapper {
 
         // removing old entities' rules
         this.entity2EVClassMappers.remove(currentEntity);
-        OEVClassMapper currentNewCM = new OEVClassMapper(currentEntity, newAggregatedVertexType, attribute2property,
-            property2attribute);
+        OEVClassMapper currentNewCM =
+            new OEVClassMapper(
+                currentEntity, newAggregatedVertexType, attribute2property, property2attribute);
 
         // adding new rules
         this.upsertEVClassMappingRules(currentEntity, newAggregatedVertexType, currentNewCM);
@@ -1187,23 +1319,29 @@ public class OER2GraphMapper extends OSource2GraphMapper {
     currentConfiguredVertexClass.setAlreadyAnalyzed(true);
   }
 
-  private void performSplittingMapping(Map<String, String> sourceId2tableName,
+  private void performSplittingMapping(
+      Map<String, String> sourceId2tableName,
       Map<String, List<OConfiguredVertexClass>> tableName2mappedConfiguredVertices) {
 
     OTeleporterStatistics statistics = OTeleporterContext.getInstance().getStatistics();
     String sourceTableName = sourceId2tableName.entrySet().iterator().next().getValue();
-    OEVClassMapper currentClassMapper = this.entity2EVClassMappers.get(this.dataBaseSchema.getEntityByName(sourceTableName)).get(0);
+    OEVClassMapper currentClassMapper =
+        this.entity2EVClassMappers.get(this.dataBaseSchema.getEntityByName(sourceTableName)).get(0);
 
     OEntity entity = currentClassMapper.getEntity();
     entity.setIsSplitEntity(true);
     OVertexType vertexType = currentClassMapper.getVertexType();
 
     // building a map with the in and out edges for each class
-    Map<String, List<OEdgeType>> vertexType2inEdges = this
-        .splitEdgesForVertexAccordingToRelationships(entity.getInCanonicalRelationships(), entity.getName(),
+    Map<String, List<OEdgeType>> vertexType2inEdges =
+        this.splitEdgesForVertexAccordingToRelationships(
+            entity.getInCanonicalRelationships(),
+            entity.getName(),
             tableName2mappedConfiguredVertices);
-    Map<String, List<OEdgeType>> vertexType2outEdges = this
-        .splitEdgesForVertexAccordingToRelationships(entity.getOutCanonicalRelationships(), entity.getName(),
+    Map<String, List<OEdgeType>> vertexType2outEdges =
+        this.splitEdgesForVertexAccordingToRelationships(
+            entity.getOutCanonicalRelationships(),
+            entity.getName(),
             tableName2mappedConfiguredVertices);
 
     // removing class mappers
@@ -1215,11 +1353,15 @@ public class OER2GraphMapper extends OSource2GraphMapper {
     statistics.totalNumberOfModelVertices--;
     statistics.builtModelVertexTypes--;
 
-    for (OConfiguredVertexClass currentConfiguredVertexClass : tableName2mappedConfiguredVertices.get(sourceTableName)) {
+    for (OConfiguredVertexClass currentConfiguredVertexClass :
+        tableName2mappedConfiguredVertices.get(sourceTableName)) {
 
       // updating vertex and table mapping according to the migrationConfigDoc
-      OVertexType currentVertexType = this.graphModel.getVertexTypeByName(currentConfiguredVertexClass
-          .getName());    // vertex already present if exists a splitting edge already built in the previous step
+      OVertexType currentVertexType =
+          this.graphModel.getVertexTypeByName(
+              currentConfiguredVertexClass
+                  .getName()); // vertex already present if exists a splitting edge already built in
+      // the previous step
       if (currentVertexType == null) {
         currentVertexType = new OVertexType(currentConfiguredVertexClass.getName());
         this.graphModel.getVerticesType().add(currentVertexType);
@@ -1227,14 +1369,16 @@ public class OER2GraphMapper extends OSource2GraphMapper {
         statistics.builtModelVertexTypes++;
       }
 
-      // we have just a source table in case of splitting, so we can retrieve the original primary key from the first source table
+      // we have just a source table in case of splitting, so we can retrieve the original primary
+      // key from the first source table
       OSourceTable sourceTable = currentConfiguredVertexClass.getMapping().getSourceTables().get(0);
       List<String> primaryKeyColumns = sourceTable.getPrimaryKeyColumns();
 
       Map<String, String> attribute2property = new HashMap<String, String>();
       Map<String, String> property2attribute = new HashMap<String, String>();
 
-      for (OConfiguredProperty configuredProperty : currentConfiguredVertexClass.getConfiguredProperties()) {
+      for (OConfiguredProperty configuredProperty :
+          currentConfiguredVertexClass.getConfiguredProperties()) {
 
         OConfiguredPropertyMapping propertyMapping = configuredProperty.getPropertyMapping();
 
@@ -1252,8 +1396,17 @@ public class OER2GraphMapper extends OSource2GraphMapper {
           fromPrimaryKey = true;
         }
 
-        OModelProperty currentProperty = new OModelProperty(propertyName, ordinalPosition, originalType, orientdbType,
-            fromPrimaryKey, currentVertexType, isMandatory, isReadOnly, isNotNull);
+        OModelProperty currentProperty =
+            new OModelProperty(
+                propertyName,
+                ordinalPosition,
+                originalType,
+                orientdbType,
+                fromPrimaryKey,
+                currentVertexType,
+                isMandatory,
+                isReadOnly,
+                isNotNull);
         currentVertexType.getProperties().add(currentProperty);
 
         attribute2property.put(columnName, propertyName);
@@ -1261,7 +1414,8 @@ public class OER2GraphMapper extends OSource2GraphMapper {
       }
 
       // setting the external key
-      addExternalKeyToVertexType(currentConfiguredVertexClass.getExternalKeyProps(), currentVertexType);
+      addExternalKeyToVertexType(
+          currentConfiguredVertexClass.getExternalKeyProps(), currentVertexType);
 
       // updating model
       List<OEdgeType> inEdgeTypes = vertexType2inEdges.get(currentVertexType.getName());
@@ -1273,7 +1427,8 @@ public class OER2GraphMapper extends OSource2GraphMapper {
         currentVertexType.getOutEdgesType().addAll(outEdgeTypes);
       }
 
-      currentClassMapper = new OEVClassMapper(entity, currentVertexType, attribute2property, property2attribute);
+      currentClassMapper =
+          new OEVClassMapper(entity, currentVertexType, attribute2property, property2attribute);
 
       // updating rules
       this.upsertEVClassMappingRules(entity, currentVertexType, currentClassMapper);
@@ -1284,25 +1439,27 @@ public class OER2GraphMapper extends OSource2GraphMapper {
   }
 
   /**
-   * Builds a map where the key is a vertex type and the values is the list of in/out edges that are retrieved according to
-   * the correspondent relationships passed as parameter.
-   * The vertex types are inferred starting from the configured vertices.
+   * Builds a map where the key is a vertex type and the values is the list of in/out edges that are
+   * retrieved according to the correspondent relationships passed as parameter. The vertex types
+   * are inferred starting from the configured vertices.
    *
    * @param relationships
    * @param entityName
    * @param tableName2mappedConfiguredVertices
-   *
    * @return
    */
-  private Map<String, List<OEdgeType>> splitEdgesForVertexAccordingToRelationships(Set<? extends ORelationship> relationships,
-      String entityName, Map<String, List<OConfiguredVertexClass>> tableName2mappedConfiguredVertices) {
+  private Map<String, List<OEdgeType>> splitEdgesForVertexAccordingToRelationships(
+      Set<? extends ORelationship> relationships,
+      String entityName,
+      Map<String, List<OConfiguredVertexClass>> tableName2mappedConfiguredVertices) {
 
     Map<String, List<OEdgeType>> vertexType2edges = new HashMap<String, List<OEdgeType>>();
     for (ORelationship currentRelationship : relationships) {
       OEdgeType currOutEdge = this.getRelationship2edgeType().get(currentRelationship);
       List<OAttribute> fromColumns = currentRelationship.getFromColumns();
 
-      for (OConfiguredVertexClass currConfiguredVertex : tableName2mappedConfiguredVertices.get(entityName)) {
+      for (OConfiguredVertexClass currConfiguredVertex :
+          tableName2mappedConfiguredVertices.get(entityName)) {
 
         boolean vertexDetected = true;
         for (OAttribute currAttribute : fromColumns) {
@@ -1312,7 +1469,8 @@ public class OER2GraphMapper extends OSource2GraphMapper {
           }
         }
 
-        // if the current vertex type contains all the properties correspondent to the attributes involved in the relationship, then the edge is added to the edges referred to the edge
+        // if the current vertex type contains all the properties correspondent to the attributes
+        // involved in the relationship, then the edge is added to the edges referred to the edge
         if (vertexDetected) {
 
           // updating map
@@ -1330,7 +1488,8 @@ public class OER2GraphMapper extends OSource2GraphMapper {
     return vertexType2edges;
   }
 
-  private void addExternalKeyToVertexType(List<String> externalKeyProps, OVertexType currentVertexType) {
+  private void addExternalKeyToVertexType(
+      List<String> externalKeyProps, OVertexType currentVertexType) {
 
     // setting the external key
     if (externalKeyProps != null) {
@@ -1347,11 +1506,11 @@ public class OER2GraphMapper extends OSource2GraphMapper {
   }
 
   /**
-   * MICRO EXECUTION BLOCK: APPLY IMPORT CONFIGURATION - UPSERT RELATIONSHIPS FROM CONFIGURATION Builds the Edge Types starting from
-   * the Relationships in the source database schema. Adds and/or updates Relationships in the source database schema according to
-   * the manual migrationConfigDoc passed to Teleporter.
+   * MICRO EXECUTION BLOCK: APPLY IMPORT CONFIGURATION - UPSERT RELATIONSHIPS FROM CONFIGURATION
+   * Builds the Edge Types starting from the Relationships in the source database schema. Adds
+   * and/or updates Relationships in the source database schema according to the manual
+   * migrationConfigDoc passed to Teleporter.
    */
-
   private void upsertRelationshipsFromConfiguration() {
 
     List<OConfiguredEdgeClass> configuredEdges = this.migrationConfig.getConfiguredEdges();
@@ -1372,35 +1531,50 @@ public class OER2GraphMapper extends OSource2GraphMapper {
           String currentParentEntityName = edgeMapping.getToTableName();
           List<String> fromColumns = edgeMapping.getFromColumns();
           List<String> toColumns = edgeMapping.getToColumns();
-          OAggregatedJoinTableMapping joinTableMapping = edgeMapping.getRepresentedJoinTableMapping();
+          OAggregatedJoinTableMapping joinTableMapping =
+              edgeMapping.getRepresentedJoinTableMapping();
 
           // migrationConfigDoc errors managing (draconian approach)
           if (currentForeignEntityName == null) {
-            OTeleporterContext.getInstance().getMessageHandler()
-                .error("Configuration error: 'fromTable' field not found in the '%s' edge-type definition.", edgeName);
+            OTeleporterContext.getInstance()
+                .getMessageHandler()
+                .error(
+                    "Configuration error: 'fromTable' field not found in the '%s' edge-type definition.",
+                    edgeName);
             throw new OTeleporterRuntimeException();
           }
           if (currentParentEntityName == null) {
-            OTeleporterContext.getInstance().getMessageHandler()
-                .error("Configuration error: 'toTable' field not found in the '%s' edge-type definition.", edgeName);
+            OTeleporterContext.getInstance()
+                .getMessageHandler()
+                .error(
+                    "Configuration error: 'toTable' field not found in the '%s' edge-type definition.",
+                    edgeName);
             throw new OTeleporterRuntimeException();
           }
           if (fromColumns == null) {
-            OTeleporterContext.getInstance().getMessageHandler()
-                .error("Configuration error: 'fromColumns' field not found in the '%s' edge-type definition.", edgeName);
+            OTeleporterContext.getInstance()
+                .getMessageHandler()
+                .error(
+                    "Configuration error: 'fromColumns' field not found in the '%s' edge-type definition.",
+                    edgeName);
             throw new OTeleporterRuntimeException();
           }
           if (toColumns == null) {
-            OTeleporterContext.getInstance().getMessageHandler()
-                .error("Configuration error: 'toColumns' field not found in the '%s' edge-type definition.", edgeName);
+            OTeleporterContext.getInstance()
+                .getMessageHandler()
+                .error(
+                    "Configuration error: 'toColumns' field not found in the '%s' edge-type definition.",
+                    edgeName);
             throw new OTeleporterRuntimeException();
           }
 
           String direction = edgeMapping.getDirection();
 
           if (direction != null && !(direction.equals("direct") || direction.equals("inverse"))) {
-            OTeleporterContext.getInstance().getMessageHandler()
-                .error("Configuration error: direction for the edge %s cannot be '%s'. Allowed values: 'direct' or 'inverse' \n",
+            OTeleporterContext.getInstance()
+                .getMessageHandler()
+                .error(
+                    "Configuration error: direction for the edge %s cannot be '%s'. Allowed values: 'direct' or 'inverse' \n",
                     edgeName, direction);
             throw new OTeleporterRuntimeException();
           }
@@ -1410,11 +1584,20 @@ public class OER2GraphMapper extends OSource2GraphMapper {
           if (joinTableMapping == null) {
 
             // building relationship
-            ORelationship currentRelationship = buildRelationshipFromConfig(currentForeignEntityName, currentParentEntityName,
-                fromColumns, toColumns, direction, foreignEntityIsJoinTableToAggregate);
+            ORelationship currentRelationship =
+                buildRelationshipFromConfig(
+                    currentForeignEntityName,
+                    currentParentEntityName,
+                    fromColumns,
+                    toColumns,
+                    direction,
+                    foreignEntityIsJoinTableToAggregate);
 
             // building correspondent edgeType (check on inheritance not needed)
-            this.buildEdgeTypeFromConfiguredRelationship(currentRelationship, edgeName, currentEdgeClass,
+            this.buildEdgeTypeFromConfiguredRelationship(
+                currentRelationship,
+                edgeName,
+                currentEdgeClass,
                 foreignEntityIsJoinTableToAggregate);
 
           } else {
@@ -1422,24 +1605,44 @@ public class OER2GraphMapper extends OSource2GraphMapper {
             String joinTableName = joinTableMapping.getTableName();
             foreignEntityIsJoinTableToAggregate = true;
 
-            if (OTeleporterContext.getInstance().getExecutionStrategy().equals("naive-aggregate")) { // strategy is aggregated
+            if (OTeleporterContext.getInstance()
+                .getExecutionStrategy()
+                .equals("naive-aggregate")) { // strategy is aggregated
               List<String> joinTableFromColumns = joinTableMapping.getFromColumns();
               List<String> joinTableToColumns = joinTableMapping.getToColumns();
 
               // building left relationship
-              ORelationship currentRelationship = buildRelationshipFromConfig(joinTableName, currentForeignEntityName,
-                  joinTableFromColumns, fromColumns, direction, foreignEntityIsJoinTableToAggregate);
+              ORelationship currentRelationship =
+                  buildRelationshipFromConfig(
+                      joinTableName,
+                      currentForeignEntityName,
+                      joinTableFromColumns,
+                      fromColumns,
+                      direction,
+                      foreignEntityIsJoinTableToAggregate);
 
               // building correspondent edgeType (check on inheritance not needed)
-              this.buildEdgeTypeFromConfiguredRelationship(currentRelationship, edgeName + "-left", currentEdgeClass,
+              this.buildEdgeTypeFromConfiguredRelationship(
+                  currentRelationship,
+                  edgeName + "-left",
+                  currentEdgeClass,
                   foreignEntityIsJoinTableToAggregate);
 
               // building right relationship
-              currentRelationship = buildRelationshipFromConfig(joinTableName, currentParentEntityName, joinTableToColumns,
-                  toColumns, direction, foreignEntityIsJoinTableToAggregate);
+              currentRelationship =
+                  buildRelationshipFromConfig(
+                      joinTableName,
+                      currentParentEntityName,
+                      joinTableToColumns,
+                      toColumns,
+                      direction,
+                      foreignEntityIsJoinTableToAggregate);
 
               // building correspondent edgeType (check on inheritance not needed)
-              this.buildEdgeTypeFromConfiguredRelationship(currentRelationship, edgeName + "-right", currentEdgeClass,
+              this.buildEdgeTypeFromConfiguredRelationship(
+                  currentRelationship,
+                  edgeName + "-right",
+                  currentEdgeClass,
                   foreignEntityIsJoinTableToAggregate);
 
               // setting attributes of the join table
@@ -1453,10 +1656,13 @@ public class OER2GraphMapper extends OSource2GraphMapper {
               correspondentVertexType.setIsFromJoinTable(true);
 
             } else if (OTeleporterContext.getInstance().getExecutionStrategy().equals("naive")) {
-              OTeleporterContext.getInstance().getMessageHandler().error(this,
-                  "Configuration not compliant with the chosen strategy: you cannot perform the aggregation declared in the migrationConfigDoc for the "
-                      + "join table %s while executing migration with a not-aggregating strategy. Thus no aggregation will be performed.\n",
-                  joinTableName);
+              OTeleporterContext.getInstance()
+                  .getMessageHandler()
+                  .error(
+                      this,
+                      "Configuration not compliant with the chosen strategy: you cannot perform the aggregation declared in the migrationConfigDoc for the "
+                          + "join table %s while executing migration with a not-aggregating strategy. Thus no aggregation will be performed.\n",
+                      joinTableName);
               throw new OTeleporterRuntimeException();
             }
           }
@@ -1473,12 +1679,15 @@ public class OER2GraphMapper extends OSource2GraphMapper {
    * @param fromColumns
    * @param toColumns
    * @param direction
-   *
    * @return
    */
-
-  private ORelationship buildRelationshipFromConfig(String currentForeignEntityName, String currentParentEntityName,
-      List<String> fromColumns, List<String> toColumns, String direction, boolean foreignEntityIsJoinTableToAggregate) {
+  private ORelationship buildRelationshipFromConfig(
+      String currentForeignEntityName,
+      String currentParentEntityName,
+      List<String> fromColumns,
+      List<String> toColumns,
+      String direction,
+      boolean foreignEntityIsJoinTableToAggregate) {
 
     OTeleporterStatistics statistics = OTeleporterContext.getInstance().getStatistics();
     ORelationship currentRelationship = null;
@@ -1488,7 +1697,8 @@ public class OER2GraphMapper extends OSource2GraphMapper {
     OEntity currentParentEntity = this.dataBaseSchema.getEntityByName(currentParentEntityName);
 
     // distinguishing canonical relationships from logical relationships:
-    // it's a canonical relationship iff the each column in toColumns corresponds to a column in the primary key of the parent entity
+    // it's a canonical relationship iff the each column in toColumns corresponds to a column in the
+    // primary key of the parent entity
     boolean isCanonicalRelationship = true;
     OPrimaryKey primaryKey = currentParentEntity.getPrimaryKey();
 
@@ -1517,8 +1727,9 @@ public class OER2GraphMapper extends OSource2GraphMapper {
 
     // fetch relationship from current db schema
     boolean relationshipAlreadyPresentInDBSchema = true;
-    currentRelationship = this.dataBaseSchema
-        .getRelationshipByInvolvedEntitiesAndAttributes(currentForeignEntity, currentParentEntity, fromColumns, toColumns);
+    currentRelationship =
+        this.dataBaseSchema.getRelationshipByInvolvedEntitiesAndAttributes(
+            currentForeignEntity, currentParentEntity, fromColumns, toColumns);
 
     if (isCanonicalRelationship) {
 
@@ -1532,7 +1743,9 @@ public class OER2GraphMapper extends OSource2GraphMapper {
         statistics.totalNumberOfRelationships += 1;
       }
 
-      // if Relationship was not already present in the schema we must add the foreign key both to the 'foreign entity' and the relationship, and the primary key to the relationship in the db schema.
+      // if Relationship was not already present in the schema we must add the foreign key both to
+      // the 'foreign entity' and the relationship, and the primary key to the relationship in the
+      // db schema.
       if (!relationshipAlreadyPresentInDBSchema) {
         OForeignKey currentFk = new OForeignKey(currentForeignEntity);
 
@@ -1555,11 +1768,17 @@ public class OER2GraphMapper extends OSource2GraphMapper {
         ((OCanonicalRelationship) currentRelationship).setForeignKey(currentFk);
 
         currentForeignEntity.getForeignKeys().add(currentFk);
-        this.dataBaseSchema.getCanonicalRelationships().add((OCanonicalRelationship) currentRelationship);
+        this.dataBaseSchema
+            .getCanonicalRelationships()
+            .add((OCanonicalRelationship) currentRelationship);
 
         // adding relationship to the current entity
-        currentForeignEntity.getOutCanonicalRelationships().add((OCanonicalRelationship) currentRelationship);
-        currentParentEntity.getInCanonicalRelationships().add((OCanonicalRelationship) currentRelationship);
+        currentForeignEntity
+            .getOutCanonicalRelationships()
+            .add((OCanonicalRelationship) currentRelationship);
+        currentParentEntity
+            .getInCanonicalRelationships()
+            .add((OCanonicalRelationship) currentRelationship);
       }
     } else {
       // if the relationships is not already present in the database schema, it will be created
@@ -1588,20 +1807,29 @@ public class OER2GraphMapper extends OSource2GraphMapper {
       ((OLogicalRelationship) currentRelationship).setFromColumns(fromAttributes);
       ((OLogicalRelationship) currentRelationship).setToColumns(toAttributes);
 
-      currentForeignEntity.getOutLogicalRelationships().add((OLogicalRelationship) currentRelationship);
+      currentForeignEntity
+          .getOutLogicalRelationships()
+          .add((OLogicalRelationship) currentRelationship);
       dataBaseSchema.getLogicalRelationships().add((OLogicalRelationship) currentRelationship);
     }
 
-    // Adding the direction of the relationship if it's different from null and if the foreign entity is not a join table.
-    // In fact when the foreign table is a join table to aggregate, direction is referred to the aggregator edge, so left and right relationships remains direct.
+    // Adding the direction of the relationship if it's different from null and if the foreign
+    // entity is not a join table.
+    // In fact when the foreign table is a join table to aggregate, direction is referred to the
+    // aggregator edge, so left and right relationships remains direct.
     if (direction != null && !foreignEntityIsJoinTableToAggregate) {
       if ((direction.equals("direct") || direction.equals("inverse"))) {
         currentRelationship.setDirection(direction);
       } else {
-        OTeleporterContext.getInstance().getMessageHandler().error(this,
-            "Wrong value for the direction of the relationship between %s and %s: \"%s\" is not a valid direction. "
-                + "Direction \"direct\" will be adopted for the current migration/synchronization.\n",
-            currentRelationship.getForeignEntity(), currentRelationship.getParentEntity(), direction);
+        OTeleporterContext.getInstance()
+            .getMessageHandler()
+            .error(
+                this,
+                "Wrong value for the direction of the relationship between %s and %s: \"%s\" is not a valid direction. "
+                    + "Direction \"direct\" will be adopted for the current migration/synchronization.\n",
+                currentRelationship.getForeignEntity(),
+                currentRelationship.getParentEntity(),
+                direction);
       }
     }
 
@@ -1614,8 +1842,11 @@ public class OER2GraphMapper extends OSource2GraphMapper {
    * @param currentEdgeClass
    * @param foreignEntityIsJoinTableToAggregate
    */
-  private void buildEdgeTypeFromConfiguredRelationship(ORelationship currentRelationship, String edgeName,
-      OConfiguredEdgeClass currentEdgeClass, boolean foreignEntityIsJoinTableToAggregate) {
+  private void buildEdgeTypeFromConfiguredRelationship(
+      ORelationship currentRelationship,
+      String edgeName,
+      OConfiguredEdgeClass currentEdgeClass,
+      boolean foreignEntityIsJoinTableToAggregate) {
 
     OTeleporterStatistics statistics = OTeleporterContext.getInstance().getStatistics();
 
@@ -1623,22 +1854,30 @@ public class OER2GraphMapper extends OSource2GraphMapper {
     OEntity currentForeignEntity = currentRelationship.getForeignEntity();
 
     // retrieving the mapping between the relationship and the edge type
-    OEdgeType currentEdgeType = this.relationship2edgeType.get(currentRelationship);    // can't fetch according to the name, because not significant (think about edge renaming)
-//    OEdgeType currentEdgeType = this.graphModel.getEdgeTypeByName(edgeName);
+    OEdgeType currentEdgeType =
+        this.relationship2edgeType.get(
+            currentRelationship); // can't fetch according to the name, because not significant
+    // (think about edge renaming)
+    //    OEdgeType currentEdgeType = this.graphModel.getEdgeTypeByName(edgeName);
     boolean edgeTypeAlreadyPresent = false;
 
     if (foreignEntityIsJoinTableToAggregate) {
       if (currentEdgeType != null) {
-        // decreasing the number of relationship represented by the retrieved edge, because a new ad-hoc edge type will be built according to the configuration
-        currentEdgeType.setNumberRelationshipsRepresented(currentEdgeType.getNumberRelationshipsRepresented() - 1);
+        // decreasing the number of relationship represented by the retrieved edge, because a new
+        // ad-hoc edge type will be built according to the configuration
+        currentEdgeType.setNumberRelationshipsRepresented(
+            currentEdgeType.getNumberRelationshipsRepresented() - 1);
       }
 
       // building a new edge type according to the configuration
       currentEdgeType = new OEdgeType(edgeName, null, null);
       this.graphModel.getEdgesType().add(currentEdgeType);
 
-      if(OTeleporterContext.getInstance().getMessageHandler().getOutputManagerLevel() == OOutputStreamManager.DEBUG_LEVEL) {
-        OTeleporterContext.getInstance().getMessageHandler().debug(this, "\nEdge-type %s built.\n", currentEdgeType.getName());
+      if (OTeleporterContext.getInstance().getMessageHandler().getOutputManagerLevel()
+          == OOutputStreamManager.DEBUG_LEVEL) {
+        OTeleporterContext.getInstance()
+            .getMessageHandler()
+            .debug(this, "\nEdge-type %s built.\n", currentEdgeType.getName());
       }
       statistics.builtModelEdgeTypes++;
       statistics.totalNumberOfModelEdges++;
@@ -1647,8 +1886,11 @@ public class OER2GraphMapper extends OSource2GraphMapper {
         currentEdgeType = new OEdgeType(edgeName, null, null);
         this.graphModel.getEdgesType().add(currentEdgeType);
 
-        if(OTeleporterContext.getInstance().getMessageHandler().getOutputManagerLevel() == OOutputStreamManager.DEBUG_LEVEL) {
-          OTeleporterContext.getInstance().getMessageHandler().debug(this, "\nEdge-type %s built.\n", currentEdgeType.getName());
+        if (OTeleporterContext.getInstance().getMessageHandler().getOutputManagerLevel()
+            == OOutputStreamManager.DEBUG_LEVEL) {
+          OTeleporterContext.getInstance()
+              .getMessageHandler()
+              .debug(this, "\nEdge-type %s built.\n", currentEdgeType.getName());
         }
         statistics.builtModelEdgeTypes++;
         statistics.totalNumberOfModelEdges++;
@@ -1669,18 +1911,22 @@ public class OER2GraphMapper extends OSource2GraphMapper {
 
     // checking if the mapping between the relationship and the edge is already present
     boolean mappingAlreadyPresent = true;
-    if(this.relationship2edgeType.get(currentRelationship) == null) {
+    if (this.relationship2edgeType.get(currentRelationship) == null) {
       mappingAlreadyPresent = false;
     }
 
     if (edgeTypeAlreadyPresent) {
 
-      // If the mapping between the edge type and the relationship is already present and the direction is inverse (as to say if it was modified) the references with in-vertex and out-vertex must to be updated
-      // If the foreign table is a join table then the direction is referred to the aggregator edge and not to the left or right one. So direction field is always "direct"
+      // If the mapping between the edge type and the relationship is already present and the
+      // direction is inverse (as to say if it was modified) the references with in-vertex and
+      // out-vertex must to be updated
+      // If the foreign table is a join table then the direction is referred to the aggregator edge
+      // and not to the left or right one. So direction field is always "direct"
       // as it is inferred from the left or right relationship.
       if (currentRelationshipDirection != null && currentRelationshipDirection.equals("inverse")) {
-        currentInVertexType = this
-            .getVertexTypeByEntityAndRelationship(currentForeignEntity, (OCanonicalRelationship) currentRelationship);
+        currentInVertexType =
+            this.getVertexTypeByEntityAndRelationship(
+                currentForeignEntity, (OCanonicalRelationship) currentRelationship);
         currentOutVertexType = this.getVertexTypeByEntity(currentParentEntity);
 
         // removing on vertices the old references to the edge type
@@ -1698,28 +1944,32 @@ public class OER2GraphMapper extends OSource2GraphMapper {
     else {
 
       /**
-       *  Direction of the edge is decided according to three conditions:
-       *  - direction != null or direction == null
-       *  - current foreign entity is a join table or not
-       *  - direction is direct or inverse
+       * Direction of the edge is decided according to three conditions: - direction != null or
+       * direction == null - current foreign entity is a join table or not - direction is direct or
+       * inverse
        */
 
       // if direction is null the edge will be direct by default
       if (currentRelationshipDirection == null) {
-        currentInVertexType = this
-            .getVertexTypeByEntityAndRelationship(currentParentEntity, (OCanonicalRelationship) currentRelationship);
+        currentInVertexType =
+            this.getVertexTypeByEntityAndRelationship(
+                currentParentEntity, (OCanonicalRelationship) currentRelationship);
         currentOutVertexType = this.getVertexTypeByEntity(currentForeignEntity);
       } else {
 
-        // if the current foreign entity is a join table we will aggregate then the edge will be direct
+        // if the current foreign entity is a join table we will aggregate then the edge will be
+        // direct
         if (foreignEntityIsJoinTableToAggregate) {
-          currentInVertexType = this
-              .getVertexTypeByEntityAndRelationship(currentParentEntity, (OCanonicalRelationship) currentRelationship);
+          currentInVertexType =
+              this.getVertexTypeByEntityAndRelationship(
+                  currentParentEntity, (OCanonicalRelationship) currentRelationship);
           currentOutVertexType = this.getVertexTypeByEntity(currentForeignEntity);
 
-          // delete old edges correspondent to the relationship between "currentParentEntity" and "currentForeignEntity" (if present)
-          List<ORelationship> relationships = this
-              .getRelationshipsByForeignAndParentTables(currentForeignEntity.getName(), currentParentEntity.getName());
+          // delete old edges correspondent to the relationship between "currentParentEntity" and
+          // "currentForeignEntity" (if present)
+          List<ORelationship> relationships =
+              this.getRelationshipsByForeignAndParentTables(
+                  currentForeignEntity.getName(), currentParentEntity.getName());
 
           for (ORelationship currRelationship : relationships) {
             OEdgeType edgeTypeToDel = this.getRelationship2edgeType().get(currentRelationship);
@@ -1727,7 +1977,8 @@ public class OER2GraphMapper extends OSource2GraphMapper {
             // deleting the edgeType from the out and in vertices-type (if present)
             currentOutVertexType.getOutEdgesType().remove(edgeTypeToDel);
             if (edgeTypeToDel != null && edgeTypeToDel.getNumberRelationshipsRepresented() == 0) {
-              // delete the edge from the in edges of the in-vertex type, because the edge is not involved in other relationship of course.
+              // delete the edge from the in edges of the in-vertex type, because the edge is not
+              // involved in other relationship of course.
               currentInVertexType.getInEdgesType().remove(edgeTypeToDel);
               this.graphModel.getEdgesType().remove(edgeTypeToDel);
               this.edgeType2relationships.remove(edgeTypeToDel);
@@ -1740,8 +1991,8 @@ public class OER2GraphMapper extends OSource2GraphMapper {
 
           // edge direction chosen according to the value of the parameter direction
           if (currentRelationshipDirection.equals("direct")) {
-            currentInVertexType = this
-                .getVertexTypeByEntityAndRelationship(currentParentEntity, currentRelationship);
+            currentInVertexType =
+                this.getVertexTypeByEntityAndRelationship(currentParentEntity, currentRelationship);
             currentOutVertexType = this.getVertexTypeByEntity(currentForeignEntity);
           } else {
             currentInVertexType = this.getVertexTypeByEntity(currentForeignEntity);
@@ -1763,15 +2014,18 @@ public class OER2GraphMapper extends OSource2GraphMapper {
    * @param currentEdgeClass
    * @param splittingEdgeInfo
    */
-  private void buildEdgeTypeFromConfiguredSplittingEdge(OConfiguredEdgeClass currentEdgeClass,
-      OSplittingEdgeInformation splittingEdgeInfo) {
+  private void buildEdgeTypeFromConfiguredSplittingEdge(
+      OConfiguredEdgeClass currentEdgeClass, OSplittingEdgeInformation splittingEdgeInfo) {
 
     OTeleporterStatistics statistics = OTeleporterContext.getInstance().getStatistics();
 
-    OVertexType inVertexType = this.graphModel.getVertexTypeByName(splittingEdgeInfo.getToVertexClass());
-    OVertexType outVertexType = this.graphModel.getVertexTypeByName(splittingEdgeInfo.getFromVertexClass());
+    OVertexType inVertexType =
+        this.graphModel.getVertexTypeByName(splittingEdgeInfo.getToVertexClass());
+    OVertexType outVertexType =
+        this.graphModel.getVertexTypeByName(splittingEdgeInfo.getFromVertexClass());
 
-    OEdgeType edgeType = new OEdgeType(currentEdgeClass.getName(), outVertexType, inVertexType, 0, true);
+    OEdgeType edgeType =
+        new OEdgeType(currentEdgeClass.getName(), outVertexType, inVertexType, 0, true);
     this.graphModel.getEdgesType().add(edgeType);
 
     outVertexType.getOutEdgesType().add(edgeType);
@@ -1783,8 +2037,16 @@ public class OER2GraphMapper extends OSource2GraphMapper {
     // Rules updating for splitting edges
     String sourceTableName = splittingEdgeInfo.getSourceTable();
     OEntity entity = this.getDataBaseSchema().getEntityByName(sourceTableName);
-    Map<String, String> attribute2property = new LinkedHashMap<String, String>();   // map to maintain the mapping between the attributes of the current entity and the properties of the correspondent edge type
-    Map<String, String> property2attribute = new LinkedHashMap<String, String>();   // map to maintain the mapping between the properties of the current edge type and the attributes of the correspondent entity
+    Map<String, String> attribute2property =
+        new LinkedHashMap<
+            String,
+            String>(); // map to maintain the mapping between the attributes of the current entity
+    // and the properties of the correspondent edge type
+    Map<String, String> property2attribute =
+        new LinkedHashMap<
+            String,
+            String>(); // map to maintain the mapping between the properties of the current edge
+    // type and the attributes of the correspondent entity
 
     // filling the 2 maps
     for (OConfiguredProperty currConfiguredProperty : currentEdgeClass.getConfiguredProperties()) {
@@ -1794,17 +2056,22 @@ public class OER2GraphMapper extends OSource2GraphMapper {
       property2attribute.put(propertyName, attributeName);
     }
 
-    OEEClassMapper classMapper = new OEEClassMapper(entity, edgeType, attribute2property, property2attribute);
+    OEEClassMapper classMapper =
+        new OEEClassMapper(entity, edgeType, attribute2property, property2attribute);
     this.upsertEEClassMappingRules(entity, edgeType, classMapper);
 
-    if(OTeleporterContext.getInstance().getMessageHandler().getOutputManagerLevel() == OOutputStreamManager.DEBUG_LEVEL) {
-      OTeleporterContext.getInstance().getMessageHandler().debug(this, "\nEdge-type %s built.\n", edgeType.getName());
+    if (OTeleporterContext.getInstance().getMessageHandler().getOutputManagerLevel()
+        == OOutputStreamManager.DEBUG_LEVEL) {
+      OTeleporterContext.getInstance()
+          .getMessageHandler()
+          .debug(this, "\nEdge-type %s built.\n", edgeType.getName());
     }
     statistics.builtModelEdgeTypes++;
     statistics.totalNumberOfModelEdges++;
   }
 
-  private void addPropertiesToEdgeTypeFromConfiguredClass(OEdgeType currentEdgeType, OConfiguredEdgeClass currentEdgeClass) {
+  private void addPropertiesToEdgeTypeFromConfiguredClass(
+      OEdgeType currentEdgeType, OConfiguredEdgeClass currentEdgeClass) {
 
     // extracting properties info if present and adding them to the current edge-type
     Collection<OConfiguredProperty> properties = currentEdgeClass.getConfiguredProperties();
@@ -1827,7 +2094,9 @@ public class OER2GraphMapper extends OSource2GraphMapper {
 
         OModelProperty currentProperty = currentEdgeType.getPropertyByName(propertyName);
         if (currentProperty == null) {
-          currentProperty = new OModelProperty(propertyName, ordinalPosition, originalType, false, currentEdgeType);
+          currentProperty =
+              new OModelProperty(
+                  propertyName, ordinalPosition, originalType, false, currentEdgeType);
           ordinalPosition++;
         }
         currentProperty.setFromPrimaryKey(false);
@@ -1847,16 +2116,13 @@ public class OER2GraphMapper extends OSource2GraphMapper {
 
         currentEdgeType.getProperties().add(currentProperty);
       }
-
     }
   }
 
   /**
-   * MACRO EXECUTION BLOCK: PERFORM AGGREGATIONS
-   * Performs aggregation strategies on the graph model through the following micro execution blocks:
-   * - Many-To-Many Aggregation
+   * MACRO EXECUTION BLOCK: PERFORM AGGREGATIONS Performs aggregation strategies on the graph model
+   * through the following micro execution blocks: - Many-To-Many Aggregation
    */
-
   public void performAggregations() {
 
     /*
@@ -1866,17 +2132,19 @@ public class OER2GraphMapper extends OSource2GraphMapper {
   }
 
   /**
-   * MICRO EXECUTION BLOCK: PERFORM AGGREGATIONS - MANY TO MANY AGGREGATION
-   * Aggregates Many-To-Many Relationships represented by join tables of dimension == 2.
+   * MICRO EXECUTION BLOCK: PERFORM AGGREGATIONS - MANY TO MANY AGGREGATION Aggregates Many-To-Many
+   * Relationships represented by join tables of dimension == 2.
    */
-
   public void performMany2ManyAggregation() {
 
     OTeleporterStatistics statistics = OTeleporterContext.getInstance().getStatistics();
     Iterator<OVertexType> it = this.graphModel.getVerticesType().iterator();
 
-    if(OTeleporterContext.getInstance().getMessageHandler().getOutputManagerLevel() == OOutputStreamManager.DEBUG_LEVEL) {
-      OTeleporterContext.getInstance().getMessageHandler().debug(this, "\n\nJoin Table aggregation phase...\n");
+    if (OTeleporterContext.getInstance().getMessageHandler().getOutputManagerLevel()
+        == OOutputStreamManager.DEBUG_LEVEL) {
+      OTeleporterContext.getInstance()
+          .getMessageHandler()
+          .debug(this, "\n\nJoin Table aggregation phase...\n");
     }
 
     while (it.hasNext()) {
@@ -1892,7 +2160,8 @@ public class OER2GraphMapper extends OSource2GraphMapper {
 
         OVertexType outVertexType;
         OVertexType inVertexType;
-        String direction = getEntityByVertexType(currentVertexType).getDirectionOfN2NRepresentedRelationship();
+        String direction =
+            getEntityByVertexType(currentVertexType).getDirectionOfN2NRepresentedRelationship();
         if (direction.equals("direct")) {
           outVertexType = currentOutEdge1.getInVertexType();
           inVertexType = currentOutEdge2.getInVertexType();
@@ -1904,10 +2173,8 @@ public class OER2GraphMapper extends OSource2GraphMapper {
         OEntity joinTable = this.getEntityByVertexType(currentVertexType);
         String nameOfRelationship = joinTable.getNameOfN2NRepresentedRelationship();
         String edgeType;
-        if (nameOfRelationship != null)
-          edgeType = nameOfRelationship;
-        else
-          edgeType = currentVertexType.getName();
+        if (nameOfRelationship != null) edgeType = nameOfRelationship;
+        else edgeType = currentVertexType.getName();
 
         OEdgeType newAggregatorEdge = new OEdgeType(edgeType, outVertexType, inVertexType);
 
@@ -1917,8 +2184,13 @@ public class OER2GraphMapper extends OSource2GraphMapper {
 
           // if property does not belong to the primary key add it to the aggregator edge
           if (!currentProperty.isFromPrimaryKey()) {
-            OModelProperty newProperty = new OModelProperty(currentProperty.getName(), position, currentProperty.getOriginalType(),
-                currentProperty.isFromPrimaryKey(), newAggregatorEdge);
+            OModelProperty newProperty =
+                new OModelProperty(
+                    currentProperty.getName(),
+                    position,
+                    currentProperty.getOriginalType(),
+                    currentProperty.isFromPrimaryKey(),
+                    newAggregatorEdge);
             newProperty.setOrientdbType(currentProperty.getOrientdbType());
             if (currentProperty.isMandatory() != null)
               newProperty.setMandatory(currentProperty.isMandatory());
@@ -1934,8 +2206,13 @@ public class OER2GraphMapper extends OSource2GraphMapper {
         // adding to the edge all properties belonging to the old edges
         for (OModelProperty currentProperty : currentOutEdge1.getProperties()) {
           if (newAggregatorEdge.getPropertyByName(currentProperty.getName()) == null) {
-            OModelProperty newProperty = new OModelProperty(currentProperty.getName(), position, currentProperty.getOriginalType(),
-                currentProperty.isFromPrimaryKey(), newAggregatorEdge);
+            OModelProperty newProperty =
+                new OModelProperty(
+                    currentProperty.getName(),
+                    position,
+                    currentProperty.getOriginalType(),
+                    currentProperty.isFromPrimaryKey(),
+                    newAggregatorEdge);
             newProperty.setOrientdbType(currentProperty.getOrientdbType());
             if (currentProperty.isMandatory() != null)
               newProperty.setMandatory(currentProperty.isMandatory());
@@ -1949,8 +2226,13 @@ public class OER2GraphMapper extends OSource2GraphMapper {
         }
         for (OModelProperty currentProperty : currentOutEdge2.getProperties()) {
           if (newAggregatorEdge.getPropertyByName(currentProperty.getName()) == null) {
-            OModelProperty newProperty = new OModelProperty(currentProperty.getName(), position, currentProperty.getOriginalType(),
-                currentProperty.isFromPrimaryKey(), newAggregatorEdge);
+            OModelProperty newProperty =
+                new OModelProperty(
+                    currentProperty.getName(),
+                    position,
+                    currentProperty.getOriginalType(),
+                    currentProperty.isFromPrimaryKey(),
+                    newAggregatorEdge);
             newProperty.setOrientdbType(currentProperty.getOrientdbType());
             if (currentProperty.isMandatory() != null)
               newProperty.setMandatory(currentProperty.isMandatory());
@@ -1964,8 +2246,10 @@ public class OER2GraphMapper extends OSource2GraphMapper {
         }
 
         // removing old edges from graph model and from vertices' "in-edges" collection
-        currentOutEdge1.setNumberRelationshipsRepresented(currentOutEdge1.getNumberRelationshipsRepresented() - 1);
-        currentOutEdge2.setNumberRelationshipsRepresented(currentOutEdge2.getNumberRelationshipsRepresented() - 1);
+        currentOutEdge1.setNumberRelationshipsRepresented(
+            currentOutEdge1.getNumberRelationshipsRepresented() - 1);
+        currentOutEdge2.setNumberRelationshipsRepresented(
+            currentOutEdge2.getNumberRelationshipsRepresented() - 1);
 
         if (currentOutEdge1.getNumberRelationshipsRepresented() == 0) {
           this.graphModel.getEdgesType().remove(currentOutEdge1);
@@ -1986,8 +2270,10 @@ public class OER2GraphMapper extends OSource2GraphMapper {
         }
 
         // adding entry to the map
-        this.joinVertex2aggregatorEdges
-            .put(currentVertexType, new OAggregatorEdge(outVertexType.getName(), inVertexType.getName(), newAggregatorEdge));
+        this.joinVertex2aggregatorEdges.put(
+            currentVertexType,
+            new OAggregatorEdge(
+                outVertexType.getName(), inVertexType.getName(), newAggregatorEdge));
 
         // removing old vertex
         it.remove();
@@ -2005,8 +2291,11 @@ public class OER2GraphMapper extends OSource2GraphMapper {
       }
     }
 
-    if(OTeleporterContext.getInstance().getMessageHandler().getOutputManagerLevel() == OOutputStreamManager.DEBUG_LEVEL) {
-      OTeleporterContext.getInstance().getMessageHandler().debug(this, "\nAggregation performed.\n");
+    if (OTeleporterContext.getInstance().getMessageHandler().getOutputManagerLevel()
+        == OOutputStreamManager.DEBUG_LEVEL) {
+      OTeleporterContext.getInstance()
+          .getMessageHandler()
+          .debug(this, "\nAggregation performed.\n");
     }
   }
 
@@ -2034,7 +2323,8 @@ public class OER2GraphMapper extends OSource2GraphMapper {
     return this.getEVClassMappersByEntity(entity).get(classMapperIndex).getVertexType();
   }
 
-  public OVertexType getVertexTypeByEntityAndRelationship(OEntity currentParentEntity, ORelationship currentRelationship) {
+  public OVertexType getVertexTypeByEntityAndRelationship(
+      OEntity currentParentEntity, ORelationship currentRelationship) {
 
     List<OEVClassMapper> classMappers = this.getEVClassMappersByEntity(currentParentEntity);
 
@@ -2061,7 +2351,8 @@ public class OER2GraphMapper extends OSource2GraphMapper {
     }
   }
 
-  public String getAttributeNameByVertexTypeAndProperty(OVertexType vertexType, String propertyName) {
+  public String getAttributeNameByVertexTypeAndProperty(
+      OVertexType vertexType, String propertyName) {
 
     String attributeName = null;
 
@@ -2082,7 +2373,8 @@ public class OER2GraphMapper extends OSource2GraphMapper {
     return attributeName;
   }
 
-  public String getPropertyNameByVertexTypeAndAttribute(OVertexType vertexType, String attributeName) {
+  public String getPropertyNameByVertexTypeAndAttribute(
+      OVertexType vertexType, String attributeName) {
 
     List<OEVClassMapper> classMappers = this.getEVClassMappersByVertex(vertexType);
 
@@ -2150,16 +2442,16 @@ public class OER2GraphMapper extends OSource2GraphMapper {
   }
 
   /**
-   * It returns the vertex type mapped with the aggregator edge correspondent to the original join table.
+   * It returns the vertex type mapped with the aggregator edge correspondent to the original join
+   * table.
    *
    * @param edgeType
-   *
    * @return
    */
-
   public OVertexType getJoinVertexTypeByAggregatorEdge(String edgeType) {
 
-    for (Map.Entry<OVertexType, OAggregatorEdge> entry : this.joinVertex2aggregatorEdges.entrySet()) {
+    for (Map.Entry<OVertexType, OAggregatorEdge> entry :
+        this.joinVertex2aggregatorEdges.entrySet()) {
       if (entry.getValue().getEdgeType().getName().equals(edgeType)) {
         OVertexType joinVertexType = entry.getKey();
         return joinVertexType;
@@ -2188,13 +2480,14 @@ public class OER2GraphMapper extends OSource2GraphMapper {
     return null;
   }
 
-  public List<ORelationship> getRelationshipsByForeignAndParentTables(String currentForeignEntity, String currentParentEntity) {
+  public List<ORelationship> getRelationshipsByForeignAndParentTables(
+      String currentForeignEntity, String currentParentEntity) {
 
     List<ORelationship> relationships = new LinkedList<ORelationship>();
 
     for (ORelationship currentRelationship : this.dataBaseSchema.getCanonicalRelationships()) {
-      if (currentRelationship.getForeignEntity().getName().equals(currentForeignEntity) && currentRelationship.getParentEntity()
-          .getName().equals(currentParentEntity)) {
+      if (currentRelationship.getForeignEntity().getName().equals(currentForeignEntity)
+          && currentRelationship.getParentEntity().getName().equals(currentParentEntity)) {
         relationships.add(currentRelationship);
       }
     }
@@ -2213,7 +2506,8 @@ public class OER2GraphMapper extends OSource2GraphMapper {
     return this.edgeType2relationships;
   }
 
-  public void setEdgeType2relationships(Map<OEdgeType, LinkedList<ORelationship>> edgeType2relationships) {
+  public void setEdgeType2relationships(
+      Map<OEdgeType, LinkedList<ORelationship>> edgeType2relationships) {
     this.edgeType2relationships = edgeType2relationships;
   }
 
@@ -2229,7 +2523,8 @@ public class OER2GraphMapper extends OSource2GraphMapper {
     return joinVertex2aggregatorEdges;
   }
 
-  public void setJoinVertex2aggregatorEdges(Map<OVertexType, OAggregatorEdge> joinVertex2aggregatorEdges) {
+  public void setJoinVertex2aggregatorEdges(
+      Map<OVertexType, OAggregatorEdge> joinVertex2aggregatorEdges) {
     this.joinVertex2aggregatorEdges = joinVertex2aggregatorEdges;
   }
 
@@ -2259,18 +2554,15 @@ public class OER2GraphMapper extends OSource2GraphMapper {
 
   public boolean isTableAllowed(String tableName) {
 
-    if (this.includedTables.size() > 0)
-      return this.includedTables.contains(tableName);
-    else if (this.excludedTables.size() > 0)
-      return !this.excludedTables.contains(tableName);
-    else
-      return true;
-
+    if (this.includedTables.size() > 0) return this.includedTables.contains(tableName);
+    else if (this.excludedTables.size() > 0) return !this.excludedTables.contains(tableName);
+    else return true;
   }
 
   public String toString() {
 
-    String s = "\n\n\n------------------------------ MAPPER DESCRIPTION ------------------------------\n\n\n";
+    String s =
+        "\n\n\n------------------------------ MAPPER DESCRIPTION ------------------------------\n\n\n";
     s += "RULES\n\n";
     s += "- Class mappings:\n\n";
     for (List<OEVClassMapper> classMappers : this.entity2EVClassMappers.values()) {
@@ -2280,8 +2572,13 @@ public class OER2GraphMapper extends OSource2GraphMapper {
     }
     s += "\n\n- Relaionship2EdgeType Rules:\n\n";
     for (ORelationship relationship : this.relationship2edgeType.keySet()) {
-      s += relationship.getForeignEntity() + "2" + relationship.getParentEntity() + " --> " + this.relationship2edgeType
-          .get(relationship).getName() + "\n";
+      s +=
+          relationship.getForeignEntity()
+              + "2"
+              + relationship.getParentEntity()
+              + " --> "
+              + this.relationship2edgeType.get(relationship).getName()
+              + "\n";
     }
     s += "\n\n- EdgeTypeName2Count Rules:\n\n";
     for (String edgeName : this.edgeTypeName2count.keySet()) {
@@ -2291,5 +2588,4 @@ public class OER2GraphMapper extends OSource2GraphMapper {
 
     return s;
   }
-
 }

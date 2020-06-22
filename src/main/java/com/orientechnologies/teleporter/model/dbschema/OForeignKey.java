@@ -26,11 +26,9 @@ package com.orientechnologies.teleporter.model.dbschema;
  * @author Gabriele Ponzi
  * @email <g.ponzi--at--orientdb.com>
  */
-
 public class OForeignKey extends OKey {
 
   public OForeignKey(OEntity belongingEntity) {
     super(belongingEntity);
   }
-
 }

@@ -21,63 +21,61 @@
 package com.orientechnologies.teleporter.context;
 
 import com.orientechnologies.teleporter.ui.OStatisticsListener;
-
 import java.util.*;
 
 /**
- * Collects and updates statistics about the Drakkar execution state.
- * It identifies and monitors 4 step in the global execution:
- * 1. Source DB Schema building
- * 2. Graph Model building
- * 3. OrientDB Schema writing
- * 4. OrientDB importing
+ * Collects and updates statistics about the Drakkar execution state. It identifies and monitors 4
+ * step in the global execution: 1. Source DB Schema building 2. Graph Model building 3. OrientDB
+ * Schema writing 4. OrientDB importing
  *
  * @author Gabriele Ponzi
  * @email <g.ponzi--at--orientdb.com>
  */
-
 public class OTeleporterStatistics {
 
   // indicates the running step, -1 if no step are running
   public volatile int runningStepNumber;
 
   // Source DB Schema building statistics
-  public volatile int  totalNumberOfEntities;
-  public volatile int  builtEntities;
-  public volatile int  entitiesAnalyzedForRelationship;  // used only for te progress monitor because we can't know the total number of relationships before all the entities are scanned.
-  public volatile int  builtRelationships;
-  public volatile int  totalNumberOfRelationships;
+  public volatile int totalNumberOfEntities;
+  public volatile int builtEntities;
+  public volatile int
+      entitiesAnalyzedForRelationship; // used only for te progress monitor because we can't know
+  // the total number of relationships before all the entities
+  // are scanned.
+  public volatile int builtRelationships;
+  public volatile int totalNumberOfRelationships;
   public volatile Date startWork1Time;
 
   // Graph Model building statistics
-  public volatile int  totalNumberOfModelVertices;
-  public volatile int  builtModelVertexTypes;
-  public volatile int  totalNumberOfModelEdges;
-  public volatile int  builtModelEdgeTypes;
+  public volatile int totalNumberOfModelVertices;
+  public volatile int builtModelVertexTypes;
+  public volatile int totalNumberOfModelEdges;
+  public volatile int builtModelEdgeTypes;
   public volatile Date startWork2Time;
 
   // OrientDB Schema writing statistics
-  public volatile int  totalNumberOfVertexTypes;
-  public volatile int  wroteVertexType;
-  public volatile int  totalNumberOfEdgeTypes;
-  public volatile int  wroteEdgeType;
-  public volatile int  totalNumberOfIndices;
-  public volatile int  wroteIndexes;
+  public volatile int totalNumberOfVertexTypes;
+  public volatile int wroteVertexType;
+  public volatile int totalNumberOfEdgeTypes;
+  public volatile int wroteEdgeType;
+  public volatile int totalNumberOfIndices;
+  public volatile int wroteIndexes;
   public volatile Date startWork3Time;
 
   // OrientDB importing
-  public volatile int  totalNumberOfRecords;
-  public volatile int  analyzedRecords;
-  public volatile int  orientAddedVertices;
-  public volatile int  orientUpdatedVertices;
-  public volatile int  orientAddedEdges;
+  public volatile int totalNumberOfRecords;
+  public volatile int analyzedRecords;
+  public volatile int orientAddedVertices;
+  public volatile int orientUpdatedVertices;
+  public volatile int orientAddedEdges;
   public volatile Date startWork4Time;
 
   // Logical Relationships
-  public volatile int  totalNumberOfLogicalRelationships;
-  public volatile int  doneLogicalRelationships;
-  public volatile int  leftVerticesCurrentLogicalRelationship;
-  public volatile int  doneLeftVerticesCurrentLogicalRelationship;
+  public volatile int totalNumberOfLogicalRelationships;
+  public volatile int doneLogicalRelationships;
+  public volatile int leftVerticesCurrentLogicalRelationship;
+  public volatile int doneLeftVerticesCurrentLogicalRelationship;
   public volatile Date startWork5Time;
 
   // Warnings and Error Messages
@@ -125,7 +123,6 @@ public class OTeleporterStatistics {
     this.doneLogicalRelationships = 0;
     this.leftVerticesCurrentLogicalRelationship = 0;
     this.doneLeftVerticesCurrentLogicalRelationship = 0;
-
   }
 
   public void reset() {
@@ -145,7 +142,6 @@ public class OTeleporterStatistics {
       listener.updateOnEvent(this);
     }
   }
-
 
   /*
    *  toString methods
@@ -185,8 +181,13 @@ public class OTeleporterStatistics {
 
   public String toString() {
     String s = "\n\nSUMMARY\n\n";
-    s += this.sourceDbSchemaBuildingProgress() + "\n\n" + this.orientSchemaWritingProgress() + "\n\n" + this.importingProgress()
-        + "\n\n";
+    s +=
+        this.sourceDbSchemaBuildingProgress()
+            + "\n\n"
+            + this.orientSchemaWritingProgress()
+            + "\n\n"
+            + this.importingProgress()
+            + "\n\n";
 
     // printing error messages
     if (this.errorMessages.size() > 0) {
@@ -207,5 +208,4 @@ public class OTeleporterStatistics {
     }
     return s;
   }
-
 }

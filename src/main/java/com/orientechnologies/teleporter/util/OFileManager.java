@@ -21,7 +21,6 @@
 package com.orientechnologies.teleporter.util;
 
 import com.orientechnologies.orient.core.record.impl.ODocument;
-
 import java.io.*;
 import java.nio.charset.Charset;
 import java.util.zip.ZipEntry;
@@ -32,7 +31,7 @@ public class OFileManager {
   public static void deleteResource(String resourcePath) throws IOException {
 
     File currentFile = new File(resourcePath);
-    if(currentFile.exists()) {
+    if (currentFile.exists()) {
       if (currentFile.isDirectory()) {
         File[] innerFiles = currentFile.listFiles();
         for (File file : innerFiles) {
@@ -40,13 +39,13 @@ public class OFileManager {
         }
         currentFile.delete();
       } else {
-        if (!currentFile.delete())
-          throw new IOException();
+        if (!currentFile.delete()) throw new IOException();
       }
     }
   }
 
-  public static void extractAll(String inputArchiveFilePath, String outputFolderPath) throws IOException {
+  public static void extractAll(String inputArchiveFilePath, String outputFolderPath)
+      throws IOException {
 
     File inputArchiveFile = new File(inputArchiveFilePath);
     if (!inputArchiveFile.exists()) {
@@ -58,23 +57,26 @@ public class OFileManager {
 
     // Extracting zip file
     unZipAll(inputArchiveFile, outputFolderPath);
-
   }
 
-  public static void unZipAll(File inputZipFile, String destinationFolderPath) throws IOException, IllegalArgumentException {
+  public static void unZipAll(File inputZipFile, String destinationFolderPath)
+      throws IOException, IllegalArgumentException {
 
     byte[] buffer = new byte[1024];
 
-    //get the zip file content
+    // get the zip file content
     ZipInputStream zipInputStream = new ZipInputStream(new FileInputStream(inputZipFile));
-    //get the zipped file list entry
+    // get the zipped file list entry
     ZipEntry zipEntry = zipInputStream.getNextEntry();
 
     while (zipEntry != null) {
 
       String fileName = zipEntry.getName();
-      if(fileName.contains("..")){
-        throw new IllegalArgumentException("Cannot unzip file: "+fileName+" as its name contains a potentially dangerous character");
+      if (fileName.contains("..")) {
+        throw new IllegalArgumentException(
+            "Cannot unzip file: "
+                + fileName
+                + " as its name contains a potentially dangerous character");
       }
       String newFilePath = destinationFolderPath + File.separator + fileName;
       File newFile = new File(newFilePath);
@@ -95,15 +97,12 @@ public class OFileManager {
         dir.mkdir();
       }
 
-      if (fileOutputStream != null)
-        fileOutputStream.close();
+      if (fileOutputStream != null) fileOutputStream.close();
       zipEntry = zipInputStream.getNextEntry();
-
     }
 
     zipInputStream.closeEntry();
     zipInputStream.close();
-
   }
 
   public static String readAllTextFile(Reader rd) throws IOException {
@@ -119,10 +118,9 @@ public class OFileManager {
    * It returns a ODocument starting from a json file.
    *
    * @param filePath
-   *
-   * @return ODocument (null if the file does not exist or problem are encountered during the reading)
+   * @return ODocument (null if the file does not exist or problem are encountered during the
+   *     reading)
    */
-
   public static ODocument buildJsonFromFile(String filePath) throws IOException {
 
     if (filePath == null) {
@@ -140,10 +138,10 @@ public class OFileManager {
     String jsonText = OFileManager.readAllTextFile(rd);
     json.fromJSON(jsonText, "noMap");
     return json;
-
   }
 
-  public static void writeFileFromText(String text, String outFilePath, boolean append) throws IOException {
+  public static void writeFileFromText(String text, String outFilePath, boolean append)
+      throws IOException {
 
     File outFile = new File(outFilePath);
     outFile.getParentFile().mkdirs();

@@ -26,7 +26,4 @@ package com.orientechnologies.teleporter.importengine;
  * @author Gabriele Ponzi
  * @email <g.ponzi--at--orientdb.com>
  */
-
-public interface ODataSourceQueryEngine {
-
-}
+public interface ODataSourceQueryEngine {}

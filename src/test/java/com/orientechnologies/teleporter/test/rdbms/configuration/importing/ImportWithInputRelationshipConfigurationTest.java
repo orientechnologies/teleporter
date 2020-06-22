@@ -20,6 +20,8 @@
 
 package com.orientechnologies.teleporter.test.rdbms.configuration.importing;
 
+import static org.junit.Assert.*;
+
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.record.ODirection;
 import com.orientechnologies.orient.core.record.OEdge;
@@ -37,34 +39,35 @@ import com.orientechnologies.teleporter.strategy.rdbms.ODBMSNaiveStrategy;
 import com.orientechnologies.teleporter.util.OFileManager;
 import com.orientechnologies.teleporter.util.OGraphCommands;
 import com.orientechnologies.teleporter.util.OMigrationConfigManager;
-import org.junit.After;
-import org.junit.Before;
-
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.Statement;
 import java.util.Iterator;
-
-import static org.junit.Assert.*;
+import org.junit.After;
+import org.junit.Before;
 
 /**
  * @author Gabriele Ponzi
  * @email gabriele.ponzi--at--gmail.com
  */
-
 public class ImportWithInputRelationshipConfigurationTest {
 
-  private OTeleporterContext            context;
-  private ODBMSNaiveStrategy            naiveStrategy;
+  private OTeleporterContext context;
+  private ODBMSNaiveStrategy naiveStrategy;
   private ODBMSNaiveAggregationStrategy naiveAggregationStrategy;
-  private final String configDirectEdgesPath            = "src/test/resources/configuration-mapping/relationships-mapping-direct-edges.json";
-  private final String configInverseEdgesPath           = "src/test/resources/configuration-mapping/relationships-mapping-inverted-edges.json";
-  private final String configJoinTableDirectEdgesPath   = "src/test/resources/configuration-mapping/joint-table-relationships-mapping-direct-edges.json";
-  private final String configJoinTableInverseEdgesPath  = "src/test/resources/configuration-mapping/joint-table-relationships-mapping-inverted-edges.json";
-  private final String configJoinTableInverseEdgesPath2 = "src/test/resources/configuration-mapping/join-table-relationship-mapping-inverted-edges2.json";
+  private final String configDirectEdgesPath =
+      "src/test/resources/configuration-mapping/relationships-mapping-direct-edges.json";
+  private final String configInverseEdgesPath =
+      "src/test/resources/configuration-mapping/relationships-mapping-inverted-edges.json";
+  private final String configJoinTableDirectEdgesPath =
+      "src/test/resources/configuration-mapping/joint-table-relationships-mapping-direct-edges.json";
+  private final String configJoinTableInverseEdgesPath =
+      "src/test/resources/configuration-mapping/joint-table-relationships-mapping-inverted-edges.json";
+  private final String configJoinTableInverseEdgesPath2 =
+      "src/test/resources/configuration-mapping/join-table-relationship-mapping-inverted-edges2.json";
   private ODBQueryEngine dbQueryEngine;
-  private String driver   = "org.hsqldb.jdbc.JDBCDriver";
-  private String jurl     = "jdbc:hsqldb:mem:mydb";
+  private String driver = "org.hsqldb.jdbc.JDBCDriver";
+  private String jurl = "jdbc:hsqldb:mem:mydb";
   private String username = "SA";
   private String password = "";
   private String dbName = "testOrientDB";
@@ -83,8 +86,10 @@ public class ImportWithInputRelationshipConfigurationTest {
     this.context.setNameResolver(new OJavaConventionNameResolver());
     this.context.setDataTypeHandler(new OHSQLDBDataTypeHandler());
     this.naiveStrategy = new ODBMSNaiveStrategy("embedded", this.outParentDirectory, this.dbName);
-    this.naiveAggregationStrategy = new ODBMSNaiveAggregationStrategy("embedded", this.outParentDirectory, this.dbName);
-    this.sourceDBInfo = new OSourceDatabaseInfo("source", this.driver, this.jurl, this.username, this.password);
+    this.naiveAggregationStrategy =
+        new ODBMSNaiveAggregationStrategy("embedded", this.outParentDirectory, this.dbName);
+    this.sourceDBInfo =
+        new OSourceDatabaseInfo("source", this.driver, this.jurl, this.username, this.password);
   }
 
   @After
@@ -96,14 +101,14 @@ public class ImportWithInputRelationshipConfigurationTest {
     try {
 
       // Deleting database directory
-      OFileManager.deleteResource(this.outOrientGraphUri.replace("embedded:",""));
+      OFileManager.deleteResource(this.outOrientGraphUri.replace("embedded:", ""));
 
     } catch (Exception e) {
       e.printStackTrace();
     }
   }
 
-  //@Test
+  // @Test
 
   /*
    *  Two tables: 2 relationships not declared through foreign keys.
@@ -130,32 +135,47 @@ public class ImportWithInputRelationshipConfigurationTest {
       Class.forName(this.driver);
       connection = DriverManager.getConnection(this.jurl, this.username, this.password);
 
-      String parentTableBuilding = "create memory table EMPLOYEE (EMP_ID varchar(256) not null,"
-          + " FIRST_NAME varchar(256) not null, LAST_NAME varchar(256) not null, PROJECT varchar(256) not null, primary key (EMP_ID))";
+      String parentTableBuilding =
+          "create memory table EMPLOYEE (EMP_ID varchar(256) not null,"
+              + " FIRST_NAME varchar(256) not null, LAST_NAME varchar(256) not null, PROJECT varchar(256) not null, primary key (EMP_ID))";
       st = connection.createStatement();
       st.execute(parentTableBuilding);
 
-      String foreignTableBuilding = "create memory table PROJECT (ID  varchar(256),"
-          + " TITLE varchar(256) not null, PROJECT_MANAGER varchar(256) not null, primary key (ID))";
+      String foreignTableBuilding =
+          "create memory table PROJECT (ID  varchar(256),"
+              + " TITLE varchar(256) not null, PROJECT_MANAGER varchar(256) not null, primary key (ID))";
       st.execute(foreignTableBuilding);
 
       // Records Inserting
 
       String employeeFilling =
-          "insert into EMPLOYEE (EMP_ID,FIRST_NAME,LAST_NAME,PROJECT) values (" + "('E001','Joe','Black','P001'),"
-              + "('E002','Thomas','Anderson','P002')," + "('E003','Tyler','Durden','P001'),"
-              + "('E004','John','McClanenei','P001')," + "('E005','Ellen','Ripley','P002')," + "('E006','Marty','McFly','P002'))";
+          "insert into EMPLOYEE (EMP_ID,FIRST_NAME,LAST_NAME,PROJECT) values ("
+              + "('E001','Joe','Black','P001'),"
+              + "('E002','Thomas','Anderson','P002'),"
+              + "('E003','Tyler','Durden','P001'),"
+              + "('E004','John','McClanenei','P001'),"
+              + "('E005','Ellen','Ripley','P002'),"
+              + "('E006','Marty','McFly','P002'))";
       st.execute(employeeFilling);
 
-      String projectFilling = "insert into PROJECT (ID,TITLE,PROJECT_MANAGER) values (" + "('P001','Data Migration','E001'),"
-          + "('P002','Contracts Update','E005'))";
+      String projectFilling =
+          "insert into PROJECT (ID,TITLE,PROJECT_MANAGER) values ("
+              + "('P001','Data Migration','E001'),"
+              + "('P002','Contracts Update','E005'))";
       st.execute(projectFilling);
 
-      ODocument config = OMigrationConfigManager.loadMigrationConfigFromFile(this.configDirectEdgesPath);
+      ODocument config =
+          OMigrationConfigManager.loadMigrationConfigFromFile(this.configDirectEdgesPath);
 
-      this.naiveStrategy
-          .executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "basicDBMapper", null, "java", null, null, config);
-
+      this.naiveStrategy.executeStrategy(
+          this.sourceDBInfo,
+          this.outOrientGraphUri,
+          "basicDBMapper",
+          null,
+          "java",
+          null,
+          null,
+          config);
 
       /*
        *  Testing context information
@@ -166,12 +186,11 @@ public class ImportWithInputRelationshipConfigurationTest {
       assertEquals(8, context.getStatistics().orientAddedVertices);
       assertEquals(8, context.getStatistics().orientAddedEdges);
 
-
       /*
        *  Testing built OrientDB
        */
 
-      orientGraph = this.context.getOrientDBInstance().open(this.dbName,"admin","admin");
+      orientGraph = this.context.getOrientDBInstance().open(this.dbName, "admin", "admin");
 
       // vertices check
 
@@ -186,9 +205,9 @@ public class ImportWithInputRelationshipConfigurationTest {
       assertEquals(2, orientGraph.countClass("HasManager"));
 
       // vertex properties and connections check
-      Iterator<OEdge>  edgesIt = null;
-      String[] keys = { "id" };
-      String[] values = { "P001" };
+      Iterator<OEdge> edgesIt = null;
+      String[] keys = {"id"};
+      String[] values = {"P001"};
 
       OVertex v = null;
       OResultSet result = OGraphCommands.getVertices(orientGraph, "Project", keys, values);
@@ -366,7 +385,7 @@ public class ImportWithInputRelationshipConfigurationTest {
     }
   }
 
-  //@Test
+  // @Test
 
   /*
    *  Two tables: 2 relationships declared through foreign keys but the first one is overridden through a migrationConfigDoc.
@@ -406,37 +425,52 @@ public class ImportWithInputRelationshipConfigurationTest {
       Class.forName(this.driver);
       connection = DriverManager.getConnection(this.jurl, this.username, this.password);
 
-      String parentTableBuilding = "create memory table EMPLOYEE (EMP_ID varchar(256) not null,"
-          + " FIRST_NAME varchar(256) not null, LAST_NAME varchar(256) not null, PROJECT varchar(256) not null, primary key (EMP_ID))";
+      String parentTableBuilding =
+          "create memory table EMPLOYEE (EMP_ID varchar(256) not null,"
+              + " FIRST_NAME varchar(256) not null, LAST_NAME varchar(256) not null, PROJECT varchar(256) not null, primary key (EMP_ID))";
       st = connection.createStatement();
       st.execute(parentTableBuilding);
 
-      String foreignTableBuilding = "create memory table PROJECT (ID  varchar(256),"
-          + " TITLE varchar(256) not null, PROJECT_MANAGER varchar(256) not null, primary key (ID), "
-          + "foreign key (PROJECT_MANAGER) references EMPLOYEE(EMP_ID))";
+      String foreignTableBuilding =
+          "create memory table PROJECT (ID  varchar(256),"
+              + " TITLE varchar(256) not null, PROJECT_MANAGER varchar(256) not null, primary key (ID), "
+              + "foreign key (PROJECT_MANAGER) references EMPLOYEE(EMP_ID))";
       st.execute(foreignTableBuilding);
 
       // Records Inserting
 
       String employeeFilling =
-          "insert into EMPLOYEE (EMP_ID,FIRST_NAME,LAST_NAME,PROJECT) values (" + "('E001','Joe','Black','P001'),"
-              + "('E002','Thomas','Anderson','P002')," + "('E003','Tyler','Durden','P001'),"
-              + "('E004','John','McClanenei','P001')," + "('E005','Ellen','Ripley','P002')," + "('E006','Marty','McFly','P002'))";
+          "insert into EMPLOYEE (EMP_ID,FIRST_NAME,LAST_NAME,PROJECT) values ("
+              + "('E001','Joe','Black','P001'),"
+              + "('E002','Thomas','Anderson','P002'),"
+              + "('E003','Tyler','Durden','P001'),"
+              + "('E004','John','McClanenei','P001'),"
+              + "('E005','Ellen','Ripley','P002'),"
+              + "('E006','Marty','McFly','P002'))";
       st.execute(employeeFilling);
 
-      String projectFilling = "insert into PROJECT (ID,TITLE,PROJECT_MANAGER) values (" + "('P001','Data Migration','E001'),"
-          + "('P002','Contracts Update','E005'))";
+      String projectFilling =
+          "insert into PROJECT (ID,TITLE,PROJECT_MANAGER) values ("
+              + "('P001','Data Migration','E001'),"
+              + "('P002','Contracts Update','E005'))";
       st.execute(projectFilling);
 
       parentTableBuilding = "alter table EMPLOYEE add foreign key (PROJECT) references PROJECT(ID)";
       st = connection.createStatement();
       st.execute(parentTableBuilding);
 
-      ODocument config = OMigrationConfigManager.loadMigrationConfigFromFile(this.configInverseEdgesPath);
+      ODocument config =
+          OMigrationConfigManager.loadMigrationConfigFromFile(this.configInverseEdgesPath);
 
-      this.naiveStrategy
-          .executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "basicDBMapper", null, "java", null, null, config);
-
+      this.naiveStrategy.executeStrategy(
+          this.sourceDBInfo,
+          this.outOrientGraphUri,
+          "basicDBMapper",
+          null,
+          "java",
+          null,
+          null,
+          config);
 
       /*
        *  Testing context information
@@ -447,12 +481,11 @@ public class ImportWithInputRelationshipConfigurationTest {
       assertEquals(8, context.getStatistics().orientAddedVertices);
       assertEquals(8, context.getStatistics().orientAddedEdges);
 
-
       /*
        *  Testing built OrientDB
        */
 
-      orientGraph = this.context.getOrientDBInstance().open(this.dbName,"admin","admin");
+      orientGraph = this.context.getOrientDBInstance().open(this.dbName, "admin", "admin");
 
       // vertices check
 
@@ -467,9 +500,9 @@ public class ImportWithInputRelationshipConfigurationTest {
       assertEquals(2, orientGraph.countClass("HasProjectManager"));
 
       // vertex properties and connections check
-      Iterator<OEdge>  edgesIt = null;
-      String[] keys = { "id" };
-      String[] values = { "P001" };
+      Iterator<OEdge> edgesIt = null;
+      String[] keys = {"id"};
+      String[] values = {"P001"};
 
       OVertex v = null;
       OResultSet result = OGraphCommands.getVertices(orientGraph, "Project", keys, values);
@@ -647,7 +680,7 @@ public class ImportWithInputRelationshipConfigurationTest {
     }
   }
 
-  //@Test
+  // @Test
 
   /*
    *  Three tables: 1  N-N relationship, no foreign keys declared for the join table in the db.
@@ -681,41 +714,68 @@ public class ImportWithInputRelationshipConfigurationTest {
       Class.forName(this.driver);
       connection = DriverManager.getConnection(this.jurl, this.username, this.password);
 
-      String parentTableBuilding = "create memory table ACTOR (ID varchar(256) not null,"
-          + " FIRST_NAME varchar(256) not null, LAST_NAME varchar(256) not null, primary key (ID))";
+      String parentTableBuilding =
+          "create memory table ACTOR (ID varchar(256) not null,"
+              + " FIRST_NAME varchar(256) not null, LAST_NAME varchar(256) not null, primary key (ID))";
       st = connection.createStatement();
       st.execute(parentTableBuilding);
 
       String foreignTableBuilding =
-          "create memory table FILM (ID varchar(256)," + " TITLE varchar(256) not null, CATEGORY varchar(256), primary key (ID))";
+          "create memory table FILM (ID varchar(256),"
+              + " TITLE varchar(256) not null, CATEGORY varchar(256), primary key (ID))";
       st.execute(foreignTableBuilding);
 
-      String actorFilmTableBuilding = "create memory table ACTOR_FILM (ACTOR_ID  varchar(256),"
-          + " FILM_ID varchar(256) not null, PAYMENT integer, primary key (ACTOR_ID, FILM_ID))";
+      String actorFilmTableBuilding =
+          "create memory table ACTOR_FILM (ACTOR_ID  varchar(256),"
+              + " FILM_ID varchar(256) not null, PAYMENT integer, primary key (ACTOR_ID, FILM_ID))";
       st.execute(actorFilmTableBuilding);
 
       // Records Inserting
 
-      String filmFilling = "insert into FILM (ID,TITLE,CATEGORY) values (" + "('F001','Pulp Fiction','Action'),"
-          + "('F002','Shutter Island','Thriller')," + "('F003','The Departed','Action-Thriller'))";
+      String filmFilling =
+          "insert into FILM (ID,TITLE,CATEGORY) values ("
+              + "('F001','Pulp Fiction','Action'),"
+              + "('F002','Shutter Island','Thriller'),"
+              + "('F003','The Departed','Action-Thriller'))";
       st.execute(filmFilling);
 
-      String actorFilling = "insert into ACTOR (ID,FIRST_NAME,LAST_NAME) values (" + "('A001','John','Travolta'),"
-          + "('A002','Samuel','Lee Jackson')," + "('A003','Bruce','Willis')," + "('A004','Leonardo','Di Caprio'),"
-          + "('A005','Ben','Kingsley')," + "('A006','Mark','Ruffalo')," + "('A007','Jack','Nicholson'),"
-          + "('A008','Matt','Damon'))";
+      String actorFilling =
+          "insert into ACTOR (ID,FIRST_NAME,LAST_NAME) values ("
+              + "('A001','John','Travolta'),"
+              + "('A002','Samuel','Lee Jackson'),"
+              + "('A003','Bruce','Willis'),"
+              + "('A004','Leonardo','Di Caprio'),"
+              + "('A005','Ben','Kingsley'),"
+              + "('A006','Mark','Ruffalo'),"
+              + "('A007','Jack','Nicholson'),"
+              + "('A008','Matt','Damon'))";
       st.execute(actorFilling);
 
-      String film2actorFilling = "insert into ACTOR_FILM (ACTOR_ID,FILM_ID,PAYMENT) values (" + "('A001','F001','12000000'),"
-          + "('A002','F001','10000000')," + "('A003','F001','15000000')," + "('A004','F002','30000000'),"
-          + "('A004','F003','40000000')," + "('A005','F002','35000000')," + "('A006','F002','9000000'),"
-          + "('A007','F003','25000000')," + "('A008','F003','15000000'))";
+      String film2actorFilling =
+          "insert into ACTOR_FILM (ACTOR_ID,FILM_ID,PAYMENT) values ("
+              + "('A001','F001','12000000'),"
+              + "('A002','F001','10000000'),"
+              + "('A003','F001','15000000'),"
+              + "('A004','F002','30000000'),"
+              + "('A004','F003','40000000'),"
+              + "('A005','F002','35000000'),"
+              + "('A006','F002','9000000'),"
+              + "('A007','F003','25000000'),"
+              + "('A008','F003','15000000'))";
       st.execute(film2actorFilling);
 
-      ODocument config = OMigrationConfigManager.loadMigrationConfigFromFile(this.configJoinTableDirectEdgesPath);
+      ODocument config =
+          OMigrationConfigManager.loadMigrationConfigFromFile(this.configJoinTableDirectEdgesPath);
 
-      this.naiveAggregationStrategy
-          .executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "basicDBMapper", null, "java", null, null, config);
+      this.naiveAggregationStrategy.executeStrategy(
+          this.sourceDBInfo,
+          this.outOrientGraphUri,
+          "basicDBMapper",
+          null,
+          "java",
+          null,
+          null,
+          config);
 
       /*
        *  Testing context information
@@ -726,12 +786,11 @@ public class ImportWithInputRelationshipConfigurationTest {
       assertEquals(11, context.getStatistics().orientAddedVertices);
       assertEquals(9, context.getStatistics().orientAddedEdges);
 
-
       /*
        *  Testing built OrientDB
        */
 
-      orientGraph = this.context.getOrientDBInstance().open(this.dbName,"admin","admin");
+      orientGraph = this.context.getOrientDBInstance().open(this.dbName, "admin", "admin");
 
       // vertices check
 
@@ -744,9 +803,9 @@ public class ImportWithInputRelationshipConfigurationTest {
       assertEquals(9, orientGraph.countClass("Performs"));
 
       // vertex properties and connections check
-      Iterator<OEdge>  edgesIt = null;
-      String[] keys = { "id" };
-      String[] values = { "F001" };
+      Iterator<OEdge> edgesIt = null;
+      String[] keys = {"id"};
+      String[] values = {"F001"};
 
       OVertex v = null;
       OEdge currentEdge = null;
@@ -999,7 +1058,7 @@ public class ImportWithInputRelationshipConfigurationTest {
     }
   }
 
-  //@Test
+  // @Test
 
   /*
    *  Three tables: 1  N-N relationship, no foreign keys declared for the join table in the db.
@@ -1035,41 +1094,68 @@ public class ImportWithInputRelationshipConfigurationTest {
       Class.forName(this.driver);
       connection = DriverManager.getConnection(this.jurl, this.username, this.password);
 
-      String parentTableBuilding = "create memory table ACTOR (ID varchar(256) not null,"
-          + " FIRST_NAME varchar(256) not null, LAST_NAME varchar(256) not null, primary key (ID))";
+      String parentTableBuilding =
+          "create memory table ACTOR (ID varchar(256) not null,"
+              + " FIRST_NAME varchar(256) not null, LAST_NAME varchar(256) not null, primary key (ID))";
       st = connection.createStatement();
       st.execute(parentTableBuilding);
 
       String foreignTableBuilding =
-          "create memory table FILM (ID varchar(256)," + " TITLE varchar(256) not null, CATEGORY varchar(256), primary key (ID))";
+          "create memory table FILM (ID varchar(256),"
+              + " TITLE varchar(256) not null, CATEGORY varchar(256), primary key (ID))";
       st.execute(foreignTableBuilding);
 
-      String actorFilmTableBuilding = "create memory table FILM_ACTOR (FILM_ID  varchar(256),"
-          + " ACTOR_ID varchar(256) not null, PAYMENT integer, primary key (FILM_ID, ACTOR_ID))";
+      String actorFilmTableBuilding =
+          "create memory table FILM_ACTOR (FILM_ID  varchar(256),"
+              + " ACTOR_ID varchar(256) not null, PAYMENT integer, primary key (FILM_ID, ACTOR_ID))";
       st.execute(actorFilmTableBuilding);
 
       // Records Inserting
 
-      String filmFilling = "insert into FILM (ID,TITLE,CATEGORY) values (" + "('F001','Pulp Fiction','Action'),"
-          + "('F002','Shutter Island','Thriller')," + "('F003','The Departed','Action-Thriller'))";
+      String filmFilling =
+          "insert into FILM (ID,TITLE,CATEGORY) values ("
+              + "('F001','Pulp Fiction','Action'),"
+              + "('F002','Shutter Island','Thriller'),"
+              + "('F003','The Departed','Action-Thriller'))";
       st.execute(filmFilling);
 
-      String actorFilling = "insert into ACTOR (ID,FIRST_NAME,LAST_NAME) values (" + "('A001','John','Travolta'),"
-          + "('A002','Samuel','Lee Jackson')," + "('A003','Bruce','Willis')," + "('A004','Leonardo','Di Caprio'),"
-          + "('A005','Ben','Kingsley')," + "('A006','Mark','Ruffalo')," + "('A007','Jack','Nicholson'),"
-          + "('A008','Matt','Damon'))";
+      String actorFilling =
+          "insert into ACTOR (ID,FIRST_NAME,LAST_NAME) values ("
+              + "('A001','John','Travolta'),"
+              + "('A002','Samuel','Lee Jackson'),"
+              + "('A003','Bruce','Willis'),"
+              + "('A004','Leonardo','Di Caprio'),"
+              + "('A005','Ben','Kingsley'),"
+              + "('A006','Mark','Ruffalo'),"
+              + "('A007','Jack','Nicholson'),"
+              + "('A008','Matt','Damon'))";
       st.execute(actorFilling);
 
-      String film2actorFilling = "insert into FILM_ACTOR (FILM_ID,ACTOR_ID,PAYMENT) values (" + "('F001','A001','12000000'),"
-          + "('F001','A002','10000000')," + "('F001','A003','15000000')," + "('F002','A004','30000000'),"
-          + "('F002','A005','35000000')," + "('F002','A006','9000000')," + "('F003','A004','40000000'),"
-          + "('F003','A007','25000000')," + "('F003','A008','15000000'))";
+      String film2actorFilling =
+          "insert into FILM_ACTOR (FILM_ID,ACTOR_ID,PAYMENT) values ("
+              + "('F001','A001','12000000'),"
+              + "('F001','A002','10000000'),"
+              + "('F001','A003','15000000'),"
+              + "('F002','A004','30000000'),"
+              + "('F002','A005','35000000'),"
+              + "('F002','A006','9000000'),"
+              + "('F003','A004','40000000'),"
+              + "('F003','A007','25000000'),"
+              + "('F003','A008','15000000'))";
       st.execute(film2actorFilling);
 
-      ODocument config = OMigrationConfigManager.loadMigrationConfigFromFile(this.configJoinTableInverseEdgesPath);
+      ODocument config =
+          OMigrationConfigManager.loadMigrationConfigFromFile(this.configJoinTableInverseEdgesPath);
 
-      this.naiveAggregationStrategy
-          .executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "basicDBMapper", null, "java", null, null, config);
+      this.naiveAggregationStrategy.executeStrategy(
+          this.sourceDBInfo,
+          this.outOrientGraphUri,
+          "basicDBMapper",
+          null,
+          "java",
+          null,
+          null,
+          config);
 
       /*
        *  Testing context information
@@ -1080,12 +1166,11 @@ public class ImportWithInputRelationshipConfigurationTest {
       assertEquals(11, context.getStatistics().orientAddedVertices);
       assertEquals(9, context.getStatistics().orientAddedEdges);
 
-
       /*
        *  Testing built OrientDB
        */
 
-      orientGraph = this.context.getOrientDBInstance().open(this.dbName,"admin","admin");
+      orientGraph = this.context.getOrientDBInstance().open(this.dbName, "admin", "admin");
 
       // vertices check
 
@@ -1099,9 +1184,9 @@ public class ImportWithInputRelationshipConfigurationTest {
       assertEquals(9, orientGraph.countClass("Performs"));
 
       // vertex properties and connections check
-      Iterator<OEdge>  edgesIt = null;
-      String[] keys = { "id" };
-      String[] values = { "F001" };
+      Iterator<OEdge> edgesIt = null;
+      String[] keys = {"id"};
+      String[] values = {"F001"};
 
       OVertex v = null;
       OEdge currentEdge = null;
@@ -1354,7 +1439,7 @@ public class ImportWithInputRelationshipConfigurationTest {
     }
   }
 
-  //@Test
+  // @Test
 
   /*
    *  Three tables: 1  N-N relationship, foreign keys declared for the join table in the db:
@@ -1387,42 +1472,69 @@ public class ImportWithInputRelationshipConfigurationTest {
       Class.forName(this.driver);
       connection = DriverManager.getConnection(this.jurl, this.username, this.password);
 
-      String parentTableBuilding = "create memory table ACTOR (ID varchar(256) not null,"
-          + " FIRST_NAME varchar(256) not null, LAST_NAME varchar(256) not null, primary key (ID))";
+      String parentTableBuilding =
+          "create memory table ACTOR (ID varchar(256) not null,"
+              + " FIRST_NAME varchar(256) not null, LAST_NAME varchar(256) not null, primary key (ID))";
       st = connection.createStatement();
       st.execute(parentTableBuilding);
 
       String foreignTableBuilding =
-          "create memory table FILM (ID varchar(256)," + " TITLE varchar(256) not null, CATEGORY varchar(256), primary key (ID))";
+          "create memory table FILM (ID varchar(256),"
+              + " TITLE varchar(256) not null, CATEGORY varchar(256), primary key (ID))";
       st.execute(foreignTableBuilding);
 
-      String actorFilmTableBuilding = "create memory table ACTOR_FILM (ACTOR_ID  varchar(256),"
-          + " FILM_ID varchar(256) not null, PAYMENT integer, primary key (ACTOR_ID, FILM_ID),"
-          + " foreign key (ACTOR_ID) references ACTOR(ID), foreign key (FILM_ID) references FILM(ID))";
+      String actorFilmTableBuilding =
+          "create memory table ACTOR_FILM (ACTOR_ID  varchar(256),"
+              + " FILM_ID varchar(256) not null, PAYMENT integer, primary key (ACTOR_ID, FILM_ID),"
+              + " foreign key (ACTOR_ID) references ACTOR(ID), foreign key (FILM_ID) references FILM(ID))";
       st.execute(actorFilmTableBuilding);
 
       // Records Inserting
 
-      String filmFilling = "insert into FILM (ID,TITLE,CATEGORY) values (" + "('F001','Pulp Fiction','Action'),"
-          + "('F002','Shutter Island','Thriller')," + "('F003','The Departed','Action-Thriller'))";
+      String filmFilling =
+          "insert into FILM (ID,TITLE,CATEGORY) values ("
+              + "('F001','Pulp Fiction','Action'),"
+              + "('F002','Shutter Island','Thriller'),"
+              + "('F003','The Departed','Action-Thriller'))";
       st.execute(filmFilling);
 
-      String actorFilling = "insert into ACTOR (ID,FIRST_NAME,LAST_NAME) values (" + "('A001','John','Travolta'),"
-          + "('A002','Samuel','Lee Jackson')," + "('A003','Bruce','Willis')," + "('A004','Leonardo','Di Caprio'),"
-          + "('A005','Ben','Kingsley')," + "('A006','Mark','Ruffalo')," + "('A007','Jack','Nicholson'),"
-          + "('A008','Matt','Damon'))";
+      String actorFilling =
+          "insert into ACTOR (ID,FIRST_NAME,LAST_NAME) values ("
+              + "('A001','John','Travolta'),"
+              + "('A002','Samuel','Lee Jackson'),"
+              + "('A003','Bruce','Willis'),"
+              + "('A004','Leonardo','Di Caprio'),"
+              + "('A005','Ben','Kingsley'),"
+              + "('A006','Mark','Ruffalo'),"
+              + "('A007','Jack','Nicholson'),"
+              + "('A008','Matt','Damon'))";
       st.execute(actorFilling);
 
-      String film2actorFilling = "insert into ACTOR_FILM (ACTOR_ID,FILM_ID,PAYMENT) values (" + "('A001','F001','12000000'),"
-          + "('A002','F001','10000000')," + "('A003','F001','15000000')," + "('A004','F002','30000000'),"
-          + "('A004','F003','40000000')," + "('A005','F002','35000000')," + "('A006','F002','9000000'),"
-          + "('A007','F003','25000000')," + "('A008','F003','15000000'))";
+      String film2actorFilling =
+          "insert into ACTOR_FILM (ACTOR_ID,FILM_ID,PAYMENT) values ("
+              + "('A001','F001','12000000'),"
+              + "('A002','F001','10000000'),"
+              + "('A003','F001','15000000'),"
+              + "('A004','F002','30000000'),"
+              + "('A004','F003','40000000'),"
+              + "('A005','F002','35000000'),"
+              + "('A006','F002','9000000'),"
+              + "('A007','F003','25000000'),"
+              + "('A008','F003','15000000'))";
       st.execute(film2actorFilling);
 
-      ODocument config = OMigrationConfigManager.loadMigrationConfigFromFile(this.configJoinTableDirectEdgesPath);
+      ODocument config =
+          OMigrationConfigManager.loadMigrationConfigFromFile(this.configJoinTableDirectEdgesPath);
 
-      this.naiveAggregationStrategy
-          .executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "basicDBMapper", null, "java", null, null, config);
+      this.naiveAggregationStrategy.executeStrategy(
+          this.sourceDBInfo,
+          this.outOrientGraphUri,
+          "basicDBMapper",
+          null,
+          "java",
+          null,
+          null,
+          config);
 
       /*
        *  Testing context information
@@ -1433,12 +1545,11 @@ public class ImportWithInputRelationshipConfigurationTest {
       assertEquals(11, context.getStatistics().orientAddedVertices);
       assertEquals(9, context.getStatistics().orientAddedEdges);
 
-
       /*
        *  Testing built OrientDB
        */
 
-      orientGraph = this.context.getOrientDBInstance().open(this.dbName,"admin","admin");
+      orientGraph = this.context.getOrientDBInstance().open(this.dbName, "admin", "admin");
 
       // vertices check
 
@@ -1451,9 +1562,9 @@ public class ImportWithInputRelationshipConfigurationTest {
       assertEquals(9, orientGraph.countClass("Performs"));
 
       // vertex properties and connections check
-      Iterator<OEdge>  edgesIt = null;
-      String[] keys = { "id" };
-      String[] values = { "F001" };
+      Iterator<OEdge> edgesIt = null;
+      String[] keys = {"id"};
+      String[] values = {"F001"};
 
       OVertex v = null;
       OEdge currentEdge = null;
@@ -1706,9 +1817,9 @@ public class ImportWithInputRelationshipConfigurationTest {
     }
   }
 
-  //@Test
+  // @Test
 
-   /*
+  /*
    *  Three tables: 1  N-N relationship, foreign keys declared for the join table in the db:
    *
    *  ACTOR
@@ -1741,42 +1852,70 @@ public class ImportWithInputRelationshipConfigurationTest {
       Class.forName(this.driver);
       connection = DriverManager.getConnection(this.jurl, this.username, this.password);
 
-      String parentTableBuilding = "create memory table ACTOR (ID varchar(256) not null,"
-          + " FIRST_NAME varchar(256) not null, LAST_NAME varchar(256) not null, primary key (ID))";
+      String parentTableBuilding =
+          "create memory table ACTOR (ID varchar(256) not null,"
+              + " FIRST_NAME varchar(256) not null, LAST_NAME varchar(256) not null, primary key (ID))";
       st = connection.createStatement();
       st.execute(parentTableBuilding);
 
       String foreignTableBuilding =
-          "create memory table FILM (ID varchar(256)," + " TITLE varchar(256) not null, CATEGORY varchar(256), primary key (ID))";
+          "create memory table FILM (ID varchar(256),"
+              + " TITLE varchar(256) not null, CATEGORY varchar(256), primary key (ID))";
       st.execute(foreignTableBuilding);
 
-      String actorFilmTableBuilding = "create memory table FILM_ACTOR (ACTOR_ID  varchar(256),"
-          + " FILM_ID varchar(256) not null, PAYMENT integer, primary key (ACTOR_ID, FILM_ID),"
-          + " foreign key (ACTOR_ID) references ACTOR(ID), foreign key (FILM_ID) references FILM(ID))";
+      String actorFilmTableBuilding =
+          "create memory table FILM_ACTOR (ACTOR_ID  varchar(256),"
+              + " FILM_ID varchar(256) not null, PAYMENT integer, primary key (ACTOR_ID, FILM_ID),"
+              + " foreign key (ACTOR_ID) references ACTOR(ID), foreign key (FILM_ID) references FILM(ID))";
       st.execute(actorFilmTableBuilding);
 
       // Records Inserting
 
-      String filmFilling = "insert into FILM (ID,TITLE,CATEGORY) values (" + "('F001','Pulp Fiction','Action'),"
-          + "('F002','Shutter Island','Thriller')," + "('F003','The Departed','Action-Thriller'))";
+      String filmFilling =
+          "insert into FILM (ID,TITLE,CATEGORY) values ("
+              + "('F001','Pulp Fiction','Action'),"
+              + "('F002','Shutter Island','Thriller'),"
+              + "('F003','The Departed','Action-Thriller'))";
       st.execute(filmFilling);
 
-      String actorFilling = "insert into ACTOR (ID,FIRST_NAME,LAST_NAME) values (" + "('A001','John','Travolta'),"
-          + "('A002','Samuel','Lee Jackson')," + "('A003','Bruce','Willis')," + "('A004','Leonardo','Di Caprio'),"
-          + "('A005','Ben','Kingsley')," + "('A006','Mark','Ruffalo')," + "('A007','Jack','Nicholson'),"
-          + "('A008','Matt','Damon'))";
+      String actorFilling =
+          "insert into ACTOR (ID,FIRST_NAME,LAST_NAME) values ("
+              + "('A001','John','Travolta'),"
+              + "('A002','Samuel','Lee Jackson'),"
+              + "('A003','Bruce','Willis'),"
+              + "('A004','Leonardo','Di Caprio'),"
+              + "('A005','Ben','Kingsley'),"
+              + "('A006','Mark','Ruffalo'),"
+              + "('A007','Jack','Nicholson'),"
+              + "('A008','Matt','Damon'))";
       st.execute(actorFilling);
 
-      String film2actorFilling = "insert into FILM_ACTOR (FILM_ID,ACTOR_ID,PAYMENT) values (" + "('F001','A001','12000000'),"
-          + "('F001','A002','10000000')," + "('F001','A003','15000000')," + "('F002','A004','30000000'),"
-          + "('F002','A005','35000000')," + "('F002','A006','9000000')," + "('F003','A004','40000000'),"
-          + "('F003','A007','25000000')," + "('F003','A008','15000000'))";
+      String film2actorFilling =
+          "insert into FILM_ACTOR (FILM_ID,ACTOR_ID,PAYMENT) values ("
+              + "('F001','A001','12000000'),"
+              + "('F001','A002','10000000'),"
+              + "('F001','A003','15000000'),"
+              + "('F002','A004','30000000'),"
+              + "('F002','A005','35000000'),"
+              + "('F002','A006','9000000'),"
+              + "('F003','A004','40000000'),"
+              + "('F003','A007','25000000'),"
+              + "('F003','A008','15000000'))";
       st.execute(film2actorFilling);
 
-      ODocument config = OMigrationConfigManager.loadMigrationConfigFromFile(this.configJoinTableInverseEdgesPath2);
+      ODocument config =
+          OMigrationConfigManager.loadMigrationConfigFromFile(
+              this.configJoinTableInverseEdgesPath2);
 
-      this.naiveAggregationStrategy
-          .executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "basicDBMapper", null, "java", null, null, config);
+      this.naiveAggregationStrategy.executeStrategy(
+          this.sourceDBInfo,
+          this.outOrientGraphUri,
+          "basicDBMapper",
+          null,
+          "java",
+          null,
+          null,
+          config);
 
       /*
        *  Testing context information
@@ -1787,12 +1926,11 @@ public class ImportWithInputRelationshipConfigurationTest {
       assertEquals(11, context.getStatistics().orientAddedVertices);
       assertEquals(9, context.getStatistics().orientAddedEdges);
 
-
       /*
        *  Testing built OrientDB
        */
 
-      orientGraph = this.context.getOrientDBInstance().open(this.dbName,"admin","admin");
+      orientGraph = this.context.getOrientDBInstance().open(this.dbName, "admin", "admin");
 
       // vertices check
 
@@ -1806,9 +1944,9 @@ public class ImportWithInputRelationshipConfigurationTest {
       assertEquals(9, orientGraph.countClass("Features"));
 
       // vertex properties and connections check
-      Iterator<OEdge>  edgesIt = null;
-      String[] keys = { "id" };
-      String[] values = { "F001" };
+      Iterator<OEdge> edgesIt = null;
+      String[] keys = {"id"};
+      String[] values = {"F001"};
 
       OVertex v = null;
       OEdge currentEdge = null;
@@ -2060,5 +2198,4 @@ public class ImportWithInputRelationshipConfigurationTest {
       }
     }
   }
-
 }

@@ -30,11 +30,10 @@ import java.util.List;
  * @author Gabriele Ponzi
  * @email <g.ponzi--at--orientdb.com>
  */
-
 public class OGraphModel {
 
   private List<OVertexType> verticesType;
-  private List<OEdgeType>   edgesType;
+  private List<OEdgeType> edgesType;
 
   public OGraphModel() {
     this.verticesType = new ArrayList<OVertexType>();
@@ -135,21 +134,25 @@ public class OGraphModel {
   }
 
   public String toString() {
-    String s = "\n\n\n------------------------------ MODEL GRAPH DESCRIPTION ------------------------------\n\n\n";
+    String s =
+        "\n\n\n------------------------------ MODEL GRAPH DESCRIPTION ------------------------------\n\n\n";
 
-    s += "Number of Vertex-type: " + this.verticesType.size() + ".\nNumber of Edge-type: " + this.edgesType.size() + ".\n\n";
+    s +=
+        "Number of Vertex-type: "
+            + this.verticesType.size()
+            + ".\nNumber of Edge-type: "
+            + this.edgesType.size()
+            + ".\n\n";
 
     // info about vertices
     s += "Vertex-type:\n\n";
-    for (OVertexType v : this.verticesType)
-      s += v.toString() + "\n\n";
+    for (OVertexType v : this.verticesType) s += v.toString() + "\n\n";
 
     s += "\n\n";
 
     // info about edges
     s += "Edge-type:\n\n";
-    for (OEdgeType e : this.edgesType)
-      s += e.toString() + "\n";
+    for (OEdgeType e : this.edgesType) s += e.toString() + "\n";
 
     s += "\n\n";
 
@@ -157,10 +160,15 @@ public class OGraphModel {
     s += "Graph structure:\n\n";
     for (OVertexType v : this.verticesType) {
       for (OEdgeType e : v.getOutEdgesType())
-        s += v.getName() + " -----------[" + e.getName() + "]-----------> " + e.getInVertexType().getName() + "\n";
+        s +=
+            v.getName()
+                + " -----------["
+                + e.getName()
+                + "]-----------> "
+                + e.getInVertexType().getName()
+                + "\n";
     }
 
     return s;
   }
-
 }

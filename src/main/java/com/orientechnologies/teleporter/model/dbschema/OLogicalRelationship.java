@@ -29,7 +29,6 @@ import java.util.List;
  * @author Gabriele Ponzi
  * @email <g.ponzi--at--orientdb.com>
  */
-
 public class OLogicalRelationship extends ORelationship {
 
   private List<OAttribute> fromColumns;
@@ -41,7 +40,10 @@ public class OLogicalRelationship extends ORelationship {
     this.direction = "direct";
   }
 
-  public OLogicalRelationship(OEntity foreignEntity, OEntity parentEntity, List<OAttribute> fromColumns,
+  public OLogicalRelationship(
+      OEntity foreignEntity,
+      OEntity parentEntity,
+      List<OAttribute> fromColumns,
       List<OAttribute> toColumns) {
     this.foreignEntity = foreignEntity;
     this.parentEntity = parentEntity;
@@ -71,8 +73,10 @@ public class OLogicalRelationship extends ORelationship {
   @Override
   public boolean equals(Object obj) {
     OCanonicalRelationship that = (OCanonicalRelationship) obj;
-    if (this.foreignEntity.equals(that.getForeignEntity()) && this.parentEntity.equals(that.getParentEntity())) {
-      if (this.fromColumns.equals(that.getFromColumns()) && this.toColumns.equals(that.getToColumns())) {
+    if (this.foreignEntity.equals(that.getForeignEntity())
+        && this.parentEntity.equals(that.getParentEntity())) {
+      if (this.fromColumns.equals(that.getFromColumns())
+          && this.toColumns.equals(that.getToColumns())) {
         return true;
       }
     }
@@ -96,7 +100,14 @@ public class OLogicalRelationship extends ORelationship {
     toColumns = toColumns.substring(0, toColumns.length() - 1);
     toColumns += "]";
 
-    return "OLogicalRelationship [foreignEntity=" + foreignEntity.getName() + ", parentEntity=" + parentEntity.getName()
-        + ", From Columns=" + fromColumns + ", To Columns=" + toColumns + " ]";
+    return "OLogicalRelationship [foreignEntity="
+        + foreignEntity.getName()
+        + ", parentEntity="
+        + parentEntity.getName()
+        + ", From Columns="
+        + fromColumns
+        + ", To Columns="
+        + toColumns
+        + " ]";
   }
 }

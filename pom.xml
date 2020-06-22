@@ -182,10 +182,10 @@
             <scope>compile</scope>
         </dependency>
         <!--<dependency>-->
-            <!--<groupId>org.hsqldb</groupId>-->
-            <!--<artifactId>hsqldb</artifactId>-->
-            <!--<version>${hsqldb.version}</version>-->
-            <!--<scope>test</scope>-->
+        <!--<groupId>org.hsqldb</groupId>-->
+        <!--<artifactId>hsqldb</artifactId>-->
+        <!--<version>${hsqldb.version}</version>-->
+        <!--<scope>test</scope>-->
         <!--</dependency>-->
     </dependencies>
 

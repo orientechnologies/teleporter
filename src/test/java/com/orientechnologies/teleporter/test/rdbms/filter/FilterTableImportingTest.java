@@ -20,6 +20,8 @@
 
 package com.orientechnologies.teleporter.test.rdbms.filter;
 
+import static org.junit.Assert.*;
+
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.record.ODirection;
@@ -35,43 +37,42 @@ import com.orientechnologies.teleporter.persistence.handler.OHSQLDBDataTypeHandl
 import com.orientechnologies.teleporter.strategy.rdbms.ODBMSNaiveStrategy;
 import com.orientechnologies.teleporter.util.OFileManager;
 import com.orientechnologies.teleporter.util.OGraphCommands;
-import org.junit.After;
-import org.junit.Before;
-
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import org.junit.After;
+import org.junit.Before;
 
-import static org.junit.Assert.*;
-
-//import com.orientechnologies.teleporter.persistence.handler.OHSQLDBDataTypeHandler;
+// import com.orientechnologies.teleporter.persistence.handler.OHSQLDBDataTypeHandler;
 
 /**
  * @author Gabriele Ponzi
  * @email <g.ponzi--at--orientdb.com>
  */
-
 public class FilterTableImportingTest {
 
   private OTeleporterContext context;
   private ODBMSNaiveStrategy importStrategy;
-  private ODBQueryEngine     dbQueryEngine;
-  private String driver   = "org.hsqldb.jdbc.JDBCDriver";
-  private String jurl     = "jdbc:hsqldb:mem:mydb";
+  private ODBQueryEngine dbQueryEngine;
+  private String driver = "org.hsqldb.jdbc.JDBCDriver";
+  private String jurl = "jdbc:hsqldb:mem:mydb";
   private String username = "SA";
   private String password = "";
   private String dbName = "testOrientDB";
   private String outParentDirectory = "embedded:target/";
   private String outOrientGraphUri = this.outParentDirectory + this.dbName;
   private OSourceDatabaseInfo sourceDBInfo;
-  private final static String XML_TABLE_PER_CLASS          = "src/test/resources/inheritance/hibernate/tablePerClassHierarchyImportTest.xml";
-  private final static String XML_TABLE_PER_SUBCLASS1      = "src/test/resources/inheritance/hibernate/tablePerSubclassImportTest1.xml";
-  private final static String XML_TABLE_PER_SUBCLASS2      = "src/test/resources/inheritance/hibernate/tablePerSubclassImportTest2.xml";
-  private final static String XML_TABLE_PER_CONCRETE_CLASS = "src/test/resources/inheritance/hibernate/tablePerConcreteClassImportTest.xml";
-
+  private static final String XML_TABLE_PER_CLASS =
+      "src/test/resources/inheritance/hibernate/tablePerClassHierarchyImportTest.xml";
+  private static final String XML_TABLE_PER_SUBCLASS1 =
+      "src/test/resources/inheritance/hibernate/tablePerSubclassImportTest1.xml";
+  private static final String XML_TABLE_PER_SUBCLASS2 =
+      "src/test/resources/inheritance/hibernate/tablePerSubclassImportTest2.xml";
+  private static final String XML_TABLE_PER_CONCRETE_CLASS =
+      "src/test/resources/inheritance/hibernate/tablePerConcreteClassImportTest.xml";
 
   @Before
   public void init() {
@@ -82,7 +83,8 @@ public class FilterTableImportingTest {
     this.context.setNameResolver(new OJavaConventionNameResolver());
     this.context.setDataTypeHandler(new OHSQLDBDataTypeHandler());
     this.importStrategy = new ODBMSNaiveStrategy("embedded", this.outParentDirectory, this.dbName);
-    this.sourceDBInfo = new OSourceDatabaseInfo("source", this.driver, this.jurl, this.username, this.password);
+    this.sourceDBInfo =
+        new OSourceDatabaseInfo("source", this.driver, this.jurl, this.username, this.password);
   }
 
   @After
@@ -94,14 +96,14 @@ public class FilterTableImportingTest {
     try {
 
       // Deleting database directory
-      OFileManager.deleteResource(this.outOrientGraphUri.replace("embedded:",""));
+      OFileManager.deleteResource(this.outOrientGraphUri.replace("embedded:", ""));
 
     } catch (Exception e) {
       e.printStackTrace();
     }
   }
 
-  //@Test
+  // @Test
   /*
    * Filtering out a table through include-tables (without inheritance).
    */ public void test1() {
@@ -115,7 +117,8 @@ public class FilterTableImportingTest {
       Class.forName(this.driver);
       connection = DriverManager.getConnection(this.jurl, this.username, this.password);
 
-      String countryTableBuilding = "create memory table COUNTRY(ID varchar(256) not null, NAME varchar(256), CONTINENT varchar(256), primary key (ID))";
+      String countryTableBuilding =
+          "create memory table COUNTRY(ID varchar(256) not null, NAME varchar(256), CONTINENT varchar(256), primary key (ID))";
       st = connection.createStatement();
       st.execute(countryTableBuilding);
 
@@ -124,29 +127,37 @@ public class FilterTableImportingTest {
               + "primary key (id), foreign key (country) references country(id))";
       st.execute(residenceTableBuilding);
 
-      String managerTableBuilding = "create memory table MANAGER(ID varchar(256) not null, NAME varchar(256), PROJECT varchar(256), primary key (ID))";
+      String managerTableBuilding =
+          "create memory table MANAGER(ID varchar(256) not null, NAME varchar(256), PROJECT varchar(256), primary key (ID))";
       st.execute(managerTableBuilding);
 
-      String employeeTableBuilding = "create memory table EMPLOYEE (ID varchar(256) not null,"
-          + " NAME varchar(256), SALARY decimal(10,2), RESIDENCE varchar(256), MANAGER varchar(256), "
-          + "primary key (ID), foreign key (RESIDENCE) references RESIDENCE(ID), foreign key (MANAGER) references MANAGER(ID))";
+      String employeeTableBuilding =
+          "create memory table EMPLOYEE (ID varchar(256) not null,"
+              + " NAME varchar(256), SALARY decimal(10,2), RESIDENCE varchar(256), MANAGER varchar(256), "
+              + "primary key (ID), foreign key (RESIDENCE) references RESIDENCE(ID), foreign key (MANAGER) references MANAGER(ID))";
       st.execute(employeeTableBuilding);
 
       // Records Inserting
 
-      String countryFilling = "insert into COUNTRY (ID,NAME,CONTINENT) values (" + "('C001','Italy','Europe'))";
+      String countryFilling =
+          "insert into COUNTRY (ID,NAME,CONTINENT) values (" + "('C001','Italy','Europe'))";
       st.execute(countryFilling);
 
       String residenceFilling =
-          "insert into RESIDENCE (ID,CITY,COUNTRY) values (" + "('R001','Rome','C001')," + "('R002','Milan','C001'))";
+          "insert into RESIDENCE (ID,CITY,COUNTRY) values ("
+              + "('R001','Rome','C001'),"
+              + "('R002','Milan','C001'))";
       st.execute(residenceFilling);
 
-      String managerFilling = "insert into MANAGER (ID,NAME,PROJECT) values (" + "('M001','Bill Right','New World'))";
+      String managerFilling =
+          "insert into MANAGER (ID,NAME,PROJECT) values (" + "('M001','Bill Right','New World'))";
       st.execute(managerFilling);
 
       String employeeFilling =
-          "insert into EMPLOYEE (ID,NAME,SALARY,RESIDENCE,MANAGER) values (" + "('E001','John Black',1500.00,'R001',null),"
-              + "('E002','Andrew Brown','1000.00','R001','M001')," + "('E003','Jack Johnson',2000.00,'R002',null))";
+          "insert into EMPLOYEE (ID,NAME,SALARY,RESIDENCE,MANAGER) values ("
+              + "('E001','John Black',1500.00,'R001',null),"
+              + "('E002','Andrew Brown','1000.00','R001','M001'),"
+              + "('E003','Jack Johnson',2000.00,'R002',null))";
       st.execute(employeeFilling);
 
       List<String> includedTables = new ArrayList<String>();
@@ -154,9 +165,15 @@ public class FilterTableImportingTest {
       includedTables.add("MANAGER");
       includedTables.add("EMPLOYEE");
 
-      this.importStrategy
-          .executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "basicDBMapper", null, "java", includedTables, null, null);
-
+      this.importStrategy.executeStrategy(
+          this.sourceDBInfo,
+          this.outOrientGraphUri,
+          "basicDBMapper",
+          null,
+          "java",
+          includedTables,
+          null,
+          null);
 
       /*
        *  Testing context information
@@ -166,13 +183,11 @@ public class FilterTableImportingTest {
       assertEquals(5, context.getStatistics().analyzedRecords);
       assertEquals(5, context.getStatistics().orientAddedVertices);
 
-
       /*
        * Test OrientDB Schema
        */
 
-
-      orientGraph = this.context.getOrientDBInstance().open(this.dbName,"admin","admin");
+      orientGraph = this.context.getOrientDBInstance().open(this.dbName, "admin", "admin");
 
       OClass employeeVertexType = orientGraph.getClass("Employee");
       OClass countryVertexType = orientGraph.getClass("Country");
@@ -189,7 +204,6 @@ public class FilterTableImportingTest {
       assertNull(contractEmployeeVertexType);
       assertNull(projectManagerVertexType);
       assertNull(residenceVertexType);
-
 
       /*
        *  Testing built OrientDB
@@ -209,9 +223,9 @@ public class FilterTableImportingTest {
 
       // vertex properties and connections check
 
-      Iterator<OEdge>  edgesIt = null;
-      String[] keys = { "id" };
-      String[] values = { "E001" };
+      Iterator<OEdge> edgesIt = null;
+      String[] keys = {"id"};
+      String[] values = {"E001"};
 
       OVertex v = null;
       OResultSet result = OGraphCommands.getVertices(orientGraph, "Employee", keys, values);
@@ -315,7 +329,7 @@ public class FilterTableImportingTest {
     }
   }
 
-  //@Test
+  // @Test
   /*
    * Filtering out a table through exclude-tables (without inheritance).
    */ public void test2() {
@@ -329,7 +343,8 @@ public class FilterTableImportingTest {
       Class.forName(this.driver);
       connection = DriverManager.getConnection(this.jurl, this.username, this.password);
 
-      String countryTableBuilding = "create memory table COUNTRY(ID varchar(256) not null, NAME varchar(256), CONTINENT varchar(256), primary key (ID))";
+      String countryTableBuilding =
+          "create memory table COUNTRY(ID varchar(256) not null, NAME varchar(256), CONTINENT varchar(256), primary key (ID))";
       st = connection.createStatement();
       st.execute(countryTableBuilding);
 
@@ -338,37 +353,51 @@ public class FilterTableImportingTest {
               + "primary key (ID), foreign key (COUNTRY) references COUNTRY(ID))";
       st.execute(residenceTableBuilding);
 
-      String managerTableBuilding = "create memory table MANAGER(ID varchar(256) not null, NAME varchar(256), PROJECT varchar(256), primary key (ID))";
+      String managerTableBuilding =
+          "create memory table MANAGER(ID varchar(256) not null, NAME varchar(256), PROJECT varchar(256), primary key (ID))";
       st.execute(managerTableBuilding);
 
-      String employeeTableBuilding = "create memory table EMPLOYEE (ID varchar(256) not null,"
-          + " NAME varchar(256), SALARY decimal(10,2), RESIDENCE varchar(256), MANAGER varchar(256), "
-          + "primary key (ID), foreign key (RESIDENCE) references RESIDENCE(ID), foreign key (MANAGER) references MANAGER(ID))";
+      String employeeTableBuilding =
+          "create memory table EMPLOYEE (ID varchar(256) not null,"
+              + " NAME varchar(256), SALARY decimal(10,2), RESIDENCE varchar(256), MANAGER varchar(256), "
+              + "primary key (ID), foreign key (RESIDENCE) references RESIDENCE(ID), foreign key (MANAGER) references MANAGER(ID))";
       st.execute(employeeTableBuilding);
 
       // Records Inserting
 
-      String countryFilling = "insert into COUNTRY (ID,NAME,CONTINENT) values (" + "('C001','Italy','Europe'))";
+      String countryFilling =
+          "insert into COUNTRY (ID,NAME,CONTINENT) values (" + "('C001','Italy','Europe'))";
       st.execute(countryFilling);
 
       String residenceFilling =
-          "insert into RESIDENCE (ID,CITY,COUNTRY) values (" + "('R001','Rome','C001')," + "('R002','Milan','C001'))";
+          "insert into RESIDENCE (ID,CITY,COUNTRY) values ("
+              + "('R001','Rome','C001'),"
+              + "('R002','Milan','C001'))";
       st.execute(residenceFilling);
 
-      String managerFilling = "insert into MANAGER (ID,NAME,PROJECT) values (" + "('M001','Bill Right','New World'))";
+      String managerFilling =
+          "insert into MANAGER (ID,NAME,PROJECT) values (" + "('M001','Bill Right','New World'))";
       st.execute(managerFilling);
 
       String employeeFilling =
-          "insert into EMPLOYEE (ID,NAME,SALARY,RESIDENCE,MANAGER) values (" + "('E001','John Black',1500.00,'R001',null),"
-              + "('E002','Andrew Brown','1000.00','R001','M001')," + "('E003','Jack Johnson',2000.00,'R002',null))";
+          "insert into EMPLOYEE (ID,NAME,SALARY,RESIDENCE,MANAGER) values ("
+              + "('E001','John Black',1500.00,'R001',null),"
+              + "('E002','Andrew Brown','1000.00','R001','M001'),"
+              + "('E003','Jack Johnson',2000.00,'R002',null))";
       st.execute(employeeFilling);
 
       List<String> excludedTables = new ArrayList<String>();
       excludedTables.add("RESIDENCE");
 
-      this.importStrategy
-          .executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "basicDBMapper", null, "java", null, excludedTables, null);
-
+      this.importStrategy.executeStrategy(
+          this.sourceDBInfo,
+          this.outOrientGraphUri,
+          "basicDBMapper",
+          null,
+          "java",
+          null,
+          excludedTables,
+          null);
 
       /*
        *  Testing context information
@@ -378,13 +407,11 @@ public class FilterTableImportingTest {
       assertEquals(5, context.getStatistics().analyzedRecords);
       assertEquals(5, context.getStatistics().orientAddedVertices);
 
-
       /*
        * Test OrientDB Schema
        */
 
-
-      orientGraph = this.context.getOrientDBInstance().open(this.dbName,"admin","admin");
+      orientGraph = this.context.getOrientDBInstance().open(this.dbName, "admin", "admin");
 
       OClass employeeVertexType = orientGraph.getClass("Employee");
       OClass countryVertexType = orientGraph.getClass("Country");
@@ -401,7 +428,6 @@ public class FilterTableImportingTest {
       assertNull(contractEmployeeVertexType);
       assertNull(projectManagerVertexType);
       assertNull(residenceVertexType);
-
 
       /*
        *  Testing built OrientDB
@@ -421,9 +447,9 @@ public class FilterTableImportingTest {
 
       // vertex properties and connections check
 
-      Iterator<OEdge>  edgesIt = null;
-      String[] keys = { "id" };
-      String[] values = { "E001" };
+      Iterator<OEdge> edgesIt = null;
+      String[] keys = {"id"};
+      String[] values = {"E001"};
 
       OVertex v = null;
       OResultSet result = OGraphCommands.getVertices(orientGraph, "Employee", keys, values);
@@ -527,7 +553,7 @@ public class FilterTableImportingTest {
     }
   }
 
-  //@Test
+  // @Test
   /*
    * Filtering out a table through include-tables (with Table per Hierarchy inheritance).
    */ public void test3() {
@@ -541,7 +567,8 @@ public class FilterTableImportingTest {
       Class.forName(this.driver);
       connection = DriverManager.getConnection(this.jurl, this.username, this.password);
 
-      String countryTableBuilding = "create memory table COUNTRY(ID varchar(256) not null, NAME varchar(256), CONTINENT varchar(256), primary key (ID))";
+      String countryTableBuilding =
+          "create memory table COUNTRY(ID varchar(256) not null, NAME varchar(256), CONTINENT varchar(256), primary key (ID))";
       st = connection.createStatement();
       st.execute(countryTableBuilding);
 
@@ -550,26 +577,32 @@ public class FilterTableImportingTest {
               + "primary key (ID), foreign key (COUNTRY) references COUNTRY(ID))";
       st.execute(residenceTableBuilding);
 
-      String managerTableBuilding = "create memory table MANAGER(ID varchar(256) not null, TYPE varchar(256), NAME varchar(256), PROJECT varchar(256), primary key (ID))";
+      String managerTableBuilding =
+          "create memory table MANAGER(ID varchar(256) not null, TYPE varchar(256), NAME varchar(256), PROJECT varchar(256), primary key (ID))";
       st.execute(managerTableBuilding);
 
-      String employeeTableBuilding = "create memory table EMPLOYEE (ID varchar(256) not null,"
-          + " TYPE varchar(256), NAME varchar(256), SALARY decimal(10,2), BONUS decimal(10,0), "
-          + "PAY_PER_HOUR decimal(10,2), CONTRACT_DURATION varchar(256), RESIDENCE varchar(256), MANAGER varchar(256), "
-          + "primary key (ID), foreign key (RESIDENCE) references RESIDENCE(ID), foreign key (MANAGER) references MANAGER(ID))";
+      String employeeTableBuilding =
+          "create memory table EMPLOYEE (ID varchar(256) not null,"
+              + " TYPE varchar(256), NAME varchar(256), SALARY decimal(10,2), BONUS decimal(10,0), "
+              + "PAY_PER_HOUR decimal(10,2), CONTRACT_DURATION varchar(256), RESIDENCE varchar(256), MANAGER varchar(256), "
+              + "primary key (ID), foreign key (RESIDENCE) references RESIDENCE(ID), foreign key (MANAGER) references MANAGER(ID))";
       st.execute(employeeTableBuilding);
 
       // Records Inserting
 
-      String countryFilling = "insert into COUNTRY (ID,NAME,CONTINENT) values (" + "('C001','Italy','Europe'))";
+      String countryFilling =
+          "insert into COUNTRY (ID,NAME,CONTINENT) values (" + "('C001','Italy','Europe'))";
       st.execute(countryFilling);
 
       String residenceFilling =
-          "insert into RESIDENCE (ID,CITY,COUNTRY) values (" + "('R001','Rome','C001')," + "('R002','Milan','C001'))";
+          "insert into RESIDENCE (ID,CITY,COUNTRY) values ("
+              + "('R001','Rome','C001'),"
+              + "('R002','Milan','C001'))";
       st.execute(residenceFilling);
 
       String managerFilling =
-          "insert into MANAGER (ID,TYPE,NAME,PROJECT) values (" + "('M001','prj_mgr','Bill Right','New World'))";
+          "insert into MANAGER (ID,TYPE,NAME,PROJECT) values ("
+              + "('M001','prj_mgr','Bill Right','New World'))";
       st.execute(managerFilling);
 
       String employeeFilling =
@@ -584,9 +617,15 @@ public class FilterTableImportingTest {
       includedTables.add("MANAGER");
       includedTables.add("EMPLOYEE");
 
-      this.importStrategy
-          .executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "hibernate", FilterTableImportingTest.XML_TABLE_PER_CLASS,
-              "java", includedTables, null, null);
+      this.importStrategy.executeStrategy(
+          this.sourceDBInfo,
+          this.outOrientGraphUri,
+          "hibernate",
+          FilterTableImportingTest.XML_TABLE_PER_CLASS,
+          "java",
+          includedTables,
+          null,
+          null);
 
       /*
        *  Testing context information
@@ -596,13 +635,11 @@ public class FilterTableImportingTest {
       assertEquals(5, context.getStatistics().analyzedRecords);
       assertEquals(5, context.getStatistics().orientAddedVertices);
 
-
       /*
        * Test OrientDB Schema
        */
 
-
-      orientGraph = this.context.getOrientDBInstance().open(this.dbName,"admin","admin");
+      orientGraph = this.context.getOrientDBInstance().open(this.dbName, "admin", "admin");
 
       OClass employeeVertexType = orientGraph.getClass("Employee");
       OClass regularEmployeeVertexType = orientGraph.getClass("RegularEmployee");
@@ -637,7 +674,6 @@ public class FilterTableImportingTest {
       assertNotNull(projectManagerSuperclass);
       assertEquals("Manager", projectManagerSuperclass.getName());
 
-
       /*
        *  Testing built OrientDB
        */
@@ -659,9 +695,9 @@ public class FilterTableImportingTest {
 
       // vertex properties and connections check
 
-      Iterator<OEdge>  edgesIt = null;
-      String[] keys = { "id" };
-      String[] values = { "E001" };
+      Iterator<OEdge> edgesIt = null;
+      String[] keys = {"id"};
+      String[] values = {"E001"};
 
       OVertex v = null;
       OResultSet result = OGraphCommands.getVertices(orientGraph, "Employee", keys, values);
@@ -771,7 +807,7 @@ public class FilterTableImportingTest {
     }
   }
 
-  //@Test
+  // @Test
   /*
    * Filtering out a table through exclude-tables (with Table per Type inheritance).
    */ public void test4() {
@@ -785,57 +821,73 @@ public class FilterTableImportingTest {
       Class.forName(this.driver);
       connection = DriverManager.getConnection(this.jurl, this.username, this.password);
 
-      String countryTableBuilding = "create memory table COUNTRY(ID varchar(256) not null, NAME varchar(256), CONTINENT varchar(256), primary key (ID))";
+      String countryTableBuilding =
+          "create memory table COUNTRY(ID varchar(256) not null, NAME varchar(256), CONTINENT varchar(256), primary key (ID))";
       st = connection.createStatement();
       st.execute(countryTableBuilding);
 
-      String residenceTableBuilding = "create memory table RESIDENCE(ID varchar(256) not null, CITY varchar(256), COUNTRY varchar(256), primary key (ID))";
+      String residenceTableBuilding =
+          "create memory table RESIDENCE(ID varchar(256) not null, CITY varchar(256), COUNTRY varchar(256), primary key (ID))";
       st = connection.createStatement();
       st.execute(residenceTableBuilding);
 
-      String managerTableBuilding = "create memory table MANAGER(ID varchar(256) not null, NAME varchar(256), primary key (ID))";
+      String managerTableBuilding =
+          "create memory table MANAGER(ID varchar(256) not null, NAME varchar(256), primary key (ID))";
       st.execute(managerTableBuilding);
 
-      String projectManagerTableBuilding = "create memory table PROJECT_MANAGER(EID varchar(256) not null, PROJECT varchar(256), primary key (EID), foreign key (EID) references MANAGER(ID))";
+      String projectManagerTableBuilding =
+          "create memory table PROJECT_MANAGER(EID varchar(256) not null, PROJECT varchar(256), primary key (EID), foreign key (EID) references MANAGER(ID))";
       st.execute(projectManagerTableBuilding);
 
-      String employeeTableBuilding = "create memory table EMPLOYEE (ID varchar(256) not null,"
-          + " NAME varchar(256), RESIDENCE varchar(256), MANAGER varchar(256), primary key (ID), "
-          + "foreign key (RESIDENCE) references RESIDENCE(ID), foreign key (MANAGER) references manager(ID))";
+      String employeeTableBuilding =
+          "create memory table EMPLOYEE (ID varchar(256) not null,"
+              + " NAME varchar(256), RESIDENCE varchar(256), MANAGER varchar(256), primary key (ID), "
+              + "foreign key (RESIDENCE) references RESIDENCE(ID), foreign key (MANAGER) references manager(ID))";
       st.execute(employeeTableBuilding);
 
-      String regularEmployeeTableBuilding = "create memory table REGULAR_EMPLOYEE (EID varchar(256) not null, "
-          + "SALARY decimal(10,2), BONUS decimal(10,0), primary key (EID), foreign key (EID) references EMPLOYEE(ID))";
+      String regularEmployeeTableBuilding =
+          "create memory table REGULAR_EMPLOYEE (EID varchar(256) not null, "
+              + "SALARY decimal(10,2), BONUS decimal(10,0), primary key (EID), foreign key (EID) references EMPLOYEE(ID))";
       st.execute(regularEmployeeTableBuilding);
 
-      String contractEmployeeTableBuilding = "create memory table CONTRACT_EMPLOYEE (EID varchar(256) not null, "
-          + "PAY_PER_HOUR decimal(10,2), CONTRACT_DURATION varchar(256), primary key (EID), foreign key (EID) references EMPLOYEE(ID))";
+      String contractEmployeeTableBuilding =
+          "create memory table CONTRACT_EMPLOYEE (EID varchar(256) not null, "
+              + "PAY_PER_HOUR decimal(10,2), CONTRACT_DURATION varchar(256), primary key (EID), foreign key (EID) references EMPLOYEE(ID))";
       st.execute(contractEmployeeTableBuilding);
 
       // Records Inserting
 
-      String countryFilling = "insert into COUNTRY (ID,NAME,CONTINENT) values (" + "('C001','Italy','Europe'))";
+      String countryFilling =
+          "insert into COUNTRY (ID,NAME,CONTINENT) values (" + "('C001','Italy','Europe'))";
       st.execute(countryFilling);
 
       String residenceFilling =
-          "insert into RESIDENCE (ID,CITY,COUNTRY) values (" + "('R001','Rome','C001')," + "('R002','Milan','C001'))";
+          "insert into RESIDENCE (ID,CITY,COUNTRY) values ("
+              + "('R001','Rome','C001'),"
+              + "('R002','Milan','C001'))";
       st.execute(residenceFilling);
 
       String managerFilling = "insert into MANAGER (ID,NAME) values (" + "('M001','Bill Right'))";
       st.execute(managerFilling);
 
-      String projectManagerFilling = "insert into PROJECT_MANAGER (EID,PROJECT) values (" + "('M001','New World'))";
+      String projectManagerFilling =
+          "insert into PROJECT_MANAGER (EID,PROJECT) values (" + "('M001','New World'))";
       st.execute(projectManagerFilling);
 
-      String employeeFilling = "insert into EMPLOYEE (ID,NAME,RESIDENCE,MANAGER) values (" + "('E001','John Black','R001',null),"
-          + "('E002','Andrew Brown','R001','M001')," + "('E003','Jack Johnson','R002',null))";
+      String employeeFilling =
+          "insert into EMPLOYEE (ID,NAME,RESIDENCE,MANAGER) values ("
+              + "('E001','John Black','R001',null),"
+              + "('E002','Andrew Brown','R001','M001'),"
+              + "('E003','Jack Johnson','R002',null))";
       st.execute(employeeFilling);
 
-      String regularEmployeeFilling = "insert into REGULAR_EMPLOYEE (EID,SALARY,BONUS) values (" + "('E002','1000.00','10'))";
+      String regularEmployeeFilling =
+          "insert into REGULAR_EMPLOYEE (EID,SALARY,BONUS) values (" + "('E002','1000.00','10'))";
       st.execute(regularEmployeeFilling);
 
       String contractEmployeeFilling =
-          "insert into CONTRACT_EMPLOYEE (EID,PAY_PER_HOUR,CONTRACT_DURATION) values (" + "('E003','50.00','6'))";
+          "insert into CONTRACT_EMPLOYEE (EID,PAY_PER_HOUR,CONTRACT_DURATION) values ("
+              + "('E003','50.00','6'))";
       st.execute(contractEmployeeFilling);
 
       List<String> includedTables = new ArrayList<String>();
@@ -846,9 +898,15 @@ public class FilterTableImportingTest {
       includedTables.add("REGULAR_EMPLOYEE");
       includedTables.add("CONTRACT_EMPLOYEE");
 
-      this.importStrategy
-          .executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "hibernate", FilterTableImportingTest.XML_TABLE_PER_SUBCLASS1,
-              "java", includedTables, null, null);
+      this.importStrategy.executeStrategy(
+          this.sourceDBInfo,
+          this.outOrientGraphUri,
+          "hibernate",
+          FilterTableImportingTest.XML_TABLE_PER_SUBCLASS1,
+          "java",
+          includedTables,
+          null,
+          null);
 
       /*
        *  Testing context information
@@ -858,13 +916,11 @@ public class FilterTableImportingTest {
       assertEquals(8, context.getStatistics().analyzedRecords);
       assertEquals(5, context.getStatistics().orientAddedVertices);
 
-
       /*
        * Test OrientDB Schema
        */
 
-
-      orientGraph = this.context.getOrientDBInstance().open(this.dbName,"admin","admin");
+      orientGraph = this.context.getOrientDBInstance().open(this.dbName, "admin", "admin");
 
       OClass employeeVertexType = orientGraph.getClass("Employee");
       OClass regularEmployeeVertexType = orientGraph.getClass("RegularEmployee");
@@ -899,7 +955,6 @@ public class FilterTableImportingTest {
       assertNotNull(projectManagerSuperclass);
       assertEquals("Manager", projectManagerSuperclass.getName());
 
-
       /*
        *  Testing built OrientDB
        */
@@ -921,9 +976,9 @@ public class FilterTableImportingTest {
 
       // vertex properties and connections check
 
-      Iterator<OEdge>  edgesIt = null;
-      String[] keys = { "id" };
-      String[] values = { "E001" };
+      Iterator<OEdge> edgesIt = null;
+      String[] keys = {"id"};
+      String[] values = {"E001"};
 
       OVertex v = null;
       OResultSet result = OGraphCommands.getVertices(orientGraph, "Employee", keys, values);
@@ -1033,7 +1088,7 @@ public class FilterTableImportingTest {
     }
   }
 
-  //@Test
+  // @Test
   /*
    * Filtering out a table through exclude-tables (with Table per Type inheritance).
    */ public void test5() {
@@ -1047,66 +1102,87 @@ public class FilterTableImportingTest {
       Class.forName(this.driver);
       connection = DriverManager.getConnection(this.jurl, this.username, this.password);
 
-      String countryTableBuilding = "create memory table COUNTRY(ID varchar(256) not null, NAME varchar(256), CONTINENT varchar(256), primary key (ID))";
+      String countryTableBuilding =
+          "create memory table COUNTRY(ID varchar(256) not null, NAME varchar(256), CONTINENT varchar(256), primary key (ID))";
       st = connection.createStatement();
       st.execute(countryTableBuilding);
 
-      String residenceTableBuilding = "create memory table RESIDENCE(ID varchar(256) not null, CITY varchar(256), COUNTRY varchar(256), primary key (ID))";
+      String residenceTableBuilding =
+          "create memory table RESIDENCE(ID varchar(256) not null, CITY varchar(256), COUNTRY varchar(256), primary key (ID))";
       st = connection.createStatement();
       st.execute(residenceTableBuilding);
 
-      String managerTableBuilding = "create memory table MANAGER(ID varchar(256) not null, NAME varchar(256), primary key (ID))";
+      String managerTableBuilding =
+          "create memory table MANAGER(ID varchar(256) not null, NAME varchar(256), primary key (ID))";
       st.execute(managerTableBuilding);
 
-      String projectManagerTableBuilding = "create memory table PROJECT_MANAGER(EID varchar(256) not null, PROJECT varchar(256), primary key (EID), foreign key (EID) references MANAGER(ID))";
+      String projectManagerTableBuilding =
+          "create memory table PROJECT_MANAGER(EID varchar(256) not null, PROJECT varchar(256), primary key (EID), foreign key (EID) references MANAGER(ID))";
       st.execute(projectManagerTableBuilding);
 
-      String employeeTableBuilding = "create memory table EMPLOYEE (ID varchar(256) not null,"
-          + " NAME varchar(256), RESIDENCE varchar(256), MANAGER varchar(256), primary key (ID), "
-          + "foreign key (RESIDENCE) references RESIDENCE(ID), foreign key (MANAGER) references MANAGER(ID))";
+      String employeeTableBuilding =
+          "create memory table EMPLOYEE (ID varchar(256) not null,"
+              + " NAME varchar(256), RESIDENCE varchar(256), MANAGER varchar(256), primary key (ID), "
+              + "foreign key (RESIDENCE) references RESIDENCE(ID), foreign key (MANAGER) references MANAGER(ID))";
       st.execute(employeeTableBuilding);
 
-      String regularEmployeeTableBuilding = "create memory table REGULAR_EMPLOYEE (EID varchar(256) not null, "
-          + "SALARY decimal(10,2), BONUS decimal(10,0), primary key (EID), foreign key (EID) references EMPLOYEE(ID))";
+      String regularEmployeeTableBuilding =
+          "create memory table REGULAR_EMPLOYEE (EID varchar(256) not null, "
+              + "SALARY decimal(10,2), BONUS decimal(10,0), primary key (EID), foreign key (EID) references EMPLOYEE(ID))";
       st.execute(regularEmployeeTableBuilding);
 
-      String contractEmployeeTableBuilding = "create memory table CONTRACT_EMPLOYEE (EID varchar(256) not null, "
-          + "PAY_PER_HOUR decimal(10,2), CONTRACT_DURATION varchar(256), primary key (EID), foreign key (EID) references EMPLOYEE(ID))";
+      String contractEmployeeTableBuilding =
+          "create memory table CONTRACT_EMPLOYEE (EID varchar(256) not null, "
+              + "PAY_PER_HOUR decimal(10,2), CONTRACT_DURATION varchar(256), primary key (EID), foreign key (EID) references EMPLOYEE(ID))";
       st.execute(contractEmployeeTableBuilding);
 
       // Records Inserting
 
-      String countryFilling = "insert into COUNTRY (ID,NAME,CONTINENT) values (" + "('C001','Italy','Europe'))";
+      String countryFilling =
+          "insert into COUNTRY (ID,NAME,CONTINENT) values (" + "('C001','Italy','Europe'))";
       st.execute(countryFilling);
 
       String residenceFilling =
-          "insert into RESIDENCE (ID,CITY,COUNTRY) values (" + "('R001','Rome','C001')," + "('R002','Milan','C001'))";
+          "insert into RESIDENCE (ID,CITY,COUNTRY) values ("
+              + "('R001','Rome','C001'),"
+              + "('R002','Milan','C001'))";
       st.execute(residenceFilling);
 
       String managerFilling = "insert into MANAGER (ID,NAME) values (" + "('M001','Bill Right'))";
       st.execute(managerFilling);
 
-      String projectManagerFilling = "insert into PROJECT_MANAGER (EID,PROJECT) values (" + "('M001','New World'))";
+      String projectManagerFilling =
+          "insert into PROJECT_MANAGER (EID,PROJECT) values (" + "('M001','New World'))";
       st.execute(projectManagerFilling);
 
-      String employeeFilling = "insert into EMPLOYEE (ID,NAME,RESIDENCE,MANAGER) values (" + "('E001','John Black','R001',null),"
-          + "('E002','Andrew Brown','R001','M001')," + "('E003','Jack Johnson','R002',null))";
+      String employeeFilling =
+          "insert into EMPLOYEE (ID,NAME,RESIDENCE,MANAGER) values ("
+              + "('E001','John Black','R001',null),"
+              + "('E002','Andrew Brown','R001','M001'),"
+              + "('E003','Jack Johnson','R002',null))";
       st.execute(employeeFilling);
 
-      String regularEmployeeFilling = "insert into REGULAR_EMPLOYEE (EID,SALARY,BONUS) values (" + "('E002','1000.00','10'))";
+      String regularEmployeeFilling =
+          "insert into REGULAR_EMPLOYEE (EID,SALARY,BONUS) values (" + "('E002','1000.00','10'))";
       st.execute(regularEmployeeFilling);
 
       String contractEmployeeFilling =
-          "insert into CONTRACT_EMPLOYEE (EID,PAY_PER_HOUR,CONTRACT_DURATION) values (" + "('E003','50.00','6'))";
+          "insert into CONTRACT_EMPLOYEE (EID,PAY_PER_HOUR,CONTRACT_DURATION) values ("
+              + "('E003','50.00','6'))";
       st.execute(contractEmployeeFilling);
 
       List<String> excludedTables = new ArrayList<String>();
       excludedTables.add("RESIDENCE");
 
-      this.importStrategy
-          .executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "hibernate", FilterTableImportingTest.XML_TABLE_PER_SUBCLASS2,
-              "java", null, excludedTables, null);
-
+      this.importStrategy.executeStrategy(
+          this.sourceDBInfo,
+          this.outOrientGraphUri,
+          "hibernate",
+          FilterTableImportingTest.XML_TABLE_PER_SUBCLASS2,
+          "java",
+          null,
+          excludedTables,
+          null);
 
       /*
        *  Testing context information
@@ -1116,13 +1192,11 @@ public class FilterTableImportingTest {
       assertEquals(8, context.getStatistics().analyzedRecords);
       assertEquals(5, context.getStatistics().orientAddedVertices);
 
-
       /*
        * Test OrientDB Schema
        */
 
-
-      orientGraph = this.context.getOrientDBInstance().open(this.dbName,"admin","admin");
+      orientGraph = this.context.getOrientDBInstance().open(this.dbName, "admin", "admin");
 
       OClass employeeVertexType = orientGraph.getClass("Employee");
       OClass regularEmployeeVertexType = orientGraph.getClass("Regularemployee");
@@ -1157,7 +1231,6 @@ public class FilterTableImportingTest {
       assertNotNull(projectManagerSuperclass);
       assertEquals("Manager", projectManagerSuperclass.getName());
 
-
       /*
        *  Testing built OrientDB
        */
@@ -1172,7 +1245,6 @@ public class FilterTableImportingTest {
       assertEquals(1, orientGraph.countClass("ProjectManager"));
       assertEquals(1, orientGraph.countClass("Country"));
 
-
       // edges check
 
       assertEquals(1, orientGraph.countClass("E"));
@@ -1180,9 +1252,9 @@ public class FilterTableImportingTest {
 
       // vertex properties and connections check
 
-      Iterator<OEdge>  edgesIt = null;
-      String[] keys = { "id" };
-      String[] values = { "E001" };
+      Iterator<OEdge> edgesIt = null;
+      String[] keys = {"id"};
+      String[] values = {"E001"};
 
       OVertex v = null;
       OResultSet result = OGraphCommands.getVertices(orientGraph, "Employee", keys, values);
@@ -1292,7 +1364,7 @@ public class FilterTableImportingTest {
     }
   }
 
-  //@Test
+  // @Test
   /*
    * Filtering out a table through include-tables (with Table per Concrete Type inheritance).
    */ public void test6() {
@@ -1306,57 +1378,72 @@ public class FilterTableImportingTest {
       Class.forName(this.driver);
       connection = DriverManager.getConnection(this.jurl, this.username, this.password);
 
-      String countryTableBuilding = "create memory table COUNTRY(ID varchar(256) not null, NAME varchar(256), CONTINENT varchar(256), primary key (ID))";
+      String countryTableBuilding =
+          "create memory table COUNTRY(ID varchar(256) not null, NAME varchar(256), CONTINENT varchar(256), primary key (ID))";
       st = connection.createStatement();
       st.execute(countryTableBuilding);
 
-      String residenceTableBuilding = "create memory table RESIDENCE(ID varchar(256) not null, CITY varchar(256), COUNTRY varchar(256), primary key (ID))";
+      String residenceTableBuilding =
+          "create memory table RESIDENCE(ID varchar(256) not null, CITY varchar(256), COUNTRY varchar(256), primary key (ID))";
       st = connection.createStatement();
       st.execute(residenceTableBuilding);
 
-      String managerTableBuilding = "create memory table MANAGER(ID varchar(256) not null, NAME varchar(256), primary key (ID))";
+      String managerTableBuilding =
+          "create memory table MANAGER(ID varchar(256) not null, NAME varchar(256), primary key (ID))";
       st.execute(managerTableBuilding);
 
-      String projectManagerTableBuilding = "create memory table PROJECT_MANAGER(ID varchar(256) not null, NAME varchar(256), PROJECT varchar(256), primary key (ID))";
+      String projectManagerTableBuilding =
+          "create memory table PROJECT_MANAGER(ID varchar(256) not null, NAME varchar(256), PROJECT varchar(256), primary key (ID))";
       st.execute(projectManagerTableBuilding);
 
-      String employeeTableBuilding = "create memory table EMPLOYEE (ID varchar(256) not null,"
-          + " NAME varchar(256), RESIDENCE varchar(256), MANAGER varchar(256), primary key (ID), "
-          + "foreign key (RESIDENCE) references RESIDENCE(ID), foreign key (MANAGER) references MANAGER(ID))";
+      String employeeTableBuilding =
+          "create memory table EMPLOYEE (ID varchar(256) not null,"
+              + " NAME varchar(256), RESIDENCE varchar(256), MANAGER varchar(256), primary key (ID), "
+              + "foreign key (RESIDENCE) references RESIDENCE(ID), foreign key (MANAGER) references MANAGER(ID))";
       st.execute(employeeTableBuilding);
 
-      String regularEmployeeTableBuilding = "create memory table REGULAR_EMPLOYEE (ID varchar(256) not null, "
-          + "NAME varchar(256), RESIDENCE varchar(256), MANAGER varchar(256),"
-          + "SALARY decimal(10,2), BONUS decimal(10,0), primary key (ID))";
+      String regularEmployeeTableBuilding =
+          "create memory table REGULAR_EMPLOYEE (ID varchar(256) not null, "
+              + "NAME varchar(256), RESIDENCE varchar(256), MANAGER varchar(256),"
+              + "SALARY decimal(10,2), BONUS decimal(10,0), primary key (ID))";
       st.execute(regularEmployeeTableBuilding);
 
-      String contractEmployeeTableBuilding = "create memory table CONTRACT_EMPLOYEE (ID varchar(256) not null, "
-          + "NAME varchar(256), RESIDENCE varchar(256), MANAGER varchar(256),"
-          + "PAY_PER_HOUR decimal(10,2), CONTRACT_DURATION varchar(256), primary key (ID))";
+      String contractEmployeeTableBuilding =
+          "create memory table CONTRACT_EMPLOYEE (ID varchar(256) not null, "
+              + "NAME varchar(256), RESIDENCE varchar(256), MANAGER varchar(256),"
+              + "PAY_PER_HOUR decimal(10,2), CONTRACT_DURATION varchar(256), primary key (ID))";
       st.execute(contractEmployeeTableBuilding);
 
       // Records Inserting
 
-      String countryFilling = "insert into COUNTRY (ID,NAME,CONTINENT) values (" + "('C001','Italy','Europe'))";
+      String countryFilling =
+          "insert into COUNTRY (ID,NAME,CONTINENT) values (" + "('C001','Italy','Europe'))";
       st.execute(countryFilling);
 
       String residenceFilling =
-          "insert into RESIDENCE (ID,CITY,COUNTRY) values (" + "('R001','Rome','C001')," + "('R002','Milan','C001'))";
+          "insert into RESIDENCE (ID,CITY,COUNTRY) values ("
+              + "('R001','Rome','C001'),"
+              + "('R002','Milan','C001'))";
       st.execute(residenceFilling);
 
       String managerFilling = "insert into MANAGER (ID,NAME) values (" + "('M001','Bill Right'))";
       st.execute(managerFilling);
 
       String projectManagerFilling =
-          "insert into PROJECT_MANAGER (ID,NAME,PROJECT) values (" + "('M001','Bill Right','New World'))";
+          "insert into PROJECT_MANAGER (ID,NAME,PROJECT) values ("
+              + "('M001','Bill Right','New World'))";
       st.execute(projectManagerFilling);
 
-      String employeeFilling = "insert into EMPLOYEE (ID,NAME,RESIDENCE,MANAGER) values (" + "('E001','John Black','R001',null),"
-          + "('E002','Andrew Brown','R001','M001')," + "('E003','Jack Johnson','R002',null))";
+      String employeeFilling =
+          "insert into EMPLOYEE (ID,NAME,RESIDENCE,MANAGER) values ("
+              + "('E001','John Black','R001',null),"
+              + "('E002','Andrew Brown','R001','M001'),"
+              + "('E003','Jack Johnson','R002',null))";
       st.execute(employeeFilling);
 
-      String regularEmployeeFilling = "insert into REGULAR_EMPLOYEE (ID,NAME,RESIDENCE,MANAGER,SALARY,BONUS) values ("
-          + "('E002','Andrew Brown','R001','M001','1000.00','10'))";
+      String regularEmployeeFilling =
+          "insert into REGULAR_EMPLOYEE (ID,NAME,RESIDENCE,MANAGER,SALARY,BONUS) values ("
+              + "('E002','Andrew Brown','R001','M001','1000.00','10'))";
       st.execute(regularEmployeeFilling);
 
       String contractEmployeeFilling =
@@ -1372,8 +1459,15 @@ public class FilterTableImportingTest {
       includedTables.add("REGULAR_EMPLOYEE");
       includedTables.add("CONTRACT_EMPLOYEE");
 
-      this.importStrategy.executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "hibernate",
-          FilterTableImportingTest.XML_TABLE_PER_CONCRETE_CLASS, "java", includedTables, null, null);
+      this.importStrategy.executeStrategy(
+          this.sourceDBInfo,
+          this.outOrientGraphUri,
+          "hibernate",
+          FilterTableImportingTest.XML_TABLE_PER_CONCRETE_CLASS,
+          "java",
+          includedTables,
+          null,
+          null);
 
       /*
        *  Testing context information
@@ -1383,13 +1477,11 @@ public class FilterTableImportingTest {
       assertEquals(8, context.getStatistics().analyzedRecords);
       assertEquals(5, context.getStatistics().orientAddedVertices);
 
-
       /*
        * Test OrientDB Schema
        */
 
-
-      orientGraph = this.context.getOrientDBInstance().open(this.dbName,"admin","admin");
+      orientGraph = this.context.getOrientDBInstance().open(this.dbName, "admin", "admin");
 
       OClass employeeVertexType = orientGraph.getClass("Employee");
       OClass regularEmployeeVertexType = orientGraph.getClass("RegularEmployee");
@@ -1424,7 +1516,6 @@ public class FilterTableImportingTest {
       assertNotNull(projectManagerSuperclass);
       assertEquals("Manager", projectManagerSuperclass.getName());
 
-
       /*
        *  Testing built OrientDB
        */
@@ -1446,9 +1537,9 @@ public class FilterTableImportingTest {
 
       // vertex properties and connections check
 
-      Iterator<OEdge>  edgesIt = null;
-      String[] keys = { "id" };
-      String[] values = { "E001" };
+      Iterator<OEdge> edgesIt = null;
+      String[] keys = {"id"};
+      String[] values = {"E001"};
 
       OVertex v = null;
       OResultSet result = OGraphCommands.getVertices(orientGraph, "Employee", keys, values);
@@ -1562,5 +1653,4 @@ public class FilterTableImportingTest {
       }
     }
   }
-
 }

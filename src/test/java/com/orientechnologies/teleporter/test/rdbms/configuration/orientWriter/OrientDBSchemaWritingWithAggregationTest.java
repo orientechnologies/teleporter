@@ -20,6 +20,8 @@
 
 package com.orientechnologies.teleporter.test.rdbms.configuration.orientWriter;
 
+import static org.junit.Assert.*;
+
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OType;
@@ -35,29 +37,26 @@ import com.orientechnologies.teleporter.nameresolver.OJavaConventionNameResolver
 import com.orientechnologies.teleporter.persistence.handler.OHSQLDBDataTypeHandler;
 import com.orientechnologies.teleporter.util.OFileManager;
 import com.orientechnologies.teleporter.writer.OGraphModelWriter;
-import org.junit.After;
-import org.junit.Before;
-
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.Statement;
-
-import static org.junit.Assert.*;
+import org.junit.After;
+import org.junit.Before;
 
 /**
  * @author Gabriele Ponzi
  * @email gabriele.ponzi--at--gmail.com
  */
-
 public class OrientDBSchemaWritingWithAggregationTest {
 
-  private OER2GraphMapper    mapper;
+  private OER2GraphMapper mapper;
   private OTeleporterContext context;
-  private OGraphModelWriter  modelWriter;
-  private final String config = "src/test/resources/configuration-mapping/aggregation-from2tables-mapping.json";
+  private OGraphModelWriter modelWriter;
+  private final String config =
+      "src/test/resources/configuration-mapping/aggregation-from2tables-mapping.json";
   private ODBQueryEngine dbQueryEngine;
-  private String driver   = "org.hsqldb.jdbc.JDBCDriver";
-  private String jurl     = "jdbc:hsqldb:mem:mydb";
+  private String driver = "org.hsqldb.jdbc.JDBCDriver";
+  private String jurl = "jdbc:hsqldb:mem:mydb";
   private String username = "SA";
   private String password = "";
   private String dbName = "testOrientDB";
@@ -75,7 +74,8 @@ public class OrientDBSchemaWritingWithAggregationTest {
     this.context.setNameResolver(new OJavaConventionNameResolver());
     this.context.setDataTypeHandler(new OHSQLDBDataTypeHandler());
     this.modelWriter = new OGraphModelWriter();
-    this.sourceDBInfo = new OSourceDatabaseInfo("source", this.driver, this.jurl, this.username, this.password);
+    this.sourceDBInfo =
+        new OSourceDatabaseInfo("source", this.driver, this.jurl, this.username, this.password);
   }
 
   @After
@@ -87,14 +87,14 @@ public class OrientDBSchemaWritingWithAggregationTest {
     try {
 
       // Deleting database directory
-      OFileManager.deleteResource(this.outOrientGraphUri.replace("embedded:",""));
+      OFileManager.deleteResource(this.outOrientGraphUri.replace("embedded:", ""));
 
     } catch (Exception e) {
       e.printStackTrace();
     }
   }
 
-  //@Test
+  // @Test
 
   /*
    *  Source DB schema:
@@ -127,17 +127,20 @@ public class OrientDBSchemaWritingWithAggregationTest {
       Class.forName(this.driver);
       connection = DriverManager.getConnection(this.jurl, this.username, this.password);
 
-      String personTableBuilding = "create memory table PERSON (ID varchar(256) not null,"
-          + " NAME varchar(256) not null, SURNAME varchar(256) not null, DEP_ID varchar(256) not null, primary key (ID))";
+      String personTableBuilding =
+          "create memory table PERSON (ID varchar(256) not null,"
+              + " NAME varchar(256) not null, SURNAME varchar(256) not null, DEP_ID varchar(256) not null, primary key (ID))";
       st = connection.createStatement();
       st.execute(personTableBuilding);
 
-      String vatProfileTableBuilding = "create memory table VAT_PROFILE (ID varchar(256),"
-          + " VAT varchar(256) not null, UPDATED_ON date not null, primary key (ID))";
+      String vatProfileTableBuilding =
+          "create memory table VAT_PROFILE (ID varchar(256),"
+              + " VAT varchar(256) not null, UPDATED_ON date not null, primary key (ID))";
       st.execute(vatProfileTableBuilding);
 
-      String departmentTableBuilding = "create memory table DEPARTMENT (ID  varchar(256),"
-          + " NAME varchar(256) not null, LOCATION varchar(256) not null, UPDATED_ON date not null, primary key (ID))";
+      String departmentTableBuilding =
+          "create memory table DEPARTMENT (ID  varchar(256),"
+              + " NAME varchar(256) not null, LOCATION varchar(256) not null, UPDATED_ON date not null, primary key (ID))";
       st.execute(departmentTableBuilding);
 
       ODocument config = OFileManager.buildJsonFromFile(this.config);
@@ -148,12 +151,10 @@ public class OrientDBSchemaWritingWithAggregationTest {
       mapper.buildSourceDatabaseSchema();
       mapper.buildGraphModel(new OJavaConventionNameResolver());
       mapper.applyImportConfiguration();
-      modelWriter.writeModelOnOrient(mapper, new OHSQLDBDataTypeHandler(), this.dbName, this.protocol);
+      modelWriter.writeModelOnOrient(
+          mapper, new OHSQLDBDataTypeHandler(), this.dbName, this.protocol);
 
-      /**
-       *  Testing context information
-       */
-
+      /** Testing context information */
       assertEquals(2, context.getStatistics().totalNumberOfVertexTypes);
       assertEquals(2, context.getStatistics().wroteVertexType);
       assertEquals(1, context.getStatistics().totalNumberOfEdgeTypes);
@@ -161,12 +162,8 @@ public class OrientDBSchemaWritingWithAggregationTest {
       assertEquals(2, context.getStatistics().totalNumberOfIndices);
       assertEquals(2, context.getStatistics().wroteIndexes);
 
-      /**
-       *  Testing built OrientDB schema
-       */
-
-
-      orientGraph = this.context.getOrientDBInstance().open(this.dbName,"admin","admin");
+      /** Testing built OrientDB schema */
+      orientGraph = this.context.getOrientDBInstance().open(this.dbName, "admin", "admin");
 
       OClass personVertexType = orientGraph.getClass("Person");
       OClass departmentVertexType = orientGraph.getClass("Department");
@@ -255,10 +252,14 @@ public class OrientDBSchemaWritingWithAggregationTest {
 
       // Indices check
       assertEquals(true, orientGraph.getMetadata().getIndexManager().existsIndex("Person.pkey"));
-      assertEquals(true, orientGraph.getMetadata().getIndexManager().areIndexed("Person", "extKey1", "extKey2"));
+      assertEquals(
+          true,
+          orientGraph.getMetadata().getIndexManager().areIndexed("Person", "extKey1", "extKey2"));
 
-      assertEquals(true, orientGraph.getMetadata().getIndexManager().existsIndex("Department.pkey"));
-      assertEquals(true, orientGraph.getMetadata().getIndexManager().areIndexed("Department", "id"));
+      assertEquals(
+          true, orientGraph.getMetadata().getIndexManager().existsIndex("Department.pkey"));
+      assertEquals(
+          true, orientGraph.getMetadata().getIndexManager().areIndexed("Department", "id"));
 
     } catch (Exception e) {
       e.printStackTrace();
@@ -276,5 +277,4 @@ public class OrientDBSchemaWritingWithAggregationTest {
       }
     }
   }
-
 }

@@ -20,20 +20,17 @@
 
 package com.orientechnologies.teleporter.test.rdbms.main;
 
-import com.orientechnologies.teleporter.main.OTeleporter;
-
 import static org.junit.Assert.fail;
+
+import com.orientechnologies.teleporter.main.OTeleporter;
 
 /**
  * @author Gabriele Ponzi
  * @email <g.ponzi--at--orientdb.com>
  */
-
 public class TeleporterBasicExecutionTest extends TeleporterInvocationTest {
 
-
-
-  //@Test
+  // @Test
   public void test1() {
 
     boolean jobComplete = false;
@@ -56,7 +53,5 @@ public class TeleporterBasicExecutionTest extends TeleporterInvocationTest {
         }
       }
     }
-
   }
-
 }

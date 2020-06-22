@@ -21,18 +21,16 @@
 package com.orientechnologies.teleporter.persistence.handler;
 
 import com.orientechnologies.orient.core.metadata.schema.OType;
-
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Handler that executes type conversions from Oracle DBMS to the OrientDB types.
- * No Geospatial implemented.
+ * Handler that executes type conversions from Oracle DBMS to the OrientDB types. No Geospatial
+ * implemented.
  *
  * @author Gabriele Ponzi
  * @email <g.ponzi--at--orientdb.com>
  */
-
 public class OOracleDataTypeHandler extends ODBMSDataTypeHandler {
 
   public OOracleDataTypeHandler() {
@@ -58,7 +56,6 @@ public class OOracleDataTypeHandler extends ODBMSDataTypeHandler {
     dbmsType2OrientType.put("nclob", OType.STRING);
     dbmsType2OrientType.put("long", OType.STRING);
 
-
     /*
      * Numeric Types
      * (doc at http://docs.oracle.com/cd/B28359_01/server.111/b28318/datatype.htm#CNCPT313 )
@@ -70,8 +67,6 @@ public class OOracleDataTypeHandler extends ODBMSDataTypeHandler {
     dbmsType2OrientType.put("double", OType.DOUBLE);
     dbmsType2OrientType.put("binary_double", OType.DOUBLE);
 
-
-
     /*
      * Date/Time Types
      * (doc at http://docs.oracle.com/cd/B28359_01/server.111/b28318/datatype.htm#CNCPT413 )
@@ -82,7 +77,6 @@ public class OOracleDataTypeHandler extends ODBMSDataTypeHandler {
     dbmsType2OrientType.put("timestamp with time zone", OType.DATETIME);
     dbmsType2OrientType.put("timestamp with local time zone", OType.DATETIME);
 
-
     /*
      * Binary Data Types
      * (doc at http://docs.oracle.com/cd/B28359_01/server.111/b28318/datatype.htm#CNCPT613 )
@@ -92,7 +86,6 @@ public class OOracleDataTypeHandler extends ODBMSDataTypeHandler {
     dbmsType2OrientType.put("raw", OType.BINARY);
     dbmsType2OrientType.put("long raw", OType.BINARY);
 
-
     /*
      * JSON Type
      * (doc at https://docs.oracle.com/database/121/ADXDB/json.htm#GUID-E6CC0DCF-3D72-41EF-ACA4-B3BF54EE3CA0__CACHFFCE)
@@ -101,7 +94,6 @@ public class OOracleDataTypeHandler extends ODBMSDataTypeHandler {
      * Oracle recommends that you always use an is_json check constraint to ensure that column values are valid JSON instances
      */
 
-
     /*
      * ROWID and UROWID Data Types
      * (doc at http://docs.oracle.com/cd/B28359_01/server.111/b28318/datatype.htm#CNCPT713 )
@@ -109,13 +101,11 @@ public class OOracleDataTypeHandler extends ODBMSDataTypeHandler {
     dbmsType2OrientType.put("rowid", OType.STRING);
     dbmsType2OrientType.put("urowid", OType.STRING);
 
-
     /*
      * ANSI, DB2, and SQL/DS Datatypes
      * (doc at http://docs.oracle.com/cd/B28359_01/server.111/b28318/datatype.htm#CNCPT813)
      */
     // TODO !!!
-
 
     /*
      * XML Type
@@ -123,13 +113,11 @@ public class OOracleDataTypeHandler extends ODBMSDataTypeHandler {
      */
     dbmsType2OrientType.put("xmltype", OType.STRING);
 
-
     /*
      * URI Type
      * (doc at http://docs.oracle.com/cd/B28359_01/server.111/b28318/datatype.htm#CNCPT1856 )
      */
     dbmsType2OrientType.put("uritype", OType.STRING);
-
 
     /*
      * User Defined Types  (Object data types and object views)
@@ -139,5 +127,4 @@ public class OOracleDataTypeHandler extends ODBMSDataTypeHandler {
 
     return dbmsType2OrientType;
   }
-
 }

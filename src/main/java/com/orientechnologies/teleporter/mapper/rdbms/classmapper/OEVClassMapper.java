@@ -22,25 +22,25 @@ package com.orientechnologies.teleporter.mapper.rdbms.classmapper;
 
 import com.orientechnologies.teleporter.model.dbschema.OEntity;
 import com.orientechnologies.teleporter.model.graphmodel.OVertexType;
-
 import java.util.Map;
 
 /**
- * This class is responsible to map 2 classes of objects: OEntity and OVertexType.
- * the following values are mapped:
- * - name of the entity -> name of the vertex type
- * - each attribute of the entity -> correspondent property of the vertex type
- * - each property of the vertex type -> correspondent attribute of the entity
+ * This class is responsible to map 2 classes of objects: OEntity and OVertexType. the following
+ * values are mapped: - name of the entity -> name of the vertex type - each attribute of the entity
+ * -> correspondent property of the vertex type - each property of the vertex type -> correspondent
+ * attribute of the entity
  *
  * @author Gabriele Ponzi
  * @email <g.ponzi--at--orientdb.com>
  */
-
 public class OEVClassMapper extends OEntityClassMapper {
 
   private OVertexType vertexType;
 
-  public OEVClassMapper(OEntity entity, OVertexType vertexType, Map<String, String> attribute2property,
+  public OEVClassMapper(
+      OEntity entity,
+      OVertexType vertexType,
+      Map<String, String> attribute2property,
       Map<String, String> property2attribute) {
     super(entity, attribute2property, property2attribute);
     this.vertexType = vertexType;
@@ -63,25 +63,26 @@ public class OEVClassMapper extends OEntityClassMapper {
 
   @Override
   public boolean equals(Object o) {
-    if (this == o)
-      return true;
-    if (o == null || getClass() != o.getClass())
-      return false;
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
 
     OEVClassMapper that = (OEVClassMapper) o;
 
-    if (!entity.equals(that.entity))
-      return false;
-    if (!vertexType.equals(that.vertexType))
-      return false;
-    if (!attribute2property.equals(that.attribute2property))
-      return false;
+    if (!entity.equals(that.entity)) return false;
+    if (!vertexType.equals(that.vertexType)) return false;
+    if (!attribute2property.equals(that.attribute2property)) return false;
     return property2attribute.equals(that.property2attribute);
   }
 
   @Override
   public String toString() {
-    String s = "{" + "Entity = " + entity.getName() + ", Vertex-Type = " + vertexType.getName() + ", attributes2properties: ";
+    String s =
+        "{"
+            + "Entity = "
+            + entity.getName()
+            + ", Vertex-Type = "
+            + vertexType.getName()
+            + ", attributes2properties: ";
 
     s += "[";
     for (String attribute : this.attribute2property.keySet()) {

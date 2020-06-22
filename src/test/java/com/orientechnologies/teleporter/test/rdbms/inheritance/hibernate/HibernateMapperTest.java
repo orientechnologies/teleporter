@@ -20,6 +20,8 @@
 
 package com.orientechnologies.teleporter.test.rdbms.inheritance.hibernate;
 
+import static org.junit.Assert.*;
+
 import com.orientechnologies.teleporter.context.OTeleporterContext;
 import com.orientechnologies.teleporter.context.OTeleporterMessageHandler;
 import com.orientechnologies.teleporter.importengine.rdbms.dbengine.ODBQueryEngine;
@@ -32,37 +34,36 @@ import com.orientechnologies.teleporter.model.dbschema.OSourceDatabaseInfo;
 import com.orientechnologies.teleporter.model.graphmodel.OVertexType;
 import com.orientechnologies.teleporter.nameresolver.OJavaConventionNameResolver;
 import com.orientechnologies.teleporter.persistence.handler.OHSQLDBDataTypeHandler;
-import org.junit.Assert;
-import org.junit.Before;
-
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.Statement;
 import java.util.Iterator;
-
-import static org.junit.Assert.*;
+import org.junit.Assert;
+import org.junit.Before;
 
 /**
  * @author Gabriele Ponzi
  * @email <g.ponzi--at--orientdb.com>
  */
-
 public class HibernateMapperTest {
 
-  private OER2GraphMapper    mapper;
+  private OER2GraphMapper mapper;
   private OTeleporterContext context;
-  private ODBQueryEngine     dbQueryEngine;
-  private String driver   = "org.hsqldb.jdbc.JDBCDriver";
-  private String jurl     = "jdbc:hsqldb:mem:mydb";
+  private ODBQueryEngine dbQueryEngine;
+  private String driver = "org.hsqldb.jdbc.JDBCDriver";
+  private String jurl = "jdbc:hsqldb:mem:mydb";
   private String username = "SA";
   private String password = "";
   private OSourceDatabaseInfo sourceDBInfo;
-  private final static String XML_TABLE_PER_CLASS          = "src/test/resources/inheritance/hibernate/tablePerClassHierarchyInheritanceTest.xml";
-  private final static String XML_TABLE_PER_SUBCLASS1      = "src/test/resources/inheritance/hibernate/tablePerSubclassInheritanceTest1.xml";
-  private final static String XML_TABLE_PER_SUBCLASS2      = "src/test/resources/inheritance/hibernate/tablePerSubclassInheritanceTest2.xml";
-  private final static String XML_TABLE_PER_CONCRETE_CLASS = "src/test/resources/inheritance/hibernate/tablePerConcreteClassInheritanceTest.xml";
+  private static final String XML_TABLE_PER_CLASS =
+      "src/test/resources/inheritance/hibernate/tablePerClassHierarchyInheritanceTest.xml";
+  private static final String XML_TABLE_PER_SUBCLASS1 =
+      "src/test/resources/inheritance/hibernate/tablePerSubclassInheritanceTest1.xml";
+  private static final String XML_TABLE_PER_SUBCLASS2 =
+      "src/test/resources/inheritance/hibernate/tablePerSubclassInheritanceTest2.xml";
+  private static final String XML_TABLE_PER_CONCRETE_CLASS =
+      "src/test/resources/inheritance/hibernate/tablePerConcreteClassInheritanceTest.xml";
   private String outParentDirectory = "embedded:target/";
-
 
   @Before
   public void init() {
@@ -72,10 +73,11 @@ public class HibernateMapperTest {
     this.context.setMessageHandler(new OTeleporterMessageHandler(0));
     this.context.setNameResolver(new OJavaConventionNameResolver());
     this.context.setDataTypeHandler(new OHSQLDBDataTypeHandler());
-    this.sourceDBInfo = new OSourceDatabaseInfo("source", this.driver, this.jurl, this.username, this.password);
+    this.sourceDBInfo =
+        new OSourceDatabaseInfo("source", this.driver, this.jurl, this.username, this.password);
   }
 
-  //@Test
+  // @Test
 
   /*
    * Table per Class Hierarchy Inheritance (<subclass> tag)
@@ -92,20 +94,23 @@ public class HibernateMapperTest {
       Class.forName(this.driver);
       connection = DriverManager.getConnection(this.jurl, this.username, this.password);
 
-      String residence = "create memory table RESIDENCE(ID varchar(256) not null, CITY varchar(256), COUNTRY varchar(256), primary key (ID))";
+      String residence =
+          "create memory table RESIDENCE(ID varchar(256) not null, CITY varchar(256), COUNTRY varchar(256), primary key (ID))";
       st = connection.createStatement();
       st.execute(residence);
 
-      String employeeTableBuilding = "create memory table EMPLOYEE (ID varchar(256) not null,"
-          + " TYPE varchar(256), NAME varchar(256), SALARY decimal(10,2), BONUS decimal(10,0), "
-          + "PAY_PER_HOUR decimal(10,2), CONTRACT_DURATION varchar(256), RESIDENCE varchar(256),"
-          + "primary key (id), foreign key (RESIDENCE) references RESIDENCE(ID))";
+      String employeeTableBuilding =
+          "create memory table EMPLOYEE (ID varchar(256) not null,"
+              + " TYPE varchar(256), NAME varchar(256), SALARY decimal(10,2), BONUS decimal(10,0), "
+              + "PAY_PER_HOUR decimal(10,2), CONTRACT_DURATION varchar(256), RESIDENCE varchar(256),"
+              + "primary key (id), foreign key (RESIDENCE) references RESIDENCE(ID))";
       st.execute(employeeTableBuilding);
 
-      this.mapper = new OHibernate2GraphMapper(this.sourceDBInfo, HibernateMapperTest.XML_TABLE_PER_CLASS, null, null, null);
+      this.mapper =
+          new OHibernate2GraphMapper(
+              this.sourceDBInfo, HibernateMapperTest.XML_TABLE_PER_CLASS, null, null, null);
       mapper.buildSourceDatabaseSchema();
       mapper.buildGraphModel(new OJavaConventionNameResolver());
-
 
       /*
        *  Testing context information
@@ -122,12 +127,14 @@ public class HibernateMapperTest {
       assertEquals(1, context.getStatistics().builtModelEdgeTypes);
 
       /*
-       *  Testing built source db schema 
+       *  Testing built source db schema
        */
 
       OEntity employeeEntity = mapper.getDataBaseSchema().getEntityByName("EMPLOYEE");
-      OEntity regularEmployeeEntity = mapper.getDataBaseSchema().getEntityByNameIgnoreCase("REGULAR_EMPLOYEE");
-      OEntity contractEmployeeEntity = mapper.getDataBaseSchema().getEntityByNameIgnoreCase("CONTRACT_EMPLOYEE");
+      OEntity regularEmployeeEntity =
+          mapper.getDataBaseSchema().getEntityByNameIgnoreCase("REGULAR_EMPLOYEE");
+      OEntity contractEmployeeEntity =
+          mapper.getDataBaseSchema().getEntityByNameIgnoreCase("CONTRACT_EMPLOYEE");
       OEntity residenceEntity = mapper.getDataBaseSchema().getEntityByNameIgnoreCase("RESIDENCE");
 
       // entities check
@@ -145,19 +152,23 @@ public class HibernateMapperTest {
       assertEquals("ID", employeeEntity.getAttributeByName("ID").getName());
       assertEquals("VARCHAR", employeeEntity.getAttributeByName("ID").getDataType());
       assertEquals(1, employeeEntity.getAttributeByName("ID").getOrdinalPosition());
-      assertEquals("EMPLOYEE", employeeEntity.getAttributeByName("ID").getBelongingEntity().getName());
+      assertEquals(
+          "EMPLOYEE", employeeEntity.getAttributeByName("ID").getBelongingEntity().getName());
 
       assertNotNull(employeeEntity.getAttributeByName("NAME"));
       assertEquals("NAME", employeeEntity.getAttributeByName("NAME").getName());
       assertEquals("VARCHAR", employeeEntity.getAttributeByName("NAME").getDataType());
       assertEquals(2, employeeEntity.getAttributeByName("NAME").getOrdinalPosition());
-      assertEquals("EMPLOYEE", employeeEntity.getAttributeByName("NAME").getBelongingEntity().getName());
+      assertEquals(
+          "EMPLOYEE", employeeEntity.getAttributeByName("NAME").getBelongingEntity().getName());
 
       assertNotNull(employeeEntity.getAttributeByName("RESIDENCE"));
       assertEquals("RESIDENCE", employeeEntity.getAttributeByName("RESIDENCE").getName());
       assertEquals("VARCHAR", employeeEntity.getAttributeByName("RESIDENCE").getDataType());
       assertEquals(3, employeeEntity.getAttributeByName("RESIDENCE").getOrdinalPosition());
-      assertEquals("EMPLOYEE", employeeEntity.getAttributeByName("RESIDENCE").getBelongingEntity().getName());
+      assertEquals(
+          "EMPLOYEE",
+          employeeEntity.getAttributeByName("RESIDENCE").getBelongingEntity().getName());
 
       assertEquals(2, regularEmployeeEntity.getAttributes().size());
 
@@ -165,28 +176,45 @@ public class HibernateMapperTest {
       assertEquals("SALARY", regularEmployeeEntity.getAttributeByName("SALARY").getName());
       assertEquals("DECIMAL", regularEmployeeEntity.getAttributeByName("SALARY").getDataType());
       assertEquals(1, regularEmployeeEntity.getAttributeByName("SALARY").getOrdinalPosition());
-      assertEquals("Regular_Employee", regularEmployeeEntity.getAttributeByName("SALARY").getBelongingEntity().getName());
+      assertEquals(
+          "Regular_Employee",
+          regularEmployeeEntity.getAttributeByName("SALARY").getBelongingEntity().getName());
 
       assertNotNull(regularEmployeeEntity.getAttributeByName("BONUS"));
       assertEquals("BONUS", regularEmployeeEntity.getAttributeByName("BONUS").getName());
       assertEquals("DECIMAL", regularEmployeeEntity.getAttributeByName("BONUS").getDataType());
       assertEquals(2, regularEmployeeEntity.getAttributeByName("BONUS").getOrdinalPosition());
-      assertEquals("Regular_Employee", regularEmployeeEntity.getAttributeByName("BONUS").getBelongingEntity().getName());
+      assertEquals(
+          "Regular_Employee",
+          regularEmployeeEntity.getAttributeByName("BONUS").getBelongingEntity().getName());
 
       assertEquals(2, contractEmployeeEntity.getAttributes().size());
 
       assertNotNull(contractEmployeeEntity.getAttributeByName("PAY_PER_HOUR"));
-      assertEquals("PAY_PER_HOUR", contractEmployeeEntity.getAttributeByName("PAY_PER_HOUR").getName());
-      assertEquals("DECIMAL", contractEmployeeEntity.getAttributeByName("PAY_PER_HOUR").getDataType());
-      assertEquals(1, contractEmployeeEntity.getAttributeByName("PAY_PER_HOUR").getOrdinalPosition());
-      assertEquals("Contract_Employee", contractEmployeeEntity.getAttributeByName("PAY_PER_HOUR").getBelongingEntity().getName());
+      assertEquals(
+          "PAY_PER_HOUR", contractEmployeeEntity.getAttributeByName("PAY_PER_HOUR").getName());
+      assertEquals(
+          "DECIMAL", contractEmployeeEntity.getAttributeByName("PAY_PER_HOUR").getDataType());
+      assertEquals(
+          1, contractEmployeeEntity.getAttributeByName("PAY_PER_HOUR").getOrdinalPosition());
+      assertEquals(
+          "Contract_Employee",
+          contractEmployeeEntity.getAttributeByName("PAY_PER_HOUR").getBelongingEntity().getName());
 
       assertNotNull(contractEmployeeEntity.getAttributeByName("CONTRACT_DURATION"));
-      assertEquals("CONTRACT_DURATION", contractEmployeeEntity.getAttributeByName("CONTRACT_DURATION").getName());
-      assertEquals("VARCHAR", contractEmployeeEntity.getAttributeByName("CONTRACT_DURATION").getDataType());
-      assertEquals(2, contractEmployeeEntity.getAttributeByName("CONTRACT_DURATION").getOrdinalPosition());
-      assertEquals("Contract_Employee",
-          contractEmployeeEntity.getAttributeByName("CONTRACT_DURATION").getBelongingEntity().getName());
+      assertEquals(
+          "CONTRACT_DURATION",
+          contractEmployeeEntity.getAttributeByName("CONTRACT_DURATION").getName());
+      assertEquals(
+          "VARCHAR", contractEmployeeEntity.getAttributeByName("CONTRACT_DURATION").getDataType());
+      assertEquals(
+          2, contractEmployeeEntity.getAttributeByName("CONTRACT_DURATION").getOrdinalPosition());
+      assertEquals(
+          "Contract_Employee",
+          contractEmployeeEntity
+              .getAttributeByName("CONTRACT_DURATION")
+              .getBelongingEntity()
+              .getName());
 
       // inherited attributes check
       assertEquals(0, employeeEntity.getInheritedAttributes().size());
@@ -195,53 +223,106 @@ public class HibernateMapperTest {
 
       assertNotNull(regularEmployeeEntity.getInheritedAttributeByName("ID"));
       assertEquals("ID", regularEmployeeEntity.getInheritedAttributeByName("ID").getName());
-      assertEquals("VARCHAR", regularEmployeeEntity.getInheritedAttributeByName("ID").getDataType());
+      assertEquals(
+          "VARCHAR", regularEmployeeEntity.getInheritedAttributeByName("ID").getDataType());
       assertEquals(1, regularEmployeeEntity.getInheritedAttributeByName("ID").getOrdinalPosition());
-      assertEquals("EMPLOYEE", regularEmployeeEntity.getInheritedAttributeByName("ID").getBelongingEntity().getName());
+      assertEquals(
+          "EMPLOYEE",
+          regularEmployeeEntity.getInheritedAttributeByName("ID").getBelongingEntity().getName());
 
       assertNotNull(regularEmployeeEntity.getInheritedAttributeByName("NAME"));
       assertEquals("NAME", regularEmployeeEntity.getInheritedAttributeByName("NAME").getName());
-      assertEquals("VARCHAR", regularEmployeeEntity.getInheritedAttributeByName("NAME").getDataType());
-      assertEquals(2, regularEmployeeEntity.getInheritedAttributeByName("NAME").getOrdinalPosition());
-      assertEquals("EMPLOYEE", regularEmployeeEntity.getInheritedAttributeByName("NAME").getBelongingEntity().getName());
+      assertEquals(
+          "VARCHAR", regularEmployeeEntity.getInheritedAttributeByName("NAME").getDataType());
+      assertEquals(
+          2, regularEmployeeEntity.getInheritedAttributeByName("NAME").getOrdinalPosition());
+      assertEquals(
+          "EMPLOYEE",
+          regularEmployeeEntity.getInheritedAttributeByName("NAME").getBelongingEntity().getName());
 
       assertNotNull(regularEmployeeEntity.getInheritedAttributeByName("RESIDENCE"));
-      assertEquals("RESIDENCE", regularEmployeeEntity.getInheritedAttributeByName("RESIDENCE").getName());
-      assertEquals("VARCHAR", regularEmployeeEntity.getInheritedAttributeByName("RESIDENCE").getDataType());
-      assertEquals(3, regularEmployeeEntity.getInheritedAttributeByName("RESIDENCE").getOrdinalPosition());
-      assertEquals("EMPLOYEE", regularEmployeeEntity.getInheritedAttributeByName("RESIDENCE").getBelongingEntity().getName());
+      assertEquals(
+          "RESIDENCE", regularEmployeeEntity.getInheritedAttributeByName("RESIDENCE").getName());
+      assertEquals(
+          "VARCHAR", regularEmployeeEntity.getInheritedAttributeByName("RESIDENCE").getDataType());
+      assertEquals(
+          3, regularEmployeeEntity.getInheritedAttributeByName("RESIDENCE").getOrdinalPosition());
+      assertEquals(
+          "EMPLOYEE",
+          regularEmployeeEntity
+              .getInheritedAttributeByName("RESIDENCE")
+              .getBelongingEntity()
+              .getName());
 
       assertEquals(3, contractEmployeeEntity.getInheritedAttributes().size());
 
       assertNotNull(contractEmployeeEntity.getInheritedAttributeByName("ID"));
       assertEquals("ID", contractEmployeeEntity.getInheritedAttributeByName("ID").getName());
-      assertEquals("VARCHAR", contractEmployeeEntity.getInheritedAttributeByName("ID").getDataType());
-      assertEquals(1, contractEmployeeEntity.getInheritedAttributeByName("ID").getOrdinalPosition());
-      assertEquals("EMPLOYEE", contractEmployeeEntity.getInheritedAttributeByName("ID").getBelongingEntity().getName());
+      assertEquals(
+          "VARCHAR", contractEmployeeEntity.getInheritedAttributeByName("ID").getDataType());
+      assertEquals(
+          1, contractEmployeeEntity.getInheritedAttributeByName("ID").getOrdinalPosition());
+      assertEquals(
+          "EMPLOYEE",
+          contractEmployeeEntity.getInheritedAttributeByName("ID").getBelongingEntity().getName());
 
       assertNotNull(contractEmployeeEntity.getInheritedAttributeByName("NAME"));
       assertEquals("NAME", contractEmployeeEntity.getInheritedAttributeByName("NAME").getName());
-      assertEquals("VARCHAR", contractEmployeeEntity.getInheritedAttributeByName("NAME").getDataType());
-      assertEquals(2, contractEmployeeEntity.getInheritedAttributeByName("NAME").getOrdinalPosition());
-      assertEquals("EMPLOYEE", contractEmployeeEntity.getInheritedAttributeByName("NAME").getBelongingEntity().getName());
+      assertEquals(
+          "VARCHAR", contractEmployeeEntity.getInheritedAttributeByName("NAME").getDataType());
+      assertEquals(
+          2, contractEmployeeEntity.getInheritedAttributeByName("NAME").getOrdinalPosition());
+      assertEquals(
+          "EMPLOYEE",
+          contractEmployeeEntity
+              .getInheritedAttributeByName("NAME")
+              .getBelongingEntity()
+              .getName());
 
       assertNotNull(contractEmployeeEntity.getInheritedAttributeByName("RESIDENCE"));
-      assertEquals("RESIDENCE", contractEmployeeEntity.getInheritedAttributeByName("RESIDENCE").getName());
-      assertEquals("VARCHAR", contractEmployeeEntity.getInheritedAttributeByName("RESIDENCE").getDataType());
-      assertEquals(3, contractEmployeeEntity.getInheritedAttributeByName("RESIDENCE").getOrdinalPosition());
-      assertEquals("EMPLOYEE", contractEmployeeEntity.getInheritedAttributeByName("RESIDENCE").getBelongingEntity().getName());
+      assertEquals(
+          "RESIDENCE", contractEmployeeEntity.getInheritedAttributeByName("RESIDENCE").getName());
+      assertEquals(
+          "VARCHAR", contractEmployeeEntity.getInheritedAttributeByName("RESIDENCE").getDataType());
+      assertEquals(
+          3, contractEmployeeEntity.getInheritedAttributeByName("RESIDENCE").getOrdinalPosition());
+      assertEquals(
+          "EMPLOYEE",
+          contractEmployeeEntity
+              .getInheritedAttributeByName("RESIDENCE")
+              .getBelongingEntity()
+              .getName());
 
       // primary key check
       assertEquals(1, regularEmployeeEntity.getPrimaryKey().getInvolvedAttributes().size());
-      assertEquals("ID", regularEmployeeEntity.getPrimaryKey().getInvolvedAttributes().get(0).getName());
-      assertEquals("VARCHAR", regularEmployeeEntity.getPrimaryKey().getInvolvedAttributes().get(0).getDataType());
-      assertEquals("EMPLOYEE", regularEmployeeEntity.getPrimaryKey().getInvolvedAttributes().get(0).getBelongingEntity().getName());
+      assertEquals(
+          "ID", regularEmployeeEntity.getPrimaryKey().getInvolvedAttributes().get(0).getName());
+      assertEquals(
+          "VARCHAR",
+          regularEmployeeEntity.getPrimaryKey().getInvolvedAttributes().get(0).getDataType());
+      assertEquals(
+          "EMPLOYEE",
+          regularEmployeeEntity
+              .getPrimaryKey()
+              .getInvolvedAttributes()
+              .get(0)
+              .getBelongingEntity()
+              .getName());
 
       assertEquals(1, contractEmployeeEntity.getPrimaryKey().getInvolvedAttributes().size());
-      assertEquals("ID", contractEmployeeEntity.getPrimaryKey().getInvolvedAttributes().get(0).getName());
-      assertEquals("VARCHAR", contractEmployeeEntity.getPrimaryKey().getInvolvedAttributes().get(0).getDataType());
-      assertEquals("EMPLOYEE",
-          contractEmployeeEntity.getPrimaryKey().getInvolvedAttributes().get(0).getBelongingEntity().getName());
+      assertEquals(
+          "ID", contractEmployeeEntity.getPrimaryKey().getInvolvedAttributes().get(0).getName());
+      assertEquals(
+          "VARCHAR",
+          contractEmployeeEntity.getPrimaryKey().getInvolvedAttributes().get(0).getDataType());
+      assertEquals(
+          "EMPLOYEE",
+          contractEmployeeEntity
+              .getPrimaryKey()
+              .getInvolvedAttributes()
+              .get(0)
+              .getBelongingEntity()
+              .getName());
 
       // relationship, primary and foreign key check
       assertEquals(0, regularEmployeeEntity.getOutCanonicalRelationships().size());
@@ -258,7 +339,8 @@ public class HibernateMapperTest {
       assertEquals(1, employeeEntity.getForeignKeys().size());
       assertEquals(0, residenceEntity.getForeignKeys().size());
 
-      Iterator<OCanonicalRelationship> itEmp = employeeEntity.getOutCanonicalRelationships().iterator();
+      Iterator<OCanonicalRelationship> itEmp =
+          employeeEntity.getOutCanonicalRelationships().iterator();
       OCanonicalRelationship currentEmpRel = itEmp.next();
       assertEquals("RESIDENCE", currentEmpRel.getParentEntity().getName());
       assertEquals("EMPLOYEE", currentEmpRel.getForeignEntity().getName());
@@ -266,7 +348,8 @@ public class HibernateMapperTest {
       assertEquals(employeeEntity.getForeignKeys().get(0), currentEmpRel.getForeignKey());
       assertFalse(itEmp.hasNext());
 
-      Iterator<OCanonicalRelationship> itRes = residenceEntity.getInCanonicalRelationships().iterator();
+      Iterator<OCanonicalRelationship> itRes =
+          residenceEntity.getInCanonicalRelationships().iterator();
       OCanonicalRelationship currentResRel = itRes.next();
       assertEquals(currentEmpRel, currentResRel);
 
@@ -276,8 +359,10 @@ public class HibernateMapperTest {
       assertEquals(0, employeeEntity.getInheritedOutCanonicalRelationships().size());
       assertEquals(0, residenceEntity.getInheritedOutCanonicalRelationships().size());
 
-      Iterator<OCanonicalRelationship> itRegEmp = regularEmployeeEntity.getInheritedOutCanonicalRelationships().iterator();
-      Iterator<OCanonicalRelationship> itContEmp = contractEmployeeEntity.getInheritedOutCanonicalRelationships().iterator();
+      Iterator<OCanonicalRelationship> itRegEmp =
+          regularEmployeeEntity.getInheritedOutCanonicalRelationships().iterator();
+      Iterator<OCanonicalRelationship> itContEmp =
+          contractEmployeeEntity.getInheritedOutCanonicalRelationships().iterator();
       OCanonicalRelationship currentRegEmpRel = itRegEmp.next();
       OCanonicalRelationship currentContEmpRel = itContEmp.next();
       assertEquals("RESIDENCE", currentRegEmpRel.getParentEntity().getName());
@@ -331,17 +416,20 @@ public class HibernateMapperTest {
 
       assertEquals(3, hierarchicalBag.getEntityName2discriminatorValue().size());
       assertEquals("emp", hierarchicalBag.getEntityName2discriminatorValue().get("EMPLOYEE"));
-      assertEquals("reg_emp", hierarchicalBag.getEntityName2discriminatorValue().get("Regular_Employee"));
-      assertEquals("cont_emp", hierarchicalBag.getEntityName2discriminatorValue().get("Contract_Employee"));
-
+      assertEquals(
+          "reg_emp", hierarchicalBag.getEntityName2discriminatorValue().get("Regular_Employee"));
+      assertEquals(
+          "cont_emp", hierarchicalBag.getEntityName2discriminatorValue().get("Contract_Employee"));
 
       /*
        *  Testing built graph model
        */
 
       OVertexType employeeVertexType = mapper.getGraphModel().getVertexTypeByName("Employee");
-      OVertexType regularEmployeeVertexType = mapper.getGraphModel().getVertexTypeByName("RegularEmployee");
-      OVertexType contractEmployeeVertexType = mapper.getGraphModel().getVertexTypeByName("ContractEmployee");
+      OVertexType regularEmployeeVertexType =
+          mapper.getGraphModel().getVertexTypeByName("RegularEmployee");
+      OVertexType contractEmployeeVertexType =
+          mapper.getGraphModel().getVertexTypeByName("ContractEmployee");
       OVertexType residenceVertexType = mapper.getGraphModel().getVertexTypeByName("Residence");
 
       // vertices check
@@ -376,29 +464,42 @@ public class HibernateMapperTest {
 
       assertNotNull(regularEmployeeVertexType.getPropertyByName("salary"));
       assertEquals("salary", regularEmployeeVertexType.getPropertyByName("salary").getName());
-      assertEquals("DECIMAL", regularEmployeeVertexType.getPropertyByName("salary").getOriginalType());
+      assertEquals(
+          "DECIMAL", regularEmployeeVertexType.getPropertyByName("salary").getOriginalType());
       assertEquals(1, regularEmployeeVertexType.getPropertyByName("salary").getOrdinalPosition());
       assertEquals(false, regularEmployeeVertexType.getPropertyByName("salary").isFromPrimaryKey());
 
       assertNotNull(regularEmployeeVertexType.getPropertyByName("bonus"));
       assertEquals("bonus", regularEmployeeVertexType.getPropertyByName("bonus").getName());
-      assertEquals("DECIMAL", regularEmployeeVertexType.getPropertyByName("bonus").getOriginalType());
+      assertEquals(
+          "DECIMAL", regularEmployeeVertexType.getPropertyByName("bonus").getOriginalType());
       assertEquals(2, regularEmployeeVertexType.getPropertyByName("bonus").getOrdinalPosition());
       assertEquals(false, regularEmployeeVertexType.getPropertyByName("bonus").isFromPrimaryKey());
 
       assertEquals(2, contractEmployeeVertexType.getProperties().size());
 
       assertNotNull(contractEmployeeVertexType.getPropertyByName("payPerHour"));
-      assertEquals("payPerHour", contractEmployeeVertexType.getPropertyByName("payPerHour").getName());
-      assertEquals("DECIMAL", contractEmployeeVertexType.getPropertyByName("payPerHour").getOriginalType());
-      assertEquals(1, contractEmployeeVertexType.getPropertyByName("payPerHour").getOrdinalPosition());
-      assertEquals(false, contractEmployeeVertexType.getPropertyByName("payPerHour").isFromPrimaryKey());
+      assertEquals(
+          "payPerHour", contractEmployeeVertexType.getPropertyByName("payPerHour").getName());
+      assertEquals(
+          "DECIMAL", contractEmployeeVertexType.getPropertyByName("payPerHour").getOriginalType());
+      assertEquals(
+          1, contractEmployeeVertexType.getPropertyByName("payPerHour").getOrdinalPosition());
+      assertEquals(
+          false, contractEmployeeVertexType.getPropertyByName("payPerHour").isFromPrimaryKey());
 
       assertNotNull(contractEmployeeVertexType.getPropertyByName("contractDuration"));
-      assertEquals("contractDuration", contractEmployeeVertexType.getPropertyByName("contractDuration").getName());
-      assertEquals("VARCHAR", contractEmployeeVertexType.getPropertyByName("contractDuration").getOriginalType());
-      assertEquals(2, contractEmployeeVertexType.getPropertyByName("contractDuration").getOrdinalPosition());
-      assertEquals(false, contractEmployeeVertexType.getPropertyByName("contractDuration").isFromPrimaryKey());
+      assertEquals(
+          "contractDuration",
+          contractEmployeeVertexType.getPropertyByName("contractDuration").getName());
+      assertEquals(
+          "VARCHAR",
+          contractEmployeeVertexType.getPropertyByName("contractDuration").getOriginalType());
+      assertEquals(
+          2, contractEmployeeVertexType.getPropertyByName("contractDuration").getOrdinalPosition());
+      assertEquals(
+          false,
+          contractEmployeeVertexType.getPropertyByName("contractDuration").isFromPrimaryKey());
 
       assertEquals(3, residenceVertexType.getProperties().size());
 
@@ -427,41 +528,70 @@ public class HibernateMapperTest {
 
       assertNotNull(regularEmployeeVertexType.getInheritedPropertyByName("id"));
       assertEquals("id", regularEmployeeVertexType.getInheritedPropertyByName("id").getName());
-      assertEquals("VARCHAR", regularEmployeeVertexType.getInheritedPropertyByName("id").getOriginalType());
-      assertEquals(1, regularEmployeeVertexType.getInheritedPropertyByName("id").getOrdinalPosition());
-      assertEquals(true, regularEmployeeVertexType.getInheritedPropertyByName("id").isFromPrimaryKey());
+      assertEquals(
+          "VARCHAR", regularEmployeeVertexType.getInheritedPropertyByName("id").getOriginalType());
+      assertEquals(
+          1, regularEmployeeVertexType.getInheritedPropertyByName("id").getOrdinalPosition());
+      assertEquals(
+          true, regularEmployeeVertexType.getInheritedPropertyByName("id").isFromPrimaryKey());
 
       assertNotNull(regularEmployeeVertexType.getInheritedPropertyByName("name"));
       assertEquals("name", regularEmployeeVertexType.getInheritedPropertyByName("name").getName());
-      assertEquals("VARCHAR", regularEmployeeVertexType.getInheritedPropertyByName("name").getOriginalType());
-      assertEquals(2, regularEmployeeVertexType.getInheritedPropertyByName("name").getOrdinalPosition());
-      assertEquals(false, regularEmployeeVertexType.getInheritedPropertyByName("name").isFromPrimaryKey());
+      assertEquals(
+          "VARCHAR",
+          regularEmployeeVertexType.getInheritedPropertyByName("name").getOriginalType());
+      assertEquals(
+          2, regularEmployeeVertexType.getInheritedPropertyByName("name").getOrdinalPosition());
+      assertEquals(
+          false, regularEmployeeVertexType.getInheritedPropertyByName("name").isFromPrimaryKey());
 
       assertNotNull(regularEmployeeVertexType.getInheritedPropertyByName("residence"));
-      assertEquals("residence", regularEmployeeVertexType.getInheritedPropertyByName("residence").getName());
-      assertEquals("VARCHAR", regularEmployeeVertexType.getInheritedPropertyByName("residence").getOriginalType());
-      assertEquals(3, regularEmployeeVertexType.getInheritedPropertyByName("residence").getOrdinalPosition());
-      assertEquals(false, regularEmployeeVertexType.getInheritedPropertyByName("residence").isFromPrimaryKey());
+      assertEquals(
+          "residence", regularEmployeeVertexType.getInheritedPropertyByName("residence").getName());
+      assertEquals(
+          "VARCHAR",
+          regularEmployeeVertexType.getInheritedPropertyByName("residence").getOriginalType());
+      assertEquals(
+          3,
+          regularEmployeeVertexType.getInheritedPropertyByName("residence").getOrdinalPosition());
+      assertEquals(
+          false,
+          regularEmployeeVertexType.getInheritedPropertyByName("residence").isFromPrimaryKey());
 
       assertEquals(3, contractEmployeeVertexType.getInheritedProperties().size());
 
       assertNotNull(contractEmployeeVertexType.getInheritedPropertyByName("id"));
       assertEquals("id", contractEmployeeVertexType.getInheritedPropertyByName("id").getName());
-      assertEquals("VARCHAR", contractEmployeeVertexType.getInheritedPropertyByName("id").getOriginalType());
-      assertEquals(1, contractEmployeeVertexType.getInheritedPropertyByName("id").getOrdinalPosition());
-      assertEquals(true, contractEmployeeVertexType.getInheritedPropertyByName("id").isFromPrimaryKey());
+      assertEquals(
+          "VARCHAR", contractEmployeeVertexType.getInheritedPropertyByName("id").getOriginalType());
+      assertEquals(
+          1, contractEmployeeVertexType.getInheritedPropertyByName("id").getOrdinalPosition());
+      assertEquals(
+          true, contractEmployeeVertexType.getInheritedPropertyByName("id").isFromPrimaryKey());
 
       assertNotNull(contractEmployeeVertexType.getInheritedPropertyByName("name"));
       assertEquals("name", contractEmployeeVertexType.getInheritedPropertyByName("name").getName());
-      assertEquals("VARCHAR", contractEmployeeVertexType.getInheritedPropertyByName("name").getOriginalType());
-      assertEquals(2, contractEmployeeVertexType.getInheritedPropertyByName("name").getOrdinalPosition());
-      assertEquals(false, contractEmployeeVertexType.getInheritedPropertyByName("name").isFromPrimaryKey());
+      assertEquals(
+          "VARCHAR",
+          contractEmployeeVertexType.getInheritedPropertyByName("name").getOriginalType());
+      assertEquals(
+          2, contractEmployeeVertexType.getInheritedPropertyByName("name").getOrdinalPosition());
+      assertEquals(
+          false, contractEmployeeVertexType.getInheritedPropertyByName("name").isFromPrimaryKey());
 
       assertNotNull(contractEmployeeVertexType.getInheritedPropertyByName("residence"));
-      assertEquals("residence", contractEmployeeVertexType.getInheritedPropertyByName("residence").getName());
-      assertEquals("VARCHAR", contractEmployeeVertexType.getInheritedPropertyByName("residence").getOriginalType());
-      assertEquals(3, contractEmployeeVertexType.getInheritedPropertyByName("residence").getOrdinalPosition());
-      assertEquals(false, contractEmployeeVertexType.getInheritedPropertyByName("residence").isFromPrimaryKey());
+      assertEquals(
+          "residence",
+          contractEmployeeVertexType.getInheritedPropertyByName("residence").getName());
+      assertEquals(
+          "VARCHAR",
+          contractEmployeeVertexType.getInheritedPropertyByName("residence").getOriginalType());
+      assertEquals(
+          3,
+          contractEmployeeVertexType.getInheritedPropertyByName("residence").getOrdinalPosition());
+      assertEquals(
+          false,
+          contractEmployeeVertexType.getInheritedPropertyByName("residence").isFromPrimaryKey());
 
       assertEquals(0, residenceVertexType.getInheritedProperties().size());
 
@@ -507,7 +637,7 @@ public class HibernateMapperTest {
     }
   }
 
-  //@Test
+  // @Test
 
   /*
    * Table per Subclass Inheritance (<joined-subclass> tag)
@@ -524,26 +654,31 @@ public class HibernateMapperTest {
       Class.forName("org.hsqldb.jdbc.JDBCDriver");
       connection = DriverManager.getConnection(this.jurl, this.username, this.password);
 
-      String residence = "create memory table RESIDENCE(ID varchar(256) not null, CITY varchar(256), COUNTRY varchar(256), primary key (ID))";
+      String residence =
+          "create memory table RESIDENCE(ID varchar(256) not null, CITY varchar(256), COUNTRY varchar(256), primary key (ID))";
       st = connection.createStatement();
       st.execute(residence);
 
-      String employeeTableBuilding = "create memory table EMPLOYEE (ID varchar(256) not null,"
-          + " NAME varchar(256), RESIDENCE varchar(256), primary key (ID), foreign key (RESIDENCE) references RESIDENCE(ID))";
+      String employeeTableBuilding =
+          "create memory table EMPLOYEE (ID varchar(256) not null,"
+              + " NAME varchar(256), RESIDENCE varchar(256), primary key (ID), foreign key (RESIDENCE) references RESIDENCE(ID))";
       st.execute(employeeTableBuilding);
 
-      String regularEmployeeTableBuilding = "create memory table REGULAR_EMPLOYEE (EID varchar(256) not null, "
-          + "SALARY decimal(10,2), BONUS decimal(10,0), primary key (EID), foreign key (EID) references EMPLOYEE(ID))";
+      String regularEmployeeTableBuilding =
+          "create memory table REGULAR_EMPLOYEE (EID varchar(256) not null, "
+              + "SALARY decimal(10,2), BONUS decimal(10,0), primary key (EID), foreign key (EID) references EMPLOYEE(ID))";
       st.execute(regularEmployeeTableBuilding);
 
-      String contractEmployeeTableBuilding = "create memory table CONTRACT_EMPLOYEE (EID varchar(256) not null, "
-          + "PAY_PER_HOUR decimal(10,2), CONTRACT_DURATION varchar(256), primary key (EID), foreign key (EID) references EMPLOYEE(ID))";
+      String contractEmployeeTableBuilding =
+          "create memory table CONTRACT_EMPLOYEE (EID varchar(256) not null, "
+              + "PAY_PER_HOUR decimal(10,2), CONTRACT_DURATION varchar(256), primary key (EID), foreign key (EID) references EMPLOYEE(ID))";
       st.execute(contractEmployeeTableBuilding);
 
-      this.mapper = new OHibernate2GraphMapper(this.sourceDBInfo, HibernateMapperTest.XML_TABLE_PER_SUBCLASS1, null, null, null);
+      this.mapper =
+          new OHibernate2GraphMapper(
+              this.sourceDBInfo, HibernateMapperTest.XML_TABLE_PER_SUBCLASS1, null, null, null);
       mapper.buildSourceDatabaseSchema();
       mapper.buildGraphModel(new OJavaConventionNameResolver());
-
 
       /*
        *  Testing context information
@@ -560,12 +695,14 @@ public class HibernateMapperTest {
       assertEquals(1, context.getStatistics().builtModelEdgeTypes);
 
       /*
-       *  Testing built source db schema 
+       *  Testing built source db schema
        */
 
       OEntity employeeEntity = mapper.getDataBaseSchema().getEntityByName("EMPLOYEE");
-      OEntity regularEmployeeEntity = mapper.getDataBaseSchema().getEntityByName("REGULAR_EMPLOYEE");
-      OEntity contractEmployeeEntity = mapper.getDataBaseSchema().getEntityByName("CONTRACT_EMPLOYEE");
+      OEntity regularEmployeeEntity =
+          mapper.getDataBaseSchema().getEntityByName("REGULAR_EMPLOYEE");
+      OEntity contractEmployeeEntity =
+          mapper.getDataBaseSchema().getEntityByName("CONTRACT_EMPLOYEE");
       OEntity residenceEntity = mapper.getDataBaseSchema().getEntityByNameIgnoreCase("RESIDENCE");
 
       // entities check
@@ -583,19 +720,23 @@ public class HibernateMapperTest {
       assertEquals("ID", employeeEntity.getAttributeByName("ID").getName());
       assertEquals("VARCHAR", employeeEntity.getAttributeByName("ID").getDataType());
       assertEquals(1, employeeEntity.getAttributeByName("ID").getOrdinalPosition());
-      assertEquals("EMPLOYEE", employeeEntity.getAttributeByName("ID").getBelongingEntity().getName());
+      assertEquals(
+          "EMPLOYEE", employeeEntity.getAttributeByName("ID").getBelongingEntity().getName());
 
       assertNotNull(employeeEntity.getAttributeByName("NAME"));
       assertEquals("NAME", employeeEntity.getAttributeByName("NAME").getName());
       assertEquals("VARCHAR", employeeEntity.getAttributeByName("NAME").getDataType());
       assertEquals(2, employeeEntity.getAttributeByName("NAME").getOrdinalPosition());
-      assertEquals("EMPLOYEE", employeeEntity.getAttributeByName("NAME").getBelongingEntity().getName());
+      assertEquals(
+          "EMPLOYEE", employeeEntity.getAttributeByName("NAME").getBelongingEntity().getName());
 
       assertNotNull(employeeEntity.getAttributeByName("RESIDENCE"));
       assertEquals("RESIDENCE", employeeEntity.getAttributeByName("RESIDENCE").getName());
       assertEquals("VARCHAR", employeeEntity.getAttributeByName("RESIDENCE").getDataType());
       assertEquals(3, employeeEntity.getAttributeByName("RESIDENCE").getOrdinalPosition());
-      assertEquals("EMPLOYEE", employeeEntity.getAttributeByName("RESIDENCE").getBelongingEntity().getName());
+      assertEquals(
+          "EMPLOYEE",
+          employeeEntity.getAttributeByName("RESIDENCE").getBelongingEntity().getName());
 
       assertEquals(2, regularEmployeeEntity.getAttributes().size());
 
@@ -603,28 +744,45 @@ public class HibernateMapperTest {
       assertEquals("SALARY", regularEmployeeEntity.getAttributeByName("SALARY").getName());
       assertEquals("DECIMAL", regularEmployeeEntity.getAttributeByName("SALARY").getDataType());
       assertEquals(1, regularEmployeeEntity.getAttributeByName("SALARY").getOrdinalPosition());
-      assertEquals("REGULAR_EMPLOYEE", regularEmployeeEntity.getAttributeByName("SALARY").getBelongingEntity().getName());
+      assertEquals(
+          "REGULAR_EMPLOYEE",
+          regularEmployeeEntity.getAttributeByName("SALARY").getBelongingEntity().getName());
 
       assertNotNull(regularEmployeeEntity.getAttributeByName("BONUS"));
       assertEquals("BONUS", regularEmployeeEntity.getAttributeByName("BONUS").getName());
       assertEquals("DECIMAL", regularEmployeeEntity.getAttributeByName("BONUS").getDataType());
       assertEquals(2, regularEmployeeEntity.getAttributeByName("BONUS").getOrdinalPosition());
-      assertEquals("REGULAR_EMPLOYEE", regularEmployeeEntity.getAttributeByName("BONUS").getBelongingEntity().getName());
+      assertEquals(
+          "REGULAR_EMPLOYEE",
+          regularEmployeeEntity.getAttributeByName("BONUS").getBelongingEntity().getName());
 
       assertEquals(2, contractEmployeeEntity.getAttributes().size());
 
       assertNotNull(contractEmployeeEntity.getAttributeByName("PAY_PER_HOUR"));
-      assertEquals("PAY_PER_HOUR", contractEmployeeEntity.getAttributeByName("PAY_PER_HOUR").getName());
-      assertEquals("DECIMAL", contractEmployeeEntity.getAttributeByName("PAY_PER_HOUR").getDataType());
-      assertEquals(1, contractEmployeeEntity.getAttributeByName("PAY_PER_HOUR").getOrdinalPosition());
-      assertEquals("CONTRACT_EMPLOYEE", contractEmployeeEntity.getAttributeByName("PAY_PER_HOUR").getBelongingEntity().getName());
+      assertEquals(
+          "PAY_PER_HOUR", contractEmployeeEntity.getAttributeByName("PAY_PER_HOUR").getName());
+      assertEquals(
+          "DECIMAL", contractEmployeeEntity.getAttributeByName("PAY_PER_HOUR").getDataType());
+      assertEquals(
+          1, contractEmployeeEntity.getAttributeByName("PAY_PER_HOUR").getOrdinalPosition());
+      assertEquals(
+          "CONTRACT_EMPLOYEE",
+          contractEmployeeEntity.getAttributeByName("PAY_PER_HOUR").getBelongingEntity().getName());
 
       assertNotNull(contractEmployeeEntity.getAttributeByName("CONTRACT_DURATION"));
-      assertEquals("CONTRACT_DURATION", contractEmployeeEntity.getAttributeByName("CONTRACT_DURATION").getName());
-      assertEquals("VARCHAR", contractEmployeeEntity.getAttributeByName("CONTRACT_DURATION").getDataType());
-      assertEquals(2, contractEmployeeEntity.getAttributeByName("CONTRACT_DURATION").getOrdinalPosition());
-      assertEquals("CONTRACT_EMPLOYEE",
-          contractEmployeeEntity.getAttributeByName("CONTRACT_DURATION").getBelongingEntity().getName());
+      assertEquals(
+          "CONTRACT_DURATION",
+          contractEmployeeEntity.getAttributeByName("CONTRACT_DURATION").getName());
+      assertEquals(
+          "VARCHAR", contractEmployeeEntity.getAttributeByName("CONTRACT_DURATION").getDataType());
+      assertEquals(
+          2, contractEmployeeEntity.getAttributeByName("CONTRACT_DURATION").getOrdinalPosition());
+      assertEquals(
+          "CONTRACT_EMPLOYEE",
+          contractEmployeeEntity
+              .getAttributeByName("CONTRACT_DURATION")
+              .getBelongingEntity()
+              .getName());
 
       // inherited attributes check
       assertEquals(0, employeeEntity.getInheritedAttributes().size());
@@ -633,54 +791,106 @@ public class HibernateMapperTest {
 
       assertNotNull(regularEmployeeEntity.getInheritedAttributeByName("ID"));
       assertEquals("ID", regularEmployeeEntity.getInheritedAttributeByName("ID").getName());
-      assertEquals("VARCHAR", regularEmployeeEntity.getInheritedAttributeByName("ID").getDataType());
+      assertEquals(
+          "VARCHAR", regularEmployeeEntity.getInheritedAttributeByName("ID").getDataType());
       assertEquals(1, regularEmployeeEntity.getInheritedAttributeByName("ID").getOrdinalPosition());
-      assertEquals("EMPLOYEE", regularEmployeeEntity.getInheritedAttributeByName("ID").getBelongingEntity().getName());
+      assertEquals(
+          "EMPLOYEE",
+          regularEmployeeEntity.getInheritedAttributeByName("ID").getBelongingEntity().getName());
 
       assertNotNull(regularEmployeeEntity.getInheritedAttributeByName("NAME"));
       assertEquals("NAME", regularEmployeeEntity.getInheritedAttributeByName("NAME").getName());
-      assertEquals("VARCHAR", regularEmployeeEntity.getInheritedAttributeByName("NAME").getDataType());
-      assertEquals(2, regularEmployeeEntity.getInheritedAttributeByName("NAME").getOrdinalPosition());
-      assertEquals("EMPLOYEE", regularEmployeeEntity.getInheritedAttributeByName("NAME").getBelongingEntity().getName());
+      assertEquals(
+          "VARCHAR", regularEmployeeEntity.getInheritedAttributeByName("NAME").getDataType());
+      assertEquals(
+          2, regularEmployeeEntity.getInheritedAttributeByName("NAME").getOrdinalPosition());
+      assertEquals(
+          "EMPLOYEE",
+          regularEmployeeEntity.getInheritedAttributeByName("NAME").getBelongingEntity().getName());
 
       assertNotNull(regularEmployeeEntity.getInheritedAttributeByName("RESIDENCE"));
-      assertEquals("RESIDENCE", regularEmployeeEntity.getInheritedAttributeByName("RESIDENCE").getName());
-      assertEquals("VARCHAR", regularEmployeeEntity.getInheritedAttributeByName("RESIDENCE").getDataType());
-      assertEquals(3, regularEmployeeEntity.getInheritedAttributeByName("RESIDENCE").getOrdinalPosition());
-      assertEquals("EMPLOYEE", regularEmployeeEntity.getInheritedAttributeByName("RESIDENCE").getBelongingEntity().getName());
+      assertEquals(
+          "RESIDENCE", regularEmployeeEntity.getInheritedAttributeByName("RESIDENCE").getName());
+      assertEquals(
+          "VARCHAR", regularEmployeeEntity.getInheritedAttributeByName("RESIDENCE").getDataType());
+      assertEquals(
+          3, regularEmployeeEntity.getInheritedAttributeByName("RESIDENCE").getOrdinalPosition());
+      assertEquals(
+          "EMPLOYEE",
+          regularEmployeeEntity
+              .getInheritedAttributeByName("RESIDENCE")
+              .getBelongingEntity()
+              .getName());
 
       assertEquals(3, contractEmployeeEntity.getInheritedAttributes().size());
 
       assertNotNull(contractEmployeeEntity.getInheritedAttributeByName("ID"));
       assertEquals("ID", contractEmployeeEntity.getInheritedAttributeByName("ID").getName());
-      assertEquals("VARCHAR", contractEmployeeEntity.getInheritedAttributeByName("ID").getDataType());
-      assertEquals(1, contractEmployeeEntity.getInheritedAttributeByName("ID").getOrdinalPosition());
-      assertEquals("EMPLOYEE", contractEmployeeEntity.getInheritedAttributeByName("ID").getBelongingEntity().getName());
+      assertEquals(
+          "VARCHAR", contractEmployeeEntity.getInheritedAttributeByName("ID").getDataType());
+      assertEquals(
+          1, contractEmployeeEntity.getInheritedAttributeByName("ID").getOrdinalPosition());
+      assertEquals(
+          "EMPLOYEE",
+          contractEmployeeEntity.getInheritedAttributeByName("ID").getBelongingEntity().getName());
 
       assertNotNull(contractEmployeeEntity.getInheritedAttributeByName("NAME"));
       assertEquals("NAME", contractEmployeeEntity.getInheritedAttributeByName("NAME").getName());
-      assertEquals("VARCHAR", contractEmployeeEntity.getInheritedAttributeByName("NAME").getDataType());
-      assertEquals(2, contractEmployeeEntity.getInheritedAttributeByName("NAME").getOrdinalPosition());
-      assertEquals("EMPLOYEE", contractEmployeeEntity.getInheritedAttributeByName("NAME").getBelongingEntity().getName());
+      assertEquals(
+          "VARCHAR", contractEmployeeEntity.getInheritedAttributeByName("NAME").getDataType());
+      assertEquals(
+          2, contractEmployeeEntity.getInheritedAttributeByName("NAME").getOrdinalPosition());
+      assertEquals(
+          "EMPLOYEE",
+          contractEmployeeEntity
+              .getInheritedAttributeByName("NAME")
+              .getBelongingEntity()
+              .getName());
 
       assertNotNull(contractEmployeeEntity.getInheritedAttributeByName("RESIDENCE"));
-      assertEquals("RESIDENCE", contractEmployeeEntity.getInheritedAttributeByName("RESIDENCE").getName());
-      assertEquals("VARCHAR", contractEmployeeEntity.getInheritedAttributeByName("RESIDENCE").getDataType());
-      assertEquals(3, contractEmployeeEntity.getInheritedAttributeByName("RESIDENCE").getOrdinalPosition());
-      assertEquals("EMPLOYEE", contractEmployeeEntity.getInheritedAttributeByName("RESIDENCE").getBelongingEntity().getName());
+      assertEquals(
+          "RESIDENCE", contractEmployeeEntity.getInheritedAttributeByName("RESIDENCE").getName());
+      assertEquals(
+          "VARCHAR", contractEmployeeEntity.getInheritedAttributeByName("RESIDENCE").getDataType());
+      assertEquals(
+          3, contractEmployeeEntity.getInheritedAttributeByName("RESIDENCE").getOrdinalPosition());
+      assertEquals(
+          "EMPLOYEE",
+          contractEmployeeEntity
+              .getInheritedAttributeByName("RESIDENCE")
+              .getBelongingEntity()
+              .getName());
 
       // primary key check
       assertEquals(1, regularEmployeeEntity.getPrimaryKey().getInvolvedAttributes().size());
-      assertEquals("EID", regularEmployeeEntity.getPrimaryKey().getInvolvedAttributes().get(0).getName());
-      assertEquals("VARCHAR", regularEmployeeEntity.getPrimaryKey().getInvolvedAttributes().get(0).getDataType());
-      assertEquals("REGULAR_EMPLOYEE",
-          regularEmployeeEntity.getPrimaryKey().getInvolvedAttributes().get(0).getBelongingEntity().getName());
+      assertEquals(
+          "EID", regularEmployeeEntity.getPrimaryKey().getInvolvedAttributes().get(0).getName());
+      assertEquals(
+          "VARCHAR",
+          regularEmployeeEntity.getPrimaryKey().getInvolvedAttributes().get(0).getDataType());
+      assertEquals(
+          "REGULAR_EMPLOYEE",
+          regularEmployeeEntity
+              .getPrimaryKey()
+              .getInvolvedAttributes()
+              .get(0)
+              .getBelongingEntity()
+              .getName());
 
       assertEquals(1, contractEmployeeEntity.getPrimaryKey().getInvolvedAttributes().size());
-      assertEquals("EID", contractEmployeeEntity.getPrimaryKey().getInvolvedAttributes().get(0).getName());
-      assertEquals("VARCHAR", contractEmployeeEntity.getPrimaryKey().getInvolvedAttributes().get(0).getDataType());
-      assertEquals("CONTRACT_EMPLOYEE",
-          contractEmployeeEntity.getPrimaryKey().getInvolvedAttributes().get(0).getBelongingEntity().getName());
+      assertEquals(
+          "EID", contractEmployeeEntity.getPrimaryKey().getInvolvedAttributes().get(0).getName());
+      assertEquals(
+          "VARCHAR",
+          contractEmployeeEntity.getPrimaryKey().getInvolvedAttributes().get(0).getDataType());
+      assertEquals(
+          "CONTRACT_EMPLOYEE",
+          contractEmployeeEntity
+              .getPrimaryKey()
+              .getInvolvedAttributes()
+              .get(0)
+              .getBelongingEntity()
+              .getName());
 
       // relationship, primary and foreign key check
       assertEquals(1, regularEmployeeEntity.getOutCanonicalRelationships().size());
@@ -697,9 +907,12 @@ public class HibernateMapperTest {
       assertEquals(1, employeeEntity.getForeignKeys().size());
       assertEquals(0, residenceEntity.getForeignKeys().size());
 
-      Iterator<OCanonicalRelationship> itEmp = employeeEntity.getOutCanonicalRelationships().iterator();
-      Iterator<OCanonicalRelationship> itRegEmp = regularEmployeeEntity.getOutCanonicalRelationships().iterator();
-      Iterator<OCanonicalRelationship> itContEmp = contractEmployeeEntity.getOutCanonicalRelationships().iterator();
+      Iterator<OCanonicalRelationship> itEmp =
+          employeeEntity.getOutCanonicalRelationships().iterator();
+      Iterator<OCanonicalRelationship> itRegEmp =
+          regularEmployeeEntity.getOutCanonicalRelationships().iterator();
+      Iterator<OCanonicalRelationship> itContEmp =
+          contractEmployeeEntity.getOutCanonicalRelationships().iterator();
       OCanonicalRelationship currentEmpRel = itEmp.next();
       OCanonicalRelationship currentRegEmpRel = itRegEmp.next();
       OCanonicalRelationship currentContEmpRel = itContEmp.next();
@@ -714,12 +927,14 @@ public class HibernateMapperTest {
       assertEquals(employeeEntity.getPrimaryKey(), currentRegEmpRel.getPrimaryKey());
       assertEquals(regularEmployeeEntity.getForeignKeys().get(0), currentRegEmpRel.getForeignKey());
       assertEquals(employeeEntity.getPrimaryKey(), currentContEmpRel.getPrimaryKey());
-      assertEquals(contractEmployeeEntity.getForeignKeys().get(0), currentContEmpRel.getForeignKey());
+      assertEquals(
+          contractEmployeeEntity.getForeignKeys().get(0), currentContEmpRel.getForeignKey());
       assertFalse(itEmp.hasNext());
       assertFalse(itRegEmp.hasNext());
       assertFalse(itContEmp.hasNext());
 
-      Iterator<OCanonicalRelationship> itRes = residenceEntity.getInCanonicalRelationships().iterator();
+      Iterator<OCanonicalRelationship> itRes =
+          residenceEntity.getInCanonicalRelationships().iterator();
       OCanonicalRelationship currentResRel = itRes.next();
       assertEquals(currentEmpRel, currentResRel);
 
@@ -791,14 +1006,15 @@ public class HibernateMapperTest {
 
       assertNull(hierarchicalBag.getDiscriminatorColumn());
 
-
       /*
        *  Testing built graph model
        */
 
       OVertexType employeeVertexType = mapper.getGraphModel().getVertexTypeByName("Employee");
-      OVertexType regularEmployeeVertexType = mapper.getGraphModel().getVertexTypeByName("RegularEmployee");
-      OVertexType contractEmployeeVertexType = mapper.getGraphModel().getVertexTypeByName("ContractEmployee");
+      OVertexType regularEmployeeVertexType =
+          mapper.getGraphModel().getVertexTypeByName("RegularEmployee");
+      OVertexType contractEmployeeVertexType =
+          mapper.getGraphModel().getVertexTypeByName("ContractEmployee");
       OVertexType residenceVertexType = mapper.getGraphModel().getVertexTypeByName("Residence");
 
       // vertices check
@@ -833,29 +1049,42 @@ public class HibernateMapperTest {
 
       assertNotNull(regularEmployeeVertexType.getPropertyByName("salary"));
       assertEquals("salary", regularEmployeeVertexType.getPropertyByName("salary").getName());
-      assertEquals("DECIMAL", regularEmployeeVertexType.getPropertyByName("salary").getOriginalType());
+      assertEquals(
+          "DECIMAL", regularEmployeeVertexType.getPropertyByName("salary").getOriginalType());
       assertEquals(1, regularEmployeeVertexType.getPropertyByName("salary").getOrdinalPosition());
       assertEquals(false, regularEmployeeVertexType.getPropertyByName("salary").isFromPrimaryKey());
 
       assertNotNull(regularEmployeeVertexType.getPropertyByName("bonus"));
       assertEquals("bonus", regularEmployeeVertexType.getPropertyByName("bonus").getName());
-      assertEquals("DECIMAL", regularEmployeeVertexType.getPropertyByName("bonus").getOriginalType());
+      assertEquals(
+          "DECIMAL", regularEmployeeVertexType.getPropertyByName("bonus").getOriginalType());
       assertEquals(2, regularEmployeeVertexType.getPropertyByName("bonus").getOrdinalPosition());
       assertEquals(false, regularEmployeeVertexType.getPropertyByName("bonus").isFromPrimaryKey());
 
       assertEquals(2, contractEmployeeVertexType.getProperties().size());
 
       assertNotNull(contractEmployeeVertexType.getPropertyByName("payPerHour"));
-      assertEquals("payPerHour", contractEmployeeVertexType.getPropertyByName("payPerHour").getName());
-      assertEquals("DECIMAL", contractEmployeeVertexType.getPropertyByName("payPerHour").getOriginalType());
-      assertEquals(1, contractEmployeeVertexType.getPropertyByName("payPerHour").getOrdinalPosition());
-      assertEquals(false, contractEmployeeVertexType.getPropertyByName("payPerHour").isFromPrimaryKey());
+      assertEquals(
+          "payPerHour", contractEmployeeVertexType.getPropertyByName("payPerHour").getName());
+      assertEquals(
+          "DECIMAL", contractEmployeeVertexType.getPropertyByName("payPerHour").getOriginalType());
+      assertEquals(
+          1, contractEmployeeVertexType.getPropertyByName("payPerHour").getOrdinalPosition());
+      assertEquals(
+          false, contractEmployeeVertexType.getPropertyByName("payPerHour").isFromPrimaryKey());
 
       assertNotNull(contractEmployeeVertexType.getPropertyByName("contractDuration"));
-      assertEquals("contractDuration", contractEmployeeVertexType.getPropertyByName("contractDuration").getName());
-      assertEquals("VARCHAR", contractEmployeeVertexType.getPropertyByName("contractDuration").getOriginalType());
-      assertEquals(2, contractEmployeeVertexType.getPropertyByName("contractDuration").getOrdinalPosition());
-      assertEquals(false, contractEmployeeVertexType.getPropertyByName("contractDuration").isFromPrimaryKey());
+      assertEquals(
+          "contractDuration",
+          contractEmployeeVertexType.getPropertyByName("contractDuration").getName());
+      assertEquals(
+          "VARCHAR",
+          contractEmployeeVertexType.getPropertyByName("contractDuration").getOriginalType());
+      assertEquals(
+          2, contractEmployeeVertexType.getPropertyByName("contractDuration").getOrdinalPosition());
+      assertEquals(
+          false,
+          contractEmployeeVertexType.getPropertyByName("contractDuration").isFromPrimaryKey());
 
       assertEquals(3, residenceVertexType.getProperties().size());
 
@@ -884,41 +1113,70 @@ public class HibernateMapperTest {
 
       assertNotNull(regularEmployeeVertexType.getInheritedPropertyByName("id"));
       assertEquals("id", regularEmployeeVertexType.getInheritedPropertyByName("id").getName());
-      assertEquals("VARCHAR", regularEmployeeVertexType.getInheritedPropertyByName("id").getOriginalType());
-      assertEquals(1, regularEmployeeVertexType.getInheritedPropertyByName("id").getOrdinalPosition());
-      assertEquals(false, regularEmployeeVertexType.getInheritedPropertyByName("id").isFromPrimaryKey());
+      assertEquals(
+          "VARCHAR", regularEmployeeVertexType.getInheritedPropertyByName("id").getOriginalType());
+      assertEquals(
+          1, regularEmployeeVertexType.getInheritedPropertyByName("id").getOrdinalPosition());
+      assertEquals(
+          false, regularEmployeeVertexType.getInheritedPropertyByName("id").isFromPrimaryKey());
 
       assertNotNull(regularEmployeeVertexType.getInheritedPropertyByName("name"));
       assertEquals("name", regularEmployeeVertexType.getInheritedPropertyByName("name").getName());
-      assertEquals("VARCHAR", regularEmployeeVertexType.getInheritedPropertyByName("name").getOriginalType());
-      assertEquals(2, regularEmployeeVertexType.getInheritedPropertyByName("name").getOrdinalPosition());
-      assertEquals(false, regularEmployeeVertexType.getInheritedPropertyByName("name").isFromPrimaryKey());
+      assertEquals(
+          "VARCHAR",
+          regularEmployeeVertexType.getInheritedPropertyByName("name").getOriginalType());
+      assertEquals(
+          2, regularEmployeeVertexType.getInheritedPropertyByName("name").getOrdinalPosition());
+      assertEquals(
+          false, regularEmployeeVertexType.getInheritedPropertyByName("name").isFromPrimaryKey());
 
       assertNotNull(regularEmployeeVertexType.getInheritedPropertyByName("residence"));
-      assertEquals("residence", regularEmployeeVertexType.getInheritedPropertyByName("residence").getName());
-      assertEquals("VARCHAR", regularEmployeeVertexType.getInheritedPropertyByName("residence").getOriginalType());
-      assertEquals(3, regularEmployeeVertexType.getInheritedPropertyByName("residence").getOrdinalPosition());
-      assertEquals(false, regularEmployeeVertexType.getInheritedPropertyByName("residence").isFromPrimaryKey());
+      assertEquals(
+          "residence", regularEmployeeVertexType.getInheritedPropertyByName("residence").getName());
+      assertEquals(
+          "VARCHAR",
+          regularEmployeeVertexType.getInheritedPropertyByName("residence").getOriginalType());
+      assertEquals(
+          3,
+          regularEmployeeVertexType.getInheritedPropertyByName("residence").getOrdinalPosition());
+      assertEquals(
+          false,
+          regularEmployeeVertexType.getInheritedPropertyByName("residence").isFromPrimaryKey());
 
       assertEquals(3, contractEmployeeVertexType.getInheritedProperties().size());
 
       assertNotNull(contractEmployeeVertexType.getInheritedPropertyByName("id"));
       assertEquals("id", contractEmployeeVertexType.getInheritedPropertyByName("id").getName());
-      assertEquals("VARCHAR", contractEmployeeVertexType.getInheritedPropertyByName("id").getOriginalType());
-      assertEquals(1, contractEmployeeVertexType.getInheritedPropertyByName("id").getOrdinalPosition());
-      assertEquals(false, contractEmployeeVertexType.getInheritedPropertyByName("id").isFromPrimaryKey());
+      assertEquals(
+          "VARCHAR", contractEmployeeVertexType.getInheritedPropertyByName("id").getOriginalType());
+      assertEquals(
+          1, contractEmployeeVertexType.getInheritedPropertyByName("id").getOrdinalPosition());
+      assertEquals(
+          false, contractEmployeeVertexType.getInheritedPropertyByName("id").isFromPrimaryKey());
 
       assertNotNull(contractEmployeeVertexType.getInheritedPropertyByName("name"));
       assertEquals("name", contractEmployeeVertexType.getInheritedPropertyByName("name").getName());
-      assertEquals("VARCHAR", contractEmployeeVertexType.getInheritedPropertyByName("name").getOriginalType());
-      assertEquals(2, contractEmployeeVertexType.getInheritedPropertyByName("name").getOrdinalPosition());
-      assertEquals(false, contractEmployeeVertexType.getInheritedPropertyByName("name").isFromPrimaryKey());
+      assertEquals(
+          "VARCHAR",
+          contractEmployeeVertexType.getInheritedPropertyByName("name").getOriginalType());
+      assertEquals(
+          2, contractEmployeeVertexType.getInheritedPropertyByName("name").getOrdinalPosition());
+      assertEquals(
+          false, contractEmployeeVertexType.getInheritedPropertyByName("name").isFromPrimaryKey());
 
       assertNotNull(contractEmployeeVertexType.getInheritedPropertyByName("residence"));
-      assertEquals("residence", contractEmployeeVertexType.getInheritedPropertyByName("residence").getName());
-      assertEquals("VARCHAR", contractEmployeeVertexType.getInheritedPropertyByName("residence").getOriginalType());
-      assertEquals(3, contractEmployeeVertexType.getInheritedPropertyByName("residence").getOrdinalPosition());
-      assertEquals(false, contractEmployeeVertexType.getInheritedPropertyByName("residence").isFromPrimaryKey());
+      assertEquals(
+          "residence",
+          contractEmployeeVertexType.getInheritedPropertyByName("residence").getName());
+      assertEquals(
+          "VARCHAR",
+          contractEmployeeVertexType.getInheritedPropertyByName("residence").getOriginalType());
+      assertEquals(
+          3,
+          contractEmployeeVertexType.getInheritedPropertyByName("residence").getOrdinalPosition());
+      assertEquals(
+          false,
+          contractEmployeeVertexType.getInheritedPropertyByName("residence").isFromPrimaryKey());
 
       assertEquals(0, residenceVertexType.getInheritedProperties().size());
 
@@ -964,7 +1222,7 @@ public class HibernateMapperTest {
     }
   }
 
-  //@Test
+  // @Test
 
   /*
    * Table per Subclass Inheritance (<subclass> <join/> </subclass> tags)
@@ -981,26 +1239,31 @@ public class HibernateMapperTest {
       Class.forName("org.hsqldb.jdbc.JDBCDriver");
       connection = DriverManager.getConnection(this.jurl, this.username, this.password);
 
-      String residence = "create memory table RESIDENCE(ID varchar(256) not null, CITY varchar(256), COUNTRY varchar(256), primary key (ID))";
+      String residence =
+          "create memory table RESIDENCE(ID varchar(256) not null, CITY varchar(256), COUNTRY varchar(256), primary key (ID))";
       st = connection.createStatement();
       st.execute(residence);
 
-      String employeeTableBuilding = "create memory table EMPLOYEE (ID varchar(256) not null,"
-          + " NAME varchar(256), RESIDENCE varchar(256), primary key (ID), foreign key (RESIDENCE) references RESIDENCE(ID))";
+      String employeeTableBuilding =
+          "create memory table EMPLOYEE (ID varchar(256) not null,"
+              + " NAME varchar(256), RESIDENCE varchar(256), primary key (ID), foreign key (RESIDENCE) references RESIDENCE(ID))";
       st.execute(employeeTableBuilding);
 
-      String regularEmployeeTableBuilding = "create memory table REGULAR_EMPLOYEE (EID varchar(256) not null, "
-          + "SALARY decimal(10,2), BONUS decimal(10,0), primary key (EID), foreign key (EID) references EMPLOYEE(ID))";
+      String regularEmployeeTableBuilding =
+          "create memory table REGULAR_EMPLOYEE (EID varchar(256) not null, "
+              + "SALARY decimal(10,2), BONUS decimal(10,0), primary key (EID), foreign key (EID) references EMPLOYEE(ID))";
       st.execute(regularEmployeeTableBuilding);
 
-      String contractEmployeeTableBuilding = "create memory table CONTRACT_EMPLOYEE (EID varchar(256) not null, "
-          + "PAY_PER_HOUR decimal(10,2), CONTRACT_DURATION varchar(256), primary key (EID), foreign key (EID) references EMPLOYEE(ID))";
+      String contractEmployeeTableBuilding =
+          "create memory table CONTRACT_EMPLOYEE (EID varchar(256) not null, "
+              + "PAY_PER_HOUR decimal(10,2), CONTRACT_DURATION varchar(256), primary key (EID), foreign key (EID) references EMPLOYEE(ID))";
       st.execute(contractEmployeeTableBuilding);
 
-      this.mapper = new OHibernate2GraphMapper(this.sourceDBInfo, HibernateMapperTest.XML_TABLE_PER_SUBCLASS2, null, null, null);
+      this.mapper =
+          new OHibernate2GraphMapper(
+              this.sourceDBInfo, HibernateMapperTest.XML_TABLE_PER_SUBCLASS2, null, null, null);
       mapper.buildSourceDatabaseSchema();
       mapper.buildGraphModel(new OJavaConventionNameResolver());
-
 
       /*
        *  Testing context information
@@ -1017,12 +1280,14 @@ public class HibernateMapperTest {
       assertEquals(1, context.getStatistics().builtModelEdgeTypes);
 
       /*
-       *  Testing built source db schema 
+       *  Testing built source db schema
        */
 
       OEntity employeeEntity = mapper.getDataBaseSchema().getEntityByName("EMPLOYEE");
-      OEntity regularEmployeeEntity = mapper.getDataBaseSchema().getEntityByName("REGULAR_EMPLOYEE");
-      OEntity contractEmployeeEntity = mapper.getDataBaseSchema().getEntityByName("CONTRACT_EMPLOYEE");
+      OEntity regularEmployeeEntity =
+          mapper.getDataBaseSchema().getEntityByName("REGULAR_EMPLOYEE");
+      OEntity contractEmployeeEntity =
+          mapper.getDataBaseSchema().getEntityByName("CONTRACT_EMPLOYEE");
       OEntity residenceEntity = mapper.getDataBaseSchema().getEntityByNameIgnoreCase("RESIDENCE");
 
       // entities check
@@ -1040,19 +1305,23 @@ public class HibernateMapperTest {
       assertEquals("ID", employeeEntity.getAttributeByName("ID").getName());
       assertEquals("VARCHAR", employeeEntity.getAttributeByName("ID").getDataType());
       assertEquals(1, employeeEntity.getAttributeByName("ID").getOrdinalPosition());
-      assertEquals("EMPLOYEE", employeeEntity.getAttributeByName("ID").getBelongingEntity().getName());
+      assertEquals(
+          "EMPLOYEE", employeeEntity.getAttributeByName("ID").getBelongingEntity().getName());
 
       assertNotNull(employeeEntity.getAttributeByName("NAME"));
       assertEquals("NAME", employeeEntity.getAttributeByName("NAME").getName());
       assertEquals("VARCHAR", employeeEntity.getAttributeByName("NAME").getDataType());
       assertEquals(2, employeeEntity.getAttributeByName("NAME").getOrdinalPosition());
-      assertEquals("EMPLOYEE", employeeEntity.getAttributeByName("NAME").getBelongingEntity().getName());
+      assertEquals(
+          "EMPLOYEE", employeeEntity.getAttributeByName("NAME").getBelongingEntity().getName());
 
       assertNotNull(employeeEntity.getAttributeByName("RESIDENCE"));
       assertEquals("RESIDENCE", employeeEntity.getAttributeByName("RESIDENCE").getName());
       assertEquals("VARCHAR", employeeEntity.getAttributeByName("RESIDENCE").getDataType());
       assertEquals(3, employeeEntity.getAttributeByName("RESIDENCE").getOrdinalPosition());
-      assertEquals("EMPLOYEE", employeeEntity.getAttributeByName("RESIDENCE").getBelongingEntity().getName());
+      assertEquals(
+          "EMPLOYEE",
+          employeeEntity.getAttributeByName("RESIDENCE").getBelongingEntity().getName());
 
       assertEquals(2, regularEmployeeEntity.getAttributes().size());
 
@@ -1060,28 +1329,45 @@ public class HibernateMapperTest {
       assertEquals("SALARY", regularEmployeeEntity.getAttributeByName("SALARY").getName());
       assertEquals("DECIMAL", regularEmployeeEntity.getAttributeByName("SALARY").getDataType());
       assertEquals(1, regularEmployeeEntity.getAttributeByName("SALARY").getOrdinalPosition());
-      assertEquals("REGULAR_EMPLOYEE", regularEmployeeEntity.getAttributeByName("SALARY").getBelongingEntity().getName());
+      assertEquals(
+          "REGULAR_EMPLOYEE",
+          regularEmployeeEntity.getAttributeByName("SALARY").getBelongingEntity().getName());
 
       assertNotNull(regularEmployeeEntity.getAttributeByName("BONUS"));
       assertEquals("BONUS", regularEmployeeEntity.getAttributeByName("BONUS").getName());
       assertEquals("DECIMAL", regularEmployeeEntity.getAttributeByName("BONUS").getDataType());
       assertEquals(2, regularEmployeeEntity.getAttributeByName("BONUS").getOrdinalPosition());
-      assertEquals("REGULAR_EMPLOYEE", regularEmployeeEntity.getAttributeByName("BONUS").getBelongingEntity().getName());
+      assertEquals(
+          "REGULAR_EMPLOYEE",
+          regularEmployeeEntity.getAttributeByName("BONUS").getBelongingEntity().getName());
 
       assertEquals(2, contractEmployeeEntity.getAttributes().size());
 
       assertNotNull(contractEmployeeEntity.getAttributeByName("PAY_PER_HOUR"));
-      assertEquals("PAY_PER_HOUR", contractEmployeeEntity.getAttributeByName("PAY_PER_HOUR").getName());
-      assertEquals("DECIMAL", contractEmployeeEntity.getAttributeByName("PAY_PER_HOUR").getDataType());
-      assertEquals(1, contractEmployeeEntity.getAttributeByName("PAY_PER_HOUR").getOrdinalPosition());
-      assertEquals("CONTRACT_EMPLOYEE", contractEmployeeEntity.getAttributeByName("PAY_PER_HOUR").getBelongingEntity().getName());
+      assertEquals(
+          "PAY_PER_HOUR", contractEmployeeEntity.getAttributeByName("PAY_PER_HOUR").getName());
+      assertEquals(
+          "DECIMAL", contractEmployeeEntity.getAttributeByName("PAY_PER_HOUR").getDataType());
+      assertEquals(
+          1, contractEmployeeEntity.getAttributeByName("PAY_PER_HOUR").getOrdinalPosition());
+      assertEquals(
+          "CONTRACT_EMPLOYEE",
+          contractEmployeeEntity.getAttributeByName("PAY_PER_HOUR").getBelongingEntity().getName());
 
       assertNotNull(contractEmployeeEntity.getAttributeByName("CONTRACT_DURATION"));
-      assertEquals("CONTRACT_DURATION", contractEmployeeEntity.getAttributeByName("CONTRACT_DURATION").getName());
-      assertEquals("VARCHAR", contractEmployeeEntity.getAttributeByName("CONTRACT_DURATION").getDataType());
-      assertEquals(2, contractEmployeeEntity.getAttributeByName("CONTRACT_DURATION").getOrdinalPosition());
-      assertEquals("CONTRACT_EMPLOYEE",
-          contractEmployeeEntity.getAttributeByName("CONTRACT_DURATION").getBelongingEntity().getName());
+      assertEquals(
+          "CONTRACT_DURATION",
+          contractEmployeeEntity.getAttributeByName("CONTRACT_DURATION").getName());
+      assertEquals(
+          "VARCHAR", contractEmployeeEntity.getAttributeByName("CONTRACT_DURATION").getDataType());
+      assertEquals(
+          2, contractEmployeeEntity.getAttributeByName("CONTRACT_DURATION").getOrdinalPosition());
+      assertEquals(
+          "CONTRACT_EMPLOYEE",
+          contractEmployeeEntity
+              .getAttributeByName("CONTRACT_DURATION")
+              .getBelongingEntity()
+              .getName());
 
       // inherited attributes check
       assertEquals(0, employeeEntity.getInheritedAttributes().size());
@@ -1090,54 +1376,106 @@ public class HibernateMapperTest {
 
       assertNotNull(regularEmployeeEntity.getInheritedAttributeByName("ID"));
       assertEquals("ID", regularEmployeeEntity.getInheritedAttributeByName("ID").getName());
-      assertEquals("VARCHAR", regularEmployeeEntity.getInheritedAttributeByName("ID").getDataType());
+      assertEquals(
+          "VARCHAR", regularEmployeeEntity.getInheritedAttributeByName("ID").getDataType());
       assertEquals(1, regularEmployeeEntity.getInheritedAttributeByName("ID").getOrdinalPosition());
-      assertEquals("EMPLOYEE", regularEmployeeEntity.getInheritedAttributeByName("ID").getBelongingEntity().getName());
+      assertEquals(
+          "EMPLOYEE",
+          regularEmployeeEntity.getInheritedAttributeByName("ID").getBelongingEntity().getName());
 
       assertNotNull(regularEmployeeEntity.getInheritedAttributeByName("NAME"));
       assertEquals("NAME", regularEmployeeEntity.getInheritedAttributeByName("NAME").getName());
-      assertEquals("VARCHAR", regularEmployeeEntity.getInheritedAttributeByName("NAME").getDataType());
-      assertEquals(2, regularEmployeeEntity.getInheritedAttributeByName("NAME").getOrdinalPosition());
-      assertEquals("EMPLOYEE", regularEmployeeEntity.getInheritedAttributeByName("NAME").getBelongingEntity().getName());
+      assertEquals(
+          "VARCHAR", regularEmployeeEntity.getInheritedAttributeByName("NAME").getDataType());
+      assertEquals(
+          2, regularEmployeeEntity.getInheritedAttributeByName("NAME").getOrdinalPosition());
+      assertEquals(
+          "EMPLOYEE",
+          regularEmployeeEntity.getInheritedAttributeByName("NAME").getBelongingEntity().getName());
 
       assertNotNull(regularEmployeeEntity.getInheritedAttributeByName("RESIDENCE"));
-      assertEquals("RESIDENCE", regularEmployeeEntity.getInheritedAttributeByName("RESIDENCE").getName());
-      assertEquals("VARCHAR", regularEmployeeEntity.getInheritedAttributeByName("RESIDENCE").getDataType());
-      assertEquals(3, regularEmployeeEntity.getInheritedAttributeByName("RESIDENCE").getOrdinalPosition());
-      assertEquals("EMPLOYEE", regularEmployeeEntity.getInheritedAttributeByName("RESIDENCE").getBelongingEntity().getName());
+      assertEquals(
+          "RESIDENCE", regularEmployeeEntity.getInheritedAttributeByName("RESIDENCE").getName());
+      assertEquals(
+          "VARCHAR", regularEmployeeEntity.getInheritedAttributeByName("RESIDENCE").getDataType());
+      assertEquals(
+          3, regularEmployeeEntity.getInheritedAttributeByName("RESIDENCE").getOrdinalPosition());
+      assertEquals(
+          "EMPLOYEE",
+          regularEmployeeEntity
+              .getInheritedAttributeByName("RESIDENCE")
+              .getBelongingEntity()
+              .getName());
 
       assertEquals(3, contractEmployeeEntity.getInheritedAttributes().size());
 
       assertNotNull(contractEmployeeEntity.getInheritedAttributeByName("ID"));
       assertEquals("ID", contractEmployeeEntity.getInheritedAttributeByName("ID").getName());
-      assertEquals("VARCHAR", contractEmployeeEntity.getInheritedAttributeByName("ID").getDataType());
-      assertEquals(1, contractEmployeeEntity.getInheritedAttributeByName("ID").getOrdinalPosition());
-      assertEquals("EMPLOYEE", contractEmployeeEntity.getInheritedAttributeByName("ID").getBelongingEntity().getName());
+      assertEquals(
+          "VARCHAR", contractEmployeeEntity.getInheritedAttributeByName("ID").getDataType());
+      assertEquals(
+          1, contractEmployeeEntity.getInheritedAttributeByName("ID").getOrdinalPosition());
+      assertEquals(
+          "EMPLOYEE",
+          contractEmployeeEntity.getInheritedAttributeByName("ID").getBelongingEntity().getName());
 
       assertNotNull(contractEmployeeEntity.getInheritedAttributeByName("NAME"));
       assertEquals("NAME", contractEmployeeEntity.getInheritedAttributeByName("NAME").getName());
-      assertEquals("VARCHAR", contractEmployeeEntity.getInheritedAttributeByName("NAME").getDataType());
-      assertEquals(2, contractEmployeeEntity.getInheritedAttributeByName("NAME").getOrdinalPosition());
-      assertEquals("EMPLOYEE", contractEmployeeEntity.getInheritedAttributeByName("NAME").getBelongingEntity().getName());
+      assertEquals(
+          "VARCHAR", contractEmployeeEntity.getInheritedAttributeByName("NAME").getDataType());
+      assertEquals(
+          2, contractEmployeeEntity.getInheritedAttributeByName("NAME").getOrdinalPosition());
+      assertEquals(
+          "EMPLOYEE",
+          contractEmployeeEntity
+              .getInheritedAttributeByName("NAME")
+              .getBelongingEntity()
+              .getName());
 
       assertNotNull(contractEmployeeEntity.getInheritedAttributeByName("RESIDENCE"));
-      assertEquals("RESIDENCE", contractEmployeeEntity.getInheritedAttributeByName("RESIDENCE").getName());
-      assertEquals("VARCHAR", contractEmployeeEntity.getInheritedAttributeByName("RESIDENCE").getDataType());
-      assertEquals(3, contractEmployeeEntity.getInheritedAttributeByName("RESIDENCE").getOrdinalPosition());
-      assertEquals("EMPLOYEE", contractEmployeeEntity.getInheritedAttributeByName("RESIDENCE").getBelongingEntity().getName());
+      assertEquals(
+          "RESIDENCE", contractEmployeeEntity.getInheritedAttributeByName("RESIDENCE").getName());
+      assertEquals(
+          "VARCHAR", contractEmployeeEntity.getInheritedAttributeByName("RESIDENCE").getDataType());
+      assertEquals(
+          3, contractEmployeeEntity.getInheritedAttributeByName("RESIDENCE").getOrdinalPosition());
+      assertEquals(
+          "EMPLOYEE",
+          contractEmployeeEntity
+              .getInheritedAttributeByName("RESIDENCE")
+              .getBelongingEntity()
+              .getName());
 
       // primary key check
       assertEquals(1, regularEmployeeEntity.getPrimaryKey().getInvolvedAttributes().size());
-      assertEquals("EID", regularEmployeeEntity.getPrimaryKey().getInvolvedAttributes().get(0).getName());
-      assertEquals("VARCHAR", regularEmployeeEntity.getPrimaryKey().getInvolvedAttributes().get(0).getDataType());
-      assertEquals("REGULAR_EMPLOYEE",
-          regularEmployeeEntity.getPrimaryKey().getInvolvedAttributes().get(0).getBelongingEntity().getName());
+      assertEquals(
+          "EID", regularEmployeeEntity.getPrimaryKey().getInvolvedAttributes().get(0).getName());
+      assertEquals(
+          "VARCHAR",
+          regularEmployeeEntity.getPrimaryKey().getInvolvedAttributes().get(0).getDataType());
+      assertEquals(
+          "REGULAR_EMPLOYEE",
+          regularEmployeeEntity
+              .getPrimaryKey()
+              .getInvolvedAttributes()
+              .get(0)
+              .getBelongingEntity()
+              .getName());
 
       assertEquals(1, contractEmployeeEntity.getPrimaryKey().getInvolvedAttributes().size());
-      assertEquals("EID", contractEmployeeEntity.getPrimaryKey().getInvolvedAttributes().get(0).getName());
-      assertEquals("VARCHAR", contractEmployeeEntity.getPrimaryKey().getInvolvedAttributes().get(0).getDataType());
-      assertEquals("CONTRACT_EMPLOYEE",
-          contractEmployeeEntity.getPrimaryKey().getInvolvedAttributes().get(0).getBelongingEntity().getName());
+      assertEquals(
+          "EID", contractEmployeeEntity.getPrimaryKey().getInvolvedAttributes().get(0).getName());
+      assertEquals(
+          "VARCHAR",
+          contractEmployeeEntity.getPrimaryKey().getInvolvedAttributes().get(0).getDataType());
+      assertEquals(
+          "CONTRACT_EMPLOYEE",
+          contractEmployeeEntity
+              .getPrimaryKey()
+              .getInvolvedAttributes()
+              .get(0)
+              .getBelongingEntity()
+              .getName());
 
       // relationship, primary and foreign key check
       assertEquals(1, regularEmployeeEntity.getOutCanonicalRelationships().size());
@@ -1154,9 +1492,12 @@ public class HibernateMapperTest {
       assertEquals(1, employeeEntity.getForeignKeys().size());
       assertEquals(0, residenceEntity.getForeignKeys().size());
 
-      Iterator<OCanonicalRelationship> itEmp = employeeEntity.getOutCanonicalRelationships().iterator();
-      Iterator<OCanonicalRelationship> itRegEmp = regularEmployeeEntity.getOutCanonicalRelationships().iterator();
-      Iterator<OCanonicalRelationship> itContEmp = contractEmployeeEntity.getOutCanonicalRelationships().iterator();
+      Iterator<OCanonicalRelationship> itEmp =
+          employeeEntity.getOutCanonicalRelationships().iterator();
+      Iterator<OCanonicalRelationship> itRegEmp =
+          regularEmployeeEntity.getOutCanonicalRelationships().iterator();
+      Iterator<OCanonicalRelationship> itContEmp =
+          contractEmployeeEntity.getOutCanonicalRelationships().iterator();
       OCanonicalRelationship currentEmpRel = itEmp.next();
       OCanonicalRelationship currentRegEmpRel = itRegEmp.next();
       OCanonicalRelationship currentContEmpRel = itContEmp.next();
@@ -1171,12 +1512,14 @@ public class HibernateMapperTest {
       assertEquals(employeeEntity.getPrimaryKey(), currentRegEmpRel.getPrimaryKey());
       assertEquals(regularEmployeeEntity.getForeignKeys().get(0), currentRegEmpRel.getForeignKey());
       assertEquals(employeeEntity.getPrimaryKey(), currentContEmpRel.getPrimaryKey());
-      assertEquals(contractEmployeeEntity.getForeignKeys().get(0), currentContEmpRel.getForeignKey());
+      assertEquals(
+          contractEmployeeEntity.getForeignKeys().get(0), currentContEmpRel.getForeignKey());
       assertFalse(itEmp.hasNext());
       assertFalse(itRegEmp.hasNext());
       assertFalse(itContEmp.hasNext());
 
-      Iterator<OCanonicalRelationship> itRes = residenceEntity.getInCanonicalRelationships().iterator();
+      Iterator<OCanonicalRelationship> itRes =
+          residenceEntity.getInCanonicalRelationships().iterator();
       OCanonicalRelationship currentResRel = itRes.next();
       assertEquals(currentEmpRel, currentResRel);
 
@@ -1246,14 +1589,15 @@ public class HibernateMapperTest {
       assertNotNull(hierarchicalBag.getDiscriminatorColumn());
       assertEquals("employee_type", hierarchicalBag.getDiscriminatorColumn());
 
-
       /*
        *  Testing built graph model
        */
 
       OVertexType employeeVertexType = mapper.getGraphModel().getVertexTypeByName("Employee");
-      OVertexType regularEmployeeVertexType = mapper.getGraphModel().getVertexTypeByName("RegularEmployee");
-      OVertexType contractEmployeeVertexType = mapper.getGraphModel().getVertexTypeByName("ContractEmployee");
+      OVertexType regularEmployeeVertexType =
+          mapper.getGraphModel().getVertexTypeByName("RegularEmployee");
+      OVertexType contractEmployeeVertexType =
+          mapper.getGraphModel().getVertexTypeByName("ContractEmployee");
       OVertexType residenceVertexType = mapper.getGraphModel().getVertexTypeByName("Residence");
 
       // vertices check
@@ -1288,29 +1632,42 @@ public class HibernateMapperTest {
 
       assertNotNull(regularEmployeeVertexType.getPropertyByName("salary"));
       assertEquals("salary", regularEmployeeVertexType.getPropertyByName("salary").getName());
-      assertEquals("DECIMAL", regularEmployeeVertexType.getPropertyByName("salary").getOriginalType());
+      assertEquals(
+          "DECIMAL", regularEmployeeVertexType.getPropertyByName("salary").getOriginalType());
       assertEquals(1, regularEmployeeVertexType.getPropertyByName("salary").getOrdinalPosition());
       assertEquals(false, regularEmployeeVertexType.getPropertyByName("salary").isFromPrimaryKey());
 
       assertNotNull(regularEmployeeVertexType.getPropertyByName("bonus"));
       assertEquals("bonus", regularEmployeeVertexType.getPropertyByName("bonus").getName());
-      assertEquals("DECIMAL", regularEmployeeVertexType.getPropertyByName("bonus").getOriginalType());
+      assertEquals(
+          "DECIMAL", regularEmployeeVertexType.getPropertyByName("bonus").getOriginalType());
       assertEquals(2, regularEmployeeVertexType.getPropertyByName("bonus").getOrdinalPosition());
       assertEquals(false, regularEmployeeVertexType.getPropertyByName("bonus").isFromPrimaryKey());
 
       assertEquals(2, contractEmployeeVertexType.getProperties().size());
 
       assertNotNull(contractEmployeeVertexType.getPropertyByName("payPerHour"));
-      assertEquals("payPerHour", contractEmployeeVertexType.getPropertyByName("payPerHour").getName());
-      assertEquals("DECIMAL", contractEmployeeVertexType.getPropertyByName("payPerHour").getOriginalType());
-      assertEquals(1, contractEmployeeVertexType.getPropertyByName("payPerHour").getOrdinalPosition());
-      assertEquals(false, contractEmployeeVertexType.getPropertyByName("payPerHour").isFromPrimaryKey());
+      assertEquals(
+          "payPerHour", contractEmployeeVertexType.getPropertyByName("payPerHour").getName());
+      assertEquals(
+          "DECIMAL", contractEmployeeVertexType.getPropertyByName("payPerHour").getOriginalType());
+      assertEquals(
+          1, contractEmployeeVertexType.getPropertyByName("payPerHour").getOrdinalPosition());
+      assertEquals(
+          false, contractEmployeeVertexType.getPropertyByName("payPerHour").isFromPrimaryKey());
 
       assertNotNull(contractEmployeeVertexType.getPropertyByName("contractDuration"));
-      assertEquals("contractDuration", contractEmployeeVertexType.getPropertyByName("contractDuration").getName());
-      assertEquals("VARCHAR", contractEmployeeVertexType.getPropertyByName("contractDuration").getOriginalType());
-      assertEquals(2, contractEmployeeVertexType.getPropertyByName("contractDuration").getOrdinalPosition());
-      assertEquals(false, contractEmployeeVertexType.getPropertyByName("contractDuration").isFromPrimaryKey());
+      assertEquals(
+          "contractDuration",
+          contractEmployeeVertexType.getPropertyByName("contractDuration").getName());
+      assertEquals(
+          "VARCHAR",
+          contractEmployeeVertexType.getPropertyByName("contractDuration").getOriginalType());
+      assertEquals(
+          2, contractEmployeeVertexType.getPropertyByName("contractDuration").getOrdinalPosition());
+      assertEquals(
+          false,
+          contractEmployeeVertexType.getPropertyByName("contractDuration").isFromPrimaryKey());
 
       assertEquals(3, residenceVertexType.getProperties().size());
 
@@ -1339,41 +1696,70 @@ public class HibernateMapperTest {
 
       assertNotNull(regularEmployeeVertexType.getInheritedPropertyByName("id"));
       assertEquals("id", regularEmployeeVertexType.getInheritedPropertyByName("id").getName());
-      assertEquals("VARCHAR", regularEmployeeVertexType.getInheritedPropertyByName("id").getOriginalType());
-      assertEquals(1, regularEmployeeVertexType.getInheritedPropertyByName("id").getOrdinalPosition());
-      assertEquals(false, regularEmployeeVertexType.getInheritedPropertyByName("id").isFromPrimaryKey());
+      assertEquals(
+          "VARCHAR", regularEmployeeVertexType.getInheritedPropertyByName("id").getOriginalType());
+      assertEquals(
+          1, regularEmployeeVertexType.getInheritedPropertyByName("id").getOrdinalPosition());
+      assertEquals(
+          false, regularEmployeeVertexType.getInheritedPropertyByName("id").isFromPrimaryKey());
 
       assertNotNull(regularEmployeeVertexType.getInheritedPropertyByName("name"));
       assertEquals("name", regularEmployeeVertexType.getInheritedPropertyByName("name").getName());
-      assertEquals("VARCHAR", regularEmployeeVertexType.getInheritedPropertyByName("name").getOriginalType());
-      assertEquals(2, regularEmployeeVertexType.getInheritedPropertyByName("name").getOrdinalPosition());
-      assertEquals(false, regularEmployeeVertexType.getInheritedPropertyByName("name").isFromPrimaryKey());
+      assertEquals(
+          "VARCHAR",
+          regularEmployeeVertexType.getInheritedPropertyByName("name").getOriginalType());
+      assertEquals(
+          2, regularEmployeeVertexType.getInheritedPropertyByName("name").getOrdinalPosition());
+      assertEquals(
+          false, regularEmployeeVertexType.getInheritedPropertyByName("name").isFromPrimaryKey());
 
       assertNotNull(regularEmployeeVertexType.getInheritedPropertyByName("residence"));
-      assertEquals("residence", regularEmployeeVertexType.getInheritedPropertyByName("residence").getName());
-      assertEquals("VARCHAR", regularEmployeeVertexType.getInheritedPropertyByName("residence").getOriginalType());
-      assertEquals(3, regularEmployeeVertexType.getInheritedPropertyByName("residence").getOrdinalPosition());
-      assertEquals(false, regularEmployeeVertexType.getInheritedPropertyByName("residence").isFromPrimaryKey());
+      assertEquals(
+          "residence", regularEmployeeVertexType.getInheritedPropertyByName("residence").getName());
+      assertEquals(
+          "VARCHAR",
+          regularEmployeeVertexType.getInheritedPropertyByName("residence").getOriginalType());
+      assertEquals(
+          3,
+          regularEmployeeVertexType.getInheritedPropertyByName("residence").getOrdinalPosition());
+      assertEquals(
+          false,
+          regularEmployeeVertexType.getInheritedPropertyByName("residence").isFromPrimaryKey());
 
       assertEquals(3, contractEmployeeVertexType.getInheritedProperties().size());
 
       assertNotNull(contractEmployeeVertexType.getInheritedPropertyByName("id"));
       assertEquals("id", contractEmployeeVertexType.getInheritedPropertyByName("id").getName());
-      assertEquals("VARCHAR", contractEmployeeVertexType.getInheritedPropertyByName("id").getOriginalType());
-      assertEquals(1, contractEmployeeVertexType.getInheritedPropertyByName("id").getOrdinalPosition());
-      assertEquals(false, contractEmployeeVertexType.getInheritedPropertyByName("id").isFromPrimaryKey());
+      assertEquals(
+          "VARCHAR", contractEmployeeVertexType.getInheritedPropertyByName("id").getOriginalType());
+      assertEquals(
+          1, contractEmployeeVertexType.getInheritedPropertyByName("id").getOrdinalPosition());
+      assertEquals(
+          false, contractEmployeeVertexType.getInheritedPropertyByName("id").isFromPrimaryKey());
 
       assertNotNull(contractEmployeeVertexType.getInheritedPropertyByName("name"));
       assertEquals("name", contractEmployeeVertexType.getInheritedPropertyByName("name").getName());
-      assertEquals("VARCHAR", contractEmployeeVertexType.getInheritedPropertyByName("name").getOriginalType());
-      assertEquals(2, contractEmployeeVertexType.getInheritedPropertyByName("name").getOrdinalPosition());
-      assertEquals(false, contractEmployeeVertexType.getInheritedPropertyByName("name").isFromPrimaryKey());
+      assertEquals(
+          "VARCHAR",
+          contractEmployeeVertexType.getInheritedPropertyByName("name").getOriginalType());
+      assertEquals(
+          2, contractEmployeeVertexType.getInheritedPropertyByName("name").getOrdinalPosition());
+      assertEquals(
+          false, contractEmployeeVertexType.getInheritedPropertyByName("name").isFromPrimaryKey());
 
       assertNotNull(contractEmployeeVertexType.getInheritedPropertyByName("residence"));
-      assertEquals("residence", contractEmployeeVertexType.getInheritedPropertyByName("residence").getName());
-      assertEquals("VARCHAR", contractEmployeeVertexType.getInheritedPropertyByName("residence").getOriginalType());
-      assertEquals(3, contractEmployeeVertexType.getInheritedPropertyByName("residence").getOrdinalPosition());
-      assertEquals(false, contractEmployeeVertexType.getInheritedPropertyByName("residence").isFromPrimaryKey());
+      assertEquals(
+          "residence",
+          contractEmployeeVertexType.getInheritedPropertyByName("residence").getName());
+      assertEquals(
+          "VARCHAR",
+          contractEmployeeVertexType.getInheritedPropertyByName("residence").getOriginalType());
+      assertEquals(
+          3,
+          contractEmployeeVertexType.getInheritedPropertyByName("residence").getOrdinalPosition());
+      assertEquals(
+          false,
+          contractEmployeeVertexType.getInheritedPropertyByName("residence").isFromPrimaryKey());
 
       assertEquals(0, residenceVertexType.getInheritedProperties().size());
 
@@ -1419,7 +1805,7 @@ public class HibernateMapperTest {
     }
   }
 
-  //@Test
+  // @Test
 
   /*
    * Table per Concrete Class Inheritance (<union-subclass> tag)
@@ -1436,27 +1822,35 @@ public class HibernateMapperTest {
       Class.forName("org.hsqldb.jdbc.JDBCDriver");
       connection = DriverManager.getConnection(this.jurl, this.username, this.password);
 
-      String residence = "create memory table RESIDENCE(ID varchar(256) not null, CITY varchar(256), COUNTRY varchar(256), primary key (ID))";
+      String residence =
+          "create memory table RESIDENCE(ID varchar(256) not null, CITY varchar(256), COUNTRY varchar(256), primary key (ID))";
       st = connection.createStatement();
       st.execute(residence);
 
-      String employeeTableBuilding = "create memory table EMPLOYEE (ID varchar(256) not null,"
-          + " NAME varchar(256), RESIDENCE varchar(256), primary key (ID), foreign key (RESIDENCE) references RESIDENCE(ID))";
+      String employeeTableBuilding =
+          "create memory table EMPLOYEE (ID varchar(256) not null,"
+              + " NAME varchar(256), RESIDENCE varchar(256), primary key (ID), foreign key (RESIDENCE) references RESIDENCE(ID))";
       st.execute(employeeTableBuilding);
 
-      String regularEmployeeTableBuilding = "create memory table REGULAR_EMPLOYEE (ID varchar(256) not null, "
-          + "NAME varchar(256), RESIDENCE varchar(256), SALARY decimal(10,2), BONUS decimal(10,0), primary key (ID))";
+      String regularEmployeeTableBuilding =
+          "create memory table REGULAR_EMPLOYEE (ID varchar(256) not null, "
+              + "NAME varchar(256), RESIDENCE varchar(256), SALARY decimal(10,2), BONUS decimal(10,0), primary key (ID))";
       st.execute(regularEmployeeTableBuilding);
 
-      String contractEmployeeTableBuilding = "create memory table CONTRACT_EMPLOYEE (ID varchar(256) not null, "
-          + "NAME varchar(256), RESIDENCE varchar(256), PAY_PER_HOUR decimal(10,2), CONTRACT_DURATION varchar(256), primary key (ID))";
+      String contractEmployeeTableBuilding =
+          "create memory table CONTRACT_EMPLOYEE (ID varchar(256) not null, "
+              + "NAME varchar(256), RESIDENCE varchar(256), PAY_PER_HOUR decimal(10,2), CONTRACT_DURATION varchar(256), primary key (ID))";
       st.execute(contractEmployeeTableBuilding);
 
-      this.mapper = new OHibernate2GraphMapper(this.sourceDBInfo, HibernateMapperTest.XML_TABLE_PER_CONCRETE_CLASS, null, null,
-          null);
+      this.mapper =
+          new OHibernate2GraphMapper(
+              this.sourceDBInfo,
+              HibernateMapperTest.XML_TABLE_PER_CONCRETE_CLASS,
+              null,
+              null,
+              null);
       mapper.buildSourceDatabaseSchema();
       mapper.buildGraphModel(new OJavaConventionNameResolver());
-
 
       /*
        *  Testing context information
@@ -1473,12 +1867,14 @@ public class HibernateMapperTest {
       assertEquals(1, context.getStatistics().builtModelEdgeTypes);
 
       /*
-       *  Testing built source db schema 
+       *  Testing built source db schema
        */
 
       OEntity employeeEntity = mapper.getDataBaseSchema().getEntityByName("EMPLOYEE");
-      OEntity regularEmployeeEntity = mapper.getDataBaseSchema().getEntityByName("REGULAR_EMPLOYEE");
-      OEntity contractEmployeeEntity = mapper.getDataBaseSchema().getEntityByName("CONTRACT_EMPLOYEE");
+      OEntity regularEmployeeEntity =
+          mapper.getDataBaseSchema().getEntityByName("REGULAR_EMPLOYEE");
+      OEntity contractEmployeeEntity =
+          mapper.getDataBaseSchema().getEntityByName("CONTRACT_EMPLOYEE");
       OEntity residenceEntity = mapper.getDataBaseSchema().getEntityByNameIgnoreCase("RESIDENCE");
 
       // entities check
@@ -1496,19 +1892,23 @@ public class HibernateMapperTest {
       assertEquals("ID", employeeEntity.getAttributeByName("ID").getName());
       assertEquals("VARCHAR", employeeEntity.getAttributeByName("ID").getDataType());
       assertEquals(1, employeeEntity.getAttributeByName("ID").getOrdinalPosition());
-      assertEquals("EMPLOYEE", employeeEntity.getAttributeByName("ID").getBelongingEntity().getName());
+      assertEquals(
+          "EMPLOYEE", employeeEntity.getAttributeByName("ID").getBelongingEntity().getName());
 
       assertNotNull(employeeEntity.getAttributeByName("NAME"));
       assertEquals("NAME", employeeEntity.getAttributeByName("NAME").getName());
       assertEquals("VARCHAR", employeeEntity.getAttributeByName("NAME").getDataType());
       assertEquals(2, employeeEntity.getAttributeByName("NAME").getOrdinalPosition());
-      assertEquals("EMPLOYEE", employeeEntity.getAttributeByName("NAME").getBelongingEntity().getName());
+      assertEquals(
+          "EMPLOYEE", employeeEntity.getAttributeByName("NAME").getBelongingEntity().getName());
 
       assertNotNull(employeeEntity.getAttributeByName("RESIDENCE"));
       assertEquals("RESIDENCE", employeeEntity.getAttributeByName("RESIDENCE").getName());
       assertEquals("VARCHAR", employeeEntity.getAttributeByName("RESIDENCE").getDataType());
       assertEquals(3, employeeEntity.getAttributeByName("RESIDENCE").getOrdinalPosition());
-      assertEquals("EMPLOYEE", employeeEntity.getAttributeByName("RESIDENCE").getBelongingEntity().getName());
+      assertEquals(
+          "EMPLOYEE",
+          employeeEntity.getAttributeByName("RESIDENCE").getBelongingEntity().getName());
 
       assertEquals(2, regularEmployeeEntity.getAttributes().size());
 
@@ -1516,28 +1916,45 @@ public class HibernateMapperTest {
       assertEquals("SALARY", regularEmployeeEntity.getAttributeByName("SALARY").getName());
       assertEquals("DECIMAL", regularEmployeeEntity.getAttributeByName("SALARY").getDataType());
       assertEquals(1, regularEmployeeEntity.getAttributeByName("SALARY").getOrdinalPosition());
-      assertEquals("REGULAR_EMPLOYEE", regularEmployeeEntity.getAttributeByName("SALARY").getBelongingEntity().getName());
+      assertEquals(
+          "REGULAR_EMPLOYEE",
+          regularEmployeeEntity.getAttributeByName("SALARY").getBelongingEntity().getName());
 
       assertNotNull(regularEmployeeEntity.getAttributeByName("BONUS"));
       assertEquals("BONUS", regularEmployeeEntity.getAttributeByName("BONUS").getName());
       assertEquals("DECIMAL", regularEmployeeEntity.getAttributeByName("BONUS").getDataType());
       assertEquals(2, regularEmployeeEntity.getAttributeByName("BONUS").getOrdinalPosition());
-      assertEquals("REGULAR_EMPLOYEE", regularEmployeeEntity.getAttributeByName("BONUS").getBelongingEntity().getName());
+      assertEquals(
+          "REGULAR_EMPLOYEE",
+          regularEmployeeEntity.getAttributeByName("BONUS").getBelongingEntity().getName());
 
       assertEquals(2, contractEmployeeEntity.getAttributes().size());
 
       assertNotNull(contractEmployeeEntity.getAttributeByName("PAY_PER_HOUR"));
-      assertEquals("PAY_PER_HOUR", contractEmployeeEntity.getAttributeByName("PAY_PER_HOUR").getName());
-      assertEquals("DECIMAL", contractEmployeeEntity.getAttributeByName("PAY_PER_HOUR").getDataType());
-      assertEquals(1, contractEmployeeEntity.getAttributeByName("PAY_PER_HOUR").getOrdinalPosition());
-      assertEquals("CONTRACT_EMPLOYEE", contractEmployeeEntity.getAttributeByName("PAY_PER_HOUR").getBelongingEntity().getName());
+      assertEquals(
+          "PAY_PER_HOUR", contractEmployeeEntity.getAttributeByName("PAY_PER_HOUR").getName());
+      assertEquals(
+          "DECIMAL", contractEmployeeEntity.getAttributeByName("PAY_PER_HOUR").getDataType());
+      assertEquals(
+          1, contractEmployeeEntity.getAttributeByName("PAY_PER_HOUR").getOrdinalPosition());
+      assertEquals(
+          "CONTRACT_EMPLOYEE",
+          contractEmployeeEntity.getAttributeByName("PAY_PER_HOUR").getBelongingEntity().getName());
 
       assertNotNull(contractEmployeeEntity.getAttributeByName("CONTRACT_DURATION"));
-      assertEquals("CONTRACT_DURATION", contractEmployeeEntity.getAttributeByName("CONTRACT_DURATION").getName());
-      assertEquals("VARCHAR", contractEmployeeEntity.getAttributeByName("CONTRACT_DURATION").getDataType());
-      assertEquals(2, contractEmployeeEntity.getAttributeByName("CONTRACT_DURATION").getOrdinalPosition());
-      assertEquals("CONTRACT_EMPLOYEE",
-          contractEmployeeEntity.getAttributeByName("CONTRACT_DURATION").getBelongingEntity().getName());
+      assertEquals(
+          "CONTRACT_DURATION",
+          contractEmployeeEntity.getAttributeByName("CONTRACT_DURATION").getName());
+      assertEquals(
+          "VARCHAR", contractEmployeeEntity.getAttributeByName("CONTRACT_DURATION").getDataType());
+      assertEquals(
+          2, contractEmployeeEntity.getAttributeByName("CONTRACT_DURATION").getOrdinalPosition());
+      assertEquals(
+          "CONTRACT_EMPLOYEE",
+          contractEmployeeEntity
+              .getAttributeByName("CONTRACT_DURATION")
+              .getBelongingEntity()
+              .getName());
 
       // inherited attributes check
       assertEquals(0, employeeEntity.getInheritedAttributes().size());
@@ -1546,54 +1963,106 @@ public class HibernateMapperTest {
 
       assertNotNull(regularEmployeeEntity.getInheritedAttributeByName("ID"));
       assertEquals("ID", regularEmployeeEntity.getInheritedAttributeByName("ID").getName());
-      assertEquals("VARCHAR", regularEmployeeEntity.getInheritedAttributeByName("ID").getDataType());
+      assertEquals(
+          "VARCHAR", regularEmployeeEntity.getInheritedAttributeByName("ID").getDataType());
       assertEquals(1, regularEmployeeEntity.getInheritedAttributeByName("ID").getOrdinalPosition());
-      assertEquals("EMPLOYEE", regularEmployeeEntity.getInheritedAttributeByName("ID").getBelongingEntity().getName());
+      assertEquals(
+          "EMPLOYEE",
+          regularEmployeeEntity.getInheritedAttributeByName("ID").getBelongingEntity().getName());
 
       assertNotNull(regularEmployeeEntity.getInheritedAttributeByName("NAME"));
       assertEquals("NAME", regularEmployeeEntity.getInheritedAttributeByName("NAME").getName());
-      assertEquals("VARCHAR", regularEmployeeEntity.getInheritedAttributeByName("NAME").getDataType());
-      assertEquals(2, regularEmployeeEntity.getInheritedAttributeByName("NAME").getOrdinalPosition());
-      assertEquals("EMPLOYEE", regularEmployeeEntity.getInheritedAttributeByName("NAME").getBelongingEntity().getName());
+      assertEquals(
+          "VARCHAR", regularEmployeeEntity.getInheritedAttributeByName("NAME").getDataType());
+      assertEquals(
+          2, regularEmployeeEntity.getInheritedAttributeByName("NAME").getOrdinalPosition());
+      assertEquals(
+          "EMPLOYEE",
+          regularEmployeeEntity.getInheritedAttributeByName("NAME").getBelongingEntity().getName());
 
       assertNotNull(regularEmployeeEntity.getInheritedAttributeByName("RESIDENCE"));
-      assertEquals("RESIDENCE", regularEmployeeEntity.getInheritedAttributeByName("RESIDENCE").getName());
-      assertEquals("VARCHAR", regularEmployeeEntity.getInheritedAttributeByName("RESIDENCE").getDataType());
-      assertEquals(3, regularEmployeeEntity.getInheritedAttributeByName("RESIDENCE").getOrdinalPosition());
-      assertEquals("EMPLOYEE", regularEmployeeEntity.getInheritedAttributeByName("RESIDENCE").getBelongingEntity().getName());
+      assertEquals(
+          "RESIDENCE", regularEmployeeEntity.getInheritedAttributeByName("RESIDENCE").getName());
+      assertEquals(
+          "VARCHAR", regularEmployeeEntity.getInheritedAttributeByName("RESIDENCE").getDataType());
+      assertEquals(
+          3, regularEmployeeEntity.getInheritedAttributeByName("RESIDENCE").getOrdinalPosition());
+      assertEquals(
+          "EMPLOYEE",
+          regularEmployeeEntity
+              .getInheritedAttributeByName("RESIDENCE")
+              .getBelongingEntity()
+              .getName());
 
       assertEquals(3, contractEmployeeEntity.getInheritedAttributes().size());
 
       assertNotNull(contractEmployeeEntity.getInheritedAttributeByName("ID"));
       assertEquals("ID", contractEmployeeEntity.getInheritedAttributeByName("ID").getName());
-      assertEquals("VARCHAR", contractEmployeeEntity.getInheritedAttributeByName("ID").getDataType());
-      assertEquals(1, contractEmployeeEntity.getInheritedAttributeByName("ID").getOrdinalPosition());
-      assertEquals("EMPLOYEE", contractEmployeeEntity.getInheritedAttributeByName("ID").getBelongingEntity().getName());
+      assertEquals(
+          "VARCHAR", contractEmployeeEntity.getInheritedAttributeByName("ID").getDataType());
+      assertEquals(
+          1, contractEmployeeEntity.getInheritedAttributeByName("ID").getOrdinalPosition());
+      assertEquals(
+          "EMPLOYEE",
+          contractEmployeeEntity.getInheritedAttributeByName("ID").getBelongingEntity().getName());
 
       assertNotNull(contractEmployeeEntity.getInheritedAttributeByName("NAME"));
       assertEquals("NAME", contractEmployeeEntity.getInheritedAttributeByName("NAME").getName());
-      assertEquals("VARCHAR", contractEmployeeEntity.getInheritedAttributeByName("NAME").getDataType());
-      assertEquals(2, contractEmployeeEntity.getInheritedAttributeByName("NAME").getOrdinalPosition());
-      assertEquals("EMPLOYEE", contractEmployeeEntity.getInheritedAttributeByName("NAME").getBelongingEntity().getName());
+      assertEquals(
+          "VARCHAR", contractEmployeeEntity.getInheritedAttributeByName("NAME").getDataType());
+      assertEquals(
+          2, contractEmployeeEntity.getInheritedAttributeByName("NAME").getOrdinalPosition());
+      assertEquals(
+          "EMPLOYEE",
+          contractEmployeeEntity
+              .getInheritedAttributeByName("NAME")
+              .getBelongingEntity()
+              .getName());
 
       assertNotNull(contractEmployeeEntity.getInheritedAttributeByName("RESIDENCE"));
-      assertEquals("RESIDENCE", contractEmployeeEntity.getInheritedAttributeByName("RESIDENCE").getName());
-      assertEquals("VARCHAR", contractEmployeeEntity.getInheritedAttributeByName("RESIDENCE").getDataType());
-      assertEquals(3, contractEmployeeEntity.getInheritedAttributeByName("RESIDENCE").getOrdinalPosition());
-      assertEquals("EMPLOYEE", contractEmployeeEntity.getInheritedAttributeByName("RESIDENCE").getBelongingEntity().getName());
+      assertEquals(
+          "RESIDENCE", contractEmployeeEntity.getInheritedAttributeByName("RESIDENCE").getName());
+      assertEquals(
+          "VARCHAR", contractEmployeeEntity.getInheritedAttributeByName("RESIDENCE").getDataType());
+      assertEquals(
+          3, contractEmployeeEntity.getInheritedAttributeByName("RESIDENCE").getOrdinalPosition());
+      assertEquals(
+          "EMPLOYEE",
+          contractEmployeeEntity
+              .getInheritedAttributeByName("RESIDENCE")
+              .getBelongingEntity()
+              .getName());
 
       // primary key check (not "inherited")
       assertEquals(1, regularEmployeeEntity.getPrimaryKey().getInvolvedAttributes().size());
-      assertEquals("ID", regularEmployeeEntity.getPrimaryKey().getInvolvedAttributes().get(0).getName());
-      assertEquals("VARCHAR", regularEmployeeEntity.getPrimaryKey().getInvolvedAttributes().get(0).getDataType());
-      assertEquals("REGULAR_EMPLOYEE",
-          regularEmployeeEntity.getPrimaryKey().getInvolvedAttributes().get(0).getBelongingEntity().getName());
+      assertEquals(
+          "ID", regularEmployeeEntity.getPrimaryKey().getInvolvedAttributes().get(0).getName());
+      assertEquals(
+          "VARCHAR",
+          regularEmployeeEntity.getPrimaryKey().getInvolvedAttributes().get(0).getDataType());
+      assertEquals(
+          "REGULAR_EMPLOYEE",
+          regularEmployeeEntity
+              .getPrimaryKey()
+              .getInvolvedAttributes()
+              .get(0)
+              .getBelongingEntity()
+              .getName());
 
       assertEquals(1, contractEmployeeEntity.getPrimaryKey().getInvolvedAttributes().size());
-      assertEquals("ID", contractEmployeeEntity.getPrimaryKey().getInvolvedAttributes().get(0).getName());
-      assertEquals("VARCHAR", contractEmployeeEntity.getPrimaryKey().getInvolvedAttributes().get(0).getDataType());
-      assertEquals("CONTRACT_EMPLOYEE",
-          contractEmployeeEntity.getPrimaryKey().getInvolvedAttributes().get(0).getBelongingEntity().getName());
+      assertEquals(
+          "ID", contractEmployeeEntity.getPrimaryKey().getInvolvedAttributes().get(0).getName());
+      assertEquals(
+          "VARCHAR",
+          contractEmployeeEntity.getPrimaryKey().getInvolvedAttributes().get(0).getDataType());
+      assertEquals(
+          "CONTRACT_EMPLOYEE",
+          contractEmployeeEntity
+              .getPrimaryKey()
+              .getInvolvedAttributes()
+              .get(0)
+              .getBelongingEntity()
+              .getName());
 
       // relationship, primary and foreign key check
       assertEquals(0, regularEmployeeEntity.getOutCanonicalRelationships().size());
@@ -1610,7 +2079,8 @@ public class HibernateMapperTest {
       assertEquals(1, employeeEntity.getForeignKeys().size());
       assertEquals(0, residenceEntity.getForeignKeys().size());
 
-      Iterator<OCanonicalRelationship> itEmp = employeeEntity.getOutCanonicalRelationships().iterator();
+      Iterator<OCanonicalRelationship> itEmp =
+          employeeEntity.getOutCanonicalRelationships().iterator();
       OCanonicalRelationship currentEmpRel = itEmp.next();
       assertEquals("RESIDENCE", currentEmpRel.getParentEntity().getName());
       assertEquals("EMPLOYEE", currentEmpRel.getForeignEntity().getName());
@@ -1618,7 +2088,8 @@ public class HibernateMapperTest {
       assertEquals(employeeEntity.getForeignKeys().get(0), currentEmpRel.getForeignKey());
       assertFalse(itEmp.hasNext());
 
-      Iterator<OCanonicalRelationship> itRes = residenceEntity.getInCanonicalRelationships().iterator();
+      Iterator<OCanonicalRelationship> itRes =
+          residenceEntity.getInCanonicalRelationships().iterator();
       OCanonicalRelationship currentResRel = itRes.next();
       assertEquals(currentEmpRel, currentResRel);
 
@@ -1628,8 +2099,10 @@ public class HibernateMapperTest {
       assertEquals(0, employeeEntity.getInheritedOutCanonicalRelationships().size());
       assertEquals(0, residenceEntity.getInheritedOutCanonicalRelationships().size());
 
-      Iterator<OCanonicalRelationship> itRegEmp = regularEmployeeEntity.getInheritedOutCanonicalRelationships().iterator();
-      Iterator<OCanonicalRelationship> itContEmp = contractEmployeeEntity.getInheritedOutCanonicalRelationships().iterator();
+      Iterator<OCanonicalRelationship> itRegEmp =
+          regularEmployeeEntity.getInheritedOutCanonicalRelationships().iterator();
+      Iterator<OCanonicalRelationship> itContEmp =
+          contractEmployeeEntity.getInheritedOutCanonicalRelationships().iterator();
       OCanonicalRelationship currentRegEmpRel = itRegEmp.next();
       OCanonicalRelationship currentContEmpRel = itContEmp.next();
       assertEquals("RESIDENCE", currentRegEmpRel.getParentEntity().getName());
@@ -1680,14 +2153,15 @@ public class HibernateMapperTest {
 
       assertNull(hierarchicalBag.getDiscriminatorColumn());
 
-
       /*
        *  Testing built graph model
        */
 
       OVertexType employeeVertexType = mapper.getGraphModel().getVertexTypeByName("Employee");
-      OVertexType regularEmployeeVertexType = mapper.getGraphModel().getVertexTypeByName("RegularEmployee");
-      OVertexType contractEmployeeVertexType = mapper.getGraphModel().getVertexTypeByName("ContractEmployee");
+      OVertexType regularEmployeeVertexType =
+          mapper.getGraphModel().getVertexTypeByName("RegularEmployee");
+      OVertexType contractEmployeeVertexType =
+          mapper.getGraphModel().getVertexTypeByName("ContractEmployee");
       OVertexType residenceVertexType = mapper.getGraphModel().getVertexTypeByName("Residence");
 
       // vertices check
@@ -1722,29 +2196,42 @@ public class HibernateMapperTest {
 
       assertNotNull(regularEmployeeVertexType.getPropertyByName("salary"));
       assertEquals("salary", regularEmployeeVertexType.getPropertyByName("salary").getName());
-      assertEquals("DECIMAL", regularEmployeeVertexType.getPropertyByName("salary").getOriginalType());
+      assertEquals(
+          "DECIMAL", regularEmployeeVertexType.getPropertyByName("salary").getOriginalType());
       assertEquals(1, regularEmployeeVertexType.getPropertyByName("salary").getOrdinalPosition());
       assertEquals(false, regularEmployeeVertexType.getPropertyByName("salary").isFromPrimaryKey());
 
       assertNotNull(regularEmployeeVertexType.getPropertyByName("bonus"));
       assertEquals("bonus", regularEmployeeVertexType.getPropertyByName("bonus").getName());
-      assertEquals("DECIMAL", regularEmployeeVertexType.getPropertyByName("bonus").getOriginalType());
+      assertEquals(
+          "DECIMAL", regularEmployeeVertexType.getPropertyByName("bonus").getOriginalType());
       assertEquals(2, regularEmployeeVertexType.getPropertyByName("bonus").getOrdinalPosition());
       assertEquals(false, regularEmployeeVertexType.getPropertyByName("bonus").isFromPrimaryKey());
 
       assertEquals(2, contractEmployeeVertexType.getProperties().size());
 
       assertNotNull(contractEmployeeVertexType.getPropertyByName("payPerHour"));
-      assertEquals("payPerHour", contractEmployeeVertexType.getPropertyByName("payPerHour").getName());
-      assertEquals("DECIMAL", contractEmployeeVertexType.getPropertyByName("payPerHour").getOriginalType());
-      assertEquals(1, contractEmployeeVertexType.getPropertyByName("payPerHour").getOrdinalPosition());
-      assertEquals(false, contractEmployeeVertexType.getPropertyByName("payPerHour").isFromPrimaryKey());
+      assertEquals(
+          "payPerHour", contractEmployeeVertexType.getPropertyByName("payPerHour").getName());
+      assertEquals(
+          "DECIMAL", contractEmployeeVertexType.getPropertyByName("payPerHour").getOriginalType());
+      assertEquals(
+          1, contractEmployeeVertexType.getPropertyByName("payPerHour").getOrdinalPosition());
+      assertEquals(
+          false, contractEmployeeVertexType.getPropertyByName("payPerHour").isFromPrimaryKey());
 
       assertNotNull(contractEmployeeVertexType.getPropertyByName("contractDuration"));
-      assertEquals("contractDuration", contractEmployeeVertexType.getPropertyByName("contractDuration").getName());
-      assertEquals("VARCHAR", contractEmployeeVertexType.getPropertyByName("contractDuration").getOriginalType());
-      assertEquals(2, contractEmployeeVertexType.getPropertyByName("contractDuration").getOrdinalPosition());
-      assertEquals(false, contractEmployeeVertexType.getPropertyByName("contractDuration").isFromPrimaryKey());
+      assertEquals(
+          "contractDuration",
+          contractEmployeeVertexType.getPropertyByName("contractDuration").getName());
+      assertEquals(
+          "VARCHAR",
+          contractEmployeeVertexType.getPropertyByName("contractDuration").getOriginalType());
+      assertEquals(
+          2, contractEmployeeVertexType.getPropertyByName("contractDuration").getOrdinalPosition());
+      assertEquals(
+          false,
+          contractEmployeeVertexType.getPropertyByName("contractDuration").isFromPrimaryKey());
 
       assertEquals(3, residenceVertexType.getProperties().size());
 
@@ -1773,41 +2260,70 @@ public class HibernateMapperTest {
 
       assertNotNull(regularEmployeeVertexType.getInheritedPropertyByName("id"));
       assertEquals("id", regularEmployeeVertexType.getInheritedPropertyByName("id").getName());
-      assertEquals("VARCHAR", regularEmployeeVertexType.getInheritedPropertyByName("id").getOriginalType());
-      assertEquals(1, regularEmployeeVertexType.getInheritedPropertyByName("id").getOrdinalPosition());
-      assertEquals(true, regularEmployeeVertexType.getInheritedPropertyByName("id").isFromPrimaryKey());
+      assertEquals(
+          "VARCHAR", regularEmployeeVertexType.getInheritedPropertyByName("id").getOriginalType());
+      assertEquals(
+          1, regularEmployeeVertexType.getInheritedPropertyByName("id").getOrdinalPosition());
+      assertEquals(
+          true, regularEmployeeVertexType.getInheritedPropertyByName("id").isFromPrimaryKey());
 
       assertNotNull(regularEmployeeVertexType.getInheritedPropertyByName("name"));
       assertEquals("name", regularEmployeeVertexType.getInheritedPropertyByName("name").getName());
-      assertEquals("VARCHAR", regularEmployeeVertexType.getInheritedPropertyByName("name").getOriginalType());
-      assertEquals(2, regularEmployeeVertexType.getInheritedPropertyByName("name").getOrdinalPosition());
-      assertEquals(false, regularEmployeeVertexType.getInheritedPropertyByName("name").isFromPrimaryKey());
+      assertEquals(
+          "VARCHAR",
+          regularEmployeeVertexType.getInheritedPropertyByName("name").getOriginalType());
+      assertEquals(
+          2, regularEmployeeVertexType.getInheritedPropertyByName("name").getOrdinalPosition());
+      assertEquals(
+          false, regularEmployeeVertexType.getInheritedPropertyByName("name").isFromPrimaryKey());
 
       assertNotNull(regularEmployeeVertexType.getInheritedPropertyByName("residence"));
-      assertEquals("residence", regularEmployeeVertexType.getInheritedPropertyByName("residence").getName());
-      assertEquals("VARCHAR", regularEmployeeVertexType.getInheritedPropertyByName("residence").getOriginalType());
-      assertEquals(3, regularEmployeeVertexType.getInheritedPropertyByName("residence").getOrdinalPosition());
-      assertEquals(false, regularEmployeeVertexType.getInheritedPropertyByName("residence").isFromPrimaryKey());
+      assertEquals(
+          "residence", regularEmployeeVertexType.getInheritedPropertyByName("residence").getName());
+      assertEquals(
+          "VARCHAR",
+          regularEmployeeVertexType.getInheritedPropertyByName("residence").getOriginalType());
+      assertEquals(
+          3,
+          regularEmployeeVertexType.getInheritedPropertyByName("residence").getOrdinalPosition());
+      assertEquals(
+          false,
+          regularEmployeeVertexType.getInheritedPropertyByName("residence").isFromPrimaryKey());
 
       assertEquals(3, contractEmployeeVertexType.getInheritedProperties().size());
 
       assertNotNull(contractEmployeeVertexType.getInheritedPropertyByName("id"));
       assertEquals("id", contractEmployeeVertexType.getInheritedPropertyByName("id").getName());
-      assertEquals("VARCHAR", contractEmployeeVertexType.getInheritedPropertyByName("id").getOriginalType());
-      assertEquals(1, contractEmployeeVertexType.getInheritedPropertyByName("id").getOrdinalPosition());
-      assertEquals(true, contractEmployeeVertexType.getInheritedPropertyByName("id").isFromPrimaryKey());
+      assertEquals(
+          "VARCHAR", contractEmployeeVertexType.getInheritedPropertyByName("id").getOriginalType());
+      assertEquals(
+          1, contractEmployeeVertexType.getInheritedPropertyByName("id").getOrdinalPosition());
+      assertEquals(
+          true, contractEmployeeVertexType.getInheritedPropertyByName("id").isFromPrimaryKey());
 
       assertNotNull(contractEmployeeVertexType.getInheritedPropertyByName("name"));
       assertEquals("name", contractEmployeeVertexType.getInheritedPropertyByName("name").getName());
-      assertEquals("VARCHAR", contractEmployeeVertexType.getInheritedPropertyByName("name").getOriginalType());
-      assertEquals(2, contractEmployeeVertexType.getInheritedPropertyByName("name").getOrdinalPosition());
-      assertEquals(false, contractEmployeeVertexType.getInheritedPropertyByName("name").isFromPrimaryKey());
+      assertEquals(
+          "VARCHAR",
+          contractEmployeeVertexType.getInheritedPropertyByName("name").getOriginalType());
+      assertEquals(
+          2, contractEmployeeVertexType.getInheritedPropertyByName("name").getOrdinalPosition());
+      assertEquals(
+          false, contractEmployeeVertexType.getInheritedPropertyByName("name").isFromPrimaryKey());
 
       assertNotNull(contractEmployeeVertexType.getInheritedPropertyByName("residence"));
-      assertEquals("residence", contractEmployeeVertexType.getInheritedPropertyByName("residence").getName());
-      assertEquals("VARCHAR", contractEmployeeVertexType.getInheritedPropertyByName("residence").getOriginalType());
-      assertEquals(3, contractEmployeeVertexType.getInheritedPropertyByName("residence").getOrdinalPosition());
-      assertEquals(false, contractEmployeeVertexType.getInheritedPropertyByName("residence").isFromPrimaryKey());
+      assertEquals(
+          "residence",
+          contractEmployeeVertexType.getInheritedPropertyByName("residence").getName());
+      assertEquals(
+          "VARCHAR",
+          contractEmployeeVertexType.getInheritedPropertyByName("residence").getOriginalType());
+      assertEquals(
+          3,
+          contractEmployeeVertexType.getInheritedPropertyByName("residence").getOrdinalPosition());
+      assertEquals(
+          false,
+          contractEmployeeVertexType.getInheritedPropertyByName("residence").isFromPrimaryKey());
 
       assertEquals(0, residenceVertexType.getInheritedProperties().size());
 
@@ -1852,5 +2368,4 @@ public class HibernateMapperTest {
       }
     }
   }
-
 }

@@ -28,12 +28,11 @@ import java.util.List;
  * @author Gabriele Ponzi
  * @email <g.ponzi--at--orientdb.com>
  */
-
 public abstract class ORelationship {
 
-  protected OEntity foreignEntity;        // Entity importing the key (starting entity)
-  protected OEntity parentEntity;            // Entity exporting the key (arrival entity)
-  protected String  direction;                    // represents the direction of the relationship
+  protected OEntity foreignEntity; // Entity importing the key (starting entity)
+  protected OEntity parentEntity; // Entity exporting the key (arrival entity)
+  protected String direction; // represents the direction of the relationship
 
   public OEntity getForeignEntity() {
     return this.foreignEntity;
@@ -62,7 +61,6 @@ public abstract class ORelationship {
   public abstract List<OAttribute> getFromColumns();
 
   public abstract List<OAttribute> getToColumns();
-
 
   @Override
   public int hashCode() {

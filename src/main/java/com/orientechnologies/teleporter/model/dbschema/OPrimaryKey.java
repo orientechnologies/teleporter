@@ -26,7 +26,6 @@ package com.orientechnologies.teleporter.model.dbschema;
  * @author Gabriele Ponzi
  * @email <g.ponzi--at--orientdb.com>
  */
-
 public class OPrimaryKey extends OKey {
 
   public OPrimaryKey(OEntity belongingEntity) {
@@ -36,15 +35,11 @@ public class OPrimaryKey extends OKey {
   public OAttribute getAttributeByOrdinalPosition(int ordinalPosition) {
 
     // overflow
-    if (ordinalPosition > super.getInvolvedAttributes().size())
-      return null;
+    if (ordinalPosition > super.getInvolvedAttributes().size()) return null;
 
     for (OAttribute attribute : super.involvedAttributes) {
-      if (attribute.getOrdinalPosition() == ordinalPosition)
-        return attribute;
+      if (attribute.getOrdinalPosition() == ordinalPosition) return attribute;
     }
     return null;
-
   }
-
 }

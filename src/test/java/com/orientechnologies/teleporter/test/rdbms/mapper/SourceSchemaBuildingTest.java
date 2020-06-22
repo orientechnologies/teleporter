@@ -20,6 +20,8 @@
 
 package com.orientechnologies.teleporter.test.rdbms.mapper;
 
+import static org.junit.Assert.*;
+
 import com.orientechnologies.teleporter.context.OTeleporterContext;
 import com.orientechnologies.teleporter.context.OTeleporterMessageHandler;
 import com.orientechnologies.teleporter.importengine.rdbms.dbengine.ODBQueryEngine;
@@ -27,33 +29,28 @@ import com.orientechnologies.teleporter.mapper.rdbms.OER2GraphMapper;
 import com.orientechnologies.teleporter.model.dbschema.OCanonicalRelationship;
 import com.orientechnologies.teleporter.model.dbschema.OEntity;
 import com.orientechnologies.teleporter.model.dbschema.OSourceDatabaseInfo;
-import org.junit.Assert;
-import org.junit.Before;
-
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.Statement;
 import java.util.Iterator;
-
-import static org.junit.Assert.*;
+import org.junit.Assert;
+import org.junit.Before;
 
 /**
  * @author Gabriele Ponzi
  * @email <g.ponzi--at--orientdb.com>
  */
-
 public class SourceSchemaBuildingTest {
 
-  private OER2GraphMapper    mapper;
+  private OER2GraphMapper mapper;
   private OTeleporterContext context;
-  private ODBQueryEngine     dbQueryEngine;
-  private String driver   = "org.hsqldb.jdbc.JDBCDriver";
-  private String jurl     = "jdbc:hsqldb:mem:mydb";
+  private ODBQueryEngine dbQueryEngine;
+  private String driver = "org.hsqldb.jdbc.JDBCDriver";
+  private String jurl = "jdbc:hsqldb:mem:mydb";
   private String username = "SA";
   private String password = "";
   private OSourceDatabaseInfo sourceDBInfo;
   private String outParentDirectory = "embedded:target/";
-
 
   @Before
   public void init() {
@@ -61,11 +58,12 @@ public class SourceSchemaBuildingTest {
     this.dbQueryEngine = new ODBQueryEngine(this.driver);
     this.context.setDbQueryEngine(this.dbQueryEngine);
     this.context.setMessageHandler(new OTeleporterMessageHandler(0));
-    this.sourceDBInfo = new OSourceDatabaseInfo("source", this.driver, this.jurl, this.username, this.password);
+    this.sourceDBInfo =
+        new OSourceDatabaseInfo("source", this.driver, this.jurl, this.username, this.password);
     this.mapper = new OER2GraphMapper(sourceDBInfo, null, null, null);
   }
 
-  //@Test
+  // @Test
 
   /*
    *  Two Foreign tables and one Parent with a simple primary key imported from the parent table.
@@ -81,17 +79,18 @@ public class SourceSchemaBuildingTest {
       Class.forName(this.driver);
       connection = DriverManager.getConnection(this.jurl, this.username, this.password);
 
-      String parentTableBuilding = "create memory table PARENT_AUTHOR (AUTHOR_ID varchar(256) not null,"
-          + " AUTHOR_NAME varchar(256) not null, primary key (AUTHOR_ID))";
+      String parentTableBuilding =
+          "create memory table PARENT_AUTHOR (AUTHOR_ID varchar(256) not null,"
+              + " AUTHOR_NAME varchar(256) not null, primary key (AUTHOR_ID))";
       st = connection.createStatement();
       st.execute(parentTableBuilding);
 
-      String foreignTableBuilding = "create memory table FOREIGN_BOOK (BOOK_ID varchar(256) not null, TITLE  varchar(256),"
-          + " AUTHOR varchar(256) not null, primary key (BOOK_ID), foreign key (AUTHOR) references PARENT_AUTHOR(AUTHOR_ID))";
+      String foreignTableBuilding =
+          "create memory table FOREIGN_BOOK (BOOK_ID varchar(256) not null, TITLE  varchar(256),"
+              + " AUTHOR varchar(256) not null, primary key (BOOK_ID), foreign key (AUTHOR) references PARENT_AUTHOR(AUTHOR_ID))";
       st.execute(foreignTableBuilding);
 
       this.mapper.buildSourceDatabaseSchema();
-
 
       /*
        *  Testing context information
@@ -102,9 +101,8 @@ public class SourceSchemaBuildingTest {
       assertEquals(1, context.getStatistics().totalNumberOfRelationships);
       assertEquals(1, context.getStatistics().builtRelationships);
 
-
       /*
-       *  Testing built source db schema 
+       *  Testing built source db schema
        */
 
       OEntity parentEntity = mapper.getDataBaseSchema().getEntityByName("PARENT_AUTHOR");
@@ -123,13 +121,17 @@ public class SourceSchemaBuildingTest {
       assertEquals("AUTHOR_ID", parentEntity.getAttributeByName("AUTHOR_ID").getName());
       assertEquals("VARCHAR", parentEntity.getAttributeByName("AUTHOR_ID").getDataType());
       assertEquals(1, parentEntity.getAttributeByName("AUTHOR_ID").getOrdinalPosition());
-      assertEquals("PARENT_AUTHOR", parentEntity.getAttributeByName("AUTHOR_ID").getBelongingEntity().getName());
+      assertEquals(
+          "PARENT_AUTHOR",
+          parentEntity.getAttributeByName("AUTHOR_ID").getBelongingEntity().getName());
 
       assertNotNull(parentEntity.getAttributeByName("AUTHOR_NAME"));
       assertEquals("AUTHOR_NAME", parentEntity.getAttributeByName("AUTHOR_NAME").getName());
       assertEquals("VARCHAR", parentEntity.getAttributeByName("AUTHOR_NAME").getDataType());
       assertEquals(2, parentEntity.getAttributeByName("AUTHOR_NAME").getOrdinalPosition());
-      assertEquals("PARENT_AUTHOR", parentEntity.getAttributeByName("AUTHOR_NAME").getBelongingEntity().getName());
+      assertEquals(
+          "PARENT_AUTHOR",
+          parentEntity.getAttributeByName("AUTHOR_NAME").getBelongingEntity().getName());
 
       assertEquals(3, foreignEntity.getAttributes().size());
 
@@ -137,19 +139,24 @@ public class SourceSchemaBuildingTest {
       assertEquals("BOOK_ID", foreignEntity.getAttributeByName("BOOK_ID").getName());
       assertEquals("VARCHAR", foreignEntity.getAttributeByName("BOOK_ID").getDataType());
       assertEquals(1, foreignEntity.getAttributeByName("BOOK_ID").getOrdinalPosition());
-      assertEquals("FOREIGN_BOOK", foreignEntity.getAttributeByName("BOOK_ID").getBelongingEntity().getName());
+      assertEquals(
+          "FOREIGN_BOOK",
+          foreignEntity.getAttributeByName("BOOK_ID").getBelongingEntity().getName());
 
       assertNotNull(foreignEntity.getAttributeByName("TITLE"));
       assertEquals("TITLE", foreignEntity.getAttributeByName("TITLE").getName());
       assertEquals("VARCHAR", foreignEntity.getAttributeByName("TITLE").getDataType());
       assertEquals(2, foreignEntity.getAttributeByName("TITLE").getOrdinalPosition());
-      assertEquals("FOREIGN_BOOK", foreignEntity.getAttributeByName("TITLE").getBelongingEntity().getName());
+      assertEquals(
+          "FOREIGN_BOOK", foreignEntity.getAttributeByName("TITLE").getBelongingEntity().getName());
 
       assertNotNull(foreignEntity.getAttributeByName("AUTHOR"));
       assertEquals("AUTHOR", foreignEntity.getAttributeByName("AUTHOR").getName());
       assertEquals("VARCHAR", foreignEntity.getAttributeByName("AUTHOR").getDataType());
       assertEquals(3, foreignEntity.getAttributeByName("AUTHOR").getOrdinalPosition());
-      assertEquals("FOREIGN_BOOK", foreignEntity.getAttributeByName("AUTHOR").getBelongingEntity().getName());
+      assertEquals(
+          "FOREIGN_BOOK",
+          foreignEntity.getAttributeByName("AUTHOR").getBelongingEntity().getName());
 
       // relationship, primary and foreign key check
       assertEquals(1, foreignEntity.getOutCanonicalRelationships().size());
@@ -170,8 +177,10 @@ public class SourceSchemaBuildingTest {
       OCanonicalRelationship currentRelationship2 = it2.next();
       assertEquals(currentRelationship, currentRelationship2);
 
-      assertEquals("AUTHOR", foreignEntity.getForeignKeys().get(0).getInvolvedAttributes().get(0).getName());
-      assertEquals("AUTHOR_ID", parentEntity.getPrimaryKey().getInvolvedAttributes().get(0).getName());
+      assertEquals(
+          "AUTHOR", foreignEntity.getForeignKeys().get(0).getInvolvedAttributes().get(0).getName());
+      assertEquals(
+          "AUTHOR_ID", parentEntity.getPrimaryKey().getInvolvedAttributes().get(0).getName());
 
       assertFalse(it.hasNext());
 
@@ -192,7 +201,7 @@ public class SourceSchemaBuildingTest {
     }
   }
 
-  //@Test
+  // @Test
 
   /*
    *  Two Foreign tables and one Parent with a composite primary key imported from the parent table.
@@ -208,18 +217,19 @@ public class SourceSchemaBuildingTest {
       Class.forName(this.driver);
       connection = DriverManager.getConnection(this.jurl, this.username, this.password);
 
-      String parentTableBuilding = "create memory table PARENT_AUTHOR (AUTHOR_NAME varchar(256) not null,"
-          + " AUTHOR_SURNAME varchar(256) not null, AGE INTEGER, primary key (AUTHOR_NAME,AUTHOR_SURNAME))";
+      String parentTableBuilding =
+          "create memory table PARENT_AUTHOR (AUTHOR_NAME varchar(256) not null,"
+              + " AUTHOR_SURNAME varchar(256) not null, AGE INTEGER, primary key (AUTHOR_NAME,AUTHOR_SURNAME))";
       st = connection.createStatement();
       st.execute(parentTableBuilding);
 
-      String foreignTableBuilding = "create memory table FOREIGN_BOOK (TITLE  varchar(256),"
-          + " AUTHOR_NAME varchar(256) not null, AUTHOR_SURNAME varchar(256) not null, primary key (TITLE),"
-          + " foreign key (AUTHOR_NAME,AUTHOR_SURNAME) references PARENT_AUTHOR(AUTHOR_NAME,AUTHOR_SURNAME))";
+      String foreignTableBuilding =
+          "create memory table FOREIGN_BOOK (TITLE  varchar(256),"
+              + " AUTHOR_NAME varchar(256) not null, AUTHOR_SURNAME varchar(256) not null, primary key (TITLE),"
+              + " foreign key (AUTHOR_NAME,AUTHOR_SURNAME) references PARENT_AUTHOR(AUTHOR_NAME,AUTHOR_SURNAME))";
       st.execute(foreignTableBuilding);
 
       mapper.buildSourceDatabaseSchema();
-
 
       /*
        *  Testing context information
@@ -230,9 +240,8 @@ public class SourceSchemaBuildingTest {
       assertEquals(1, context.getStatistics().totalNumberOfRelationships);
       assertEquals(1, context.getStatistics().builtRelationships);
 
-
       /*
-       *  Testing built source db schema 
+       *  Testing built source db schema
        */
 
       OEntity parentEntity = mapper.getDataBaseSchema().getEntityByName("PARENT_AUTHOR");
@@ -251,19 +260,24 @@ public class SourceSchemaBuildingTest {
       assertEquals("AUTHOR_NAME", parentEntity.getAttributeByName("AUTHOR_NAME").getName());
       assertEquals("VARCHAR", parentEntity.getAttributeByName("AUTHOR_NAME").getDataType());
       assertEquals(1, parentEntity.getAttributeByName("AUTHOR_NAME").getOrdinalPosition());
-      assertEquals("PARENT_AUTHOR", parentEntity.getAttributeByName("AUTHOR_NAME").getBelongingEntity().getName());
+      assertEquals(
+          "PARENT_AUTHOR",
+          parentEntity.getAttributeByName("AUTHOR_NAME").getBelongingEntity().getName());
 
       assertNotNull(parentEntity.getAttributeByName("AUTHOR_SURNAME"));
       assertEquals("AUTHOR_SURNAME", parentEntity.getAttributeByName("AUTHOR_SURNAME").getName());
       assertEquals("VARCHAR", parentEntity.getAttributeByName("AUTHOR_SURNAME").getDataType());
       assertEquals(2, parentEntity.getAttributeByName("AUTHOR_SURNAME").getOrdinalPosition());
-      assertEquals("PARENT_AUTHOR", parentEntity.getAttributeByName("AUTHOR_SURNAME").getBelongingEntity().getName());
+      assertEquals(
+          "PARENT_AUTHOR",
+          parentEntity.getAttributeByName("AUTHOR_SURNAME").getBelongingEntity().getName());
 
       assertNotNull(parentEntity.getAttributeByName("AGE"));
       assertEquals("AGE", parentEntity.getAttributeByName("AGE").getName());
       assertEquals("INTEGER", parentEntity.getAttributeByName("AGE").getDataType());
       assertEquals(3, parentEntity.getAttributeByName("AGE").getOrdinalPosition());
-      assertEquals("PARENT_AUTHOR", parentEntity.getAttributeByName("AGE").getBelongingEntity().getName());
+      assertEquals(
+          "PARENT_AUTHOR", parentEntity.getAttributeByName("AGE").getBelongingEntity().getName());
 
       assertEquals(3, foreignEntity.getAttributes().size());
 
@@ -271,19 +285,24 @@ public class SourceSchemaBuildingTest {
       assertEquals("TITLE", foreignEntity.getAttributeByName("TITLE").getName());
       assertEquals("VARCHAR", foreignEntity.getAttributeByName("TITLE").getDataType());
       assertEquals(1, foreignEntity.getAttributeByName("TITLE").getOrdinalPosition());
-      assertEquals("FOREIGN_BOOK", foreignEntity.getAttributeByName("TITLE").getBelongingEntity().getName());
+      assertEquals(
+          "FOREIGN_BOOK", foreignEntity.getAttributeByName("TITLE").getBelongingEntity().getName());
 
       assertNotNull(foreignEntity.getAttributeByName("AUTHOR_NAME"));
       assertEquals("AUTHOR_NAME", foreignEntity.getAttributeByName("AUTHOR_NAME").getName());
       assertEquals("VARCHAR", foreignEntity.getAttributeByName("AUTHOR_NAME").getDataType());
       assertEquals(2, foreignEntity.getAttributeByName("AUTHOR_NAME").getOrdinalPosition());
-      assertEquals("FOREIGN_BOOK", foreignEntity.getAttributeByName("AUTHOR_NAME").getBelongingEntity().getName());
+      assertEquals(
+          "FOREIGN_BOOK",
+          foreignEntity.getAttributeByName("AUTHOR_NAME").getBelongingEntity().getName());
 
       assertNotNull(foreignEntity.getAttributeByName("AUTHOR_SURNAME"));
       assertEquals("AUTHOR_SURNAME", foreignEntity.getAttributeByName("AUTHOR_SURNAME").getName());
       assertEquals("VARCHAR", foreignEntity.getAttributeByName("AUTHOR_SURNAME").getDataType());
       assertEquals(3, foreignEntity.getAttributeByName("AUTHOR_SURNAME").getOrdinalPosition());
-      assertEquals("FOREIGN_BOOK", foreignEntity.getAttributeByName("AUTHOR_SURNAME").getBelongingEntity().getName());
+      assertEquals(
+          "FOREIGN_BOOK",
+          foreignEntity.getAttributeByName("AUTHOR_SURNAME").getBelongingEntity().getName());
 
       // relationship, primary and foreign key check
       assertEquals(1, foreignEntity.getOutCanonicalRelationships().size());
@@ -304,10 +323,16 @@ public class SourceSchemaBuildingTest {
       OCanonicalRelationship currentRelationship2 = it2.next();
       assertEquals(currentRelationship, currentRelationship2);
 
-      assertEquals("AUTHOR_NAME", foreignEntity.getForeignKeys().get(0).getInvolvedAttributes().get(0).getName());
-      assertEquals("AUTHOR_SURNAME", foreignEntity.getForeignKeys().get(0).getInvolvedAttributes().get(1).getName());
-      assertEquals("AUTHOR_NAME", parentEntity.getPrimaryKey().getInvolvedAttributes().get(0).getName());
-      assertEquals("AUTHOR_SURNAME", parentEntity.getPrimaryKey().getInvolvedAttributes().get(1).getName());
+      assertEquals(
+          "AUTHOR_NAME",
+          foreignEntity.getForeignKeys().get(0).getInvolvedAttributes().get(0).getName());
+      assertEquals(
+          "AUTHOR_SURNAME",
+          foreignEntity.getForeignKeys().get(0).getInvolvedAttributes().get(1).getName());
+      assertEquals(
+          "AUTHOR_NAME", parentEntity.getPrimaryKey().getInvolvedAttributes().get(0).getName());
+      assertEquals(
+          "AUTHOR_SURNAME", parentEntity.getPrimaryKey().getInvolvedAttributes().get(1).getName());
 
       assertFalse(it.hasNext());
 
@@ -328,7 +353,7 @@ public class SourceSchemaBuildingTest {
     }
   }
 
-  //@Test
+  // @Test
 
   /*
    *  Two Foreign tables and one Parent with a simple primary key imported twice from the parent table.
@@ -344,19 +369,20 @@ public class SourceSchemaBuildingTest {
       Class.forName(this.driver);
       connection = DriverManager.getConnection(this.jurl, this.username, this.password);
 
-      String parentTableBuilding = "create memory table PARENT_PERSON (PERSON_ID varchar(256) not null,"
-          + " NAME varchar(256) not null, primary key (PERSON_ID))";
+      String parentTableBuilding =
+          "create memory table PARENT_PERSON (PERSON_ID varchar(256) not null,"
+              + " NAME varchar(256) not null, primary key (PERSON_ID))";
       st = connection.createStatement();
       st.execute(parentTableBuilding);
 
-      String foreignTableBuilding = "create memory table FOREIGN_ARTICLE (TITLE  varchar(256),"
-          + " AUTHOR varchar(256) not null, TRANSLATOR varchar(256) not null, primary key (TITLE),"
-          + " foreign key (AUTHOR) references PARENT_PERSON(PERSON_ID),"
-          + " foreign key (TRANSLATOR) references PARENT_PERSON(PERSON_ID))";
+      String foreignTableBuilding =
+          "create memory table FOREIGN_ARTICLE (TITLE  varchar(256),"
+              + " AUTHOR varchar(256) not null, TRANSLATOR varchar(256) not null, primary key (TITLE),"
+              + " foreign key (AUTHOR) references PARENT_PERSON(PERSON_ID),"
+              + " foreign key (TRANSLATOR) references PARENT_PERSON(PERSON_ID))";
       st.execute(foreignTableBuilding);
 
       mapper.buildSourceDatabaseSchema();
-
 
       /*
        *  Testing context information
@@ -367,9 +393,8 @@ public class SourceSchemaBuildingTest {
       assertEquals(2, context.getStatistics().totalNumberOfRelationships);
       assertEquals(2, context.getStatistics().builtRelationships);
 
-
       /*
-       *  Testing built source db schema 
+       *  Testing built source db schema
        */
 
       OEntity parentEntity = mapper.getDataBaseSchema().getEntityByName("PARENT_PERSON");
@@ -388,13 +413,16 @@ public class SourceSchemaBuildingTest {
       assertEquals("PERSON_ID", parentEntity.getAttributeByName("PERSON_ID").getName());
       assertEquals("VARCHAR", parentEntity.getAttributeByName("PERSON_ID").getDataType());
       assertEquals(1, parentEntity.getAttributeByName("PERSON_ID").getOrdinalPosition());
-      assertEquals("PARENT_PERSON", parentEntity.getAttributeByName("PERSON_ID").getBelongingEntity().getName());
+      assertEquals(
+          "PARENT_PERSON",
+          parentEntity.getAttributeByName("PERSON_ID").getBelongingEntity().getName());
 
       assertNotNull(parentEntity.getAttributeByName("NAME"));
       assertEquals("NAME", parentEntity.getAttributeByName("NAME").getName());
       assertEquals("VARCHAR", parentEntity.getAttributeByName("NAME").getDataType());
       assertEquals(2, parentEntity.getAttributeByName("NAME").getOrdinalPosition());
-      assertEquals("PARENT_PERSON", parentEntity.getAttributeByName("NAME").getBelongingEntity().getName());
+      assertEquals(
+          "PARENT_PERSON", parentEntity.getAttributeByName("NAME").getBelongingEntity().getName());
 
       assertEquals(3, foreignEntity.getAttributes().size());
 
@@ -402,19 +430,25 @@ public class SourceSchemaBuildingTest {
       assertEquals("TITLE", foreignEntity.getAttributeByName("TITLE").getName());
       assertEquals("VARCHAR", foreignEntity.getAttributeByName("TITLE").getDataType());
       assertEquals(1, foreignEntity.getAttributeByName("TITLE").getOrdinalPosition());
-      assertEquals("FOREIGN_ARTICLE", foreignEntity.getAttributeByName("TITLE").getBelongingEntity().getName());
+      assertEquals(
+          "FOREIGN_ARTICLE",
+          foreignEntity.getAttributeByName("TITLE").getBelongingEntity().getName());
 
       assertNotNull(foreignEntity.getAttributeByName("AUTHOR"));
       assertEquals("AUTHOR", foreignEntity.getAttributeByName("AUTHOR").getName());
       assertEquals("VARCHAR", foreignEntity.getAttributeByName("AUTHOR").getDataType());
       assertEquals(2, foreignEntity.getAttributeByName("AUTHOR").getOrdinalPosition());
-      assertEquals("FOREIGN_ARTICLE", foreignEntity.getAttributeByName("AUTHOR").getBelongingEntity().getName());
+      assertEquals(
+          "FOREIGN_ARTICLE",
+          foreignEntity.getAttributeByName("AUTHOR").getBelongingEntity().getName());
 
       assertNotNull(foreignEntity.getAttributeByName("TRANSLATOR"));
       assertEquals("TRANSLATOR", foreignEntity.getAttributeByName("TRANSLATOR").getName());
       assertEquals("VARCHAR", foreignEntity.getAttributeByName("TRANSLATOR").getDataType());
       assertEquals(3, foreignEntity.getAttributeByName("TRANSLATOR").getOrdinalPosition());
-      assertEquals("FOREIGN_ARTICLE", foreignEntity.getAttributeByName("TRANSLATOR").getBelongingEntity().getName());
+      assertEquals(
+          "FOREIGN_ARTICLE",
+          foreignEntity.getAttributeByName("TRANSLATOR").getBelongingEntity().getName());
 
       // relationship, primary and foreign key check
       assertEquals(2, foreignEntity.getOutCanonicalRelationships().size());
@@ -436,8 +470,10 @@ public class SourceSchemaBuildingTest {
       OCanonicalRelationship currentRelationship2 = it2.next();
       assertEquals(currentRelationship, currentRelationship2);
 
-      assertEquals("AUTHOR", foreignEntity.getForeignKeys().get(0).getInvolvedAttributes().get(0).getName());
-      assertEquals("PERSON_ID", parentEntity.getPrimaryKey().getInvolvedAttributes().get(0).getName());
+      assertEquals(
+          "AUTHOR", foreignEntity.getForeignKeys().get(0).getInvolvedAttributes().get(0).getName());
+      assertEquals(
+          "PERSON_ID", parentEntity.getPrimaryKey().getInvolvedAttributes().get(0).getName());
 
       // second relationship
       currentRelationship = it.next();
@@ -449,8 +485,11 @@ public class SourceSchemaBuildingTest {
       currentRelationship2 = it2.next();
       assertEquals(currentRelationship, currentRelationship2);
 
-      assertEquals("TRANSLATOR", foreignEntity.getForeignKeys().get(1).getInvolvedAttributes().get(0).getName());
-      assertEquals("PERSON_ID", parentEntity.getPrimaryKey().getInvolvedAttributes().get(0).getName());
+      assertEquals(
+          "TRANSLATOR",
+          foreignEntity.getForeignKeys().get(1).getInvolvedAttributes().get(0).getName());
+      assertEquals(
+          "PERSON_ID", parentEntity.getPrimaryKey().getInvolvedAttributes().get(0).getName());
 
       assertFalse(it.hasNext());
 
@@ -471,7 +510,7 @@ public class SourceSchemaBuildingTest {
     }
   }
 
-  //@Test
+  // @Test
 
   /*
    *  Two Foreign tables and one Parent with a composite primary key imported twice from the parent table.
@@ -487,20 +526,21 @@ public class SourceSchemaBuildingTest {
       Class.forName(this.driver);
       connection = DriverManager.getConnection(this.jurl, this.username, this.password);
 
-      String parentTableBuilding = "create memory table PARENT_PERSON (NAME varchar(256) not null,"
-          + " SURNAME varchar(256) not null, primary key (NAME,SURNAME))";
+      String parentTableBuilding =
+          "create memory table PARENT_PERSON (NAME varchar(256) not null,"
+              + " SURNAME varchar(256) not null, primary key (NAME,SURNAME))";
       st = connection.createStatement();
       st.execute(parentTableBuilding);
 
-      String foreignTableBuilding = "create memory table FOREIGN_ARTICLE (TITLE  varchar(256),"
-          + " AUTHOR_NAME varchar(256) not null, AUTHOR_SURNAME varchar(256) not null, TRANSLATOR_NAME varchar(256) not null,"
-          + " TRANSLATOR_SURNAME varchar(256) not null, primary key (TITLE),"
-          + " foreign key (AUTHOR_NAME,AUTHOR_SURNAME) references PARENT_PERSON(NAME,SURNAME),"
-          + " foreign key (TRANSLATOR_NAME,TRANSLATOR_SURNAME) references PARENT_PERSON(NAME,SURNAME))";
+      String foreignTableBuilding =
+          "create memory table FOREIGN_ARTICLE (TITLE  varchar(256),"
+              + " AUTHOR_NAME varchar(256) not null, AUTHOR_SURNAME varchar(256) not null, TRANSLATOR_NAME varchar(256) not null,"
+              + " TRANSLATOR_SURNAME varchar(256) not null, primary key (TITLE),"
+              + " foreign key (AUTHOR_NAME,AUTHOR_SURNAME) references PARENT_PERSON(NAME,SURNAME),"
+              + " foreign key (TRANSLATOR_NAME,TRANSLATOR_SURNAME) references PARENT_PERSON(NAME,SURNAME))";
       st.execute(foreignTableBuilding);
 
       mapper.buildSourceDatabaseSchema();
-
 
       /*
        *  Testing context information
@@ -511,9 +551,8 @@ public class SourceSchemaBuildingTest {
       assertEquals(2, context.getStatistics().totalNumberOfRelationships);
       assertEquals(2, context.getStatistics().builtRelationships);
 
-
       /*
-       *  Testing built source db schema 
+       *  Testing built source db schema
        */
 
       OEntity parentEntity = mapper.getDataBaseSchema().getEntityByName("PARENT_PERSON");
@@ -532,13 +571,16 @@ public class SourceSchemaBuildingTest {
       assertEquals("NAME", parentEntity.getAttributeByName("NAME").getName());
       assertEquals("VARCHAR", parentEntity.getAttributeByName("NAME").getDataType());
       assertEquals(1, parentEntity.getAttributeByName("NAME").getOrdinalPosition());
-      assertEquals("PARENT_PERSON", parentEntity.getAttributeByName("NAME").getBelongingEntity().getName());
+      assertEquals(
+          "PARENT_PERSON", parentEntity.getAttributeByName("NAME").getBelongingEntity().getName());
 
       assertNotNull(parentEntity.getAttributeByName("SURNAME"));
       assertEquals("SURNAME", parentEntity.getAttributeByName("SURNAME").getName());
       assertEquals("VARCHAR", parentEntity.getAttributeByName("SURNAME").getDataType());
       assertEquals(2, parentEntity.getAttributeByName("SURNAME").getOrdinalPosition());
-      assertEquals("PARENT_PERSON", parentEntity.getAttributeByName("SURNAME").getBelongingEntity().getName());
+      assertEquals(
+          "PARENT_PERSON",
+          parentEntity.getAttributeByName("SURNAME").getBelongingEntity().getName());
 
       assertEquals(5, foreignEntity.getAttributes().size());
 
@@ -546,31 +588,43 @@ public class SourceSchemaBuildingTest {
       assertEquals("TITLE", foreignEntity.getAttributeByName("TITLE").getName());
       assertEquals("VARCHAR", foreignEntity.getAttributeByName("TITLE").getDataType());
       assertEquals(1, foreignEntity.getAttributeByName("TITLE").getOrdinalPosition());
-      assertEquals("FOREIGN_ARTICLE", foreignEntity.getAttributeByName("TITLE").getBelongingEntity().getName());
+      assertEquals(
+          "FOREIGN_ARTICLE",
+          foreignEntity.getAttributeByName("TITLE").getBelongingEntity().getName());
 
       assertNotNull(foreignEntity.getAttributeByName("AUTHOR_NAME"));
       assertEquals("AUTHOR_NAME", foreignEntity.getAttributeByName("AUTHOR_NAME").getName());
       assertEquals("VARCHAR", foreignEntity.getAttributeByName("AUTHOR_NAME").getDataType());
       assertEquals(2, foreignEntity.getAttributeByName("AUTHOR_NAME").getOrdinalPosition());
-      assertEquals("FOREIGN_ARTICLE", foreignEntity.getAttributeByName("AUTHOR_NAME").getBelongingEntity().getName());
+      assertEquals(
+          "FOREIGN_ARTICLE",
+          foreignEntity.getAttributeByName("AUTHOR_NAME").getBelongingEntity().getName());
 
       assertNotNull(foreignEntity.getAttributeByName("AUTHOR_SURNAME"));
       assertEquals("AUTHOR_SURNAME", foreignEntity.getAttributeByName("AUTHOR_SURNAME").getName());
       assertEquals("VARCHAR", foreignEntity.getAttributeByName("AUTHOR_SURNAME").getDataType());
       assertEquals(3, foreignEntity.getAttributeByName("AUTHOR_SURNAME").getOrdinalPosition());
-      assertEquals("FOREIGN_ARTICLE", foreignEntity.getAttributeByName("AUTHOR_SURNAME").getBelongingEntity().getName());
+      assertEquals(
+          "FOREIGN_ARTICLE",
+          foreignEntity.getAttributeByName("AUTHOR_SURNAME").getBelongingEntity().getName());
 
       assertNotNull(foreignEntity.getAttributeByName("TRANSLATOR_NAME"));
-      assertEquals("TRANSLATOR_NAME", foreignEntity.getAttributeByName("TRANSLATOR_NAME").getName());
+      assertEquals(
+          "TRANSLATOR_NAME", foreignEntity.getAttributeByName("TRANSLATOR_NAME").getName());
       assertEquals("VARCHAR", foreignEntity.getAttributeByName("TRANSLATOR_NAME").getDataType());
       assertEquals(4, foreignEntity.getAttributeByName("TRANSLATOR_NAME").getOrdinalPosition());
-      assertEquals("FOREIGN_ARTICLE", foreignEntity.getAttributeByName("TRANSLATOR_NAME").getBelongingEntity().getName());
+      assertEquals(
+          "FOREIGN_ARTICLE",
+          foreignEntity.getAttributeByName("TRANSLATOR_NAME").getBelongingEntity().getName());
 
       assertNotNull(foreignEntity.getAttributeByName("TRANSLATOR_SURNAME"));
-      assertEquals("TRANSLATOR_SURNAME", foreignEntity.getAttributeByName("TRANSLATOR_SURNAME").getName());
+      assertEquals(
+          "TRANSLATOR_SURNAME", foreignEntity.getAttributeByName("TRANSLATOR_SURNAME").getName());
       assertEquals("VARCHAR", foreignEntity.getAttributeByName("TRANSLATOR_SURNAME").getDataType());
       assertEquals(5, foreignEntity.getAttributeByName("TRANSLATOR_SURNAME").getOrdinalPosition());
-      assertEquals("FOREIGN_ARTICLE", foreignEntity.getAttributeByName("TRANSLATOR_SURNAME").getBelongingEntity().getName());
+      assertEquals(
+          "FOREIGN_ARTICLE",
+          foreignEntity.getAttributeByName("TRANSLATOR_SURNAME").getBelongingEntity().getName());
 
       // relationship, primary and foreign key check
       assertEquals(2, foreignEntity.getOutCanonicalRelationships().size());
@@ -592,10 +646,15 @@ public class SourceSchemaBuildingTest {
       OCanonicalRelationship currentRelationship2 = it2.next();
       assertEquals(currentRelationship, currentRelationship2);
 
-      assertEquals("AUTHOR_NAME", foreignEntity.getForeignKeys().get(0).getInvolvedAttributes().get(0).getName());
-      assertEquals("AUTHOR_SURNAME", foreignEntity.getForeignKeys().get(0).getInvolvedAttributes().get(1).getName());
+      assertEquals(
+          "AUTHOR_NAME",
+          foreignEntity.getForeignKeys().get(0).getInvolvedAttributes().get(0).getName());
+      assertEquals(
+          "AUTHOR_SURNAME",
+          foreignEntity.getForeignKeys().get(0).getInvolvedAttributes().get(1).getName());
       assertEquals("NAME", parentEntity.getPrimaryKey().getInvolvedAttributes().get(0).getName());
-      assertEquals("SURNAME", parentEntity.getPrimaryKey().getInvolvedAttributes().get(1).getName());
+      assertEquals(
+          "SURNAME", parentEntity.getPrimaryKey().getInvolvedAttributes().get(1).getName());
 
       // second relationship
       currentRelationship = it.next();
@@ -608,10 +667,15 @@ public class SourceSchemaBuildingTest {
       currentRelationship2 = it2.next();
       assertEquals(currentRelationship, currentRelationship2);
 
-      assertEquals("TRANSLATOR_NAME", foreignEntity.getForeignKeys().get(1).getInvolvedAttributes().get(0).getName());
-      assertEquals("TRANSLATOR_SURNAME", foreignEntity.getForeignKeys().get(1).getInvolvedAttributes().get(1).getName());
+      assertEquals(
+          "TRANSLATOR_NAME",
+          foreignEntity.getForeignKeys().get(1).getInvolvedAttributes().get(0).getName());
+      assertEquals(
+          "TRANSLATOR_SURNAME",
+          foreignEntity.getForeignKeys().get(1).getInvolvedAttributes().get(1).getName());
       assertEquals("NAME", parentEntity.getPrimaryKey().getInvolvedAttributes().get(0).getName());
-      assertEquals("SURNAME", parentEntity.getPrimaryKey().getInvolvedAttributes().get(1).getName());
+      assertEquals(
+          "SURNAME", parentEntity.getPrimaryKey().getInvolvedAttributes().get(1).getName());
 
     } catch (Exception e) {
       e.printStackTrace();
@@ -630,7 +694,7 @@ public class SourceSchemaBuildingTest {
     }
   }
 
-  //@Test
+  // @Test
 
   /*
    *  Two tables: 1 Foreign and 1 Parent (parent has an inner referential integrity).
@@ -647,19 +711,20 @@ public class SourceSchemaBuildingTest {
       Class.forName(this.driver);
       connection = DriverManager.getConnection(this.jurl, this.username, this.password);
 
-      String parentTableBuilding = "create memory table PARENT_EMPLOYEE (EMP_ID varchar(256) not null,"
-          + " MGR_ID varchar(256) not null, NAME varchar(256) not null, primary key (EMP_ID), "
-          + " foreign key (MGR_ID) references PARENT_EMPLOYEE(EMP_ID))";
+      String parentTableBuilding =
+          "create memory table PARENT_EMPLOYEE (EMP_ID varchar(256) not null,"
+              + " MGR_ID varchar(256) not null, NAME varchar(256) not null, primary key (EMP_ID), "
+              + " foreign key (MGR_ID) references PARENT_EMPLOYEE(EMP_ID))";
       st = connection.createStatement();
       st.execute(parentTableBuilding);
 
-      String foreignTableBuilding = "create memory table FOREIGN_PROJECT (PROJECT_ID  varchar(256),"
-          + " TITLE varchar(256) not null, PROJECT_MANAGER varchar(256) not null, primary key (PROJECT_ID),"
-          + " foreign key (PROJECT_MANAGER) references PARENT_EMPLOYEE(EMP_ID))";
+      String foreignTableBuilding =
+          "create memory table FOREIGN_PROJECT (PROJECT_ID  varchar(256),"
+              + " TITLE varchar(256) not null, PROJECT_MANAGER varchar(256) not null, primary key (PROJECT_ID),"
+              + " foreign key (PROJECT_MANAGER) references PARENT_EMPLOYEE(EMP_ID))";
       st.execute(foreignTableBuilding);
 
       mapper.buildSourceDatabaseSchema();
-
 
       /*
        *  Testing context information
@@ -670,9 +735,8 @@ public class SourceSchemaBuildingTest {
       assertEquals(2, context.getStatistics().totalNumberOfRelationships);
       assertEquals(2, context.getStatistics().builtRelationships);
 
-
       /*
-       *  Testing built source db schema 
+       *  Testing built source db schema
        */
 
       OEntity parentEntity = mapper.getDataBaseSchema().getEntityByName("PARENT_EMPLOYEE");
@@ -691,19 +755,25 @@ public class SourceSchemaBuildingTest {
       assertEquals("EMP_ID", parentEntity.getAttributeByName("EMP_ID").getName());
       assertEquals("VARCHAR", parentEntity.getAttributeByName("EMP_ID").getDataType());
       assertEquals(1, parentEntity.getAttributeByName("EMP_ID").getOrdinalPosition());
-      assertEquals("PARENT_EMPLOYEE", parentEntity.getAttributeByName("EMP_ID").getBelongingEntity().getName());
+      assertEquals(
+          "PARENT_EMPLOYEE",
+          parentEntity.getAttributeByName("EMP_ID").getBelongingEntity().getName());
 
       assertNotNull(parentEntity.getAttributeByName("MGR_ID"));
       assertEquals("MGR_ID", parentEntity.getAttributeByName("MGR_ID").getName());
       assertEquals("VARCHAR", parentEntity.getAttributeByName("MGR_ID").getDataType());
       assertEquals(2, parentEntity.getAttributeByName("MGR_ID").getOrdinalPosition());
-      assertEquals("PARENT_EMPLOYEE", parentEntity.getAttributeByName("MGR_ID").getBelongingEntity().getName());
+      assertEquals(
+          "PARENT_EMPLOYEE",
+          parentEntity.getAttributeByName("MGR_ID").getBelongingEntity().getName());
 
       assertNotNull(parentEntity.getAttributeByName("NAME"));
       assertEquals("NAME", parentEntity.getAttributeByName("NAME").getName());
       assertEquals("VARCHAR", parentEntity.getAttributeByName("NAME").getDataType());
       assertEquals(3, parentEntity.getAttributeByName("NAME").getOrdinalPosition());
-      assertEquals("PARENT_EMPLOYEE", parentEntity.getAttributeByName("NAME").getBelongingEntity().getName());
+      assertEquals(
+          "PARENT_EMPLOYEE",
+          parentEntity.getAttributeByName("NAME").getBelongingEntity().getName());
 
       assertEquals(3, foreignEntity.getAttributes().size());
 
@@ -711,19 +781,26 @@ public class SourceSchemaBuildingTest {
       assertEquals("PROJECT_ID", foreignEntity.getAttributeByName("PROJECT_ID").getName());
       assertEquals("VARCHAR", foreignEntity.getAttributeByName("PROJECT_ID").getDataType());
       assertEquals(1, foreignEntity.getAttributeByName("PROJECT_ID").getOrdinalPosition());
-      assertEquals("FOREIGN_PROJECT", foreignEntity.getAttributeByName("PROJECT_ID").getBelongingEntity().getName());
+      assertEquals(
+          "FOREIGN_PROJECT",
+          foreignEntity.getAttributeByName("PROJECT_ID").getBelongingEntity().getName());
 
       assertNotNull(foreignEntity.getAttributeByName("TITLE"));
       assertEquals("TITLE", foreignEntity.getAttributeByName("TITLE").getName());
       assertEquals("VARCHAR", foreignEntity.getAttributeByName("TITLE").getDataType());
       assertEquals(2, foreignEntity.getAttributeByName("TITLE").getOrdinalPosition());
-      assertEquals("FOREIGN_PROJECT", foreignEntity.getAttributeByName("TITLE").getBelongingEntity().getName());
+      assertEquals(
+          "FOREIGN_PROJECT",
+          foreignEntity.getAttributeByName("TITLE").getBelongingEntity().getName());
 
       assertNotNull(foreignEntity.getAttributeByName("PROJECT_MANAGER"));
-      assertEquals("PROJECT_MANAGER", foreignEntity.getAttributeByName("PROJECT_MANAGER").getName());
+      assertEquals(
+          "PROJECT_MANAGER", foreignEntity.getAttributeByName("PROJECT_MANAGER").getName());
       assertEquals("VARCHAR", foreignEntity.getAttributeByName("PROJECT_MANAGER").getDataType());
       assertEquals(3, foreignEntity.getAttributeByName("PROJECT_MANAGER").getOrdinalPosition());
-      assertEquals("FOREIGN_PROJECT", foreignEntity.getAttributeByName("PROJECT_MANAGER").getBelongingEntity().getName());
+      assertEquals(
+          "FOREIGN_PROJECT",
+          foreignEntity.getAttributeByName("PROJECT_MANAGER").getBelongingEntity().getName());
 
       // relationship, primary and foreign key check
       assertEquals(1, foreignEntity.getOutCanonicalRelationships().size());
@@ -745,7 +822,9 @@ public class SourceSchemaBuildingTest {
       OCanonicalRelationship currentRelationship2 = it2.next();
       assertEquals(currentRelationship, currentRelationship2);
 
-      assertEquals("PROJECT_MANAGER", foreignEntity.getForeignKeys().get(0).getInvolvedAttributes().get(0).getName());
+      assertEquals(
+          "PROJECT_MANAGER",
+          foreignEntity.getForeignKeys().get(0).getInvolvedAttributes().get(0).getName());
       assertEquals("EMP_ID", parentEntity.getPrimaryKey().getInvolvedAttributes().get(0).getName());
 
       // second relationship
@@ -759,7 +838,8 @@ public class SourceSchemaBuildingTest {
       currentRelationship2 = it2.next();
       assertEquals(currentRelationship, currentRelationship2);
 
-      assertEquals("MGR_ID", parentEntity.getForeignKeys().get(0).getInvolvedAttributes().get(0).getName());
+      assertEquals(
+          "MGR_ID", parentEntity.getForeignKeys().get(0).getInvolvedAttributes().get(0).getName());
       assertEquals("EMP_ID", parentEntity.getPrimaryKey().getInvolvedAttributes().get(0).getName());
 
       assertFalse(it.hasNext());
@@ -781,7 +861,7 @@ public class SourceSchemaBuildingTest {
     }
   }
 
-  //@Test
+  // @Test
 
   /*
    * Join table and 2 parent tables.
@@ -797,25 +877,29 @@ public class SourceSchemaBuildingTest {
       Class.forName(this.driver);
       connection = DriverManager.getConnection(this.jurl, this.username, this.password);
 
-      String filmTableBuilding = "create memory table FILM (ID varchar(256) not null, TITLE varchar(256) not null,"
-          + " YEAR varchar(256) not null, DIRECTOR varchar(256) not null, primary key (ID))";
+      String filmTableBuilding =
+          "create memory table FILM (ID varchar(256) not null, TITLE varchar(256) not null,"
+              + " YEAR varchar(256) not null, DIRECTOR varchar(256) not null, primary key (ID))";
       st = connection.createStatement();
       st.execute(filmTableBuilding);
 
-      String actorTableBuilding = "create memory table ACTOR (ID varchar(256) not null, NAME varchar(256) not null,"
-          + " SURNAME varchar(256) not null, primary key (ID))";
+      String actorTableBuilding =
+          "create memory table ACTOR (ID varchar(256) not null, NAME varchar(256) not null,"
+              + " SURNAME varchar(256) not null, primary key (ID))";
       st = connection.createStatement();
       st.execute(actorTableBuilding);
 
-      String joinTableBuilding = "create memory table FILM2ACTOR (FILM_ID  varchar(256) not null,"
-          + " ACTOR_ID varchar(256) not null, SALARY varchar(256)," + " primary key (FILM_ID,ACTOR_ID),"
-          + " foreign key (FILM_ID) references FILM(ID)," + " foreign key (ACTOR_ID) references ACTOR(ID))";
+      String joinTableBuilding =
+          "create memory table FILM2ACTOR (FILM_ID  varchar(256) not null,"
+              + " ACTOR_ID varchar(256) not null, SALARY varchar(256),"
+              + " primary key (FILM_ID,ACTOR_ID),"
+              + " foreign key (FILM_ID) references FILM(ID),"
+              + " foreign key (ACTOR_ID) references ACTOR(ID))";
       st.execute(joinTableBuilding);
 
       connection.commit();
 
       mapper.buildSourceDatabaseSchema();
-
 
       /*
        *  Testing context information
@@ -826,9 +910,8 @@ public class SourceSchemaBuildingTest {
       assertEquals(2, context.getStatistics().totalNumberOfRelationships);
       assertEquals(2, context.getStatistics().builtRelationships);
 
-
       /*
-       *  Testing built source db schema 
+       *  Testing built source db schema
        */
 
       OEntity filmEntity = mapper.getDataBaseSchema().getEntityByName("FILM");
@@ -870,7 +953,8 @@ public class SourceSchemaBuildingTest {
       OCanonicalRelationship currentRelationship2 = it2.next();
       assertEquals(currentRelationship, currentRelationship2);
 
-      assertEquals("ACTOR_ID", film2actor.getForeignKeys().get(0).getInvolvedAttributes().get(0).getName());
+      assertEquals(
+          "ACTOR_ID", film2actor.getForeignKeys().get(0).getInvolvedAttributes().get(0).getName());
       assertEquals("ID", actorEntity.getPrimaryKey().getInvolvedAttributes().get(0).getName());
 
       // second relationship
@@ -884,7 +968,8 @@ public class SourceSchemaBuildingTest {
       OCanonicalRelationship currentRelationship3 = it3.next();
       assertEquals(currentRelationship, currentRelationship3);
 
-      assertEquals("FILM_ID", film2actor.getForeignKeys().get(1).getInvolvedAttributes().get(0).getName());
+      assertEquals(
+          "FILM_ID", film2actor.getForeignKeys().get(1).getInvolvedAttributes().get(0).getName());
       assertEquals("ID", filmEntity.getPrimaryKey().getInvolvedAttributes().get(0).getName());
 
       assertFalse(it.hasNext());
@@ -905,5 +990,4 @@ public class SourceSchemaBuildingTest {
       }
     }
   }
-
 }

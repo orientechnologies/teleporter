@@ -22,7 +22,6 @@ package com.orientechnologies.teleporter.strategy;
 
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.teleporter.model.OSourceInfo;
-
 import java.util.List;
 
 /**
@@ -31,10 +30,15 @@ import java.util.List;
  * @author Gabriele Ponzi
  * @email <g.ponzi--at--orientdb.com>
  */
-
 public interface OWorkflowStrategy {
 
-  ODocument executeStrategy(OSourceInfo sourceInfo, String outOrientGraphUri, String chosenMapper, String xmlPath,
-      String nameResolverConvention, List<String> includedTables, List<String> excludedTables, ODocument migrationConfig);
-
+  ODocument executeStrategy(
+      OSourceInfo sourceInfo,
+      String outOrientGraphUri,
+      String chosenMapper,
+      String xmlPath,
+      String nameResolverConvention,
+      List<String> includedTables,
+      List<String> excludedTables,
+      ODocument migrationConfig);
 }

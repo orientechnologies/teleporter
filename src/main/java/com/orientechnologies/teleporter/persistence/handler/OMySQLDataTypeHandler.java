@@ -20,19 +20,17 @@
 
 package com.orientechnologies.teleporter.persistence.handler;
 
+import com.orientechnologies.orient.core.metadata.schema.OType;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.orientechnologies.orient.core.metadata.schema.OType;
-
 /**
- * Handler that executes type conversions from MySQL DBMS to the OrientDB types.
- * No Geospatial implemented.
+ * Handler that executes type conversions from MySQL DBMS to the OrientDB types. No Geospatial
+ * implemented.
  *
  * @author Gabriele Ponzi
  * @email <g.ponzi--at--orientdb.com>
  */
-
 public class OMySQLDataTypeHandler extends ODBMSDataTypeHandler {
 
   public OMySQLDataTypeHandler() {
@@ -44,7 +42,6 @@ public class OMySQLDataTypeHandler extends ODBMSDataTypeHandler {
   private Map<String, OType> fillTypesMap() {
 
     Map<String, OType> dbmsType2OrientType = new HashMap<String, OType>();
-
 
     /*
      * Numeric Types
@@ -65,13 +62,11 @@ public class OMySQLDataTypeHandler extends ODBMSDataTypeHandler {
     dbmsType2OrientType.put("double", OType.DOUBLE);
     dbmsType2OrientType.put("double precision", OType.DOUBLE);
 
-
     /*
      * Bit String Types
      * (doc at http://dev.mysql.com/doc/refman/5.7/en/numeric-types.html )
      */
     dbmsType2OrientType.put("bit", OType.STRING);
-
 
     /*
      * Date/Time Types
@@ -82,7 +77,6 @@ public class OMySQLDataTypeHandler extends ODBMSDataTypeHandler {
     dbmsType2OrientType.put("timestamp", OType.DATETIME);
     dbmsType2OrientType.put("time", OType.STRING);
     dbmsType2OrientType.put("year", OType.STRING);
-
 
     /*
      * Character Types
@@ -97,7 +91,6 @@ public class OMySQLDataTypeHandler extends ODBMSDataTypeHandler {
     dbmsType2OrientType.put("mediumtext", OType.STRING);
     dbmsType2OrientType.put("longtext", OType.STRING);
 
-
     /*
      * Binary Data Types
      * (doc at http://dev.mysql.com/doc/refman/5.7/en/binary-varbinary.html
@@ -110,13 +103,11 @@ public class OMySQLDataTypeHandler extends ODBMSDataTypeHandler {
     dbmsType2OrientType.put("mediumblob", OType.BINARY);
     dbmsType2OrientType.put("longblob", OType.BINARY);
 
-
-     /*
+    /*
      * JSON Type
      * (doc at http://dev.mysql.com/doc/refman/5.7/en/json.html )
      */
     dbmsType2OrientType.put("json", OType.EMBEDDED);
-
 
     /*
      * ENUM Types
@@ -124,13 +115,11 @@ public class OMySQLDataTypeHandler extends ODBMSDataTypeHandler {
      */
     // TODO !!!
 
-
     /*
      * SET Types
      * (doc at http://dev.mysql.com/doc/refman/5.7/en/set.html )
      */
     // TODO !!!
-
 
     /*
      * Geometric Types
@@ -147,7 +136,6 @@ public class OMySQLDataTypeHandler extends ODBMSDataTypeHandler {
     dbmsType2OrientType.put("multilinestring", OType.STRING);
     dbmsType2OrientType.put("multipolygon", OType.STRING);
 
-
     /*
      * Using Data Types from Other Database Engines
      * (doc at http://dev.mysql.com/doc/refman/5.7/en/other-vendor-data-types.html )
@@ -156,5 +144,4 @@ public class OMySQLDataTypeHandler extends ODBMSDataTypeHandler {
 
     return dbmsType2OrientType;
   }
-
 }

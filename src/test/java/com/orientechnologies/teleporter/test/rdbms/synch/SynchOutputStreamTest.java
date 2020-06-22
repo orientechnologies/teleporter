@@ -20,27 +20,24 @@
 
 package com.orientechnologies.teleporter.test.rdbms.synch;
 
-import com.orientechnologies.orient.output.OOutputStreamManager;
-import org.junit.Before;
-import org.junit.Test;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
+import com.orientechnologies.orient.output.OOutputStreamManager;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.*;
+import org.junit.Before;
+import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
-/**
- * Created by gabriele on 11/08/17.
- */
+/** Created by gabriele on 11/08/17. */
 public class SynchOutputStreamTest {
 
-  private OOutputStreamManager  streamManager;
-  private PrintStream           stream;
+  private OOutputStreamManager streamManager;
+  private PrintStream stream;
   private ByteArrayOutputStream baos;
 
   @Before
@@ -54,41 +51,43 @@ public class SynchOutputStreamTest {
 
     this.streamManager = new OOutputStreamManager(2);
 
-    Callable writer = new Callable<Void>() {
+    Callable writer =
+        new Callable<Void>() {
 
-      public Void call() {
-        try {
+          public Void call() {
+            try {
 
-          for (int i = 1; i <= 50; i++) {
-            streamManager.info("Message " + i + " from writer thread.\n");
+              for (int i = 1; i <= 50; i++) {
+                streamManager.info("Message " + i + " from writer thread.\n");
+              }
+            } catch (Exception e) {
+
+            }
+            return null;
           }
-        }catch(Exception e) {
+        };
 
-        }
-        return null;
-      }
-    };
+    Callable flusher =
+        new Callable<Void>() {
+          @Override
+          public Void call() {
 
-    Callable flusher = new Callable<Void>() {
-      @Override
-      public Void call() {
+            System.out.println("Flushing started.");
 
-        System.out.println("Flushing started.");
+            synchronized (streamManager) {
+              try {
+                // DO NOTHING
+                Thread.sleep(5000);
+              } catch (Exception e) {
+                e.printStackTrace();
+                fail();
+              }
+            }
 
-        synchronized (streamManager) {
-          try {
-            // DO NOTHING
-            Thread.sleep(5000);
-          } catch(Exception e) {
-            e.printStackTrace();
-            fail();
+            System.out.println("Flushing completed.");
+            return null;
           }
-        }
-
-        System.out.println("Flushing completed.");
-        return null;
-      }
-    };
+        };
 
     List<Callable<Void>> threads = new ArrayList<Callable<Void>>();
     threads.add(writer);
@@ -101,11 +100,9 @@ public class SynchOutputStreamTest {
       for (Future<Void> future : futures) {
         future.get();
       }
-    } catch(Exception e) {
+    } catch (Exception e) {
       e.printStackTrace();
     }
-
-
   }
 
   @Test
@@ -113,55 +110,57 @@ public class SynchOutputStreamTest {
 
     this.streamManager = new OOutputStreamManager(this.stream, 2);
 
-    Callable writer = new Callable<Void>() {
+    Callable writer =
+        new Callable<Void>() {
 
-      public Void call() {
-        try {
+          public Void call() {
+            try {
 
-          for (int i = 1; i <= 50; i++) {
-            streamManager.info("Message " + i + " from writer thread.\n");
+              for (int i = 1; i <= 50; i++) {
+                streamManager.info("Message " + i + " from writer thread.\n");
+              }
+            } catch (Exception e) {
+
+            }
+            return null;
           }
-        }catch(Exception e) {
+        };
 
-        }
-        return null;
-      }
-    };
+    Callable flusher =
+        new Callable<Void>() {
+          @Override
+          public Void call() {
 
-    Callable flusher = new Callable<Void>() {
-      @Override
-      public Void call() {
+            System.out.println("Flushing started.");
 
-        System.out.println("Flushing started.");
+            synchronized (streamManager) {
+              try {
+                int initialBufferSize = baos.size();
+                String flush = baos.toString();
 
-        synchronized (streamManager) {
-          try {
-            int initialBufferSize = baos.size();
-            String flush = baos.toString();
+                int finalBufferSize = baos.size();
+                assertEquals(finalBufferSize - initialBufferSize, 0);
 
-            int finalBufferSize = baos.size();
-            assertEquals(finalBufferSize - initialBufferSize, 0);
+                // getting the baos empty
+                baos.reset();
+                assertEquals(baos.size(), 0);
+              } catch (Exception e) {
+                e.printStackTrace();
+                fail();
+              }
+            }
+            try {
+              Thread.sleep(1000);
+              assertTrue(baos.size() > 0);
+            } catch (Exception e) {
+              e.printStackTrace();
+              fail();
+            }
 
-            // getting the baos empty
-            baos.reset();
-            assertEquals(baos.size(), 0);
-          } catch(Exception e) {
-            e.printStackTrace();
-            fail();
+            System.out.println("Flushing completed.");
+            return null;
           }
-        }
-        try {
-          Thread.sleep(1000);
-          assertTrue(baos.size() > 0);
-        } catch(Exception e) {
-          e.printStackTrace();
-          fail();
-        }
-
-        System.out.println("Flushing completed.");
-        return null;
-      }
-    };
+        };
 
     List<Callable<Void>> threads = new ArrayList<Callable<Void>>();
     threads.add(writer);
@@ -174,11 +173,8 @@ public class SynchOutputStreamTest {
       for (Future<Void> future : futures) {
         future.get();
       }
-    } catch(Exception e) {
+    } catch (Exception e) {
       e.printStackTrace();
     }
-
-
   }
-
 }

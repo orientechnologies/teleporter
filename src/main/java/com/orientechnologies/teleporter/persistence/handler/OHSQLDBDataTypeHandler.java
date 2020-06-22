@@ -20,19 +20,17 @@
 
 package com.orientechnologies.teleporter.persistence.handler;
 
+import com.orientechnologies.orient.core.metadata.schema.OType;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.orientechnologies.orient.core.metadata.schema.OType;
-
 /**
- * Handler that executes type conversions from HSQLDB DBMS to the OrientDB types.
- * No Geospatial implementable (HSQLDB doesn't support this feature).
+ * Handler that executes type conversions from HSQLDB DBMS to the OrientDB types. No Geospatial
+ * implementable (HSQLDB doesn't support this feature).
  *
  * @author Gabriele Ponzi
  * @email <g.ponzi--at--orientdb.com>
  */
-
 public class OHSQLDBDataTypeHandler extends ODBMSDataTypeHandler {
 
   public OHSQLDBDataTypeHandler() {
@@ -44,7 +42,6 @@ public class OHSQLDBDataTypeHandler extends ODBMSDataTypeHandler {
   private Map<String, OType> fillTypesMap() {
 
     Map<String, OType> dbmsType2OrientType = new HashMap<String, OType>();
-
 
     /*
      * Character Types
@@ -58,7 +55,6 @@ public class OHSQLDBDataTypeHandler extends ODBMSDataTypeHandler {
     dbmsType2OrientType.put("varchar", OType.STRING);
     dbmsType2OrientType.put("longvarchar", OType.STRING);
     dbmsType2OrientType.put("character large object", OType.STRING);
-
 
     /*
      * Numeric Types
@@ -75,15 +71,12 @@ public class OHSQLDBDataTypeHandler extends ODBMSDataTypeHandler {
     dbmsType2OrientType.put("numeric", OType.DECIMAL);
     dbmsType2OrientType.put("decimal", OType.DECIMAL);
 
-
     /*
      * Bit String Types
      * (doc at http://hsqldb.org/doc/guide/guide.html#sgc_bit_types )
      */
     dbmsType2OrientType.put("bit", OType.STRING);
     dbmsType2OrientType.put("bit varying", OType.STRING);
-
-
 
     /*
      * Date/Time Types
@@ -95,13 +88,11 @@ public class OHSQLDBDataTypeHandler extends ODBMSDataTypeHandler {
     dbmsType2OrientType.put("timestamp", OType.DATETIME);
     dbmsType2OrientType.put("timestamp with time zone", OType.DATETIME);
 
-
     /*
      * Boolean Type
      * (doc at http://hsqldb.org/doc/guide/guide.html#sgc_boolean_type )
      */
     dbmsType2OrientType.put("boolean", OType.BOOLEAN);
-
 
     /*
      * Binary Data Types
@@ -114,7 +105,6 @@ public class OHSQLDBDataTypeHandler extends ODBMSDataTypeHandler {
     dbmsType2OrientType.put("binary large object", OType.BINARY);
     dbmsType2OrientType.put("longvarbinary", OType.BINARY);
 
-
     /*
      * User Defined Types  (Object data types and object views)
      */
@@ -122,5 +112,4 @@ public class OHSQLDBDataTypeHandler extends ODBMSDataTypeHandler {
 
     return dbmsType2OrientType;
   }
-
 }

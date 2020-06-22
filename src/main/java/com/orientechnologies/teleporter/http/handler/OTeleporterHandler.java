@@ -20,13 +20,12 @@
 
 package com.orientechnologies.teleporter.http.handler;
 
+import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.orient.server.OServer;
 import com.orientechnologies.teleporter.context.OTeleporterContext;
 import com.orientechnologies.teleporter.context.OTeleporterMessageHandler;
 import com.orientechnologies.teleporter.util.ODriverConfigurator;
-import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.teleporter.util.OMigrationConfigManager;
-
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
@@ -37,9 +36,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-/**
- * Created by Enrico Risa on 27/11/15.
- */
+/** Created by Enrico Risa on 27/11/15. */
 public class OTeleporterHandler {
   private ExecutorService pool = Executors.newFixedThreadPool(1);
 
@@ -53,12 +50,16 @@ public class OTeleporterHandler {
    */
   public ODocument execute(ODocument args, OServer currentServerInstance) throws Exception {
 
-    OTeleporterJob job = new OTeleporterJob(args, currentServerInstance, new OTeleporterListener() {
-      @Override
-      public void onEnd(OTeleporterJob oTeleporterJob) {
-        currentJob = null;
-      }
-    });
+    OTeleporterJob job =
+        new OTeleporterJob(
+            args,
+            currentServerInstance,
+            new OTeleporterListener() {
+              @Override
+              public void onEnd(OTeleporterJob oTeleporterJob) {
+                currentJob = null;
+              }
+            });
 
     job.validate();
 
@@ -66,7 +67,7 @@ public class OTeleporterHandler {
     Future<ODocument> future = pool.submit(job);
     ODocument executionResult = null;
 
-    //print the return value of Future, notice the output delay in console
+    // print the return value of Future, notice the output delay in console
     // because Future.get() waits for task to get completed
     executionResult = future.get();
 
@@ -77,7 +78,6 @@ public class OTeleporterHandler {
    * Checks If the connection with given parameters is alive
    *
    * @param args
-   *
    * @throws Exception
    */
   public void checkConnection(ODocument args, OServer currentServerInstance) throws Exception {
@@ -89,7 +89,7 @@ public class OTeleporterHandler {
     final String username = args.field("username");
     final String password = args.field("password");
 
-    if(OTeleporterContext.getInstance() == null) {
+    if (OTeleporterContext.getInstance() == null) {
       OTeleporterContext.newInstance(currentServerInstance.getContext());
     }
     OTeleporterContext.getInstance().setMessageHandler(new OTeleporterMessageHandler(2));
@@ -114,7 +114,6 @@ public class OTeleporterHandler {
     return status;
   }
 
-
   /**
    * Retrieves all the tables contained in the specified source database.
    *
@@ -130,7 +129,7 @@ public class OTeleporterHandler {
     String username = params.field("username");
     String password = params.field("password");
 
-    if(OTeleporterContext.getInstance() == null) {
+    if (OTeleporterContext.getInstance() == null) {
       OTeleporterContext.newInstance(currentServerInstance.getContext());
     }
     OTeleporterContext.getInstance().setMessageHandler(new OTeleporterMessageHandler(2));
@@ -165,17 +164,16 @@ public class OTeleporterHandler {
     final String outDbName = args.field("outDBName");
     final String migrationConfig = args.field("migrationConfig");
 
-    if(migrationConfig == null) {
+    if (migrationConfig == null) {
       throw new IllegalArgumentException("Migration config is null.");
     }
 
-    if(outDbName == null) {
+    if (outDbName == null) {
       throw new IllegalArgumentException("target database name is null.");
     }
 
     String serverDatabaseDirectory = server.getDatabaseDirectory();
     String outDbUrl = serverDatabaseDirectory + outDbName;
     OMigrationConfigManager.writeConfigurationInTargetDB(migrationConfig, outDbUrl);
-
   }
 }

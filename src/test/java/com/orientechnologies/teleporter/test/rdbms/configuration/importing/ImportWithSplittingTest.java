@@ -20,6 +20,8 @@
 
 package com.orientechnologies.teleporter.test.rdbms.configuration.importing;
 
+import static org.junit.Assert.*;
+
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.id.ORID;
 import com.orientechnologies.orient.core.record.ODirection;
@@ -37,9 +39,6 @@ import com.orientechnologies.teleporter.strategy.rdbms.ODBMSNaiveStrategy;
 import com.orientechnologies.teleporter.util.OFileManager;
 import com.orientechnologies.teleporter.util.OGraphCommands;
 import com.orientechnologies.teleporter.util.OMigrationConfigManager;
-import org.junit.After;
-import org.junit.Before;
-
 import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -47,22 +46,22 @@ import java.sql.Statement;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-
-import static org.junit.Assert.*;
+import org.junit.After;
+import org.junit.Before;
 
 /**
  * @author Gabriele Ponzi
  * @email <g.ponzi--at--orientdb.com>
  */
-
 public class ImportWithSplittingTest {
 
   private OTeleporterContext context;
   private ODBMSNaiveStrategy naiveStrategy;
-  private final String configPathJson = "src/test/resources/configuration-mapping/splitting-into2tables-mapping.json";
+  private final String configPathJson =
+      "src/test/resources/configuration-mapping/splitting-into2tables-mapping.json";
   private ODBQueryEngine dbQueryEngine;
-  private String driver   = "org.hsqldb.jdbc.JDBCDriver";
-  private String jurl     = "jdbc:hsqldb:mem:mydb";
+  private String driver = "org.hsqldb.jdbc.JDBCDriver";
+  private String jurl = "jdbc:hsqldb:mem:mydb";
   private String username = "SA";
   private String password = "";
   private String dbName = "testOrientDB";
@@ -70,7 +69,6 @@ public class ImportWithSplittingTest {
   private String outParentDirectory = "target/";
   private String outOrientGraphUri = this.protocol + this.outParentDirectory + this.dbName;
   private OSourceDatabaseInfo sourceDBInfo;
-
 
   @Before
   public void init() {
@@ -82,7 +80,8 @@ public class ImportWithSplittingTest {
     this.context.setNameResolver(new OJavaConventionNameResolver());
     this.context.setDataTypeHandler(new OHSQLDBDataTypeHandler());
     this.naiveStrategy = new ODBMSNaiveStrategy("embedded", this.outParentDirectory, this.dbName);
-    this.sourceDBInfo = new OSourceDatabaseInfo("source", this.driver, this.jurl, this.username, this.password);
+    this.sourceDBInfo =
+        new OSourceDatabaseInfo("source", this.driver, this.jurl, this.username, this.password);
   }
 
   @After
@@ -94,15 +93,14 @@ public class ImportWithSplittingTest {
     try {
 
       // Deleting database directory
-      OFileManager.deleteResource(this.outOrientGraphUri.replace("embedded:",""));
+      OFileManager.deleteResource(this.outOrientGraphUri.replace("embedded:", ""));
 
     } catch (Exception e) {
       e.printStackTrace();
     }
   }
 
-
-//  @Test
+  //  @Test
   /*
    *  Source DB schema:
    *
@@ -140,14 +138,16 @@ public class ImportWithSplittingTest {
       Class.forName(this.driver);
       connection = DriverManager.getConnection(this.jurl, this.username, this.password);
 
-      String employeeTableBuilding = "create memory table EMPLOYEE_PROJECT (FIRST_NAME varchar(256) not null,"
-          + " LAST_NAME varchar(256) not null, SALARY double not null, DEPARTMENT varchar(256) not null,"
-          + " PROJECT varchar(256) not null, BALANCE double not null, ROLE varchar(256), primary key (FIRST_NAME,LAST_NAME,PROJECT))";
+      String employeeTableBuilding =
+          "create memory table EMPLOYEE_PROJECT (FIRST_NAME varchar(256) not null,"
+              + " LAST_NAME varchar(256) not null, SALARY double not null, DEPARTMENT varchar(256) not null,"
+              + " PROJECT varchar(256) not null, BALANCE double not null, ROLE varchar(256), primary key (FIRST_NAME,LAST_NAME,PROJECT))";
       st = connection.createStatement();
       st.execute(employeeTableBuilding);
 
-      String departmentTableBuilding = "create memory table DEPARTMENT (ID varchar(256),"
-          + " NAME varchar(256) not null, LOCATION varchar(256) not null, UPDATED_ON date not null, primary key (ID))";
+      String departmentTableBuilding =
+          "create memory table DEPARTMENT (ID varchar(256),"
+              + " NAME varchar(256) not null, LOCATION varchar(256) not null, UPDATED_ON date not null, primary key (ID))";
       st.execute(departmentTableBuilding);
 
       String chiefTableBuilding =
@@ -157,41 +157,51 @@ public class ImportWithSplittingTest {
 
       // Records Inserting
 
-      String personFilling = "insert into EMPLOYEE_PROJECT (FIRST_NAME,LAST_NAME,SALARY,DEPARTMENT,PROJECT,BALANCE,ROLE) values ("
-          + "('Joe','Black','20000','D001','Mars','12000','T')," + "('Thomas','Anderson','35000','D002','Venus','15000','T'),"
-          + "('Tyler','Durden','35000','D001','Iuppiter','20000','A'),"
-          + "('John','McClanenei','25000','D001','Venus','15000','S')," + "('Marty','McFly','40000','D002','Mars','12000','M'),"
-          + "('Marty','McFly','40000','D002','Mercury','5000','M'))";
+      String personFilling =
+          "insert into EMPLOYEE_PROJECT (FIRST_NAME,LAST_NAME,SALARY,DEPARTMENT,PROJECT,BALANCE,ROLE) values ("
+              + "('Joe','Black','20000','D001','Mars','12000','T'),"
+              + "('Thomas','Anderson','35000','D002','Venus','15000','T'),"
+              + "('Tyler','Durden','35000','D001','Iuppiter','20000','A'),"
+              + "('John','McClanenei','25000','D001','Venus','15000','S'),"
+              + "('Marty','McFly','40000','D002','Mars','12000','M'),"
+              + "('Marty','McFly','40000','D002','Mercury','5000','M'))";
       st.execute(personFilling);
 
       String departmentFilling =
-          "insert into DEPARTMENT (ID,NAME,LOCATION,UPDATED_ON) values (" + "('D001','Data Migration','London','2016-05-10'),"
+          "insert into DEPARTMENT (ID,NAME,LOCATION,UPDATED_ON) values ("
+              + "('D001','Data Migration','London','2016-05-10'),"
               + "('D002','Contracts Update','Glasgow','2016-05-10'))";
       st.execute(departmentFilling);
 
-      String chiefOfficerFilling = "insert into CHIEF_OFFICER (FIRST_NAME,LAST_NAME,PROJECT) values (" + "('Tim','Cook','Mars'),"
-          + "('Sundar','Pichai','Venus')," + "('Satya','Nadella','Iuppiter')," + "('Chuck','Robbins','Mercury'))";
+      String chiefOfficerFilling =
+          "insert into CHIEF_OFFICER (FIRST_NAME,LAST_NAME,PROJECT) values ("
+              + "('Tim','Cook','Mars'),"
+              + "('Sundar','Pichai','Venus'),"
+              + "('Satya','Nadella','Iuppiter'),"
+              + "('Chuck','Robbins','Mercury'))";
       st.execute(chiefOfficerFilling);
 
-      ODocument configDoc = OMigrationConfigManager.loadMigrationConfigFromFile(this.configPathJson);
+      ODocument configDoc =
+          OMigrationConfigManager.loadMigrationConfigFromFile(this.configPathJson);
 
-      this.naiveStrategy
-          .executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "basicDBMapper", null, "java", null, null, configDoc);
+      this.naiveStrategy.executeStrategy(
+          this.sourceDBInfo,
+          this.outOrientGraphUri,
+          "basicDBMapper",
+          null,
+          "java",
+          null,
+          null,
+          configDoc);
 
-      /**
-       *  Testing context information
-       */
-
+      /** Testing context information */
       assertEquals(12, context.getStatistics().totalNumberOfRecords);
       assertEquals(12, context.getStatistics().analyzedRecords);
       assertEquals(15, context.getStatistics().orientAddedVertices);
       assertEquals(15, context.getStatistics().orientAddedEdges);
 
-      /**
-       *  Testing built OrientDB
-       */
-
-      orientGraph = this.context.getOrientDBInstance().open(this.dbName,"admin","admin");
+      /** Testing built OrientDB */
+      orientGraph = this.context.getOrientDBInstance().open(this.dbName, "admin", "admin");
 
       // vertices check
 
@@ -205,16 +215,16 @@ public class ImportWithSplittingTest {
 
       int cont = 0;
       Map<ORID, OVertex> map = new HashMap<>();
-      while(res.hasNext()) {
-        OVertex v =  res.next().getVertex().get();
+      while (res.hasNext()) {
+        OVertex v = res.next().getVertex().get();
         map.put(v.getIdentity(), v);
       }
 
       res = orientGraph.command("select from WorksAt");
 
       cont = 0;
-      while(res.hasNext()) {
-        OEdge e =  res.next().getEdge().get();
+      while (res.hasNext()) {
+        OEdge e = res.next().getEdge().get();
         cont++;
       }
 
@@ -225,9 +235,9 @@ public class ImportWithSplittingTest {
       assertEquals(4, orientGraph.countClass("IsChiefForProject"));
 
       // vertex properties and connections check
-      Iterator<OEdge>  edgesIt = null;
-      String[] keys = { "id" };
-      String[] values = { "D001" };
+      Iterator<OEdge> edgesIt = null;
+      String[] keys = {"id"};
+      String[] values = {"D001"};
 
       OVertex v = null;
       OResultSet result = OGraphCommands.getVertices(orientGraph, "Department", keys, values);
@@ -240,7 +250,8 @@ public class ImportWithSplittingTest {
         assertNull(v.getProperty("updatedOn"));
         edgesIt = v.getEdges(ODirection.IN, "WorksAt").iterator();
         assertEquals("Black", edgesIt.next().getVertex(ODirection.OUT).getProperty("lastName"));
-        assertEquals("McClanenei", edgesIt.next().getVertex(ODirection.OUT).getProperty("lastName"));
+        assertEquals(
+            "McClanenei", edgesIt.next().getVertex(ODirection.OUT).getProperty("lastName"));
         assertEquals("Durden", edgesIt.next().getVertex(ODirection.OUT).getProperty("lastName"));
         assertEquals(false, edgesIt.hasNext());
       } else {
@@ -264,8 +275,8 @@ public class ImportWithSplittingTest {
         fail("Query fail!");
       }
 
-      String[] employeeKeys = { "firstName", "lastName" };
-      String[] employeeValues = { "Joe", "Black" };
+      String[] employeeKeys = {"firstName", "lastName"};
+      String[] employeeValues = {"Joe", "Black"};
       result = OGraphCommands.getVertices(orientGraph, "Employee", employeeKeys, employeeValues);
       assertTrue(result.hasNext());
       if (result.hasNext()) {
@@ -323,7 +334,8 @@ public class ImportWithSplittingTest {
         assertEquals(false, edgesIt.hasNext());
         edgesIt = v.getEdges(ODirection.OUT, "HasProject").iterator();
         OEdge currentSplittingEdge = edgesIt.next();
-        assertEquals("Iuppiter", currentSplittingEdge.getVertex(ODirection.IN).getProperty("project"));
+        assertEquals(
+            "Iuppiter", currentSplittingEdge.getVertex(ODirection.IN).getProperty("project"));
         assertEquals("A", currentSplittingEdge.getProperty("role"));
         assertEquals(false, edgesIt.hasNext());
       } else {
@@ -370,15 +382,16 @@ public class ImportWithSplittingTest {
         assertEquals("Mars", currentSplittingEdge.getVertex(ODirection.IN).getProperty("project"));
         assertEquals("M", currentSplittingEdge.getProperty("role"));
         currentSplittingEdge = edgesIt.next();
-        assertEquals("Mercury", currentSplittingEdge.getVertex(ODirection.IN).getProperty("project"));
+        assertEquals(
+            "Mercury", currentSplittingEdge.getVertex(ODirection.IN).getProperty("project"));
         assertEquals("M", currentSplittingEdge.getProperty("role"));
         assertEquals(false, edgesIt.hasNext());
       } else {
         fail("Query fail!");
       }
 
-      String[] projectKeys = { "project" };
-      String[] projectValues = { "Mars" };
+      String[] projectKeys = {"project"};
+      String[] projectValues = {"Mars"};
       result = OGraphCommands.getVertices(orientGraph, "Project", projectKeys, projectValues);
       assertTrue(result.hasNext());
       if (result.hasNext()) {
@@ -387,10 +400,12 @@ public class ImportWithSplittingTest {
         assertEquals(12000, ((BigDecimal) v.getProperty("balance")).intValue());
         edgesIt = v.getEdges(ODirection.IN, "HasProject").iterator();
         OEdge currentSplittingEdge = edgesIt.next();
-        assertEquals("Black", currentSplittingEdge.getVertex(ODirection.OUT).getProperty("lastName"));
+        assertEquals(
+            "Black", currentSplittingEdge.getVertex(ODirection.OUT).getProperty("lastName"));
         assertEquals("T", currentSplittingEdge.getProperty("role"));
         currentSplittingEdge = edgesIt.next();
-        assertEquals("McFly", currentSplittingEdge.getVertex(ODirection.OUT).getProperty("lastName"));
+        assertEquals(
+            "McFly", currentSplittingEdge.getVertex(ODirection.OUT).getProperty("lastName"));
         assertEquals("M", currentSplittingEdge.getProperty("role"));
         assertEquals(false, edgesIt.hasNext());
 
@@ -414,10 +429,12 @@ public class ImportWithSplittingTest {
         assertEquals(15000, ((BigDecimal) v.getProperty("balance")).intValue());
         edgesIt = v.getEdges(ODirection.IN, "HasProject").iterator();
         OEdge currentSplittingEdge = edgesIt.next();
-        assertEquals("McClanenei", currentSplittingEdge.getVertex(ODirection.OUT).getProperty("lastName"));
+        assertEquals(
+            "McClanenei", currentSplittingEdge.getVertex(ODirection.OUT).getProperty("lastName"));
         assertEquals("S", currentSplittingEdge.getProperty("role"));
         currentSplittingEdge = edgesIt.next();
-        assertEquals("Anderson", currentSplittingEdge.getVertex(ODirection.OUT).getProperty("lastName"));
+        assertEquals(
+            "Anderson", currentSplittingEdge.getVertex(ODirection.OUT).getProperty("lastName"));
         assertEquals("T", currentSplittingEdge.getProperty("role"));
         assertEquals(false, edgesIt.hasNext());
 
@@ -426,7 +443,7 @@ public class ImportWithSplittingTest {
         assertEquals("Sundar", currentEdge.getVertex(ODirection.OUT).getProperty("firstName"));
         assertEquals("Pichai", currentEdge.getVertex(ODirection.OUT).getProperty("lastName"));
         assertEquals("Venus", currentEdge.getVertex(ODirection.OUT).getProperty("project"));
-        assertEquals(0, currentEdge.getPropertyNames().size()  - 2);
+        assertEquals(0, currentEdge.getPropertyNames().size() - 2);
         assertEquals(false, edgesIt.hasNext());
       } else {
         fail("Query fail!");
@@ -441,7 +458,8 @@ public class ImportWithSplittingTest {
         assertEquals(20000, ((BigDecimal) v.getProperty("balance")).intValue());
         edgesIt = v.getEdges(ODirection.IN, "HasProject").iterator();
         OEdge currentSplittingEdge = edgesIt.next();
-        assertEquals("Durden", currentSplittingEdge.getVertex(ODirection.OUT).getProperty("lastName"));
+        assertEquals(
+            "Durden", currentSplittingEdge.getVertex(ODirection.OUT).getProperty("lastName"));
         assertEquals("A", currentSplittingEdge.getProperty("role"));
         assertEquals(false, edgesIt.hasNext());
 
@@ -450,7 +468,7 @@ public class ImportWithSplittingTest {
         assertEquals("Satya", currentEdge.getVertex(ODirection.OUT).getProperty("firstName"));
         assertEquals("Nadella", currentEdge.getVertex(ODirection.OUT).getProperty("lastName"));
         assertEquals("Iuppiter", currentEdge.getVertex(ODirection.OUT).getProperty("project"));
-        assertEquals(0, currentEdge.getPropertyNames().size()  - 2);
+        assertEquals(0, currentEdge.getPropertyNames().size() - 2);
         assertEquals(false, edgesIt.hasNext());
       } else {
         fail("Query fail!");
@@ -465,7 +483,8 @@ public class ImportWithSplittingTest {
         assertEquals(5000, ((BigDecimal) v.getProperty("balance")).intValue());
         edgesIt = v.getEdges(ODirection.IN, "HasProject").iterator();
         OEdge currentSplittingEdge = edgesIt.next();
-        assertEquals("McFly", currentSplittingEdge.getVertex(ODirection.OUT).getProperty("lastName"));
+        assertEquals(
+            "McFly", currentSplittingEdge.getVertex(ODirection.OUT).getProperty("lastName"));
         assertEquals("M", currentSplittingEdge.getProperty("role"));
         assertEquals(false, edgesIt.hasNext());
 
@@ -480,9 +499,11 @@ public class ImportWithSplittingTest {
         fail("Query fail!");
       }
 
-      String[] chiefOfficerKeys = { "firstName", "lastName" };
-      String[] chiefOfficerValues = { "Tim", "Cook" };
-      result = OGraphCommands.getVertices(orientGraph, "ChiefOfficer", chiefOfficerKeys, chiefOfficerValues);
+      String[] chiefOfficerKeys = {"firstName", "lastName"};
+      String[] chiefOfficerValues = {"Tim", "Cook"};
+      result =
+          OGraphCommands.getVertices(
+              orientGraph, "ChiefOfficer", chiefOfficerKeys, chiefOfficerValues);
       assertTrue(result.hasNext());
       if (result.hasNext()) {
         v = result.next().getVertex().get();
@@ -501,7 +522,9 @@ public class ImportWithSplittingTest {
 
       chiefOfficerValues[0] = "Sundar";
       chiefOfficerValues[1] = "Pichai";
-      result = OGraphCommands.getVertices(orientGraph, "ChiefOfficer", chiefOfficerKeys, chiefOfficerValues);
+      result =
+          OGraphCommands.getVertices(
+              orientGraph, "ChiefOfficer", chiefOfficerKeys, chiefOfficerValues);
       assertTrue(result.hasNext());
       if (result.hasNext()) {
         v = result.next().getVertex().get();
@@ -519,7 +542,9 @@ public class ImportWithSplittingTest {
 
       chiefOfficerValues[0] = "Satya";
       chiefOfficerValues[1] = "Nadella";
-      result = OGraphCommands.getVertices(orientGraph, "ChiefOfficer", chiefOfficerKeys, chiefOfficerValues);
+      result =
+          OGraphCommands.getVertices(
+              orientGraph, "ChiefOfficer", chiefOfficerKeys, chiefOfficerValues);
       assertTrue(result.hasNext());
       if (result.hasNext()) {
         v = result.next().getVertex().get();
@@ -537,7 +562,9 @@ public class ImportWithSplittingTest {
 
       chiefOfficerValues[0] = "Chuck";
       chiefOfficerValues[1] = "Robbins";
-      result = OGraphCommands.getVertices(orientGraph, "ChiefOfficer", chiefOfficerKeys, chiefOfficerValues);
+      result =
+          OGraphCommands.getVertices(
+              orientGraph, "ChiefOfficer", chiefOfficerKeys, chiefOfficerValues);
       assertTrue(result.hasNext());
       if (result.hasNext()) {
         v = result.next().getVertex().get();
@@ -576,5 +603,4 @@ public class ImportWithSplittingTest {
       }
     }
   }
-
 }

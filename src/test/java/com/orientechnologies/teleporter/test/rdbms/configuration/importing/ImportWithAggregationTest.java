@@ -20,6 +20,8 @@
 
 package com.orientechnologies.teleporter.test.rdbms.configuration.importing;
 
+import static org.junit.Assert.*;
+
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.record.ODirection;
 import com.orientechnologies.orient.core.record.OEdge;
@@ -36,29 +38,26 @@ import com.orientechnologies.teleporter.strategy.rdbms.ODBMSNaiveStrategy;
 import com.orientechnologies.teleporter.util.OFileManager;
 import com.orientechnologies.teleporter.util.OGraphCommands;
 import com.orientechnologies.teleporter.util.OMigrationConfigManager;
-import org.junit.After;
-import org.junit.Before;
-
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.Statement;
 import java.util.Iterator;
-
-import static org.junit.Assert.*;
+import org.junit.After;
+import org.junit.Before;
 
 /**
  * @author Gabriele Ponzi
  * @email <g.ponzi--at--orientdb.com>
  */
-
 public class ImportWithAggregationTest {
 
   private OTeleporterContext context;
   private ODBMSNaiveStrategy naiveStrategy;
-  private final String configPathJson = "src/test/resources/configuration-mapping/aggregation-from2tables-mapping.json";
+  private final String configPathJson =
+      "src/test/resources/configuration-mapping/aggregation-from2tables-mapping.json";
   private ODBQueryEngine dbQueryEngine;
-  private String driver   = "org.hsqldb.jdbc.JDBCDriver";
-  private String jurl     = "jdbc:hsqldb:mem:mydb";
+  private String driver = "org.hsqldb.jdbc.JDBCDriver";
+  private String jurl = "jdbc:hsqldb:mem:mydb";
   private String username = "SA";
   private String password = "";
   private String dbName = "testOrientDB";
@@ -77,8 +76,8 @@ public class ImportWithAggregationTest {
     this.context.setNameResolver(new OJavaConventionNameResolver());
     this.context.setDataTypeHandler(new OHSQLDBDataTypeHandler());
     this.naiveStrategy = new ODBMSNaiveStrategy("embedded", this.outParentDirectory, this.dbName);
-    this.sourceDBInfo = new OSourceDatabaseInfo("source", this.driver, this.jurl, this.username, this.password);
-
+    this.sourceDBInfo =
+        new OSourceDatabaseInfo("source", this.driver, this.jurl, this.username, this.password);
   }
 
   @After
@@ -90,35 +89,32 @@ public class ImportWithAggregationTest {
     try {
 
       // Deleting database directory
-      OFileManager.deleteResource(this.outOrientGraphUri.replace("embedded:",""));
+      OFileManager.deleteResource(this.outOrientGraphUri.replace("embedded:", ""));
 
     } catch (Exception e) {
       e.printStackTrace();
     }
   }
 
-  //@Test
+  // @Test
 
   /**
-   *  Source DB schema:
+   * Source DB schema:
    *
-   *  - 1 mysql source
-   *  - 1 relationship from person to department (not declared through foreign key definition)
-   *  - 3 tables: "person", "vat_profile", "department"
+   * <p>- 1 mysql source - 1 relationship from person to department (not declared through foreign
+   * key definition) - 3 tables: "person", "vat_profile", "department"
    *
-   *  person(id, name, surname, dep_id)
-   *  vat_profile(id, vat, updated_on)
-   *  department(id, name, location, updated_on)
+   * <p>person(id, name, surname, dep_id) vat_profile(id, vat, updated_on) department(id, name,
+   * location, updated_on)
    *
-   *  Desired Graph Model:
+   * <p>Desired Graph Model:
    *
-   *  - 2 vertex classes: "Person" (aggregation of person and vat_profile entities) and "Department"
-   *  - 1 edge class "WorksAt", corresponding to the logic relationship between "person" and "department"
+   * <p>- 2 vertex classes: "Person" (aggregation of person and vat_profile entities) and
+   * "Department" - 1 edge class "WorksAt", corresponding to the logic relationship between "person"
+   * and "department"
    *
-   *  Person(extKey1, extKey2, firstName, lastName, VAT)
-   *  Department(id, departmentName, location)
+   * <p>Person(extKey1, extKey2, firstName, lastName, VAT) Department(id, departmentName, location)
    */
-
   public void test1() {
 
     Connection connection = null;
@@ -130,55 +126,71 @@ public class ImportWithAggregationTest {
       Class.forName(this.driver);
       connection = DriverManager.getConnection(this.jurl, this.username, this.password);
 
-      String personTableBuilding = "create memory table PERSON (ID varchar(256) not null,"
-          + " NAME varchar(256) not null, SURNAME varchar(256) not null, DEP_ID varchar(256) not null, primary key (ID))";
+      String personTableBuilding =
+          "create memory table PERSON (ID varchar(256) not null,"
+              + " NAME varchar(256) not null, SURNAME varchar(256) not null, DEP_ID varchar(256) not null, primary key (ID))";
       st = connection.createStatement();
       st.execute(personTableBuilding);
 
-      String vatProfileTableBuilding = "create memory table VAT_PROFILE (ID varchar(256),"
-          + " VAT varchar(256) not null, UPDATED_ON date not null, primary key (ID))";
+      String vatProfileTableBuilding =
+          "create memory table VAT_PROFILE (ID varchar(256),"
+              + " VAT varchar(256) not null, UPDATED_ON date not null, primary key (ID))";
       st.execute(vatProfileTableBuilding);
 
-      String departmentTableBuilding = "create memory table DEPARTMENT (ID  varchar(256),"
-          + " NAME varchar(256) not null, LOCATION varchar(256) not null, UPDATED_ON date not null, primary key (ID))";
+      String departmentTableBuilding =
+          "create memory table DEPARTMENT (ID  varchar(256),"
+              + " NAME varchar(256) not null, LOCATION varchar(256) not null, UPDATED_ON date not null, primary key (ID))";
       st.execute(departmentTableBuilding);
 
       // Records Inserting
 
-      String personFilling = "insert into PERSON (ID,NAME,SURNAME,DEP_ID) values (" + "('P001','Joe','Black','D001'),"
-          + "('P002','Thomas','Anderson','D002')," + "('P003','Tyler','Durden','D001')," + "('P004','John','McClanenei','D001'),"
-          + "('P005','Ellen','Ripley','D002')," + "('P006','Marty','McFly','D002'))";
+      String personFilling =
+          "insert into PERSON (ID,NAME,SURNAME,DEP_ID) values ("
+              + "('P001','Joe','Black','D001'),"
+              + "('P002','Thomas','Anderson','D002'),"
+              + "('P003','Tyler','Durden','D001'),"
+              + "('P004','John','McClanenei','D001'),"
+              + "('P005','Ellen','Ripley','D002'),"
+              + "('P006','Marty','McFly','D002'))";
       st.execute(personFilling);
 
-      String vatProfileFilling = "insert into VAT_PROFILE (ID,VAT,UPDATED_ON) values (" + "('P001','173845012','2014-08-16'),"
-          + "('P002','627390164','2010-02-06')," + "('P003','472889102','2008-10-23')," + "('P004','564856410','2012-12-21'),"
-          + "('P005','467280751','2015-05-05')," + "('P006','389450126','2015-04-25'))";
+      String vatProfileFilling =
+          "insert into VAT_PROFILE (ID,VAT,UPDATED_ON) values ("
+              + "('P001','173845012','2014-08-16'),"
+              + "('P002','627390164','2010-02-06'),"
+              + "('P003','472889102','2008-10-23'),"
+              + "('P004','564856410','2012-12-21'),"
+              + "('P005','467280751','2015-05-05'),"
+              + "('P006','389450126','2015-04-25'))";
       st.execute(vatProfileFilling);
 
       String departmentFilling =
-          "insert into DEPARTMENT (ID,NAME,LOCATION,UPDATED_ON) values (" + "('D001','Data Migration','London','2016-05-10'),"
+          "insert into DEPARTMENT (ID,NAME,LOCATION,UPDATED_ON) values ("
+              + "('D001','Data Migration','London','2016-05-10'),"
               + "('D002','Contracts Update','Glasgow','2016-05-10'))";
       st.execute(departmentFilling);
 
-      ODocument configDoc = OMigrationConfigManager.loadMigrationConfigFromFile(this.configPathJson);
+      ODocument configDoc =
+          OMigrationConfigManager.loadMigrationConfigFromFile(this.configPathJson);
 
-      this.naiveStrategy
-          .executeStrategy(this.sourceDBInfo, this.outOrientGraphUri, "basicDBMapper", null, "java", null, null, configDoc);
+      this.naiveStrategy.executeStrategy(
+          this.sourceDBInfo,
+          this.outOrientGraphUri,
+          "basicDBMapper",
+          null,
+          "java",
+          null,
+          null,
+          configDoc);
 
-      /**
-       *  Testing context information
-       */
-
+      /** Testing context information */
       assertEquals(14, context.getStatistics().totalNumberOfRecords);
       assertEquals(14, context.getStatistics().analyzedRecords);
       assertEquals(8, context.getStatistics().orientAddedVertices);
       assertEquals(6, context.getStatistics().orientAddedEdges);
 
-      /**
-       *  Testing built OrientDB
-       */
-
-      orientGraph = this.context.getOrientDBInstance().open(this.dbName,"admin","admin");
+      /** Testing built OrientDB */
+      orientGraph = this.context.getOrientDBInstance().open(this.dbName, "admin", "admin");
 
       // vertices check
       assertEquals(8, orientGraph.countClass("V"));
@@ -188,9 +200,9 @@ public class ImportWithAggregationTest {
       assertEquals(6, orientGraph.countClass("WorksAt"));
 
       // vertex properties and connections check
-      Iterator<OEdge>  edgesIt = null;
-      String[] keys = { "id" };
-      String[] values = { "D001" };
+      Iterator<OEdge> edgesIt = null;
+      String[] keys = {"id"};
+      String[] values = {"D001"};
 
       OVertex v = null;
       OResultSet result = OGraphCommands.getVertices(orientGraph, "Department", keys, values);
@@ -228,8 +240,8 @@ public class ImportWithAggregationTest {
         fail("Query fail!");
       }
 
-      String[] personKeys = { "extKey1", "extKey2" };
-      String[] personValues = { "P001", "P001" };
+      String[] personKeys = {"extKey1", "extKey2"};
+      String[] personValues = {"P001", "P001"};
       result = OGraphCommands.getVertices(orientGraph, "Person", personKeys, personValues);
       assertTrue(result.hasNext());
       if (result.hasNext()) {
