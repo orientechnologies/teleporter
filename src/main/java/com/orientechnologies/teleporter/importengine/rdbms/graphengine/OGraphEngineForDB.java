@@ -48,6 +48,7 @@ import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Executes the necessary operations of insert and upsert for the destination Orient DB populating.
@@ -1087,9 +1088,31 @@ public class OGraphEngineForDB {
 
     try {
 
-      Iterator<OCanonicalRelationship> it = joinTable.getOutCanonicalRelationships().iterator();
-      OCanonicalRelationship relationship1 = it.next();
-      OCanonicalRelationship relationship2 = it.next();
+      OCanonicalRelationship relationship1 = null;
+      OCanonicalRelationship relationship2 = null;
+
+      Set<OCanonicalRelationship> relationships = joinTable.getAllOutCanonicalRelationships();
+
+      if (aggregatorEdge.getEdgeType().getFromColumns() != null
+          && aggregatorEdge.getEdgeType().getToColumns() != null) {
+        relationship1 =
+            relationships.stream()
+                .filter(x -> keysMatch(x, aggregatorEdge.getEdgeType().getFromColumns()))
+                .findFirst()
+                .orElse(null);
+
+        relationship2 =
+            relationships.stream()
+                .filter(x -> keysMatch(x, aggregatorEdge.getEdgeType().getToColumns()))
+                .findFirst()
+                .orElse(null);
+      }
+
+      if (relationship1 == null || relationship2 == null) {
+        Iterator<OCanonicalRelationship> it = relationships.iterator();
+        relationship1 = it.next();
+        relationship2 = it.next();
+      }
 
       // Building keys and values for out-vertex lookup
 
@@ -1197,6 +1220,15 @@ public class OGraphEngineForDB {
       OTeleporterContext.getInstance().printExceptionStackTrace(e, "error");
       throw new OTeleporterRuntimeException(e);
     }
+  }
+
+  private boolean keysMatch(OCanonicalRelationship relationship, List<String> columns) {
+    Set<String> relColumns =
+        relationship.getForeignKey().getInvolvedAttributes().stream()
+            .map(attr -> attr.getName())
+            .collect(Collectors.toSet());
+
+    return relColumns.containsAll(columns) && columns.containsAll(relColumns);
   }
 
   private OVertex addVertexToGraph(ODatabaseDocument orientGraph, String classAndClusterName) {
