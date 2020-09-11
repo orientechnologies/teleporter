@@ -20,6 +20,8 @@
 
 package com.orientechnologies.teleporter.model.graphmodel;
 
+import java.util.List;
+
 /**
  * It represents an Orient class of a specific type that extends the Orient Edge Class. It's a
  * simple edge-type in the graph model.
@@ -33,6 +35,8 @@ public class OEdgeType extends OElementType {
   private OVertexType outVertexType;
   private int numberRelationshipsRepresented; // the number of relationships represented by the edge
   private boolean isSplittingEdge;
+  private List<String> fromColumns;
+  private List<String> toColumns;
 
   public OEdgeType(String edgeType) {
     super(edgeType);
@@ -144,5 +148,21 @@ public class OEdgeType extends OElementType {
     }
     s += "\n";
     return s;
+  }
+
+  public void setFromColumns(List<String> fromColumns) {
+    this.fromColumns = fromColumns;
+  }
+
+  public List<String> getFromColumns() {
+    return fromColumns;
+  }
+
+  public void setToColumns(List<String> toColumns) {
+    this.toColumns = toColumns;
+  }
+
+  public List<String> getToColumns() {
+    return toColumns;
   }
 }

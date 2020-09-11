@@ -1025,13 +1025,21 @@ public class OConfigurationHandler {
               joinTable.getOutCanonicalRelationships().iterator();
           OCanonicalRelationship currRelationship = outRelationshipsIterator.next();
           fromColumns = new LinkedList<String>();
-          for (OAttribute attribute : currRelationship.getFromColumns()) {
-            fromColumns.add(attribute.getName());
+          if (currEdgeType.getFromColumns() != null) {
+            fromColumns.addAll(currEdgeType.getFromColumns());
+          } else {
+            for (OAttribute attribute : currRelationship.getFromColumns()) {
+              fromColumns.add(attribute.getName());
+            }
           }
           currRelationship = outRelationshipsIterator.next();
           toColumns = new LinkedList<String>();
-          for (OAttribute attribute : currRelationship.getFromColumns()) {
-            toColumns.add(attribute.getName());
+          if (currEdgeType.getToColumns() != null) {
+            toColumns.addAll(currEdgeType.getToColumns());
+          } else {
+            for (OAttribute attribute : currRelationship.getFromColumns()) {
+              toColumns.add(attribute.getName());
+            }
           }
           joinTableMappingInfo.setFromColumns(fromColumns);
           joinTableMappingInfo.setToColumns(toColumns);

@@ -2178,6 +2178,24 @@ public class OER2GraphMapper extends OSource2GraphMapper {
 
         OEdgeType newAggregatorEdge = new OEdgeType(edgeType, outVertexType, inVertexType);
 
+        OConfiguredEdgeClass edgeClassConfig =
+            migrationConfig.getEdgeClassByName(currentVertexType.getName());
+        if (edgeClassConfig != null) {
+          List<OEdgeMappingInformation> mappings = edgeClassConfig.getMappings();
+          if (mappings != null && mappings.size() > 0) {
+            List<String> fromCol =
+                mappings.get(0).getRepresentedJoinTableMapping().getFromColumns();
+
+            if (fromCol != null) {
+              newAggregatorEdge.setFromColumns(new LinkedList<>(fromCol));
+            }
+            List<String> toCol = mappings.get(0).getRepresentedJoinTableMapping().getToColumns();
+            if (toCol != null) {
+              newAggregatorEdge.setToColumns(new LinkedList<>(toCol));
+            }
+          }
+        }
+
         int position = 1;
         // adding to the edge all properties not belonging to the primary key
         for (OModelProperty currentProperty : currentVertexType.getProperties()) {
