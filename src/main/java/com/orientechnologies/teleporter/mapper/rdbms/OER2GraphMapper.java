@@ -2179,7 +2179,9 @@ public class OER2GraphMapper extends OSource2GraphMapper {
         OEdgeType newAggregatorEdge = new OEdgeType(edgeType, outVertexType, inVertexType);
 
         OConfiguredEdgeClass edgeClassConfig =
-            migrationConfig.getEdgeClassByName(currentVertexType.getName());
+            migrationConfig == null
+                ? null
+                : migrationConfig.getEdgeClassByName(currentVertexType.getName());
         if (edgeClassConfig != null) {
           List<OEdgeMappingInformation> mappings = edgeClassConfig.getMappings();
           if (mappings != null && mappings.size() > 0) {
