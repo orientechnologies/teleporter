@@ -951,7 +951,7 @@ public class OGraphEngineForDB {
 
       boolean edgeAlreadyPresent = false;
       Iterator<OEdge> it = currentOutVertex.getEdges(ODirection.OUT, edgeType).iterator();
-      OEdge currentEdge;
+      OEdge currentEdge = null;
 
       OTeleporterStatistics statistics = OTeleporterContext.getInstance().getStatistics();
 
@@ -977,6 +977,7 @@ public class OGraphEngineForDB {
                     currentOutVertex.toString(),
                     currentInVertex.toString());
           }
+          this.setElementProperties(currentEdge, properties);
         } else {
           OEdge edge = null;
           if (direction != null && direction.equals("direct")) {
