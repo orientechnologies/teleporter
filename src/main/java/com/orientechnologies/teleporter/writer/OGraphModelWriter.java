@@ -21,7 +21,6 @@
 package com.orientechnologies.teleporter.writer;
 
 import com.orientechnologies.common.exception.OException;
-import com.orientechnologies.orient.core.db.ODatabaseType;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.index.OIndex;
 import com.orientechnologies.orient.core.index.OIndexManagerProxy;
@@ -97,17 +96,26 @@ public class OGraphModelWriter {
           case "embedded":
             OTeleporterContext.getInstance()
                 .getOrientDBInstance()
-                .create(dbName, ODatabaseType.PLOCAL);
+                .execute(
+                    "create database "
+                        + dbName
+                        + " plocal users ( admin identified by 'admin' role admin)");
             break;
           case "plocal":
             OTeleporterContext.getInstance()
                 .getOrientDBInstance()
-                .create(dbName, ODatabaseType.PLOCAL);
+                .execute(
+                    "create database "
+                        + dbName
+                        + " plocal users ( admin identified by 'admin' role admin)");
             break;
           case "memory":
             OTeleporterContext.getInstance()
                 .getOrientDBInstance()
-                .create(dbName, ODatabaseType.MEMORY);
+                .execute(
+                    "create database "
+                        + dbName
+                        + " memory users ( admin identified by 'admin' role admin)");
             break;
           case "remote":
             message =
