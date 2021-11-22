@@ -97,25 +97,25 @@ public class OGraphModelWriter {
             OTeleporterContext.getInstance()
                 .getOrientDBInstance()
                 .execute(
-                    "create database "
+                    "create database `"
                         + dbName
-                        + " plocal users ( admin identified by 'admin' role admin)");
+                        + "` plocal users ( admin identified by 'admin' role admin)");
             break;
           case "plocal":
             OTeleporterContext.getInstance()
                 .getOrientDBInstance()
                 .execute(
-                    "create database "
+                    "create database `"
                         + dbName
-                        + " plocal users ( admin identified by 'admin' role admin)");
+                        + "` plocal users ( admin identified by 'admin' role admin)");
             break;
           case "memory":
             OTeleporterContext.getInstance()
                 .getOrientDBInstance()
                 .execute(
-                    "create database "
+                    "create database `"
                         + dbName
-                        + " memory users ( admin identified by 'admin' role admin)");
+                        + "` memory users ( admin identified by 'admin' role admin)");
             break;
           case "remote":
             message =
