@@ -17,7 +17,7 @@
   },
   "MySQL": {
     "className": "com.mysql.jdbc.Driver",
-    "url": "http://central.maven.org/maven2/mysql/mysql-connector-java/5.1.36/mysql-connector-java-5.1.36.jar",
+    "url": "http://repo1.maven.org/maven2/mysql/mysql-connector-java/5.1.36/mysql-connector-java-5.1.36.jar",
     "version": "5.1.36",
     "format": [
       "jdbc:mysql://<HOST>:<PORT>/<DB>"
@@ -33,7 +33,7 @@
   },
   "HyperSQL": {
     "className": "org.hsqldb.jdbc.JDBCDriver",
-    "url": "http://central.maven.org/maven2/org/hsqldb/hsqldb/2.3.3/hsqldb-2.3.3.jar",
+    "url": "http://repo1.maven.org/maven2/org/hsqldb/hsqldb/2.3.3/hsqldb-2.3.3.jar",
     "version": "2.3.3",
     "format": [
       "jdbc:hsqldb:hsql://<HOST>:<PORT>",
