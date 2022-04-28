@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
         <groupId>com.orientechnologies</groupId>
         <artifactId>orientdb-parent</artifactId>
         <version>3.2.6-SNAPSHOT</version>
-        <relativePath/>
+        <relativePath />
     </parent>
 
     <artifactId>orientdb-teleporter</artifactId>
+  <version>3.2.6</version>
 
     <packaging>jar</packaging>
 
@@ -46,7 +46,8 @@
         <connection>scm:git:git@github.com:orientechnologies/teleporter.git</connection>
         <developerConnection>scm:git:git@github.com:orientechnologies/teleporter.git</developerConnection>
         <url>scm:git:git@github.com:orientechnologies/teleporter.git</url>
-    </scm>
+      <tag>3.2.6</tag>
+  </scm>
     <issueManagement>
         <system>GitHub Issues</system>
         <url>https://github.com/orientechnologies/teleporter/issues</url>
@@ -117,7 +118,7 @@
                                 <descriptor>${basedir}/src/main/assembly/assembly-descriptor.xml</descriptor>
                             </descriptors>
                             <filters>
-                                <filter></filter>
+                                <filter />
                             </filters>
                             <ignoreDirFormatExtensions>false</ignoreDirFormatExtensions>
                             <tarLongFileMode>gnu</tarLongFileMode>
