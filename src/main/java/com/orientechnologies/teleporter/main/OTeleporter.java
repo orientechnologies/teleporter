@@ -281,6 +281,8 @@ public class OTeleporter extends OServerPluginAbstract {
       OPluginMessageHandler messageHandler)
       throws OTeleporterIOException {
 
+    SetScriptOTeleporterContext(outDbUrl);
+
     // trying to load the configuration starting from the input configurationPath
     ODocument migrationConfigDoc = null;
     String jsonMigrationConfig = null;
@@ -590,6 +592,32 @@ public class OTeleporter extends OServerPluginAbstract {
         null,
         messageHandler,
         null);
+  }
+
+  public static void SetScriptOTeleporterContext(String outDbUrl) {
+    /**
+     * Urls handling
+     */
+
+    String serverInitUrl;
+
+    if(outDbUrl.contains("embedded") || outDbUrl.contains("plocal")) {
+      outDbUrl = outDbUrl.replace("plocal","embedded");
+      serverInitUrl = outDbUrl.substring(0, outDbUrl.lastIndexOf('/') + 1);
+    }
+
+    else if(outDbUrl.contains("remote")) {
+      serverInitUrl = outDbUrl.substring(0, outDbUrl.lastIndexOf('/') + 1);
+    }
+    else {
+      // memory protocol
+      serverInitUrl = outDbUrl;
+    }
+
+    OTeleporterContext.newInstance(serverInitUrl);
+
+    OTeleporterContext.getInstance().setMessageHandler(messageHandler);
+
   }
 
   @Override
