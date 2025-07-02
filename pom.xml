@@ -16,6 +16,7 @@
     <packaging>jar</packaging>
 
     <name>teleporter</name>
+    <url>https://orientdb.dev</url>
     <description>Teleporter plugin for OrientDB NoSQL DBMS</description>
     <inceptionYear>2015</inceptionYear>
     <organization>
