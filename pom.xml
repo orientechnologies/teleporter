@@ -11,7 +11,7 @@
 
     <groupId>com.orientechnologies</groupId>
     <artifactId>orientdb-teleporter</artifactId>
-    <version>3.2.49-SNAPSHOT</version>
+    <version>3.2.49</version>
 
     <packaging>jar</packaging>
 
@@ -47,7 +47,7 @@
         <connection>scm:git:git@github.com:orientechnologies/teleporter.git</connection>
         <developerConnection>scm:git:git@github.com:orientechnologies/teleporter.git</developerConnection>
         <url>scm:git:git@github.com:orientechnologies/teleporter.git</url>
-      <tag>HEAD</tag>
+      <tag>3.2.49</tag>
   </scm>
     <issueManagement>
         <system>GitHub Issues</system>
